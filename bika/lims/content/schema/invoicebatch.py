@@ -13,7 +13,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 BatchStartDate = DateTimeField(
     'BatchStartDate',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default_method='current_date',
     widget=CalendarWidget(
@@ -23,7 +23,7 @@ BatchStartDate = DateTimeField(
 
 BatchEndDate = DateTimeField(
     'BatchEndDate',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default_method='current_date',
     validators=('invoicebatch_EndDate_validator',),

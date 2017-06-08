@@ -13,7 +13,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Volume = StringField(
     'Volume',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Volume")
     ),
@@ -21,7 +21,7 @@ Volume = StringField(
 
 Unit = StringField(
     'Unit',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Unit")
     ),
@@ -29,7 +29,7 @@ Unit = StringField(
 
 VAT = FixedPointField(
     'VAT',
-    storage=Storage,
+    storage=Storage(),
     default_method='getDefaultVAT',
     widget=DecimalWidget(
         label=_("VAT %"),
@@ -39,7 +39,7 @@ VAT = FixedPointField(
 
 Price = FixedPointField(
     'Price',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     widget=DecimalWidget(
         label=_("Price excluding VAT")
@@ -48,7 +48,7 @@ Price = FixedPointField(
 
 VATAmount = ComputedField(
     'VATAmount',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getVATAmount()',
     widget=ComputedWidget(
         label=_("VAT"),
@@ -58,7 +58,7 @@ VATAmount = ComputedField(
 
 TotalPrice = ComputedField(
     'TotalPrice',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getTotalPrice()',
     widget=ComputedWidget(
         label=_("Total price"),

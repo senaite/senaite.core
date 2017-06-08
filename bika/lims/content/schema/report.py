@@ -12,7 +12,7 @@ from plone.app.blob.field import FileField as BlobFileField
 
 ReportFile = BlobFileField(
     'ReportFile',
-    storage=Storage,
+    storage=Storage(),
     widget=FileWidget(
         label=_("Report")
     ),
@@ -20,7 +20,7 @@ ReportFile = BlobFileField(
 
 ReportType = StringField(
     'ReportType',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Report Type"),
         description=_("Report type")
@@ -29,7 +29,7 @@ ReportType = StringField(
 
 Client = ReferenceField(
     'Client',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Client',),
     relationship='ReportClient',
     widget=ReferenceWidget(

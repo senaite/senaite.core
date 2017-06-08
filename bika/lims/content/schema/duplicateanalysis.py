@@ -12,7 +12,7 @@ from bika.lims.content.schema import Storage
 # A reference back to the original analysis from which this one was duplicated.
 Analysis = UIDReferenceField(
     'Analysis',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     allowed_types=('Analysis', 'ReferenceAnalysis'),
 )
@@ -20,7 +20,7 @@ Analysis = UIDReferenceField(
 # TODO Analysis - Duplicates shouldn't have this attribute, only ReferenceAns
 ReferenceAnalysesGroupID = StringField(
     'ReferenceAnalysesGroupID',
-    storage=Storage,
+    storage=Storage(),
 )
 
 schema = schema.copy() + Schema((

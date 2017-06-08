@@ -13,7 +13,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 ReferenceResults = ReferenceResultsField(
     'ReferenceResults',
-    storage=Storage,
+    storage=Storage(),
     schemata='Reference Values',
     required=1,
     subfield_validators={
@@ -37,7 +37,7 @@ ReferenceResults = ReferenceResultsField(
 
 Blank = BooleanField(
     'Blank',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     default=False,
     widget=BooleanWidget(
@@ -48,7 +48,7 @@ Blank = BooleanField(
 
 Hazardous = BooleanField(
     'Hazardous',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     default=False,
     widget=BooleanWidget(

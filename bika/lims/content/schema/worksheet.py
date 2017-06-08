@@ -19,12 +19,12 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 WorksheetTemplate = UIDReferenceField(
     'WorksheetTemplate',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('WorksheetTemplate',)
 )
 Layout = RecordsField(
     'Layout',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     subfields=('position', 'type', 'container_uid', 'analysis_uid'),
     subfield_types={'position': 'int'}
@@ -32,7 +32,7 @@ Layout = RecordsField(
 # all layout info lives in Layout; Analyses is used for back references.
 Analyses = ReferenceField(
     'Analyses',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     multiValued=1,
     allowed_types=(
@@ -42,12 +42,12 @@ Analyses = ReferenceField(
 )
 Analyst = StringField(
     'Analyst',
-    storage=Storage,
+    storage=Storage(),
     searchable=True
 )
 Method = ReferenceField(
     'Method',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     vocabulary_display_path_bound=maxsize,
     vocabulary='_getMethodsVoc',
@@ -63,7 +63,7 @@ Method = ReferenceField(
 # TODO Remove. Instruments must be assigned directly to each analysis.
 Instrument = ReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('Instrument',),
     vocabulary='_getInstrumentsVoc',
@@ -72,7 +72,7 @@ Instrument = ReferenceField(
 )
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -85,7 +85,7 @@ Remarks = TextField(
 )
 ResultsLayout = StringField(
     'ResultsLayout',
-    storage=Storage,
+    storage=Storage(),
     default='1',
     vocabulary=WORKSHEET_LAYOUT_OPTIONS
 )

@@ -19,14 +19,14 @@ from bika.lims.content.schema.abstractbaseanalysis import schema
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(
     'AnalysisService',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # Overrides the AbstractBaseAnalysis. Analyses have a versioned link to the
 # calculation as it was when created.
 Calculation = HistoryAwareReferenceField(
     'Calculation',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Calculation',),
     relationship='AnalysisCalculation',
     referenceClass=HoldingReference,
@@ -36,7 +36,7 @@ Calculation = HistoryAwareReferenceField(
 # results are imported from a file supplied by an instrument.
 Attachment = UIDReferenceField(
     'Attachment',
-    storage=Storage,
+    storage=Storage(),
     multiValued=1,
     allowed_types=('Attachment',),
 )
@@ -46,7 +46,7 @@ Attachment = UIDReferenceField(
 # a non-numeric result is needed, ResultOptions can be used.
 Result = StringField(
     'Result',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # When the result is changed, this value is updated to the current time.
@@ -55,21 +55,21 @@ Result = StringField(
 # used to get all dates of result capture
 ResultCaptureDate = DateTimeField(
     'ResultCaptureDate',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # If ReportDryMatter is True in the AnalysisService, the adjusted result
 # is stored here.
 ResultDM = StringField(
     'ResultDM',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # If the analysis has previously been retracted, this flag is set True
 # to indicate that this is a re-test.
 Retested = BooleanField(
     'Retested',
-    storage=Storage,
+    storage=Storage(),
     default=False,
 )
 
@@ -77,7 +77,7 @@ Retested = BooleanField(
 # It's used to populate catalog values.
 DateAnalysisPublished = DateTimeField(
     'DateAnalysisPublished',
-    storage=Storage,
+    storage=Storage(),
     widget=DateTimeWidget(
         label=_("Date Published")
     ),
@@ -88,34 +88,34 @@ DateAnalysisPublished = DateTimeField(
 # from the Result, if the result entered explicitly startswith "<" or ">"
 DetectionLimitOperand = StringField(
     'DetectionLimitOperand',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # This is used to calculate turnaround time reports.
 # The value is set when the Analysis is published.
 Duration = IntegerField(
     'Duration',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # This is used to calculate turnaround time reports. The value is set when the
 # Analysis is published.
 Earliness = IntegerField(
     'Earliness',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
 Analyst = StringField(
     'Analyst',
-    storage=Storage,
+    storage=Storage(),
 )
 
 # The actual uncertainty for this analysis' result, populated from the ranges
 # specified in the analysis service when the result is submitted.
 Uncertainty = FixedPointField(
     'Uncertainty',
-    storage=Storage,
+    storage=Storage(),
     precision=10,
 )
 
@@ -124,7 +124,7 @@ Uncertainty = FixedPointField(
 # NumberOfRequiredVerifications from the Analysis Service
 NumberOfRequiredVerifications = IntegerField(
     'NumberOfRequiredVerifications',
-    storage=Storage,
+    storage=Storage(),
     default=1,
 )
 
@@ -133,7 +133,7 @@ NumberOfRequiredVerifications = IntegerField(
 # seperated by comma- ',' .
 Verificators = StringField(
     'Verificators',
-    storage=Storage,
+    storage=Storage(),
     default='',
 )
 

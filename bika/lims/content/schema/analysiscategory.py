@@ -16,7 +16,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Comments = TextField(
     'Comments',
-    storage=Storage,
+    storage=Storage(),
     default_output_type='text/plain',
     allowable_content_types=('text/plain',),
     widget=TextAreaWidget(
@@ -29,7 +29,7 @@ Comments = TextField(
 
 Department = ReferenceField(
     'Department',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary='getDepartments',
     vocabulary_display_path_bound=maxsize,
@@ -45,7 +45,7 @@ Department = ReferenceField(
 
 SortKey = FloatField(
     'SortKey',
-    storage=Storage,
+    storage=Storage(),
     validators=('SortKeyValidator',),
     widget=DecimalWidget(
         label=_("Sort Key"),

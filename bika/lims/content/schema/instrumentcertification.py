@@ -16,7 +16,7 @@ from plone.app.blob.field import FileField as BlobFileField
 
 TaskID = StringField(
     'TaskID',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_('Task ID'),
         description=_("The instrument's ID in the lab's asset register")
@@ -25,7 +25,7 @@ TaskID = StringField(
 
 Instrument = ReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Instrument',),
     relationship='InstrumentCertificationInstrument',
     widget=StringWidget(
@@ -35,7 +35,7 @@ Instrument = ReferenceField(
 
 InstrumentUID = ComputedField(
     'InstrumentUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getInstrument().UID() '
                'if context.getInstrument() else None',
     widget=ComputedWidget(
@@ -47,7 +47,7 @@ InstrumentUID = ComputedField(
 # When selected, the 'Agency' field is hidden
 Internal = BooleanField(
     'Internal',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_('Internal Certificate'),
@@ -57,7 +57,7 @@ Internal = BooleanField(
 
 Agency = StringField(
     'Agency',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_('Agency'),
         description=_(
@@ -67,7 +67,7 @@ Agency = StringField(
 
 Date = DateTimeField(
     'Date',
-    storage=Storage,
+    storage=Storage(),
     widget=DateTimeWidget(
         label=_('Date'),
         description=_('Date when the calibration certificate was granted')
@@ -76,7 +76,7 @@ Date = DateTimeField(
 
 ValidFrom = DateTimeField(
     'ValidFrom',
-    storage=Storage,
+    storage=Storage(),
     with_time=1,
     with_date=1,
     required=1,
@@ -88,7 +88,7 @@ ValidFrom = DateTimeField(
 
 ValidTo = DateTimeField(
     'ValidTo',
-    storage=Storage,
+    storage=Storage(),
     with_time=1,
     with_date=1,
     required=1,
@@ -100,7 +100,7 @@ ValidTo = DateTimeField(
 
 Preparator = ReferenceField(
     'Preparator',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getLabContacts',
     allowed_types=('LabContact',),
     relationship='LabContactInstrumentCertificatePreparator',
@@ -126,7 +126,7 @@ Preparator = ReferenceField(
 
 Validator = ReferenceField(
     'Validator',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getLabContacts',
     allowed_types=('LabContact',),
     relationship='LabContactInstrumentCertificateValidator',
@@ -152,7 +152,7 @@ Validator = ReferenceField(
 
 Document = BlobFileField(
     'Document',
-    storage=Storage,
+    storage=Storage(),
     widget=FileWidget(
         label=_('Report upload'),
         description=_('Load the certificate document here')
@@ -161,7 +161,7 @@ Document = BlobFileField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/x-web-intelligent',
     allowable_content_types=('text/plain',),

@@ -13,7 +13,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Salutation = StringField(
     'Salutation',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Salutation",
                 "Title"),
@@ -23,7 +23,7 @@ Salutation = StringField(
 
 Firstname = StringField(
     'Firstname',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     widget=StringWidget(
         label=_("Firstname")
@@ -32,7 +32,7 @@ Firstname = StringField(
 
 Middleinitial = StringField(
     'Middleinitial',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     widget=StringWidget(
         label=_("Middle initial")
@@ -41,7 +41,7 @@ Middleinitial = StringField(
 
 Middlename = StringField(
     'Middlename',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     widget=StringWidget(
         label=_("Middle name")
@@ -50,7 +50,7 @@ Middlename = StringField(
 
 Surname = StringField(
     'Surname',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     widget=StringWidget(
         label=_("Surname")
@@ -59,7 +59,7 @@ Surname = StringField(
 
 Fullname = ComputedField(
     'Fullname',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getFullname()',
     searchable=1,
     widget=ComputedWidget(
@@ -70,7 +70,7 @@ Fullname = ComputedField(
 
 Username = StringField(
     'Username',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         visible=False
     ),
@@ -78,7 +78,7 @@ Username = StringField(
 
 EmailAddress = StringField(
     'EmailAddress',
-    storage=Storage,
+    storage=Storage(),
     schemata='Email Telephone Fax',
     searchable=1,
     widget=StringWidget(
@@ -88,7 +88,7 @@ EmailAddress = StringField(
 
 BusinessPhone = StringField(
     'BusinessPhone',
-    storage=Storage,
+    storage=Storage(),
     schemata='Email Telephone Fax',
     widget=StringWidget(
         label=_("Phone (business)")
@@ -97,7 +97,7 @@ BusinessPhone = StringField(
 
 BusinessFax = StringField(
     'BusinessFax',
-    storage=Storage,
+    storage=Storage(),
     schemata='Email Telephone Fax',
     widget=StringWidget(
         label=_("Fax (business)")
@@ -106,7 +106,7 @@ BusinessFax = StringField(
 
 HomePhone = StringField(
     'HomePhone',
-    storage=Storage,
+    storage=Storage(),
     schemata='Email Telephone Fax',
     widget=StringWidget(
         label=_("Phone (home)")
@@ -115,7 +115,7 @@ HomePhone = StringField(
 
 MobilePhone = StringField(
     'MobilePhone',
-    storage=Storage,
+    storage=Storage(),
     schemata='Email Telephone Fax',
     widget=StringWidget(
         label=_("Phone (mobile)")
@@ -124,7 +124,7 @@ MobilePhone = StringField(
 
 JobTitle = StringField(
     'JobTitle',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Job title")
     ),
@@ -132,7 +132,7 @@ JobTitle = StringField(
 
 Department = StringField(
     'Department',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Department")
     ),
@@ -140,7 +140,7 @@ Department = StringField(
 
 PhysicalAddress = AddressField(
     'PhysicalAddress',
-    storage=Storage,
+    storage=Storage(),
     schemata='Address',
     widget=AddressWidget(
         label=_("Physical address")
@@ -149,7 +149,7 @@ PhysicalAddress = AddressField(
 
 City = ComputedField(
     'City',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getPhysicalAddress().get("city")',
     searchable=1,
     widget=ComputedWidget(
@@ -159,7 +159,7 @@ City = ComputedField(
 
 District = ComputedField(
     'District',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getPhysicalAddress().get("district")',
     searchable=1,
     widget=ComputedWidget(
@@ -169,7 +169,7 @@ District = ComputedField(
 
 PostalCode = ComputedField(
     'PostalCode',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getPhysicalAddress().get("postalCode")',
     searchable=1,
     widget=ComputedWidget(
@@ -179,7 +179,7 @@ PostalCode = ComputedField(
 
 Country = ComputedField(
     'Country',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getPhysicalAddress().get("country")',
     searchable=1,
     widget=ComputedWidget(
@@ -189,7 +189,7 @@ Country = ComputedField(
 
 PostalAddress = AddressField(
     'PostalAddress',
-    storage=Storage,
+    storage=Storage(),
     schemata='Address',
     widget=AddressWidget(
         label=_("Postal address")
@@ -198,7 +198,7 @@ PostalAddress = AddressField(
 
 ObjectWorkflowStates = ComputedField(
     'ObjectWorkflowStates',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getObjectWorkflowStates()',
     searchable=1,
     widget=ComputedWidget(

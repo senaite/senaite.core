@@ -10,14 +10,14 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 # 'Key' field is name of the Cache object, must be Unique
 Key = atapi.StringField(
     'Key',
-    storage=Storage,
+    storage=Storage(),
     default='',
 )
 
 # 'Value' is ID of the last created object. Must be increased before using.
 Value = atapi.StringField(
     'Value',
-    storage=Storage,
+    storage=Storage(),
     default='',
 )
 

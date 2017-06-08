@@ -15,7 +15,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 InterimFields = InterimFieldsField(
     'InterimFields',
-    storage=Storage,
+    storage=Storage(),
     schemata='Calculation',
     widget=BikaRecordsWidget(
         label=_("Calculation Interim Fields"),
@@ -32,7 +32,7 @@ InterimFields = InterimFieldsField(
 
 DependentServices = UIDReferenceField(
     'DependentServices',
-    storage=Storage,
+    storage=Storage(),
     multiValued=1,
     allowed_types=('AnalysisService',),
     widget=ReferenceWidget(
@@ -42,7 +42,7 @@ DependentServices = UIDReferenceField(
 
 Formula = TextField(
     'Formula',
-    storage=Storage,
+    storage=Storage(),
     schemata='Calculation',
     validators=('formulavalidator',),
     default_content_type='text/plain',

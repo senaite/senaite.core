@@ -14,7 +14,7 @@ from bika.lims.content.schema.bikaschema import BikaFolderSchema
 
 Type = StringField(
     'Type',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary=PRICELIST_TYPES,
     widget=SelectionWidget(
@@ -25,7 +25,7 @@ Type = StringField(
 
 BulkDiscount = BooleanField(
     'BulkDiscount',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=SelectionWidget(
         label=_("Bulk discount applies")
@@ -34,7 +34,7 @@ BulkDiscount = BooleanField(
 
 BulkPrice = FixedPointField(
     'BulkPrice',
-    storage=Storage,
+    storage=Storage(),
     widget=DecimalWidget(
         label=_("Discount %"),
         description=_("Enter discount percentage value")
@@ -43,7 +43,7 @@ BulkPrice = FixedPointField(
 
 Descriptions = BooleanField(
     'Descriptions',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_("Include descriptions"),
@@ -53,7 +53,7 @@ Descriptions = BooleanField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),

@@ -13,7 +13,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Container = ReferenceField(
     'Container',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Container',),
     relationship='SamplePartitionContainer',
     required=1,
@@ -22,7 +22,7 @@ Container = ReferenceField(
 
 Preservation = ReferenceField(
     'Preservation',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Preservation',),
     relationship='SamplePartitionPreservation',
     required=0,
@@ -31,13 +31,13 @@ Preservation = ReferenceField(
 
 Separate = BooleanField(
     'Separate',
-    storage=Storage,
+    storage=Storage(),
     default=False,
 )
 
 Analyses = UIDReferenceField(
     'Analyses',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Analysis',),
     required=0,
     multiValued=1,
@@ -45,23 +45,23 @@ Analyses = UIDReferenceField(
 
 DatePreserved = DateTimeField(
     'DatePreserved',
-    storage=Storage,
+    storage=Storage(),
 )
 
 Preserver = StringField(
     'Preserver',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
 )
 
 RetentionPeriod = DurationField(
     'RetentionPeriod',
-    storage=Storage,
+    storage=Storage(),
 )
 
 DisposalDate = ComputedField(
     'DisposalDate',
-    storage=Storage,
+    storage=Storage(),
     expression='context.disposal_date()',
     widget=ComputedWidget(
         visible=False

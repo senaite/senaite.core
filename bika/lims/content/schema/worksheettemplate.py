@@ -19,7 +19,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Layout = RecordsField(
     'Layout',
-    storage=Storage,
+    storage=Storage(),
     schemata='Layout',
     required=1,
     type='templateposition',
@@ -44,7 +44,7 @@ Layout = RecordsField(
 
 Service = ReferenceField(
     'Service',
-    storage=Storage,
+    storage=Storage(),
     schemata='Analyses',
     required=0,
     multiValued=1,
@@ -60,7 +60,7 @@ Service = ReferenceField(
 
 RestrictToMethod = ReferenceField(
     'RestrictToMethod',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     required=0,
     vocabulary_display_path_bound=maxint,
@@ -80,7 +80,7 @@ RestrictToMethod = ReferenceField(
 
 Instrument = ReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     required=0,
     vocabulary_display_path_bound=maxint,
@@ -97,7 +97,7 @@ Instrument = ReferenceField(
 
 InstrumentTitle = ComputedField(
     'InstrumentTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getInstrument().Title() "
                "if context.getInstrument() else ''",
     widget=ComputedWidget(

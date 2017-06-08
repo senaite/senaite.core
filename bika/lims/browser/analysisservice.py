@@ -10,7 +10,7 @@ from bika.lims.jsonapi import load_field_values, get_include_fields
 from bika.lims.utils import t
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.browser.log import LogView
-from bika.lims.content.analysisservice import getContainers
+from bika.lims.vocabularies import getContainers
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IJSONReadExtender

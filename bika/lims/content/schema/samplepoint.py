@@ -22,7 +22,7 @@ from plone.app.blob.field import FileField as BlobFileField
 
 Latitude = CoordinateField(
     'Latitude',
-    storage=Storage,
+    storage=Storage(),
     schemata='Location',
     widget=CoordinateWidget(
         label=_("Latitude"),
@@ -34,7 +34,7 @@ Latitude = CoordinateField(
 
 Longitude = CoordinateField(
     'Longitude',
-    storage=Storage,
+    storage=Storage(),
     schemata='Location',
     widget=CoordinateWidget(
         label=_("Longitude"),
@@ -46,7 +46,7 @@ Longitude = CoordinateField(
 
 Elevation = StringField(
     'Elevation',
-    storage=Storage,
+    storage=Storage(),
     schemata='Location',
     widget=StringWidget(
         label=_("Elevation"),
@@ -56,7 +56,7 @@ Elevation = StringField(
 
 SamplingFrequency = DurationField(
     'SamplingFrequency',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxint,
     widget=DurationWidget(
         label=_("Sampling Frequency"),
@@ -68,7 +68,7 @@ SamplingFrequency = DurationField(
 
 SampleTypes = ReferenceField(
     'SampleTypes',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     multiValued=1,
     allowed_types=('SampleType',),
@@ -84,7 +84,7 @@ SampleTypes = ReferenceField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="[o.Title() for o in context.getSampleTypes()]",
     widget=ComputedWidget(
         visible=False,
@@ -93,7 +93,7 @@ SampleTypeTitle = ComputedField(
 
 Composite = BooleanField(
     'Composite',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_("Composite"),
@@ -109,7 +109,7 @@ Composite = BooleanField(
 
 AttachmentFile = BlobFileField(
     'AttachmentFile',
-    storage=Storage,
+    storage=Storage(),
     widget=FileWidget(
         label=_("Attachment")
     ),

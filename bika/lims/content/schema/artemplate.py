@@ -25,7 +25,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 # Form autocomplete widgets can then work with the Titles.
 SamplePoint = ReferenceField(
     'SamplePoint',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxint,
     allowed_types=('SamplePoint',),
     relationship='ARTemplateSamplePoint',
@@ -47,7 +47,7 @@ SamplePoint = ReferenceField(
 
 ComputedField(
     'SamplePointUID',
-    storage=Storage,
+    storage=Storage(),
     expression="context.Schema()['SamplePoint'].get(context).UID() "
                "if context.Schema()['SamplePoint'].get(context) else ''",
     widget=ComputedWidget(
@@ -57,7 +57,7 @@ ComputedField(
 
 SampleType = ReferenceField(
     'SampleType',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxint,
     allowed_types=('SampleType',),
     relationship='ARTemplateSampleType',
@@ -79,7 +79,7 @@ SampleType = ReferenceField(
 
 ComputedField(
     'SampleTypeUID',
-    storage=Storage,
+    storage=Storage(),
     expression="context.Schema()['SampleType'].get(context).UID() "
                "if context.Schema()['SampleType'].get(context) else ''",
     widget=ComputedWidget(
@@ -89,7 +89,7 @@ ComputedField(
 
 Composite = BooleanField(
     'Composite',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_('Composite'),
@@ -99,7 +99,7 @@ Composite = BooleanField(
 
 ReportDryMatter = BooleanField(
     'ReportDryMatter',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_('Report as Dry Matter'),
@@ -109,7 +109,7 @@ ReportDryMatter = BooleanField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -123,7 +123,7 @@ Remarks = TextField(
 
 Partitions = RecordsField(
     'Partitions',
-    storage=Storage,
+    storage=Storage(),
     schemata='Sample Partitions',
     required=0,
     type='artemplate_parts',
@@ -191,7 +191,7 @@ Partitions = RecordsField(
 
 AnalysisProfile = ReferenceField(
     'AnalysisProfile',
-    storage=Storage,
+    storage=Storage(),
     schemata='Analyses',
     required=0,
     multiValued=0,
@@ -211,7 +211,7 @@ AnalysisProfile = ReferenceField(
 
 Analyses = RecordsField(
     'Analyses',
-    storage=Storage,
+    storage=Storage(),
     schemata='Analyses',
     required=0,
     type='analyses',
@@ -231,7 +231,7 @@ Analyses = RecordsField(
 #   - hidden: True/False. Hide/Display in results reports
 AnalysisServicesSettings = RecordsField(
     'AnalysisServicesSettings',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     subfields=('uid', 'hidden',),
     widget=ComputedWidget(visible=False)

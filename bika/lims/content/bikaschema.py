@@ -6,6 +6,6 @@
 # XXX BBB
 
 # noinspection PyUnresolvedReferences
-from bika.lims.content.schema.bikaschema import BikaFolderSchema2
+from bika.lims.content.schema.bikaschema import BikaFolderSchema
 # noinspection PyUnresolvedReferences
-from bika.lims.content.schema.bikaschema import BikaSchema2
+from bika.lims.content.schema.bikaschema import BikaSchema

@@ -16,7 +16,7 @@ ACTIVE_STATES = ["active"]
 
 PublicationPreference = LinesField(
     'PublicationPreference',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
     schemata='Publication preference',
     widget=MultiSelectionWidget(
@@ -26,7 +26,7 @@ PublicationPreference = LinesField(
 
 AttachmentsPermitted = BooleanField(
     'AttachmentsPermitted',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     schemata='Publication preference',
     widget=BooleanWidget(
@@ -39,7 +39,7 @@ AttachmentsPermitted = BooleanField(
 
 CCContact = ReferenceField(
     'CCContact',
-    storage=Storage,
+    storage=Storage(),
     schemata='Publication preference',
     vocabulary='getContacts',
     multiValued=1,

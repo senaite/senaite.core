@@ -13,7 +13,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Category = StringField(
     'Category',
-    storage=Storage,
+    storage=Storage(),
     default='lab',
     vocabulary=PRESERVATION_CATEGORIES,
     widget=SelectionWidget(
@@ -24,7 +24,7 @@ Category = StringField(
 
 RetentionPeriod = DurationField(
     'RetentionPeriod',
-    storage=Storage,
+    storage=Storage(),
     widget=DurationWidget(
         label=_("Retention Period"),
         description=_(

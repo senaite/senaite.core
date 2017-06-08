@@ -11,7 +11,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 SiteTitle = StringField(
     'SiteTitle',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Site Title"),
         description=_("Title of the site")
@@ -19,7 +19,7 @@ SiteTitle = StringField(
 )
 SiteCode = StringField(
     'SiteCode',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Site Code"),
         description=_("Code for the site")
@@ -27,7 +27,7 @@ SiteCode = StringField(
 )
 SiteDescription = StringField(
     'SiteDescription',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Site Description"),
         description=_("Description of the site")
@@ -35,7 +35,7 @@ SiteDescription = StringField(
 )
 LocationTitle = StringField(
     'LocationTitle',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Location Title"),
         description=_("Title of location")
@@ -43,7 +43,7 @@ LocationTitle = StringField(
 )
 LocationCode = StringField(
     'LocationCode',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Location Code"),
         description=_("Code for the location")
@@ -51,7 +51,7 @@ LocationCode = StringField(
 )
 LocationDescription = StringField(
     'LocationDescription',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Location Description"),
         description=_("Description of the location")
@@ -59,7 +59,7 @@ LocationDescription = StringField(
 )
 LocationType = StringField(
     'LocationType',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Location Type"),
         description=_("Type of location")
@@ -67,7 +67,7 @@ LocationType = StringField(
 )
 ShelfTitle = StringField(
     'ShelfTitle',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Shelf Title"),
         description=_("Title of the shelf")
@@ -75,7 +75,7 @@ ShelfTitle = StringField(
 )
 ShelfCode = StringField(
     'ShelfCode',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Shelf Code"),
         description=_("Code the the shelf")
@@ -83,7 +83,7 @@ ShelfCode = StringField(
 )
 ShelfDescription = StringField(
     'ShelfDescription',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Shelf Description"),
         description=_("Description of the shelf")

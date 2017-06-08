@@ -17,7 +17,7 @@ from bika.lims.permissions import ManageClients
 
 ClientID = atapi.StringField(
     'ClientID',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     searchable=True,
     validators=('uniquefieldvalidator', 'standard_id_validator'),
@@ -28,7 +28,7 @@ ClientID = atapi.StringField(
 
 BulkDiscount = atapi.BooleanField(
     'BulkDiscount',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     write_permission=ManageClients,
     widget=atapi.BooleanWidget(
@@ -38,7 +38,7 @@ BulkDiscount = atapi.BooleanField(
 
 MemberDiscountApplies = atapi.BooleanField(
     'MemberDiscountApplies',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     write_permission=ManageClients,
     widget=atapi.BooleanWidget(
@@ -48,7 +48,7 @@ MemberDiscountApplies = atapi.BooleanField(
 
 CCEmails = atapi.StringField(
     'CCEmails',
-    storage=Storage,
+    storage=Storage(),
     schemata='Preferences',
     mode="rw",
     widget=atapi.StringWidget(
@@ -63,7 +63,7 @@ CCEmails = atapi.StringField(
 
 EmailSubject = atapi.LinesField(
     'EmailSubject',
-    storage=Storage,
+    storage=Storage(),
     schemata='Preferences',
     default=['ar', ],
     vocabulary=EMAIL_SUBJECT_OPTIONS,
@@ -75,7 +75,7 @@ EmailSubject = atapi.LinesField(
 
 DefaultCategories = atapi.ReferenceField(
     'DefaultCategories',
-    storage=Storage,
+    storage=Storage(),
     schemata='Preferences',
     required=0,
     multiValued=1,
@@ -92,7 +92,7 @@ DefaultCategories = atapi.ReferenceField(
 
 RestrictedCategories = atapi.ReferenceField(
     'RestrictedCategories',
-    storage=Storage,
+    storage=Storage(),
     schemata='Preferences',
     required=0,
     multiValued=1,
@@ -110,7 +110,7 @@ RestrictedCategories = atapi.ReferenceField(
 
 DefaultARSpecs = atapi.StringField(
     'DefaultARSpecs',
-    storage=Storage,
+    storage=Storage(),
     schemata="Preferences",
     default='ar_specs',
     vocabulary=DEFAULT_AR_SPECS,
@@ -123,7 +123,7 @@ DefaultARSpecs = atapi.StringField(
 
 DefaultDecimalMark = atapi.BooleanField(
     'DefaultDecimalMark',
-    storage=Storage,
+    storage=Storage(),
     schemata="Preferences",
     default=True,
     widget=atapi.BooleanWidget(
@@ -134,7 +134,7 @@ DefaultDecimalMark = atapi.BooleanField(
 
 DecimalMark = atapi.StringField(
     'DecimalMark',
-    storage=Storage,
+    storage=Storage(),
     schemata="Preferences",
     vocabulary=DECIMAL_MARKS,
     default=".",

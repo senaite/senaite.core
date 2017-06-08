@@ -19,7 +19,7 @@ from bika.lims.content.schema.bikaschema import BikaFolderSchema
 
 BatchID = StringField(
     'BatchID',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     required=False,
     validators=('uniquefieldvalidator',),
@@ -31,7 +31,7 @@ BatchID = StringField(
 
 Client = ReferenceField(
     'Client',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('Client',),
     relationship='BatchClient',
@@ -52,7 +52,7 @@ Client = ReferenceField(
 
 ClientBatchID = StringField(
     'ClientBatchID',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     required=0,
     widget=StringWidget(
@@ -62,7 +62,7 @@ ClientBatchID = StringField(
 
 BatchDate = DateTimeField(
     'BatchDate',
-    storage=Storage,
+    storage=Storage(),
     required=False,
     widget=DateTimeWidget(
         label=_('Date')
@@ -71,7 +71,7 @@ BatchDate = DateTimeField(
 
 BatchLabels = LinesField(
     'BatchLabels',
-    storage=Storage,
+    storage=Storage(),
     vocabulary="BatchLabelVocabulary",
     accessor="getLabelNames",
     widget=MultiSelectionWidget(
@@ -82,7 +82,7 @@ BatchLabels = LinesField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/x-web-intelligent',
     allowable_content_types=('text/plain',),
@@ -96,7 +96,7 @@ Remarks = TextField(
 
 InheritedObjects = ReferenceField(
     'InheritedObjects',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     multiValued=True,
     allowed_types=('AnalysisRequest',),
@@ -110,7 +110,7 @@ InheritedObjects = ReferenceField(
 
 InheritedObjectsUI = InheritedObjectsUIField(
     'InheritedObjectsUI',
-    storage=Storage,
+    storage=Storage(),
     required=False,
     type='InheritedObjects',
     subfields=('Title', 'ObjectID', 'Description'),

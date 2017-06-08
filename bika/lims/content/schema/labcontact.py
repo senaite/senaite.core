@@ -19,7 +19,7 @@ from bika.lims.content.schema import Storage
 
 PublicationPreference = LinesField(
     'PublicationPreference',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
     default='email',
     schemata='Publication preference',
@@ -30,7 +30,7 @@ PublicationPreference = LinesField(
 
 Signature = ImageField(
     'Signature',
-    storage=Storage,
+    storage=Storage(),
     widget=ImageWidget(
         label=_("Signature"),
         description=_(
@@ -42,7 +42,7 @@ Signature = ImageField(
 # TODO: Department'll be delated
 Department = ReferenceField(
     'Department',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     vocabulary_display_path_bound=sys.maxint,
     allowed_types=('Department',),
@@ -59,7 +59,7 @@ Department = ReferenceField(
 
 DepartmentTitle = ComputedField(
     'DepartmentTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getDepartment().Title() "
                "if context.getDepartment() else ''",
     widget=ComputedWidget(
@@ -69,7 +69,7 @@ DepartmentTitle = ComputedField(
 
 Departments = ReferenceField(
     'Departments',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     vocabulary_display_path_bound=sys.maxint,
     allowed_types=('Department',),
@@ -86,7 +86,7 @@ Departments = ReferenceField(
 
 DefaultDepartment = StringField(
     'DefaultDepartment',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     vocabulary_display_path_bound=sys.maxint,
     vocabulary='_defaultDepsVoc',

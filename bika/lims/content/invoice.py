@@ -3,6 +3,7 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from Persistence import PersistentMapping
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
@@ -71,3 +72,6 @@ class Invoice(BaseFolder):
 
 
 registerType(Invoice, PROJECTNAME)
+
+class InvoiceLineItem(PersistentMapping):
+    pass

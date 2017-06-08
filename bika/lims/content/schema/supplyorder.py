@@ -19,7 +19,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Contact = ReferenceField(
     'Contact',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary_display_path_bound=maxsize,
     allowed_types=('Contact',),
@@ -38,7 +38,7 @@ Contact = ReferenceField(
 )
 OrderNumber = StringField(
     'OrderNumber',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     searchable=True,
     widget=StringWidget(
@@ -47,7 +47,7 @@ OrderNumber = StringField(
 )
 Invoice = ReferenceField(
     'Invoice',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxsize,
     allowed_types=('Invoice',),
     referenceClass=HoldingReference,
@@ -55,7 +55,7 @@ Invoice = ReferenceField(
 )
 OrderDate = DateTimeField(
     'OrderDate',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default_method='current_date',
     widget=DateTimeWidget(
@@ -72,14 +72,14 @@ OrderDate = DateTimeField(
 )
 DateDispatched = DateTimeField(
     'DateDispatched',
-    storage=Storage,
+    storage=Storage(),
     widget=DateTimeWidget(
         label=_("Date Dispatched")
     )
 )
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -92,7 +92,7 @@ Remarks = TextField(
 )
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage,
+    storage=Storage(),
     expression='here.aq_parent.UID()',
     widget=ComputedWidget(
         visible=False
@@ -100,7 +100,7 @@ ClientUID = ComputedField(
 )
 ProductUID = ComputedField(
     'ProductUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getProductUIDs()',
     widget=ComputedWidget(
         visible=False

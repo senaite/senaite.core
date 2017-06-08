@@ -13,18 +13,18 @@ from plone.app.blob.field import BlobField
 
 ReferenceType = StringField(
     'ReferenceType',
-    storage=Storage,
+    storage=Storage(),
     vocabulary=STD_TYPES,
 )
 
 RetractedAnalysesPdfReport = BlobField(
     'RetractedAnalysesPdfReport',
-    storage=Storage,
+    storage=Storage(),
 )
 
 ReferenceAnalysesGroupID = StringField(
     'ReferenceAnalysesGroupID',
-    storage=Storage,
+    storage=Storage(),
 )
 
 schema = schema.copy() + Schema((

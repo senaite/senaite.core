@@ -8,7 +8,6 @@
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from bika.lims.content.abstractanalysis import AbstractAnalysis
-from bika.lims.content.abstractroutine import schema
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.content.schema.abstractroutineanalysis import schema
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
@@ -146,8 +145,8 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         maxtime = self.getMaxTimeAllowed()
         if not maxtime:
-            maxtime = getToolByName(self,
-                                    'bika_setup').getDefaultTurnaroundTime()
+            bs = getToolByName(self, 'bika_setup')
+            maxtime = bs.getDefaultTurnaroundTime()
         max_days = float(maxtime.get('days', 0)) + (
             (float(maxtime.get('hours', 0)) * 3600 +
              float(maxtime.get('minutes', 0)) * 60)

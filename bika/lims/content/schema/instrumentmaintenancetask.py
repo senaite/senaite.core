@@ -14,7 +14,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Instrument = ReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Instrument',),
     relationship='InstrumentMaintenanceTaskInstrument',
     widget=StringWidget(
@@ -24,7 +24,7 @@ Instrument = ReferenceField(
 
 InstrumentUID = ComputedField(
     'InstrumentUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getInstrument().UID() '
                'if context.getInstrument() else None',
     widget=ComputedWidget(
@@ -34,7 +34,7 @@ InstrumentUID = ComputedField(
 
 Type = StringField(
     'Type',
-    storage=Storage,
+    storage=Storage(),
     vocabulary="getMaintenanceTypes",
     widget=ReferenceWidget(
         checkbox_bound=0,
@@ -45,7 +45,7 @@ Type = StringField(
 
 DownFrom = DateTimeField(
     'DownFrom',
-    storage=Storage,
+    storage=Storage(),
     with_time=1,
     with_date=1,
     required=1,
@@ -58,7 +58,7 @@ DownFrom = DateTimeField(
 
 DownTo = DateTimeField(
     'DownTo',
-    storage=Storage,
+    storage=Storage(),
     with_time=1,
     with_date=1,
     widget=DateTimeWidget(
@@ -70,7 +70,7 @@ DownTo = DateTimeField(
 
 Maintainer = StringField(
     'Maintainer',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Maintainer"),
         description=_("The analyst or agent responsible of the maintenance")
@@ -79,7 +79,7 @@ Maintainer = StringField(
 
 Considerations = TextField(
     'Considerations',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -91,7 +91,7 @@ Considerations = TextField(
 
 WorkPerformed = TextField(
     'WorkPerformed',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -104,7 +104,7 @@ WorkPerformed = TextField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -115,7 +115,7 @@ Remarks = TextField(
 
 Cost = FixedPointField(
     'Cost',
-    storage=Storage,
+    storage=Storage(),
     default='0.00',
     widget=DecimalWidget(
         label=_("Price")
@@ -124,7 +124,7 @@ Cost = FixedPointField(
 
 Closed = BooleanField(
     'Closed',
-    storage=Storage,
+    storage=Storage(),
     default='0',
     widget=BooleanWidget(
         label=_("Closed"),

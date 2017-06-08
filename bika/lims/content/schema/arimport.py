@@ -27,7 +27,7 @@ _p = MessageFactory(u"plone")
 
 OriginalFile = BlobFileField(
     'OriginalFile',
-    storage=Storage,
+    storage=Storage(),
     widget=ComputedWidget(
         visible=False
     ),
@@ -35,7 +35,7 @@ OriginalFile = BlobFileField(
 
 Filename = StringField(
     'Filename',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_('Original Filename'),
         visible=True
@@ -44,7 +44,7 @@ Filename = StringField(
 
 NrSamples = StringField(
     'NrSamples',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_('Number of samples'),
         visible=True
@@ -53,7 +53,7 @@ NrSamples = StringField(
 
 ClientName = StringField(
     'ClientName',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     widget=StringWidget(
         label=_("Client Name"),
@@ -62,7 +62,7 @@ ClientName = StringField(
 
 ClientID = StringField(
     'ClientID',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     widget=StringWidget(
         label=_('Client ID'),
@@ -71,7 +71,7 @@ ClientID = StringField(
 
 ClientOrderNumber = StringField(
     'ClientOrderNumber',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     widget=StringWidget(
         label=_('Client Order Number'),
@@ -80,7 +80,7 @@ ClientOrderNumber = StringField(
 
 ClientReference = StringField(
     'ClientReference',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     widget=StringWidget(
         label=_('Client Reference'),
@@ -89,7 +89,7 @@ ClientReference = StringField(
 
 Contact = ReferenceField(
     'Contact',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Contact',),
     relationship='ARImportContact',
     default_method='getContactUIDForUser',
@@ -110,7 +110,7 @@ Contact = ReferenceField(
 
 Batch = ReferenceField(
     'Batch',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Batch',),
     relationship='ARImportBatch',
     widget=bReferenceWidget(
@@ -124,7 +124,7 @@ Batch = ReferenceField(
 
 CCContacts = DataGridField(
     'CCContacts',
-    storage=Storage,
+    storage=Storage(),
     allow_insert=False,
     allow_delete=False,
     allow_reorder=False,
@@ -150,7 +150,7 @@ CCContacts = DataGridField(
 
 SampleData = DataGridField(
     'SampleData',
-    storage=Storage,
+    storage=Storage(),
     allow_insert=True,
     allow_delete=True,
     allow_reorder=False,
@@ -190,7 +190,7 @@ SampleData = DataGridField(
 
 Errors = LinesField(
     'Errors',
-    storage=Storage,
+    storage=Storage(),
     widget=LinesWidget(
         label=_('Errors'),
         rows=10,

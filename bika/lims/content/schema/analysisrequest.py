@@ -27,7 +27,7 @@ from bika.lims.permissions import EditARContact, SampleSample, ScheduleSampling
 
 Contact = UIDReferenceField(
     'Contact',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default_method='getContactUIDForUser',
     allowed_types=('Contact',),
@@ -75,7 +75,7 @@ Contact = UIDReferenceField(
 
 CCContact = ReferenceField(
     'CCContact',
-    storage=Storage,
+    storage=Storage(),
     multiValued=1,
     vocabulary_display_path_bound=maxsize,
     allowed_types=('Contact',),
@@ -123,7 +123,7 @@ CCContact = ReferenceField(
 
 CCEmails = StringField(
     'CCEmails',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=EditARContact,
@@ -157,7 +157,7 @@ CCEmails = StringField(
 
 Client = ReferenceField(
     'Client',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     allowed_types=('Client',),
     relationship='AnalysisRequestClient',
@@ -203,7 +203,7 @@ Client = ReferenceField(
 
 Sample = ReferenceField(
     'Sample',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxsize,
     allowed_types=('Sample',),
     referenceClass=HoldingReference,
@@ -246,7 +246,7 @@ Sample = ReferenceField(
 
 Batch = ReferenceField(
     'Batch',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Batch',),
     relationship='AnalysisRequestBatch',
     mode="rw",
@@ -286,7 +286,7 @@ Batch = ReferenceField(
 
 BatchUID = ComputedField(
     'BatchUID',
-    storage=Storage,
+    storage=Storage(),
     expression='here.getBatch().UID() if here.getBatch() else ""',
     widget=ComputedWidget(
         visible=False
@@ -295,7 +295,7 @@ BatchUID = ComputedField(
 
 SamplingRound = ReferenceField(
     'SamplingRound',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('SamplingRound',),
     relationship='AnalysisRequestSamplingRound',
     mode="rw",
@@ -334,7 +334,7 @@ SamplingRound = ReferenceField(
 
 SubGroup = ReferenceField(
     'SubGroup',
-    storage=Storage,
+    storage=Storage(),
     required=False,
     allowed_types=('SubGroup',),
     referenceClass=HoldingReference,
@@ -382,7 +382,7 @@ SubGroup = ReferenceField(
 
 Template = ReferenceField(
     'Template',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('ARTemplate',),
     referenceClass=HoldingReference,
     relationship='AnalysisRequestARTemplate',
@@ -424,7 +424,7 @@ Template = ReferenceField(
 # TODO: Profile'll be delated
 Profile = ReferenceField(
     'Profile',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('AnalysisProfile',),
     referenceClass=HoldingReference,
     relationship='AnalysisRequestAnalysisProfile',
@@ -444,7 +444,7 @@ Profile = ReferenceField(
 
 Profiles = ReferenceField(
     'Profiles',
-    storage=Storage,
+    storage=Storage(),
     multiValued=1,
     allowed_types=('AnalysisProfile',),
     referenceClass=HoldingReference,
@@ -487,7 +487,7 @@ Profiles = ReferenceField(
 # This field is a mirror of a field in Sample with the same name
 DateSampled = DateTimeField(
     'DateSampled',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=SampleSample,
@@ -522,7 +522,7 @@ DateSampled = DateTimeField(
 # This field is a mirror of a field in Sample with the same name
 Sampler = StringField(
     'Sampler',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=SampleSample,
@@ -555,7 +555,7 @@ Sampler = StringField(
 
 ScheduledSamplingSampler = StringField(
     'ScheduledSamplingSampler',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=ScheduleSampling,
@@ -586,7 +586,7 @@ ScheduledSamplingSampler = StringField(
 # This field is a mirror of a Sample field with the same name
 SamplingDate = DateTimeField(
     'SamplingDate',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     mode="rw",
     read_permission=permissions.View,
@@ -623,7 +623,7 @@ SamplingDate = DateTimeField(
 
 SampleType = ReferenceField(
     'SampleType',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     allowed_types='SampleType',
     relationship='AnalysisRequestSampleType',
@@ -665,7 +665,7 @@ SampleType = ReferenceField(
 
 RejectionReasons = RecordsField(
     'RejectionReasons',
-    storage=Storage,
+    storage=Storage(),
     widget=RejectionWidget(
         label=_("Sample Rejection"),
         description=_("Set the Sample Rejection workflow and the reasons"),
@@ -695,7 +695,7 @@ RejectionReasons = RecordsField(
 
 Specification = ReferenceField(
     'Specification',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types='AnalysisSpec',
     relationship='AnalysisRequestAnalysisSpec',
@@ -748,7 +748,7 @@ Specification = ReferenceField(
 # see setResultsRange below.
 ResultsRange = RecordsField(
     'ResultsRange',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     type='resultsrange',
     subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax',
@@ -758,7 +758,7 @@ ResultsRange = RecordsField(
 
 PublicationSpecification = ReferenceField(
     'PublicationSpecification',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types='AnalysisSpec',
     relationship='AnalysisRequestPublicationSpec',
@@ -799,7 +799,7 @@ PublicationSpecification = ReferenceField(
 
 SamplePoint = ReferenceField(
     'SamplePoint',
-    storage=Storage,
+    storage=Storage(),
     allowed_types='SamplePoint',
     relationship='AnalysisRequestSamplePoint',
     mode="rw",
@@ -841,7 +841,7 @@ SamplePoint = ReferenceField(
 
 StorageLocation = ReferenceField(
     'StorageLocation',
-    storage=Storage,
+    storage=Storage(),
     allowed_types='StorageLocation',
     relationship='AnalysisRequestStorageLocation',
     mode="rw",
@@ -882,7 +882,7 @@ StorageLocation = ReferenceField(
 
 ClientOrderNumber = StringField(
     'ClientOrderNumber',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -917,7 +917,7 @@ ClientOrderNumber = StringField(
 # Sample field
 ClientReference = StringField(
     'ClientReference',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -953,7 +953,7 @@ ClientReference = StringField(
 # Sample field
 ClientSampleID = StringField(
     'ClientSampleID',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -988,7 +988,7 @@ ClientSampleID = StringField(
 # Sample field
 SamplingDeviation = ReferenceField(
     'SamplingDeviation',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('SamplingDeviation',),
     relationship='AnalysisRequestSamplingDeviation',
     referenceClass=HoldingReference,
@@ -1030,7 +1030,7 @@ SamplingDeviation = ReferenceField(
 # Sample field
 SampleCondition = ReferenceField(
     'SampleCondition',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('SampleCondition',),
     relationship='AnalysisRequestSampleCondition',
     referenceClass=HoldingReference,
@@ -1071,7 +1071,7 @@ SampleCondition = ReferenceField(
 
 EnvironmentalConditions = StringField(
     'EnvironmentalConditions',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -1103,7 +1103,7 @@ EnvironmentalConditions = StringField(
 
 DefaultContainerType = ReferenceField(
     'DefaultContainerType',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('ContainerType',),
     relationship='AnalysisRequestContainerType',
     referenceClass=HoldingReference,
@@ -1146,7 +1146,7 @@ DefaultContainerType = ReferenceField(
 # Sample field
 AdHoc = BooleanField(
     'AdHoc',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     mode="rw",
     read_permission=permissions.View,
@@ -1182,7 +1182,7 @@ AdHoc = BooleanField(
 # Sample field
 Composite = BooleanField(
     'Composite',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     mode="rw",
     read_permission=permissions.View,
@@ -1217,7 +1217,7 @@ Composite = BooleanField(
 
 ReportDryMatter = BooleanField(
     'ReportDryMatter',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     mode="rw",
     read_permission=permissions.View,
@@ -1252,7 +1252,7 @@ ReportDryMatter = BooleanField(
 
 InvoiceExclude = BooleanField(
     'InvoiceExclude',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     mode="rw",
     read_permission=permissions.View,
@@ -1287,7 +1287,7 @@ InvoiceExclude = BooleanField(
 
 Analyses = ARAnalysesField(
     'Analyses',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     mode="rw",
     read_permission=permissions.View,
@@ -1304,7 +1304,7 @@ Analyses = ARAnalysesField(
 
 Attachment = ReferenceField(
     'Attachment',
-    storage=Storage,
+    storage=Storage(),
     multiValued=1,
     allowed_types=('Attachment',),
     referenceClass=HoldingReference,
@@ -1322,7 +1322,7 @@ Attachment = ReferenceField(
 
 Invoice = ReferenceField(
     'Invoice',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxsize,
     allowed_types=('Invoice',),
     referenceClass=HoldingReference,
@@ -1346,7 +1346,7 @@ Invoice = ReferenceField(
 # This field is updated in workflow_script_receive method.
 DateReceived = DateTimeField(
     'DateReceived',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -1378,7 +1378,7 @@ DateReceived = DateTimeField(
 
 DatePublished = DateTimeField(
     'DatePublished',
-    storage=Storage,
+    storage=Storage(),
     mode="r",
     read_permission=permissions.View,
     widget=DateTimeWidget(
@@ -1410,7 +1410,7 @@ DatePublished = DateTimeField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/x-web-intelligent',
     allowable_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -1433,7 +1433,7 @@ Remarks = TextField(
 
 MemberDiscount = FixedPointField(
     'MemberDiscount',
-    storage=Storage,
+    storage=Storage(),
     default_method='getDefaultMemberDiscount',
     mode="rw",
     read_permission=permissions.View,
@@ -1453,7 +1453,7 @@ MemberDiscount = FixedPointField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSampleType().Title() if here.getSampleType() "
                "else ''",
     widget=ComputedWidget(
@@ -1463,7 +1463,7 @@ SampleTypeTitle = ComputedField(
 
 SamplePointTitle = ComputedField(
     'SamplePointTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSamplePoint().Title() if here.getSamplePoint() "
                "else ''",
     widget=ComputedWidget(
@@ -1473,7 +1473,7 @@ SamplePointTitle = ComputedField(
 
 SampleUID = ComputedField(
     'SampleUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSample() and here.getSample().UID() or ''",
     widget=ComputedWidget(
         visible=False,
@@ -1482,7 +1482,7 @@ SampleUID = ComputedField(
 
 SampleID = ComputedField(
     'SampleID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSample() and here.getSample().getId() or ''",
     widget=ComputedWidget(
         visible=False,
@@ -1491,7 +1491,7 @@ SampleID = ComputedField(
 
 ContactUID = ComputedField(
     'ContactUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getContact() and here.getContact().UID() or ''",
     widget=ComputedWidget(
         visible=False,
@@ -1500,7 +1500,7 @@ ContactUID = ComputedField(
 
 ProfilesUID = ComputedField(
     'ProfilesUID',
-    storage=Storage,
+    storage=Storage(),
     expression="[p.UID() for p in here.getProfiles()] if here.getProfiles() "
                "else []",
     widget=ComputedWidget(
@@ -1510,7 +1510,7 @@ ProfilesUID = ComputedField(
 
 Invoiced = ComputedField(
     'Invoiced',
-    storage=Storage,
+    storage=Storage(),
     expression='here.getInvoice() and True or False',
     default=False,
     widget=ComputedWidget(
@@ -1520,7 +1520,7 @@ Invoiced = ComputedField(
 
 ReceivedBy = ComputedField(
     'ReceivedBy',
-    storage=Storage,
+    storage=Storage(),
     expression='here.getReceivedBy()',
     default='',
     widget=ComputedWidget(visible=False, )
@@ -1528,21 +1528,21 @@ ReceivedBy = ComputedField(
 
 CreatorFullName = ComputedField(
     'CreatorFullName',
-    storage=Storage,
+    storage=Storage(),
     expression="here._getCreatorFullName()",
     widget=ComputedWidget(visible=False)
 )
 
 CreatorEmail = ComputedField(
     'CreatorEmail',
-    storage=Storage,
+    storage=Storage(),
     expression="here._getCreatorEmail()",
     widget=ComputedWidget(visible=False)
 )
 
 SamplingRoundUID = ComputedField(
     'SamplingRoundUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSamplingRound().UID() if here.getSamplingRound() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1550,7 +1550,7 @@ SamplingRoundUID = ComputedField(
 
 SampleURL = ComputedField(
     'SampleURL',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSample().absolute_url_path() if here.getSample() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1558,28 +1558,28 @@ SampleURL = ComputedField(
 
 SamplerFullName = ComputedField(
     'SamplerFullName',
-    storage=Storage,
+    storage=Storage(),
     expression="here._getSamplerFullName()",
     widget=ComputedWidget(visible=False)
 )
 
 SamplerEmail = ComputedField(
     'SamplerEmail',
-    storage=Storage,
+    storage=Storage(),
     expression="here._getSamplerEmail()",
     widget=ComputedWidget(visible=False)
 )
 
 BatchID = ComputedField(
     'BatchID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getBatch().getId() if here.getBatch() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 BatchURL = ComputedField(
     'BatchURL',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getBatch().absolute_url_path() if here.getBatch() else ''",
     widget=ComputedWidget(visible=False)
 )
@@ -1587,21 +1587,21 @@ BatchURL = ComputedField(
 # TODO-catalog: move all these computed fields to methods
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getClient().UID() if here.getClient() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ClientTitle = ComputedField(
     'ClientTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getClient().Title() if here.getClient() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ClientURL = ComputedField(
     'ClientURL',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getClient().absolute_url_path() if here.getClient() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1609,21 +1609,21 @@ ClientURL = ComputedField(
 
 ContactUsername = ComputedField(
     'ContactUsername',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getContact().getUsername() if here.getContact() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ContactFullName = ComputedField(
     'ContactFullName',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getContact().getFullname() if here.getContact() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ContactEmail = ComputedField(
     'ContactEmail',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getContact().getEmailAddress() if here.getContact() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1631,21 +1631,21 @@ ContactEmail = ComputedField(
 
 SampleTypeUID = ComputedField(
     'SampleTypeUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSampleType().UID() if here.getSampleType() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 SamplePointUID = ComputedField(
     'SamplePointUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getSamplePoint().UID() if here.getSamplePoint() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 StorageLocationUID = ComputedField(
     'StorageLocationUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getStorageLocation().UID() if here.getStorageLocation() "
                "else ''",
     widget=ComputedWidget(visible=False)
@@ -1653,7 +1653,7 @@ StorageLocationUID = ComputedField(
 
 ProfilesURL = ComputedField(
     'ProfilesURL',
-    storage=Storage,
+    storage=Storage(),
     expression="[p.absolute_url_path() for p in here.getProfiles()] if "
                "here.getProfiles() else []",
     widget=ComputedWidget(visible=False)
@@ -1661,7 +1661,7 @@ ProfilesURL = ComputedField(
 
 ProfilesTitle = ComputedField(
     'ProfilesTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="[p.Title() for p in here.getProfiles()] if here.getProfiles()"
                " else []",
     widget=ComputedWidget(visible=False)
@@ -1669,7 +1669,7 @@ ProfilesTitle = ComputedField(
 
 ProfilesTitleStr = ComputedField(
     'ProfilesTitleStr',
-    storage=Storage,
+    storage=Storage(),
     expression="' '.join([p.Title() for p in here.getProfiles()]) if "
                "here.getProfiles() else []",
     widget=ComputedWidget(visible=False)
@@ -1677,14 +1677,14 @@ ProfilesTitleStr = ComputedField(
 
 TemplateUID = ComputedField(
     'TemplateUID',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getTemplate().UID() if here.getTemplate() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 TemplateURL = ComputedField(
     'TemplateURL',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getTemplate().absolute_url_path() if here.getTemplate() "
                "else ''",
     widget=ComputedWidget(visible=False)
@@ -1692,21 +1692,21 @@ TemplateURL = ComputedField(
 
 TemplateTitle = ComputedField(
     'TemplateTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="here.getTemplate().Title() if here.getTemplate() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 AnalysesNum = ComputedField(
     'AnalysesNum',
-    storage=Storage,
+    storage=Storage(),
     expression="here._getAnalysesNum()",
     widget=ComputedWidget(visible=False)
 )
 
 ChildAnalysisRequest = ReferenceField(
     'ChildAnalysisRequest',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('AnalysisRequest',),
     relationship='AnalysisRequestChildAnalysisRequest',
     referenceClass=HoldingReference,
@@ -1720,7 +1720,7 @@ ChildAnalysisRequest = ReferenceField(
 
 ParentAnalysisRequest = ReferenceField(
     'ParentAnalysisRequest',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('AnalysisRequest',),
     relationship='AnalysisRequestParentAnalysisRequest',
     referenceClass=HoldingReference,
@@ -1734,7 +1734,7 @@ ParentAnalysisRequest = ReferenceField(
 
 PreparationWorkflow = StringField(
     'PreparationWorkflow',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -1771,7 +1771,7 @@ PreparationWorkflow = StringField(
 # ResultsInterpretationDepts (due to LIMS-1628)
 ResultsInterpretation = TextField(
     'ResultsInterpretation',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     default_content_type='text/html',
     # Input content type for the textfield
@@ -1794,7 +1794,7 @@ ResultsInterpretation = TextField(
 
 ResultsInterpretationDepts = RecordsField(
     'ResultsInterpretationDepts',
-    storage=Storage,
+    storage=Storage(),
     subfields=('uid', 'richtext'),
     subfield_labels={'uid': _('Department'),
                      'richtext': _('Results Interpreation')},
@@ -1809,7 +1809,7 @@ ResultsInterpretationDepts = RecordsField(
 
 AnalysisServicesSettings = RecordsField(
     'AnalysisServicesSettings',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     subfields=('uid', 'hidden',),
     widget=ComputedWidget(visible=False)
@@ -1817,7 +1817,7 @@ AnalysisServicesSettings = RecordsField(
 
 Printed = StringField(
     'Printed',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     read_permission=permissions.View,
     widget=StringWidget(
@@ -1833,7 +1833,7 @@ Printed = StringField(
 # are made to verified objects.
 Digest = StringField(
     'Digest',
-    storage=Storage,
+    storage=Storage(),
 )
 
 schema = BikaSchema.copy() + Schema((
