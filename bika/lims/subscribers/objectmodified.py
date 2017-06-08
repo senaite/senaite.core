@@ -6,6 +6,7 @@
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.permissions import ManageSupplyOrders, ManageLoginDetails
+from bika.lims.interfaces import IAnalysisRequest
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -65,3 +66,15 @@ def ObjectModifiedEventHandler(obj, event):
             brains = cat(portal_type=i[0], getCategoryUID=obj.UID())
             for brain in brains:
                 brain.getObject().reindexObject(idxs=['getCategoryTitle'])
+    # TODO: This is a workaround in order to reindex the getBatchUID index
+    # of analyses when the analysis request has been modified. When the
+    # ReferenceField 'batch' is modified (and because it is reference field)
+    # only the archetype 'Reference' object is flagged as modified, not
+    # the whole AnalysisRequest. We need to migrate that reference field
+    # to the new ones.
+    # For now, we will take advantage of that reference object and we will
+    # reindex only the getbatchUID.
+    elif IAnalysisRequest.providedBy(obj.aq_parent.aq_inner):
+        analyses = obj.getAnalyses()
+        for analysis in analyses:
+            analysis.getObject().reindexObject(idxs=['getBatchUID'])

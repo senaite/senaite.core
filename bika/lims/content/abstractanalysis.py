@@ -1126,6 +1126,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 % self.getId())
         return worksheet[0]
 
+    @security.public
     def getExpiryDate(self):
         """It is used as a metacolumn.
         Returns the expiration date from the associated sample

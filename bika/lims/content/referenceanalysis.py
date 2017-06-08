@@ -78,12 +78,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         val = str(value).strip()
         self.getField('Result').set(self, val)
 
-    def getExpiryDate(self):
-        """It is used as a metacolumn.
-        Returns the expiration date from the reference sample.
-        """
-        return self.getSample().getExpiryDate()
-
     def getReferenceResults(self):
         """
         It is used as metacolumn
