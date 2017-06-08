@@ -3,7 +3,7 @@ from Products.ATExtensions.field import RecordsField
 from Products.Archetypes import DisplayList
 from Products.Archetypes.Registry import registerField
 from Products.CMFCore.utils import getToolByName
-from bika.lims.content.analysisservice import getContainers
+from bika.lims.vocabularies import getContainers
 from bika.lims import bikaMessageFactory as _
 
 

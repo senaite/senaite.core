@@ -15,7 +15,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Instrument = ReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Instrument',),
     relationship='InstrumentCalibrationInstrument',
     widget=StringWidget(
@@ -25,7 +25,7 @@ Instrument = ReferenceField(
 
 InstrumentUID = ComputedField(
     'InstrumentUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getInstrument() and context.getInstrument().UID() or '
                'None',
     widget=ComputedWidget(
@@ -35,7 +35,7 @@ InstrumentUID = ComputedField(
 
 DateIssued = DateTimeField(
     'DateIssued',
-    storage=Storage,
+    storage=Storage(),
     with_time=1,
     with_date=1,
     widget=DateTimeWidget(
@@ -46,7 +46,7 @@ DateIssued = DateTimeField(
 
 DownFrom = DateTimeField(
     'DownFrom',
-    storage=Storage,
+    storage=Storage(),
     with_time=1,
     with_date=1,
     widget=DateTimeWidget(
@@ -57,7 +57,7 @@ DownFrom = DateTimeField(
 
 DownTo = DateTimeField(
     'DownTo',
-    storage=Storage,
+    storage=Storage(),
     with_time=1,
     with_date=1,
     widget=DateTimeWidget(
@@ -68,7 +68,7 @@ DownTo = DateTimeField(
 
 Calibrator = StringField(
     'Calibrator',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Calibrator"),
         description=_("The analyst or agent responsible of the calibration")
@@ -77,7 +77,7 @@ Calibrator = StringField(
 
 Considerations = TextField(
     'Considerations',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -89,7 +89,7 @@ Considerations = TextField(
 
 WorkPerformed = TextField(
     'WorkPerformed',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -101,7 +101,7 @@ WorkPerformed = TextField(
 
 Worker = ReferenceField(
     'Worker',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getLabContacts',
     allowed_types=('LabContact',),
     relationship='LabContactInstrumentCalibration',
@@ -122,7 +122,7 @@ Worker = ReferenceField(
 
 ReportID = StringField(
     'ReportID',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Report ID"),
         description=_("Report identification number")
@@ -131,7 +131,7 @@ ReportID = StringField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",

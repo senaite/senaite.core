@@ -15,7 +15,7 @@ ImportedFile = StringField('ImportedFile', default='')
 
 Instrument = ReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Instrument',),
     referenceClass=HoldingReference,
     relationship='InstrumentImportLogs',
@@ -23,19 +23,19 @@ Instrument = ReferenceField(
 
 Interface = StringField(
     'Interface',
-    storage=Storage,
+    storage=Storage(),
     default='',
 )
 
 Results = StringField(
     'Results',
-    storage=Storage,
+    storage=Storage(),
     default='',
 )
 
 LogTime = DateTimeField(
     'LogTime',
-    storage=Storage,
+    storage=Storage(),
     default=DateTime(),
 )
 

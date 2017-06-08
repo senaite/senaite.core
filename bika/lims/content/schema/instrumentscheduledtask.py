@@ -16,7 +16,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Instrument = ReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Instrument',),
     relationship='InstrumentScheduledTaskInstrument',
     widget=StringWidget(
@@ -26,7 +26,7 @@ Instrument = ReferenceField(
 
 InstrumentUID = ComputedField(
     'InstrumentUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getInstrument().UID() '
                'if context.getInstrument() else None',
     widget=ComputedWidget(
@@ -36,7 +36,7 @@ InstrumentUID = ComputedField(
 
 Type = StringField(
     'Type',
-    storage=Storage,
+    storage=Storage(),
     vocabulary="getTaskTypes",
     widget=ReferenceWidget(
         checkbox_bound=0,
@@ -46,7 +46,7 @@ Type = StringField(
 
 ScheduleCriteria = RecordsField(
     'ScheduleCriteria',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     type='schedulecriteria',
     widget=ScheduleInputWidget(
@@ -56,7 +56,7 @@ ScheduleCriteria = RecordsField(
 
 Considerations = TextField(
     'Considerations',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",

@@ -11,7 +11,7 @@ from bika.lims.fields import ExtStringField, StringWidget
 schema = BikaSchema.copy() + Schema((
     ExtStringField(
         'SortKey',
-        storage=Storage,
+        storage=Storage(),
         widget=StringWidget(
             label=_("Sort Key"),
             description=_("Subgroups are sorted with this key in group views")

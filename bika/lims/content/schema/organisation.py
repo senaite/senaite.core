@@ -13,7 +13,7 @@ from bika.lims.content.schema.bikaschema import BikaFolderSchema, BikaSchema
 
 Name = StringField(
     'Name',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     searchable=True,
     validators=('uniquefieldvalidator',),
@@ -24,7 +24,7 @@ Name = StringField(
 
 TaxNumber = StringField(
     'TaxNumber',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("VAT number")
     ),
@@ -32,7 +32,7 @@ TaxNumber = StringField(
 
 Phone = StringField(
     'Phone',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Phone")
     ),
@@ -40,7 +40,7 @@ Phone = StringField(
 
 Fax = StringField(
     'Fax',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Fax")
     ),
@@ -48,7 +48,7 @@ Fax = StringField(
 
 EmailAddress = StringField(
     'EmailAddress',
-    storage=Storage,
+    storage=Storage(),
     schemata='Address',
     widget=StringWidget(
         label=_("Email Address"),
@@ -58,7 +58,7 @@ EmailAddress = StringField(
 
 PhysicalAddress = AddressField(
     'PhysicalAddress',
-    storage=Storage,
+    storage=Storage(),
     schemata='Address',
     widget=AddressWidget(
         label=_("Physical address"),
@@ -72,7 +72,7 @@ PhysicalAddress = AddressField(
 )
 PostalAddress = AddressField(
     'PostalAddress',
-    storage=Storage,
+    storage=Storage(),
     schemata='Address',
     widget=AddressWidget(
         label=_("Postal address"),
@@ -86,7 +86,7 @@ PostalAddress = AddressField(
 )
 BillingAddress = AddressField(
     'BillingAddress',
-    storage=Storage,
+    storage=Storage(),
     schemata='Address',
     widget=AddressWidget(
         label=_("Billing address"),
@@ -100,7 +100,7 @@ BillingAddress = AddressField(
 )
 AccountType = StringField(
     'AccountType',
-    storage=Storage,
+    storage=Storage(),
     schemata='Bank details',
     widget=StringWidget(
         label=_("Account Type")
@@ -109,7 +109,7 @@ AccountType = StringField(
 
 AccountName = StringField(
     'AccountName',
-    storage=Storage,
+    storage=Storage(),
     schemata='Bank details',
     widget=StringWidget(
         label=_("Account Name")
@@ -118,7 +118,7 @@ AccountName = StringField(
 
 AccountNumber = StringField(
     'AccountNumber',
-    storage=Storage,
+    storage=Storage(),
     schemata='Bank details',
     widget=StringWidget(
         label=_("Account Number")
@@ -127,7 +127,7 @@ AccountNumber = StringField(
 
 BankName = StringField(
     'BankName',
-    storage=Storage,
+    storage=Storage(),
     schemata='Bank details',
     widget=StringWidget(
         label=_("Bank name")
@@ -136,7 +136,7 @@ BankName = StringField(
 
 BankBranch = StringField(
     'BankBranch',
-    storage=Storage,
+    storage=Storage(),
     schemata='Bank details',
     widget=StringWidget(
         label=_("Bank branch")

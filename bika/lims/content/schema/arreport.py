@@ -16,7 +16,7 @@ from plone.app.blob.field import BlobField
 
 AnalysisRequest = UIDReferenceField(
     'AnalysisRequest',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('AnalysisRequest',),
     referenceClass=HoldingReference,
     required=1,
@@ -24,17 +24,17 @@ AnalysisRequest = UIDReferenceField(
 
 Pdf = BlobField(
     'Pdf',
-    storage=Storage,
+    storage=Storage(),
 )
 
 SMS = StringField(
     'SMS',
-    storage=Storage,
+    storage=Storage(),
 )
 
 Recipients = RecordsField(
     'Recipients',
-    storage=Storage,
+    storage=Storage(),
     type='recipients',
     subfields=(
         'UID', 'Username', 'Fullname', 'EmailAddress',
@@ -43,7 +43,7 @@ Recipients = RecordsField(
 
 DatePrinted = DateTimeField(
     'DatePrinted',
-    storage=Storage,
+    storage=Storage(),
     mode="rw",
     widget=DateTimeWidget(
         label=_("Date Printed"),

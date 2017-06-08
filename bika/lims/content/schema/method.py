@@ -16,7 +16,7 @@ from plone.app.blob.field import FileField as BlobFileField
 # Method ID should be unique, specified on MethodSchemaModifier
 MethodID = StringField(
     'MethodID',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     required=0,
     validators=('uniquefieldvalidator',),
@@ -30,7 +30,7 @@ MethodID = StringField(
 
 Instructions = TextField(
     'Instructions',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -44,7 +44,7 @@ Instructions = TextField(
 
 MethodDocument = BlobFileField(
     'MethodDocument',  # XXX Multiple Method documents please
-    storage=Storage,
+    storage=Storage(),
     widget=FileWidget(
         label=_("Method Document"),
         description=_("Load documents describing the method here")
@@ -55,7 +55,7 @@ MethodDocument = BlobFileField(
 # method, use getInstrumentUIDs() or getInstruments() instead
 _Instruments = LinesField(
     '_Instruments',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getInstrumentsDisplayList',
     widget=MultiSelectionWidget(
         modes=('edit',),
@@ -72,7 +72,7 @@ _Instruments = LinesField(
 # getInstruments() or getInstrumentUIDs() instead.
 _AvailableInstruments = LinesField(
     '_AvailableInstruments',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='_getAvailableInstrumentsDisplayList',
     widget=MultiSelectionWidget(
         modes=('edit',)
@@ -84,7 +84,7 @@ _AvailableInstruments = LinesField(
 # is controlled with javascript.
 ManualEntryOfResults = BooleanField(
     'ManualEntryOfResults',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_("Manual entry of results"),
@@ -98,7 +98,7 @@ ManualEntryOfResults = BooleanField(
 # Only shown in readonly view. Not in edit view
 ManualEntryOfResultsViewField = ComputedField(
     'ManualEntryOfResultsViewField',
-    storage=Storage,
+    storage=Storage(),
     expression="context.isManualEntryOfResults()",
     widget=BooleanWidget(
         label=_("Manual entry of results"),
@@ -113,7 +113,7 @@ ManualEntryOfResultsViewField = ComputedField(
 # with this method assigned will use the calculation selected here.
 Calculation = UIDReferenceField(
     'Calculation',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='_getCalculations',
     allowed_types=('Calculation',),
     widget=ReferenceWidget(
@@ -130,7 +130,7 @@ Calculation = UIDReferenceField(
 
 Accredited = BooleanField(
     'Accredited',
-    storage=Storage,
+    storage=Storage(),
     schemata="default",
     default=True,
     widget=BooleanWidget(

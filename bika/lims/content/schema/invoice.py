@@ -15,7 +15,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 Client = ReferenceField(
     'Client',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary_display_path_bound=maxint,
     allowed_types=('Client',),
@@ -24,7 +24,7 @@ Client = ReferenceField(
 
 AnalysisRequest = ReferenceField(
     'AnalysisRequest',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary_display_path_bound=maxint,
     allowed_types=('AnalysisRequest',),
@@ -33,7 +33,7 @@ AnalysisRequest = ReferenceField(
 
 SupplyOrder = ReferenceField(
     'SupplyOrder',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary_display_path_bound=maxint,
     allowed_types=('SupplyOrder',),
@@ -42,7 +42,7 @@ SupplyOrder = ReferenceField(
 
 InvoiceDate = DateTimeField(
     'InvoiceDate',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default_method='current_date',
     widget=DateTimeWidget(
@@ -52,7 +52,7 @@ InvoiceDate = DateTimeField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -66,7 +66,7 @@ Remarks = TextField(
 
 Subtotal = ComputedField(
     'Subtotal',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getSubtotal()',
     widget=ComputedWidget(
         label=_("Subtotal"),
@@ -76,7 +76,7 @@ Subtotal = ComputedField(
 
 VATAmount = ComputedField(
     'VATAmount',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getVATAmount()',
     widget=ComputedWidget(
         label=_("VAT Total"),
@@ -86,7 +86,7 @@ VATAmount = ComputedField(
 
 Total = ComputedField(
     'Total',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getTotal()',
     widget=ComputedWidget(
         label=_("Total"),
@@ -96,7 +96,7 @@ Total = ComputedField(
 
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getClient().UID() if context.getClient() else ''",
     widget=ComputedWidget(
         visible=False
@@ -105,7 +105,7 @@ ClientUID = ComputedField(
 
 InvoiceSearchableText = ComputedField(
     'InvoiceSearchableText',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getInvoiceSearchableText()',
     widget=ComputedWidget(
         visible=False

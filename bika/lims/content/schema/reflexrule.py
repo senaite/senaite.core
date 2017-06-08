@@ -21,7 +21,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 # method.
 Method = ReferenceField(
     'Method',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     multiValued=0,
     vocabulary_display_path_bound=sys.maxint,
@@ -40,7 +40,7 @@ Method = ReferenceField(
 
 ReflexRules = ReflexRuleField(
     'ReflexRules',
-    storage=Storage,
+    storage=Storage(),
 )
 
 schema = BikaSchema.copy() + Schema((

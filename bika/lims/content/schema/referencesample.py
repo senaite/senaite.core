@@ -22,7 +22,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 ReferenceDefinition = ReferenceField(
     'ReferenceDefinition',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     allowed_types=('ReferenceDefinition',),
     relationship='ReferenceSampleReferenceDefinition',
@@ -36,7 +36,7 @@ ReferenceDefinition = ReferenceField(
 
 Blank = BooleanField(
     'Blank',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     default=False,
     widget=BooleanWidget(
@@ -47,7 +47,7 @@ Blank = BooleanField(
 
 Hazardous = BooleanField(
     'Hazardous',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     default=False,
     widget=BooleanWidget(
@@ -58,7 +58,7 @@ Hazardous = BooleanField(
 
 Manufacturer = ReferenceField(
     'Manufacturer',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     allowed_types=('Manufacturer',),
     relationship='ReferenceSampleManufacturer',
@@ -72,7 +72,7 @@ Manufacturer = ReferenceField(
 
 CatalogueNumber = StringField(
     'CatalogueNumber',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     widget=StringWidget(
         label=_("Catalogue Number")
@@ -81,7 +81,7 @@ CatalogueNumber = StringField(
 
 LotNumber = StringField(
     'LotNumber',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     widget=StringWidget(
         label=_("Lot Number")
@@ -90,7 +90,7 @@ LotNumber = StringField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description',
     searchable=True,
     default_content_type='text/plain',
@@ -105,7 +105,7 @@ Remarks = TextField(
 
 DateSampled = DateTimeField(
     'DateSampled',
-    storage=Storage,
+    storage=Storage(),
     schemata='Dates',
     widget=bika_DateTimeWidget(
         label=_("Date Sampled")
@@ -114,7 +114,7 @@ DateSampled = DateTimeField(
 
 DateReceived = DateTimeField(
     'DateReceived',
-    storage=Storage,
+    storage=Storage(),
     schemata='Dates',
     default_method='current_date',
     widget=bika_DateTimeWidget(
@@ -124,7 +124,7 @@ DateReceived = DateTimeField(
 
 DateOpened = DateTimeField(
     'DateOpened',
-    storage=Storage,
+    storage=Storage(),
     schemata='Dates',
     widget=bika_DateTimeWidget(
         label=_("Date Opened")
@@ -133,7 +133,7 @@ DateOpened = DateTimeField(
 
 ExpiryDate = DateTimeField(
     'ExpiryDate',
-    storage=Storage,
+    storage=Storage(),
     schemata='Dates',
     required=1,
     widget=bika_DateTimeWidget(
@@ -143,7 +143,7 @@ ExpiryDate = DateTimeField(
 
 DateExpired = DateTimeField(
     'DateExpired',
-    storage=Storage,
+    storage=Storage(),
     schemata='Dates',
     widget=bika_DateTimeWidget(
         label=_("Date Expired"),
@@ -153,7 +153,7 @@ DateExpired = DateTimeField(
 
 DateDisposed = DateTimeField(
     'DateDisposed',
-    storage=Storage,
+    storage=Storage(),
     schemata='Dates',
     widget=bika_DateTimeWidget(
         label=_("Date Disposed"),
@@ -163,7 +163,7 @@ DateDisposed = DateTimeField(
 
 ReferenceResults = ReferenceResultsField(
     'ReferenceResults',
-    storage=Storage,
+    storage=Storage(),
     schemata='Reference Values',
     required=1,
     subfield_validators={
@@ -178,7 +178,7 @@ ReferenceResults = ReferenceResultsField(
 
 SupplierUID = ComputedField(
     'SupplierUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.aq_parent.UID()',
     widget=ComputedWidget(
         visible=False
@@ -187,7 +187,7 @@ SupplierUID = ComputedField(
 
 ReferenceDefinitionUID = ComputedField(
     'ReferenceDefinitionUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getReferenceDefinition().UID() '
                'if context.getReferenceDefinition().UID() else None',
     widget=ComputedWidget(

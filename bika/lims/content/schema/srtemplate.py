@@ -20,7 +20,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 # The default sampler for the rounds
 Sampler = StringField(
     'Sampler',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     searchable=True,
     vocabulary='_getSamplersDisplayList',
@@ -33,7 +33,7 @@ Sampler = StringField(
 # The department responsible for the sampling round
 Department = ReferenceField(
     'Department',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary_display_path_bound=maxint,
     allowed_types=('Department',),
@@ -52,7 +52,7 @@ Department = ReferenceField(
 # The number of days between recurring field trips
 SamplingDaysFrequency = IntegerField(
     'SamplingDaysFrequency',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default=7,
     widget=IntegerWidget(
@@ -64,7 +64,7 @@ SamplingDaysFrequency = IntegerField(
 
 Instructions = TextField(
     'Instructions',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -77,7 +77,7 @@ Instructions = TextField(
 
 ARTemplates = ReferenceField(
     'ARTemplates',
-    storage=Storage,
+    storage=Storage(),
     schemata='AR Templates',
     required=1,
     multiValued=1,

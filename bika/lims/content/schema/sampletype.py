@@ -18,7 +18,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 RetentionPeriod = DurationField(
     'RetentionPeriod',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default_method='getDefaultLifetime',
     widget=DurationWidget(
@@ -32,7 +32,7 @@ RetentionPeriod = DurationField(
 
 Hazardous = BooleanField(
     'Hazardous',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_("Hazardous"),
@@ -43,7 +43,7 @@ Hazardous = BooleanField(
 
 SampleMatrix = ReferenceField(
     'SampleMatrix',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('SampleMatrix',),
     vocabulary='SampleMatricesVocabulary',
@@ -57,7 +57,7 @@ SampleMatrix = ReferenceField(
 
 Prefix = StringField(
     'Prefix',
-    storage=Storage,
+    storage=Storage(),
     required=True,
     widget=StringWidget(
         label=_("Sample Type Prefix")
@@ -66,7 +66,7 @@ Prefix = StringField(
 
 MinimumVolume = StringField(
     'MinimumVolume',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     widget=StringWidget(
         label=_("Minimum Volume"),
@@ -78,7 +78,7 @@ MinimumVolume = StringField(
 
 ContainerType = ReferenceField(
     'ContainerType',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('ContainerType',),
     vocabulary='ContainerTypesVocabulary',
@@ -96,7 +96,7 @@ ContainerType = ReferenceField(
 
 SamplePoints = ReferenceField(
     'SamplePoints',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     multiValued=1,
     allowed_types=('SamplePoint',),
@@ -113,7 +113,7 @@ SamplePoints = ReferenceField(
 
 SamplePointTitle = ComputedField(
     'SamplePointTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="[o.Title() for o in context.getSamplePoints()]",
     widget=ComputedWidget(
         visibile=False,

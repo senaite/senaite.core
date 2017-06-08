@@ -21,7 +21,7 @@ from bika.lims.content.schema import Storage
 # partition.
 Separate = BooleanField(
     'Separate',
-    storage=Storage,
+    storage=Storage(),
     schemata='Container and Preservation',
     default=False,
     required=0,
@@ -37,7 +37,7 @@ Separate = BooleanField(
 # sample partition.
 Preservation = UIDReferenceField(
     'Preservation',
-    storage=Storage,
+    storage=Storage(),
     schemata='Container and Preservation',
     allowed_types=('Preservation',),
     vocabulary='getPreservations',
@@ -60,7 +60,7 @@ Preservation = UIDReferenceField(
 # possible that their analyses can be performed on the same partitions
 Container = UIDReferenceField(
     'Container',
-    storage=Storage,
+    storage=Storage(),
     schemata='Container and Preservation',
     allowed_types=('Container', 'ContainerType'),
     vocabulary='getContainers',
@@ -85,7 +85,7 @@ Container = UIDReferenceField(
 # analyases can be performed on each partition.
 PartitionSetup = PartitionSetupField(
     'PartitionSetup',
-    storage=Storage,
+    storage=Storage(),
     schemata='Container and Preservation',
     widget=PartitionSetupWidget(
         label=PMF("Preservation per sample type"),
@@ -104,7 +104,7 @@ PartitionSetup = PartitionSetupField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Calculation = UIDReferenceField(
     'Calculation',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     required=0,
     vocabulary='_getAvailableCalculationsDisplayList',
@@ -128,7 +128,7 @@ Calculation = UIDReferenceField(
 # See browser/js/bika.lims.analysisservice.edit.js
 UseDefaultCalculation = BooleanField(
     'UseDefaultCalculation',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     default=True,
     widget=BooleanWidget(
@@ -151,7 +151,7 @@ UseDefaultCalculation = BooleanField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Methods = UIDReferenceField(
     'Methods',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     required=0,
     multiValued=1,
@@ -179,7 +179,7 @@ Methods = UIDReferenceField(
 # - If InstrumentEntry checked, set the first selected and show
 Instruments = UIDReferenceField(
     'Instruments',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     required=0,
     multiValued=1,

@@ -12,7 +12,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 PortalTypes = LinesField(
     'PortalTypes',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getPortalTypes',
     widget=PicklistWidget(
         label=_("Portal Types"),

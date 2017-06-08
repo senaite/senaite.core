@@ -16,7 +16,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 ProfileKey = StringField(
     'ProfileKey',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_("Profile Keyword"),
         description=_(
@@ -28,7 +28,7 @@ ProfileKey = StringField(
 
 Service = ReferenceField(
     'Service',
-    storage=Storage,
+    storage=Storage(),
     schemata='Analyses',
     required=1,
     multiValued=1,
@@ -43,7 +43,7 @@ Service = ReferenceField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowable_content_types=('text/plain',),
@@ -62,7 +62,7 @@ Remarks = TextField(
 #   - hidden: True/False. Hide/Display in results reports
 AnalysisServicesSettings = RecordsField(
     'AnalysisServicesSettings',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     subfields=('uid', 'hidden',),
     widget=ComputedWidget(visible=False),
@@ -70,7 +70,7 @@ AnalysisServicesSettings = RecordsField(
 
 CommercialID = StringField(
     'CommercialID',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     required=0,
     schemata='Accounting',
@@ -86,7 +86,7 @@ CommercialID = StringField(
 # the analysis profile's specific VAT
 UseAnalysisProfilePrice = BooleanField(
     'UseAnalysisProfilePrice',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     schemata='Accounting',
     widget=BooleanWidget(
@@ -103,7 +103,7 @@ UseAnalysisProfilePrice = BooleanField(
 # service's price.
 AnalysisProfilePrice = FixedPointField(
     'AnalysisProfilePrice',
-    storage=Storage,
+    storage=Storage(),
     schemata="Accounting",
     default='0.00',
     widget=DecimalWidget(
@@ -116,7 +116,7 @@ AnalysisProfilePrice = FixedPointField(
 # the AnalysisProfilesVAT should override the system's VAT
 AnalysisProfileVAT = FixedPointField(
     'AnalysisProfileVAT',
-    storage=Storage,
+    storage=Storage(),
     schemata="Accounting",
     default='14.00',
     widget=DecimalWidget(
@@ -132,7 +132,7 @@ AnalysisProfileVAT = FixedPointField(
 #  VAT
 VATAmount = ComputedField(
     'VATAmount',
-    storage=Storage,
+    storage=Storage(),
     schemata="Accounting",
     expression='context.getVATAmount()',
     widget=ComputedWidget(
@@ -143,7 +143,7 @@ VATAmount = ComputedField(
 
 TotalPrice = ComputedField(
     'TotalPrice',
-    storage=Storage,
+    storage=Storage(),
     schemata="Accounting",
     expression='context.getTotalPrice()',
     widget=ComputedWidget(

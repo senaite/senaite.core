@@ -15,7 +15,7 @@ from plone.app.blob.field import FileField
 # It comes from blob
 AttachmentFile = FileField(
     'AttachmentFile',
-    storage=Storage,
+    storage=Storage(),
     widget=FileWidget(
         label=_("Attachment")
     ),
@@ -23,7 +23,7 @@ AttachmentFile = FileField(
 
 AttachmentType = UIDReferenceField(
     'AttachmentType',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('AttachmentType',),
     widget=ReferenceWidget(
@@ -33,7 +33,7 @@ AttachmentType = UIDReferenceField(
 
 AttachmentKeys = StringField(
     'AttachmentKeys',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     widget=StringWidget(
         label=_("Attachment Keys")
@@ -42,7 +42,7 @@ AttachmentKeys = StringField(
 
 DateLoaded = DateTimeField(
     'DateLoaded',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default_method='current_date',
     widget=DateTimeWidget(

@@ -17,7 +17,7 @@ from bika.lims.content.schema import Storage
 # The physical sample partition linked to the Analysis.
 SamplePartition = UIDReferenceField(
     'SamplePartition',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('SamplePartition',),
 )
@@ -25,7 +25,7 @@ SamplePartition = UIDReferenceField(
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
     'IsReflexAnalysis',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     required=0,
 )
@@ -33,7 +33,7 @@ IsReflexAnalysis = BooleanField(
 # This field contains the original analysis which was reflected
 OriginalReflexedAnalysis = UIDReferenceField(
     'OriginalReflexedAnalysis',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('Analysis',),
 )
@@ -42,7 +42,7 @@ OriginalReflexedAnalysis = UIDReferenceField(
 # a reflex rule
 ReflexAnalysisOf = UIDReferenceField(
     'ReflexAnalysisOf',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     allowed_types=('Analysis',),
 )
@@ -50,7 +50,7 @@ ReflexAnalysisOf = UIDReferenceField(
 # Which is the Reflex Rule action that has created this analysis
 ReflexRuleAction = StringField(
     'ReflexRuleAction',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     default=0,
 )
@@ -58,7 +58,7 @@ ReflexRuleAction = StringField(
 # Which is the 'local_id' inside the reflex rule
 ReflexRuleLocalID = StringField(
     'ReflexRuleLocalID',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     default=0,
 )
@@ -67,7 +67,7 @@ ReflexRuleLocalID = StringField(
 # Separated by '|'
 ReflexRuleActionsTriggered = StringField(
     'ReflexRuleActionsTriggered',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     default='',
 )
@@ -76,7 +76,7 @@ ReflexRuleActionsTriggered = StringField(
 # is submitted.
 Uncertainty = FixedPointField(
     'Uncertainty',
-    storage=Storage,
+    storage=Storage(),
     precision=10,
     widget=DecimalWidget(
         label=_("Uncertainty")

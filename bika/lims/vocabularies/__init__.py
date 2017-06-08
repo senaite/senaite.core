@@ -559,3 +559,73 @@ class CustomPubPrefVocabulary(object):
         return SimpleVocabulary.fromItems(items)
 
 CustomPubPrefVocabularyFactory = CustomPubPrefVocabulary()
+
+
+def getContainers(instance,
+                  minvol=None,
+                  allow_blank=True,
+                  show_container_types=True,
+                  show_containers=True):
+    """ Containers vocabulary, for AnalysisService.
+
+    This is a separate class so that it can be called from ajax to filter
+    the container list, as well as being used as the AT field vocabulary.
+
+    Returns a tuple of tuples: ((object_uid, object_title), ())
+
+    If the partition is flagged 'Separate', only containers are displayed.
+    If the Separate flag is false, displays container types.
+
+    XXX bsc = self.portal.bika_setup_catalog
+    XXX obj = bsc(getKeyword='Moist')[0].getObject()
+    XXX u'Container Type: Canvas bag' in obj.getContainers().values()
+    XXX True
+
+    """
+
+    bsc = getToolByName(instance, 'bika_setup_catalog')
+
+    items = allow_blank and [['', _('Any')]] or []
+
+    containers = []
+    for container in bsc(portal_type='Container', sort_on='sortable_title'):
+        container = container.getObject()
+
+        # verify container capacity is large enough for required sample volume.
+        if minvol is not None:
+            capacity = container.getCapacity()
+            try:
+                capacity = capacity.split(' ', 1)
+                capacity = mg(float(capacity[0]), capacity[1])
+                if capacity < minvol:
+                    continue
+            except (ValueError, TypeError):
+                # if there's a unit conversion error, allow the container
+                # to be displayed.
+                pass
+
+        containers.append(container)
+
+    if show_containers:
+        # containers with no containertype first
+        for container in containers:
+            if not container.getContainerType():
+                items.append((container.UID(), container.Title()))
+
+    ts = getToolByName(instance, 'translation_service').translate
+    cat_str = _c(ts(_('Container Type')))
+    containertypes = [c.getContainerType() for c in containers]
+    containertypes = dict([(ct.UID(), ct.Title())
+                           for ct in containertypes if ct])
+    for ctype_uid, ctype_title in containertypes.items():
+        ctype_title = _c(ctype_title)
+        if show_container_types:
+            items.append((ctype_uid, "%s: %s" % (cat_str, ctype_title)))
+        if show_containers:
+            for container in containers:
+                ctype = container.getContainerType()
+                if ctype and ctype.UID() == ctype_uid:
+                    items.append((container.UID(), container.Title()))
+
+    items = tuple(items)
+    return items

@@ -26,7 +26,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 # but accessed on all analysis objects.
 ShortTitle = StringField(
     'ShortTitle',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     widget=StringWidget(
         label=_("Short title"),
@@ -40,7 +40,7 @@ ShortTitle = StringField(
 # A simple integer to sort items.
 SortKey = FloatField(
     'SortKey',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     validators=('SortKeyValidator',),
     widget=DecimalWidget(
@@ -55,7 +55,7 @@ SortKey = FloatField(
 # Is the title of the analysis a proper Scientific Name?
 ScientificName = BooleanField(
     'ScientificName',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     default=False,
     widget=BooleanWidget(
@@ -69,7 +69,7 @@ ScientificName = BooleanField(
 # manage_results screen.
 Unit = StringField(
     'Unit',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     widget=StringWidget(
         label=_("Unit"),
@@ -82,7 +82,7 @@ Unit = StringField(
 # Decimal precision for printing normal decimal results.
 Precision = IntegerField(
     'Precision',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     widget=IntegerWidget(
         label=_("Precision as number of decimals"),
@@ -95,7 +95,7 @@ Precision = IntegerField(
 # the results will be represented in scientific notation.
 ExponentialFormatPrecision = IntegerField(
     'ExponentialFormatPrecision',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default=7,
     widget=IntegerWidget(
@@ -111,7 +111,7 @@ ExponentialFormatPrecision = IntegerField(
 # report.
 LowerDetectionLimit = FixedPointField(
     'LowerDetectionLimit',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default='0.0',
     precision=7,
@@ -130,7 +130,7 @@ LowerDetectionLimit = FixedPointField(
 # report.
 UpperDetectionLimit = FixedPointField(
     'UpperDetectionLimit',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default='1000000000.0',
     precision=7,
@@ -165,7 +165,7 @@ UpperDetectionLimit = FixedPointField(
 # displayed in the results table.
 DetectionLimitSelector = BooleanField(
     'DetectionLimitSelector',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default=False,
     widget=BooleanWidget(
@@ -185,7 +185,7 @@ DetectionLimitSelector = BooleanField(
 # further information.
 AllowManualDetectionLimit = BooleanField(
     'AllowManualDetectionLimit',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default=False,
     widget=BooleanWidget(
@@ -200,7 +200,7 @@ AllowManualDetectionLimit = BooleanField(
 # service, and the modified result stored in Analysis.ResultDM field.
 ReportDryMatter = BooleanField(
     'ReportDryMatter',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default=False,
     widget=BooleanWidget(
@@ -212,7 +212,7 @@ ReportDryMatter = BooleanField(
 # Specify attachment requirements for these analyses
 AttachmentOption = StringField(
     'AttachmentOption',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default='p',
     vocabulary=ATTACHMENT_OPTIONS,
@@ -230,7 +230,7 @@ AttachmentOption = StringField(
 # imports, and other places too.  It's also used as the ID analyses.
 Keyword = StringField(
     'Keyword',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     required=1,
     searchable=True,
@@ -253,7 +253,7 @@ Keyword = StringField(
 # See browser/js/bika.lims.analysisservice.edit.js
 ManualEntryOfResults = BooleanField(
     'ManualEntryOfResults',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     default=True,
     widget=BooleanWidget(
@@ -274,7 +274,7 @@ ManualEntryOfResults = BooleanField(
 # See browser/js/bika.lims.analysisservice.edit.js
 InstrumentEntryOfResults = BooleanField(
     'InstrumentEntryOfResults',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     default=False,
     widget=BooleanWidget(
@@ -298,7 +298,7 @@ InstrumentEntryOfResults = BooleanField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
     'Instrument',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     searchable=True,
     required=0,
@@ -329,7 +329,7 @@ Instrument = UIDReferenceField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Method = UIDReferenceField(
     'Method',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     required=0,
     searchable=True,
@@ -355,7 +355,7 @@ Method = UIDReferenceField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Calculation = UIDReferenceField(
     'Calculation',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     required=0,
     vocabulary='_getAvailableCalculationsDisplayList',
@@ -379,7 +379,7 @@ Calculation = UIDReferenceField(
 # before the calculation is performed.
 InterimFields = InterimFieldsField(
     'InterimFields',
-    storage=Storage,
+    storage=Storage(),
     schemata='Method',
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),
@@ -394,7 +394,7 @@ InterimFields = InterimFieldsField(
 # flagged in turnaround time report.
 MaxTimeAllowed = DurationField(
     'MaxTimeAllowed',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     widget=DurationWidget(
         label=_("Maximum turn-around time"),
@@ -407,7 +407,7 @@ MaxTimeAllowed = DurationField(
 # The amount of difference allowed between this analysis, and any duplicates.
 DuplicateVariation = FixedPointField(
     'DuplicateVariation',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     widget=DecimalWidget(
         label=_("Duplicate Variation %"),
@@ -422,7 +422,7 @@ DuplicateVariation = FixedPointField(
 # accreditation.
 Accredited = BooleanField(
     'Accredited',
-    storage=Storage,
+    storage=Storage(),
     schemata="Method",
     default=False,
     widget=BooleanWidget(
@@ -439,7 +439,7 @@ Accredited = BooleanField(
 # the results may be entered before the sample is received.
 PointOfCapture = StringField(
     'PointOfCapture',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     required=1,
     default='lab',
@@ -459,7 +459,7 @@ PointOfCapture = StringField(
 # reporting on analyses.
 Category = UIDReferenceField(
     'Category',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     required=1,
     allowed_types=('AnalysisCategory',),
@@ -476,7 +476,7 @@ Category = UIDReferenceField(
 # The base price for this analysis
 Price = FixedPointField(
     'Price',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     default='0.00',
     widget=DecimalWidget(
@@ -487,7 +487,7 @@ Price = FixedPointField(
 # Some clients qualify for bulk discounts.
 BulkPrice = FixedPointField(
     'BulkPrice',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     default='0.00',
     widget=DecimalWidget(
@@ -502,7 +502,7 @@ BulkPrice = FixedPointField(
 # service.  The default value is taken from BikaSetup
 VAT = FixedPointField(
     'VAT',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     default_method='getDefaultVAT',
     widget=DecimalWidget(
@@ -515,7 +515,7 @@ VAT = FixedPointField(
 # and for indicating the responsibile lab manager in reports.
 Department = UIDReferenceField(
     'Department',
-    storage=Storage,
+    storage=Storage(),
     schemata="Description",
     required=0,
     allowed_types=('Department',),
@@ -533,7 +533,7 @@ Department = UIDReferenceField(
 # themselves.
 Uncertainties = RecordsField(
     'Uncertainties',
-    storage=Storage,
+    storage=Storage(),
     schemata="Uncertainties",
     type='uncertainties',
     subfields=('intercept_min', 'intercept_max', 'errorvalue'),
@@ -576,7 +576,7 @@ Uncertainties = RecordsField(
 # See browser/js/bika.lims.analysisservice.edit.js
 PrecisionFromUncertainty = BooleanField(
     'PrecisionFromUncertainty',
-    storage=Storage,
+    storage=Storage(),
     schemata="Uncertainties",
     default=False,
     widget=BooleanWidget(
@@ -599,7 +599,7 @@ PrecisionFromUncertainty = BooleanField(
 # result
 AllowManualUncertainty = BooleanField(
     'AllowManualUncertainty',
-    storage=Storage,
+    storage=Storage(),
     schemata="Uncertainties",
     default=False,
     widget=BooleanWidget(
@@ -616,7 +616,7 @@ AllowManualUncertainty = BooleanField(
 # "Result" when applying calculations.
 ResultOptions = RecordsField(
     'ResultOptions',
-    storage=Storage,
+    storage=Storage(),
     schemata="Result Options",
     type='resultsoptions',
     subfields=('ResultValue', 'ResultText'),
@@ -643,7 +643,7 @@ ResultOptions = RecordsField(
 # from the client in the final report (and in manage_results view)
 Hidden = BooleanField(
     'Hidden',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default=False,
     widget=BooleanWidget(
@@ -659,7 +659,7 @@ Hidden = BooleanField(
 # accreditation for the results of this analysis!
 SelfVerification = IntegerField(
     'SelfVerification',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default=-1,
     vocabulary="_getSelfVerificationVocabulary",
@@ -679,7 +679,7 @@ SelfVerification = IntegerField(
 # Require more than one verification by separate Verifier or LabManager users.
 NumberOfRequiredVerifications = IntegerField(
     'NumberOfRequiredVerifications',
-    storage=Storage,
+    storage=Storage(),
     schemata="Analysis",
     default=-1,
     vocabulary="_getNumberOfRequiredVerificationsVocabulary",
@@ -697,7 +697,7 @@ NumberOfRequiredVerifications = IntegerField(
 # Just a string displayed on various views
 CommercialID = StringField(
     'CommercialID',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     schemata='Description',
     required=0,
@@ -710,7 +710,7 @@ CommercialID = StringField(
 # Just a string displayed on various views
 ProtocolID = StringField(
     'ProtocolID',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     schemata='Description',
     required=0,
@@ -723,7 +723,7 @@ ProtocolID = StringField(
 # Remarks are used in various ways by almost all objects in the system.
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     schemata='Description'
 )
 

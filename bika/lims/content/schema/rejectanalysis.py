@@ -9,7 +9,7 @@ from bika.lims.content.schema import Storage
 
 Analysis = ReferenceField(
     'Analysis',
-    storage=Storage,
+    storage=Storage(),
     allowed_types=('Analysis',),
     relationship='RejectAnalysisAnalysis',
 )

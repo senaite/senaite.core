@@ -16,7 +16,7 @@ from plone.app.blob.field import ImageField
 
 LabURL = StringField(
     'LabURL',
-    storage=Storage,
+    storage=Storage(),
     schemata='Address',
     write_permission=ManageBika,
     widget=StringWidget(
@@ -28,7 +28,7 @@ LabURL = StringField(
 
 Confidence = IntegerField(
     'Confidence',
-    storage=Storage,
+    storage=Storage(),
     schemata='Accreditation',
     widget=IntegerWidget(
         label=_("Confidence Level %"),
@@ -39,7 +39,7 @@ Confidence = IntegerField(
 
 LaboratoryAccredited = BooleanField(
     'LaboratoryAccredited',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     schemata='Accreditation',
     write_permission=ManageBika,
@@ -51,7 +51,7 @@ LaboratoryAccredited = BooleanField(
 
 AccreditationBody = StringField(
     'AccreditationBody',
-    storage=Storage,
+    storage=Storage(),
     schemata='Accreditation',
     write_permission=ManageBika,
     widget=StringWidget(
@@ -62,7 +62,7 @@ AccreditationBody = StringField(
 
 AccreditationBodyURL = StringField(
     'AccreditationBodyURL',
-    storage=Storage,
+    storage=Storage(),
     schemata='Accreditation',
     write_permission=ManageBika,
     widget=StringWidget(
@@ -73,7 +73,7 @@ AccreditationBodyURL = StringField(
 
 Accreditation = StringField(
     'Accreditation',
-    storage=Storage,
+    storage=Storage(),
     schemata='Accreditation',
     write_permission=ManageBika,
     widget=StringWidget(
@@ -84,7 +84,7 @@ Accreditation = StringField(
 
 AccreditationReference = StringField(
     'AccreditationReference',
-    storage=Storage,
+    storage=Storage(),
     schemata='Accreditation',
     write_permission=ManageBika,
     widget=StringWidget(
@@ -96,7 +96,7 @@ AccreditationReference = StringField(
 
 AccreditationBodyLogo = ImageField(
     'AccreditationBodyLogo',
-    storage=Storage,
+    storage=Storage(),
     schemata='Accreditation',
     widget=ImageWidget(
         label=_("Accreditation Logo"),
@@ -109,7 +109,7 @@ AccreditationBodyLogo = ImageField(
 
 AccreditationPageHeader = TextField(
     'AccreditationPageHeader',
-    storage=Storage,
+    storage=Storage(),
     schemata='Accreditation',
     default="${lab_name} has been accredited as ${accreditation_standard} "
             "conformant by ${accreditation_body_abbr}, "

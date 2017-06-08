@@ -15,7 +15,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 ContainerType = ReferenceField(
     'ContainerType',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     vocabulary_display_path_bound=maxint,
     allowed_types=('ContainerType',),
@@ -30,7 +30,7 @@ ContainerType = ReferenceField(
 
 Capacity = StringField(
     'Capacity',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     default="0 ml",
     widget=StringWidget(
@@ -42,7 +42,7 @@ Capacity = StringField(
 
 PrePreserved = BooleanField(
     'PrePreserved',
-    storage=Storage,
+    storage=Storage(),
     validators=('container_prepreservation_validator',),
     default=False,
     widget=BooleanWidget(
@@ -58,7 +58,7 @@ PrePreserved = BooleanField(
 
 Preservation = ReferenceField(
     'Preservation',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     vocabulary_display_path_bound=maxint,
     allowed_types=('Preservation',),
@@ -77,7 +77,7 @@ Preservation = ReferenceField(
 
 SecuritySealIntact = BooleanField(
     'SecuritySealIntact',
-    storage=Storage,
+    storage=Storage(),
     default=True,
     widget=BooleanWidget(
         label=_("Security Seal Intact Y/N")

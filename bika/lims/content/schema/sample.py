@@ -26,7 +26,7 @@ from bika.lims.permissions import ScheduleSampling
 
 SampleID = StringField(
     'SampleID',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     searchable=True,
     mode='rw',
@@ -44,7 +44,7 @@ SampleID = StringField(
 
 ClientReference = StringField(
     'ClientReference',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -70,7 +70,7 @@ ClientReference = StringField(
 
 ClientSampleID = StringField(
     'ClientSampleID',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -96,7 +96,7 @@ ClientSampleID = StringField(
 
 LinkedSample = ReferenceField(
     'LinkedSample',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxsize,
     multiValue=1,
     allowed_types=('Sample',),
@@ -112,7 +112,7 @@ LinkedSample = ReferenceField(
 
 SampleType = ReferenceField(
     'SampleType',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     vocabulary_display_path_bound=maxsize,
     allowed_types=('SampleType',),
@@ -146,7 +146,7 @@ SampleType = ReferenceField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getSampleType().Title() "
                "if context.getSampleType() else None",
     widget=ComputedWidget(
@@ -156,7 +156,7 @@ SampleTypeTitle = ComputedField(
 
 SamplePoint = ReferenceField(
     'SamplePoint',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxsize,
     allowed_types=('SamplePoint',),
     relationship='SampleSamplePoint',
@@ -189,7 +189,7 @@ SamplePoint = ReferenceField(
 
 SamplePointTitle = ComputedField(
     'SamplePointTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getSamplePoint().Title() "
                "if context.getSamplePoint() else None",
     widget=ComputedWidget(
@@ -199,7 +199,7 @@ SamplePointTitle = ComputedField(
 
 StorageLocation = ReferenceField(
     'StorageLocation',
-    storage=Storage,
+    storage=Storage(),
     allowed_types='StorageLocation',
     relationship='AnalysisRequestStorageLocation',
     mode='rw',
@@ -232,12 +232,12 @@ StorageLocation = ReferenceField(
 
 SamplingWorkflowEnabled = BooleanField(
     'SamplingWorkflowEnabled',
-    storage=Storage,
+    storage=Storage(),
     default_method='getSamplingWorkflowEnabledDefault'
 )
 DateSampled = DateTimeField(
     'DateSampled',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=SampleSample,
@@ -266,7 +266,7 @@ DateSampled = DateTimeField(
 
 Sampler = StringField(
     'Sampler',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=SampleSample,
@@ -295,7 +295,7 @@ Sampler = StringField(
 
 ScheduledSamplingSampler = StringField(
     'ScheduledSamplingSampler',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=ScheduleSampling,
@@ -325,7 +325,7 @@ ScheduledSamplingSampler = StringField(
 
 SamplingDate = DateTimeField(
     'SamplingDate',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -354,7 +354,7 @@ SamplingDate = DateTimeField(
 
 PreparationWorkflow = StringField(
     'PreparationWorkflow',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -382,7 +382,7 @@ PreparationWorkflow = StringField(
 
 SamplingDeviation = ReferenceField(
     'SamplingDeviation',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxsize,
     allowed_types=('SamplingDeviation',),
     relationship='SampleSamplingDeviation',
@@ -415,7 +415,7 @@ SamplingDeviation = ReferenceField(
 
 SampleCondition = ReferenceField(
     'SampleCondition',
-    storage=Storage,
+    storage=Storage(),
     vocabulary_display_path_bound=maxsize,
     allowed_types=('SampleCondition',),
     relationship='SampleSampleCondition',
@@ -448,7 +448,7 @@ SampleCondition = ReferenceField(
 
 EnvironmentalConditions = StringField(
     'EnvironmentalConditions',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -485,7 +485,7 @@ EnvironmentalConditions = StringField(
 # This field is updated in workflow_script_receive method.
 DateReceived = DateTimeField(
     'DateReceived',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -512,7 +512,7 @@ DateReceived = DateTimeField(
 
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.aq_parent.UID()',
     widget=ComputedWidget(
         visible=False
@@ -521,7 +521,7 @@ ClientUID = ComputedField(
 
 SampleTypeUID = ComputedField(
     'SampleTypeUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getSampleType().UID()',
     widget=ComputedWidget(
         visible=False
@@ -530,7 +530,7 @@ SampleTypeUID = ComputedField(
 
 SamplePointUID = ComputedField(
     'SamplePointUID',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getSamplePoint().UID() '
                'if context.getSamplePoint() else None',
     widget=ComputedWidget(
@@ -540,7 +540,7 @@ SamplePointUID = ComputedField(
 
 Composite = BooleanField(
     'Composite',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     mode='rw',
     read_permission=permissions.View,
@@ -567,7 +567,7 @@ Composite = BooleanField(
 
 DateExpired = DateTimeField(
     'DateExpired',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -595,7 +595,7 @@ DateExpired = DateTimeField(
 
 DisposalDate = ComputedField(
     'DisposalDate',
-    storage=Storage,
+    storage=Storage(),
     expression='context.disposal_date()',
     widget=DateTimeWidget(
         visible={'edit': 'visible',
@@ -619,7 +619,7 @@ DisposalDate = ComputedField(
 
 DateDisposed = DateTimeField(
     'DateDisposed',
-    storage=Storage,
+    storage=Storage(),
     mode='rw',
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -647,7 +647,7 @@ DateDisposed = DateTimeField(
 
 AdHoc = BooleanField(
     'AdHoc',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     mode='rw',
     read_permission=permissions.View,
@@ -674,7 +674,7 @@ AdHoc = BooleanField(
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     default_content_type='text/x-web-intelligent',
     allowable_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -690,7 +690,7 @@ Remarks = TextField(
 
 RejectionReasons = RecordsField(
     'RejectionReasons',
-    storage=Storage,
+    storage=Storage(),
     widget=RejectionWidget(
         label=_("Sample Rejection"),
         description=_(

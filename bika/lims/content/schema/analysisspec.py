@@ -16,7 +16,7 @@ from bika.lims.content.schema.bikaschema import BikaSchema
 
 SampleType = UIDReferenceField(
     'SampleType',
-    storage=Storage,
+    storage=Storage(),
     vocabulary="getSampleTypes",
     allowed_types=('SampleType',),
     widget=ReferenceWidget(
@@ -27,7 +27,7 @@ SampleType = UIDReferenceField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getSampleType().Title() "
                "if context.getSampleType() else ''",
     widget=ComputedWidget(
@@ -36,7 +36,7 @@ SampleTypeTitle = ComputedField(
 )
 SampleTypeUID = ComputedField(
     'SampleTypeUID',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getSampleType().UID() "
                "if context.getSampleType() else ''",
     widget=ComputedWidget(
@@ -46,7 +46,7 @@ SampleTypeUID = ComputedField(
 
 ResultsRange = RecordsField(
     'ResultsRange',
-    storage=Storage,
+    storage=Storage(),
     # schemata = 'Specifications',
     required=1,
     type='resultsrange',
@@ -82,7 +82,7 @@ ResultsRange = RecordsField(
 
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage,
+    storage=Storage(),
     expression="context.aq_parent.UID()",
     widget=ComputedWidget(
         visible=False

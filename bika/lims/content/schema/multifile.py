@@ -11,7 +11,7 @@ from plone.app.blob.field import FileField
 
 DocumentID = atapi.StringField(
     'DocumentID',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     validators=('uniquefieldvalidator',),
     widget=atapi.StringWidget(
@@ -21,7 +21,7 @@ DocumentID = atapi.StringField(
 
 File = FileField(
     'File',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     widget=atapi.FileWidget(
         label=_("Document"),
@@ -31,7 +31,7 @@ File = FileField(
 
 DocumentVersion = atapi.StringField(
     'DocumentVersion',
-    storage=Storage,
+    storage=Storage(),
     widget=atapi.StringWidget(
         label=_("Document Version")
     ),
@@ -39,7 +39,7 @@ DocumentVersion = atapi.StringField(
 
 DocumentLocation = atapi.StringField(
     'DocumentLocation',
-    storage=Storage,
+    storage=Storage(),
     widget=atapi.StringWidget(
         label=_("Document Location"),
         description=_("Location where the document set is shelved")
@@ -48,7 +48,7 @@ DocumentLocation = atapi.StringField(
 
 DocumentType = atapi.StringField(
     'DocumentType',
-    storage=Storage,
+    storage=Storage(),
     required=1,
     widget=atapi.StringWidget(
         label=_("Document Type"),

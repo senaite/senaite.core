@@ -20,7 +20,7 @@ from plone.app.blob.field import FileField as BlobFileField, ImageField
 
 InstrumentType = ReferenceField(
     'InstrumentType',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getInstrumentTypes',
     allowed_types=('InstrumentType',),
     relationship='InstrumentInstrumentType',
@@ -34,7 +34,7 @@ InstrumentType = ReferenceField(
 
 Manufacturer = ReferenceField(
     'Manufacturer',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getManufacturers',
     allowed_types=('Manufacturer',),
     relationship='InstrumentManufacturer',
@@ -48,7 +48,7 @@ Manufacturer = ReferenceField(
 
 Supplier = ReferenceField(
     'Supplier',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getSuppliers',
     allowed_types=('Supplier',),
     relationship='InstrumentSupplier',
@@ -62,7 +62,7 @@ Supplier = ReferenceField(
 
 Model = StringField(
     'Model',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_('Model'),
         description=_("The instrument's model number")
@@ -71,7 +71,7 @@ Model = StringField(
 
 SerialNo = StringField(
     'SerialNo',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_('Serial No'),
         description=_(
@@ -81,7 +81,7 @@ SerialNo = StringField(
 
 Method = UIDReferenceField(
     'Method',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='_getAvailableMethods',
     allowed_types=('Method',),
     required=0,
@@ -94,7 +94,7 @@ Method = UIDReferenceField(
 
 Methods = ReferenceField(
     'Methods',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='_getAvailableMethods',
     allowed_types=('Method',),
     relationship='InstrumentMethods',
@@ -109,7 +109,7 @@ Methods = ReferenceField(
 
 DisposeUntilNextCalibrationTest = BooleanField(
     'DisposeUntilNextCalibrationTest',
-    storage=Storage,
+    storage=Storage(),
     default=False,
     widget=BooleanWidget(
         label=_('De-activate until next calibration test'),
@@ -123,7 +123,7 @@ DisposeUntilNextCalibrationTest = BooleanField(
 # Procedures
 InlabCalibrationProcedure = TextField(
     'InlabCalibrationProcedure',
-    storage=Storage,
+    storage=Storage(),
     schemata='Procedures',
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -138,7 +138,7 @@ InlabCalibrationProcedure = TextField(
 
 PreventiveMaintenanceProcedure = TextField(
     'PreventiveMaintenanceProcedure',
-    storage=Storage,
+    storage=Storage(),
     schemata='Procedures',
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -153,7 +153,7 @@ PreventiveMaintenanceProcedure = TextField(
 
 DataInterface = StringField(
     'DataInterface',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getExportDataInterfacesList',
     widget=SelectionWidget(
         checkbox_bound=0,
@@ -167,7 +167,7 @@ DataInterface = StringField(
 
 ImportDataInterface = StringField(
     'ImportDataInterface',
-    storage=Storage,
+    storage=Storage(),
     vocabulary='getImportDataInterfacesList',
     multiValued=1,
     widget=MultiSelectionWidget(
@@ -182,7 +182,7 @@ ImportDataInterface = StringField(
 
 ResultFilesFolder = RecordsField(
     'ResultFilesFolder',
-    storage=Storage,
+    storage=Storage(),
     subfields=('InterfaceName', 'Folder'),
     subfield_labels={'InterfaceName': _('Interface Code'),
                      'Folder': _('Folder that results will be saved')},
@@ -202,7 +202,7 @@ ResultFilesFolder = RecordsField(
 
 DataInterfaceOptions = RecordsField(
     'DataInterfaceOptions',
-    storage=Storage,
+    storage=Storage(),
     type='interfaceoptions',
     subfields=('Key', 'Value'),
     required_subfields=('Key', 'Value'),
@@ -221,7 +221,7 @@ DataInterfaceOptions = RecordsField(
 # Includes regular analyses, QC analyes and Calibration tests.
 Analyses = UIDReferenceField(
     'Analyses',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     multiValued=1,
     allowed_types=('ReferenceAnalysis', 'DuplicateAnalysis', 'Analysis'),
@@ -234,7 +234,7 @@ Analyses = UIDReferenceField(
 # See getLatestReferenceAnalyses() method for further info.
 _LatestReferenceAnalyses = ReferenceField(
     '_LatestReferenceAnalyses',
-    storage=Storage,
+    storage=Storage(),
     required=0,
     multiValued=1,
     allowed_types=('ReferenceAnalysis',),
@@ -246,7 +246,7 @@ _LatestReferenceAnalyses = ReferenceField(
 
 Valid = ComputedField(
     'Valid',
-    storage=Storage,
+    storage=Storage(),
     expression="'1' if context.isValid() else '0'",
     widget=ComputedWidget(
         visible=False
@@ -255,7 +255,7 @@ Valid = ComputedField(
 # Needed since InstrumentType is sorted by its own object, not by its name.
 InstrumentTypeName = ComputedField(
     'InstrumentTypeName',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getInstrumentType().Title() "
                "if context.getInstrumentType() else ''",
     widget=ComputedWidget(
@@ -266,7 +266,7 @@ InstrumentTypeName = ComputedField(
 
 InstrumentLocationName = ComputedField(
     'InstrumentLocationName',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getInstrumentLocation().Title() "
                "if context.getInstrumentLocation() else ''",
     widget=ComputedWidget(
@@ -281,7 +281,7 @@ InstrumentLocationName = ComputedField(
 
 ManufacturerName = ComputedField(
     'ManufacturerName',
-    storage=Storage,
+    storage=Storage(),
     expression="context.getManufacturer().Title() "
                "if context.getManufacturer() else ''",
     widget=ComputedWidget(
@@ -292,7 +292,7 @@ ManufacturerName = ComputedField(
 
 SupplierName = ComputedField(
     'SupplierName',
-    storage=Storage,
+    storage=Storage(),
     expression='context.getSupplier().Title() '
                'if context.getSupplier() else ""',
     widget=ComputedWidget(
@@ -303,7 +303,7 @@ SupplierName = ComputedField(
 
 AssetNumber = StringField(
     'AssetNumber',
-    storage=Storage,
+    storage=Storage(),
     widget=StringWidget(
         label=_('Asset Number'),
         description=_("The instrument's ID in the lab's asset register")
@@ -312,7 +312,7 @@ AssetNumber = StringField(
 
 InstrumentLocation = ReferenceField(
     'InstrumentLocation',
-    storage=Storage,
+    storage=Storage(),
     schemata='Additional info.',
     vocabulary='getInstrumentLocations',
     allowed_types=('InstrumentLocation',),
@@ -331,7 +331,7 @@ InstrumentLocation = ReferenceField(
 
 Photo = ImageField(
     'Photo',
-    storage=Storage,
+    storage=Storage(),
     schemata='Additional info.',
     widget=ImageWidget(
         label=_('Photo image file'),
@@ -341,7 +341,7 @@ Photo = ImageField(
 
 InstallationDate = DateTimeField(
     'InstallationDate',
-    storage=Storage,
+    storage=Storage(),
     schemata='Additional info.',
     widget=DateTimeWidget(
         label=_('InstallationDate'),
@@ -351,7 +351,7 @@ InstallationDate = DateTimeField(
 
 InstallationCertificate = BlobFileField(
     'InstallationCertificate',
-    storage=Storage,
+    storage=Storage(),
     schemata='Additional info.',
     widget=FileWidget(
         label=_('Installation Certificate'),

@@ -12,7 +12,7 @@ from bika.lims.content.schema import Storage
 
 Remarks = TextField(
     'Remarks',
-    storage=Storage,
+    storage=Storage(),
     searchable=True,
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
@@ -26,7 +26,7 @@ Remarks = TextField(
 
 Website = StringField(
     'Website',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     required=0,
     widget=StringWidget(
@@ -37,7 +37,7 @@ Website = StringField(
 
 NIB = StringField(
     'NIB',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     schemata='Bank details',
     required=0,
@@ -50,7 +50,7 @@ NIB = StringField(
 
 IBN = StringField(
     'IBN',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     schemata='Bank details',
     required=0,
@@ -63,7 +63,7 @@ IBN = StringField(
 
 SWIFTcode = StringField(
     'SWIFTcode',
-    storage=Storage,
+    storage=Storage(),
     searchable=1,
     required=0,
     schemata='Bank details',
