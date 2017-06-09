@@ -15,6 +15,7 @@ from bika.lims.utils import tmpID
 from Products.Archetypes.config import REFERENCE_CATALOG
 from datetime import datetime
 from DateTime import DateTime
+from bika.lims.workflow import doActionFor
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import os
 
@@ -822,6 +823,7 @@ class AnalysisResultsImporter(Logger):
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)
+            doActionFor(analysis, 'submit')
             resultsaved = True
 
         elif resultsaved == False:
