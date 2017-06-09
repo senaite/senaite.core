@@ -374,7 +374,7 @@ class AnalysisResultsImporter(Logger):
 
         # Attachments will be created in any worksheet that contains
         # analyses that are updated by this import
-        attachments = []
+        attachments = {}
         infile = self._parser.getInputFile()
 
         searchcriteria = self.getIdSearchCriteria()
