@@ -563,7 +563,7 @@ class AnalysisResultsImporter(Logger):
         if attuid:
             attachment = _createObjectByType("Attachment", ws, tmpID())
             logger.info("Creating %s in %s" % (attachment, ws))
-            fn = inf.filename
+            fn = infile.filename
             attachment.edit(
                 AttachmentFile=fn,
                 AttachmentType=attuid,
