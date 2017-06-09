@@ -49,7 +49,7 @@ _indexes_dict = {
     'getSampleConditionUID': 'FieldIndex',
     'getAnalysisRequestPrintStatus': 'FieldIndex',
     'getWorksheetUID': 'FieldIndex',
-    'getOriginalReflexedAnalysisUID': 'UUIDIndex',
+    'getOriginalReflexedAnalysisUID': 'FieldIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
