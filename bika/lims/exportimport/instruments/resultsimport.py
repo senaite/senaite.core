@@ -560,15 +560,14 @@ class AnalysisResultsImporter(Logger):
     def create_attachment(self, ws, infile):
         attuid = self.create_mime_attachmenttype()
         attachment = None
-        if attuid:
+        if attuid and infile:
             attachment = _createObjectByType("Attachment", ws, tmpID())
             logger.info("Creating %s in %s" % (attachment, ws))
-            fn = infile.filename
             attachment.edit(
-                AttachmentFile=fn,
+                AttachmentFile=infile,
                 AttachmentType=attuid,
                 AttachmentKeys='Results, Automatic import')
-            attachment.setId(fn)
+            attachment.reindexObject()
         return attachment
 
     def attach_attachment(self, analysis, attachment):
