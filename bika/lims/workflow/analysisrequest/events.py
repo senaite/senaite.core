@@ -171,8 +171,8 @@ def after_publish(obj):
     if "publish all analyses" in obj.REQUEST['workflow_skiplist']:
         return
 
-    # Verify all analyses from this Analysis Request, except not requested
-    ans = obj.getAnalyses(full_objects=True, review_state='verified')
+    # Transition the children
+    ans = obj.getAnalyses(full_objects=True)
     for analysis in ans:
         doActionFor(analysis, 'publish')
 
