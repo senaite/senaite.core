@@ -652,6 +652,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         earliness = maxtime_delta - duration
         return earliness
 
+    def isLateAnalysis(self):
+        """Returns true if the analysis is late in accordance with the maximum
+        turnaround time. If no maximum turnaround time is set for this analysis
+        or it is not yet ready to be processed, or there is still time
+        remaining (earliness), returns False.
+        :return: true if the analysis is late
+        :rtype: bool
+        """
+        maxtime = self.getMaxTimeAllowed()
+        if not maxtime:
+            # No maximum turnaround time set, assume is not late
+            return False
+        return self.getEarliness() < 0
+
     @security.public
     def isInstrumentValid(self):
         """Checks if the instrument selected for this analysis is valid.
