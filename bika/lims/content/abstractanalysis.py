@@ -110,18 +110,6 @@ DetectionLimitOperand = StringField(
     'DetectionLimitOperand'
 )
 
-# This is used to calculate turnaround time reports.
-# The value is set when the Analysis is published.
-Duration = IntegerField(
-    'Duration',
-)
-
-# This is used to calculate turnaround time reports. The value is set when the
-# Analysis is published.
-Earliness = IntegerField(
-    'Earliness',
-)
-
 # The ID of the logged in user who submitted the result for this Analysis.
 Analyst = StringField(
     'Analyst'
@@ -158,8 +146,6 @@ schema = schema.copy() + Schema((
     Calculation,
     DateAnalysisPublished,
     DetectionLimitOperand,
-    Duration,
-    Earliness,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
     NumberOfRequiredVerifications,
     Result,
