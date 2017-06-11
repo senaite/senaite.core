@@ -167,10 +167,6 @@ def after_publish(obj):
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    # TODO Workflow, Publish - REQUEST thing inside event?
-    if "publish all analyses" in obj.REQUEST['workflow_skiplist']:
-        return
-
     # Transition the children
     ans = obj.getAnalyses(full_objects=True)
     for analysis in ans:
