@@ -1063,6 +1063,26 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return getTransitionDate(self, 'submit', return_as_datetime=True)
 
     @security.public
+    def getDateVerified(self):
+        """Returns the time the analysis was verified. If the analysis hasn't
+        been yet verified, returns None
+        :return: the time the analysis was verified or None
+        :rtype: DateTime
+        """
+        return getTransitionDate(self, 'verify', return_as_datetime=True)
+
+    @security.public
+    def getStartProcessDate(self):
+        """Returns the date time when the analysis is ready to be processed.
+        It returns the datetime when the object was created, but might be
+        different depending on the type of analysis (e.g. "Date Received" for
+        routine analyses): see overriden functions.
+        :return: Date time when the analysis is ready to be processed.
+        :rtype: DateTime
+        """
+        return self.created()
+
+    @security.public
     def getParentUID(self):
         """This method is used to populate catalog values
         This function returns the analysis' parent UID
