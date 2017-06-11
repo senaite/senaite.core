@@ -197,6 +197,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         return getTransitionDate(self, 'sample', return_as_datetime=True)
 
+    @security.poublic
+    def getStartProcessDate(self):
+        """Returns the date time when the analysis was received. If the
+        analysis hasn't yet been received, returns None
+        Overrides getStartProcessDateTime from the base class
+        :return: Date time when the analysis is ready to be processed.
+        :rtype: DateTime
+        """
+        return self.getDateReceived()
+
     @security.public
     def getSamplePartitionUID(self):
         part = self.getSamplePartition()
