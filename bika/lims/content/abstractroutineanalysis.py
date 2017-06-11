@@ -183,6 +183,14 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return getTransitionDate(self, 'receive', return_as_datetime=True)
 
     @security.public
+    def getDatePublished(self):
+        """Used to populate catalog values.
+        Returns the date on which the "publish" transition was invoked on this
+        analysis.
+        """
+        return getTransitionDate(self, 'publish', return_as_datetime=True)
+
+    @security.public
     def getDateSampled(self):
         """Used to populate catalog values.
         Only has value when sampling_workflow is active.
