@@ -33,6 +33,8 @@ from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import create_analysis, format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getTransitionActor
+from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
@@ -1050,32 +1052,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         state of the current analysis is "to_be_verified" or "verified"
         :return: the user_id of the user who did the last submission of result
         """
-        workflow = getToolByName(self, "portal_workflow")
-        try:
-            review_history = workflow.getInfoFor(self, "review_history")
-            review_history = self.reverseList(review_history)
-            for event in review_history:
-                if event.get("action") == "submit":
-                    return event.get("actor")
-            return ''
-        except WorkflowException:
-            return ''
+        return getTransitionActor(self, 'submit')
 
     @security.public
     def getDateSubmitted(self):
         """Returns the time the result was submitted.
         :return: a DateTime object.
+        :rtype: DateTime
         """
-        workflow = getToolByName(self, "portal_workflow")
-        try:
-            review_history = workflow.getInfoFor(self, "review_history")
-            review_history = self.reverseList(review_history)
-            for event in review_history:
-                if event.get("action") == "submit":
-                    return event.get("time")
-            return ''
-        except WorkflowException:
-            return ''
+        return getTransitionDate(self, 'submit', return_as_datetime=True)
 
     @security.public
     def getParentUID(self):
