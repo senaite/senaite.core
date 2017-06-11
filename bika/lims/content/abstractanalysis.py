@@ -637,7 +637,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         Returns zero if the analysis is neither 'ready to process' nor a
         turnaround time is set.
             earliness = duration - max_turnaround_time
-        If calculated earliness is negative, returns zero
+        The analysis is late if the earliness is negative
         :return: the remaining time in minutes before the analysis reaches TAT
         :rtype: int
         """
@@ -650,8 +650,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         maxtime_delta += int(maxtime.get('minutes', 0))
         duration = self.getDuration()
         earliness = maxtime_delta - duration
-        if earliness < 0:
-            earliness = 0
         return earliness
 
     @security.public
