@@ -620,6 +620,55 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return Decimal(self.getPrice()) + Decimal(self.getVATAmount())
 
     @security.public
+    def getDuration(self):
+        """Returns the time in minutes taken for this analysis.
+        If the analysis is not yet 'ready to process', returns 0
+        If the analysis is still in progress (not yet verified),
+            duration = date_verified - date_start_process
+        Otherwise:
+            duration = current_datetime - date_start_process
+        :return: time in minutes taken for this analysis
+        :rtype: int
+        """
+        starttime = self.getStartProcessDate()
+        if not starttime:
+            # The analysis is not yet ready to be processed
+            return 0
+
+        endtime = self.getDateVerified()
+        if not endtime:
+            # Assume here the analysis is still in progress, so use the current
+            # Date and Time
+            endtime = DateTime()
+
+        # Duration in minutes
+        duration = (endtime - starttime) * 24 * 60
+        return duration
+
+    @security.public
+    def getEarliness(self):
+        """The remaining time in minutes for this analysis to be completed.
+        Returns zero if the analysis is neither 'ready to process' nor a
+        turnaround time is set.
+            earliness = duration - max_turnaround_time
+        If calculated earliness is negative, returns zero
+        :return: the remaining time in minutes before the analysis reaches TAT
+        :rtype: int
+        """
+        maxtime = self.getMaxTimeAllowed()
+        if not maxtime:
+            # No Turnaround time is set for this analysis
+            return 0
+        maxtime_delta = int(maxtime.get('days', 0)) * 86400
+        maxtime_delta += int(maxtime.get('hours', 0)) * 3600
+        maxtime_delta += int(maxtime.get('minutes', 0))
+        duration = self.getDuration()
+        earliness = maxtime_delta - duration
+        if earliness < 0:
+            earliness = 0
+        return earliness
+
+    @security.public
     def isInstrumentValid(self):
         """Checks if the instrument selected for this analysis is valid.
         Returns false if an out-of-date or uncalibrated instrument is
