@@ -74,6 +74,26 @@ def upgrade(tool):
 
     FixBrokenActionExpressions()
 
+    # Remove workflow automatic transtions no longer used, fix problem with
+    # action_name in transitions, target states replacement and removal of
+    # unused guards
+    fix_workflows(portal)
+
+    # Adding two indexes in order to delete getBackreference in reflex rules
+    reflex_rules(ut)
+
+    # Changing some indexes types
+    change_UUIDIndex(ut)
+
+    # Refresh affected catalogs
+    _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
+    ut.refreshCatalogs()
+
+    logger.info("{0} upgraded to version {1}".format(product, version))
+    return True
+
+
+def fix_workflows(portal):
     # Remove workflow automatic transitions no longer used
     removeWorkflowsAutoTransitions(portal)
 
@@ -89,18 +109,13 @@ def upgrade(tool):
     # Replace target states from some transitions
     replace_target_states(portal)
 
-    # Adding two indexes in order to delete getBackreference in reflex rules
-    reflex_rules(ut)
-
-    # Changing some indexes types
-    change_UUIDIndex(ut)
-
-    # Refresh affected catalogs
-    _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
-    ut.refreshCatalogs()
-
-    logger.info("{0} upgraded to version {1}".format(product, version))
-    return True
+    # Force the update of workflow permissions, cause we want those objects
+    # that reached a given state without being transitioned acquire the
+    # permissions in accordance with the workflow definition. Othwerwise,
+    # the transition of those old objects will fail.
+    logger.info("Updating role mappings...")
+    wf = getToolByName(portal, 'portal_workflow')
+    wf.updateRoleMappings()
 
 
 def FixBrokenActionExpressions():

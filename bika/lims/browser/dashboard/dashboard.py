@@ -517,6 +517,7 @@ class DashboardView(BrowserView):
         rstates = [k for k,v in statscount.items() if v==0]
         for o in outevo:
             for r in rstates:
-                del o[r]
+                if r in o:
+                    del o[r]
 
         return outevo
