@@ -8,6 +8,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
+from bika.lims import logger
 from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
@@ -422,6 +423,13 @@ class AnalysesView(BikaListingView):
                 self.categories.append((cat, cat_order))
         # Check for InterimFields attribute on our object,
         interim_fields = obj.getInterimFields
+        # TODO: This should never happen, we must ensure that interim_fields
+        # is always a list
+        if not isinstance(interim_fields, list):
+            logger.warn(
+                "InterimFields from {} isn't a list " +
+                "object. This should never happen".format(obj.getId))
+            interim_fields = []
         full_obj = None
         # kick some pretty display values in.
         for x in range(len(interim_fields)):
