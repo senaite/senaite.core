@@ -15,6 +15,7 @@ from bika.lims.utils import tmpID
 from Products.Archetypes.config import REFERENCE_CATALOG
 from datetime import datetime
 from DateTime import DateTime
+from bika.lims.workflow import doActionFor
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import os
 
@@ -374,7 +375,7 @@ class AnalysisResultsImporter(Logger):
 
         # Attachments will be created in any worksheet that contains
         # analyses that are updated by this import
-        attachments = []
+        attachments = {}
         infile = self._parser.getInputFile()
 
         searchcriteria = self.getIdSearchCriteria()
@@ -560,15 +561,14 @@ class AnalysisResultsImporter(Logger):
     def create_attachment(self, ws, infile):
         attuid = self.create_mime_attachmenttype()
         attachment = None
-        if attuid:
+        if attuid and infile:
             attachment = _createObjectByType("Attachment", ws, tmpID())
             logger.info("Creating %s in %s" % (attachment, ws))
-            fn = inf.filename
             attachment.edit(
-                AttachmentFile=fn,
+                AttachmentFile=infile,
                 AttachmentType=attuid,
                 AttachmentKeys='Results, Automatic import')
-            attachment.setId(fn)
+            attachment.reindexObject()
         return attachment
 
     def attach_attachment(self, analysis, attachment):
@@ -823,6 +823,7 @@ class AnalysisResultsImporter(Logger):
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)
+            doActionFor(analysis, 'submit')
             resultsaved = True
 
         elif resultsaved == False:

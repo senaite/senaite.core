@@ -306,7 +306,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         https://jira.bikalabs.com/browse/LIMS-1775
         """
         md = self.getDetectionLimitSelector()
-        val = value if (md and value in '<>') else None
+        val = value if (md and value and value in '<>') else None
         self.getField('DetectionLimitOperand').set(self, val)
 
     # Method getLowerDetectionLimit overrides method of class BaseAnalysis
