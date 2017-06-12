@@ -1297,11 +1297,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def workflow_script_verify(self):
         events.after_verify(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_publish')
-    @security.public
-    def workflow_script_publish(self):
-        events.after_publish(self)
-
     @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_cancel')
     @security.public
     def workflow_script_cancel(self):
