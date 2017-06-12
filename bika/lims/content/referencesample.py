@@ -333,8 +333,7 @@ class ReferenceSample(BaseFolder):
         rc = getToolByName(self, REFERENCE_CATALOG)
         service = rc.lookupObject(service_uid)
         calc = service.getCalculation()
-        interim_fields = calc.getInterimFields() if calc else None
-        interim_fields = interim_fields if interim_fields else []
+        interim_fields = calc.getInterimFields() if calc else []
         analysis = _createObjectByType("ReferenceAnalysis", self, id=tmpID())
         # Copy all the values from the schema
         # TODO Add Service as a param in ReferenceAnalysis constructor and do
