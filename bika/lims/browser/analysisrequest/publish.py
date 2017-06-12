@@ -1313,7 +1313,7 @@ class AnalysisRequestDigester:
             contact = brains[0].getObject()
             data['fullname'] = contact.getFullname()
             data['email'] = contact.getEmailAddress()
-            sf = contact.getObject().getSignature()
+            sf = contact.getSignature()
             if sf:
                 data['signature'] = sf.absolute_url() + "/Signature"
         else:
