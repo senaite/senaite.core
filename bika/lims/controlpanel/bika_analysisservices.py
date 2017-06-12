@@ -70,9 +70,11 @@ class AnalysisServiceCopy(BrowserView):
                 if field.getType() == "Products.Archetypes.Field.ComputedField" \
                         or fieldname in self.skip_fieldnames:
                     continue
-                getter = field.getAccessor(src_service)
-                setter = dst_service.Schema()[fieldname].getMutator(dst_service)
-                setter(getter())
+                value = field.get(src_service)
+                if value:
+                    mutator_name = dst_service.getField(fieldname).mutator
+                    mutator = getattr(dst_service, mutator_name)
+                    mutator(value)
             dst_service.reindexObject()
             return dst_title
         else:
@@ -300,7 +302,7 @@ class AnalysisServicesView(BikaListingView):
                            sort_on="sortable_title")
         self.an_cats_order = dict([(b.Title, "{:04}".format(a))
                                   for a, b in enumerate(self.an_cats)])
-                                  
+
     def isItemAllowed(self, obj):
         """
         It checks if the item can be added to the list depending on the
