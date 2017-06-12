@@ -26,6 +26,7 @@ class BikaCatalogTool(CatalogTool):
         self.portal_type = portal_meta_type
         self.meta_type = portal_meta_type
         self.title = title
+        self.counter = None
         ZCatalog.__init__(self, id)
 
     def clearFindAndRebuild(self):
@@ -35,12 +36,17 @@ class BikaCatalogTool(CatalogTool):
         """
         def indexObject(obj, path):
             self.reindexObject(obj)
+            self.counter += 1
+            if self.counter % 100 == 0:
+                logger.info('Progress: {} objects have been cataloged for {}.'
+                            .format(self.counter, self.id))
 
         logger.info('Cleaning and rebuilding %s...' % self.id)
         try:
             at = getToolByName(self, 'archetype_tool')
             types = [k for k, v in at.catalog_map.items()
                      if self.id in v]
+            self.counter = 0
             self.manage_catalogClear()
             portal = getToolByName(self, 'portal_url').getPortalObject()
             portal.ZopeFindAndApply(portal,
