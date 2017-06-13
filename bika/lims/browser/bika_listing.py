@@ -5,51 +5,34 @@
 
 """ Display lists of items in tables.
 """
-import json
-import re
-import urllib
 import copy
-from operator import itemgetter
-
-import App
-import pkg_resources
-import plone
-import transaction
+import json
+import traceback
 from AccessControl import getSecurityManager
-from Acquisition import aq_parent, aq_inner
+from Acquisition import aq_inner
+
+import plone
 from DateTime import DateTime
-from OFS.interfaces import IOrderedContainer
 from Products.AdvancedQuery import And, Or, MatchRegexp, Between, Generic, Eq
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone import PloneMessageFactory
-from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.browser.bika_listing_filter_bar import BikaListingFilterBar
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.utils import isActive, getHiddenAttributesForClass
-from bika.lims.utils import t, format_supsub
-from bika.lims.utils import to_utf8
 from bika.lims.utils import getFromString
+from bika.lims.utils import isActive, getHiddenAttributesForClass
+from bika.lims.utils import t
+from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
-from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component._api import getMultiAdapter
-from zope.i18nmessageid import MessageFactory
-from zope.interface import Interface
-from zope.interface import implements
-from bika.lims.browser.bika_listing_filter_bar import BikaListingFilterBar
-import types
-import traceback
 
 try:
     from plone.batching import Batch
