@@ -771,14 +771,17 @@ class BikaListingView(BrowserView):
         self.request.response.setCookie(
             'bika_listing_filter_bar', None,  path='/', max_age=0)
         # Saving the filter bar values
-        try:
-            cookie_filter_bar = json.loads(cookie_filter_bar)
-        except ValueError:
-            err_msg = traceback.format_exc() + '\n'
-            logger.error(
-                err_msg +
-                "Error converting loading JSON object {} in {}."
-                .format(cookie_filter_bar, self.context))
+        if cookie_filter_bar is not None and cookie_filter_bar != '':
+            try:
+                cookie_filter_bar = json.loads(cookie_filter_bar)
+            except ValueError:
+                err_msg = traceback.format_exc() + '\n'
+                logger.error(
+                    err_msg +
+                    "Error decoding JSON object {} in {}."
+                    .format(cookie_filter_bar, self.context))
+                cookie_filter_bar = []
+        else:
             cookie_filter_bar = []
         # Creating a dict from cookie data
         cookie_data = {}
