@@ -85,20 +85,12 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     try:
         time_str = _ut(time, long_format, time_only, context, 'bika', request)
     except ValueError:
-        # TODO: Clean-up this mess
-        # Maybe the date was captured with js, which returns the timestamp
-        # in milliseconds, while ulocalized_time() expects a timestamp in
-        # seconds.
-        try:
-            time = time/1000
-            time_str = _ut(time, long_format, time_only, context,
-                           'bika', request)
-        except:
-            err_msg = traceback.format_exc() + '\n'
-            logger.error(
-                err_msg +
-                "Error converting '{}' time to string.".format(time))
-            time_str = ''
+        err_msg = traceback.format_exc() + '\n'
+        logger.warn(
+            err_msg + '\n' +
+            "Error converting '{}' time to string in {}."
+            .format(time, context))
+        time_str = ''
     return time_str
 
 
