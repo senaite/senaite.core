@@ -38,6 +38,7 @@
   <include package=".workflow" />
 
   <include file="profiles.zcml" />
+  <include file="storage.zcml" />
 
   <i18n:registerTranslations directory="locales" />
 

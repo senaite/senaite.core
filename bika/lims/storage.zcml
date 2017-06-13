@@ -1,0 +1,20 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+  <subscriber
+      for="ZPublisher.interfaces.IPubSuccess"
+      handler=".storage.RequestQueueToSQLQueue"
+  />
+
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="sql_queue_runner"
+      class=".storage.SQLQueueRunner"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+</configure>

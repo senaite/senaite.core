@@ -1,3 +1,3 @@
-from Products.Archetypes.Storage import AttributeStorage
+from bika.lims.storage import BikaSQLStorage
 
-Storage = AttributeStorage
+Storage = BikaSQLStorage

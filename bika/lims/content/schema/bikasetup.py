@@ -10,8 +10,9 @@ import sys
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.atapi import BooleanField, BooleanWidget, \
     DecimalWidget, FixedPointField, IntegerField, IntegerWidget, LinesField, \
-    MultiSelectionWidget, ReferenceField, ReferenceWidget, Schema, \
-    SelectionWidget, StringField, StringWidget, TextAreaWidget, TextField
+    MultiSelectionWidget, PasswordWidget, ReferenceField, ReferenceWidget, \
+    Schema, SelectionWidget, StringField, StringWidget, TextAreaWidget, \
+    TextField
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
@@ -29,7 +30,6 @@ from bika.lims.config import DEFAULT_AR_SPECS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaFolderSchema
 
 STICKER_AUTO_OPTIONS = DisplayList((
@@ -40,8 +40,7 @@ STICKER_AUTO_OPTIONS = DisplayList((
 
 PasswordLifetime = IntegerField(
     'PasswordLifetime',
-    storage=Storage(),
-    schemata="Security",
+    schemata='Security',
     required=1,
     default=0,
     widget=IntegerWidget(
@@ -54,8 +53,7 @@ PasswordLifetime = IntegerField(
 
 AutoLogOff = IntegerField(
     'AutoLogOff',
-    storage=Storage(),
-    schemata="Security",
+    schemata='Security',
     required=1,
     default=0,
     widget=IntegerWidget(
@@ -68,8 +66,7 @@ AutoLogOff = IntegerField(
 
 AllowClerksToEditClients = BooleanField(
     'AllowClerksToEditClients',
-    storage=Storage(),
-    schemata="Security",
+    schemata='Security',
     default=False,
     widget=BooleanWidget(
         label=_("Allow Lab Clerks to create and edit clients")
@@ -78,8 +75,7 @@ AllowClerksToEditClients = BooleanField(
 
 RestrictWorksheetUsersAccess = BooleanField(
     'RestrictWorksheetUsersAccess',
-    storage=Storage(),
-    schemata="Security",
+    schemata='Security',
     default=True,
     widget=BooleanWidget(
         label=_("Allow access to worksheets only to assigned analysts"),
@@ -90,8 +86,7 @@ RestrictWorksheetUsersAccess = BooleanField(
 
 RestrictWorksheetManagement = BooleanField(
     'RestrictWorksheetManagement',
-    storage=Storage(),
-    schemata="Security",
+    schemata='Security',
     default=True,
     widget=BooleanWidget(
         label=_("Only lab managers can create and manage worksheets"),
@@ -105,8 +100,7 @@ RestrictWorksheetManagement = BooleanField(
 
 ShowNewReleasesInfo = BooleanField(
     'ShowNewReleasesInfo',
-    storage=Storage(),
-    schemata="Security",
+    schemata='Security',
     default=True,
     widget=BooleanWidget(
         label=_("Display an alert on new releases of Bika LIMS")
@@ -115,8 +109,7 @@ ShowNewReleasesInfo = BooleanField(
 
 ShowPrices = BooleanField(
     'ShowPrices',
-    storage=Storage(),
-    schemata="Accounting",
+    schemata='Accounting',
     default=True,
     widget=BooleanWidget(
         label=_("Include and display pricing information")
@@ -125,8 +118,7 @@ ShowPrices = BooleanField(
 
 Currency = StringField(
     'Currency',
-    storage=Storage(),
-    schemata="Accounting",
+    schemata='Accounting',
     required=1,
     vocabulary=CURRENCIES,
     default='ZAR',
@@ -140,8 +132,7 @@ Currency = StringField(
 
 DefaultCountry = StringField(
     'DefaultCountry',
-    storage=Storage(),
-    schemata="Accounting",
+    schemata='Accounting',
     required=1,
     vocabulary='getCountries',
     default='',
@@ -154,8 +145,7 @@ DefaultCountry = StringField(
 
 MemberDiscount = FixedPointField(
     'MemberDiscount',
-    storage=Storage(),
-    schemata="Accounting",
+    schemata='Accounting',
     default='33.33',
     widget=DecimalWidget(
         label=_("Member discount %"),
@@ -168,8 +158,7 @@ MemberDiscount = FixedPointField(
 
 VAT = FixedPointField(
     'VAT',
-    storage=Storage(),
-    schemata="Accounting",
+    schemata='Accounting',
     default='14.00',
     widget=DecimalWidget(
         label=_("VAT %"),
@@ -181,8 +170,7 @@ VAT = FixedPointField(
 
 DecimalMark = StringField(
     'DecimalMark',
-    storage=Storage(),
-    schemata="Results Reports",
+    schemata='Results Reports',
     vocabulary=DECIMAL_MARKS,
     default=".",
     widget=SelectionWidget(
@@ -194,8 +182,7 @@ DecimalMark = StringField(
 
 ScientificNotationReport = StringField(
     'ScientificNotationReport',
-    storage=Storage(),
-    schemata="Results Reports",
+    schemata='Results Reports',
     default='1',
     vocabulary=SCINOTATION_OPTIONS,
     widget=SelectionWidget(
@@ -207,8 +194,7 @@ ScientificNotationReport = StringField(
 
 MinimumResults = IntegerField(
     'MinimumResults',
-    storage=Storage(),
-    schemata="Results Reports",
+    schemata='Results Reports',
     required=1,
     default=5,
     widget=IntegerWidget(
@@ -222,8 +208,7 @@ MinimumResults = IntegerField(
 
 IncludePreviousFromBatch = BooleanField(
     'IncludePreviousFromBatch',
-    storage=Storage(),
-    schemata="Results Reports",
+    schemata='Results Reports',
     default=False,
     widget=BooleanWidget(
         label=_("Include Previous Results From Batch"),
@@ -235,8 +220,7 @@ IncludePreviousFromBatch = BooleanField(
 
 BatchEmail = IntegerField(
     'BatchEmail',
-    storage=Storage(),
-    schemata="Results Reports",
+    schemata='Results Reports',
     required=1,
     default=5,
     widget=IntegerWidget(
@@ -250,8 +234,7 @@ BatchEmail = IntegerField(
 
 ResultFooter = TextField(
     'ResultFooter',
-    storage=Storage(),
-    schemata="Results Reports",
+    schemata='Results Reports',
     default_content_type='text/plain',
     allowed_content_types=('text/plain',),
     default_output_type="text/plain",
@@ -265,8 +248,7 @@ ResultFooter = TextField(
 
 PrintingWorkflowEnabled = BooleanField(
     'PrintingWorkflowEnabled',
-    storage=Storage(),
-    schemata="Results Reports",
+    schemata='Results Reports',
     default=False,
     widget=BooleanWidget(
         label=_("Enable the Results Report Printing workflow"),
@@ -279,8 +261,7 @@ PrintingWorkflowEnabled = BooleanField(
 
 SamplingWorkflowEnabled = BooleanField(
     'SamplingWorkflowEnabled',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Enable the Sampling workflow"),
@@ -291,8 +272,7 @@ SamplingWorkflowEnabled = BooleanField(
 
 ScheduleSamplingEnabled = BooleanField(
     'ScheduleSamplingEnabled',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Enable the Schedule a Sampling functionality"),
@@ -304,8 +284,7 @@ ScheduleSamplingEnabled = BooleanField(
 
 ShowPartitions = BooleanField(
     'ShowPartitions',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=True,
     widget=BooleanWidget(
         label=_("Display individual sample partitions "),
@@ -315,8 +294,7 @@ ShowPartitions = BooleanField(
 
 CategoriseAnalysisServices = BooleanField(
     'CategoriseAnalysisServices',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Categorise analysis services"),
@@ -328,8 +306,7 @@ CategoriseAnalysisServices = BooleanField(
 
 EnableARSpecs = BooleanField(
     'EnableARSpecs',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=True,
     widget=BooleanWidget(
         label=_("Enable AR Specifications"),
@@ -341,8 +318,7 @@ EnableARSpecs = BooleanField(
 
 DefaultARSpecs = StringField(
     'DefaultARSpecs',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default='ar_specs',
     vocabulary=DEFAULT_AR_SPECS,
     widget=SelectionWidget(
@@ -357,8 +333,7 @@ DefaultARSpecs = StringField(
 
 ExponentialFormatThreshold = IntegerField(
     'ExponentialFormatThreshold',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     required=1,
     default=7,
     widget=IntegerWidget(
@@ -373,8 +348,7 @@ ExponentialFormatThreshold = IntegerField(
 
 EnableAnalysisRemarks = BooleanField(
     'EnableAnalysisRemarks',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Add a remarks field to all analyses"),
@@ -386,8 +360,7 @@ EnableAnalysisRemarks = BooleanField(
 
 SelfVerificationEnabled = BooleanField(
     'SelfVerificationEnabled',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Allow self-verification of results"),
@@ -403,8 +376,7 @@ SelfVerificationEnabled = BooleanField(
 
 NumberOfRequiredVerifications = IntegerField(
     'NumberOfRequiredVerifications',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=1,
     vocabulary="_getNumberOfRequiredVerificationsVocabulary",
     widget=SelectionWidget(
@@ -419,8 +391,7 @@ NumberOfRequiredVerifications = IntegerField(
 
 TypeOfmultiVerification = StringField(
     'TypeOfmultiVerification',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default='self_multi_enabled',
     vocabulary=MULTI_VERIFICATION_TYPE,
     widget=SelectionWidget(
@@ -435,8 +406,7 @@ TypeOfmultiVerification = StringField(
 
 DryMatterService = ReferenceField(
     'DryMatterService',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     required=0,
     vocabulary_display_path_bound=sys.maxint,
     allowed_types=('AnalysisService',),
@@ -451,8 +421,7 @@ DryMatterService = ReferenceField(
 
 ARImportOption = LinesField(
     'ARImportOption',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     vocabulary=ARIMPORT_OPTIONS,
     widget=MultiSelectionWidget(
         visible=False,
@@ -466,8 +435,7 @@ ARImportOption = LinesField(
 
 ARAttachmentOption = StringField(
     'ARAttachmentOption',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default='p',
     vocabulary=ATTACHMENT_OPTIONS,
     widget=SelectionWidget(
@@ -481,8 +449,7 @@ ARAttachmentOption = StringField(
 
 AnalysisAttachmentOption = StringField(
     'AnalysisAttachmentOption',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default='p',
     vocabulary=ATTACHMENT_OPTIONS,
     widget=SelectionWidget(
@@ -497,8 +464,7 @@ AnalysisAttachmentOption = StringField(
 
 DefaultSampleLifetime = DurationField(
     'DefaultSampleLifetime',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     required=1,
     default={"days": 30, "hours": 0, "minutes": 0},
     widget=DurationWidget(
@@ -512,8 +478,7 @@ DefaultSampleLifetime = DurationField(
 
 DefaultTurnaroundTime = DurationField(
     'DefaultTurnaroundTime',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     required=1,
     default={"days": 5, "hours": 0, "minutes": 0},
     widget=DurationWidget(
@@ -527,8 +492,7 @@ DefaultTurnaroundTime = DurationField(
 
 ResultsDecimalMark = StringField(
     'ResultsDecimalMark',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     vocabulary=DECIMAL_MARKS,
     default=".",
     widget=SelectionWidget(
@@ -540,8 +504,7 @@ ResultsDecimalMark = StringField(
 
 ScientificNotationResults = StringField(
     'ScientificNotationResults',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default='1',
     vocabulary=SCINOTATION_OPTIONS,
     widget=SelectionWidget(
@@ -553,8 +516,7 @@ ScientificNotationResults = StringField(
 
 AutoImportInterval = IntegerField(
     'AutoImportInterval',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default="0",
     widget=IntegerWidget(
         label=_("Interval of Auto-Importing Files in minutes"),
@@ -567,8 +529,7 @@ AutoImportInterval = IntegerField(
 
 WorksheetLayout = StringField(
     'WorksheetLayout',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default='1',
     vocabulary=WORKSHEET_LAYOUT_OPTIONS,
     widget=SelectionWidget(
@@ -584,8 +545,7 @@ WorksheetLayout = StringField(
 
 DashboardByDefault = BooleanField(
     'DashboardByDefault',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=True,
     widget=BooleanWidget(
         label=_("Use Dashboard as default front page"),
@@ -596,8 +556,7 @@ DashboardByDefault = BooleanField(
 
 LandingPage = ReferenceField(
     'LandingPage',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     multiValued=0,
     allowed_types=('Document',),
     relationship='SetupLandingPage',
@@ -619,8 +578,7 @@ LandingPage = ReferenceField(
 
 AutoPrintStickers = StringField(
     'AutoPrintStickers',
-    storage=Storage(),
-    schemata="Stickers",
+    schemata='Stickers',
     vocabulary=STICKER_AUTO_OPTIONS,
     widget=SelectionWidget(
         format='select',
@@ -635,8 +593,7 @@ AutoPrintStickers = StringField(
 
 AutoStickerTemplate = StringField(
     'AutoStickerTemplate',
-    storage=Storage(),
-    schemata="Stickers",
+    schemata='Stickers',
     vocabulary="getStickerTemplates",
     widget=SelectionWidget(
         format='select',
@@ -649,8 +606,7 @@ AutoStickerTemplate = StringField(
 
 SmallStickerTemplate = StringField(
     'SmallStickerTemplate',
-    storage=Storage(),
-    schemata="Stickers",
+    schemata='Stickers',
     vocabulary="getStickerTemplates",
     default="Code_128_1x48mm.pt",
     widget=SelectionWidget(
@@ -664,8 +620,7 @@ SmallStickerTemplate = StringField(
 
 LargeStickerTemplate = StringField(
     'LargeStickerTemplate',
-    storage=Storage(),
-    schemata="Stickers",
+    schemata='Stickers',
     vocabulary="getStickerTemplates",
     default="Code_128_1x72mm.pt",
     widget=SelectionWidget(
@@ -679,8 +634,7 @@ LargeStickerTemplate = StringField(
 
 Prefixes = PrefixesField(
     'Prefixes',
-    storage=Storage(),
-    schemata="ID Server",
+    schemata='ID Server',
     default=[{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4',
               'separator': '-', 'sequence_start': '0'},
              {'portal_type': 'AnalysisRequest', 'prefix': 'client',
@@ -725,8 +679,7 @@ Prefixes = PrefixesField(
 
 YearInPrefix = BooleanField(
     'YearInPrefix',
-    storage=Storage(),
-    schemata="ID Server",
+    schemata='ID Server',
     default=False,
     widget=BooleanWidget(
         label=_("Include year in ID prefix"),
@@ -736,8 +689,7 @@ YearInPrefix = BooleanField(
 
 SampleIDPadding = IntegerField(
     'SampleIDPadding',
-    storage=Storage(),
-    schemata="ID Server",
+    schemata='ID Server',
     required=1,
     default=4,
     widget=IntegerWidget(
@@ -748,8 +700,7 @@ SampleIDPadding = IntegerField(
 
 SampleIDSequenceStart = IntegerField(
     'SampleIDSequenceStart',
-    storage=Storage(),
-    schemata="ID Server",
+    schemata='ID Server',
     required=1,
     default=0,
     widget=IntegerWidget(
@@ -763,8 +714,7 @@ SampleIDSequenceStart = IntegerField(
 
 ARIDPadding = IntegerField(
     'ARIDPadding',
-    storage=Storage(),
-    schemata="ID Server",
+    schemata='ID Server',
     required=1,
     default=2,
     widget=IntegerWidget(
@@ -776,8 +726,7 @@ ARIDPadding = IntegerField(
 
 ExternalIDServer = BooleanField(
     'ExternalIDServer',
-    storage=Storage(),
-    schemata="ID Server",
+    schemata='ID Server',
     default=False,
     widget=BooleanWidget(
         label=_("Use external ID server"),
@@ -789,8 +738,7 @@ ExternalIDServer = BooleanField(
 
 IDServerURL = StringField(
     'IDServerURL',
-    storage=Storage(),
-    schemata="ID Server",
+    schemata='ID Server',
     widget=StringWidget(
         label=_("ID Server URL"),
         description=_("The full URL: http://URL/path:port")
@@ -799,8 +747,7 @@ IDServerURL = StringField(
 
 RejectionReasons = RecordsField(
     'RejectionReasons',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     widget=RejectionSetupWidget(
         label=_("Enable the rejection workflow"),
         description=_("Select this to activate the rejection workflow "
@@ -812,8 +759,7 @@ RejectionReasons = RecordsField(
 
 NotifyOnRejection = BooleanField(
     'NotifyOnRejection',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Email notification on rejection"),
@@ -825,8 +771,7 @@ NotifyOnRejection = BooleanField(
 
 AllowDepartmentFiltering = BooleanField(
     'AllowDepartmentFiltering',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Enable filtering by department"),
@@ -840,8 +785,7 @@ AllowDepartmentFiltering = BooleanField(
 
 DisplayAdvancedFilterBarForAnalysisRequests = BooleanField(
     'DisplayAdvancedFilterBarForAnalysisRequests',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_(
@@ -856,8 +800,7 @@ DisplayAdvancedFilterBarForAnalysisRequests = BooleanField(
 
 DisplayAdvancedFilterBarForSamples = BooleanField(
     'DisplayAdvancedFilterBarForSamples',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Display an advanced filter bar in Samples lists"),
@@ -871,8 +814,7 @@ DisplayAdvancedFilterBarForSamples = BooleanField(
 
 DisplayAdvancedFilterBarForAnalyses = BooleanField(
     'DisplayAdvancedFilterBarForAnalyses',
-    storage=Storage(),
-    schemata="Analyses",
+    schemata='Analyses',
     default=False,
     widget=BooleanWidget(
         label=_("Display an advanced filter bar in Analyses lists"),
@@ -882,6 +824,51 @@ DisplayAdvancedFilterBarForAnalyses = BooleanField(
             "to filter the listed items by some several criteria."
             "Warning: This may affect the listing performance."),
     ),
+)
+
+SQLHost = StringField(
+    'SQLHost',
+    schemata='SQL Server',
+    widget=StringWidget(
+        label=_("Host Name"),
+        description=_("The hostname or IP of the PostgreSQL Server.")
+    )
+)
+
+SQLPort = StringField(
+    'SQLPort',
+    schemata='SQL Server',
+    widget=StringWidget(
+        label=_("Host Port"),
+        description=_("The port on which the SQL server process is listening.")
+    )
+)
+
+SQLUser = StringField(
+    'SQLUser',
+    schemata='SQL Server',
+    widget=StringWidget(
+        label=_("Username"),
+        description=_("The SQL server username.")
+    )
+)
+
+SQLPassword = StringField(
+    'SQLPassword',
+    schemata='SQL Server',
+    widget=PasswordWidget(
+        label=_("Password"),
+        description=_("The password for the user specified above.")
+    )
+)
+
+SQLDBName = StringField(
+    'SQLDBName',
+    schemata='SQL Server',
+    widget=PasswordWidget(
+        label=_("Database"),
+        description=_("Name of the database to be used for Bika LIMS data.")
+    )
 )
 
 schema = BikaFolderSchema.copy() + Schema((
