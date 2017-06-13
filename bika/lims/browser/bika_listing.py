@@ -778,7 +778,8 @@ class BikaListingView(BrowserView):
                 err_msg = traceback.format_exc() + '\n'
                 logger.error(
                     err_msg +
-                    "Error decoding JSON object {} in {}."
+                    "Error decoding JSON object 'bika_listing_filter_bar' "
+                    "with value {} in {}."
                     .format(cookie_filter_bar, self.context))
                 cookie_filter_bar = []
         else:
