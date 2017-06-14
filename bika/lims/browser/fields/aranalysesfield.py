@@ -25,6 +25,7 @@ class ARAnalysesField(ObjectField):
     _properties.update({
         'type': 'analyses',
         'default': None,
+        'multiValued': True,
     })
 
     security = ClassSecurityInfo()
@@ -88,6 +89,12 @@ class ARAnalysesField(ObjectField):
                 analyses_filtered.append(a)
             analyses = analyses_filtered
         return analyses
+
+    def getRaw(self, instance, **kwargs):
+        """Calls .get() internally, but always returns a list of UIDs.
+        """
+        values = self.get(instance)
+        return [x.UID for x in values]
 
     security.declarePrivate('set')
 
