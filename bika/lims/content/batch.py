@@ -4,7 +4,8 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING

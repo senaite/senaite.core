@@ -10,8 +10,8 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.Archetypes import atapi
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode

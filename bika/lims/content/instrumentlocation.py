@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.Archetypes.public import BaseContent
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.instrumentlocation import schema
@@ -24,4 +24,4 @@ class InstrumentLocation(BaseContent):
         renameAfterCreation(self)
 
 
-atapi.registerType(InstrumentLocation, PROJECTNAME)
+registerType(InstrumentLocation, PROJECTNAME)

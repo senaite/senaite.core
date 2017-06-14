@@ -9,8 +9,10 @@ testing
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _

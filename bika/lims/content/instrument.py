@@ -7,7 +7,8 @@ from datetime import date
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes.atapi import *
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _

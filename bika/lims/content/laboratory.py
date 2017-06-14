@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFPlone.utils import safe_unicode

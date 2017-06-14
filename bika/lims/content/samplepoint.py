@@ -5,7 +5,9 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.Archetypes.public import *
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseContent import BaseContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import PROJECTNAME
@@ -36,14 +38,14 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
             It's done strangely, because it may be required to behave strangely.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        ## convert value to objects
+        # convert value to objects
         if value and type(value) == str:
             value = [bsc(UID=value)[0].getObject(), ]
         elif value and type(value) in (list, tuple) and type(value[0]) == str:
             value = [bsc(UID=uid)[0].getObject() for uid in value if uid]
         if not type(value) in (list, tuple):
             value = [value, ]
-        ## Find all SampleTypes that were removed
+        # Find all SampleTypes that were removed
         existing = self.Schema()['SampleTypes'].get(self)
         removed = existing and [s for s in existing if s not in value] or []
         added = value and [s for s in value if s not in existing] or []

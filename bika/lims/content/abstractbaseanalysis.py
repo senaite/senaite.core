@@ -10,7 +10,7 @@ from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.utils import DisplayList, IntDisplayList
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.content.schema.abstractanalysis import schema
+from bika.lims.content.schema.abstractbaseanalysis import schema
 from bika.lims.utils import to_utf8 as _c
 
 

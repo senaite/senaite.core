@@ -7,7 +7,8 @@
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.invoice import InvoiceLineItem
@@ -39,7 +40,6 @@ class InvoiceBatch(BaseFolder):
         plone_view = self.restrictedTraverse('@@plone')
         invoice_id = self.generateUniqueId('Invoice')
         invoice = _createObjectByType("Invoice", self, invoice_id)
-        # noinspection PyCallingNonCallable
         invoice.edit(
             Client=client_uid,
             InvoiceDate=DateTime(),
@@ -95,11 +95,6 @@ registerType(InvoiceBatch, PROJECTNAME)
 def ObjectModifiedEventHandler(instance, event):
     """ Various types need automation on edit.
     """
-    # if not hasattr(instance, 'portal_type'):
-    #     return
-
-    # if instance.portal_type == 'InvoiceBatch':
-
     if not isinstance(event, ContainerModifiedEvent):
         """ Create batch invoices
         """

@@ -8,10 +8,10 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
+from Products.Archetypes import atapi, DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.config import *
+from bika.lims.config import ARIMPORT_OPTIONS, PROJECTNAME
 from bika.lims.content.organisation import Organisation
 from bika.lims.content.schema.client import schema
 from bika.lims.interfaces import IClient
@@ -115,6 +115,7 @@ class Client(Organisation):
         postal_address = self.getPostalAddress().get("district", default)
         return physical_address if physical_address else postal_address
 
+    # noinspection PyUnusedLocal
     def validate_address(self, request, field, data):
         """Validates the Address Fields
         :returns: (str) message if validation fails, otherwise (bool) True

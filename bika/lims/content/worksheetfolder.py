@@ -7,7 +7,7 @@
 """
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.worksheetfolder import schema
 from bika.lims.interfaces import IHaveNoBreadCrumbs, IWorksheetFolder
@@ -24,4 +24,4 @@ class WorksheetFolder(folder.ATFolder):
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 
-atapi.registerType(WorksheetFolder, PROJECTNAME)
+registerType(WorksheetFolder, PROJECTNAME)

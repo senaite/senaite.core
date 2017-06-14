@@ -2,13 +2,13 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
-from Persistence import PersistentMapping
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
+from persistent.mapping import PersistentMapping
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import PROJECTNAME
@@ -72,6 +72,7 @@ class Invoice(BaseFolder):
 
 
 registerType(Invoice, PROJECTNAME)
+
 
 class InvoiceLineItem(PersistentMapping):
     pass

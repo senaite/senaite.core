@@ -8,7 +8,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.content.schema.samplinground import ISamplingRound
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
-from plone import api
+from plone.api import user
 from plone.dexterity.content import Item
 from plone.indexer import indexer
 from zope.interface import implements
@@ -203,9 +203,9 @@ class SamplingRound(Item):
         #  the client satisfy the condition wrote in the function's description
         if (checkPermission(ModifyPortalContent, self)
             or checkPermission(AddPortalContent, self)) \
-                and 'Client' in api.user.get_current().getRoles():
+                and 'Client' in user.get_current().getRoles():
             # Checking if the current user is a current client's contact
-            userID = api.user.get_current().id
+            userID = user.get_current().id
             contact_objs = self.getContacts()
             contact_ids = [obj.getUsername() for obj in contact_objs]
             if userID in contact_ids:

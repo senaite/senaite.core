@@ -8,9 +8,9 @@ import csv
 import transaction
 from AccessControl import ClassSecurityInfo
 from DateTime.DateTime import DateTime
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.event import ObjectInitializedEvent
-from Products.Archetypes.public import *
 from Products.Archetypes.utils import addStatusMessage
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -29,7 +29,6 @@ from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import ProgressState
 from collective.progressbar.events import UpdateProgressEvent
-from zope import event
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
@@ -92,7 +91,6 @@ class ARImport(BaseFolder):
         """Create objects from valid ARImport
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        workflow = getToolByName(self, 'portal_workflow')
         client = self.aq_parent
 
         title = _('Submitting AR Import')
@@ -113,7 +111,7 @@ class ARImport(BaseFolder):
             # First convert all row values into something the field can take
             sample.edit(**row)
             sample._renameAfterCreation()
-            event.notify(ObjectInitializedEvent(sample))
+            notify(ObjectInitializedEvent(sample))
             sample.at_post_create_script()
             swe = self.bika_setup.getSamplingWorkflowEnabled()
             part = _createObjectByType('SamplePartition', sample, 'part-1')
@@ -123,6 +121,8 @@ class ARImport(BaseFolder):
             if container:
                 if container.portal_type == 'ContainerType':
                     containers = container.getContainers()
+                else:
+                    containers = [container]
                 # XXX And so we must calculate the best container for this
                 # partition
                 part.edit(Container=containers[0])
@@ -453,10 +453,10 @@ class ARImport(BaseFolder):
                 batch_data = [x.strip() for x in row][1:]
                 break
         if not (batch_data or batch_headers):
-            return None
+            return {}
         if not (batch_data and batch_headers):
             self.error("Missing batch headers or data")
-            return None
+            return {}
         # Inject us out of here
         values = dict(zip(batch_headers, batch_data))
         return values
@@ -491,7 +491,7 @@ class ARImport(BaseFolder):
             batch.edit(**batch_headers)
             self.setBatch(batch)
 
-    def munge_field_value(self, schema, row_nr, fieldname, value):
+    def munge_field_value(self, _schema, row_nr, fieldname, value):
         """Convert a spreadsheet value into a field value that fits in
         the corresponding schema field.
         - boolean: All values are true except '', 'false', or '0'.
@@ -504,7 +504,7 @@ class ARImport(BaseFolder):
         get to complain about these field values.
 
         """
-        field = schema[fieldname]
+        field = _schema[fieldname]
         if field.type == 'boolean':
             value = str(value).strip().lower()
             value = '' if value in ['0', 'no', 'false', 'none'] else '1'
@@ -649,10 +649,10 @@ class ARImport(BaseFolder):
             if not an_cnt:
                 self.error("Row %s: No valid analyses or profiles" % row_nr)
 
-    def validate_against_schema(self, schema, row_nr, fieldname, value):
+    def validate_against_schema(self, _schema, row_nr, fieldname, value):
         """
         """
-        field = schema[fieldname]
+        field = _schema[fieldname]
         if field.type == 'boolean':
             value = str(value).strip().lower()
             return value
@@ -784,4 +784,4 @@ class ARImport(BaseFolder):
         self.setErrors(errors)
 
 
-atapi.registerType(ARImport, PROJECTNAME)
+registerType(ARImport, PROJECTNAME)

@@ -7,7 +7,7 @@
 """
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.supplyorderfolder import schema
 from bika.lims.interfaces import IHaveNoBreadCrumbs, ISupplyOrderFolder
@@ -24,4 +24,4 @@ class SupplyOrderFolder(folder.ATFolder):
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 
-atapi.registerType(SupplyOrderFolder, PROJECTNAME)
+registerType(SupplyOrderFolder, PROJECTNAME)

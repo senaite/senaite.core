@@ -2,11 +2,10 @@
 #
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.Archetypes.public import BaseContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims import config
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.autoimportlog import schema
 
 
@@ -47,5 +46,4 @@ class AutoImportLog(BaseContent):
         return states
 
 
-# Activating the content type in Archetypes' internal types registry
-atapi.registerType(AutoImportLog, config.PROJECTNAME)
+registerType(AutoImportLog, PROJECTNAME)

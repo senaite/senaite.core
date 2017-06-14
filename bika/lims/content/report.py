@@ -5,8 +5,8 @@
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes import atapi
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.report import schema
 
@@ -35,4 +35,4 @@ class Report(BaseFolder):
         return ''
 
 
-atapi.registerType(Report, PROJECTNAME)
+registerType(Report, PROJECTNAME)

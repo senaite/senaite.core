@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
@@ -88,7 +89,7 @@ class MethodsView(BikaListingView):
             }
         return super(MethodsView, self).__call__()
 
-    def folderitems(self):
+    def folderitems(self, **kwargs):
 
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -144,4 +145,4 @@ class Methods(ATFolder):
 
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(Methods, PROJECTNAME)
+registerType(Methods, PROJECTNAME)

@@ -3,10 +3,9 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-"""Department - the department in the laboratory.
-"""
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.department import schema
 from bika.lims.interfaces import IDepartment

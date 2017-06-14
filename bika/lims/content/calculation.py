@@ -9,7 +9,8 @@ import re
 import transaction
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -84,7 +85,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                                               '"%s"' % mapping[keyword])
 
         mapped = eval("'%s'%%mapping" % formula,
-                      {"__builtins__": __builtins__,
+                      {"__builtins__": locals()['__builtins__'],
                        'math': math,
                        'context': analysis},
                       {'mapping': mapping})
@@ -106,8 +107,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
             set flat=True to get a simple list of AnalysisService objects
         """
-        if deps == None:
-            deps = [] if flat == True else {}
+        if deps is None:
+            deps = [] if flat else {}
 
         for service in self.getDependentServices():
             calc = service.getCalculation()

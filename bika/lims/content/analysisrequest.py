@@ -3,16 +3,15 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-"""The request for analysis by a client. It contains analysis instances.
-"""
 from decimal import Decimal
 from operator import methodcaller
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes import atapi
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -22,8 +21,7 @@ from bika.lims import logger
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.analysisrequest import schema
 from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.permissions import Verify as VerifyPermission, ManageInvoices
 from bika.lims.utils import dicts_to_dict, getUsers
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
@@ -72,8 +70,7 @@ class AnalysisRequest(BaseFolder):
         return self.getId()
 
     def sortable_title(self):
-        """
-        Some lists expects this index
+        """Some lists expects this index
         """
         return self.getId()
 
@@ -84,8 +81,8 @@ class AnalysisRequest(BaseFolder):
 
     @deprecated('[1703] Use getId() instead')
     def getRequestID(self):
-        """
-        Another way to return the object ID. It is used as a column and index.
+        """Another way to return the object ID. It is used as a column and 
+        index.
         :returns: The object ID
         :rtype: str
         """
@@ -93,8 +90,7 @@ class AnalysisRequest(BaseFolder):
 
     @deprecated('[1703] Use setId(new_id) instad')
     def setRequestID(self, new_id):
-        """
-        Delegates to setId() function
+        """Delegates to setId() function
         :param new_id: The new id to define
         """
         self.setId(new_id)
@@ -293,8 +289,7 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):
-        """
-        The main purpose of this function is to obtain the analysis services
+        """The main purpose of this function is to obtain the analysis services
         and profiles from the analysis request
         whose prices are needed to quote the analysis request.
         If an analysis belongs to a profile, this analysis will only be
@@ -352,8 +347,7 @@ class AnalysisRequest(BaseFolder):
         return analyses, analysis_profiles
 
     def getServicesAndProfiles(self):
-        """
-        This function gets all analysis services and all profiles and removes
+        """This function gets all analysis services and all profiles and removes
         the services belonging to a profile.
         :returns: a tuple of three lists, where the first list contains the
         analyses and the second list the profiles.
@@ -414,8 +408,7 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getDiscountAmount')
 
     def getDiscountAmount(self):
-        """
-        It computes and returns the analysis service's discount amount
+        """It computes and returns the analysis service's discount amount
         without VAT
         """
         has_client_discount = self.aq_parent.getMemberDiscountApplies()
@@ -426,8 +419,7 @@ class AnalysisRequest(BaseFolder):
             return 0
 
     def getVATAmount(self):
-        """
-        It computes the VAT amount from (subtotal-discount.)*VAT/100,
+        """It computes the VAT amount from (subtotal-discount.)*VAT/100,
         but each analysis has its
         own VAT!
         :returns: the analysis request VAT amount with the discount
@@ -443,8 +435,7 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getTotalPrice')
 
     def getTotalPrice(self):
-        """
-        It gets the discounted price from analyses and profiles to obtain the
+        """It gets the discounted price from analyses and profiles to obtain the
         total value with the VAT
         and the discount applied
         :returns: the analysis request's total price including the VATs and
@@ -693,8 +684,7 @@ class AnalysisRequest(BaseFolder):
         return child
 
     def getRequestedAnalyses(self):
-        """
-        It returns all requested analyses, even if they belong to an analysis
+        """It returns all requested analyses, even if they belong to an analysis
         profile or not.
         """
         #
@@ -721,8 +711,7 @@ class AnalysisRequest(BaseFolder):
         return result
 
     def getSamplingRoundUID(self):
-        """
-        Obtains the sampling round UID
+        """Obtains the sampling round UID
         :returns: a UID
         """
         if self.getSamplingRound():
@@ -784,8 +773,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSamplingDate')
 
     def setSamplingDate(self, value):
-        """
-        Sets the specified sampling date from the sample.
+        """Sets the specified sampling date from the sample.
         :value: a date as a date object.
         """
         sample = self.getSample()
@@ -804,8 +792,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getSamplingDate')
 
     def getSamplingDate(self):
-        """
-        Gets the specified sampling date from the sample.
+        """Gets the specified sampling date from the sample.
         """
         sample = self.getSample()
         if sample:
@@ -816,8 +803,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSampler')
 
     def setSampler(self, value):
-        """
-        Sets the sampler to the sample.
+        """Sets the sampler to the sample.
         :value: a user id.
         """
         sample = self.getSample()
@@ -836,8 +822,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getSampler')
 
     def getSampler(self):
-        """
-        Returns the sampler (as a user id) from the sample
+        """Returns the sampler (as a user id) from the sample
         """
         sample = self.getSample()
         if sample:
@@ -848,8 +833,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setDateSampled')
 
     def setDateSampled(self, value):
-        """
-        sets the date when the sample has been sampled.
+        """sets the date when the sample has been sampled.
         :value: the time value
         """
         sample = self.getSample()
@@ -868,8 +852,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getDateSampled')
 
     def getDateSampled(self):
-        """
-        Returns the date when the sample has been sampled.
+        """Returns the date when the sample has been sampled.
         """
         sample = self.getSample()
         if sample:
@@ -880,8 +863,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getDatePublished')
 
     def getDatePublished(self):
-        """
-        Returns the transition date from the Analysis Request object
+        """Returns the transition date from the Analysis Request object
         """
         return getTransitionDate(self, 'publish', not_as_string=True)
 
@@ -932,8 +914,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
-        else:
-            return ''
 
     security.declarePublic('setClientReference')
 
@@ -986,8 +966,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getSamplingDeviation')
 
     def getSamplingDeviation(self):
-        """
-        It works as a metacolumn.
+        """It works as a metacolumn.
         """
         sample = self.getSample()
         if sample:
@@ -996,8 +975,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getSamplingDeviationTitle')
 
     def getSamplingDeviationTitle(self):
-        """
-        It works as a metacolumn.
+        """It works as a metacolumn.
         """
         sd = self.getSamplingDeviation()
         if sd:
@@ -1006,8 +984,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getHazardous')
 
     def getHazardous(self):
-        """
-        It works as a metacolumn.
+        """It works as a metacolumn.
         """
         sample_type = self.getSampleType()
         if sample_type:
@@ -1016,8 +993,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getContactURL')
 
     def getContactURL(self):
-        """
-        It works as a metacolumn.
+        """It works as a metacolumn.
         """
         contact = self.getContact()
         if contact:
@@ -1026,8 +1002,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getSamplingWorkflowEnabled')
 
     def getSamplingWorkflowEnabled(self):
-        """
-        It works as a metacolumn.
+        """It works as a metacolumn.
         """
         sample = self.getSample()
         if sample:
@@ -1223,8 +1198,7 @@ class AnalysisRequest(BaseFolder):
         return sets[0] if sets else {'uid': uid}
 
     def getPartitions(self):
-        """
-        This functions returns the partitions from the analysis request's
+        """This functions returns the partitions from the analysis request's
         analyses.
         :returns: a list with the full partition objects
         """
@@ -1236,8 +1210,7 @@ class AnalysisRequest(BaseFolder):
         return partitions
 
     def getContainers(self):
-        """
-        This functions returns the containers from the analysis request's
+        """This functions returns the containers from the analysis request's
         analyses
         :returns: a list with the full partition objects
         """
@@ -1271,8 +1244,8 @@ class AnalysisRequest(BaseFolder):
         return sets.get('hidden', False)
 
     def getRejecter(self):
-        """
-        If the Analysis Request has been rejected, returns the user who did the
+        """If the Analysis Request has been rejected, returns the user who 
+        did the
         rejection. If it was not rejected or the current user has not enough
         privileges to access to this information, returns None.
         """
@@ -1292,55 +1265,49 @@ class AnalysisRequest(BaseFolder):
         return None
 
     def getReceivedBy(self):
-        """
-        Returns the User who received the analysis request.
+        """Returns the User who received the analysis request.
         :returns: the user id
         """
         user = getTransitionUsers(self, 'receive', last_user=True)
         return user[0] if user else ''
 
     def getDateVerified(self):
-        """
-        Returns the date of verification as a DateTime object.
+        """Returns the date of verification as a DateTime object.
         """
         return getTransitionDate(self, 'verify', not_as_string=True)
 
     def _getCreatorFullName(self):
-        """
-        Returns the full name of this analysis request's creator.
+        """Returns the full name of this analysis request's creator.
         """
         return user_fullname(self, self.Creator())
 
     def _getCreatorEmail(self):
-        """
-        Returns the email of this analysis request's creator.
+        """Returns the email of this analysis request's creator.
         """
         return user_email(self, self.Creator())
 
     def _getSamplerFullName(self):
-        """
-        Returns the full name's defined sampler.
+        """Returns the full name's defined sampler.
         """
         return user_fullname(self, self.getSampler())
 
     def _getSamplerEmail(self):
-        """
-        Returns the email of this analysis request's sampler.
+        """Returns the email of this analysis request's sampler.
         """
         return user_email(self, self.Creator())
 
     # TODO Workflow, AnalysisRequest Move to guards.verify?
     def isVerifiable(self):
-        """
-        Checks it the current Analysis Request can be verified. This is, its
-        not a cancelled Analysis Request and all the analyses that contains
-        are verifiable too. Note that verifying an Analysis Request is in fact,
-        the same as verifying all the analyses that contains. Therefore, the
-        'verified' state of an Analysis Request shouldn't be a 'real' state,
-        rather a kind-of computed state, based on the statuses of the analyses
-        it contains. This is why this function checks if the analyses
-        contained are verifiable, cause otherwise, the Analysis Request will
-        never be able to reach a 'verified' state.
+        """Checks it the current Analysis Request can be verified. This is, 
+        its not a cancelled Analysis Request and all the analyses that 
+        contains are verifiable too. Note that verifying an Analysis Request 
+        is in fact, the same as verifying all the analyses that contains. 
+        Therefore, the 'verified' state of an Analysis Request shouldn't be a 
+        'real' state, rather a kind-of computed state, based on the statuses 
+        of the analyses it contains. This is why this function checks if the 
+        analyses contained are verifiable, cause otherwise, the Analysis 
+        Request will never be able to reach a 'verified' state.
+
         :returns: True or False
         """
         # Check if the analysis request is active
@@ -1376,10 +1343,9 @@ class AnalysisRequest(BaseFolder):
             return canbeverified
 
     def getObjectWorkflowStates(self):
-        """
-        This method is used as a metacolumn.
-        Returns a dictionary with the workflow id as key and workflow state as
-        value.
+        """This method is used as a metacolumn. Returns a dictionary with the 
+        workflow id as key and workflow state as value.
+
         :returns: {'review_state':'active',...}
         """
         workflow = getToolByName(self, 'portal_workflow')
@@ -1391,13 +1357,14 @@ class AnalysisRequest(BaseFolder):
 
     # TODO Workflow, AnalysisRequest Move to guards.verify?
     def isUserAllowedToVerify(self, member):
-        """
-        Checks if the specified user has enough privileges to verify the
-        current AR. Apart from the roles, this function also checks if the
-        current user has enough privileges to verify all the analyses contained
-        in this Analysis Request. Note that this function only returns if the
-        user can verify the analysis request according to his/her privileges
-        and the analyses contained (see isVerifiable function)
+        """Checks if the specified user has enough privileges to verify the 
+        current AR. Apart from the roles, this function also checks if the 
+        current user has enough privileges to verify all the analyses 
+        contained in this Analysis Request. Note that this function only 
+        returns if the user can verify the analysis request according to 
+        his/her privileges and the analyses contained (see isVerifiable 
+        function)
+
         :member: user to be tested
         :returns: true or false
         """
@@ -1534,8 +1501,7 @@ class AnalysisRequest(BaseFolder):
         events.after_reject(self)
 
     def SearchableText(self):
-        """
-        Override searchable text logic based on the requirements.
+        """Override searchable text logic based on the requirements.
 
         This method constructs a text blob which contains all full-text
         searchable text for this content item.
@@ -1551,19 +1517,16 @@ class AnalysisRequest(BaseFolder):
         plain_text_fields = ("getId",)
 
         def read(getter):
-            """
-            Call a class accessor method to give a value for certain Archetypes
-            field.
+            """Call a class accessor method to give a value for certain
+            Archetypes field.
             """
             try:
                 val = getter()
-            # XXX except what? @Espurna, here is your name in the code!
-            #
+            # XXX @pau bare except
             except:
                 message = \
-                    "Error getting the accessor parameter" \
-                    " in SearchableText from the Analysis Request Object {}" \
-                        .format(self.getId())
+                    "Error getting the accessor parameter in SearchableText " \
+                    "from the Analysis Request Object {}".format(self.getId())
                 logger.error(message)
                 val = ""
 
@@ -1578,21 +1541,6 @@ class AnalysisRequest(BaseFolder):
             value = read(accessor)
             entries.append(value)
 
-        # Adding HTML Fields to SearchableText can be uncommented if necessary
-        # transforms = getToolByName(self, 'portal_transforms')
-        #
-        # # Run HTML valued fields through text/plain conversion
-        # for f in html_fields:
-        #     accessor = getattr(self, f)
-        #     value = read(accessor)
-        #
-        #     if value != "":
-        #         stream = transforms.convertTo(
-        #                 'text/plain', value, mimetype='text/html')
-        #         value = stream.getData()
-        #
-        #     entries.append(value)
-
         # Plone accessor methods assume utf-8
         def convertToUTF8(text):
             if type(text) == unicode:
@@ -1605,4 +1553,4 @@ class AnalysisRequest(BaseFolder):
         return " ".join(entries)
 
 
-atapi.registerType(AnalysisRequest, PROJECTNAME)
+registerType(AnalysisRequest, PROJECTNAME)

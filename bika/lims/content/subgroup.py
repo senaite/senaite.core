@@ -4,9 +4,10 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.subgroup import schema
-from bika.lims.fields import *
 from bika.lims.interfaces import ISubGroup
 from zope.interface import implements
 

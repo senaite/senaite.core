@@ -8,14 +8,15 @@ import re
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims.config import *
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.worksheet import schema
 from bika.lims.idserver import renameAfterCreation
@@ -40,6 +41,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
     _at_rename_after_creation = True
 
+    # This is used to display more details in rejection messages.
+    # see by bika.lims.browser.worksheet.tools.showRejectionMessage
+    replaced_by = None
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -53,7 +58,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         method of the template, if there is one, the function sets the
         method field of the worksheet.
         """
-        self.getField('WorksheetTemplate').set(self, worksheettemplate)
+        self.getField('WorksheetTemplate').set(self, worksheettemplate, **kw)
         if worksheettemplate and isinstance(worksheettemplate, str):
             # worksheettemplate is a UID, so we need to get the object first
             uc = getToolByName(self, 'uid_catalog')
@@ -62,7 +67,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 self.setMethod(wst[0].getObject().getRestrictToMethod())
             else:
                 logger.warning(
-                    'The given Worksheet Template UID "%s" to be set ' +
+                    'The given Worksheet Template UID "%s" to be set '
                     'in the Worksheet Object "%s" with uid "%s" is not valid' %
                     (worksheettemplate, self.Title(), self.UID()))
         elif worksheettemplate and worksheettemplate.getRestrictToMethod():
@@ -75,8 +80,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
-        workflow = getToolByName(self, 'portal_workflow')
-
         analysis_uid = analysis.UID()
         parent_uid = analysis.aq_parent.UID()
         analyses = self.getAnalyses()
@@ -142,15 +145,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     self.addAnalysis(dma)
         # Reindex the worksheet in order to update its columns
         self.reindexObject()
-        analysis.reindexObject(idxs=['getWorksheetUID',])
+        analysis.reindexObject(idxs=['getWorksheetUID', ])
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 
     def removeAnalysis(self, analysis):
         """ delete an analyses from the worksheet and un-assign it
         """
-        workflow = getToolByName(self, 'portal_workflow')
-
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
         doActionFor(analysis, 'unassign')
@@ -207,13 +208,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout
         """
-        workflow = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
         layout = self.getLayout()
         wst = self.getWorksheetTemplate()
         wstlayout = wst and wst.getLayout() or []
         ref_type = reference.getBlank() and 'b' or 'c'
-        ref_uid = reference.UID()
 
         if position == 'new':
             highest_existing_position = len(wstlayout)
@@ -285,11 +284,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         layout = self.getLayout()
         wst = self.getWorksheetTemplate()
         wstlayout = wst and wst.getLayout() or []
-
-        src_ar = [slot['container_uid'] for slot in layout if
-                  slot['position'] == src_slot]
-        if src_ar:
-            src_ar = src_ar[0]
 
         if not dest_slot or dest_slot == 'new':
             highest_existing_position = len(wstlayout)
@@ -430,7 +424,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for row in [r for r in wstlayout if
                         r['type'] == t and r['pos'] not in ws_slots]:
                 reference_definition_uid = row.get(form_key, None)
-                if (not reference_definition_uid):
+                if not reference_definition_uid:
                     continue
                 samples = bc(portal_type='ReferenceSample',
                              review_state='current',
@@ -443,7 +437,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     samples = [s for s in samples if s.getBlank()]
                 else:
                     samples = [s for s in samples if not s.getBlank()]
-                complete_reference_found = False
                 references = {}
                 for reference in samples:
                     reference_uid = reference.UID()
@@ -456,15 +449,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                             references[reference_uid]['services'].append(
                                 service_uid)
                             references[reference_uid]['count'] += 1
-                    if references[reference_uid]['count'] == len(
-                            wst_service_uids):
-                        complete_reference_found = True
-                        break
-                if complete_reference_found:
-                    supported_uids = wst_service_uids
-                    self.addReferences(int(row['pos']),
-                                       reference,
-                                       supported_uids)
+                    if references[reference_uid]['count'] == \
+                            len(wst_service_uids):
+                        supported_uids = wst_service_uids
+                        self.addReferences(
+                            int(row['pos']), reference, supported_uids)
                 else:
                     # find the most complete reference sample instead
                     reference_keys = references.keys()
@@ -499,17 +488,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Apply the wst method to all analyses and ws
         if method:
             self.setMethod(method, True)
-
-    def exportAnalyses(self, REQUEST=None, RESPONSE=None):
-        """ Export analyses from this worksheet """
-        import bika.lims.InstrumentExport as InstrumentExport
-        instrument = REQUEST.form['getInstrument']
-        try:
-            func = getattr(InstrumentExport, "%s_export" % instrument)
-        except:
-            return
-        func(self, REQUEST, RESPONSE)
-        return
 
     security.declarePublic('getWorksheetServices')
 
@@ -625,56 +603,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # discarding any duplicate values
         return len(set(samples))
 
-    security.declareProtected(EditWorksheet, 'resequenceWorksheet')
-
-    def resequenceWorksheet(self, REQUEST=None, RESPONSE=None):
-        """  Reset the sequence of analyses in the worksheet """
-        """ sequence is [{'pos': , 'type': , 'uid', 'key'},] """
-        old_seq = self.getLayout()
-        new_dict = {}
-        new_seq = []
-        other_dict = {}
-        for seq in old_seq:
-            if seq['key'] == '':
-                if seq['pos'] not in other_dict:
-                    other_dict[seq['pos']] = []
-                other_dict[seq['pos']].append(seq)
-                continue
-            if seq['key'] not in new_dict:
-                new_dict[seq['key']] = []
-            analyses = new_dict[seq['key']]
-            analyses.append(seq)
-            new_dict[seq['key']] = analyses
-        new_keys = sorted(new_dict.keys())
-
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        seqno = 1
-        for key in new_keys:
-            analyses = {}
-            if len(new_dict[key]) == 1:
-                new_dict[key][0]['pos'] = seqno
-                new_seq.append(new_dict[key][0])
-            else:
-                for item in new_dict[key]:
-                    item['pos'] = seqno
-                    analysis = rc.lookupObject(item['uid'])
-                    service = analysis.Title()
-                    analyses[service] = item
-                a_keys = sorted(analyses.keys())
-                for a_key in a_keys:
-                    new_seq.append(analyses[a_key])
-            seqno += 1
-        other_keys = other_dict.keys()
-        other_keys.sort()
-        for other_key in other_keys:
-            for item in other_dict[other_key]:
-                item['pos'] = seqno
-                new_seq.append(item)
-            seqno += 1
-
-        self.setLayout(new_seq)
-        RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
     security.declarePublic('current_date')
 
     def current_date(self):
@@ -738,6 +666,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.getField('Method').set(self, method)
         return total
 
+    # noinspection PyUnusedLocal
     @deprecated('[1703] Orphan. No alternative')
     def getFolderContents(self, contentFilter):
         """
@@ -752,7 +681,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         mtool = getToolByName(self, 'portal_membership')
         analyst = self.getAnalyst().strip()
         analyst_member = mtool.getMemberById(analyst)
-        if analyst_member != None:
+        if analyst_member is not None:
             return analyst_member.getProperty('fullname')
         return analyst
 
@@ -865,7 +794,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         if skip(self, "reject"):
             return
-        utils = getToolByName(self, 'plone_utils')
         workflow = self.portal_workflow
 
         def copy_src_fields_to_dst(src, dst):
@@ -934,6 +862,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         new_ws_analyses = []
         old_ws_analyses = []
         for analysis in analyses:
+            position = analysis_positions[analysis.UID()]
             # Skip published or verified analyses
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state in ['published', 'verified', 'retracted']:
@@ -951,7 +880,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'Analysis':
                 reject = _createObjectByType('RejectAnalysis', self, tmpID())
                 reject.unmarkCreationFlag()
-                reject_id = renameAfterCreation(reject)
                 copy_src_fields_to_dst(analysis, reject)
                 reject.setAnalysis(analysis)
                 reject.reindexObject()
@@ -960,7 +888,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     Retested=True,
                 )
                 analysis.reindexObject()
-                position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(reject.UID())
                 old_layout.append({'position': position,
                                    'type': 'r',
@@ -978,8 +905,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
                 reference_type = analysis.getReferenceType()
-                new_analysis_uid = reference.addReferenceAnalysis(service_uid,
-                                                                  reference_type)
+                new_analysis_uid = reference.addReferenceAnalysis(
+                    service_uid, reference_type)
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
@@ -1000,8 +927,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # - Create a new duplicate inside the new worksheet
             # - Transition the original analysis to 'rejected' state
             if analysis.portal_type == 'DuplicateAnalysis':
-                src_analysis = analysis.getAnalysis()
-                ar = src_analysis.aq_parent
                 duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
                 new_duplicate = _createObjectByType('DuplicateAnalysis',
                                                     new_ws, duplicate_id)
@@ -1043,7 +968,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         granted = False
         can_access = self.checkUserAccess()
 
-        if can_access == True:
+        if can_access:
             pm = getToolByName(self, 'portal_membership')
             edit_allowed = pm.checkPermission(EditWorksheet, self)
             if edit_allowed:

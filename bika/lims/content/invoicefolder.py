@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
@@ -5,7 +6,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import folder
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.invoicefolder import schema
 from bika.lims.interfaces import IHaveNoBreadCrumbs, IInvoiceFolder
@@ -19,4 +20,4 @@ class InvoiceFolder(folder.ATFolder):
     security = ClassSecurityInfo()
 
 
-atapi.registerType(InvoiceFolder, PROJECTNAME)
+registerType(InvoiceFolder, PROJECTNAME)

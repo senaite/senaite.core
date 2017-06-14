@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes import listTypes
 from Products.Archetypes.public import BaseContent

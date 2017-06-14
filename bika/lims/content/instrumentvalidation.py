@@ -4,8 +4,9 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes import atapi
-from Products.Archetypes.public import *
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.instrumentvalidation import schema
@@ -34,4 +35,4 @@ class InstrumentValidation(BaseFolder):
         return DisplayList(pairs)
 
 
-atapi.registerType(InstrumentValidation, PROJECTNAME)
+registerType(InstrumentValidation, PROJECTNAME)

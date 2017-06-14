@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
@@ -6,7 +7,8 @@
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.labproduct import schema
 

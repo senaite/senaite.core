@@ -4,7 +4,8 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -12,7 +13,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.attachment import schema
 
 
-class Attachment(atapi.BaseFolder):
+class Attachment(BaseFolder):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -98,4 +99,4 @@ class Attachment(atapi.BaseFolder):
         return ''
 
 
-atapi.registerType(Attachment, PROJECTNAME)
+registerType(Attachment, PROJECTNAME)

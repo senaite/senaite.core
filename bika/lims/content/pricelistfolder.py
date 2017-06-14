@@ -1,12 +1,11 @@
+# -*- coding: utf-8 -*-
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-"""PricelistFolder is a container for Pricelist instances.
-"""
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
 from bika.lims import PROJECTNAME
 from bika.lims.content.schema.pricelistfolder import schema
 from bika.lims.interfaces import IHaveNoBreadCrumbs

@@ -8,7 +8,7 @@ from decimal import Decimal
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes import atapi
-from Products.Archetypes.public import *
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.CMFCore.permissions import View
 from Products.CMFPlone.interfaces import IConstrainTypes
 from Products.CMFPlone.utils import safe_unicode

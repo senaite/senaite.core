@@ -6,7 +6,7 @@
 """The contact person at a reference supplier organisation.
 """
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.content.schema.suppliercontact import schema

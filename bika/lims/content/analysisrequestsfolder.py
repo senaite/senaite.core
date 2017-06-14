@@ -8,7 +8,7 @@ view from browser/analysisrequest.py wired to it.
 """
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.analysisrequestsfolder import schema
 from bika.lims.interfaces import IAnalysisRequestsFolder, IHaveNoBreadCrumbs
@@ -25,4 +25,4 @@ class AnalysisRequestsFolder(folder.ATFolder):
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 
-atapi.registerType(AnalysisRequestsFolder, PROJECTNAME)
+registerType(AnalysisRequestsFolder, PROJECTNAME)

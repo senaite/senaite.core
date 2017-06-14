@@ -9,7 +9,8 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseContent import BaseContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import PROJECTNAME
@@ -245,10 +246,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         sample = self.aq_parent
         self.reindexObject(idxs=["review_state", ])
         sample_r_state = workflow.getInfoFor(sample, 'review_state')
-        # if all sibling partitions are cancelled, cancel sample
-        not_rejected = [sp for sp in sample.objectValues("SamplePartition")
-                        if
-                        workflow.getInfoFor(sp, 'review_state') != 'rejected']
         if sample_r_state != 'rejected':
             workflow.doActionFor(sample, 'reject')
 

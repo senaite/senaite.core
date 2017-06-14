@@ -7,9 +7,10 @@
 """
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.Archetypes import atapi
+from Products.Archetypes import DisplayList
+from Products.Archetypes.ArchetypeTool import registerType
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -168,4 +169,4 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         return self.aq_parent.UID()
 
 
-atapi.registerType(AnalysisSpec, PROJECTNAME)
+registerType(AnalysisSpec, PROJECTNAME)

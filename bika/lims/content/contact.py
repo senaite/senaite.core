@@ -21,7 +21,7 @@ from bika.lims.content.person import Person
 from bika.lims.content.schema.contact import schema
 from bika.lims.interfaces import IContact
 from bika.lims.utils import isActive
-from plone import api
+from plone.api import portal, user as userapi
 from zope.interface import implements
 
 ACTIVE_STATES = ["active"]
@@ -43,7 +43,7 @@ class Contact(Person):
         """
 
         # Check if the User is linked already
-        pc = api.portal.get_tool("portal_catalog")
+        pc = portal.get_tool("portal_catalog")
         contacts = pc(portal_type=cls.portal_type, getUsername=username)
 
         # No Contact assigned to this username
@@ -83,7 +83,7 @@ class Contact(Person):
         username = self.getUsername()
         if not username:
             return None
-        user = api.user.get(userid=username)
+        user = userapi.get(userid=username)
         return user
 
     security.declareProtected(ManageClients, 'getUser')
@@ -95,15 +95,12 @@ class Contact(Person):
         :rtype: bool
         """
         user = None
-        userid = None
 
         # Handle User IDs (strings)
         if isinstance(user_or_username, types.StringTypes):
-            userid = user_or_username
-            user = api.user.get(userid)
+            user = userapi.get(user_or_username)
         # Handle User Objects (MemberData/PloneUser)
         if hasattr(user_or_username, "getId"):
-            userid = user_or_username.getId()
             user = user_or_username
 
         # Not a valid user
@@ -134,7 +131,7 @@ class Contact(Person):
             # Also remove the Plone User (caution)
             if delete:
                 logger.debug("Removing Plone User '{}'".format(userid))
-                api.user.delete(username=userid)
+                userapi.delete(username=userid)
 
             return True
         return False

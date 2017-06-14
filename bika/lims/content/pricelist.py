@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
@@ -5,7 +6,7 @@
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.schema.pricelist import schema
@@ -69,6 +70,11 @@ def ObjectModifiedEventHandler(instance, event):
             obj = p.getObject()
             itemDescription = None
             itemAccredited = False
+            itemTitle = ''
+            cat = None
+            price = 0
+            vat = 0
+            totalprice = 0
             if instance.getType() == "LabProduct":
                 print_detail = ""
                 if obj.getVolume():
@@ -80,15 +86,10 @@ def ObjectModifiedEventHandler(instance, event):
                     itemTitle = obj.Title() + print_detail
                 else:
                     itemTitle = obj.Title()
-                cat = None
                 if obj.getPrice():
                     price = float(obj.getPrice())
                     totalprice = float(obj.getTotalPrice())
                     vat = totalprice - price
-                else:
-                    price = 0
-                    totalprice = 0
-                    vat = 0
             elif instance.getType() == "AnalysisService":
                 #
                 if str(obj.getUnit()):
@@ -114,10 +115,6 @@ def ObjectModifiedEventHandler(instance, event):
                         price = float(obj.getPrice())
                         vat = get_vat_amount(price, obj.getVAT())
                         totalprice = price + vat
-                    else:
-                        totalprice = 0
-                        price = 0
-                        vat = 0
 
             if instance.getDescriptions():
                 itemDescription = obj.Description()

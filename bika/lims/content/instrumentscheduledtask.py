@@ -4,8 +4,8 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes import atapi
-from Products.Archetypes.public import *
+from Products.Archetypes import DisplayList, atapi
+from Products.Archetypes.BaseFolder import BaseFolder
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME

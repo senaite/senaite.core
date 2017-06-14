@@ -59,8 +59,9 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         if not requestuid or not worksheet:
             return []
         analyses = worksheet.getAnalyses()
-        siblings = [an for an in analyses if an.getRequestUID() == requestuid]
-        siblings = [an for an in analyses if an.UID() != self.UID()]
+        siblings = [an for an in analyses
+                    if an.getRequestUID() == requestuid
+                    and an.UID() != self.UID()]
         return siblings
 
     @security.public

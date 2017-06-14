@@ -4,7 +4,7 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.organisation import Organisation
