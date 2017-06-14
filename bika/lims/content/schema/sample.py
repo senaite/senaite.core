@@ -146,7 +146,6 @@ SampleType = ReferenceField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage(),
     expression="context.getSampleType().Title() "
                "if context.getSampleType() else None",
     widget=ComputedWidget(
@@ -189,7 +188,6 @@ SamplePoint = ReferenceField(
 
 SamplePointTitle = ComputedField(
     'SamplePointTitle',
-    storage=Storage(),
     expression="context.getSamplePoint().Title() "
                "if context.getSamplePoint() else None",
     widget=ComputedWidget(
@@ -512,7 +510,6 @@ DateReceived = DateTimeField(
 
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage(),
     expression='context.aq_parent.UID()',
     widget=ComputedWidget(
         visible=False
@@ -521,7 +518,6 @@ ClientUID = ComputedField(
 
 SampleTypeUID = ComputedField(
     'SampleTypeUID',
-    storage=Storage(),
     expression='context.getSampleType().UID()',
     widget=ComputedWidget(
         visible=False
@@ -530,7 +526,6 @@ SampleTypeUID = ComputedField(
 
 SamplePointUID = ComputedField(
     'SamplePointUID',
-    storage=Storage(),
     expression='context.getSamplePoint().UID() '
                'if context.getSamplePoint() else None',
     widget=ComputedWidget(
@@ -595,7 +590,6 @@ DateExpired = DateTimeField(
 
 DisposalDate = ComputedField(
     'DisposalDate',
-    storage=Storage(),
     expression='context.disposal_date()',
     widget=DateTimeWidget(
         visible={'edit': 'visible',
@@ -690,7 +684,11 @@ Remarks = TextField(
 
 RejectionReasons = RecordsField(
     'RejectionReasons',
-    storage=Storage(),
+    # XXX RejectionReasons should not be stored as a List of Dictionaries.
+    # It should simply be LinesField, and store a list of strings, the
+    # rejection reasons themselves.  When this is done, un-comment the
+    # Storage() line below.  See analysisrequest.py for the same comment.
+    # storage=Storage(),
     widget=RejectionWidget(
         label=_("Sample Rejection"),
         description=_(

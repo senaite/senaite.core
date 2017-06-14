@@ -35,7 +35,6 @@ Instrument = ReferenceField(
 
 InstrumentUID = ComputedField(
     'InstrumentUID',
-    storage=Storage(),
     expression='context.getInstrument().UID() '
                'if context.getInstrument() else None',
     widget=ComputedWidget(

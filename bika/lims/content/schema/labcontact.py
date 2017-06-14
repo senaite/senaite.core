@@ -59,7 +59,6 @@ Department = ReferenceField(
 
 DepartmentTitle = ComputedField(
     'DepartmentTitle',
-    storage=Storage(),
     expression="context.getDepartment().Title() "
                "if context.getDepartment() else ''",
     widget=ComputedWidget(

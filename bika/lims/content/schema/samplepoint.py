@@ -84,7 +84,6 @@ SampleTypes = ReferenceField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage(),
     expression="[o.Title() for o in context.getSampleTypes()]",
     widget=ComputedWidget(
         visible=False,

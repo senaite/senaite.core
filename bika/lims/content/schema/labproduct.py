@@ -48,7 +48,6 @@ Price = FixedPointField(
 
 VATAmount = ComputedField(
     'VATAmount',
-    storage=Storage(),
     expression='context.getVATAmount()',
     widget=ComputedWidget(
         label=_("VAT"),
@@ -58,7 +57,6 @@ VATAmount = ComputedField(
 
 TotalPrice = ComputedField(
     'TotalPrice',
-    storage=Storage(),
     expression='context.getTotalPrice()',
     widget=ComputedWidget(
         label=_("Total price"),

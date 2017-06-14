@@ -66,7 +66,6 @@ Remarks = TextField(
 
 Subtotal = ComputedField(
     'Subtotal',
-    storage=Storage(),
     expression='context.getSubtotal()',
     widget=ComputedWidget(
         label=_("Subtotal"),
@@ -76,7 +75,6 @@ Subtotal = ComputedField(
 
 VATAmount = ComputedField(
     'VATAmount',
-    storage=Storage(),
     expression='context.getVATAmount()',
     widget=ComputedWidget(
         label=_("VAT Total"),
@@ -86,7 +84,6 @@ VATAmount = ComputedField(
 
 Total = ComputedField(
     'Total',
-    storage=Storage(),
     expression='context.getTotal()',
     widget=ComputedWidget(
         label=_("Total"),
@@ -96,7 +93,6 @@ Total = ComputedField(
 
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage(),
     expression="context.getClient().UID() if context.getClient() else ''",
     widget=ComputedWidget(
         visible=False
@@ -105,7 +101,6 @@ ClientUID = ComputedField(
 
 InvoiceSearchableText = ComputedField(
     'InvoiceSearchableText',
-    storage=Storage(),
     expression='context.getInvoiceSearchableText()',
     widget=ComputedWidget(
         visible=False

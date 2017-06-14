@@ -61,7 +61,6 @@ RetentionPeriod = DurationField(
 
 DisposalDate = ComputedField(
     'DisposalDate',
-    storage=Storage(),
     expression='context.disposal_date()',
     widget=ComputedWidget(
         visible=False

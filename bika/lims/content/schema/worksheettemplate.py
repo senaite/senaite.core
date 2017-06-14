@@ -97,7 +97,6 @@ Instrument = ReferenceField(
 
 InstrumentTitle = ComputedField(
     'InstrumentTitle',
-    storage=Storage(),
     expression="context.getInstrument().Title() "
                "if context.getInstrument() else ''",
     widget=ComputedWidget(

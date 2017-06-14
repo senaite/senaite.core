@@ -246,7 +246,6 @@ _LatestReferenceAnalyses = ReferenceField(
 
 Valid = ComputedField(
     'Valid',
-    storage=Storage(),
     expression="'1' if context.isValid() else '0'",
     widget=ComputedWidget(
         visible=False
@@ -255,7 +254,6 @@ Valid = ComputedField(
 # Needed since InstrumentType is sorted by its own object, not by its name.
 InstrumentTypeName = ComputedField(
     'InstrumentTypeName',
-    storage=Storage(),
     expression="context.getInstrumentType().Title() "
                "if context.getInstrumentType() else ''",
     widget=ComputedWidget(
@@ -266,7 +264,6 @@ InstrumentTypeName = ComputedField(
 
 InstrumentLocationName = ComputedField(
     'InstrumentLocationName',
-    storage=Storage(),
     expression="context.getInstrumentLocation().Title() "
                "if context.getInstrumentLocation() else ''",
     widget=ComputedWidget(
@@ -281,7 +278,6 @@ InstrumentLocationName = ComputedField(
 
 ManufacturerName = ComputedField(
     'ManufacturerName',
-    storage=Storage(),
     expression="context.getManufacturer().Title() "
                "if context.getManufacturer() else ''",
     widget=ComputedWidget(
@@ -292,7 +288,6 @@ ManufacturerName = ComputedField(
 
 SupplierName = ComputedField(
     'SupplierName',
-    storage=Storage(),
     expression='context.getSupplier().Title() '
                'if context.getSupplier() else ""',
     widget=ComputedWidget(

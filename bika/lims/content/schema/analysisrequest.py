@@ -286,7 +286,6 @@ Batch = ReferenceField(
 
 BatchUID = ComputedField(
     'BatchUID',
-    storage=Storage(),
     expression='here.getBatch().UID() if here.getBatch() else ""',
     widget=ComputedWidget(
         visible=False
@@ -665,7 +664,11 @@ SampleType = ReferenceField(
 
 RejectionReasons = RecordsField(
     'RejectionReasons',
-    storage=Storage(),
+    # XXX RejectionReasons should not be stored as a List of Dictionaries.
+    # It should simply be LinesField, and store a list of strings, the
+    # rejection reasons themselves.  When this is done, un-comment the
+    # Storage() line below.  See sample.py for the same comment.
+    # storage=Storage(),
     widget=RejectionWidget(
         label=_("Sample Rejection"),
         description=_("Set the Sample Rejection workflow and the reasons"),
@@ -1287,7 +1290,6 @@ InvoiceExclude = BooleanField(
 
 Analyses = ARAnalysesField(
     'Analyses',
-    storage=Storage(),
     required=1,
     mode="rw",
     read_permission=permissions.View,
@@ -1453,7 +1455,6 @@ MemberDiscount = FixedPointField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage(),
     expression="here.getSampleType().Title() if here.getSampleType() "
                "else ''",
     widget=ComputedWidget(
@@ -1463,7 +1464,6 @@ SampleTypeTitle = ComputedField(
 
 SamplePointTitle = ComputedField(
     'SamplePointTitle',
-    storage=Storage(),
     expression="here.getSamplePoint().Title() if here.getSamplePoint() "
                "else ''",
     widget=ComputedWidget(
@@ -1473,7 +1473,6 @@ SamplePointTitle = ComputedField(
 
 SampleUID = ComputedField(
     'SampleUID',
-    storage=Storage(),
     expression="here.getSample() and here.getSample().UID() or ''",
     widget=ComputedWidget(
         visible=False,
@@ -1482,7 +1481,6 @@ SampleUID = ComputedField(
 
 SampleID = ComputedField(
     'SampleID',
-    storage=Storage(),
     expression="here.getSample() and here.getSample().getId() or ''",
     widget=ComputedWidget(
         visible=False,
@@ -1491,7 +1489,6 @@ SampleID = ComputedField(
 
 ContactUID = ComputedField(
     'ContactUID',
-    storage=Storage(),
     expression="here.getContact() and here.getContact().UID() or ''",
     widget=ComputedWidget(
         visible=False,
@@ -1500,7 +1497,6 @@ ContactUID = ComputedField(
 
 ProfilesUID = ComputedField(
     'ProfilesUID',
-    storage=Storage(),
     expression="[p.UID() for p in here.getProfiles()] if here.getProfiles() "
                "else []",
     widget=ComputedWidget(
@@ -1510,7 +1506,6 @@ ProfilesUID = ComputedField(
 
 Invoiced = ComputedField(
     'Invoiced',
-    storage=Storage(),
     expression='here.getInvoice() and True or False',
     default=False,
     widget=ComputedWidget(
@@ -1520,7 +1515,6 @@ Invoiced = ComputedField(
 
 ReceivedBy = ComputedField(
     'ReceivedBy',
-    storage=Storage(),
     expression='here.getReceivedBy()',
     default='',
     widget=ComputedWidget(visible=False, )
@@ -1528,21 +1522,18 @@ ReceivedBy = ComputedField(
 
 CreatorFullName = ComputedField(
     'CreatorFullName',
-    storage=Storage(),
     expression="here._getCreatorFullName()",
     widget=ComputedWidget(visible=False)
 )
 
 CreatorEmail = ComputedField(
     'CreatorEmail',
-    storage=Storage(),
     expression="here._getCreatorEmail()",
     widget=ComputedWidget(visible=False)
 )
 
 SamplingRoundUID = ComputedField(
     'SamplingRoundUID',
-    storage=Storage(),
     expression="here.getSamplingRound().UID() if here.getSamplingRound() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1550,7 +1541,6 @@ SamplingRoundUID = ComputedField(
 
 SampleURL = ComputedField(
     'SampleURL',
-    storage=Storage(),
     expression="here.getSample().absolute_url_path() if here.getSample() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1558,28 +1548,24 @@ SampleURL = ComputedField(
 
 SamplerFullName = ComputedField(
     'SamplerFullName',
-    storage=Storage(),
     expression="here._getSamplerFullName()",
     widget=ComputedWidget(visible=False)
 )
 
 SamplerEmail = ComputedField(
     'SamplerEmail',
-    storage=Storage(),
     expression="here._getSamplerEmail()",
     widget=ComputedWidget(visible=False)
 )
 
 BatchID = ComputedField(
     'BatchID',
-    storage=Storage(),
     expression="here.getBatch().getId() if here.getBatch() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 BatchURL = ComputedField(
     'BatchURL',
-    storage=Storage(),
     expression="here.getBatch().absolute_url_path() if here.getBatch() else ''",
     widget=ComputedWidget(visible=False)
 )
@@ -1587,21 +1573,18 @@ BatchURL = ComputedField(
 # TODO-catalog: move all these computed fields to methods
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage(),
     expression="here.getClient().UID() if here.getClient() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ClientTitle = ComputedField(
     'ClientTitle',
-    storage=Storage(),
     expression="here.getClient().Title() if here.getClient() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ClientURL = ComputedField(
     'ClientURL',
-    storage=Storage(),
     expression="here.getClient().absolute_url_path() if here.getClient() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1609,21 +1592,18 @@ ClientURL = ComputedField(
 
 ContactUsername = ComputedField(
     'ContactUsername',
-    storage=Storage(),
     expression="here.getContact().getUsername() if here.getContact() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ContactFullName = ComputedField(
     'ContactFullName',
-    storage=Storage(),
     expression="here.getContact().getFullname() if here.getContact() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 ContactEmail = ComputedField(
     'ContactEmail',
-    storage=Storage(),
     expression="here.getContact().getEmailAddress() if here.getContact() else"
                " ''",
     widget=ComputedWidget(visible=False)
@@ -1631,21 +1611,18 @@ ContactEmail = ComputedField(
 
 SampleTypeUID = ComputedField(
     'SampleTypeUID',
-    storage=Storage(),
     expression="here.getSampleType().UID() if here.getSampleType() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 SamplePointUID = ComputedField(
     'SamplePointUID',
-    storage=Storage(),
     expression="here.getSamplePoint().UID() if here.getSamplePoint() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 StorageLocationUID = ComputedField(
     'StorageLocationUID',
-    storage=Storage(),
     expression="here.getStorageLocation().UID() if here.getStorageLocation() "
                "else ''",
     widget=ComputedWidget(visible=False)
@@ -1653,7 +1630,6 @@ StorageLocationUID = ComputedField(
 
 ProfilesURL = ComputedField(
     'ProfilesURL',
-    storage=Storage(),
     expression="[p.absolute_url_path() for p in here.getProfiles()] if "
                "here.getProfiles() else []",
     widget=ComputedWidget(visible=False)
@@ -1661,7 +1637,6 @@ ProfilesURL = ComputedField(
 
 ProfilesTitle = ComputedField(
     'ProfilesTitle',
-    storage=Storage(),
     expression="[p.Title() for p in here.getProfiles()] if here.getProfiles()"
                " else []",
     widget=ComputedWidget(visible=False)
@@ -1669,7 +1644,6 @@ ProfilesTitle = ComputedField(
 
 ProfilesTitleStr = ComputedField(
     'ProfilesTitleStr',
-    storage=Storage(),
     expression="' '.join([p.Title() for p in here.getProfiles()]) if "
                "here.getProfiles() else []",
     widget=ComputedWidget(visible=False)
@@ -1677,14 +1651,12 @@ ProfilesTitleStr = ComputedField(
 
 TemplateUID = ComputedField(
     'TemplateUID',
-    storage=Storage(),
     expression="here.getTemplate().UID() if here.getTemplate() else ''",
     widget=ComputedWidget(visible=False)
 )
 
 TemplateURL = ComputedField(
     'TemplateURL',
-    storage=Storage(),
     expression="here.getTemplate().absolute_url_path() if here.getTemplate() "
                "else ''",
     widget=ComputedWidget(visible=False)
@@ -1692,7 +1664,6 @@ TemplateURL = ComputedField(
 
 TemplateTitle = ComputedField(
     'TemplateTitle',
-    storage=Storage(),
     expression="here.getTemplate().Title() if here.getTemplate() else ''",
     widget=ComputedWidget(visible=False)
 )

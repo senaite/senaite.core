@@ -47,7 +47,6 @@ SamplePoint = ReferenceField(
 
 ComputedField(
     'SamplePointUID',
-    storage=Storage(),
     expression="context.Schema()['SamplePoint'].get(context).UID() "
                "if context.Schema()['SamplePoint'].get(context) else ''",
     widget=ComputedWidget(
@@ -79,7 +78,6 @@ SampleType = ReferenceField(
 
 ComputedField(
     'SampleTypeUID',
-    storage=Storage(),
     expression="context.Schema()['SampleType'].get(context).UID() "
                "if context.Schema()['SampleType'].get(context) else ''",
     widget=ComputedWidget(

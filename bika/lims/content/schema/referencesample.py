@@ -178,7 +178,6 @@ ReferenceResults = ReferenceResultsField(
 
 SupplierUID = ComputedField(
     'SupplierUID',
-    storage=Storage(),
     expression='context.aq_parent.UID()',
     widget=ComputedWidget(
         visible=False
@@ -187,7 +186,6 @@ SupplierUID = ComputedField(
 
 ReferenceDefinitionUID = ComputedField(
     'ReferenceDefinitionUID',
-    storage=Storage(),
     expression='context.getReferenceDefinition().UID() '
                'if context.getReferenceDefinition().UID() else None',
     widget=ComputedWidget(

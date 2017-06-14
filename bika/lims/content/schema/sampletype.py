@@ -113,7 +113,6 @@ SamplePoints = ReferenceField(
 
 SamplePointTitle = ComputedField(
     'SamplePointTitle',
-    storage=Storage(),
     expression="[o.Title() for o in context.getSamplePoints()]",
     widget=ComputedWidget(
         visibile=False,

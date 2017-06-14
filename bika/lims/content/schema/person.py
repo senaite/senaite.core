@@ -59,7 +59,6 @@ Surname = StringField(
 
 Fullname = ComputedField(
     'Fullname',
-    storage=Storage(),
     expression='context.getFullname()',
     searchable=1,
     widget=ComputedWidget(
@@ -149,7 +148,6 @@ PhysicalAddress = AddressField(
 
 City = ComputedField(
     'City',
-    storage=Storage(),
     expression='context.getPhysicalAddress().get("city")',
     searchable=1,
     widget=ComputedWidget(
@@ -159,7 +157,6 @@ City = ComputedField(
 
 District = ComputedField(
     'District',
-    storage=Storage(),
     expression='context.getPhysicalAddress().get("district")',
     searchable=1,
     widget=ComputedWidget(
@@ -169,7 +166,6 @@ District = ComputedField(
 
 PostalCode = ComputedField(
     'PostalCode',
-    storage=Storage(),
     expression='context.getPhysicalAddress().get("postalCode")',
     searchable=1,
     widget=ComputedWidget(
@@ -179,7 +175,6 @@ PostalCode = ComputedField(
 
 Country = ComputedField(
     'Country',
-    storage=Storage(),
     expression='context.getPhysicalAddress().get("country")',
     searchable=1,
     widget=ComputedWidget(
@@ -198,7 +193,6 @@ PostalAddress = AddressField(
 
 ObjectWorkflowStates = ComputedField(
     'ObjectWorkflowStates',
-    storage=Storage(),
     expression='context.getObjectWorkflowStates()',
     searchable=1,
     widget=ComputedWidget(

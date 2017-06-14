@@ -98,7 +98,6 @@ ManualEntryOfResults = BooleanField(
 # Only shown in readonly view. Not in edit view
 ManualEntryOfResultsViewField = ComputedField(
     'ManualEntryOfResultsViewField',
-    storage=Storage(),
     expression="context.isManualEntryOfResults()",
     widget=BooleanWidget(
         label=_("Manual entry of results"),

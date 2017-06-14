@@ -27,7 +27,6 @@ SampleType = UIDReferenceField(
 
 SampleTypeTitle = ComputedField(
     'SampleTypeTitle',
-    storage=Storage(),
     expression="context.getSampleType().Title() "
                "if context.getSampleType() else ''",
     widget=ComputedWidget(
@@ -36,7 +35,6 @@ SampleTypeTitle = ComputedField(
 )
 SampleTypeUID = ComputedField(
     'SampleTypeUID',
-    storage=Storage(),
     expression="context.getSampleType().UID() "
                "if context.getSampleType() else ''",
     widget=ComputedWidget(
@@ -82,7 +80,6 @@ ResultsRange = RecordsField(
 
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage(),
     expression="context.aq_parent.UID()",
     widget=ComputedWidget(
         visible=False

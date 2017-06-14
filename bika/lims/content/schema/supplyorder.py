@@ -92,7 +92,6 @@ Remarks = TextField(
 )
 ClientUID = ComputedField(
     'ClientUID',
-    storage=Storage(),
     expression='here.aq_parent.UID()',
     widget=ComputedWidget(
         visible=False
@@ -100,7 +99,6 @@ ClientUID = ComputedField(
 )
 ProductUID = ComputedField(
     'ProductUID',
-    storage=Storage(),
     expression='context.getProductUIDs()',
     widget=ComputedWidget(
         visible=False

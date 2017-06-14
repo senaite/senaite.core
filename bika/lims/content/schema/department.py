@@ -35,7 +35,6 @@ Manager = ReferenceField(
 
 ManagerName = ComputedField(
     'ManagerName',
-    storage=Storage(),
     expression="context.getManager().getFullname() "
                "if context.getManager() else ''",
     widget=ComputedWidget(
@@ -45,7 +44,6 @@ ManagerName = ComputedField(
 
 ManagerPhone = ComputedField(
     'ManagerPhone',
-    storage=Storage(),
     expression="context.getManager().getBusinessPhone() "
                "if context.getManager() else ''",
     widget=ComputedWidget(
@@ -55,7 +53,6 @@ ManagerPhone = ComputedField(
 
 ManagerEmail = ComputedField(
     'ManagerEmail',
-    storage=Storage(),
     expression="context.getManager().getEmailAddress() "
                "if context.getManager() else ''",
     widget=ComputedWidget(

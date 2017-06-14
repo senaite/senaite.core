@@ -132,7 +132,6 @@ AnalysisProfileVAT = FixedPointField(
 #  VAT
 VATAmount = ComputedField(
     'VATAmount',
-    storage=Storage(),
     schemata="Accounting",
     expression='context.getVATAmount()',
     widget=ComputedWidget(
@@ -143,7 +142,6 @@ VATAmount = ComputedField(
 
 TotalPrice = ComputedField(
     'TotalPrice',
-    storage=Storage(),
     schemata="Accounting",
     expression='context.getTotalPrice()',
     widget=ComputedWidget(
