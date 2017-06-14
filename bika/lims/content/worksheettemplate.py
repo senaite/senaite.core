@@ -100,7 +100,8 @@ schema = BikaSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Enable Multiple Use of Instrument in Worksheets."),
             description=_("If unchecked, \
-                          Lab Managers won't be able to assign the same Instrument more than one Analyse.")
+                          Lab Managers won't be able to assign the same Instrument more than one Analyses while \
+                          creating a Worksheet.")
         )
     ),
 ))
