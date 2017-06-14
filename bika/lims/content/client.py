@@ -13,7 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import *
 from bika.lims.content.organisation import Organisation
-from bika.lims.content.schema.organisation import schema
+from bika.lims.content.schema.client import schema
 from bika.lims.interfaces import IClient
 from bika.lims.workflow import InactiveState, StateFlow, getCurrentState
 from zope.interface import implements
