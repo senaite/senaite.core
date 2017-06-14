@@ -38,14 +38,11 @@ marker = random.random()
 # the queue of queries to be executed against the sql server.
 SQL_QUEUE = 'bika_sqlstorage_queue'
 
+
 class BikaSQLQueue(PersistentList):
     """This is just PersistentList, but I stubbed it here for debugging.
     I've left the stub active because one never knows what the future holds.
     """
-    def __setitem__(self, i, item):
-        import pdb;pdb.set_trace();pass
-        self.__super_setitem(i, item)
-        self._p_changed = 1
 
 
 class BikaSQLStorage(AttributeStorage):
