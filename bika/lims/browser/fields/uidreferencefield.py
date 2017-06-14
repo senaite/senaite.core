@@ -113,13 +113,9 @@ class UIDReferenceField(StringField):
         """Grab the stored value, and return it directly as UIDs.
         """
         value = StringField.get(self, instance, **kwargs)
-        if self.multiValued:
-            ret = value
-        else:
-            ret = self.get_object(instance, value)
-            if aslist:
-                ret = [ret]
-        return ret
+        if aslist and not self.multiValued:
+            value = [value]
+        return value
 
     @security.public
     def set(self, instance, value, **kwargs):
