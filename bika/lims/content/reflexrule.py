@@ -53,12 +53,11 @@ class ReflexRule(BaseContent):
             rules for.
         :ans_cond: the local id with the target derivative reflex rule id.
         """
-        import pdb;
-        pdb.set_trace()
         # Getting the first reflexed analysis from the chain
         first_reflexed = analysis.getOriginalReflexedAnalysis()
         # Getting all reflexed analysis created due to this first analysis
-        derivatives_brains = self.analyses_catalog(
+        catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
+        derivatives_brains = catalog(
             getOriginalReflexedAnalysisUID=first_reflexed.UID()
         )
         # From all the related reflexed analysis, return the one that matches
@@ -193,6 +192,8 @@ class ReflexRule(BaseContent):
             service_uid = curranalysis.getServiceUID()
 
             # Resolve the conditions
+            # noinspection PyChainedComparisons
+            # XXX @pau is crazy
             resolution = \
                 ans_uid_cond == service_uid and \
                 ((isnumber(result) and isinstance(exp_val, str) and
@@ -224,12 +225,9 @@ class ReflexRule(BaseContent):
             have to act in consideration of the action_set 'trigger' variable
         :returns: [{'action': 'duplicate', ...}, {,}, ...]
         """
-        # Setting up the analyses catalog
-        self.analyses_catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
         # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()
         l = []
-        condition = False
         for action_set in action_sets:
             # Validate the trigger
             if action_set.get('trigger', '') == wf_action:
@@ -262,9 +260,6 @@ def doActionToAnalysis(base, action):
     # If the analysis has been retracted yet, just duplicate it
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
-    action_rule_name = ''
-    import pdb;
-    pdb.set_trace()
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -297,6 +292,7 @@ def doActionToAnalysis(base, action):
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))
         return 0
+    # noinspection PyUnboundLocalVariable
     analysis.setReflexRuleAction(action.get('action', ''))
     analysis.setIsReflexAnalysis(True)
     analysis.setReflexAnalysisOf(base)
@@ -332,7 +328,7 @@ def _createWorksheet(base, worksheettemplate, analyst):
     variable. If there isn't an analyst definet, the system will puck up the
     the first one obtained in a query.
     """
-    if not (analyst):
+    if not analyst:
         # Get any analyst
         analyst = getUsers(base, ['Manager', 'LabManager', 'Analyst'])[1]
     folder = base.bika_setup.worksheets
