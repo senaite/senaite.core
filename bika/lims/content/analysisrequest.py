@@ -650,10 +650,10 @@ class AnalysisRequest(BaseFolder):
                 return False
             an_state = wf.getInfoFor(wan, 'review_state')
             an_reftype = wan.getReferenceType()
-            return wan.getServiceUID() in suids \
-                   and wan not in qcanalyses \
-                   and (qctype is None or an_reftype == qctype) \
-                   and (review_state is None or an_state in review_state)
+            return wan.getServiceUID() in suids and \
+                wan not in qcanalyses and \
+                (qctype is None or an_reftype == qctype) and \
+                (review_state is None or an_state in review_state)
 
         for an in ans:
             an = an.getObject()
@@ -1520,9 +1520,10 @@ class AnalysisRequest(BaseFolder):
             """Call a class accessor method to give a value for certain
             Archetypes field.
             """
+            # noinspection PyBroadException
+            # XXX @pau bare except
             try:
                 val = getter()
-            # XXX @pau bare except
             except:
                 message = \
                     "Error getting the accessor parameter in SearchableText " \

@@ -2,11 +2,11 @@
 #
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
-from Products.Archetypes import atapi
+from Products.Archetypes.ArchetypeTool import registerType
 from Products.Archetypes.public import BaseContent
 from bika.lims import config
 from bika.lims.content.schema.bikacache import schema
+
 
 class BikaCache(BaseContent):
     """BikaCache objects stores information about 'Last Created ID's of 
@@ -18,4 +18,4 @@ class BikaCache(BaseContent):
 
 
 # Activating the content type in Archetypes' internal types registry
-atapi.registerType(BikaCache, config.PROJECTNAME)
+registerType(BikaCache, config.PROJECTNAME)

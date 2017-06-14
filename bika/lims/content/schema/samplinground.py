@@ -8,8 +8,8 @@ from datetime import date
 from Products.CMFCore.utils import getToolByName
 from bika.lims import _
 from plone.supermodel import model
-from zope import schema
 from zope.interface import implements
+from zope.schema import TextLine, Text, Choice, Date, List, Int
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
 
@@ -59,8 +59,8 @@ class SamplingRoundTemplates(object):
                 if context.portal_type == 'Client' and container.UID() != \
                         context.UID():
                     continue
-                elif context.portal_type == 'SamplingRound' and \
-                                container.UID() != context.aq_parent.UID():
+                elif context.portal_type == 'SamplingRound' \
+                        and container.UID() != context.aq_parent.UID():
                     continue
             srt_uid = brain.UID
             title = brain.Title
@@ -145,7 +145,7 @@ class ISamplingRound(model.Schema):
     """A Sampling round interface
     """
 
-    title = schema.TextLine(
+    title = TextLine(
         title=_(u"Title"),
         description=_(
             u"A short name that describes the Round for it to be easily "
@@ -153,7 +153,7 @@ class ISamplingRound(model.Schema):
         required=True
     )
 
-    description = schema.Text(
+    description = Text(
         title=_(u"Description"),
         description=_(
             u"This text is also displayed upon a mouse-over of the Title "
@@ -161,7 +161,7 @@ class ISamplingRound(model.Schema):
         required=False
     )
 
-    sr_template = schema.Choice(
+    sr_template = Choice(
         title=_(u"Sampling Rounds Template"),
         description=_(
             u"Analysis request templates to be included in the Sampling Round "
@@ -170,64 +170,64 @@ class ISamplingRound(model.Schema):
         required=False,
     )
 
-    sampler = schema.Choice(
+    sampler = Choice(
         title=_(u"Sampler"),
         description=_(u"The default Sampler for these Sampling Round"),
         required=True,
         source=Samplers(['LabManager', 'Sampler']),
     )
 
-    department = schema.Choice(
+    department = Choice(
         title=_(u"Department"),
         description=_(u"The lab department responsible for the sampling round"),
         required=True,
         source=Departments()
     )
 
-    sampling_freq = schema.Int(
+    sampling_freq = Int(
         title=_(u"Sampling frequency"),
         description=_(u"The number of days between recurring field trips"),
         required=True,
         default=7,
     )
 
-    sampling_date = schema.Date(
+    sampling_date = Date(
         title=_(u"Sampling date"),
         description=_(u"The date to do the sampling process"),
         default=date.today(),
         required=True
     )
 
-    environmental_conditions = schema.TextLine(
+    environmental_conditions = TextLine(
         title=_(u"Environmental conditions"),
         required=False
     )
 
-    instructions = schema.Text(
+    instructions = Text(
         title=_(u"Instructions"),
         required=False
     )
 
-    ar_templates = schema.List(
+    ar_templates = List(
         title=_(u'Analysis Request Templates'),
-        value_type=schema.Choice(
+        value_type=Choice(
             source=AnalysisRequestTemplates()
         )
     )
 
-    client_contact = schema.Choice(
+    client_contact = Choice(
         title=_(u'Client contact who coordinates with the lab'),
         required=False,
         source=ClientContacts()
     )
 
-    client_contact_in_charge_at_sampling_time = schema.Choice(
+    client_contact_in_charge_at_sampling_time = Choice(
         title=_(u'Client contact in charge at sampling time'),
         required=False,
         source=ClientContacts()
     )
 
-    num_sample_points = schema.Int(
+    num_sample_points = Int(
         title=_(u"Number of Sample Points"),
         description=_(
             u"the total number of Sample Points defined in the Round."),
@@ -235,7 +235,7 @@ class ISamplingRound(model.Schema):
         readonly=True,
     )
 
-    num_containers = schema.Int(
+    num_containers = Int(
         title=_(u"Number of Containers"),
         description=_(u"The total number of Containers included in the Round."),
         required=False,

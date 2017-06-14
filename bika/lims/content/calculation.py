@@ -54,7 +54,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.getField('Formula').set(self, Formula)
         else:
             DependentServices = []
-            keywords = re.compile(r"\[([^\.^\]]+)\]").findall(Formula)
+            keywords = re.compile(r"\[([^\]]+)\]").findall(Formula)
             for keyword in keywords:
                 service = bsc(portal_type="AnalysisService",
                               getKeyword=keyword)
@@ -74,7 +74,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def getMappedFormula(self, analysis, mapping):
         formula = self.getMinifiedFormula()
         # XXX regex groups to replace only [x] where x in interim keys.
-        keywords = re.compile(r"\[([^\.^\]]+)\]").findall(formula)
+        keywords = re.compile(r"\[([^\]]+)\]").findall(formula)
         for keyword in keywords:
             if keyword in mapping:
                 try:

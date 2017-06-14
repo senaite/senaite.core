@@ -106,6 +106,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             for d in uncertainties:
                 _min = float(d['intercept_min'])
                 _max = float(d['intercept_max'])
+                # noinspection PyChainedComparisons
                 if _min <= res and res <= _max:
                     if str(d['errorvalue']).strip().endswith('%'):
                         try:
@@ -128,8 +129,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         current result for this analysis is below or above detections limits.
         """
         uncertainty = self.getField('Uncertainty').get(self)
-        if result is None and (self.isAboveUpperDetectionLimit() or
-                                   self.isBelowLowerDetectionLimit()):
+        if result is None and (self.isAboveUpperDetectionLimit()
+                               or self.isBelowLowerDetectionLimit()):
             return None
 
         if uncertainty and self.getAllowManualUncertainty() is True:

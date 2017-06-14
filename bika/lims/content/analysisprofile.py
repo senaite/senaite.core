@@ -63,8 +63,8 @@ class AnalysisProfile(BaseContent):
     def getVATAmount(self):
         """ Compute AnalysisProfileVATAmount
         """
-        price, vat = self.getAnalysisProfilePrice(), \
-                     self.getAnalysisProfileVAT()
+        price = self.getAnalysisProfilePrice()
+        vat = self.getAnalysisProfileVAT()
         return float(price) * float(vat) / 100
 
     def getTotalPrice(self):

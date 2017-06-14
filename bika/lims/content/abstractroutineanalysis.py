@@ -264,7 +264,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         an = self
 
         if specification == 'ar' or specification is None:
-            request = self.getRequest()
             if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
                 rr = an.aq_parent.getResultsRange()
                 rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
@@ -431,7 +430,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
             # All dependencies from this dependent analysis are ok?
             deps = dependent.getDependencies()
-            dsub = [dep for dep in deps if wasTransitionPerformed(sp, 'submit')]
+            dsub = [dp for dp in deps if wasTransitionPerformed(dp, 'submit')]
             if len(deps) == len(dsub):
                 # The statuses of all dependencies of this dependent are ok
                 # (at least, all of them have been submitted already)

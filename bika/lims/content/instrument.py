@@ -184,6 +184,7 @@ class Instrument(ATFolder):
                 continue
             validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
+            # noinspection PyChainedComparisons
             if today >= validfrom and today <= validto:
                 certs.append(c)
         return certs
