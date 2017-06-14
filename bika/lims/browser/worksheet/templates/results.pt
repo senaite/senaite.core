@@ -154,8 +154,9 @@
         </table>
     </tal:interimwide>
 
-    <span tal:replace="structure view/Analyses/contents_table"/>
 
+    <span tal:replace="structure view/Analyses/contents_table"/>
+    <input type="hidden" id = "instrument_multiple_use" tal:attributes="value python:context.getWorksheetTemplate().getEnableMultipleUseOfInstrument() if context.getWorksheetTemplate() else 'True';"/>
     <tal:remarks define="
         field python:context.Schema()['Remarks'];
         errors python:{};">

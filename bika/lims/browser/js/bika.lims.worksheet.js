@@ -453,11 +453,11 @@ function WorksheetManageResultsView() {
 
         // Populate instruments list
         $(i_selector).find('option').remove();
-        console.log(constraints[7]);
         if (constraints[7]) {
             $.each(constraints[7], function(key, value) {
-                console.log(key+ ": "+value);
-                $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+                if(is_ins_allowed(key)){
+                    $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+                }
             });
         }
 
@@ -562,5 +562,25 @@ function WorksheetManageResultsView() {
             var muid = $(this).val();
             load_analysis_method_constraint(auid, muid);
         });
+    }
+
+    /**
+     * Check if the Instrument is allowed to appear in Instrument list of Analysis.
+     * Returns true if multiple use of an Instrument is enabled for assigned Worksheet Template or UID is not in selected Instruments
+     * @param {uid} ins_uid - UID of Instrument.
+     */
+    function is_ins_allowed(uid) {
+        var multiple_enabled = $("#instrument_multiple_use").attr('value');
+        if(multiple_enabled=='True'){
+            return true;
+        }else{
+            var i_selectors = $('select.listing_select_entry[field="Instrument"]');
+            for(i=0; i < i_selectors.length; i++){
+                if(i_selectors[i].value == uid){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
