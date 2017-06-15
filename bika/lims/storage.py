@@ -302,7 +302,11 @@ class SQLQueueRunner(BrowserView):
         self.conn.commit()
 
     def unlock(self):
-        """Unlock, permits new clock instances to proceed.
+        """Unlock, permits new clock instances to proceed.  It's important
+        that any transactions are committed before calling this function,
+        because this function does a rollback on the current connection.  This
+        is to be sure that we release the lock even if the connection is in
+        a strange state.
 
         :return: None
         :rtype: NoneType
@@ -314,7 +318,7 @@ class SQLQueueRunner(BrowserView):
         self.conn.commit()
 
     def is_locked(self):
-        """Check lock status
+        """Check lock status.
         
         :return: False if lock is not held, or PID of process holding lock.
         :rtype: bool | string
@@ -324,11 +328,13 @@ class SQLQueueRunner(BrowserView):
             query = 'select * from lock'
             cur.execute(query)
             # noinspection PyStatementEffect
-            cur.fetchone()[0]
+            pid, datetime = cur.fetchone()
         except TypeError:
             return False
         finally:
             self.conn.rollback()
+        logger.info("Lock is held by {} since {:%Y-%m-%d %H:%M}".format(
+            pid, datetime))
         return True
 
     def get_queue(self):
@@ -353,7 +359,7 @@ class SQLQueueRunner(BrowserView):
         does not exist.  Supplementary tables are created for some fields:
 
         - Dictionary or List of Dictionary (RecordField, RecordsField):
-          create a table with column f\or each key of dictionary.
+          create a table with column for each key of dictionary.
 
         - Other list or tuple (LinesField, multiValued reference):
           create table containing only UID and value columns
@@ -381,7 +387,6 @@ class SQLQueueRunner(BrowserView):
             return []
         except ProgrammingError:
             self.conn.rollback()
-            pass
 
         # divide all schema fields into table types
         fields, dict_fields, list_fields = self.get_fields(schema)
@@ -480,9 +485,9 @@ class SQLQueueRunner(BrowserView):
         uq = "UPDATE {} SET {} WHERE UID='{}'"
         iq = "INSERT INTO {} ({}) VALUES ({})"
         if self.exists_in_table(tablename, 'UID', uid):
-            z = ['{}={}'.format(f.getName(),
-                                self._mutate(f, values[f.getName()]))
-                 for f in fields]
+            z = ['{}={}'.format(
+                f.getName(), self._mutate(f, values[f.getName()]))
+                for f in fields]
             query = uq.format(tablename, ','.join(z), uid)
         else:
             colnames = ['UID', 'PARENTUID'] + [f.getName() for f in fields]
