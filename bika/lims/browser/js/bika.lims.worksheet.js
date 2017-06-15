@@ -242,6 +242,8 @@ function WorksheetManageResultsView() {
         loadRemarksEventHandlers();
 
         loadDetectionLimitsEventHandlers();
+
+        loadInstrumentEventHandlers();
     }
 
     function portalMessage(message) {
@@ -457,6 +459,8 @@ function WorksheetManageResultsView() {
             $.each(constraints[7], function(key, value) {
                 if(is_ins_allowed(key)){
                     $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+                }else{
+                    $(i_selector).append('<option value="'+key+'" disabled="true">'+value+'</option>');
                 }
             });
         }
@@ -561,6 +565,26 @@ function WorksheetManageResultsView() {
             var auid = $(this).attr('uid');
             var muid = $(this).val();
             load_analysis_method_constraint(auid, muid);
+        });
+    }
+
+    /**
+     * If a new instrument is chosen for the analysis, disable this Instrument for the other analyses. Also, remove
+     * the restriction of previous Instrument of this analysis to be chosen in the other analyses.
+     */
+    function loadInstrumentEventHandlers() {
+        $('table.bika-listing-table select.listing_select_entry[field="Instrument"]').on('focus', function () {
+                // First, getting the previous value
+                previous = this.value;
+            }).change(function() {
+            var auid = $(this).attr('uid');
+            var iuid = $(this).val();
+            // Disable New Instrument for rest of the analyses
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+iuid+'"] option[value="'+iuid+'"]').prop('disabled', true);
+            // Enable previous Instrument everywhere
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value="'+previous+'"]').prop('disabled', false);
+            // Enable 'None' option as well.
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value=""]').prop('disabled', false);
         });
     }
 
