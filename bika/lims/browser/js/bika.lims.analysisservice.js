@@ -20,6 +20,7 @@ function AnalysisServiceEditView() {
 
     var default_calculation_chk      = $('#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation');
     var calculation_field            = $('#archetypes-fieldname-Calculation');
+    var calculation_label            = $(calculation_field).find('label');
     var calculation_select_element   = $('#archetypes-fieldname-Calculation #Calculation');
 
     var interim_fd = $("#archetypes-fieldname-InterimFields");
@@ -312,6 +313,10 @@ function AnalysisServiceEditView() {
             // If it has default Instrument, Default method can be only one of that Default Instrument's methods. Do
             // not do anything.
             if ($(instr_chk).is(':checked')) {
+                $(method_sel).change(function(e) {
+                    // Delegate actions to Default Calculation change event
+                    $(default_calculation_chk).change();
+                });
                 return;
             }
 
@@ -454,8 +459,8 @@ function AnalysisServiceEditView() {
 
                 // Using default calculation.
                 // So, we deny access to the "Calculation" selection field.
-                $(calculation_field).show();
-                $(calculation_field).prop('disabled', true);
+                $(calculation_label).hide();
+                $(calculation_select_element).prop('disabled', true);
 
                 // Load the calculation for the selected method
                 var muid = $(method_sel).val();
@@ -490,9 +495,31 @@ function AnalysisServiceEditView() {
                 $(calculation_select_element).val('');
 
                 // Unselected "Use Default Calculation"
-                // So, we allow selection of calculation manually
-                $(calculation_field).hide();
+                // So, we allow selection of calculation manually and fill the list with the all available Calculations
+                // in the system.
+                $(calculation_label).show();
+                $(calculation_select_element).prop('disabled', false);
 
+                // Get available Calculations from Bika
+                $.ajax({
+                    url: window.portal_url + "/get_available_calculations",
+                    type: 'POST',
+                    data: {'_authenticator': $('input[name="_authenticator"]').val()},
+                    dataType: 'json'
+                }).done(function(data) {
+                    $(calculation_select_element).find('option').remove();
+                    if (data != null) {
+                        for(i=0; i<data.length;i++){
+                            $(calculation_select_element).append('<option value="'+data[i]['uid']+'">'+data[i]['title']+'</option>');
+                        }
+                    } else {
+                        $(calculation_select_element).append('<option value="">'+_('None')+'</option>');
+                    }
+                    $(calculation_select_element).val($(calculation_select_element).find('option').first().val());
+
+                    // Delegate the action to Default Calculation change event
+                    $(calculation_select_element).change();
+                });
             }
         });
 
@@ -559,10 +586,10 @@ function AnalysisServiceEditView() {
         });
 
         // Toggle default/alternative calculation
-        if ($(default_calculation_chk).is(':checked')) {
-            $(calculation_field).show();
+        if (!$(default_calculation_chk).is(':checked')) {
+            $(calculation_label).show();
         } else {
-            $(calculation_field).hide();
+            $(calculation_label).hide();
         }
 
         // Save the manually entered interims to keep them if another
@@ -800,6 +827,6 @@ function AnalysisServiceEditView() {
             .css('padding', '10px')
             .css('margin-bottom', '20px');
 
-        $(calculation_field).find('label').hide();
+//        $(calculation_field).find('label').hide();
     }
 }
