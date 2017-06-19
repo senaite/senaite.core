@@ -11,8 +11,8 @@ function AnalysisServiceEditView() {
     var instr_chk  = $('#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults');
     var methods_fd = $('#archetypes-fieldname-Methods');
     var methods_ms = $('#archetypes-fieldname-Methods #Methods');
-    var method_fd  = $('#archetypes-fieldname-_Method');
-    var method_sel = $('#archetypes-fieldname-_Method #_Method');
+    var method_fd  = $('#archetypes-fieldname-Method');
+    var method_sel = $('#archetypes-fieldname-Method #Method');
     var instrs_fd  = $('#archetypes-fieldname-Instruments');
     var instrs_ms  = $('#archetypes-fieldname-Instruments #Instruments');
     var instr_fd   = $('#archetypes-fieldname-Instrument');
@@ -309,6 +309,12 @@ function AnalysisServiceEditView() {
                 $(this).val($(this).find('option').first().val());
             }*/
 
+            // If it has default Instrument, Default method can be only one of that Default Instrument's methods. Do
+            // not do anything.
+            if ($(instr_chk).is(':checked')) {
+                return;
+            }
+
             $(method_sel).find('option').remove();
 
             // Populate with the methods from the multi-select
@@ -329,14 +335,6 @@ function AnalysisServiceEditView() {
                 if (defoption == null || defoption == '') {
                     defoption = $(method_sel).find('option').first();
                 }
-            }
-            if (!$(instr_chk).is(':checked')) {
-                $(method_sel).val(defoption.val());
-            } else {
-                if ($(method_sel).find('option[value="'+prevmethod+'"]').length == 0) {
-                    $(method_sel).append('<option value="'+prevmethod+'">'+prevmethodtxt+'</option>');
-                }
-                $(method_sel).val(prevmethod);
             }
 
             // Delegate remaining actions to Method change event
@@ -408,7 +406,6 @@ function AnalysisServiceEditView() {
 
             // Delegate remaining actions to Instrument change event
             $(instr_sel).change();
-
         });
 
 

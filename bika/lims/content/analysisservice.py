@@ -356,6 +356,7 @@ schema.moveField('Method', after='Instrument')
 schema.moveField('Calculation', after='UseDefaultCalculation')
 schema.moveField('DuplicateVariation', after='Calculation')
 schema.moveField('Accredited', after='Calculation')
+schema.moveField('InterimFields', after='Calculation')
 
 
 class AnalysisService(AbstractBaseAnalysis):
