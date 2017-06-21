@@ -76,7 +76,7 @@
         <tr>
             <td id="client-info">
                 <table>
-                    <tr tal:condition="python:contact.get('fullname','') != ''"><td id="client-contact" tal:content="contact/fullname"></td></tr>
+                    <tr tal:condition="python:contact.get('fullname','') != ''"><td id="client-contact" tal:content="python:contact.get('fullname','')"></td></tr>
                     <tr><td id="client-name" tal:content="client/name"></td></tr>
                     <tr><td id="client-address" tal:content="structure client/address"></td></tr>
                     <tr tal:condition="python:contact.get('email','') != ''">
