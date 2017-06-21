@@ -541,10 +541,12 @@ def migrate_refs(rel, fieldname, pgthreshold=100):
     if refs:
         logger.info('Migrating %s references of %s' % (len(refs), rel))
     for i, ref in enumerate(refs):
-        obj = uc(UID=ref[1])[0].getObject()
-        if i and not divmod(i, pgthreshold)[1]:
-            logger.info("%s/%s %s/%s" % (i, len(refs), obj, rel))
-        touidref(obj, obj, rel, fieldname)
+        obj = uc(UID=ref[1])
+        if obj:
+            obj = obj[0].getObject()
+            if i and not divmod(i, pgthreshold)[1]:
+                logger.info("%s/%s %s/%s" % (i, len(refs), obj, rel))
+            touidref(obj, obj, rel, fieldname)
 
 
 def del_at_refs(rel):
