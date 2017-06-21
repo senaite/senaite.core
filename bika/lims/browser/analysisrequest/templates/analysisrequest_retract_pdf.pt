@@ -61,8 +61,8 @@
     alllabreas  python:ar.bika_setup.getRejectionReasons()[0];
     labreasons  python:[alllabreas[key] for key in alllabreas.keys() if key != 'checkbox'];
     client      python:ar.getClient();
-    reasons     python:ar.getRejectionReasons()[0].get('selected',[]);">
-
+    rej_widg    python:ar.getRejectionReasons();
+    reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else [];">
     <div class="header">
         <h1 tal:content="lab/Title"></h1>
         <div class="header-logo">
