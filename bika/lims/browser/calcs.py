@@ -189,7 +189,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             # interpolation
             hidden_fields = []
             c_fields = calculation.getInterimFields()
-            s_fields = service.getInterimFields()
+            s_fields = analysis.getInterimFields()
             for field in c_fields:
                 if field.get('hidden', False):
                     hidden_fields.append(field['keyword'])
