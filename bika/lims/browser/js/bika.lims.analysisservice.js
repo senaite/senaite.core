@@ -620,6 +620,10 @@ function AnalysisServiceEditView() {
         if($(calculation_select_element).val() == ''){
             $(interim_fd).hide();
         }
+        // Making sure nothign is selected.
+        if(!$(calculation_select_element).find('option[selected="selected"]').val()){
+            $(interim_fd).hide();
+        }
         // Remove 'None' option from 'Methods' multi-select
         $(methods_ms).find('option[value=""]').remove();
 
@@ -671,7 +675,6 @@ function AnalysisServiceEditView() {
                 if (data.objects.length > 0) {
                     $(calculation_select_element).append('<option value="'+data.objects[0].UID+'">'+data.objects[0].Title+'</option>');
                     $(calculation_select_element).val(data.objects[0].UID);
-                    $(calculation_select_element).find('option').prop('selected',true);
                     $(calculation_select_element).find('option').attr('selected','selected');
                     for (i = 0; i < data.objects[0].InterimFields.length; i++) {
                         var row = data.objects[0].InterimFields[i];
