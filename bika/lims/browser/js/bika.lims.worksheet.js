@@ -463,7 +463,6 @@ function WorksheetManageResultsView() {
                     $(i_selector).append('<option value="'+key+'" disabled="true">'+value+'</option>');
                 }
             });
-            $(i_selector).change();
         }
 
         // None option in instrument selector?
@@ -472,7 +471,9 @@ function WorksheetManageResultsView() {
         }
 
         // Select the default instrument
-        $(i_selector).val(constraints[4]);
+        if(is_ins_allowed(constraints[4])){
+            $(i_selector).val(constraints[4]);
+        }
 
         // Instrument selector visible?
         if (constraints[2] === 0) {
