@@ -15,6 +15,8 @@ from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims import PMF, bikaMessageFactory as _
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
 from zope.interface import implements
 import sys
 
@@ -90,6 +92,17 @@ schema = BikaSchema.copy() + Schema((
         widget = ComputedWidget(
             visible = False,
         ),
+    ),
+    BooleanField(
+        'EnableMultipleUseOfInstrument',
+        default=True,
+        schemata="Description",
+        widget=BooleanWidget(
+            label=_("Enable Multiple Use of Instrument in Worksheets."),
+            description=_("If unchecked, \
+                          Lab Managers won't be able to assign the same Instrument more than one Analyses while \
+                          creating a Worksheet.")
+        )
     ),
 ))
 

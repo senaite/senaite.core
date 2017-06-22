@@ -242,6 +242,8 @@ function WorksheetManageResultsView() {
         loadRemarksEventHandlers();
 
         loadDetectionLimitsEventHandlers();
+
+        loadInstrumentEventHandlers();
     }
 
     function portalMessage(message) {
@@ -451,23 +453,35 @@ function WorksheetManageResultsView() {
             $(m_selector).show();
         }
 
+        // We are going to reload Instrument list.. Enable all disabled options from other Instrument lists which has the
+        // same value as old value of this Instrument Selectbox.
+        ins_old_val=$(i_selector).val();
+        if(ins_old_val && ins_old_val!=''){
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+ins_old_val+'"] option[value="'+ins_old_val+'"]').prop('disabled', false);
+        }
         // Populate instruments list
         $(i_selector).find('option').remove();
-        console.log(constraints[7]);
         if (constraints[7]) {
             $.each(constraints[7], function(key, value) {
-                console.log(key+ ": "+value);
-                $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+                if(is_ins_allowed(key)){
+                    $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+                }else{
+                    $(i_selector).append('<option value="'+key+'" disabled="true">'+value+'</option>');
+                }
             });
         }
 
         // None option in instrument selector?
         if (constraints[3] == 1) {
-            $(i_selector).prepend('<option value="">'+_('None')+'</option>');
+            $(i_selector).prepend('<option selected="selected" value="">'+_('None')+'</option>');
         }
 
         // Select the default instrument
-        $(i_selector).val(constraints[4]);
+        if(is_ins_allowed(constraints[4])){
+           $(i_selector).val(constraints[4]);
+           // Disable this Instrument in the other Instrument SelectBoxes
+           $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+constraints[4]+'"] option[value="'+constraints[4]+'"]').prop('disabled', true);
+        }
 
         // Instrument selector visible?
         if (constraints[2] === 0) {
@@ -562,5 +576,45 @@ function WorksheetManageResultsView() {
             var muid = $(this).val();
             load_analysis_method_constraint(auid, muid);
         });
+    }
+
+    /**
+     * If a new instrument is chosen for the analysis, disable this Instrument for the other analyses. Also, remove
+     * the restriction of previous Instrument of this analysis to be chosen in the other analyses.
+     */
+    function loadInstrumentEventHandlers() {
+        $('table.bika-listing-table select.listing_select_entry[field="Instrument"]').on('focus', function () {
+                // First, getting the previous value
+                previous = this.value;
+            }).change(function() {
+            var auid = $(this).attr('uid');
+            var iuid = $(this).val();
+            // Disable New Instrument for rest of the analyses
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+iuid+'"] option[value="'+iuid+'"]').prop('disabled', true);
+            // Enable previous Instrument everywhere
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value="'+previous+'"]').prop('disabled', false);
+            // Enable 'None' option as well.
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value=""]').prop('disabled', false);
+        });
+    }
+
+    /**
+     * Check if the Instrument is allowed to appear in Instrument list of Analysis.
+     * Returns true if multiple use of an Instrument is enabled for assigned Worksheet Template or UID is not in selected Instruments
+     * @param {uid} ins_uid - UID of Instrument.
+     */
+    function is_ins_allowed(uid) {
+        var multiple_enabled = $("#instrument_multiple_use").attr('value');
+        if(multiple_enabled=='True'){
+            return true;
+        }else{
+            var i_selectors = $('select.listing_select_entry[field="Instrument"]');
+            for(i=0; i < i_selectors.length; i++){
+                if(i_selectors[i].value == uid){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
