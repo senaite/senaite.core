@@ -711,7 +711,8 @@ class AnalysisRequestDigester:
 
         # if AR was previously digested, use existing data (if exists)
         if not overwrite:
-            data = ar.getDigest()
+            # Prevent any error related with digest
+            data = ar.getDigest() if hasattr(ar, 'getDigest') else ''
             if data:
                 # Seems that sometimes the 'obj' is wrong in the saved data.
                 data['obj'] = ar
@@ -721,7 +722,8 @@ class AnalysisRequestDigester:
 
         # Set data to the AR schema field, and return it.
         data = self._ar_data(ar)
-        ar.setDigest(data)
+        if hasattr(ar, 'setDigest'):
+            ar.setDigest(data)
         return data
 
     def _schema_dict(self, instance, skip_fields=None, recurse=True):
