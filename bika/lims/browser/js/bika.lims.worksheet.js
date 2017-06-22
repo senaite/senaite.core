@@ -453,6 +453,12 @@ function WorksheetManageResultsView() {
             $(m_selector).show();
         }
 
+        // We are going to reload Instrument list.. Enable all disabled options from other Instrument lists which has the
+        // same value as old value of this Instrument Selectbox.
+        ins_old_val=$(i_selector).val();
+        if(ins_old_val && ins_old_val!=''){
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+ins_old_val+'"] option[value="'+ins_old_val+'"]').prop('disabled', false);
+        }
         // Populate instruments list
         $(i_selector).find('option').remove();
         if (constraints[7]) {
