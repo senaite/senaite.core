@@ -467,7 +467,9 @@ function WorksheetManageResultsView() {
 
         // None option in instrument selector?
         if (constraints[3] == 1) {
-            $(i_selector).prepend('<option value="">'+_('None')+'</option>');
+            $(i_selector).prepend('<option selected="selected" value="">'+_
+            ('None')
+            +'</option>');
         }
 
         // Select the default instrument
