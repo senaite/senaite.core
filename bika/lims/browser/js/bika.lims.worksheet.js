@@ -467,14 +467,13 @@ function WorksheetManageResultsView() {
 
         // None option in instrument selector?
         if (constraints[3] == 1) {
-            $(i_selector).prepend('<option selected="selected" value="">'+_
-            ('None')
-            +'</option>');
+            $(i_selector).prepend('<option selected="selected" value="">'+_('None')+'</option>');
         }
 
         // Select the default instrument
         if(is_ins_allowed(constraints[4])){
            $(i_selector).val(constraints[4]);
+           // Disable this Instrument in the other Instrument SelectBoxes
            $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+constraints[4]+'"] option[value="'+constraints[4]+'"]').prop('disabled', true);
         }
 
