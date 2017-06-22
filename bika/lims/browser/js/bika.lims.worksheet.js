@@ -470,6 +470,11 @@ function WorksheetManageResultsView() {
             $(i_selector).prepend('<option value="">'+_('None')+'</option>');
         }
 
+        // Select the default instrument
+        if(is_ins_allowed(constraints[4])){
+           $(i_selector).val(constraints[4]);
+        }
+
         // Instrument selector visible?
         if (constraints[2] === 0) {
             $(i_selector).hide();
