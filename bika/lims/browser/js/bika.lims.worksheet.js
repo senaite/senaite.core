@@ -473,7 +473,7 @@ function WorksheetManageResultsView() {
         // Select the default instrument
         if(is_ins_allowed(constraints[4])){
            $(i_selector).val(constraints[4]);
-           $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+iuid+'"] option[value="'+constraints[4]+'"]').prop('disabled', true);
+           $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+constraints[4]+'"] option[value="'+constraints[4]+'"]').prop('disabled', true);
         }
 
         // Instrument selector visible?
