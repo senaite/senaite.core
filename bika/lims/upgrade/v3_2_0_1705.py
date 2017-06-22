@@ -561,7 +561,8 @@ def del_at_refs(rel):
         for ref_id, ref_obj in ref_dict.items():
             removed += 1
             size += 1
-            ref_obj.aq_parent.manage_delObjects([ref_id])
+            if ref_obj is not None:
+                ref_obj.aq_parent.manage_delObjects([ref_id])
     if removed:
         logger.info("Performed %s deletions" % removed)
     return removed
