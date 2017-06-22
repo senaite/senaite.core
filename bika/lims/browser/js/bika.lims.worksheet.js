@@ -463,6 +463,7 @@ function WorksheetManageResultsView() {
                     $(i_selector).append('<option value="'+key+'" disabled="true">'+value+'</option>');
                 }
             });
+            $(i_selector).change();
         }
 
         // None option in instrument selector?
