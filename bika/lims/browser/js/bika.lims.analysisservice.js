@@ -460,8 +460,6 @@ function AnalysisServiceEditView() {
                 // Using default calculation.
                 // So, we deny access to the "Calculation" selection field.
                 $(calculation_label).hide();
-                // Do not disable field, if you need the value of the field
-//                $(calculation_select_element).prop('disabled', true);
 
                 // Load the calculation for the selected method
                 var muid = $(method_sel).val();
@@ -617,11 +615,7 @@ function AnalysisServiceEditView() {
         }
 
         // If there is no calculation assigned, hide interim fields section.
-        if($(calculation_select_element).val() == ''){
-            $(interim_fd).hide();
-        }
-        // Making sure nothign is selected.
-        if(!$(calculation_select_element).find('option[selected="selected"]').val()){
+        if(!$(calculation_select_element).find(":selected").val()){
             $(interim_fd).hide();
         }
         // Remove 'None' option from 'Methods' multi-select
