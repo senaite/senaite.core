@@ -189,7 +189,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             # interpolation
             hidden_fields = []
             c_fields = calculation.getInterimFields()
-            s_fields = service.getInterimFields()
+            s_fields = analysis.getInterimFields()
             for field in c_fields:
                 if field.get('hidden', False):
                     hidden_fields.append(field['keyword'])
@@ -418,4 +418,22 @@ class ajaxGetMethodCalculation(BrowserView):
             if calc:
                 calcdict = {'uid': calc.UID(),
                             'title': calc.Title()}
+        return json.dumps(calcdict)
+
+
+class ajaxGetAvailableCalculations(BrowserView):
+    """
+    Returns all available calculations.
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Calculation',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
+        calcdict = [{'uid': calc[0], 'title': calc[1]} for calc in items]
+
         return json.dumps(calcdict)
