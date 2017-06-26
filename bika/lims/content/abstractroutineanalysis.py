@@ -197,7 +197,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         return getTransitionDate(self, 'sample', return_as_datetime=True)
 
-    @security.poublic
+    @security.public
     def getStartProcessDate(self):
         """Returns the date time when the analysis was received. If the
         analysis hasn't yet been received, returns None
