@@ -161,7 +161,7 @@ def after_verify(obj):
 
 def after_publish(obj):
     """Method triggered after an 'publish' transition for the Analysis Request
-    passed in is performed.
+    passed in is performed. Performs the 'publish' transition to children.
     This function is called automatically by
     bika.lims.workflow.AfterTransitionEventHandler
     :param obj: Analysis Request affected by the transition

@@ -33,6 +33,15 @@ def receive(obj):
 
 
 def publish(obj):
+    """ Returns true if the 'publish' transition can be performed to the
+    analysis passed in.
+    In accordance with bika_analysis_workflow, 'publish'
+    transition can only be performed if the state of the analysis is verified,
+    so this guard only checks if the analysis state is active: there is no need
+    of additional checks, cause the DC Workflow machinery will already take
+    care of them.
+    :returns: true or false
+    """
     return isBasicTransitionAllowed(obj)
 
 
