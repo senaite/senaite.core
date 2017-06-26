@@ -90,7 +90,11 @@
         }
 
         @media print {
-            body {background-color:#fff;}
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background-color:#fff !important;
+            }
             #sticker-preview-header {display:none !important;}
             #stickers-wrapper { margin:0;}
             .sticker {
