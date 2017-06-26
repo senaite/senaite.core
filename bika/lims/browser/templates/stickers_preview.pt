@@ -151,8 +151,6 @@
 <body tal:attributes="onload        python:'this.print()' if view.request.get('autoprint', False) else '';
                       data-itemsurl python:view.getItemsURL();">
     <div id='sticker-preview-wrapper'>
-        <!-- Header of the preview. This will never be printed.
-             Container with preview options and buttons -->
         <div id="sticker-preview-header">
             <div id='options-handler'>
                 <div class='options-line'>
