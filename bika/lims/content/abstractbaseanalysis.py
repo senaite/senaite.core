@@ -21,6 +21,7 @@ from bika.lims.browser.fields import DurationField, InterimFieldsField, \
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import to_utf8 as _c
@@ -291,7 +292,7 @@ Instrument = UIDReferenceField(
     required=0,
     vocabulary='_getAvailableInstrumentsDisplayList',
     allowed_types=('Instrument',),
-    widget=SelectionWidget(
+    widget=UIDSelectionWidget(
         format='select',
         label=_("Default Instrument"),
         description=_(
@@ -321,7 +322,7 @@ Method = UIDReferenceField(
     searchable=True,
     allowed_types=('Method',),
     vocabulary='_getAvailableMethodsDisplayList',
-    widget=SelectionWidget(
+    widget=UIDSelectionWidget(
         format='select',
         label=_("Default Method"),
         description=_(
@@ -345,13 +346,10 @@ Calculation = UIDReferenceField(
     required=0,
     vocabulary='_getAvailableCalculationsDisplayList',
     allowed_types=('Calculation',),
-    widget=SelectionWidget(
+    widget=UIDSelectionWidget(
         format='select',
-        label=_("Default Calculation"),
-        description=_(
-            "Default calculation to be used from the default Method selected. "
-            "The Calculation for a method can be assigned in the Method edit "
-            "view."),
+        label=_("Calculation"),
+        description=_("Calculation to be assigned to this content."),
         catalog_name='bika_setup_catalog',
         base_query={'inactive_state': 'active'},
     )

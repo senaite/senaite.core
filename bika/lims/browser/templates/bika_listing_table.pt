@@ -243,7 +243,7 @@ Colum Headers
 <tr>
 <td class="noborder"
     tal:attributes="colspan nr_cols"
-    tal:condition="python:(view.batch.multiple_pages and not view.show_all) or (view.bika_listing.show_workflow_action_buttons)">
+    tal:condition="python:(view.batch.multiple_pages and not view.show_all) or (view.bika_listing.show_workflow_action_buttons) or view.bika_listing.show_more">
 <table style="margin:0" width="100%">
     <tr class="noborder" tal:condition="python:len(view.batch) > 0">
 <tal:comment replace="nothing">***************

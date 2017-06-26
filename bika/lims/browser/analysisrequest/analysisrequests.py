@@ -792,17 +792,6 @@ class AnalysisRequestsView(BikaListingView):
         # This variable will contain the full analysis request if there is
         # need to work with the full object instead of the brain
         full_object = None
-        # TODO-performance: quering every time not good
-        # extract province and district
-        client = self.portal_catalog(UID=obj.getClientUID)
-        if client:
-            item['Province'] = client[0].getProvince if\
-                client[0].getProvince else ''
-            item['District'] = client[0].getDistrict if\
-                client[0].getDistrict else ''
-        else:
-            item['Province'] = ''
-            item['District'] = ''
         item['Creator'] = self.user_fullname(obj.Creator)
         # If we redirect from the folderitems view we should check if the
         # user has permissions to medify the element or not.

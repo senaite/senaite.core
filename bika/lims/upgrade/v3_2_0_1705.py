@@ -74,6 +74,26 @@ def upgrade(tool):
 
     FixBrokenActionExpressions()
 
+    # Remove workflow automatic transtions no longer used, fix problem with
+    # action_name in transitions, target states replacement and removal of
+    # unused guards
+    fix_workflows(portal)
+
+    # Adding two indexes in order to delete getBackreference in reflex rules
+    reflex_rules(ut)
+
+    # Changing some indexes types
+    change_UUIDIndex(ut)
+
+    # Refresh affected catalogs
+    _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
+    ut.refreshCatalogs()
+
+    logger.info("{0} upgraded to version {1}".format(product, version))
+    return True
+
+
+def fix_workflows(portal):
     # Remove workflow automatic transitions no longer used
     removeWorkflowsAutoTransitions(portal)
 
@@ -89,18 +109,13 @@ def upgrade(tool):
     # Replace target states from some transitions
     replace_target_states(portal)
 
-    # Adding two indexes in order to delete getBackreference in reflex rules
-    reflex_rules(ut)
-
-    # Changing some indexes types
-    change_UUIDIndex(ut)
-
-    # Refresh affected catalogs
-    _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
-    ut.refreshCatalogs()
-
-    logger.info("{0} upgraded to version {1}".format(product, version))
-    return True
+    # Force the update of workflow permissions, cause we want those objects
+    # that reached a given state without being transitioned acquire the
+    # permissions in accordance with the workflow definition. Othwerwise,
+    # the transition of those old objects will fail.
+    logger.info("Updating role mappings...")
+    wf = getToolByName(portal, 'portal_workflow')
+    wf.updateRoleMappings()
 
 
 def FixBrokenActionExpressions():
@@ -526,10 +541,12 @@ def migrate_refs(rel, fieldname, pgthreshold=100):
     if refs:
         logger.info('Migrating %s references of %s' % (len(refs), rel))
     for i, ref in enumerate(refs):
-        obj = uc(UID=ref[1])[0].getObject()
-        if i and not divmod(i, pgthreshold)[1]:
-            logger.info("%s/%s %s/%s" % (i, len(refs), obj, rel))
-        touidref(obj, obj, rel, fieldname)
+        obj = uc(UID=ref[1])
+        if obj:
+            obj = obj[0].getObject()
+            if i and not divmod(i, pgthreshold)[1]:
+                logger.info("%s/%s %s/%s" % (i, len(refs), obj, rel))
+            touidref(obj, obj, rel, fieldname)
 
 
 def del_at_refs(rel):
@@ -544,7 +561,8 @@ def del_at_refs(rel):
         for ref_id, ref_obj in ref_dict.items():
             removed += 1
             size += 1
-            ref_obj.aq_parent.manage_delObjects([ref_id])
+            if ref_obj is not None:
+                ref_obj.aq_parent.manage_delObjects([ref_id])
     if removed:
         logger.info("Performed %s deletions" % removed)
     return removed

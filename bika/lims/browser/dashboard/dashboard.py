@@ -8,6 +8,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from calendar import monthrange
@@ -248,7 +249,7 @@ class DashboardView(BrowserView):
             WS to be verified, WS with results pending, etc.)
         """
         out = []
-        bc = getToolByName(self.context, "bika_catalog")
+        bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
         query = {'portal_type':"Worksheet",}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
@@ -517,6 +518,7 @@ class DashboardView(BrowserView):
         rstates = [k for k,v in statscount.items() if v==0]
         for o in outevo:
             for r in rstates:
-                del o[r]
+                if r in o:
+                    del o[r]
 
         return outevo

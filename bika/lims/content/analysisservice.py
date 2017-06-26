@@ -269,7 +269,7 @@ UseDefaultCalculation = BooleanField(
     schemata="Method",
     default=True,
     widget=BooleanWidget(
-        label=_("Use default calculation"),
+        label=_("Use the Default Calculation of Method"),
         description=_(
             "Select if the calculation to be used is the calculation set by "
             "default in the default method. If unselected, the calculation "
@@ -356,6 +356,7 @@ schema.moveField('Method', after='Instrument')
 schema.moveField('Calculation', after='UseDefaultCalculation')
 schema.moveField('DuplicateVariation', after='Calculation')
 schema.moveField('Accredited', after='Calculation')
+schema.moveField('InterimFields', after='Calculation')
 
 
 class AnalysisService(AbstractBaseAnalysis):
