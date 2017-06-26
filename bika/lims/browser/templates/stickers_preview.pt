@@ -108,7 +108,7 @@
         $(function(){
             $('#print-button').click(function(e) {
                 e.preventDefault();
-                window.print();
+                printPdf();
             });
             $('#cancel-button').click(function(e) {
                 e.preventDefault();
@@ -144,6 +144,26 @@
                     $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
                     $('#sticker-rule').fadeIn();
                 });
+            }
+
+            function printPdf() {
+                var url = window.location.href;
+                // Get the stickers style
+                var style = $('#stickers-style').clone().wrap('<div>').parent().html();
+                var stickershtml = '';
+                // Get all stickers
+                $('#stickers-wrapper .sticker').each(function(e) {
+                    stickershtml += $(this).clone().wrap('<div>').parent().html();
+                });
+                // Generate the form (POST request to generate PDF)
+                var form = '<form action="'+url+'" name="topdf" method="post" style="display:none">' +
+                    '<textarea name="html"><div style="padding:0px;"></div>' +
+                    stickershtml + '</textarea>' +
+                    '<input type="hidden" name="pdf" value="1" />' +
+                    '<textarea name="style">' + style + '</textarea>' +
+                    '</form>';
+                $('body').html(form);
+                document.forms.topdf.submit();
             }
         });
     </script>
