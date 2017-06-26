@@ -110,3 +110,14 @@ def verify(obj):
     # doesn't make sense to verify an Analysis Request if all the analyses that
     # contains are rejected or cancelled!
     return len(analyses) - invalid > 0
+
+
+def publish(obj):
+    """Returns True if 'publish' transition can be applied to the Analysis
+    Request passed in. Returns true if the Analysis Request is active (not in
+    a cancelled/inactive state). As long as 'publish' transition, in accordance
+    with its DC workflow can only be performed if its previous state is
+    verified or published, there is no need of additional validations.
+    :returns: true or false
+    """
+    return isBasicTransitionAllowed(obj)
