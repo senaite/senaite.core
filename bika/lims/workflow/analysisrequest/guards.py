@@ -5,6 +5,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isActive
 from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow.analysis import guards as analysis_guards
 
@@ -114,6 +115,43 @@ def verify(obj):
     # doesn't make sense to verify an Analysis Request if all the analyses that
     # contains are rejected or cancelled!
     return len(analyses) - invalid > 0
+
+
+def prepublish(obj):
+    """Returns True if 'prepublish' transition can be applied to the Analysis
+    Request passed in.
+    Returns true if the Analysis Request is active (not in a cancelled/inactive
+    state), the 'publish' transition cannot be performed yet, and at least one
+    of its analysis is under to_be_verified state or has been already verified.
+    As per default DC workflow definition in bika_ar_workflow, note that
+    prepublish does not transitions the Analysis Request to any other state
+    different from the actual one, neither its children. This 'fake' transition
+    is only used for the prepublish action to be displayed when the Analysis
+    Request' status is other than verified, so the labman can generate a
+    provisional report, also if results are not yet definitive.
+    :returns: true or false
+    """
+    if not isBasicTransitionAllowed(obj):
+        return False
+
+    if isTransitionAllowed(obj, 'publish'):
+        return False
+
+    analyses = obj.getAnalyses(full_objects=True)
+    for an in analyses:
+        # If the analysis is not active, omit
+        if not isActive(an):
+            continue
+
+        # Check if the current state is 'verified'
+        status = getCurrentState(an)
+        if status in ['verified', 'to_be_verified']:
+            return True
+
+    # This analysis request has no single result ready to be verified or
+    # verified yet. In this situation, it doesn't make sense to publish a
+    # provisional results reports without a single result to display
+    return False
 
 
 def publish(obj):

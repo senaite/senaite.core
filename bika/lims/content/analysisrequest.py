@@ -3149,6 +3149,12 @@ class AnalysisRequest(BaseFolder):
     def guard_publish_transition(self):
         return guards.publish(self)
 
+    @deprecated('[1705] Use guards.prepublish from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
+    def guard_prepublish_transition(self):
+        return guards.prepublish(self)
+
     @deprecated('[1705] Use events.after_no_sampling_workflow from '
                 'bika.lims.workflow.anaysisrequest')
     @security.public
