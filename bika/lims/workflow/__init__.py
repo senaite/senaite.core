@@ -281,6 +281,7 @@ def isBasicTransitionAllowed(context, permission=None):
         return False
     return True
 
+
 def isTransitionAllowed(instance, transition_id, active_only=True):
     """Checks if the object can perform the transition passed in.
     If active_only is set to true, the function will always return false if the
@@ -292,10 +293,16 @@ def isTransitionAllowed(instance, transition_id, active_only=True):
     """
     if active_only and not isBasicTransitionAllowed(instance):
         return False
+
     wftool = getToolByName(instance, "portal_workflow")
-    transitions = wftool.getTransitionsFor(instance)
-    trans = [trans['id'] for trans in transitions]
-    return transition_id in trans
+    chain = wftool.getChainFor(instance)
+    for wf_id in chain:
+        wf = wftool.getWorkflowById(wf_id)
+        if wf and wf.isActionSupported(instance, transition_id):
+            return True
+
+    return False
+
 
 def wasTransitionPerformed(instance, transition_id):
     """Checks if the transition has already been performed to the object
