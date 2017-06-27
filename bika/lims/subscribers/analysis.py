@@ -51,7 +51,7 @@ def ObjectInitializedEventHandler(instance, event):
     return
 
 def ObjectRemovedEventHandler(instance, event):
-
+    # TODO Workflow - Review all this function and normalize
     # May need to promote the AR's review_state
     # if all other analyses are at a higher state than this one was.
     workflow = getToolByName(instance, 'portal_workflow')

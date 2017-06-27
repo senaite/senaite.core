@@ -33,6 +33,8 @@ from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import create_analysis, format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getTransitionActor
+from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
@@ -108,18 +110,6 @@ DetectionLimitOperand = StringField(
     'DetectionLimitOperand'
 )
 
-# This is used to calculate turnaround time reports.
-# The value is set when the Analysis is published.
-Duration = IntegerField(
-    'Duration',
-)
-
-# This is used to calculate turnaround time reports. The value is set when the
-# Analysis is published.
-Earliness = IntegerField(
-    'Earliness',
-)
-
 # The ID of the logged in user who submitted the result for this Analysis.
 Analyst = StringField(
     'Analyst'
@@ -156,8 +146,6 @@ schema = schema.copy() + Schema((
     Calculation,
     DateAnalysisPublished,
     DetectionLimitOperand,
-    Duration,
-    Earliness,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
     NumberOfRequiredVerifications,
     Result,
@@ -618,6 +606,67 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return Decimal(self.getPrice()) + Decimal(self.getVATAmount())
 
     @security.public
+    def getDuration(self):
+        """Returns the time in minutes taken for this analysis.
+        If the analysis is not yet 'ready to process', returns 0
+        If the analysis is still in progress (not yet verified),
+            duration = date_verified - date_start_process
+        Otherwise:
+            duration = current_datetime - date_start_process
+        :return: time in minutes taken for this analysis
+        :rtype: int
+        """
+        starttime = self.getStartProcessDate()
+        if not starttime:
+            # The analysis is not yet ready to be processed
+            return 0
+
+        endtime = self.getDateVerified()
+        if not endtime:
+            # Assume here the analysis is still in progress, so use the current
+            # Date and Time
+            endtime = DateTime()
+
+        # Duration in minutes
+        duration = (endtime - starttime) * 24 * 60
+        return duration
+
+    @security.public
+    def getEarliness(self):
+        """The remaining time in minutes for this analysis to be completed.
+        Returns zero if the analysis is neither 'ready to process' nor a
+        turnaround time is set.
+            earliness = duration - max_turnaround_time
+        The analysis is late if the earliness is negative
+        :return: the remaining time in minutes before the analysis reaches TAT
+        :rtype: int
+        """
+        maxtime = self.getMaxTimeAllowed()
+        if not maxtime:
+            # No Turnaround time is set for this analysis
+            return 0
+        maxtime_delta = int(maxtime.get('days', 0)) * 86400
+        maxtime_delta += int(maxtime.get('hours', 0)) * 3600
+        maxtime_delta += int(maxtime.get('minutes', 0))
+        duration = self.getDuration()
+        earliness = maxtime_delta - duration
+        return earliness
+
+    def isLateAnalysis(self):
+        """Returns true if the analysis is late in accordance with the maximum
+        turnaround time. If no maximum turnaround time is set for this analysis
+        or it is not yet ready to be processed, or there is still time
+        remaining (earliness), returns False.
+        :return: true if the analysis is late
+        :rtype: bool
+        """
+        maxtime = self.getMaxTimeAllowed()
+        if not maxtime:
+            # No maximum turnaround time set, assume is not late
+            return False
+        return self.getEarliness() < 0
+
+    @security.public
     def isInstrumentValid(self):
         """Checks if the instrument selected for this analysis is valid.
         Returns false if an out-of-date or uncalibrated instrument is
@@ -1050,32 +1099,35 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         state of the current analysis is "to_be_verified" or "verified"
         :return: the user_id of the user who did the last submission of result
         """
-        workflow = getToolByName(self, "portal_workflow")
-        try:
-            review_history = workflow.getInfoFor(self, "review_history")
-            review_history = self.reverseList(review_history)
-            for event in review_history:
-                if event.get("action") == "submit":
-                    return event.get("actor")
-            return ''
-        except WorkflowException:
-            return ''
+        return getTransitionActor(self, 'submit')
 
     @security.public
     def getDateSubmitted(self):
         """Returns the time the result was submitted.
         :return: a DateTime object.
+        :rtype: DateTime
         """
-        workflow = getToolByName(self, "portal_workflow")
-        try:
-            review_history = workflow.getInfoFor(self, "review_history")
-            review_history = self.reverseList(review_history)
-            for event in review_history:
-                if event.get("action") == "submit":
-                    return event.get("time")
-            return ''
-        except WorkflowException:
-            return ''
+        return getTransitionDate(self, 'submit', return_as_datetime=True)
+
+    @security.public
+    def getDateVerified(self):
+        """Returns the time the analysis was verified. If the analysis hasn't
+        been yet verified, returns None
+        :return: the time the analysis was verified or None
+        :rtype: DateTime
+        """
+        return getTransitionDate(self, 'verify', return_as_datetime=True)
+
+    @security.public
+    def getStartProcessDate(self):
+        """Returns the date time when the analysis is ready to be processed.
+        It returns the datetime when the object was created, but might be
+        different depending on the type of analysis (e.g. "Date Received" for
+        routine analyses): see overriden functions.
+        :return: Date time when the analysis is ready to be processed.
+        :rtype: DateTime
+        """
+        return self.created()
 
     @security.public
     def getParentUID(self):
@@ -1244,11 +1296,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def workflow_script_verify(self):
         events.after_verify(self)
-
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_publish')
-    @security.public
-    def workflow_script_publish(self):
-        events.after_publish(self)
 
     @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_cancel')
     @security.public

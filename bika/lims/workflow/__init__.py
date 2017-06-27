@@ -356,6 +356,19 @@ def getCurrentState(obj, stateflowid='review_state'):
     return wf.getInfoFor(obj, stateflowid, '')
 
 
+def getTransitionActor(obj, action_id):
+    """Returns the actor that performed a given transition. If transition has
+    not been perormed, or current user has no privileges, returns None
+    :return: the username of the user that performed the transition passed-in
+    :type: string
+    """
+    review_history = getReviewHistory(obj)
+    for event in review_history:
+        if event.get('action') == action_id:
+            return event.get('actor')
+    return None
+
+
 def getTransitionDate(obj, action_id, return_as_datetime=False):
     """
     Returns date of action for object. Sometimes we need this date in Datetime
@@ -363,12 +376,14 @@ def getTransitionDate(obj, action_id, return_as_datetime=False):
     """
     review_history = getReviewHistory(obj)
     for event in review_history:
-        if event['action'] == action_id:
+        if event.get('action') == action_id:
+            evtime = event.get('time')
             if return_as_datetime:
-                return event['time']
-            value = ulocalized_time(event['time'], long_format=True,
-                                    time_only=False, context=obj)
-            return value
+                return evtime
+            if evtime:
+                value = ulocalized_time(evtime, long_format=True,
+                                        time_only=False, context=obj)
+                return value
     return None
 
 

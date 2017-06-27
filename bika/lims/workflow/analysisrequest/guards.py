@@ -78,10 +78,14 @@ def verify(obj):
     Request passed in. This is, returns true if all the analyses that contains
     have already been verified. Those analyses that are in an inactive state
     (cancelled, inactive) are dismissed, but at least one analysis must be in
-    an active state (and verified), otherwise always return False.
+    an active state (and verified), otherwise always return False. If the
+    Analysis Request is in inactive state (cancelled/inactive), returns False
     Note this guard depends entirely on the current status of the children
     :returns: true or false
     """
+    if not isBasicTransitionAllowed(obj):
+        return False
+
     analyses = obj.getAnalyses(full_objects=True)
     invalid = 0
     for an in analyses:
@@ -110,3 +114,14 @@ def verify(obj):
     # doesn't make sense to verify an Analysis Request if all the analyses that
     # contains are rejected or cancelled!
     return len(analyses) - invalid > 0
+
+
+def publish(obj):
+    """Returns True if 'publish' transition can be applied to the Analysis
+    Request passed in. Returns true if the Analysis Request is active (not in
+    a cancelled/inactive state). As long as 'publish' transition, in accordance
+    with its DC workflow can only be performed if its previous state is
+    verified or published, there is no need of additional validations.
+    :returns: true or false
+    """
+    return isBasicTransitionAllowed(obj)

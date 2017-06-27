@@ -98,34 +98,6 @@ def after_verify(obj):
         doActionFor(ws, 'verify')
 
 
-def after_publish(obj):
-    if skip(obj, "publish"):
-        return
-    workflow = getToolByName(obj, "portal_workflow")
-    state = workflow.getInfoFor(obj, 'cancellation_state', 'active')
-    if state == "cancelled":
-        return False
-    endtime = DateTime()
-    obj.setDateAnalysisPublished(endtime)
-    starttime = obj.aq_parent.getDateReceived()
-    starttime = starttime or obj.created()
-    maxtime = obj.getMaxTimeAllowed()
-    # set the instance duration value to default values
-    # in case of no calendars or max hours
-    if maxtime:
-        duration = (endtime - starttime) * 24 * 60
-        maxtime_delta = int(maxtime.get("hours", 0)) * 86400
-        maxtime_delta += int(maxtime.get("hours", 0)) * 3600
-        maxtime_delta += int(maxtime.get("minutes", 0)) * 60
-        earliness = duration - maxtime_delta
-    else:
-        earliness = 0
-        duration = 0
-    obj.setDuration(duration)
-    obj.setEarliness(earliness)
-    obj.reindexObject()
-
-
 def after_cancel(obj):
     if skip(obj, "cancel"):
         return
