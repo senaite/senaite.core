@@ -871,6 +871,7 @@ class BikaListingView(BrowserView):
         :classic: if True, the old way folderitems works will be executed. This
         function is mainly used to mantain the integrity with the old version.
         """
+        self.state_titles = {}
         # Getting a security manager instance for the current reques
         self.security_manager = getSecurityManager()
         if self.workflow is None:
@@ -935,16 +936,11 @@ class BikaListingView(BrowserView):
             if not obj or not self.isItemAllowed(obj):
                 continue
             modified = self.ulocalized_time(obj.modified()),
-            state_class = ''
-            states = obj.getObjectWorkflowStates
-            if not states:
-                logger.warning(
-                    'No workflow states found for object with id {0}'
-                    .format(obj.getId))
-                states = {}
-            states = states if states else {}
-            for w_id in states.keys():
-                state_class += "state-%s " % states.get(w_id, '')
+
+            # Get the css for this row in accordance with the obj's state
+            state_class = self._get_states_css(obj)
+            state_class = ' '.join(state_class)
+
             # Building the dictionary with basic items
             results_dict = dict(
                 # obj can be an object or a brain!!
@@ -976,22 +972,27 @@ class BikaListingView(BrowserView):
             )
             # Getting the state title, if the review_state doesn't have a title
             # use the title of the first workflow found for the object
-            try:
-                rs = obj.review_state
-                st_title =\
-                    self.workflow.getTitleForStateOnType(rs, obj.portal_type)
-                st_title = t(PMF(st_title))
-            except:
-                logger.warning(
-                    "Workflow title doesn't obtined for object %s" % obj.getId)
-                rs = 'active'
-                st_title = None
+            st_title = state_titles.get(obj.review_state, None)
+            if not st_title:
+                try:
+                    rvstate = obj.review_state
+                    ptype = obj.portal_type
+                    st_title = self.workflow .getTitleForStateOnType(rvstate,
+                                                                     ptype)
+                    st_title = t(PMF(st_title))
+                    state_titles[review_state] = st_title
+                except:
+                    logger.warning(
+                        "Workflow title doesn't obtined for object %s" % obj.getId)
+                    rs = 'active'
+                    st_title = None
             for state_var, state in states.items():
                 if not st_title:
                     st_title = self.workflow.getTitleForStateOnType(
                         state, obj.portal_type)
                 results_dict[state_var] = state
             results_dict['state_title'] = st_title
+
             # extra classes for individual fields on this item
             # { field_id : "css classes" }
             results_dict['class'] = {}
@@ -1038,6 +1039,19 @@ class BikaListingView(BrowserView):
                 results.append(item)
                 idx += 1
         return results
+
+    def _get_states_css(self, brain):
+        """Returns a list with the css names for the passed in object to be
+        rendered in the list based on its current state.
+        :brain: brain to retrieve the states from
+        :returns: a list of css names
+        :rtype: list
+        """
+        states = brain.getObjectWorkflowStates
+        if not states:
+            return []
+        states_css = ['state-{0}'.format(v) for v in states.values()]
+        return list(set(states_css))
 
     def _folderitems(self, full_objects=False):
         """
