@@ -459,6 +459,7 @@ class BikaListingView(BrowserView):
         # Requests view checks bika_setup.getSamplingBarEnabledAnalysisRequests
         # to know if the functionality is activeated or not for its views.
         self.filter_bar_enabled = False
+        self.state_titles = {}
 
     @property
     def review_state(self):
@@ -871,18 +872,142 @@ class BikaListingView(BrowserView):
         :classic: if True, the old way folderitems works will be executed. This
         function is mainly used to mantain the integrity with the old version.
         """
-        self.state_titles = {}
         # Getting a security manager instance for the current reques
         self.security_manager = getSecurityManager()
-        if self.workflow is None:
-            self.workflow = getToolByName(self.context, 'portal_workflow')
-        # If the classic is True,, use the old way.
-        if classic:
-            return self._folderitems(full_objects)
+        self.workflow = getToolByName(self.context, 'portal_workflow')
         if not hasattr(self, 'contentsMethod'):
             self.contentsMethod = getToolByName(self.context, self.catalog)
-        # Setting up some attributes
-        context = aq_inner(self.context)
+
+        if classic:
+            return self._folderitems(full_objects)
+
+        # idx increases one unit each time an object is added to the 'items'
+        # dictionary to be returned. Note that if the item is not rendered,
+        # the idx will not increase.
+        idx = 0
+        results = []
+        self.show_more = False
+        brains = self._fetch_brains(self.limit_from)
+        for obj in brains:
+            # avoid creating unnecessary info for items outside the current
+            # batch;  only the path is needed for the "select all" case...
+            # we only take allowed items into account
+            if idx >= self.pagesize:
+                # Maximum number of items to be shown reached!
+                self.show_more = True
+                break
+
+            # check if the item must be rendered or not (prevents from
+            # doing it later in folderitems) and dealing with paging
+            if not obj or not self.isItemAllowed(obj):
+                continue
+
+            # Get the css for this row in accordance with the obj's state
+            states = obj.getObjectWorkflowStates
+            if not states:
+                states = {}
+            state_class = ['state-{0}'.format(v) for v in states.values()]
+            state_class = ' '.join(state_class)
+
+            # Building the dictionary with basic items
+            results_dict = dict(
+                # obj can be an object or a brain!!
+                obj=obj,
+                uid=obj.UID,
+                url=obj.getURL(),
+                id=obj.getId,
+                title=obj.Title,
+                # To colour the list items by state
+                state_class=state_class,
+                review_state=obj.review_state,
+                # a list of names of fields that may be edited on this item
+                allow_edit=[],
+                # a dict where the column name works as a key and the value is
+                # the name of the field related with the column. It is used
+                # when the name given to the column and the content field it
+                # represents diverges. bika_listing_table_items.pt defines an
+                # attribute for each item, this attribute is named 'field' and
+                # the system fills it taking advantage of this dictionary or
+                # the name of the column if it isn't defined in the dict.
+                field={},
+                # "before", "after" and replace: dictionary (key is column ID)
+                # A snippet of HTML which will be rendered
+                # before/after/instead of the table cell content.
+                before={},  # { before : "<a href=..>" }
+                after={},
+                replace={},
+                choices={},
+            )
+            # Set states and state titles
+            ptype = obj.portal_type
+            for state_var, state in states.items():
+                st_title = self.state_titles.get(state, None)
+                if not st_title:
+                    st_title = self.workflow.getTitleForStateOnType(state,
+                                                                    ptype)
+                    if st_title:
+                        st_title = t(PMF(st_title))
+                        self.state_titles[state] = st_title
+                results_dict[state_var] = state
+                if st_title and state_var == obj.review_state:
+                    results_dict['state_title'] = st_title
+
+            # extra classes for individual fields on this item
+            # { field_id : "css classes" }
+            results_dict['class'] = {}
+            # TODO: This trace of code should be implemented in analysis only
+            # obj_f=obj.getObject()
+            # for name, adapter in getAdapters((obj_f, ), IFieldIcons):
+            #     auid = obj.UID
+            #     if not auid:
+            #         continue
+            #     alerts = adapter()
+            #     if alerts and auid in alerts:
+            #         if auid in self.field_icons:
+            #             self.field_icons[auid].extend(alerts[auid])
+            #         else:
+            #             self.field_icons[auid] = alerts[auid]
+            # Search for values for all columns in obj
+            for key in self.columns.keys():
+                # if the key is already in the results dict
+                # then we don't replace it's value
+                value = results_dict.get(key, '')
+                if not value:
+                    attrobj = getFromString(obj, key)
+                    value = attrobj if attrobj else value
+
+                    # Custom attribute? Inspect to set the value
+                    # for the current column dinamically
+                    vattr = self.columns[key].get('attr', None)
+                    if vattr:
+                        attrobj = getFromString(obj, vattr)
+                        value = attrobj if attrobj else value
+                    results_dict[key] = value
+                # Replace with an url?
+                replace_url = self.columns[key].get('replace_url', None)
+                if replace_url:
+                    attrobj = getFromString(obj, replace_url)
+                    if attrobj:
+                        results_dict['replace'][key] = \
+                            '<a href="%s">%s</a>' % (attrobj, value)
+            # The item basics filled. Delegate additional actions to folderitem
+            # service. folderitem service is frequently overriden by child
+            # objects
+            item = self.folderitem(obj, results_dict, idx)
+            if item:
+                results.append(item)
+                idx += 1
+        return results
+
+    def _fetch_brains(self, idxfrom=0):
+        """Returns the brains that must be displayed in the current list
+        Uses the contentFilter and/or contentsMethod class variables (or
+        functions) to query against the database. Also takes into account if
+        only a subset of the results must be returned by using idxfrom and. If
+        the number of results is lower than idxfrom, will return an empty array
+        :param idxfrom: index to start to count for results
+        :return: the list of brains to be displayed in this list
+        """
         # Creating a copy of the contentFilter dictionary in order to include
         # the filter bar's filtering additions in the query. We don't want to
         # modify contentFilter with those 'extra' filtering elements to be
@@ -915,143 +1040,10 @@ class BikaListingView(BrowserView):
         else:
             brains = self.contentsMethod(contentFilterTemp)
 
-        # idx increases one unit each time an object is added to the 'items'
-        # dictionary to be returned. Note that if the item is not rendered,
-        # the idx will not increase.
-        idx = 0
-        results = []
-        self.show_more = False
-        brains = brains[self.limit_from:]
-        for i, obj in enumerate(brains):
-            # avoid creating unnecessary info for items outside the current
-            # batch;  only the path is needed for the "select all" case...
-            # we only take allowed items into account
-            if idx >= self.pagesize:
-                # Maximum number of items to be shown reached!
-                self.show_more = True
-                break
-
-            # check if the item must be rendered or not (prevents from
-            # doing it later in folderitems) and dealing with paging
-            if not obj or not self.isItemAllowed(obj):
-                continue
-            modified = self.ulocalized_time(obj.modified()),
-
-            # Get the css for this row in accordance with the obj's state
-            state_class = self._get_states_css(obj)
-            state_class = ' '.join(state_class)
-
-            # Building the dictionary with basic items
-            results_dict = dict(
-                # obj can be an object or a brain!!
-                obj=obj,
-                uid=obj.UID,
-                url=obj.getURL(),
-                id=obj.getId,
-                title=obj.Title,
-                # To colour the list items by state
-                state_class=state_class,
-                review_state=obj.review_state,
-                # a list of names of fields that may be edited on this item
-                allow_edit=[],
-                # a dict where the column name works as a key and the value is
-                # the name of the field related with the column. It is used
-                # when the name given to the column and the content field it
-                # represents diverges. bika_listing_table_items.pt defines an
-                # attribute for each item, this attribute is named 'field' and
-                # the system fills it taking advantage of this dictionary or
-                # the name of the column if it isn't defined in the dict.
-                field={},
-                # "before", "after" and replace: dictionary (key is column ID)
-                # A snippet of HTML which will be rendered
-                # before/after/instead of the table cell content.
-                before={},  # { before : "<a href=..>" }
-                after={},
-                replace={},
-                choices={},
-            )
-            # Getting the state title, if the review_state doesn't have a title
-            # use the title of the first workflow found for the object
-            st_title = state_titles.get(obj.review_state, None)
-            if not st_title:
-                try:
-                    rvstate = obj.review_state
-                    ptype = obj.portal_type
-                    st_title = self.workflow .getTitleForStateOnType(rvstate,
-                                                                     ptype)
-                    st_title = t(PMF(st_title))
-                    state_titles[review_state] = st_title
-                except:
-                    logger.warning(
-                        "Workflow title doesn't obtined for object %s" % obj.getId)
-                    rs = 'active'
-                    st_title = None
-            for state_var, state in states.items():
-                if not st_title:
-                    st_title = self.workflow.getTitleForStateOnType(
-                        state, obj.portal_type)
-                results_dict[state_var] = state
-            results_dict['state_title'] = st_title
-
-            # extra classes for individual fields on this item
-            # { field_id : "css classes" }
-            results_dict['class'] = {}
-            # TODO: This trace of code should be implemented in analysis only
-            # obj_f=obj.getObject()
-            # for name, adapter in getAdapters((obj_f, ), IFieldIcons):
-            #     auid = obj.UID
-            #     if not auid:
-            #         continue
-            #     alerts = adapter()
-            #     if alerts and auid in alerts:
-            #         if auid in self.field_icons:
-            #             self.field_icons[auid].extend(alerts[auid])
-            #         else:
-            #             self.field_icons[auid] = alerts[auid]
-            # Search for values for all columns in obj
-            for key in self.columns.keys():
-                # if the key is already in the results dict
-                # then we don't replace it's value
-                value = results_dict.get(key, '')
-                if key not in results_dict:
-                    attrobj = getFromString(obj, key)
-                    value = attrobj if attrobj else value
-
-                    # Custom attribute? Inspect to set the value
-                    # for the current column dinamically
-                    vattr = self.columns[key].get('attr', None)
-                    if vattr:
-                        attrobj = getFromString(obj, vattr)
-                        value = attrobj if attrobj else value
-                    results_dict[key] = value
-                # Replace with an url?
-                replace_url = self.columns[key].get('replace_url', None)
-                if replace_url:
-                    attrobj = getFromString(obj, replace_url)
-                    if attrobj:
-                        results_dict['replace'][key] = \
-                            '<a href="%s">%s</a>' % (attrobj, value)
-            # The item basics filled. Delegate additional actions to folderitem
-            # service. folderitem service is frequently overriden by child
-            # objects
-            item = self.folderitem(obj, results_dict, idx)
-            if item:
-                results.append(item)
-                idx += 1
-        return results
-
-    def _get_states_css(self, brain):
-        """Returns a list with the css names for the passed in object to be
-        rendered in the list based on its current state.
-        :brain: brain to retrieve the states from
-        :returns: a list of css names
-        :rtype: list
-        """
-        states = brain.getObjectWorkflowStates
-        if not states:
-            return []
-        states_css = ['state-{0}'.format(v) for v in states.values()]
-        return list(set(states_css))
+        # Return a subset of results, if necessary
+        if idxfrom and len(brains) > idxfrom:
+            return brains[limitfrom:]
+        return brains
 
     def _folderitems(self, full_objects=False):
         """
@@ -1089,37 +1081,6 @@ class BikaListingView(BrowserView):
             show_all = True
         else:
             show_all = False
-        # Creating a copy of the contentFilter dictionary in order to include
-        # the filter bar's filtering additions in the query. We don't want to
-        # modify contentFilter with those 'extra' filtering elements to be
-        # inculded in the.
-        contentFilterTemp = copy.deepcopy(self.contentFilter)
-        addition = self.get_filter_bar_queryaddition()
-        # Adding the extra filtering elements
-        if addition:
-            contentFilterTemp.update(addition)
-        # Check for 'and'/'or' logic queries
-        if (hasattr(self, 'And') and self.And) \
-           or (hasattr(self, 'Or') and self.Or):
-            # if contentsMethod is capable, we do an AdvancedQuery.
-            if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
-                aq = self.contentsMethod.makeAdvancedQuery(contentFilterTemp)
-                if hasattr(self, 'And') and self.And:
-                    tmpAnd = And()
-                    for q in self.And:
-                        tmpAnd.addSubquery(q)
-                    aq &= tmpAnd
-                if hasattr(self, 'Or') and self.Or:
-                    tmpOr = Or()
-                    for q in self.Or:
-                        tmpOr.addSubquery(q)
-                    aq &= tmpOr
-                brains = self.contentsMethod.evalAdvancedQuery(aq)
-            else:
-                # otherwise, self.contentsMethod must handle contentFilter
-                brains = self.contentsMethod(contentFilterTemp)
-        else:
-            brains = self.contentsMethod(contentFilterTemp)
 
         # idx increases one unit each time an object is added to the 'items'
         # dictionary to be returned. Note that if the item is not rendered,
@@ -1127,8 +1088,8 @@ class BikaListingView(BrowserView):
         idx = 0
         results = []
         self.show_more = False
-        brains = brains[self.limit_from:]
-        for i, obj in enumerate(brains):
+        brains = self._fetch_brains(self.limit_from)
+        for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             # we only take allowed items into account
