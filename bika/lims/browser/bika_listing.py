@@ -1062,7 +1062,7 @@ class BikaListingView(BrowserView):
         >>> browser.contents
         '...Water...'
         """
-
+        logger.warn("Using folderitems in classic mode, with objects wake-up")
         #self.contentsMethod = self.context.getFolderContents
         if not hasattr(self, 'contentsMethod'):
             self.contentsMethod = getToolByName(self.context, self.catalog)
