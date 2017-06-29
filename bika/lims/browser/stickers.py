@@ -4,15 +4,19 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.utils import createPdf
 from bika.lims.vocabularies import getStickerTemplates
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 import glob, os, os.path, sys, traceback
 
 import os
+import App
+import tempfile
 
 
 class Sticker(BrowserView):
@@ -51,6 +55,15 @@ class Sticker(BrowserView):
     rendered_items = []
 
     def __call__(self):
+        # Need to generate a PDF with the stickers?
+        if self.request.form.get('pdf', '0') == '1':
+            response = self.request.response
+            response.setHeader('Content-type', 'application/pdf')
+            response.setHeader('Content-Disposition', 'inline')
+            response.setHeader('filename', 'sticker.pdf')
+            pdfstream = self.pdf_from_post()
+            return pdfstream
+
         self.rendered_items = []
         items = self.request.get('items', '')
         # If filter by type is given in the request, only the templates under
@@ -297,3 +310,15 @@ class Sticker(BrowserView):
         if self.filter_by_type:
             templates_dir = templates_dir + '/' + self.filter_by_type
         return templates_dir
+
+    def pdf_from_post(self):
+        """Returns a pdf stream with the stickers
+        """
+        html = self.request.form.get('html')
+        style = self.request.form.get('style')
+        reporthtml = '<html><head>{0}</head><body>{1}</body></html>'
+        reporthtml = reporthtml.format(style, html)
+        reporthtml = safe_unicode(reporthtml).encode('utf-8')
+        pdf_fn = tempfile.mktemp(suffix='.pdf')
+        pdf_file = createPdf(htmlreport=reporthtml, outfile=pdf_fn)
+        return pdf_file
