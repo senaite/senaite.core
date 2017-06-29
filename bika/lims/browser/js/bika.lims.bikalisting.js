@@ -245,10 +245,16 @@ function BikaListingTableView() {
 		var allowed_transitions = [];
 		var hidden_transitions = $(blst).find('input[type="hidden"][id="hide_transitions"]');
 		hidden_transitions = $(hidden_transitions).val().split(',');
+		var restricted_transitions = $(blst).find('input[type="hidden"][id="restricted_transitions"]');
+		restricted_transitions = $(restricted_transitions).val().split(',');
 		var checked = $(blst).find("input[type='checkbox'][id*='_cb_']:checked");
 		$(checked).each(function(e) {
 			var transitions = $(this).attr('data-valid_transitions');
 			transitions = transitions.split(',');
+			// Do not want transitions other than those defined in bikalisting
+			transitions = transitions.filter(function(el) {
+				return restricted_transitions.indexOf(el) != -1;
+			});
 			// Do not show hidden transitions
 			transitions = transitions.filter(function(el) {
 				return hidden_transitions.indexOf(el) == -1;
@@ -261,6 +267,11 @@ function BikaListingTableView() {
 			}
 			allowed_transitions = transitions;
 		});
+		// Sort the transitions in accordance with bikalisting settings
+		allowed_transitions = restricted_transitions.filter(function(v) {
+		    return allowed_transitions.includes(v);
+		});
+
 		// Generate the action buttons
 		var buttonspane = $(blst).find('span.workflow_action_buttons');
 		$(buttonspane).html('');
