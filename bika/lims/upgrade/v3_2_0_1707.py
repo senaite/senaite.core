@@ -78,4 +78,4 @@ def result_per_sample_index_and_cols(ut):
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getSampleID')
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getSampleTypeID')
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getClientReference')
-    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getStorageLocation')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getStorageLocationTitle')

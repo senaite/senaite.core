@@ -316,10 +316,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return ''
 
     @security.public
-    def getStorageLocation(self):
+    def getStorageLocationTitle(self):
         sample = self.getSample()
         if sample:
-            return sample.getStorageLocation()
+            location = sample.getStorageLocation()
+            return location.Title() if location else ''
         return ''
 
     @security.public

@@ -87,7 +87,7 @@ class Report(BrowserView):
             dataitem = {'value': analysis.getSampleTypeID}
             dataline.append(dataitem)
             # Storage location
-            location = analysis.getStorageLocation
+            location = analysis.getStorageLocationTitle
             dataitem = {'value': location}
             dataline.append(dataitem)
             # Analysis

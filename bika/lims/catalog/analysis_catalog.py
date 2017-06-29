@@ -113,7 +113,7 @@ _columns_list = [
     'getSampleID',
     'getSampleTypeID',
     'getClientReference',
-    'getStorageLocation',
+    'getStorageLocationTitle',
 
 ]
 # Adding basic indexes
