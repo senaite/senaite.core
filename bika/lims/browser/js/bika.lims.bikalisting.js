@@ -263,11 +263,22 @@ function BikaListingTableView() {
 		});
 		// Generate the action buttons
 		var buttonspane = $(blst).find('span.workflow_action_buttons');
-		$(buttonspane).find('input[id*="_transition"]').remove();
+		$(buttonspane).html('');
 		for (var i = 0; i < allowed_transitions.length; i++) {
 			var trans = allowed_transitions[i];
-			var button = '<input id="'+trans+'_transition" class="context workflow_action_button action_button allowMultiSubmit" type="submit" url="" value="'+_(PMF(trans+'_transition_title'))+'" transition="'+trans+'" name="workflow_action_button">';
+			var button = '<input id="'+trans+'_transition" class="context workflow_action_button action_button allowMultiSubmit" type="submit" url="" value="'+_(PMF(trans+'_transition_title'))+'" transition="'+trans+'" name="workflow_action_button">&nbsp;';
 			$(buttonspane).append(button);
+		}
+		// Add now custom actions
+		if ($(checked).length > 0) {
+			var custom_actions = $(blst).find('input[type="hidden"].custom_action');
+			$(custom_actions).each(function(e){
+				var trans = $(this).val();
+				var url = $(this).attr('url');
+				var title = $(this).attr('title');
+				var button = '<input id="'+trans+'_transition" class="context workflow_action_button action_button allowMultiSubmit" type="submit" url="'+url+'" value="'+title+'" transition="'+trans+'" name="workflow_action_button">&nbsp;';
+				$(buttonspane).append(button);
+			});
 		}
 	}
 
