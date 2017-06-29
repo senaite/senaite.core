@@ -9,6 +9,7 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 
 from Products.CMFCore.Expression import Expression
 
@@ -33,6 +34,9 @@ def upgrade(tool):
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
 
+    # Result per sample report improved
+    result_per_sample_index_and_cols(ut)
+    ut.refreshCatalogs()
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -59,3 +63,18 @@ def set_guard_expressions(portal):
                     transition.guard = guard
                     logger.info("Guard from transition '{0}' set to '{1}'"
                                 .format(torenid, newguard))
+
+def result_per_sample_index_and_cols(ut):
+    """
+    Adding indexes and columns in analyses catalog in order to
+    render that report as fast as possible.
+    """
+    ut.addIndex(
+        CATALOG_ANALYSIS_LISTING,
+        'getSampleID',
+        'FieldIndex',
+        )
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getFormattedResult')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getSampleID')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getSampleTypeID')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getClientReference')

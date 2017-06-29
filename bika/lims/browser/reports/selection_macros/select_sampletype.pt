@@ -4,10 +4,15 @@
     <br/>
 
     <select name="SampleTypeUID:ignore_empty"
+            size="7"
             id="SampleTypeUID"
-            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+            tal:attributes="
+            size python:view.multiselect and '7' or '1';
+            style string:font-family:${here/base_properties/fontFamily};;font-size:100%;
+            multiple view/multiselect">
 
-        <option tal:condition="python:view.allow_blank" value=""/>
+        <option tal:condition="python:view.allow_blank and not view.multiselect"
+                value=""/>
 
         <tal:sampletypes tal:repeat="sampletype view/sampletypes">
 

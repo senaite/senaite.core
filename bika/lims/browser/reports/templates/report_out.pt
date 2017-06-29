@@ -88,13 +88,13 @@
                         <tal:img tal:condition="img_before">
                             <img src=""
                                     tal:attributes="src string:${portal_url}/${img_before}" />
-                            &nbsp
+                            &nbsp;
                         </tal:img>
                         <span tal:content="python:line[i]['value']"/>
                         <tal:img tal:condition="img_after">
                             <img src=""
                                     tal:attributes="src string:${portal_url}/${img_after}" />
-                            &nbsp
+                            &nbsp;
                         </tal:img>
                     </td>
                 </tal:column>

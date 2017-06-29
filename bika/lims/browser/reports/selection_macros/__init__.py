@@ -111,8 +111,10 @@ class SelectionMacrosView(BrowserView):
 
     select_client_pt = ViewPageTemplateFile("select_client.pt")
 
-    def select_client(self, style=None):
+    def select_client(self, allow_blank=True, multiselect=False,style=None):
         self.style = style
+        self.allow_blank = allow_blank
+        self.multiselect = multiselect
         self.clients = self.pc(portal_type='Client', inactive_state='active',
                                sort_on='sortable_title')
         return self.select_client_pt()
@@ -297,6 +299,7 @@ class SelectionMacrosView(BrowserView):
 
     select_output_format_pt = ViewPageTemplateFile("select_output_format.pt")
 
-    def select_output_format(self, style=None):
+    def select_output_format(self, style=None, formats=['PDF', 'CSV']):
         self.style = style
+        self.output_formats = formats
         return self.select_output_format_pt()
