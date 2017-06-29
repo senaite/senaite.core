@@ -250,6 +250,9 @@ Colum Headers
 Workflow Actions
 ********************************</tal:comment>
         <td class="workflow_actions">
+            <input type="hidden" id="hide_transitions"
+                tal:condition="view/bika_listing/show_workflow_action_buttons"
+                tal:attributes="value python:','.join(view.bika_listing.review_state.get('hide_transitions',[]))"/>
             <span class="workflow_action_buttons"
                 tal:condition="view/bika_listing/show_workflow_action_buttons">
             </span>

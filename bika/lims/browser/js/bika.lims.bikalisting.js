@@ -243,10 +243,17 @@ function BikaListingTableView() {
 	function render_transition_buttons(blst) {
 		"use strict";
 		var allowed_transitions = [];
+		var hidden_transitions = $(blst).find('input[type="hidden"][id="hide_transitions"]');
+		hidden_transitions = $(hidden_transitions).val().split(',');
 		var checked = $(blst).find("input[type='checkbox'][id*='_cb_']:checked");
 		$(checked).each(function(e) {
 			var transitions = $(this).attr('data-valid_transitions');
 			transitions = transitions.split(',');
+			// Do not show hidden transitions
+			transitions = transitions.filter(function(el) {
+				return hidden_transitions.indexOf(el) == -1;
+			});
+			// We only want the intersection within all selected items
 			if (allowed_transitions.length > 0) {
 				transitions = transitions.filter(function(el) {
 					return allowed_transitions.indexOf(el) != -1;
