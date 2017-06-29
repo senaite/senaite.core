@@ -35,18 +35,6 @@ def upgrade(tool):
         bsc.addIndex('getMethodID', 'FieldIndex')
     if 'getDocumentID' not in bsc.indexes():
         bsc.addIndex('getDocumentID', 'FieldIndex')
-    pc = getToolByName(portal, 'portal_catalog', None)
-    if 'getClientUID' not in pc.indexes():
-        pc.addIndex('getClientUID', 'FieldIndex')
-    if 'getSampleTypeUID' not in pc.indexes():
-        pc.addIndex('getSampleTypeUID', 'FieldIndex')
-    if 'getDateSampled' not in pc.indexes():
-        pc.addIndex('getDateSampled', 'FieldIndex')
-    pc.manage_reindexIndex(ids=[
-        'getClientUID',
-        'getSampleTypeUID',
-        'getDateSampled'])
-    logger.info("Reindex added indexes in portal_catalog")
 
     # Define permissions for Multifile
     mp = portal.manage_permission
