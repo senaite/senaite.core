@@ -30,7 +30,7 @@
     name="bika.lims.jsonapi.remove"
     provides="plone.jsonapi.core.interfaces.IRouteProvider"
     factory=".remove.Remove" />
-    
+
   <utility
     name="bika.lims.jsonapi.getusers"
     provides="plone.jsonapi.core.interfaces.IRouteProvider"
@@ -45,5 +45,10 @@
     name="bika.lims.jsonapi.calculate_partitions"
     provides="plone.jsonapi.core.interfaces.IRouteProvider"
     factory=".calculate_partitions.calculate_partitions" />
+
+  <utility
+    name="bika.lims.jsonapi.allowedtransitionsfor"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".allowedtransitionsfor.allowedTransitionsFor" />
 
 </configure>
