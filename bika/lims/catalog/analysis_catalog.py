@@ -22,6 +22,7 @@ _indexes_dict = {
     'worksheetanalysis_review_state': 'FieldIndex',
     'cancellation_state': 'FieldIndex',
     'getParentUID': 'FieldIndex',
+    'getSampleID': 'FieldIndex',
     'getAnalysisRequestUID': 'FieldIndex',
     'getDepartmentUID': 'FieldIndex',
     'getDueDate': 'DateIndex',
@@ -66,6 +67,7 @@ _columns_list = [
     'getClientURL',
     'getAnalysisRequestTitle',
     'getResult',
+    'getFormattedResult',
     'getCalculation',
     'getUnit',
     'getKeyword',
@@ -107,6 +109,11 @@ _columns_list = [
     'getSampleTypeUID',
     'getClientOrderNumber',
     'getDateReceived',
+    'getClientReference',
+    'getSampleID',
+    'getSampleTypeID',
+    'getClientReference',
+
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()

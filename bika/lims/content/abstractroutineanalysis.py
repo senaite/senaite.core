@@ -271,6 +271,40 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
                 return sampletype.UID()
 
     @security.public
+    def getSampleTypeID(self):
+        """Used to populate catalog values.
+        """
+        sample = self.getSample()
+        if sample:
+            sampletype = sample.getSampleType()
+            if sampletype:
+                return sampletype.getId()
+        return ''
+
+    @security.public
+    def getClientReference(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getClientReference()
+        return ''
+
+    @security.public
+    def getSampleID(self):
+        """Instances must implement getSample
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.getId()
+        return ''
+
+    @security.public
+    def getStorageLocation(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getStorageLocation()
+        return ''
+
+    @security.public
     def getBatchUID(self):
         """This method is used to populate catalog values
         """

@@ -3,8 +3,8 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import csv
@@ -23,16 +23,15 @@ class Report(BrowserView):
 
     def __call__(self):
         # get all the data into datalines
-        pc = getToolByName(self.context, 'portal_catalog')
+        catalog = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
         self.report_content = {}
-        parm_lines = {}
         parms = []
         headings = {}
         headings['header'] = _("Analyses result per sample")
         count_all = 0
-        query = {'portal_type': 'Sample', 'sort_on': 'created'}
-        client_title = None
+        query = {'sort_on': 'getSampleID'}
         # Getting the query filters
+        import pdb; pdb.set_trace()
         val = self.selection_macros.parse_client(self.request)
         if val:
             query[val['contentFilter'][0]] = val['contentFilter'][1]
@@ -46,9 +45,7 @@ class Report(BrowserView):
         val = self.selection_macros.parse_analysisservice(self.request)
         allowd_services_uids = []
         if val:
-            # query[val['contentFilter'][0]] = val['contentFilter'][1]
-            # Lets get the analysis services uids list only.
-            allowd_services_uids = val['contentFilter'][1]
+            query[val['contentFilter'][0]] = val['contentFilter'][1]
             parms.append(val['parms'])
 
         val = self.selection_macros.parse_daterange(self.request,
@@ -70,50 +67,39 @@ class Report(BrowserView):
                         _('Result')], }
         # and now lets do the actual report lines
         datalines = []
-        for sample_b in pc(query):
-            sample = sample_b.getObject()
-            analyses = []
-            for ar in sample.getAnalysisRequests():
-                analyses += list(ar.getAnalyses(full_objects=True))
-                for analysis in analyses:
-                    if allowd_services_uids == [] or analysis.getServiceUID() in allowd_services_uids:
-                        dataline = []
-                        ars = sample.getAnalysisRequests()
-                        ars_ids = ''
-                        # Request ID
-                        for ar in ars:
-                            ars_ids = ars_ids + ar.getId() + ' '
-                        dataitem = {
-                            'value': ars_ids}
-                        dataline.append(dataitem)
-                        # Client reference
-                        dataline.append({'value':  sample.getClientSampleID()})
-                        # Client Sample ID
-                        dataline.append(
-                            {'value':  sample.getClientReference()})
-                        # Date
-                        date = sample.getDateSampled() if\
-                            sample.getDateSampled() else\
-                            sample.getDateReceived()
-                        dataitem = {
-                            'value': self.ulocalized_time(date)}
-                        dataline.append(dataitem)
-                        # Sample type
-                        dataitem = {'value': sample.getSampleType().Title()}
-                        dataline.append(dataitem)
-                        # Storage location
-                        location = sample.getStorageLocation().Title()\
-                            if sample.getStorageLocation() else ''
-                        dataitem = {'value': location}
-                        dataline.append(dataitem)
-                        # Analysis
-                        dataitem = {'value': analysis.Title()}
-                        dataline.append(dataitem)
-                        # Result
-                        dataitem = {'value': analysis.getFormattedResult()}
-                        dataline.append(dataitem)
-                        count_all += 1
-                        datalines.append(dataline)
+        for analysis in catalog(query):
+            dataline = []
+            # Request ID
+            dataitem = {
+                'value': analysis.getAnalysisRequestTitle}
+            dataline.append(dataitem)
+            # Client reference
+            dataline.append({'value':  analysis.getClientReference})
+            # Client Sample ID
+            dataline.append(
+                {'value':  analysis.getSampleID})
+            # Date
+            date = analysis.getDateSampled if\
+                analysis.getDateSampled else\
+                analysis.getDateReceived
+            dataitem = {
+                'value': self.ulocalized_time(date)}
+            dataline.append(dataitem)
+            # Sample type
+            dataitem = {'value': analysis.getSampleTypeID}
+            dataline.append(dataitem)
+            # Storage location
+            location = analysis.getStorageLocation
+            dataitem = {'value': location}
+            dataline.append(dataitem)
+            # Analysis
+            dataitem = {'value': analysis.getId}
+            dataline.append(dataitem)
+            # Result
+            dataitem = {'value': analysis.getFormattedResult}
+            dataline.append(dataitem)
+            count_all += 1
+            datalines.append(dataline)
 
         # footer data
         footlines = []
