@@ -31,7 +31,6 @@ class Report(BrowserView):
         count_all = 0
         query = {'sort_on': 'getSampleID'}
         # Getting the query filters
-        import pdb; pdb.set_trace()
         val = self.selection_macros.parse_client(self.request)
         if val:
             query[val['contentFilter'][0]] = val['contentFilter'][1]
@@ -43,7 +42,6 @@ class Report(BrowserView):
             parms.append(val['parms'])
 
         val = self.selection_macros.parse_analysisservice(self.request)
-        allowd_services_uids = []
         if val:
             query[val['contentFilter'][0]] = val['contentFilter'][1]
             parms.append(val['parms'])
