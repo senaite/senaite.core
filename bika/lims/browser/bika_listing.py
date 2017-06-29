@@ -459,6 +459,8 @@ class BikaListingView(BrowserView):
         # Requests view checks bika_setup.getSamplingBarEnabledAnalysisRequests
         # to know if the functionality is activeated or not for its views.
         self.filter_bar_enabled = False
+        # Stores the translations of the statuses from the items displayed in
+        # this list. It value is set automatically in folderitems function.
         self.state_titles = {}
 
     @property
@@ -1042,7 +1044,7 @@ class BikaListingView(BrowserView):
 
         # Return a subset of results, if necessary
         if idxfrom and len(brains) > idxfrom:
-            return brains[limitfrom:]
+            return brains[idxfrom:]
         return brains
 
     def _folderitems(self, full_objects=False):
