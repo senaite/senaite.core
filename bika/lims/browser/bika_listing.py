@@ -27,6 +27,7 @@ from bika.lims.utils import isActive, getHiddenAttributesForClass
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getAllowedTransitions
 from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
 from plone.i18n.normalizer.interfaces import IIDNormalizer
@@ -1202,6 +1203,8 @@ class BikaListingView(BrowserView):
                         state, obj.portal_type)
                 results_dict[state_var] = state
             results_dict['state_title'] = st_title
+
+            results_dict['valid_transitions'] = getAllowedTransitions(obj)
 
             # extra classes for individual fields on this item { field_id : "css classes" }
             results_dict['class'] = {}
