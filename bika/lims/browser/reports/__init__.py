@@ -51,7 +51,6 @@ class ProductivityView(BrowserView):
             report_dict = adapter(self.context, self.request)
             report_dict['id'] = name
             self.additional_reports.append(report_dict)
-        self.template()
 
         return self.template()
 

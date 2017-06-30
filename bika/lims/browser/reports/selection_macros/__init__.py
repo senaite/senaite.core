@@ -20,6 +20,7 @@ def update_timer():
     """
     return time() // (24 *60 * 60)
 
+
 def _cache_key_select_state(method, self, workflow_id, field_id, field_title):
     """
     This function returns the key used to decide if select_state has to be recomputed
@@ -190,6 +191,7 @@ class SelectionMacrosView(BrowserView):
                                  }
 
     """
+
     def __init__(self, context, request):
         super(SelectionMacrosView, self).__init__(context, request)
         self.bc = self.bika_catalog
@@ -205,7 +207,7 @@ class SelectionMacrosView(BrowserView):
     def select_analysiscategory(self, style=None):
         self.style = style
         self.analysiscategories = self.bsc(portal_type='AnalysisCategory',
-                                               sort_on='sortable_title')
+                                           sort_on='sortable_title')
         return self.select_analysiscategory_pt()
 
     select_analysisservice_pt = ViewPageTemplateFile("select_analysisservice.pt")
