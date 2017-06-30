@@ -944,14 +944,18 @@ class BikaListingView(BrowserView):
             # Set states and state titles
             ptype = obj.portal_type
             for state_var, state in states.items():
+                results_dict[state_var] = state
                 st_title = self.state_titles.get(state, None)
                 if not st_title:
-                    st_title = self.workflow.getTitleForStateOnType(state,
-                                                                    ptype)
-                    if st_title:
-                        st_title = t(PMF(st_title))
-                        self.state_titles[state] = st_title
-                results_dict[state_var] = state
+                    try:
+                        st_title = self.workflow.getTitleForStateOnType(state,
+                                                                        ptype)
+                        if st_title:
+                            st_title = t(PMF(st_title))
+                            self.state_titles[state] = st_title
+                    except:
+                        logger.warning("Cannot obtain title for state {0} and "
+                                       "object {1}".format(state, obj.getId))
                 if st_title and state_var == obj.review_state:
                     results_dict['state_title'] = st_title
 
