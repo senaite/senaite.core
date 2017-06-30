@@ -167,7 +167,7 @@ function BikaListingTableView() {
 		var checkall = $("input[id*='select_all']");
 		$(checkall).hide();
 		var wo_trans = $("input[type='checkbox'][id*='_cb_'][data-valid_transitions='']");
-		$(wo_trans).hide();
+		$(wo_trans).prop('enabled', false);
 		$(wo_trans).each(function(e){
 			uids.push($(this).val());
 		});
@@ -188,7 +188,7 @@ function BikaListingTableView() {
 							var trans = data.transitions[i].transitions;
 							var el = $("input[type='checkbox'][id*='_cb_'][value='"+uid+"']");
 							el.attr('data-valid_transitions', trans.join(','));
-							$(el).show();
+							$(el).prop('enabled', true);
 						}
 						$("input[id*='select_all']").fadeIn();
 					}

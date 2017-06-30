@@ -956,7 +956,7 @@ class BikaListingView(BrowserView):
                     except:
                         logger.warning("Cannot obtain title for state {0} and "
                                        "object {1}".format(state, obj.getId))
-                if st_title and state_var == obj.review_state:
+                if st_title and state == obj.review_state:
                     results_dict['state_title'] = st_title
 
             # extra classes for individual fields on this item
