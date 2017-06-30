@@ -10,6 +10,168 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import getUsers
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
+from plone.memoize import ram
+from time import time
+
+
+def update_timer():
+    """
+    This function sets the time between updates of cached values
+    """
+    return time() // (24 *60 * 60)
+
+
+def _cache_key_select_state(method, self, workflow_id, field_id, field_title):
+    """
+    This function returns the key used to decide if select_state has to be recomputed
+    """
+    key = update_timer(), workflow_id, field_id, field_title
+    return key
+
+
+def _cache_key_select_analysiscategory(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_analysiscategory has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_analysisservice(method, self, allow_blank,
+                                      multiselect, style=None):
+    """
+    This function returns the key used to decide if method select_analysisservice has to be recomputed
+    """
+    key = update_timer(), allow_blank, multiselect, style
+    return key
+
+
+def _cache_key_select_analysisspecification(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_analysisspecification has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_analyst(method, self, allow_blank=False, style=None):
+    """
+    This function returns the key used to decide if method select_analyst has to be recomputed
+    """
+    key = update_timer(),allow_blank, style
+    return key
+
+
+def _cache_key_select_user(method, self, allow_blank=True, style=None):
+    """
+    This function returns the key used to decide if method select_user has to be recomputed
+    """
+    key = update_timer(), allow_blank, style
+    return key
+
+
+def _cache_key_select_client(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_client has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_contact(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_contact has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_daterange(method, self, field_id, field_title, style=None):
+    """
+    This function returns the key used to decide if method select_daterange has to be recomputed
+    """
+    key = update_timer(), field_id, field_title, style
+    return key
+
+
+def _cache_key_select_instrument(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_instrument has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_period(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_period has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_profile(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_profile has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_supplier(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_supplier has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+def _cache_key_select_reference_sample(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_reference_sample has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_reference_service(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_reference_service has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
+
+def _cache_key_select_samplepoint(method, self, allow_blank=True, multiselect=False, style=None):
+    """
+    This function returns the key used to decide if method select_samplepoint has to be recomputed
+    """
+    key = update_timer(), allow_blank, multiselect, style
+    return key
+
+
+def _cache_key_select_sample_type(method, self, allow_blank=True, multiselect=False, style=None):
+    """
+    This function returns the key used to decide if method select_sample_type has to be recomputed
+    """
+    key = update_timer(), allow_blank, multiselect, style
+    return key
+
+
+def _cache_key_select_groupingperiod(method, self, allow_blank=True, multiselect=False, style=None):
+    """
+    This function returns the key used to decide if method select_groupingperiod has to be recomputed
+    """
+    key = update_timer(), allow_blank, multiselect, style
+    return key
+
+
+def _cache_key_select_output_format(method, self, style=None):
+    """
+    This function returns the key used to decide if method select_output_format has to be recomputed
+    """
+    key = update_timer(), style
+    return key
+
 
 class SelectionMacrosView(BrowserView):
     """ Display snippets for the query form, and
@@ -41,6 +203,7 @@ class SelectionMacrosView(BrowserView):
     select_analysiscategory_pt = ViewPageTemplateFile(
         "select_analysiscategory.pt")
 
+    @ram.cache(_cache_key_select_analysiscategory)
     def select_analysiscategory(self, style=None):
         self.style = style
         self.analysiscategories = self.bsc(portal_type='AnalysisCategory',
@@ -49,6 +212,7 @@ class SelectionMacrosView(BrowserView):
 
     select_analysisservice_pt = ViewPageTemplateFile("select_analysisservice.pt")
 
+    @ram.cache(_cache_key_select_analysisservice)
     def select_analysisservice(self, allow_blank=True, multiselect=False,
                                style=None):
         self.style = style
@@ -75,25 +239,19 @@ class SelectionMacrosView(BrowserView):
     select_analysisspecification_pt = ViewPageTemplateFile(
         "select_analysisspecification.pt")
 
+    @ram.cache(_cache_key_select_analysisspecification)
     def select_analysisspecification(self, style=None):
         self.style = style
-        specfolder_uid = self.context.bika_setup.bika_analysisspecs.UID()
         res = []
         bsc = getToolByName(self.context, "bika_setup_catalog")
         for s in bsc(portal_type='AnalysisSpec'):
-            if s.getClientUID == specfolder_uid:
-                res.append({'uid': s.UID, 'title': s.Title})
-        for c in self.context.clients.objectValues():
-            for s in c.objectValues():
-                if s.portal_type != 'AnalysisSpec':
-                    continue
-                res.append(
-                    {'uid': s.UID(), 'title': s.Title() + " (" + c.Title() + ")"})
+            res.append({'uid': s.UID, 'title': s.Title})
         self.specs = res
         return self.select_analysisspecification_pt()
 
     select_analyst_pt = ViewPageTemplateFile("select_analyst.pt")
 
+    @ram.cache(_cache_key_select_analyst)
     def select_analyst(self, allow_blank=False, style=None):
         self.style = style
         self.analysts = getUsers(self.context,
@@ -103,6 +261,7 @@ class SelectionMacrosView(BrowserView):
 
     select_user_pt = ViewPageTemplateFile("select_user.pt")
 
+    @ram.cache(_cache_key_select_user)
     def select_user(self, allow_blank=True, style=None):
         self.style = style
         self.allow_blank = allow_blank
@@ -111,6 +270,7 @@ class SelectionMacrosView(BrowserView):
 
     select_client_pt = ViewPageTemplateFile("select_client.pt")
 
+    @ram.cache(_cache_key_select_client)
     def select_client(self, style=None):
         self.style = style
         self.clients = self.pc(portal_type='Client', inactive_state='active',
@@ -130,6 +290,7 @@ class SelectionMacrosView(BrowserView):
 
     select_contact_pt = ViewPageTemplateFile("select_contact.pt")
 
+    @ram.cache(_cache_key_select_contact)
     def select_contact(self, style=None):
         self.style = style
         self.contacts = self.pc(portal_type='Contact', inactive_state='active',
@@ -138,11 +299,35 @@ class SelectionMacrosView(BrowserView):
 
     select_daterange_pt = ViewPageTemplateFile("select_daterange.pt")
 
-    def select_daterange(self, field_id, field_title, style=None):
+    def _select_daterange(self, field_id, field_title, style=None):
         self.style = style
         self.field_id = field_id
         self.field_title = _(field_title)
         return self.select_daterange_pt()
+
+    @ram.cache(_cache_key_select_daterange)
+    def select_daterange(self, field_id, field_title, style=None):
+        return self._select_daterange(field_id, field_title, style)
+
+    @ram.cache(_cache_key_select_daterange)
+    def select_daterange_requested(self, field_id, field_title, style=None):
+        return self._select_daterange(field_id, field_title, style)
+
+    @ram.cache(_cache_key_select_daterange)
+    def select_daterange_created(self, field_id, field_title, style=None):
+        return self._select_daterange(field_id, field_title, style)
+
+    @ram.cache(_cache_key_select_daterange)
+    def select_daterange_received(self, field_id, field_title, style=None):
+        return self._select_daterange(field_id, field_title, style)
+
+    @ram.cache(_cache_key_select_daterange)
+    def select_daterange_published(self, field_id, field_title, style=None):
+        return self._select_daterange(field_id, field_title, style)
+
+    @ram.cache(_cache_key_select_daterange)
+    def select_daterange_loaded(self, field_id, field_title, style=None):
+        return self._select_daterange(field_id, field_title, style)
 
     def parse_daterange(self, request, field_id, field_title):
         from_date = request.get('%s_fromdate' % field_id, None)
@@ -175,6 +360,7 @@ class SelectionMacrosView(BrowserView):
 
     select_instrument_pt = ViewPageTemplateFile("select_instrument.pt")
 
+    @ram.cache(_cache_key_select_instrument)
     def select_instrument(self, style=None):
         self.style = style
         self.instruments = self.bsc(portal_type='Instrument',
@@ -184,12 +370,14 @@ class SelectionMacrosView(BrowserView):
 
     select_period_pt = ViewPageTemplateFile("select_period.pt")
 
+    @ram.cache(_cache_key_select_period)
     def select_period(self, style=None):
         self.style = style
         return self.select_period_pt()
 
     select_profile_pt = ViewPageTemplateFile("select_profile.pt")
 
+    @ram.cache(_cache_key_select_profile)
     def select_profile(self, style=None):
         self.style = style
         self.analysisprofiles = self.bsc(portal_type='AnalysisProfile',
@@ -199,6 +387,7 @@ class SelectionMacrosView(BrowserView):
 
     select_supplier_pt = ViewPageTemplateFile("select_supplier.pt")
 
+    @ram.cache(_cache_key_select_supplier)
     def select_supplier(self, style=None):
         self.style = style
         self.suppliers = self.bsc(portal_type='Supplier', inactive_state='active',
@@ -208,6 +397,7 @@ class SelectionMacrosView(BrowserView):
     select_reference_sample_pt = ViewPageTemplateFile(
         "select_reference_sample.pt")
 
+    @ram.cache(_cache_key_select_reference_sample)
     def select_reference_sample(self, style=None):
         self.style = style
         return self.select_reference_sample_pt()
@@ -215,13 +405,14 @@ class SelectionMacrosView(BrowserView):
     select_reference_service_pt = ViewPageTemplateFile(
         "select_reference_service.pt")
 
+    @ram.cache(_cache_key_select_reference_service)
     def select_reference_service(self, style=None):
         self.style = style
         return self.select_reference_service_pt()
 
     select_state_pt = ViewPageTemplateFile("select_state.pt")
 
-    def select_state(self, workflow_id, field_id, field_title, style=None):
+    def _select_state(self, workflow_id, field_id, field_title, style=None):
         self.style = style
         self.field_id = field_id
         self.field_title = field_title
@@ -231,6 +422,22 @@ class SelectionMacrosView(BrowserView):
             state = states[state_id]
             self.states.append({'id': state.getId(), 'title': state.title})
         return self.select_state_pt()
+
+    @ram.cache(_cache_key_select_state)
+    def select_state(self, workflow_id, field_id, field_title, style=None):
+        return self._select_state(workflow_id, field_title, field_title, style)
+
+    @ram.cache(_cache_key_select_state)
+    def select_state_analysis(self, workflow_id, field_id, field_title, style=None):
+        return self._select_state(workflow_id, field_title, field_title, style)
+
+    @ram.cache(_cache_key_select_state)
+    def select_state_cancellation(self, workflow_id, field_id, field_title, style=None):
+        return self._select_state(workflow_id, field_title, field_title, style)
+
+    @ram.cache(_cache_key_select_state)
+    def select_state_worksheetanalysis(self, workflow_id, field_id, field_title, style=None):
+        return self._select_state(workflow_id, field_title, field_title, style)
 
     def parse_state(self, request, workflow_id, field_id, field_title):
         val = request.form.get(field_id, "")
@@ -245,6 +452,7 @@ class SelectionMacrosView(BrowserView):
 
     select_samplepoint_pt = ViewPageTemplateFile("select_samplepoint.pt")
 
+    @ram.cache(_cache_key_select_samplepoint)
     def select_samplepoint(self, allow_blank=True, multiselect=False, style=None):
         self.style = style
         self.allow_blank = allow_blank
@@ -267,6 +475,7 @@ class SelectionMacrosView(BrowserView):
 
     select_sampletype_pt = ViewPageTemplateFile("select_sampletype.pt")
 
+    @ram.cache(_cache_key_select_sample_type)
     def select_sampletype(self, allow_blank=True, multiselect=False, style=None):
         self.style = style
         self.allow_blank = allow_blank
@@ -289,6 +498,7 @@ class SelectionMacrosView(BrowserView):
 
     select_groupingperiod_pt = ViewPageTemplateFile("select_groupingperiod.pt")
 
+    @ram.cache(_cache_key_select_groupingperiod)
     def select_groupingperiod(self, allow_blank=True, multiselect=False,
                               style=None):
         self.style = style
@@ -297,6 +507,7 @@ class SelectionMacrosView(BrowserView):
 
     select_output_format_pt = ViewPageTemplateFile("select_output_format.pt")
 
+    @ram.cache(_cache_key_select_output_format)
     def select_output_format(self, style=None):
         self.style = style
         return self.select_output_format_pt()

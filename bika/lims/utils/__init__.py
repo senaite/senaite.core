@@ -622,3 +622,22 @@ def user_email(obj, userid):
     c = portal_catalog(portal_type='Contact', getUsername=userid)
     contact_email = c[0].getObject().getEmailAddress() if c else None
     return contact_email or member_email or ''
+
+
+def measure_time(func_to_measure):
+    """
+    This decorator allows to measure the execution time
+    of a function and prints it to the console.
+    :param func_to_measure: function to be decorated
+    """
+    def wrap(*args, **kwargs):
+        start_time = time()
+        return_value = func_to_measure(*args, **kwargs)
+        finish_time = time()
+        log = "%s took %0.4f seconds. start_time = %0.4f - finish_time = %0.4f\n" % (func_to_measure.func_name,
+                                                                                     finish_time-start_time,
+                                                                                     start_time,
+                                                                                     finish_time)
+        print log
+        return return_value
+    return wrap
