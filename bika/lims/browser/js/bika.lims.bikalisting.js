@@ -244,14 +244,14 @@ function BikaListingTableView() {
 		"use strict";
 		var allowed_transitions = [];
 		var hidden_transitions = $(blst).find('input[type="hidden"][id="hide_transitions"]');
-		hidden_transitions = $(hidden_transitions).val().split(',');
+		hidden_transitions = $(hidden_transitions).length == 1 ? $(hidden_transitions).val() : '';
+		hidden_transitions = hidden_transitions === '' ? [] : hidden_transitions.split(',');
 		var restricted_transitions = $(blst).find('input[type="hidden"][id="restricted_transitions"]');
-		restricted_transitions = $(restricted_transitions).val();
+		restricted_transitions = $(restricted_transitions).length == 1 ? $(restricted_transitions).val() : '';
 		restricted_transitions = restricted_transitions === '' ? [] : restricted_transitions.split(',');
 		var checked = $(blst).find("input[type='checkbox'][id*='_cb_']:checked");
 		$(checked).each(function(e) {
 			var transitions = $(this).attr('data-valid_transitions');
-			console.log(transitions);
 			transitions = transitions.split(',');
 			if (restricted_transitions.length > 0) {
 				// Do not want transitions other than those defined in bikalisting
@@ -259,19 +259,16 @@ function BikaListingTableView() {
 					return restricted_transitions.indexOf(el) != -1;
 				});
 			}
-			console.log(transitions);
 			// Do not show hidden transitions
 			transitions = transitions.filter(function(el) {
 				return hidden_transitions.indexOf(el) == -1;
 			});
-			console.log(transitions);
 			// We only want the intersection within all selected items
 			if (allowed_transitions.length > 0) {
 				transitions = transitions.filter(function(el) {
 					return allowed_transitions.indexOf(el) != -1;
 				});
 			}
-			console.log(transitions);
 			allowed_transitions = transitions;
 		});
 		if (restricted_transitions.length > 0) {

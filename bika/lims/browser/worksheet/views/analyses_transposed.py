@@ -6,8 +6,10 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import PMF
 from bika.lims.browser.bika_listing import BikaListingTable
 from bika.lims.browser.worksheet.views.analyses import AnalysesView
+from bika.lims.utils import t
 
 
 class AnalysesTransposedView(AnalysesView):
@@ -43,6 +45,7 @@ class AnalysesTransposedTable(BikaListingTable):
         self.trans_items = {}
         self.positions = []
         self._transpose_data()
+        self.bika_listing = bika_listing
 
     def _transpose_data(self):
         cached = []
@@ -105,3 +108,62 @@ class AnalysesTransposedTable(BikaListingTable):
             return ''
 
         return self.render_cell()
+
+    def get_workflow_actions(self):
+        """ Compile a list of possible workflow transitions for items
+            in this Table.
+        """
+
+        # cbb return empty list if we are unable to select items
+        if not self.bika_listing.show_select_column:
+            return []
+
+        if self.bika_listing.workflow is None:
+            self.bika_listing.workflow = getToolByName(self.context, 'portal_workflow')
+        # get all transitions for all items.
+        transitions = {}
+        actions = []
+        for obj in [i.get('obj', '') for i in self.items]:
+            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
+            for it in self.bika_listing.workflow.getTransitionsFor(obj):
+                transitions[it['id']] = it
+
+        # the list is restricted to and ordered by these transitions.
+        if 'transitions' in self.bika_listing.review_state:
+            for transition_dict in self.bika_listing.review_state['transitions']:
+                if transition_dict['id'] in transitions:
+                    actions.append(transitions[transition_dict['id']])
+        else:
+            actions = transitions.values()
+
+        new_actions = []
+        # remove any invalid items with a warning
+        for a,action in enumerate(actions):
+            if isinstance(action, dict) \
+                    and 'id' in action:
+                new_actions.append(action)
+            else:
+                logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
+        actions = new_actions
+        # and these are removed
+        if 'hide_transitions' in self.bika_listing.review_state:
+            actions = [a for a in actions
+                       if a['id'] not in self.bika_listing.review_state['hide_transitions']]
+
+        # cheat: until workflow_action is abolished, all URLs defined in
+        # GS workflow setup will be ignored, and the default will apply.
+        # (that means, WorkflowAction-bound URL is called).
+        for i, action in enumerate(actions):
+            actions[i]['url'] = ''
+
+        # if there is a self.review_state['some_state']['custom_actions'] attribute
+        # on the BikaListingView, add these actions to the list.
+        if 'custom_actions' in self.bika_listing.review_state:
+            for action in self.bika_listing.review_state['custom_actions']:
+                if isinstance(action, dict) \
+                        and 'id' in action:
+                    actions.append(action)
+
+        for a,action in enumerate(actions):
+            actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
+        return actions

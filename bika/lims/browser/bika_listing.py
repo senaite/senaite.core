@@ -1290,65 +1290,6 @@ class BikaListingView(BrowserView):
         data = self.render_items()
         return data
 
-    def get_workflow_actions(self):
-        """ Compile a list of possible workflow transitions for items
-            in this Table.
-        """
-
-        # cbb return empty list if we are unable to select items
-        if not self.show_select_column:
-            return []
-
-        if self.workflow is None:
-            self.workflow = getToolByName(self.context, 'portal_workflow')
-        # get all transitions for all items.
-        transitions = {}
-        actions = []
-        for obj in [i.get('obj', '') for i in self.items]:
-            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
-            for it in self.workflow.getTransitionsFor(obj):
-                transitions[it['id']] = it
-
-        # the list is restricted to and ordered by these transitions.
-        if 'transitions' in self.review_state:
-            for transition_dict in self.review_state['transitions']:
-                if transition_dict['id'] in transitions:
-                    actions.append(transitions[transition_dict['id']])
-        else:
-            actions = transitions.values()
-
-        new_actions = []
-        # remove any invalid items with a warning
-        for a,action in enumerate(actions):
-            if isinstance(action, dict) \
-                    and 'id' in action:
-                new_actions.append(action)
-            else:
-                logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
-        actions = new_actions
-        # and these are removed
-        if 'hide_transitions' in self.review_state:
-            actions = [a for a in actions
-                       if a['id'] not in self.review_state['hide_transitions']]
-
-        # cheat: until workflow_action is abolished, all URLs defined in
-        # GS workflow setup will be ignored, and the default will apply.
-        # (that means, WorkflowAction-bound URL is called).
-        for i, action in enumerate(actions):
-            actions[i]['url'] = ''
-
-        # if there is a self.review_state['some_state']['custom_actions'] attribute
-        # on the BikaListingView, add these actions to the list.
-        if 'custom_actions' in self.review_state:
-            for action in self.review_state['custom_actions']:
-                if isinstance(action, dict) \
-                        and 'id' in action:
-                    actions.append(action)
-
-        for a,action in enumerate(actions):
-            actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
-        return actions
-
     def tabindex(self):
         i = 0
         while True:
