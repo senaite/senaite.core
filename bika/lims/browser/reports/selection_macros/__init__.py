@@ -197,7 +197,6 @@ class SelectionMacrosView(BrowserView):
         self.bsc = self.bika_setup_catalog
         self.pc = self.portal_catalog
         self.rc = self.reference_catalog
-        self.analysiscategories = None
 
     select_analysiscategory_pt = ViewPageTemplateFile(
         "select_analysiscategory.pt")
@@ -205,8 +204,7 @@ class SelectionMacrosView(BrowserView):
     @ram.cache(_cache_key_select_analysiscategory)
     def select_analysiscategory(self, style=None):
         self.style = style
-        if self.analysiscategories is None:
-            self.analysiscategories = self.bsc(portal_type='AnalysisCategory',
+        self.analysiscategories = self.bsc(portal_type='AnalysisCategory',
                                                sort_on='sortable_title')
         return self.select_analysiscategory_pt()
 
