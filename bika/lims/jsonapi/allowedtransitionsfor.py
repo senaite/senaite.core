@@ -57,13 +57,13 @@ class allowedTransitionsFor(object):
         return ret
 
     def allowed_transitions_for_many(self, context, request):
-        """/@@API/doActionFor: Perform workflow transition on a list of objects.
+        """/@@API/allowedTransitionsFor_many: Returns a list of dictionaries. Each
+        dictionary has the following structure:
+            {'uid': <uid_object_passed_in>,
+             'transitions': [<transtion_id_1>, <transition_id2>]}
 
-        required parameters:
-
-            - obj_paths: a json encoded list of objects to transition.
-            - action: the id of the transition
-
+        Required parameters:
+            - uid: uids of the objects to get the allowed transitions from
         """
         uc = getToolByName(context, 'uid_catalog')
         uids = json.loads(request.get('uid', '[]'))
