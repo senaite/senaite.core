@@ -212,7 +212,6 @@ class ReportHistoryView(BikaListingView):
             items[x]['replace']['Title'] = \
                 "<a href='%s/at_download/ReportFile'>%s</a>" % \
                 (obj_url, items[x]['Title'])
-
         return items
 
 
