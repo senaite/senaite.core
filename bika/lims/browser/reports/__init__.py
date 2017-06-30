@@ -51,6 +51,7 @@ class ProductivityView(BrowserView):
             report_dict = adapter(self.context, self.request)
             report_dict['id'] = name
             self.additional_reports.append(report_dict)
+        self.template()
 
         return self.template()
 
@@ -212,6 +213,7 @@ class ReportHistoryView(BikaListingView):
             items[x]['replace']['Title'] = \
                 "<a href='%s/at_download/ReportFile'>%s</a>" % \
                 (obj_url, items[x]['Title'])
+
         return items
 
 
