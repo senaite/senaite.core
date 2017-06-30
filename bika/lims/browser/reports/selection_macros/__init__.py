@@ -246,7 +246,6 @@ class SelectionMacrosView(BrowserView):
         bsc = getToolByName(self.context, "bika_setup_catalog")
         for s in bsc(portal_type='AnalysisSpec'):
             res.append({'uid': s.UID, 'title': s.Title})
-
         self.specs = res
         return self.select_analysisspecification_pt()
 
