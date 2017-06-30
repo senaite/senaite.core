@@ -3,15 +3,17 @@
  */
 function BikaListingTableView() {
 
-	var that = this
+	var that = this;
+	// To keep track if a transitions loading is taking place atm
+	var loading_transitions = false;
 
 	// Entry-point method for AnalysisServiceEditView
 	that.load = function () {
 
 		column_header_clicked()
-		select_one_clicked()
-		select_all_clicked()
-		manage_select_all_state()
+		load_transitions();
+		select_one_clicked();
+		select_all_clicked();
 		listing_string_input_keypress()
 		listing_string_select_changed()
 		pagesize_change()
@@ -72,6 +74,7 @@ function BikaListingTableView() {
 						$('#' + formid + ' a.bika_listing_show_more').hide();
 						console.log(e);
 					}
+					load_transitions();
 				}).fail(function () {
 					$('#'+formid+' a.bika_listing_show_more').hide();
 					console.log("bika_listing_show_more failed");
@@ -147,81 +150,157 @@ function BikaListingTableView() {
 		})
 	}
 
-	function show_or_hide_transition_buttons() {
-		// Get all transitions for all items, into all_valid_transitions
-		var all_valid_transitions = [] // array of arrays
-		var checked = $("input[name='uids:list']:checked")
-		if (checked.length == 0){
-			$("input[workflow_transition]").hide()
-			return
+	/**
+	* Fetch allowed transitions for all the objects listed in bika_listing and
+	* sets the value for the attribute 'data-valid_transitions' for each check
+	* box next to each row.
+	* The process requires an ajax call, so the function keeps checkboxes
+	* disabled until the allowed transitions for the associated object are set.
+	*/
+	function load_transitions() {
+		"use strict";
+		if (loading_transitions) {
+			return;
 		}
-		for(var i=0; i<checked.length; i++){
-			all_valid_transitions.push($(checked[i]).attr("data-valid_transitions").split(","))
+		loading_transitions = true;
+		var uids = [];
+		var checkall = $("input[id*='select_all']");
+		$(checkall).hide();
+		var wo_trans = $("input[type='checkbox'][id*='_cb_'][data-valid_transitions='']");
+		$(wo_trans).hide();
+		$(wo_trans).each(function(e){
+			uids.push($(this).val());
+		});
+		if (uids.length > 0) {
+			var request_data = {
+				_authenticator: $("input[name='_authenticator']").val(),
+				uid:  $.toJSON(uids),};
+			window.jsonapi_cache = window.jsonapi_cache || {};
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: window.portal_url + "/@@API/allowedTransitionsFor_many",
+				data: request_data,
+				success: function(data) {
+					if ('transitions' in data) {
+						for (var i = 0; i < data.transitions.length; i++) {
+							var uid = data.transitions[i].uid;
+							var trans = data.transitions[i].transitions;
+							var el = $("input[type='checkbox'][id*='_cb_'][value='"+uid+"']");
+							el.attr('data-valid_transitions', trans.join(','));
+							$(el).show();
+						}
+						$("input[id*='select_all']").fadeIn();
+					}
+				}
+			});
 		}
-		// intersect values from all arrays in all_valid_transitions
-		var valid_transitions = all_valid_transitions.shift().filter(function (v) {
-		    return all_valid_transitions.every(function (a) {
-		        return a.indexOf(v) !== -1;
-		    })
-		})
-		// Hide all buttons except the ones listed as valid.
-		$.each($("input[workflow_transition='yes']"), function (i, e) {
-			if($.inArray($(e).attr('transition'), valid_transitions) == -1){
-				$(e).hide()
-			}
-			else {
-				$(e).show()
-			}
-		})
-		// if any checkboxes are checked, then all "custom" action buttons are shown.
-		// This means any action button that is not linked to a workflow transition.
-		if(checked.length>0){
-			$("input[workflow_transition='no']").show()
-		} else {
-			$("input[workflow_transition='no']").hide()
-		}
+		loading_transitions = false;
 	}
 
+	/**
+	* Controls the behavior when a checkbox of row selection is clicked.
+	* Updates the status of the 'select all' checkbox accordingly and also
+	* re-renders the workflow action buttons from the bottom of the list
+	* based on the allowed transitions of the currently selected items
+	*/
 	function select_one_clicked() {
-		$("input[name='uids:list']").live("click", function () {
-			show_or_hide_transition_buttons();
-		})
+		"use strict";
+		$("input[type='checkbox'][id*='_cb_']").live("click", function () {
+			var blst = $(this).parents("table.bika-listing-table");
+			render_transition_buttons(blst);
+			// Modify all checkbox statuses
+			var checked = $("input[type='checkbox'][id*='_cb_']:checked");
+			var all =  $("input[type='checkbox'][id*='_cb_']");
+			var checkall = $(blst).find("input[id*='select_all']");
+			checkall.prop("checked", checked.length == all.length);
+		});
 	}
 
+	/**
+	* Controls the behavior when the 'select all' checkbox is clicked.
+	* Checks/Unchecks all the row selection checkboxes and once done,
+	* re-renders the workflow action buttons from the bottom of the list,
+	* based on the allowed transitions for the currently selected items
+	*/
 	function select_all_clicked() {
+		"use strict";
 		// select all (on this page at least)
 		$("input[id*='select_all']").live("click", function () {
-			var checkboxes = $(this).parents("form").find("[id*='_cb_']")
-			if ($(this).prop("checked")) {
-				$(checkboxes).filter("input:checkbox:not(:checked)").prop("checked", true)
-			}
-			else {
-				$(checkboxes).filter("input:checkbox:checked").prop("checked", false)
-			}
-			show_or_hide_transition_buttons();
-		})
+			var blst = $(this).parents("table.bika-listing-table");
+			var checkboxes = $(blst).find("[id*='_cb_']");
+			$(checkboxes).prop("checked", $(this).prop("checked"));
+			render_transition_buttons(blst);
+		});
 	}
 
-	function manage_select_all_state() {
-		// modify select_all checkbox when regular checkboxes are modified
-		$("input[id*='_cb_']").live("change", function () {
-			form_id = $(this).parents("form").attr("id")
-			all_selected = true
-			$.each($("input[id^='" + form_id + "_cb_']"), function (i, v) {
-				if (!($(v).prop("checked"))) {
-					all_selected = false
-				}
-			})
-			if (all_selected) {
-				$("#" + form_id + "_select_all").prop("checked", true)
+	/**
+	* Re-generates the workflow action buttons from the bottom of the list in
+	* accordance with the allowed transitions for the currently selected items.
+	* This is, makes the intersection within all allowed transitions and adds
+	* the corresponding buttons to the workflow action bar.
+	*/
+	function render_transition_buttons(blst) {
+		"use strict";
+		var allowed_transitions = [];
+		var hidden_transitions = $(blst).find('input[type="hidden"][id="hide_transitions"]');
+		hidden_transitions = $(hidden_transitions).length == 1 ? $(hidden_transitions).val() : '';
+		hidden_transitions = hidden_transitions === '' ? [] : hidden_transitions.split(',');
+		var restricted_transitions = $(blst).find('input[type="hidden"][id="restricted_transitions"]');
+		restricted_transitions = $(restricted_transitions).length == 1 ? $(restricted_transitions).val() : '';
+		restricted_transitions = restricted_transitions === '' ? [] : restricted_transitions.split(',');
+		var checked = $(blst).find("input[type='checkbox'][id*='_cb_']:checked");
+		$(checked).each(function(e) {
+			var transitions = $(this).attr('data-valid_transitions');
+			transitions = transitions.split(',');
+			if (restricted_transitions.length > 0) {
+				// Do not want transitions other than those defined in bikalisting
+				transitions = transitions.filter(function(el) {
+					return restricted_transitions.indexOf(el) != -1;
+				});
 			}
-			else {
-				$("#" + form_id + "_select_all").prop("checked", false)
+			// Do not show hidden transitions
+			transitions = transitions.filter(function(el) {
+				return hidden_transitions.indexOf(el) == -1;
+			});
+			// We only want the intersection within all selected items
+			if (allowed_transitions.length > 0) {
+				transitions = transitions.filter(function(el) {
+					return allowed_transitions.indexOf(el) != -1;
+				});
 			}
-		})
+			allowed_transitions = transitions;
+		});
+		if (restricted_transitions.length > 0) {
+			// Sort the transitions in accordance with bikalisting settings
+			allowed_transitions = restricted_transitions.filter(function(v) {
+			    return allowed_transitions.includes(v);
+			});
+		}
+
+		// Generate the action buttons
+		var buttonspane = $(blst).find('span.workflow_action_buttons');
+		$(buttonspane).html('');
+		for (var i = 0; i < allowed_transitions.length; i++) {
+			var trans = allowed_transitions[i];
+			var button = '<input id="'+trans+'_transition" class="context workflow_action_button action_button allowMultiSubmit" type="submit" url="" value="'+_(PMF(trans+'_transition_title'))+'" transition="'+trans+'" name="workflow_action_button">&nbsp;';
+			$(buttonspane).append(button);
+		}
+		// Add now custom actions
+		if ($(checked).length > 0) {
+			var custom_actions = $(blst).find('input[type="hidden"].custom_action');
+			$(custom_actions).each(function(e){
+				var trans = $(this).val();
+				var url = $(this).attr('url');
+				var title = $(this).attr('title');
+				var button = '<input id="'+trans+'_transition" class="context workflow_action_button action_button allowMultiSubmit" type="submit" url="'+url+'" value="'+title+'" transition="'+trans+'" name="workflow_action_button">&nbsp;';
+				$(buttonspane).append(button);
+			});
+		}
 	}
 
 	function listing_string_input_keypress() {
+		"use strict";
 		$(".listing_string_entry,.listing_select_entry").live("keypress", function (event) {
 			// Prevent automatic submissions of manage_results forms when enter is pressed
 			var enter = 13

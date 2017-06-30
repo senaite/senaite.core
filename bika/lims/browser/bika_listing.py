@@ -27,6 +27,7 @@ from bika.lims.utils import isActive, getHiddenAttributesForClass
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getAllowedTransitions
 from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
 from plone.i18n.normalizer.interfaces import IIDNormalizer
@@ -459,6 +460,9 @@ class BikaListingView(BrowserView):
         # Requests view checks bika_setup.getSamplingBarEnabledAnalysisRequests
         # to know if the functionality is activeated or not for its views.
         self.filter_bar_enabled = False
+        # Stores the translations of the statuses from the items displayed in
+        # this list. It value is set automatically in folderitems function.
+        self.state_titles = {}
 
     @property
     def review_state(self):
@@ -873,46 +877,12 @@ class BikaListingView(BrowserView):
         """
         # Getting a security manager instance for the current reques
         self.security_manager = getSecurityManager()
-        if self.workflow is None:
-            self.workflow = getToolByName(self.context, 'portal_workflow')
-        # If the classic is True,, use the old way.
-        if classic:
-            return self._folderitems(full_objects)
+        self.workflow = getToolByName(self.context, 'portal_workflow')
         if not hasattr(self, 'contentsMethod'):
             self.contentsMethod = getToolByName(self.context, self.catalog)
-        # Setting up some attributes
-        context = aq_inner(self.context)
-        # Creating a copy of the contentFilter dictionary in order to include
-        # the filter bar's filtering additions in the query. We don't want to
-        # modify contentFilter with those 'extra' filtering elements to be
-        # inculded in the.
-        contentFilterTemp = copy.deepcopy(self.contentFilter)
-        addition = self.get_filter_bar_queryaddition()
-        # Adding the extra filtering elements
-        if addition:
-            contentFilterTemp.update(addition)
-        # Check for 'and'/'or' logic queries
-        if (hasattr(self, 'And') and self.And) \
-           or (hasattr(self, 'Or') and self.Or):
-            # if contentsMethod is capable, we do an AdvancedQuery.
-            if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
-                aq = self.contentsMethod.makeAdvancedQuery(contentFilterTemp)
-                if hasattr(self, 'And') and self.And:
-                    tmpAnd = And()
-                    for q in self.And:
-                        tmpAnd.addSubquery(q)
-                    aq &= tmpAnd
-                if hasattr(self, 'Or') and self.Or:
-                    tmpOr = Or()
-                    for q in self.Or:
-                        tmpOr.addSubquery(q)
-                    aq &= tmpOr
-                brains = self.contentsMethod.evalAdvancedQuery(aq)
-            else:
-                # otherwise, self.contentsMethod must handle contentFilter
-                brains = self.contentsMethod(contentFilterTemp)
-        else:
-            brains = self.contentsMethod(contentFilterTemp)
+
+        if classic:
+            return self._folderitems(full_objects)
 
         # idx increases one unit each time an object is added to the 'items'
         # dictionary to be returned. Note that if the item is not rendered,
@@ -920,8 +890,8 @@ class BikaListingView(BrowserView):
         idx = 0
         results = []
         self.show_more = False
-        brains = brains[self.limit_from:]
-        for i, obj in enumerate(brains):
+        brains = self._fetch_brains(self.limit_from)
+        for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             # we only take allowed items into account
@@ -934,17 +904,14 @@ class BikaListingView(BrowserView):
             # doing it later in folderitems) and dealing with paging
             if not obj or not self.isItemAllowed(obj):
                 continue
-            modified = self.ulocalized_time(obj.modified()),
-            state_class = ''
+
+            # Get the css for this row in accordance with the obj's state
             states = obj.getObjectWorkflowStates
             if not states:
-                logger.warning(
-                    'No workflow states found for object with id {0}'
-                    .format(obj.getId))
                 states = {}
-            states = states if states else {}
-            for w_id in states.keys():
-                state_class += "state-%s " % states.get(w_id, '')
+            state_class = ['state-{0}'.format(v) for v in states.values()]
+            state_class = ' '.join(state_class)
+
             # Building the dictionary with basic items
             results_dict = dict(
                 # obj can be an object or a brain!!
@@ -974,24 +941,24 @@ class BikaListingView(BrowserView):
                 replace={},
                 choices={},
             )
-            # Getting the state title, if the review_state doesn't have a title
-            # use the title of the first workflow found for the object
-            try:
-                rs = obj.review_state
-                st_title =\
-                    self.workflow.getTitleForStateOnType(rs, obj.portal_type)
-                st_title = t(PMF(st_title))
-            except:
-                logger.warning(
-                    "Workflow title doesn't obtined for object %s" % obj.getId)
-                rs = 'active'
-                st_title = None
+            # Set states and state titles
+            ptype = obj.portal_type
             for state_var, state in states.items():
-                if not st_title:
-                    st_title = self.workflow.getTitleForStateOnType(
-                        state, obj.portal_type)
                 results_dict[state_var] = state
-            results_dict['state_title'] = st_title
+                st_title = self.state_titles.get(state, None)
+                if not st_title:
+                    try:
+                        st_title = self.workflow.getTitleForStateOnType(state,
+                                                                        ptype)
+                        if st_title:
+                            st_title = t(PMF(st_title))
+                            self.state_titles[state] = st_title
+                    except:
+                        logger.warning("Cannot obtain title for state {0} and "
+                                       "object {1}".format(state, obj.getId))
+                if st_title and state_var == obj.review_state:
+                    results_dict['state_title'] = st_title
+
             # extra classes for individual fields on this item
             # { field_id : "css classes" }
             results_dict['class'] = {}
@@ -1012,7 +979,7 @@ class BikaListingView(BrowserView):
                 # if the key is already in the results dict
                 # then we don't replace it's value
                 value = results_dict.get(key, '')
-                if key not in results_dict:
+                if not value:
                     attrobj = getFromString(obj, key)
                     value = attrobj if attrobj else value
 
@@ -1039,42 +1006,15 @@ class BikaListingView(BrowserView):
                 idx += 1
         return results
 
-    def _folderitems(self, full_objects=False):
+    def _fetch_brains(self, idxfrom=0):
+        """Returns the brains that must be displayed in the current list
+        Uses the contentFilter and/or contentsMethod class variables (or
+        functions) to query against the database. Also takes into account if
+        only a subset of the results must be returned by using idxfrom and. If
+        the number of results is lower than idxfrom, will return an empty array
+        :param idxfrom: index to start to count for results
+        :return: the list of brains to be displayed in this list
         """
-        WARNING: :full_objects: could create a big performance hit.
-        >>> portal = layer['portal']
-        >>> portal_url = portal.absolute_url()
-        >>> from plone.app.testing import SITE_OWNER_NAME
-        >>> from plone.app.testing import SITE_OWNER_PASSWORD
-
-        Test page batching https://github.com/bikalabs/Bika-LIMS/issues/1276
-        When visiting the second page, the Water sampletype should be displayed:
-
-        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
-        >>> browser.open(portal_url+"/bika_setup/bika_sampletypes/folder_view?",
-        ... "list_pagesize=10&list_review_state=default")
-        >>> browser.contents
-        '...Water...'
-        """
-
-        #self.contentsMethod = self.context.getFolderContents
-        if not hasattr(self, 'contentsMethod'):
-            self.contentsMethod = getToolByName(self.context, self.catalog)
-        # Setting up some attributes
-        context = aq_inner(self.context)
-        plone_layout = getMultiAdapter((context, self.request), name = u'plone_layout')
-        plone_utils = getToolByName(context, 'plone_utils')
-        plone_view = getMultiAdapter((context, self.request), name = u'plone')
-        portal_properties = getToolByName(context, 'portal_properties')
-        portal_types = getToolByName(context, 'portal_types')
-        site_properties = portal_properties.site_properties
-        norm = getUtility(IIDNormalizer).normalize
-        if self.request.get('show_all', '').lower() == 'true' \
-                or self.show_all == True \
-                or self.pagesize == 0:
-            show_all = True
-        else:
-            show_all = False
         # Creating a copy of the contentFilter dictionary in order to include
         # the filter bar's filtering additions in the query. We don't want to
         # modify contentFilter with those 'extra' filtering elements to be
@@ -1107,14 +1047,56 @@ class BikaListingView(BrowserView):
         else:
             brains = self.contentsMethod(contentFilterTemp)
 
+        # Return a subset of results, if necessary
+        if idxfrom and len(brains) > idxfrom:
+            return brains[idxfrom:]
+        return brains
+
+    def _folderitems(self, full_objects=False):
+        """
+        WARNING: :full_objects: could create a big performance hit.
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+
+        Test page batching https://github.com/bikalabs/Bika-LIMS/issues/1276
+        When visiting the second page, the Water sampletype should be displayed:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/bika_setup/bika_sampletypes/folder_view?",
+        ... "list_pagesize=10&list_review_state=default")
+        >>> browser.contents
+        '...Water...'
+        """
+        logger.warn("Using folderitems in classic mode, with objects wake-up")
+        #self.contentsMethod = self.context.getFolderContents
+        if not hasattr(self, 'contentsMethod'):
+            self.contentsMethod = getToolByName(self.context, self.catalog)
+        # Setting up some attributes
+        context = aq_inner(self.context)
+        plone_layout = getMultiAdapter((context, self.request), name = u'plone_layout')
+        plone_utils = getToolByName(context, 'plone_utils')
+        plone_view = getMultiAdapter((context, self.request), name = u'plone')
+        portal_properties = getToolByName(context, 'portal_properties')
+        portal_types = getToolByName(context, 'portal_types')
+        site_properties = portal_properties.site_properties
+        norm = getUtility(IIDNormalizer).normalize
+        if self.request.get('show_all', '').lower() == 'true' \
+                or self.show_all == True \
+                or self.pagesize == 0:
+            show_all = True
+        else:
+            show_all = False
+
         # idx increases one unit each time an object is added to the 'items'
         # dictionary to be returned. Note that if the item is not rendered,
         # the idx will not increase.
         idx = 0
         results = []
         self.show_more = False
-        brains = brains[self.limit_from:]
-        for i, obj in enumerate(brains):
+        brains = self._fetch_brains(self.limit_from)
+        for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             # we only take allowed items into account
@@ -1226,6 +1208,8 @@ class BikaListingView(BrowserView):
                 results_dict[state_var] = state
             results_dict['state_title'] = st_title
 
+            results_dict['valid_transitions'] = getAllowedTransitions(obj)
+
             # extra classes for individual fields on this item { field_id : "css classes" }
             results_dict['class'] = {}
             for name, adapter in getAdapters((obj, ), IFieldIcons):
@@ -1309,65 +1293,6 @@ class BikaListingView(BrowserView):
 
         data = self.render_items()
         return data
-
-    def get_workflow_actions(self):
-        """ Compile a list of possible workflow transitions for items
-            in this Table.
-        """
-
-        # cbb return empty list if we are unable to select items
-        if not self.show_select_column:
-            return []
-
-        if self.workflow is None:
-            self.workflow = getToolByName(self.context, 'portal_workflow')
-        # get all transitions for all items.
-        transitions = {}
-        actions = []
-        for obj in [i.get('obj', '') for i in self.items]:
-            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
-            for it in self.workflow.getTransitionsFor(obj):
-                transitions[it['id']] = it
-
-        # the list is restricted to and ordered by these transitions.
-        if 'transitions' in self.review_state:
-            for transition_dict in self.review_state['transitions']:
-                if transition_dict['id'] in transitions:
-                    actions.append(transitions[transition_dict['id']])
-        else:
-            actions = transitions.values()
-
-        new_actions = []
-        # remove any invalid items with a warning
-        for a,action in enumerate(actions):
-            if isinstance(action, dict) \
-                    and 'id' in action:
-                new_actions.append(action)
-            else:
-                logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
-        actions = new_actions
-        # and these are removed
-        if 'hide_transitions' in self.review_state:
-            actions = [a for a in actions
-                       if a['id'] not in self.review_state['hide_transitions']]
-
-        # cheat: until workflow_action is abolished, all URLs defined in
-        # GS workflow setup will be ignored, and the default will apply.
-        # (that means, WorkflowAction-bound URL is called).
-        for i, action in enumerate(actions):
-            actions[i]['url'] = ''
-
-        # if there is a self.review_state['some_state']['custom_actions'] attribute
-        # on the BikaListingView, add these actions to the list.
-        if 'custom_actions' in self.review_state:
-            for action in self.review_state['custom_actions']:
-                if isinstance(action, dict) \
-                        and 'id' in action:
-                    actions.append(action)
-
-        for a,action in enumerate(actions):
-            actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
-        return actions
 
     def tabindex(self):
         i = 0

@@ -250,26 +250,23 @@ Colum Headers
 Workflow Actions
 ********************************</tal:comment>
         <td class="workflow_actions">
+            <input type="hidden" id="restricted_transitions"
+                tal:condition="view/bika_listing/show_workflow_action_buttons"
+                tal:attributes="value python:','.join([trans['id'] for trans in view.bika_listing.review_state.get('transitions', [])])"/>
+            <input type="hidden" id="hide_transitions"
+                tal:condition="view/bika_listing/show_workflow_action_buttons"
+                tal:attributes="value python:','.join(view.bika_listing.review_state.get('hide_transitions',[]))"/>
+            <tal:custom_actions condition="view/bika_listing/show_workflow_action_buttons">
+                <tal:customaction repeat="caction python: view.bika_listing.review_state.get('custom_actions',[])">
+                    <input type="hidden" class="custom_action"
+                        tal:condition="python:caction.get('id', '')"
+                        tal:attributes="value caction/id;
+                                        title python:caction.get('title', caction.get('id'));
+                                        url python:caction.get('url','')"/>
+                </tal:customaction>
+            </tal:custom_actions>
             <span class="workflow_action_buttons"
-                tal:define="actions view/bika_listing/get_workflow_actions">
-                <span tal:omit-tag="python:True" tal:repeat="action actions"
-                    tal:condition="view/bika_listing/show_workflow_action_buttons">
-                    <input
-                        type="hidden"
-                        tal:attributes="name action/title;
-                                        value action/id;"/>
-                    <input
-                        class="context workflow_action_button action_button allowMultiSubmit"
-                        type="submit"
-                        name="workflow_action_button"
-                        i18n:attributes="value"
-                        i18n:domain="plone"
-                        tal:attributes="
-                            id python:action['id']+'_transition';
-                            transition action/id;
-                            value string:${action/id}_transition_title;
-                            url python:action.get('url', '');"/>
-                </span>
+                tal:condition="view/bika_listing/show_workflow_action_buttons">
             </span>
         </td>
         <td class="batching" style="text-align:right">

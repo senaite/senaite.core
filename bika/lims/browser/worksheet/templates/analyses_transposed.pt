@@ -65,7 +65,7 @@
                     <tr class="noborder" tal:condition="python:len(rows) > 0">
                         <td class="workflow_actions">
                             <span class="workflow_action_buttons"
-                                tal:define="actions view/bika_listing/get_workflow_actions;
+                                tal:define="actions view/get_workflow_actions;
                                             exclude_actions python:['unassign',];
                                             actions python:[a for a in actions if a.get('id','') not in exclude_actions];">
                                 <span tal:omit-tag="python:True" tal:repeat="action actions"
