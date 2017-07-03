@@ -107,6 +107,9 @@
                  other_val = $('.rejectionwidget-input-other').val();
              }
              else{other_ch_val=0;}
+         }else{
+            // Just set ch_val '0' if it is false.
+            ch_val=0;
          }
          // Gathering all values
          var rej_widget_state = {
