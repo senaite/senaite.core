@@ -4,7 +4,7 @@
         portal portal_url/getPortalObject;
         ar python:view.context;
         rej_widg    python:ar.getRejectionReasons();
-        reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else []
+        reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else [];
         lab python:ar.bika_setup.laboratory;">
 
     <tal:multiplereasons condition="python:len(reasons)&gt;1">
