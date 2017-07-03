@@ -19,6 +19,7 @@ version = '3.2.0.1707'
 @upgradestep(product, version)
 def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ufrom = ut.getInstalledVersion(product)
     if ut.isOlderVersion(product, version):
@@ -29,7 +30,7 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
-
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
 
