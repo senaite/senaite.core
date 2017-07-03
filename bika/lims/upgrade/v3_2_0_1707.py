@@ -11,6 +11,10 @@ from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 
 from Products.CMFCore.Expression import Expression
+from Products.CMFCore.utils import getToolByName
+
+from bika.lims.catalog.report_catalog import bika_catalog_report_definition
+from bika.lims.catalog.report_catalog import CATALOG_REPORT_LISTING
 
 product = 'bika.lims'
 version = '3.2.0.1707'
@@ -30,10 +34,11 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
+    # importing toolset in order to add bika_catalog_report
     setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
-
+    create_report_catalog(portal, ut)
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -60,3 +65,20 @@ def set_guard_expressions(portal):
                     transition.guard = guard
                     logger.info("Guard from transition '{0}' set to '{1}'"
                                 .format(torenid, newguard))
+
+
+def create_report_catalog(portal, upgrade_utils):
+    at = getToolByName(portal, 'archetype_tool')
+    catalog_dict = bika_catalog_report_definition.get(CATALOG_REPORT_LISTING, {})
+    report_indexes = catalog_dict.get('indexes', {})
+    report_columns = catalog_dict.get('columns',[])
+    # create catalog indexes
+    for idx in report_indexes:
+        upgrade_utils.addIndex(CATALOG_REPORT_LISTING, idx, report_indexes[idx])
+    # create catalog columns
+    for col in report_columns:
+        upgrade_utils.addColumn(CATALOG_REPORT_LISTING, col)
+    # define objects to be catalogued
+    at.setCatalogsByType('Report', [CATALOG_REPORT_LISTING, ])
+    # catalog objects
+    # uncatalog objects
