@@ -15,6 +15,8 @@ from bika.lims.catalog.autoimportlogs_catalog import \
     bika_catalog_autoimportlogs_listing_definition
 from bika.lims.catalog.worksheet_catalog import \
     bika_catalog_worksheet_listing_definition
+from bika.lims.catalog.report_catalog import \
+    bika_catalog_report_definition
 
 
 def getCatalogDefinitions():
@@ -26,11 +28,13 @@ def getCatalogDefinitions():
     analysis = bika_catalog_analysis_listing_definition
     autoimportlogs = bika_catalog_autoimportlogs_listing_definition
     worksheet = bika_catalog_worksheet_listing_definition
+    report = bika_catalog_report_definition
     # Merging the catalogs
     final.update(analysis_request)
     final.update(analysis)
     final.update(autoimportlogs)
     final.update(worksheet)
+    final.update(report)
     return final
 
 

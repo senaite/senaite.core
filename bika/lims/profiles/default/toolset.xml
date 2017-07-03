@@ -6,4 +6,5 @@
  <required tool_id="bika_catalog_analysisrequest_listing" class="bika.lims.catalog.BikaCatalogAnalysisRequestListing"/>
  <required tool_id="bika_catalog_autoimportlogs_listing" class="bika.lims.catalog.BikaCatalogAutoImportLogsListing"/>
  <required tool_id="bika_catalog_worksheet_listing" class="bika.lims.catalog.BikaCatalogWorksheetListing"/>
+ <required tool_id="bika_catalog_report" class="bika.lims.catalog.BikaCatalogReport"/>
 </tool-setup>
