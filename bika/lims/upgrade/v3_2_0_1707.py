@@ -39,6 +39,7 @@ def upgrade(tool):
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
     create_report_catalog(portal, ut)
+    ut.refreshCatalogs()
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -68,17 +69,33 @@ def set_guard_expressions(portal):
 
 
 def create_report_catalog(portal, upgrade_utils):
+    logger.info('Creating Report catalog')
     at = getToolByName(portal, 'archetype_tool')
     catalog_dict = bika_catalog_report_definition.get(CATALOG_REPORT_LISTING, {})
     report_indexes = catalog_dict.get('indexes', {})
-    report_columns = catalog_dict.get('columns',[])
-    # create catalog indexes
+    report_columns = catalog_dict.get('columns', [])
+    # create report catalog indexes
     for idx in report_indexes:
         upgrade_utils.addIndex(CATALOG_REPORT_LISTING, idx, report_indexes[idx])
-    # create catalog columns
+    # create report catalog columns
     for col in report_columns:
         upgrade_utils.addColumn(CATALOG_REPORT_LISTING, col)
     # define objects to be catalogued
     at.setCatalogsByType('Report', [CATALOG_REPORT_LISTING, ])
-    # catalog objects
-    # uncatalog objects
+    # retrieve brains of objects to be catalogued from UID catalog
+    logger.info('Recovering reports to reindex')
+    bika_catalog = getToolByName(portal, 'bika_catalog')
+    reports_brains = bika_catalog(portal_type='Report')
+    i = 0  # already indexed objects counter
+    # reindex the found objects in report catalog and uncatalog them from bika_catalog
+    logger.info('Reindexing reports')
+    for brain in reports_brains:
+        if i % 100 == 0:
+            logger.info('Reindexed {}/{} reports'.format(i, len(reports_brains)))
+        report_obj = brain.getObject()
+        report_obj.reindexObject()
+        # uncatalog reports from bika_catalog
+        path_uid = '/'.join(report_obj.getPhysicalPath())
+        bika_catalog.uncatalog_object(path_uid)
+        i += 1
+    logger.info('Reindexed {}/{} reports'.format(len(reports_brains), len(reports_brains)))

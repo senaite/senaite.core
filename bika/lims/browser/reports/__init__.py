@@ -18,6 +18,7 @@ from bika.lims.utils import to_utf8 as _c
 from bika.lims.interfaces import IProductivityReport
 from bika.lims.interfaces import IQualityControlReport
 from bika.lims.interfaces import IAdministrationReport
+from bika.lims.catalog.report_catalog import CATALOG_REPORT_LISTING
 from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
@@ -116,7 +117,7 @@ class ReportHistoryView(BikaListingView):
     def __init__(self, context, request):
         super(ReportHistoryView, self).__init__(context, request)
 
-        self.catalog = "bika_catalog"
+        self.catalog = CATALOG_REPORT_LISTING
         # this will be reset in the call to filter on own reports
         self.contentFilter = {'portal_type': 'Report',
                               'sort_order': 'reverse'}

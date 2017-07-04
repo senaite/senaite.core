@@ -13,10 +13,15 @@ from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
 # Using a variable to avoid plain strings in code
 CATALOG_REPORT_LISTING = 'bika_catalog_report'
 # Defining the indexes for this catalog
-_indexes_dict = {}
+_indexes_dict = {'getClientUID': 'FieldIndex',
+}
 
 # Defining the columns for this catalog
-_columns_list = []
+_columns_list = ['getClientURL',
+                 'getFileSize',
+                 'getCreatorFullName',
+                 'getClientTitle'
+]
 
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()
