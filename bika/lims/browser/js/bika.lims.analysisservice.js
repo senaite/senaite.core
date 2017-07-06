@@ -497,7 +497,7 @@ function AnalysisServiceEditView() {
                 // So, we allow selection of calculation manually and fill the list with the all available Calculations
                 // in the system.
                 $(calculation_label).show();
-                $(calculation_select_element).prop('disabled', false);
+                //$(calculation_select_element).prop('disabled', false);
 
                 // Get available Calculations from Bika
                 $.ajax({
@@ -621,10 +621,11 @@ function AnalysisServiceEditView() {
         // Remove 'None' option from 'Methods' multi-select
         $(methods_ms).find('option[value=""]').remove();
 
+        // Commenting out this event because default method can be selected by user?!
         // Disable the default calculation selector
-        $(calculation_select_element).focus(function(e) {
-            $(this).blur();
-        });
+//        $(calculation_select_element).focus(function(e) {
+//            $(this).blur();
+//        });
 
         // Toggle default/alternative calculation
         if (!$(default_calculation_chk).is(':checked')) {
