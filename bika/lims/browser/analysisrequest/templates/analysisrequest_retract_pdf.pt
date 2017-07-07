@@ -119,7 +119,7 @@
                 <td class="label" i18n:translate="">Date collected</td>
                 <td tal:content="python:plone_view.toLocalizedTime(sample.getDateSampled())"></td>
                 <td class="label" i18n:translate="">Date received</td>
-                <td tal:content="python:plone_view.toLocalizedTime(sample.created())"></td>
+                <td tal:content="python:plone_view.toLocalizedTime(sample.getDateReceived())"></td>
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Sample Number/NMRL Number</td>
