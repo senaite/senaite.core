@@ -1342,7 +1342,7 @@ schema = BikaSchema.copy() + Schema((
         'DatePublishedViewer',
         mode="r",
         read_permission=permissions.View,
-        expression="here.getDatePublished().strftime('%Y-%m-%d %H:%M %p')",
+        expression="here.getDatePublished().strftime('%Y-%m-%d %H:%M %p') if here here.getDatePublished() else ''",
         widget=StringWidget(
             label=_("Date Published"),
             visible={
