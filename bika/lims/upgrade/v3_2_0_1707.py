@@ -33,6 +33,9 @@ def upgrade(tool):
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
 
+    # Remove 'Date Published' from AR objects
+    removeDatePublishedFromAR(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -59,3 +62,21 @@ def set_guard_expressions(portal):
                     transition.guard = guard
                     logger.info("Guard from transition '{0}' set to '{1}'"
                                 .format(torenid, newguard))
+
+def removeDatePublishedFromAR(portal):
+    """
+    DatePublished field has been removed from ARs' schema, because we didn't have setter and that field was always
+    empty. Instead we are adding ComputedField which calls old getDatePublished() but is StringField.
+    """
+    uc = getToolByName(portal, 'uid_catalog')
+    ar_reps = uc(portal_type='ARReport')
+    f_name = 'DatePublished'
+    counter = 0
+    for ar in ar_reps:
+        obj = ar.getObject()
+        if hasattr(obj, f_name):
+            delattr(obj, f_name)
+            counter += 1
+
+    logger.info("'DatePublished' attribute has been removed from %d ARReport objects."
+                % counter)
