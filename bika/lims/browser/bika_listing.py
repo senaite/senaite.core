@@ -321,7 +321,7 @@ class BikaListingView(BrowserView):
 
     # With this setting, we allow categories to be simple empty place-holders.
     # When activated, the category data will be fetched from the server,
-    # and complted inline.  This is useful for list which will have many
+    # and completed inline.  This is useful for lists which will have many
     # thousands of entries in many categories, where loading the entire list
     # in HTML would be very slow.
     ajax_categories = False
@@ -355,26 +355,69 @@ class BikaListingView(BrowserView):
     # all entries without values.
     #
     # Possible column dictionary keys are:
-    # - allow_edit
+    #
+    # - allow_edit:
     #   This field is made editable.
     #   Interim fields are always editable
-    # - type
-    #   "string" is the default.
-    #   "boolean" a checkbox is rendered
-    #   "date" A text field is rendered, with a jquery DatePicker attached.
-    #   "choices" renders a dropdown.  The vocabulary data must be placed in
-    #             item['choices'][column_id].  it's a list of dictionaries:
-    #             [{'ResultValue':x}, {'ResultText',x}].
-    # - index
-    #   The name of the catalog index for the column.  Allows full-table
-    #            sorting.
-    # - sortable: if False, adds nosort class to this column.
-    # - toggle: enable/disable column toggle ability.
-    # - input_class: CSS class applied to input widget in edit mode
-    #               autosave: when js detects this variable as 'true',
-    #               the system will save the value after been
-    #               introduced via ajax.
-    # - input_width: size attribute applied to input widget in edit mode
+    #
+    # - type:
+    #   "string"    is the default.
+    #   "boolean"   a checkbox is rendered
+    #   "date"      A text field is rendered, with a jquery DatePicker attached.
+    #   "choices"   Renders a dropdown.  The vocabulary data must be placed in
+    #               item['choices'][column_id]. It's a list of dictionaries:
+    #               [{'ResultValue':x}, {'ResultText',x}].
+    #
+    # - index:
+    #   The name of the catalog index for the column. Allows full-table
+    #   sorting.
+    #
+    # - sortable:
+    #   If False, adds nosort class to this column.
+    #
+    # - toggle:
+    #   Enable/disable column toggle ability.
+    #
+    # - input_class:
+    #   CSS class applied to input widget in edit mode
+    #   autosave: when js detects this variable as 'true',
+    #   the system will save the value after been
+    #   introduced via ajax.
+    #
+    # - input_width:
+    #   Size attribute applied to input widget in edit mode
+    #
+    # - attr:
+    #   The name of the catalog column/metadata field from where to retrieve the data
+    #   that will be rendered in the column for a particular object. If not specified
+    #   then the column key will be used as this value. As an example:
+    #
+    #   self.columns = {
+    #       'file_size': {
+    #            'title': _("Size"),
+    #            'attr': 'getFileSize',
+    #            'sortable': False, }, }
+    #
+    #   ^Here, getFileSize will be used to retrieve the data
+    #
+    #   self.columns = {
+    #       'file_size': {
+    #            'title': _("Size"),
+    #            'sortable': False, }, }
+    #
+    #   ^Here, file_size will be used to retrieve the data
+    #
+    # - title:
+    #   Title that will be used to name the column when rendered
+    #
+    # - replace_url:
+    #   if replace_url:
+    #         attrobj = getFromString(obj, replace_url)
+    #         if attrobj:
+    #             results_dict['replace'][key] = \
+    #                 '<a href="%s">%s</a>' % (attrobj, value)
+    #
+
     columns = {
            'obj_type': {'title': _('Type')},
            'id': {'title': _('ID')},
@@ -865,17 +908,17 @@ class BikaListingView(BrowserView):
         No object is needed by default. We should be able to get all
         the listing columns taking advantage of the catalog's metadata,
         so that the listing will be much more faster. If a very specific
-        info has to be retrive from the objects, we can define
+        info has to be retrieve from the objects, we can define
         full_objects as True but performance can be lowered.
 
         :full_objects: a boolean, if True, each dictionary will contain an item
-        with the cobject itself. item.get('obj') will return a object.
+        with the object itself. item.get('obj') will return a object.
         Only works with the 'classic' way.
         WARNING: :full_objects: could create a big performance hit!
         :classic: if True, the old way folderitems works will be executed. This
-        function is mainly used to mantain the integrity with the old version.
+        function is mainly used to maintain the integrity with the old version.
         """
-        # Getting a security manager instance for the current reques
+        # Getting a security manager instance for the current request
         self.security_manager = getSecurityManager()
         self.workflow = getToolByName(self.context, 'portal_workflow')
         if not hasattr(self, 'contentsMethod'):
@@ -984,7 +1027,7 @@ class BikaListingView(BrowserView):
                     value = attrobj if attrobj else value
 
                     # Custom attribute? Inspect to set the value
-                    # for the current column dinamically
+                    # for the current column dynamically
                     vattr = self.columns[key].get('attr', None)
                     if vattr:
                         attrobj = getFromString(obj, vattr)
@@ -1018,7 +1061,7 @@ class BikaListingView(BrowserView):
         # Creating a copy of the contentFilter dictionary in order to include
         # the filter bar's filtering additions in the query. We don't want to
         # modify contentFilter with those 'extra' filtering elements to be
-        # inculded in the.
+        # included in the.
         contentFilterTemp = copy.deepcopy(self.contentFilter)
         addition = self.get_filter_bar_queryaddition()
         # Adding the extra filtering elements

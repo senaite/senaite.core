@@ -118,13 +118,14 @@ class ReportHistoryView(BikaListingView):
         super(ReportHistoryView, self).__init__(context, request)
 
         self.catalog = CATALOG_REPORT_LISTING
-        # this will be reset in the call to filter on own reports
-        self.contentFilter = {'portal_type': 'Report',
-                              'sort_order': 'reverse'}
+
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = True
+        self.show_select_column = False
+        self.show_column_toggles = False
+        self.show_workflow_action_buttons = False
+        self.show_select_all_checkbox = False
         self.pagesize = 50
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
@@ -136,48 +137,45 @@ class ReportHistoryView(BikaListingView):
         self.review_states = []
 
     def __call__(self):
+        self.columns = {
+            'Title': {
+                'title': _('Title'),
+                'attr': 'Title',
+                'index': 'title', },
+            'file_size': {
+                'title': _("Size"),
+                'attr': 'getFileSize',
+                'sortable': False, },
+            'created': {
+                'title': _("Created"),
+                'attr': 'created',
+                'index': 'created', },
+            'creator': {
+                'title': _("By"),
+                'attr': 'getCreatorFullName',
+                'index': 'Creator', }, }
+        self.review_states = [
+            {'id': 'default',
+             'title': 'All',
+             'contentFilter': {},
+             'columns': ['Title',
+                         'file_size',
+                         'created',
+                         'creator']},
+        ]
+
+        self.contentFilter = {
+            'portal_type': 'Report',
+            'sort_order': 'reverse'}
+
         this_client = logged_in_client(self.context)
         if this_client:
-            self.contentFilter = {
-                'portal_type': 'Report',
-                'getClientUID': this_client.UID(),
-                'sort_order': 'reverse'}
-            self.columns = {
-                'Title': {'title': _('Title')},
-                'FileSize': {'title': _('Size')},
-                'Created': {'title': _('Created')},
-                'By': {'title': _('By')}, }
-            self.review_states = [
-                {'id': 'default',
-                 'title': 'All',
-                 'contentFilter': {},
-                 'columns': ['Title',
-                             'FileSize',
-                             'Created',
-                             'By']},
-            ]
+            self.contentFilter['getClientUID'] = this_client.UID()
         else:
-            self.contentFilter = {
-                'portal_type': 'Report',
-                'sort_order': 'reverse'}
-
-            self.columns = {
-                'Client': {'title': _('Client')},
-                'Title': {'title': _('Report Type')},
-                'FileSize': {'title': _('Size')},
-                'Created': {'title': _('Created')},
-                'By': {'title': _('By')},
-            }
-            self.review_states = [
-                {'id': 'default',
-                 'title': 'All',
-                 'contentFilter': {},
-                 'columns': ['Client',
-                             'Title',
-                             'FileSize',
-                             'Created',
-                             'By']},
-            ]
+            self.columns['client'] = {
+                'title': _('Client'),
+                'attr': 'getClientTitle',
+                'replace_url': 'getClientURL', }
 
         return super(ReportHistoryView, self).__call__()
 
@@ -189,32 +187,34 @@ class ReportHistoryView(BikaListingView):
         else:
             return name
 
+    def folderitem(self, obj, item, index):
+        item = BikaListingView.folderitem(self, obj, item, index)
+        # https://github.com/collective/uwosh.pfg.d2c/issues/20
+        # https://github.com/collective/uwosh.pfg.d2c/pull/21
+        item['replace']['Title'] = \
+             "<a href='%s/ReportFile'>%s</a>" % \
+             (item['url'], item['Title'])
+        item['replace']['created'] = self.ulocalized_time(item['created'])
+        return item
+
     def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        props = self.context.portal_properties.site_properties
-        for x in range(len(items)):
-            if 'obj' not in items[x]:
-                continue
-            obj = items[x]['obj']
-            obj_url = obj.absolute_url()
-            file = obj.getReportFile()
-            icon = file.icon
-
-            items[x]['Client'] = ''
-            client = obj.getClient()
-            if client:
-                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                                                (client.absolute_url(),
-                                                 client.Title())
-            items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
-            items[x]['Created'] = self.ulocalized_time(obj.created())
-            items[x]['By'] = self.user_fullname(obj.Creator())
-
-            items[x]['replace']['Title'] = \
-                "<a href='%s/at_download/ReportFile'>%s</a>" % \
-                (obj_url, items[x]['Title'])
-        return items
-
+        return BikaListingView.folderitems(self, classic=False)
+        # props = self.context.portal_properties.site_properties
+        # for x in range(len(items)):
+        #     if 'obj' not in items[x]:
+        #         continue
+        #     obj = items[x]['obj']
+        #     #obj_url = obj.absolute_url()
+        #     #file = obj.getReportFile()
+        #     #icon = file.icon
+        #
+        #     items[x]['Client'] = ''
+        #     client = obj.getClient()
+        #     if client:
+        #         items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+        #                                         (client.absolute_url(),
+        #                                          client.Title())
+        # return items
 
 class SubmitForm(BrowserView):
     """ Redirect to specific report
