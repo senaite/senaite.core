@@ -12,6 +12,10 @@ from plone.api.portal import get_tool
 from Products.CMFCore.utils import getToolByName
 
 from Products.CMFCore.Expression import Expression
+from Products.CMFCore.utils import getToolByName
+
+from bika.lims.catalog.report_catalog import bika_catalog_report_definition
+from bika.lims.catalog.report_catalog import CATALOG_REPORT_LISTING
 
 product = 'bika.lims'
 version = '3.2.0.1707'
@@ -20,6 +24,7 @@ version = '3.2.0.1707'
 @upgradestep(product, version)
 def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ufrom = ut.getInstalledVersion(product)
     if ut.isOlderVersion(product, version):
@@ -31,11 +36,17 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
 
+    # importing toolset in order to add bika_catalog_report
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
+
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
 
     # Remove 'Date Published' from AR objects
     removeDatePublishedFromAR(portal)
+
+    create_report_catalog(portal, ut)
+    ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -64,6 +75,7 @@ def set_guard_expressions(portal):
                     logger.info("Guard from transition '{0}' set to '{1}'"
                                 .format(torenid, newguard))
 
+                    
 def removeDatePublishedFromAR(portal):
     """
     DatePublished field has been removed from ARs' schema, because we didn't have setter and that field was always
@@ -85,3 +97,37 @@ def removeDatePublishedFromAR(portal):
 
     logger.info("'DatePublished' attribute has been removed from %d AnalysisRequest objects."
                 % counter)
+
+
+def create_report_catalog(portal, upgrade_utils):
+    logger.info('Creating Report catalog')
+    at = getToolByName(portal, 'archetype_tool')
+    catalog_dict = bika_catalog_report_definition.get(CATALOG_REPORT_LISTING, {})
+    report_indexes = catalog_dict.get('indexes', {})
+    report_columns = catalog_dict.get('columns', [])
+    # create report catalog indexes
+    for idx in report_indexes:
+        upgrade_utils.addIndex(CATALOG_REPORT_LISTING, idx, report_indexes[idx])
+    # create report catalog columns
+    for col in report_columns:
+        upgrade_utils.addColumn(CATALOG_REPORT_LISTING, col)
+    # define objects to be catalogued
+    at.setCatalogsByType('Report', [CATALOG_REPORT_LISTING, ])
+    # retrieve brains of objects to be catalogued from UID catalog
+    logger.info('Recovering reports to reindex')
+    bika_catalog = getToolByName(portal, 'bika_catalog')
+    reports_brains = bika_catalog(portal_type='Report')
+    i = 0  # already indexed objects counter
+    # reindex the found objects in report catalog and uncatalog them from bika_catalog
+    logger.info('Reindexing reports')
+    for brain in reports_brains:
+        if i % 100 == 0:
+            logger.info('Reindexed {}/{} reports'.format(i, len(reports_brains)))
+        report_obj = brain.getObject()
+        report_obj.reindexObject()
+        # uncatalog reports from bika_catalog
+        path_uid = '/'.join(report_obj.getPhysicalPath())
+        bika_catalog.uncatalog_object(path_uid)
+        i += 1
+    logger.info('Reindexed {}/{} reports'.format(len(reports_brains), len(reports_brains)))
+

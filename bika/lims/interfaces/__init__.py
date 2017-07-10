@@ -426,30 +426,33 @@ class IWorksheetTemplates(Interface):
 
 class IBikaCatalog(Interface):
 
-    "Marker interface for custom catalog"
+    """Marker interface for custom catalog"""
 
 
 class IBikaAnalysisCatalog(Interface):
 
-    "Marker interface for custom catalog"
+    """Marker interface for custom catalog"""
 
 
 class IBikaSetupCatalog(Interface):
 
-    "Marker interface for custom catalog"
+    """Marker interface for custom catalog"""
 
 
 class IBikaCatalogAnalysisRequestListing(Interface):
-    "Marker interface for custom catalog"
+    """Marker interface for custom catalog"""
 
 
 class IBikaCatalogAutoImportLogsListing(Interface):
-    "Marker interface for custom catalog"
+    """Marker interface for custom catalog"""
 
 
 class IBikaCatalogWorksheetListing(Interface):
-    "Marker interface for custom catalog"
+    """Marker interface for custom catalog"""
 
+
+class IBikaCatalogReport(Interface):
+    """Marker interface for custom catalog"""
 
 class IIdServer(Interface):
 
