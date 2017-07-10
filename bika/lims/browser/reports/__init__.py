@@ -199,22 +199,6 @@ class ReportHistoryView(BikaListingView):
 
     def folderitems(self):
         return BikaListingView.folderitems(self, classic=False)
-        # props = self.context.portal_properties.site_properties
-        # for x in range(len(items)):
-        #     if 'obj' not in items[x]:
-        #         continue
-        #     obj = items[x]['obj']
-        #     #obj_url = obj.absolute_url()
-        #     #file = obj.getReportFile()
-        #     #icon = file.icon
-        #
-        #     items[x]['Client'] = ''
-        #     client = obj.getClient()
-        #     if client:
-        #         items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-        #                                         (client.absolute_url(),
-        #                                          client.Title())
-        # return items
 
 class SubmitForm(BrowserView):
     """ Redirect to specific report

@@ -508,7 +508,6 @@ class BikaGenerator:
         at.setCatalogsByType('Sample', ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplePartition', ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceSample', ['bika_catalog', 'portal_catalog'])
-        # at.setCatalogsByType('Report', ['bika_catalog', ])
 
         addIndex(bc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bc, 'allowedRolesAndUsers', 'KeywordIndex')
