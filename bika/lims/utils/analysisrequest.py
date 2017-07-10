@@ -131,21 +131,20 @@ def create_analysisrequest(client, request, values, analyses=None,
     else:
         # If Preservation is required for some partitions, and the SamplingWorkflow
         # is disabled, we need to transition to to_be_preserved manually.
-        if not sampling_workflow_enabled:
-            to_be_preserved = []
-            sample_due = []
-            lowest_state = 'sample_due'
-            for p in sample.objectValues('SamplePartition'):
-                if p.getPreservation():
-                    lowest_state = 'to_be_preserved'
-                    to_be_preserved.append(p)
-                else:
-                    sample_due.append(p)
-            for p in to_be_preserved:
-                doActionFor(p, 'to_be_preserved')
-            for p in sample_due:
-                doActionFor(p, 'sample_due')
-            doActionFor(sample, lowest_state)
+        to_be_preserved = []
+        sample_due = []
+        lowest_state = 'sample_due'
+        for p in sample.objectValues('SamplePartition'):
+            if p.getPreservation():
+                lowest_state = 'to_be_preserved'
+                to_be_preserved.append(p)
+            else:
+                sample_due.append(p)
+        for p in to_be_preserved:
+            doActionFor(p, 'to_be_preserved')
+        for p in sample_due:
+            doActionFor(p, 'sample_due')
+        doActionFor(sample, lowest_state)
 
         # Transition pre-preserved partitions
         for p in partitions:
