@@ -9,6 +9,7 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 
 from Products.CMFCore.Expression import Expression
 
@@ -32,6 +33,11 @@ def upgrade(tool):
 
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
+
+    # Add missing Geo Columns to AR Catalog
+    ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDistrict')
+    ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getProvince')
+    ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
