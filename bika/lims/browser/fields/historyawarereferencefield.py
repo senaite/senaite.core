@@ -171,7 +171,7 @@ class HistoryAwareReferenceField(ReferenceField):
                     e = sys.exc_info()
                     logger.error(
                         "Caught exception in"
-                        " HistoryAwareReferenceField: %s" % e)
+                        " HistoryAwareReferenceField: %s" % str(e))
                     o = r
                 rd[uid] = o
             else:
