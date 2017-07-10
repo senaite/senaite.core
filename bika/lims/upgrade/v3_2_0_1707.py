@@ -9,6 +9,7 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
+from Products.CMFCore.utils import getToolByName
 
 from Products.CMFCore.Expression import Expression
 
@@ -69,14 +70,18 @@ def removeDatePublishedFromAR(portal):
     empty. Instead we are adding ComputedField which calls old getDatePublished() but is StringField.
     """
     uc = getToolByName(portal, 'uid_catalog')
-    ar_reps = uc(portal_type='ARReport')
+    ars = uc(portal_type='AnalysisRequest')
     f_name = 'DatePublished'
     counter = 0
-    for ar in ar_reps:
+    tot_counter = 0
+    total = len(ars)
+    for ar in ars:
         obj = ar.getObject()
         if hasattr(obj, f_name):
             delattr(obj, f_name)
             counter += 1
+        tot_counter += 1
+        logger.info("Removing Date Published attribute from ARs: %d of %d" % (tot_counter, total))
 
-    logger.info("'DatePublished' attribute has been removed from %d ARReport objects."
+    logger.info("'DatePublished' attribute has been removed from %d AnalysisRequest objects."
                 % counter)
