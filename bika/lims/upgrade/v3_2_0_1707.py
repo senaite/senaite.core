@@ -43,7 +43,6 @@ def upgrade(tool):
     # Add missing Geo Columns to AR Catalog
     ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDistrict')
     ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getProvince')
-    ut.refreshCatalogs()
 
     create_report_catalog(portal, ut)
     ut.refreshCatalogs()
