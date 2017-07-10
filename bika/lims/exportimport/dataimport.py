@@ -82,7 +82,12 @@ class ImportView(BrowserView):
                 return lsd()
             else:
                 exim = instruments.getExim(self.request['exim'])
-                return exim.Import(self.context, self.request)
+                if not exim:
+                    er_mes = "Importer not found for: %s" % exim
+                    results = {'errors': er_mes, 'log': '', 'warns': ''}
+                    return json.dumps(results)
+                else:
+                    return exim.Import(self.context, self.request)
         else:
             return self.template()
 
