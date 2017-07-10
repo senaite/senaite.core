@@ -13,6 +13,8 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
+from bika.lims.browser import ulocalized_time
+from bika.lims.utils import user_fullname
 
 schema = BikaSchema.copy() + Schema((
     BlobFileField('ReportFile',
@@ -54,10 +56,36 @@ class Report(BaseFolder):
         """ return current date """
         return DateTime()
 
+    @security.public
     def getClientUID(self):
         client = self.getClient()
         if client:
             return client.UID()
+        return ''
+
+    @security.public
+    def getCreatorFullName(self):
+        return user_fullname(self, self.Creator())
+
+    @security.public
+    def getFileSize(self):
+        file = self.getReportFile()
+        if file:
+            return '%sKb' % (file.get_size() / 1024)
+        return ''
+
+    @security.public
+    def getClientURL(self):
+        client = self.getClient()
+        if client:
+            return client.absolute_url_path()
+        return ''
+
+    @security.public
+    def getClientTitle(self):
+        client = self.getClient()
+        if client:
+            return client.Title()
         return ''
 
 
