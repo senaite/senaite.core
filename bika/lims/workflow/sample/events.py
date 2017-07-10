@@ -97,6 +97,22 @@ def after_sample(obj):
     """
     _cascade_transition(obj, 'sample')
 
+    if obj.getSamplingWorkflowEnabled():
+        to_be_preserved = []
+        sample_due = []
+        lowest_state = 'sample_due'
+        for p in obj.objectValues('SamplePartition'):
+            if p.getPreservation():
+                lowest_state = 'to_be_preserved'
+                to_be_preserved.append(p)
+            else:
+                sample_due.append(p)
+        for p in to_be_preserved:
+            doActionFor(p, 'to_be_preserved')
+        for p in sample_due:
+            doActionFor(p, 'sample_due')
+        doActionFor(obj, lowest_state)
+
 
 def after_sample_due(obj):
     """Method triggered after a 'sample_due' transition for the Sample passed
