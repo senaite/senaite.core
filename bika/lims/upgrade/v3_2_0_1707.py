@@ -10,6 +10,7 @@ from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 from Products.CMFCore.utils import getToolByName
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.utils import getToolByName
@@ -44,6 +45,10 @@ def upgrade(tool):
 
     # Remove 'Date Published' from AR objects
     removeDatePublishedFromAR(portal)
+
+    # Add missing Geo Columns to AR Catalog
+    ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDistrict')
+    ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getProvince')
 
     create_report_catalog(portal, ut)
     ut.refreshCatalogs()
