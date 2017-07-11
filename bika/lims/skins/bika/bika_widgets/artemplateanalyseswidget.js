@@ -26,7 +26,6 @@ function expand_cat(service_uid){
 
 function check_service(service_uid){
 	// Add partition dropdown
-	console.log('Holalaaa')
 	var element = $("[name='Partition."+service_uid+":records']");
 	var select = "<select class='listing_select_entry' "+
 		"name='Partition."+service_uid+":records' "+
