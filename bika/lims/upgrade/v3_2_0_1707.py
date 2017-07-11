@@ -9,6 +9,7 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
+from Products.CMFCore.utils import getToolByName
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 
 from Products.CMFCore.Expression import Expression
@@ -35,10 +36,15 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
+
     # importing toolset in order to add bika_catalog_report
     setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
+
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
+
+    # Remove 'Date Published' from AR objects
+    removeDatePublishedFromAR(portal)
 
     # Add missing Geo Columns to AR Catalog
     ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDistrict')
@@ -74,6 +80,29 @@ def set_guard_expressions(portal):
                     logger.info("Guard from transition '{0}' set to '{1}'"
                                 .format(torenid, newguard))
 
+                    
+def removeDatePublishedFromAR(portal):
+    """
+    DatePublished field has been removed from ARs' schema, because we didn't have setter and that field was always
+    empty. Instead we are adding ComputedField which calls old getDatePublished() but is StringField.
+    """
+    uc = getToolByName(portal, 'uid_catalog')
+    ars = uc(portal_type='AnalysisRequest')
+    f_name = 'DatePublished'
+    counter = 0
+    tot_counter = 0
+    total = len(ars)
+    for ar in ars:
+        obj = ar.getObject()
+        if hasattr(obj, f_name):
+            delattr(obj, f_name)
+            counter += 1
+        tot_counter += 1
+        logger.info("Removing Date Published attribute from ARs: %d of %d" % (tot_counter, total))
+
+    logger.info("'DatePublished' attribute has been removed from %d AnalysisRequest objects."
+                % counter)
+
 
 def create_report_catalog(portal, upgrade_utils):
     logger.info('Creating Report catalog')
@@ -106,3 +135,4 @@ def create_report_catalog(portal, upgrade_utils):
         bika_catalog.uncatalog_object(path_uid)
         i += 1
     logger.info('Reindexed {}/{} reports'.format(len(reports_brains), len(reports_brains)))
+
