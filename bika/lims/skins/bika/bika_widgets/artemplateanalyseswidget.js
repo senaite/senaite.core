@@ -26,6 +26,7 @@ function expand_cat(service_uid){
 
 function check_service(service_uid){
 	// Add partition dropdown
+	console.log('Holalaaa')
 	var element = $("[name='Partition."+service_uid+":records']");
 	var select = "<select class='listing_select_entry' "+
 		"name='Partition."+service_uid+":records' "+
@@ -94,6 +95,9 @@ function calcdependencies(elements, auto_yes) {
 		// selecting a service; discover dependencies
 		if ($(element).prop("checked")){
 			var Dependencies = lims.AnalysisService.Dependencies(service_uid);
+			if(!Dependencies){
+			    Dependencies = [];
+			}
 			for(i = 0; i<Dependencies.length; i++) {
 				dep = Dependencies[i];
 				if ($("#analyses_cb_"+dep.Service_uid).prop("checked") ){
@@ -134,6 +138,9 @@ function calcdependencies(elements, auto_yes) {
 		// unselecting a service; discover back dependencies
 		else {
 			var Dependants = lims.AnalysisService.Dependants(service_uid);
+			if(!Dependants){
+			    Dependants = [];
+			}
 			for (i=0; i<Dependants.length; i++){
 				dep = Dependants[i];
 				cb = $("#analyses_cb_" + dep.Service_uid);
