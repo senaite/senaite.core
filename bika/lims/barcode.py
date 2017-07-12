@@ -101,6 +101,6 @@ class barcode_entry(BrowserView):
         """
         ars = instance.getAnalysisRequests()
         if len(ars) == 1:
-            return self.handle_AnalysisRequest(instance)
+            return self.handle_AnalysisRequest(ars[0])
         else:
             return instance.absolute_url()
