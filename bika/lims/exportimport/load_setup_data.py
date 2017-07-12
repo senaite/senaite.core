@@ -91,7 +91,11 @@ class LoadSetupData(BrowserView):
                 workbook = load_workbook(filename=tmp)  # , use_iterators=True)
                 self.dataset_name = 'uploaded'
 
-        assert(workbook is not None)
+        if not workbook:
+            message = PMF("File not found...")
+            self.context.plone_utils.addPortalMessage(message)
+            self.request.RESPONSE.redirect(portal.absolute_url() + "/import")
+            return
 
         adapters = [[name, adapter]
                     for name, adapter
