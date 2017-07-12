@@ -457,7 +457,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=('AnalysisService',),
         relationship='SetupDryAnalysisService',
-        vocabulary='getAnalysisServices',
+        vocabulary='getAnalysisServicesVocabulary',
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
             label=_("Dry matter analysis"),
@@ -879,13 +879,15 @@ class BikaSetup(folder.ATFolder):
         else:
             return True
 
-    def getAnalysisServices(self):
+    def getAnalysisServicesVocabulary(self):
         """
+        Get all active Analysis Services from Bika Setup and return them as Display List.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in
-                              bsc(portal_type='AnalysisService',
-                                  inactive_state='active')]
+        brains = bsc(portal_type='AnalysisService',
+                     inactive_state='active')
+        items = [(b.UID, b.Title) for b in brains]
+        items.insert(0, ("", ""))
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
