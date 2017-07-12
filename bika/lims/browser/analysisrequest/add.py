@@ -433,7 +433,7 @@ class ajaxAnalysisRequestSubmit():
                         "Bad time formatting: Getting '{}' but expecting an"\
                         " string with '%Y-%m-%d %H:%M' format."\
                         .format(samplingdate)
-                    logger.error(msg)
+                    logger.warning(msg)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
                 now = datetime.datetime.now()
