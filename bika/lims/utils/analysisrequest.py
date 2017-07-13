@@ -213,12 +213,16 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
                 " profile provided")
     # Add analysis services UIDs from profiles to analyses_services variable.
     for profile_uid in analyses_profiles:
-        profile = uid_catalog(UID=profile_uid)
-        profile = profile[0].getObject()
-        # Only services UIDs
-        services_uids = profile.getRawService()
-        # _resolve_items_to_service_uids() will remove duplicates
-        analyses_services += services_uids
+        # When creating an AR, JS builds a query from selected fields. Although it doesn't set empty values to any
+        # Field, somehow 'Profiles' field can have an empty value in the set.
+        # Thus, we should avoid querying by empty UID through 'uid_catalog'.
+        if profile_uid:
+            profile = uid_catalog(UID=profile_uid)
+            profile = profile[0].getObject()
+            # Only services UIDs
+            services_uids = profile.getRawService()
+            # _resolve_items_to_service_uids() will remove duplicates
+            analyses_services += services_uids
     return _resolve_items_to_service_uids(analyses_services)
 
 
