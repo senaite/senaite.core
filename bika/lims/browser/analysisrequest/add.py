@@ -426,7 +426,7 @@ class ajaxAnalysisRequestSubmit():
                 samplingdate = state.get('SamplingDate', '')
                 try:
                     samp_date = datetime.datetime.strptime(
-                        samplingdate, "%Y-%m-%d %H:%M")
+                        samplingdate.strip(), "%Y-%m-%d %H:%M")
                 except ValueError:
                     print traceback.format_exc()
                     msg =\
