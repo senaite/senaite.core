@@ -320,8 +320,8 @@ function AnalysisRequestAddByCol() {
             options.url = options.url + "&search_query=" + $(element).attr("search_query")
         }
         else {
-            options.url = options.url + "&base_query=" + $(element).attr("base_query")
-            options.url = options.url + "&search_query=" + $.toJSON(query)
+            options.url = options.url + "&base_query=" + encodeURIComponent($(element).attr("base_query"))
+            options.url = options.url + "&search_query=" + encodeURIComponent($.toJSON(query))
         }
         options.url = options.url + "&colModel=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).colModel)
         options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options"))['search_fields'])
