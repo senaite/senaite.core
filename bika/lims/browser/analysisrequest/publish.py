@@ -1044,24 +1044,25 @@ class AnalysisRequestDigester:
             memail = member.getProperty('email')
             mhomepage = member.getProperty('home_page')
             pc = getToolByName(self.context, 'portal_catalog')
-            c = pc(portal_type='Contact', getUsername=member.id)
-            c = c[0].getObject() if c else None
-            cfullname = c.getFullname() if c else None
-            cemail = c.getEmailAddress() if c else None
+            contact = pc(portal_type='Contact', getUsername=member.id)
+            contact = contact[0].getObject() if contact else None
+            cfullname = contact.getFullname() if contact else None
+            cemail = contact.getEmailAddress() if contact else None
+            physical_address = self._format_address(
+                contact.getPhysicalAddress())
+            postal_address = self._format_address(contact.getPostalAddress())
             data = {'id': member.id,
                     'fullname': to_utf8(cfullname) if cfullname else to_utf8(
                         mfullname),
                     'email': cemail if cemail else memail,
-                    'business_phone': c.getBusinessPhone() if c else '',
-                    'business_fax': c.getBusinessFax() if c else '',
-                    'home_phone': c.getHomePhone() if c else '',
-                    'mobile_phone': c.getMobilePhone() if c else '',
-                    'job_title': to_utf8(c.getJobTitle()) if c else '',
-                    'department': to_utf8(c.getDepartment()) if c else '',
-                    'physical_address': to_utf8(
-                        c.getPhysicalAddress()) if c else '',
-                    'postal_address': to_utf8(
-                        c.getPostalAddress()) if c else '',
+                    'business_phone': contact.getBusinessPhone() if contact else '',
+                    'business_fax': contact.getBusinessFax() if contact else '',
+                    'home_phone': contact.getHomePhone() if contact else '',
+                    'mobile_phone': contact.getMobilePhone() if contact else '',
+                    'job_title': to_utf8(contact.getJobTitle()) if contact else '',
+                    'department': to_utf8(contact.getDepartment()) if contact else '',
+                    'physical_address': physical_address if contact else '',
+                    'postal_address': postal_address if contact else '',
                     'home_page': to_utf8(mhomepage)}
         return data
 
