@@ -832,6 +832,25 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
         )
     ),
+
+    RecordsField(
+        'DateFormats',
+        schemata="default",
+        required=0,
+        subfields=('Type', 'Format'),
+        default=[{'Type': 'date_format_long', 'Format': '%Y-%m-%d %H:%M'},
+                 {'Type': 'date_format_short', 'Format': '%Y-%m-%d'},
+                 {'Type': 'time_only', 'Format': '%H:%M'}],
+        subfield_labels={'Type': _('Type'),
+                         'Folder': _('String Format')},
+        subfield_readonly={'Type': False,
+                           'Format': False},
+        widget=RecordsWidget(
+            label=_("Date formats in String"),
+            description=_("Define The String Formats of Date and Time values users prefer to use."),
+            visible=True,
+        ),
+    ),
 ))
 
 schema['title'].validators = ()
