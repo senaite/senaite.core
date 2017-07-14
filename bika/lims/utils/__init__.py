@@ -26,6 +26,11 @@ from weasyprint import HTML, CSS
 from zope.component import queryUtility
 from zope.i18n import translate
 from zope.i18n.locales import locales
+try:
+    from zope.component.hooks import getSite
+except:
+    # Plone < 4.3
+    from zope.app.component.hooks import getSite
 
 import App
 import Globals
@@ -448,6 +453,35 @@ def currency_format(context, locale):
     def format(val):
         return '%s %0.2f' % (symbol, val)
     return format
+
+
+def get_date_format(d_type, context=None):
+    """
+    Getting date format for user inputs from Bika Setup. This function should never fail nor return None / ''
+    :param d_type: is format name with 3 possible values 'date_format_long', 'date_format_short' & 'time_only'
+    :param context: to access bika setup faster, context can be sent as a parameter
+    :return:
+    """
+    formats = None
+    if context and hasattr(context, "bika_setup"):
+        formats = context.bika_setup.getDateFormats()
+    else:
+        plone = getSite()
+        if plone:
+            formats = plone.bika_setup.getDateFormats()
+    # In case we still have formats, just use default values of 'DateFormats' field of bikasetup content
+    if not formats:
+        formats = [{'Type': 'date_format_long', 'Format': '%Y-%m-%d %H:%M'},
+                   {'Type': 'date_format_short', 'Format': '%Y-%m-%d'},
+                   {'Type': 'time_only', 'Format': '%H:%M'}]
+
+    for f in formats:
+        if f.get('Type', '') == d_type and f.get('Format', None):
+            return f.get('Format').strip()
+
+    # It can happen only when someone sets the value to an empty string from Bika Setup
+    logger.error("Format String for %s not found in Bika Setup. This should not happen." % d_type)
+    return None
 
 
 def getHiddenAttributesForClass(classname):

@@ -12,6 +12,7 @@ from bika.lims.controlpanel.bika_analysisservices import \
     AnalysisServicesView as ASV
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.utils import t
+from bika.lims.utils import get_date_format
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
@@ -425,15 +426,15 @@ class ajaxAnalysisRequestSubmit():
             if state.get('SamplingDate', ''):
                 samplingdate = state.get('SamplingDate', '')
                 try:
+                    f_long = get_date_format('date_format_long')
                     samp_date = datetime.datetime.strptime(
-                        samplingdate, "%Y-%m-%d %H:%M")
+                        samplingdate, f_long)
                 except ValueError:
                     print traceback.format_exc()
                     msg =\
-                        "Bad time formatting: Getting '{}' but expecting an"\
-                        " string with '%Y-%m-%d %H:%M' format."\
-                        .format(samplingdate)
-                    logger.error(msg)
+                        "Bad time formatting: Getting '{}' but expecting a"\
+                        " string with '{}' format."\
+                        .format(samplingdate, f_long)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
                 now = datetime.datetime.now()
