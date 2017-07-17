@@ -6,7 +6,7 @@
 from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
-from bika.lims.utils import safe_unicode
+from bika.lims.utils import to_utf8
 import json
 import Missing
 import sys, traceback
@@ -85,14 +85,14 @@ def load_field_values(instance, include_fields):
             if field.type == 'reference':
                 if type(val) in (list, tuple):
                     ret[fieldname + "_uid"] = [v.UID() for v in val]
-                    val = [safe_unicode(v.Title()) for v in val]
+                    val = [to_utf8(v.Title()) for v in val]
                 else:
                     ret[fieldname + "_uid"] = val.UID()
-                    val = safe_unicode(val.Title())
+                    val = to_utf8(val.Title())
             elif field.type == 'boolean':
                 val = True if val else False
             elif field.type == 'text':
-                val = safe_unicode(val)
+                val = to_utf8(val)
 
         try:
             json.dumps(val)
