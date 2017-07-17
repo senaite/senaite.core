@@ -343,17 +343,35 @@ function AnalysisRequestViewView() {
             //success alert
             if (data != null && data['success'] == true) {
                 bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', "succeed");
-            } else {
-                bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
-                var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+            } else if (data == null){
+                bika.lims.SiteView.notificationPanel(
+                'Field ' + name + ' for '+ anch + ' could not be updated.' +
+                ' Wrong value?',
+                "error");
+                var msg =
+                    '[bika.lims.analysisrequest.js] No data returned ' +
+                    'while updating ' + name + ' for '+ ar;
                 console.warn(msg);
-                window.bika.lims.error(msg);
+                window.bika.lims.warning(msg);
+            }else {
+                bika.lims.SiteView.notificationPanel(
+                'Field ' + name + ' for '+ anch + ' could not be updated.' +
+                ' Wrong value?',
+                "error");
+                var msg =
+                    '[bika.lims.analysisrequest.js] No success ' +
+                    'while updating ' + name + ' for '+ ar;
+                console.warn(msg);
+                window.bika.lims.warning(msg);
             }
         })
-        .fail(function(){
+        .fail(function(xhr, textStatus, errorThrown) {
             //error
             bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
-            var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+            var msg =
+                '[bika.lims.analysisrequest.js] Error in AJAX call' +
+                'while updating ' + name + ' for '+ ar + '. Error: ' +
+                xhr.responseText;
             console.warn(msg);
             window.bika.lims.error(msg);
         });

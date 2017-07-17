@@ -132,6 +132,8 @@ class Update(object):
 
         try:
             fields = set_fields_from_request(obj, request)
+            if not fields:
+                return ret
             for field in fields:
                 self.used(field)
         except:
@@ -213,12 +215,16 @@ class Update(object):
                 "error": True,
             }
             try:
-                set_fields_from_request(obj, i)
+                fields = set_fields_from_request(obj, i)
+                if not fields:
+                    this_ret['success'] = False
+                    this_ret['error'] = True
+                else:
+                    this_ret['success'] = True
+                    this_ret['error'] = False
             except:
                 savepoint.rollback()
                 raise
-            this_ret['success'] = True
-            this_ret['error'] = False
             ret['updates'].append(this_ret)
         ret['success'] = True
         ret['error'] = False
