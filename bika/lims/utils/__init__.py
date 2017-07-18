@@ -82,6 +82,14 @@ class js_err(BrowserView):
         """
         self.logger.error(message);
 
+
+class js_warn(BrowserView):
+
+    def __call__(self, message):
+        """Javascript sends a string for us to place into the warn log
+        """
+        self.logger.warning(message)
+
 ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
 
 
