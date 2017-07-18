@@ -1044,8 +1044,14 @@ class AnalysisRequestDigester:
             memail = member.getProperty('email')
             mhomepage = member.getProperty('home_page')
             pc = getToolByName(self.context, 'portal_catalog')
-            c = pc(portal_type='Contact', getUsername=member.id)
-            c = c[0].getObject() if c else None
+            c_brain = pc(portal_type='LabContact', getUsername=member.id)
+            # Only one LabContact should be found
+            if len(c_brain) > 1:
+                logger.warn(
+                    "Incorrect number of user with the same "
+                    "memberID. '{0}' users found with {1} as ID"
+                    .format(len(c_brain), member.id))
+            c = c_brain[0].getObject() if c_brain else None
             cfullname = c.getFullname() if c else None
             cemail = c.getEmailAddress() if c else None
             data = {'id': member.id,
