@@ -455,12 +455,14 @@ def currency_format(context, locale):
     return format
 
 
-def get_date_format(d_type, context=None):
+def get_date_format(d_type, f_type='PythonFormat', context=None):
     """
     Getting date format for user inputs from Bika Setup. This function should never fail nor return None / ''
-    :param d_type: is format name with 3 possible values 'date_format_long', 'date_format_short' & 'time_only'
+    :param d_type: is date format name with 3 possible values 'date_format_long', 'date_format_short' & 'time_only'
+    :param f_type: is format type to indicate if this method called for parsing user input string past via JS, or
+    for parsing entered value via Python to save to DB. Possible values- 'UserInputFormat' and 'PythonFormat'
     :param context: to access bika setup faster, context can be sent as a parameter
-    :return:
+    :return: String Format
     """
     formats = None
     if context and hasattr(context, "bika_setup"):
@@ -469,17 +471,18 @@ def get_date_format(d_type, context=None):
         plone = getSite()
         if plone:
             formats = plone.bika_setup.getDateFormats()
-    # In case we still have formats, just use default values of 'DateFormats' field of bikasetup content
+    # In case we still don't have formats, just use default values of 'DateFormats' field of bikasetup content
     if not formats:
-        formats = [{'Type': 'date_format_long', 'Format': '%Y-%m-%d %H:%M'},
-                   {'Type': 'date_format_short', 'Format': '%Y-%m-%d'},
-                   {'Type': 'time_only', 'Format': '%H:%M'}]
+        formats = [{'Type': 'date_format_long', 'PythonFormat': '%Y-%m-%d %H:%M',
+                    'UIFormat': 'yy-mm-dd HH:mm'},
+                   {'Type': 'date_format_short', 'PythonFormat': '%Y-%m-%d', 'UIFormat': 'yy-mm-dd'},
+                   {'Type': 'time_only', 'PythonFormat': '%H:%M', 'UIFormat': 'HH:mm'}]
 
     for f in formats:
-        if f.get('Type', '') == d_type and f.get('Format', None):
-            return f.get('Format').strip()
+        if f.get('Type', '') == d_type and f.get(f_type, None):
+            return f.get(f_type).strip()
 
-    # It can happen only when someone sets the value to an empty string from Bika Setup
+    # It can only happen when someone sets the value to an empty string from Bika Setup
     logger.error("Format String for %s not found in Bika Setup. This should not happen." % d_type)
     return None
 

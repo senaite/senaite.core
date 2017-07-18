@@ -24,8 +24,10 @@ def strptime(context, value):
     """
     val = ""
     for fmt in ['date_format_long', 'date_format_short']:
-        fmtstr = context.translate(fmt, domain='bika', mapping={})
-        fmtstr = fmtstr.replace(r"${", '%').replace('}', '')
+        # We don't import 'get_date_format' from utils, in top of the file, because in that case we get
+        # circular import error.
+        from bika.lims.utils import get_date_format
+        fmtstr = get_date_format(fmt, f_type='UIFormat', context=context)
         try:
             val = _strptime(value, fmtstr)
         except ValueError:
