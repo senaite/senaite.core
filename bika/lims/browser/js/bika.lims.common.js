@@ -95,11 +95,16 @@ function CommonUtils() {
             if (page_size == undefined) {
                 request_data.page_size = 0
             }
+            var aj_async = request_data.aj_async;
+            if (aj_async == undefined) {
+                aj_async = true
+            }
             var jsonapi_cacheKey = $.param(request_data);
             var jsonapi_read_handler = handler;
             if (window.bika.lims.jsonapi_cache[jsonapi_cacheKey] === undefined){
                 $.ajax({
                     type: "POST",
+                    async: aj_async,
                     dataType: "json",
                     url: window.portal_url + "/@@API/read",
                     data: request_data,
