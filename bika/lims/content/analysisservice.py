@@ -487,6 +487,36 @@ class AnalysisService(AbstractBaseAnalysis):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+    def getServiceDependenciesUIDs(self):
+        """
+        This methods returns a list with the service dependencies UIDs
+        :return: a lis of uids
+        """
+        calc = self.getCalculation()
+        if calc:
+            deps = calc.getCalculationDependencies(self, flat=False)
+            deps_uids = [service.UID() for service in deps]
+            return deps_uids
+        return []
+
+    def getServiceDependantsUIDs(self):
+        """
+        This methods returns a list with the dependants for this
+        service.
+        :return: A list of UIDs
+        """
+        result = []
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        # A service cannot be deactivated if "active" calculations list it
+        # as a dependency.
+        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
+        calculations = (c.getObject() for c in active_calcs)
+        for calc in calculations:
+            deps = [dep.UID() for dep in calc.getDependentServices()]
+            if self.UID() in deps:
+                result = result + deps
+        return result
+
     def workflow_script_activate(self):
         workflow = getToolByName(self, 'portal_workflow')
         pu = getToolByName(self, 'plone_utils')

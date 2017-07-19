@@ -479,12 +479,12 @@ function AnalysisRequestAnalysesView() {
         });
 
     }
-
+    /**
+    * This function validates specification inputs
+    * @param {element} The input field from specifications (min, max, err)
+    */
     function validate_spec_field_entry(element) {
         var uid = $(element).attr("uid");
-        // no spec selector here yet!
-        // $("[name^='ar\\."+sb_col+"\\.Specification']").val("");
-        // $("[name^='ar\\."+sb_col+"\\.Specification_uid']").val("");
         var min_element = $("[name='min\\."+uid+"\\:records']");
         var max_element = $("[name='max\\."+uid+"\\:records']");
         var error_element = $("[name='error\\."+uid+"\\:records']");
@@ -510,7 +510,11 @@ function AnalysisRequestAnalysesView() {
             }
         }
     }
-
+    /**
+    * This functions runs the logic needed after setting the checkbox of a
+    * service.
+    * @param {service_uid} the service uid checked.
+    */
     function check_service(service_uid){
         var new_element, element;
 
@@ -555,7 +559,11 @@ function AnalysisRequestAnalysesView() {
         }
 
     }
-
+    /**
+    * This functions runs the logic needed after unsetting the checkbox of a
+    * service.
+    * @param {service_uid} the service uid unchecked.
+    */
     function uncheck_service(service_uid){
         var new_element, element;
 
@@ -605,7 +613,13 @@ function AnalysisRequestAnalysesView() {
         $(dlg).dialog("close");
         $("#messagebox").remove();
     }
-
+    /**
+    * Once a checkbox has been selected, this functions finds out which are
+    * the dependencies and dependants related to it.
+    * @param {elements} The selected element, a checkbox.
+    * @param {auto_yes} A boolean. If 'true', the dependants and dependencies
+    * will be automatically selected/unselected.
+    */
     function calcdependencies(elements, auto_yes) {
         /*jshint validthis:true */
         auto_yes = auto_yes || false;

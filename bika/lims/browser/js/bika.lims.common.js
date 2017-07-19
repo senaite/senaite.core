@@ -22,13 +22,14 @@ function CommonUtils() {
             Dependants: function(service_uid){
                 var request_data = {
                     catalog_name: "bika_setup_catalog",
-                    UID: service_uid
+                    UID: service_uid,
+                    include_methods: 'getServiceDependantsUIDs',
                 };
                 var deps = {};
                 $.ajaxSetup({async:false});
                 window.bika.lims.jsonapi_read(request_data, function(data){
                     if (data.objects != null && data.objects.length > 0) {
-                        deps = data.objects[0].ServiceDependants;
+                        deps = data.objects[0].getServiceDependantsUIDs;
                     } else {
                         deps = [];
                     }
@@ -39,13 +40,14 @@ function CommonUtils() {
             Dependencies: function(service_uid){
                 var request_data = {
                     catalog_name: "bika_setup_catalog",
-                    UID: service_uid
+                    UID: service_uid,
+                    include_methods: 'getServiceDependenciesUIDs',
                 };
                 var deps = {};
                 $.ajaxSetup({async:false});
                 window.bika.lims.jsonapi_read(request_data, function(data){
                     if (data.objects != null && data.objects.length > 0) {
-                        deps = data.objects[0].ServiceDependencies;
+                        deps = data.objects[0].getServiceDependenciesUIDs;
                     } else {
                         deps = [];
                     }

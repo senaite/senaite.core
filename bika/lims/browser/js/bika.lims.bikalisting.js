@@ -308,8 +308,8 @@ function BikaListingTableView() {
 				event.preventDefault()
 			}
 			// check the item's checkbox
-			form_id = $(this).parents("form").attr("id")
-			uid = $(this).attr("uid")
+			var form_id = $(this).parents("form").attr("id")
+			var uid = $(this).attr("uid")
 			if (!($("#" + form_id + "_cb_" + uid).prop("checked"))) {
 				$("#" + form_id + "_cb_" + uid).prop("checked", true)
 			}
