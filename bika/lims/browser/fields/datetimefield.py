@@ -48,8 +48,8 @@ class DateTimeField(DTF):
             val = None
         elif not isinstance(value, DateTime):
             for fmt in ['date_format_long', 'date_format_short']:
-                fmtstr = instance.translate(fmt, domain='bika', mapping={})
-                fmtstr = fmtstr.replace(r"${", '%').replace('}', '')
+                from bika.lims.utils import get_date_format
+                fmtstr = get_date_format(fmt, context=instance)
                 try:
                     val = strptime(value, fmtstr)
                 except ValueError:
