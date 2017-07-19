@@ -234,21 +234,24 @@ class BrowserView(BaseBrowserView):
 
     @lazy_property
     def date_format_long(self):
-        fmt = self.python_date_format(long_format=1)
-        if fmt == "date_format_long":
+        from bika.lims.utils import get_date_format
+        fmt = get_date_format('date_format_long')
+        if not fmt:
             fmt = "%Y-%m-%d %I:%M %p"
         return fmt
 
     @lazy_property
     def date_format_short(self):
-        fmt = self.python_date_format()
-        if fmt == "date_format_short":
+        from bika.lims.utils import get_date_format
+        fmt = get_date_format('date_format_short')
+        if not fmt:
             fmt = "%Y-%m-%d"
         return fmt
 
     @lazy_property
     def time_format(self):
-        fmt = self.python_date_format(time_only=True)
-        if fmt == "time_format":
+        from bika.lims.utils import get_date_format
+        fmt = get_date_format('time_only')
+        if not fmt:
             fmt = "%I:%M %p"
         return fmt
