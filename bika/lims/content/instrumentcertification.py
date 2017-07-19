@@ -11,6 +11,7 @@ from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from plone.app.blob.field import FileField as BlobFileField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 
 schema = BikaSchema.copy() + Schema((
 
@@ -60,7 +61,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('ValidFrom',
+    _DateTimeField('ValidFrom',
         with_time = 1,
         with_date = 1,
         required = 1,

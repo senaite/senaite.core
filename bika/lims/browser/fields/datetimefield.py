@@ -13,7 +13,7 @@ from Products.Archetypes.Registry import registerField
 from Products.Archetypes.interfaces import IDateTimeField
 from Products.Archetypes.public import *
 from Products.Archetypes.public import DateTimeField as DTF
-from bika.lims import logger
+from bika.lims.browser import strptime
 from zope.interface import implements
 
 
@@ -47,32 +47,7 @@ class DateTimeField(DTF):
         if not value:
             val = None
         elif not isinstance(value, DateTime):
-            for fmt in ['date_format_long', 'date_format_short']:
-                from bika.lims.utils import get_date_format
-                fmtstr = get_date_format(fmt, context=instance)
-                try:
-                    val = strptime(value, fmtstr)
-                except ValueError:
-                    continue
-                try:
-                    val = DateTime(*list(val)[:-6])
-                except DateTimeError:
-                    continue
-                if val.timezoneNaive():
-                    # Use local timezone for tz naive strings
-                    # see http://dev.plone.org/plone/ticket/10141
-                    zone = val.localZone(safelocaltime(val.timeTime()))
-                    parts = val.parts()[:-1] + (zone,)
-                    val = DateTime(*parts)
-                break
-            else:
-                try:
-                    # The following will handle an rfc822 string.
-                    value = value.split(" +", 1)[0]
-                    val = DateTime(value)
-                except:
-                    logger.warning("DateTimeField failed to format date "
-                                   "string '%s' with '%s'" % (value, fmtstr))
+            val = strptime(instance, value)
 
         super(DateTimeField, self).set(instance, val, **kwargs)
 

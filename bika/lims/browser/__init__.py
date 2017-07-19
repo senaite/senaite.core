@@ -43,13 +43,10 @@ def strptime(context, value):
             val = DateTime(*parts)
         break
     else:
-        try:
-            # The following will handle an rfc822 string.
-            value = value.split(" +", 1)[0]
-            val = DateTime(value)
-        except:
-            logger.warning("DateTimeField failed to format date "
-                           "string '%s' with '%s'" % (value, fmtstr))
+        # Loop was completed without break. It means we weren't able to parse the string.
+        logger.warning("DateTimeField failed to format date "
+                       "string '%s' with '%s'" % (value, fmtstr))
+
     return val
 
 
