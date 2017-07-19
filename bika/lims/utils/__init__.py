@@ -487,6 +487,17 @@ def get_date_format(d_type, f_type='PythonFormat', context=None):
     return None
 
 
+def time_to_string(time_obj, long_format=None, time_only=None, context=None):
+    if not long_format:
+        formatstring = get_date_format('date_format_short', context=context)
+    elif time_only:
+        formatstring = get_date_format('time_only', context)
+    else:
+        formatstring = get_date_format('date_format_long', context=context)
+
+    return time_obj.strftime(formatstring)
+
+
 def getHiddenAttributesForClass(classname):
     try:
         registry = queryUtility(IRegistry)

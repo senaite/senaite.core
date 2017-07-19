@@ -17,7 +17,6 @@ $(document).ready(function(){
             formats[raw_formats[i].Type] = raw_formats[i].UIFormat
         }
     });
-	dateFormat = _('date_format_short_datepicker');
 
     $('[datepicker="1"]').datepicker({
         dateFormat: formats.date_format_short,
@@ -27,16 +26,13 @@ $(document).ready(function(){
     });
 
     $('[datetimepicker="1"]').datetimepicker({
+        dateFormat: formats.date_format_short,
+        timeFormat: formats.time_only,
         hourGrid: 4,
         minuteGrid: 10,
-        // addSliderAccess: true,
-        // sliderAccessArgs: { touchonly: false },
-//        dateFormat: dateFormat,
-//        timeFormat: "HH:mm",
-        format: formats.date_format_long,
         changeMonth:true,
         changeYear:true,
-        yearRange: "-100:+1"
+        yearRange: "-60:+1"
     });
 
     $('[datepicker_nofuture="1"]').live("click", function() {

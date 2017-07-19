@@ -26,7 +26,7 @@ def strptime(context, value):
     for fmt in ['date_format_long', 'date_format_short']:
         # We don't import get_date_format in top of the file, because in that case we get circular import error.
         from bika.lims.utils import get_date_format
-        fmtstr = get_date_format(fmt, f_type='UIFormat', context=context)
+        fmtstr = get_date_format(fmt, context=context)
         try:
             val = _strptime(value, fmtstr)
         except ValueError:
@@ -84,7 +84,9 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     if time.second() + time.minute() + time.hour() == 0:
         long_format = False
     try:
-        time_str = _ut(time, long_format, time_only, context, 'bika', request)
+        # time_str = _ut(time, long_format, time_only, context, 'bika', request)
+        from bika.lims.utils import time_to_string
+        time_str = time_to_string(time, long_format, time_only, context)
     except ValueError:
         err_msg = traceback.format_exc() + '\n'
         logger.warn(
