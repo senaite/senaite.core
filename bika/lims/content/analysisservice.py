@@ -487,6 +487,49 @@ class AnalysisService(AbstractBaseAnalysis):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+    @security.public
+    def getServiceDependencies(self):
+        """
+        This methods returns a list with the analyses services dependencies.
+        :return: a list of analysis services objects.
+        """
+        calc = self.getCalculation()
+        if calc:
+            return calc.getCalculationDependencies(flat=True)
+        return []
+
+    @security.public
+    def getServiceDependenciesUIDs(self):
+        """
+        This methods returns a list with the service dependencies UIDs
+        :return: a list of uids
+        """
+        deps = self.getServiceDependencies()
+        deps_uids = [service.UID() for service in deps]
+        return deps_uids
+
+    @security.public
+    def getServiceDependants(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
+        calculations = [c.getObject() for c in active_calcs]
+        dependants = []
+        for calc in calculations:
+            calc_dependants = calc.getDependentServices()
+            if self in calc_dependants:
+                calc_dependencies = calc.getCalculationDependants()
+                dependants = dependants + calc_dependencies
+        dependants = list(set(dependants))
+        if self in dependants:
+            dependants.remove(self)
+        return dependants
+
+    @security.public
+    def getServiceDependantsUIDs(self):
+        deps = self.getServiceDependants()
+        deps_uids = [service.UID() for service in deps]
+        return deps_uids
+
     def workflow_script_activate(self):
         workflow = getToolByName(self, 'portal_workflow')
         pu = getToolByName(self, 'plone_utils')

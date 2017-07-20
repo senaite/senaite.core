@@ -143,7 +143,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         specs = {}
         if form.get("min", None):
             for service_uid in Analyses:
-                service = bsc(UID=service_uid)[0].getObject()
+                service = objects[service_uid]
                 keyword = service.getKeyword()
                 specs[service_uid] = {
                     "min": form["min"][0][service_uid],
@@ -154,7 +154,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 }
         else:
             for service_uid in Analyses:
-                service = bsc(UID=service_uid)[0].getObject()
+                service = objects[service_uid]
                 keyword = service.getKeyword()
                 specs[service_uid] = {"min": "", "max": "", "error": "",
                                       "keyword": keyword, "uid": service_uid}

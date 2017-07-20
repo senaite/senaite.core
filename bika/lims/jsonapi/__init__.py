@@ -103,6 +103,24 @@ def load_field_values(instance, include_fields):
     return ret
 
 
+def get_include_methods(request):
+    """Retrieve include_methods values from the request
+    """
+    methods = request.get("include_methods", "")
+    include_methods = [
+        x.strip() for x in methods.split(",") if x.strip()]
+    return include_methods
+
+
+def load_method_values(instance, include_methods):
+    ret = {}
+    for method in include_methods:
+        if hasattr(instance, method):
+            val = getattr(instance, method)()
+            ret[method] = val
+    return ret
+
+
 def resolve_request_lookup(context, request, fieldname):
     if fieldname not in request:
         return []

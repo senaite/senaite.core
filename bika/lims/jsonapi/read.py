@@ -12,6 +12,8 @@ from plone.jsonapi.core.interfaces import IRouteProvider
 from plone.protect.authenticator import AuthenticatorView
 from bika.lims.jsonapi import load_brain_metadata
 from bika.lims.jsonapi import load_field_values
+from bika.lims.jsonapi import get_include_methods
+from bika.lims.jsonapi import load_method_values
 from Products.CMFCore.utils import getToolByName
 from zope import interface
 from zope.component import getAdapters
@@ -71,6 +73,8 @@ def read(context, request):
 
     include_fields = get_include_fields(request)
 
+    include_methods = get_include_methods(request)
+
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
 
@@ -108,6 +112,8 @@ def read(context, request):
         # Place all schema fields ino the result.
         obj = proxy.getObject()
         obj_data.update(load_field_values(obj, include_fields))
+        # Add methods results
+        obj_data.update(load_method_values(obj, include_methods))
 
         obj_data['path'] = "/".join(obj.getPhysicalPath())
 

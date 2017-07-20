@@ -487,7 +487,7 @@ function AnalysisRequestAnalysesView() {
         ////////////////////////////////////////
         // checkboxes in services list
         $("[name='uids:list']").live("click", function(){
-            calcdependencies([this]);
+            calcdependencies([this], true);
             var service_uid = $(this).val();
             if ($(this).prop("checked")){
                 check_service(service_uid);
@@ -497,12 +497,12 @@ function AnalysisRequestAnalysesView() {
         });
 
     }
-
+    /**
+    * This function validates specification inputs
+    * @param {element} The input field from specifications (min, max, err)
+    */
     function validate_spec_field_entry(element) {
         var uid = $(element).attr("uid");
-        // no spec selector here yet!
-        // $("[name^='ar\\."+sb_col+"\\.Specification']").val("");
-        // $("[name^='ar\\."+sb_col+"\\.Specification_uid']").val("");
         var min_element = $("[name='min\\."+uid+"\\:records']");
         var max_element = $("[name='max\\."+uid+"\\:records']");
         var error_element = $("[name='error\\."+uid+"\\:records']");
@@ -528,7 +528,11 @@ function AnalysisRequestAnalysesView() {
             }
         }
     }
-
+    /**
+    * This functions runs the logic needed after setting the checkbox of a
+    * service.
+    * @param {service_uid} the service uid checked.
+    */
     function check_service(service_uid){
         var new_element, element;
 
@@ -573,7 +577,11 @@ function AnalysisRequestAnalysesView() {
         }
 
     }
-
+    /**
+    * This functions runs the logic needed after unsetting the checkbox of a
+    * service.
+    * @param {service_uid} the service uid unchecked.
+    */
     function uncheck_service(service_uid){
         var new_element, element;
 
@@ -604,15 +612,18 @@ function AnalysisRequestAnalysesView() {
     }
 
     function add_Yes(dlg, element, dep_services){
+    var service_uid;
         for(var i = 0; i<dep_services.length; i++){
-            var service_uid = dep_services[i].Service_uid;
+            service_uid = dep_services[i];
             if(! $("#list_cb_"+service_uid).prop("checked") ){
                 check_service(service_uid);
                 $("#list_cb_"+service_uid).prop("checked",true);
             }
         }
-        $(dlg).dialog("close");
-        $("#messagebox").remove();
+        if(dlg !== false){
+            $(dlg).dialog("close");
+            $("#messagebox").remove();
+        }
     }
 
     function add_No(dlg, element){
@@ -620,10 +631,18 @@ function AnalysisRequestAnalysesView() {
             uncheck_service($(element).attr("value"));
             $(element).prop("checked",false);
         }
-        $(dlg).dialog("close");
-        $("#messagebox").remove();
+        if(dlg !== false){
+            $(dlg).dialog("close");
+            $("#messagebox").remove();
+        };
     }
-
+    /**
+    * Once a checkbox has been selected, this functions finds out which are
+    * the dependencies and dependants related to it.
+    * @param {elements} The selected element, a checkbox.
+    * @param {auto_yes} A boolean. If 'true', the dependants and dependencies
+    * will be automatically selected/unselected.
+    */
     function calcdependencies(elements, auto_yes) {
         /*jshint validthis:true */
         auto_yes = auto_yes || false;
@@ -653,7 +672,7 @@ function AnalysisRequestAnalysesView() {
                 }
                 if (dep_services.length > 0) {
                     if (auto_yes) {
-                        add_Yes(this, element, dep_services);
+                        add_Yes(false, element, dep_services);
                     } else {
                         var html = "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>";
                         html = html + _("<p>${service} requires the following services to be selected:</p>"+
@@ -685,7 +704,7 @@ function AnalysisRequestAnalysesView() {
                 var Dependants = lims.AnalysisService.Dependants(service_uid);
                 for (i=0; i<Dependants.length; i++){
                     dep = Dependants[i];
-                    cb = $("#list_cb_" + dep.Service_uid);
+                    cb = $("#list_cb_" + dep);
                     if (cb.prop("checked")){
                         dep_titles.push(dep.Service);
                         dep_services.push(dep);
@@ -695,9 +714,9 @@ function AnalysisRequestAnalysesView() {
                     if (auto_yes) {
                         for(i=0; i<dep_services.length; i+=1) {
                             dep = dep_services[i];
-                            service_uid = dep.Service_uid;
-                            cb = $("#list_cb_" + dep.Service_uid);
-                            uncheck_service(dep.Service_uid);
+                            service_uid = dep;
+                            cb = $("#list_cb_" + service_uid);
+                            uncheck_service(service_uid);
                             $(cb).prop("checked", false);
                         }
                     } else {
@@ -714,10 +733,10 @@ function AnalysisRequestAnalysesView() {
                                 yes: function(){
                                     for(i=0; i<dep_services.length; i+=1) {
                                         dep = dep_services[i];
-                                        service_uid = dep.Service_uid;
-                                        cb = $("#list_cb_" + dep.Service_uid);
+                                        service_uid = dep;
+                                        cb = $("#list_cb_" + dep);
                                         $(cb).prop("checked", false);
-                                        uncheck_service(dep.Service_uid);
+                                        uncheck_service(dep);
                                     }
                                     $(this).dialog("close");
                                     $("#messagebox").remove();
