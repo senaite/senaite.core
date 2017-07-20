@@ -56,6 +56,10 @@ function BikaSetupEditView() {
         });
 
         $(restrict_useraccess).change();
+
+        // Disable and Hide 'More' button of DateFormats fields. Setting 'fixedsize=True' in content schema doesn't help.
+        $('#DateFormats_more').prop('disabled', true);
+        $('#DateFormats_more').hide();
     };
 
     function toSelectionList(pointer) {
