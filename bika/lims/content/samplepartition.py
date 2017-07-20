@@ -6,6 +6,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -43,7 +44,7 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=1,
     ),
-    DateTimeField('DatePreserved',
+    _DateTimeField('DatePreserved',
     ),
     StringField('Preserver',
         searchable=True

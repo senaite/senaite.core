@@ -11,8 +11,8 @@ from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
@@ -42,7 +42,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('DownFrom',
+    _DateTimeField('DownFrom',
         with_time = 1,
         with_date = 1,
         required = 1,
@@ -53,13 +53,13 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('DownTo',
+    _DateTimeField('DownTo',
         with_time = 1,
         with_date = 1,
         widget = DateTimeWidget(
             label=_("To"),
             description=_("Date until the instrument will not be available"),
-            show_hm = True,
+            show_hm=True,
         ),
     ),
 

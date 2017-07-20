@@ -54,7 +54,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('Date',
+    _DateTimeField('Date',
         widget = DateTimeWidget(
             label=_("Date"),
             description=_("Date when the calibration certificate was granted"),
@@ -71,7 +71,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('ValidTo',
+    _DateTimeField('ValidTo',
         with_time = 1,
         with_date = 1,
         required = 1,

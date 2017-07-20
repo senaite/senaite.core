@@ -15,6 +15,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
@@ -291,12 +292,12 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField('InstallationDate',
-    schemata = 'Additional info.',
-    widget = DateTimeWidget(
-        label=_("InstallationDate"),
-        description=_("The date the instrument was installed"),
-        )
+    _DateTimeField('InstallationDate',
+        schemata = 'Additional info.',
+        widget = DateTimeWidget(
+            label=_("InstallationDate"),
+            description=_("The date the instrument was installed"),
+            )
     ),
 
     BlobFileField('InstallationCertificate',

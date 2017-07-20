@@ -16,18 +16,19 @@ from bika.lims.content.invoice import InvoiceLineItem
 from bika.lims.interfaces import IInvoiceBatch
 from bika.lims.utils import get_invoice_item_description
 from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    DateTimeField('BatchStartDate',
+    _DateTimeField('BatchStartDate',
                   required=1,
                   default_method='current_date',
                   widget=CalendarWidget(
                       label=_("Start Date"),
                   ),
                   ),
-    DateTimeField('BatchEndDate',
+    _DateTimeField('BatchEndDate',
                   required=1,
                   default_method='current_date',
                   validators=('invoicebatch_EndDate_validator',),

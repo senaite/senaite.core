@@ -9,6 +9,7 @@ from Products.Archetypes.public import *
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
@@ -58,7 +59,7 @@ schema = BikaSchema.copy() + Schema((
                    referenceClass=HoldingReference,
                    relationship='OrderInvoice',
                    ),
-    DateTimeField(
+    _DateTimeField(
       'OrderDate',
       required=1,
       default_method='current_date',
@@ -74,7 +75,7 @@ schema = BikaSchema.copy() + Schema((
         },
       ),
     ),
-    DateTimeField('DateDispatched',
+    _DateTimeField('DateDispatched',
                   widget=DateTimeWidget(
                       label=_("Date Dispatched"),
                       ),

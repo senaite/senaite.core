@@ -11,8 +11,9 @@ from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes.Field import BooleanField, DateTimeField, \
+from Products.Archetypes.Field import BooleanField, \
     FixedPointField, IntegerField, StringField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -77,7 +78,7 @@ Result = StringField(
 # Only the most recent result capture date is recorded here and used to
 # populate catalog values, however the workflow review_history can be
 # used to get all dates of result capture
-ResultCaptureDate = DateTimeField(
+ResultCaptureDate = _DateTimeField(
     'ResultCaptureDate'
 )
 
@@ -96,7 +97,7 @@ Retested = BooleanField(
 
 # When the AR is published, the date of publication is recorded here.
 # It's used to populate catalog values.
-DateAnalysisPublished = DateTimeField(
+DateAnalysisPublished = _DateTimeField(
     'DateAnalysisPublished',
     widget=DateTimeWidget(
         label=_("Date Published")

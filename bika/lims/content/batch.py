@@ -24,6 +24,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 
 from bika.lims.browser.widgets import ReferenceWidget
 
@@ -101,7 +102,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Client Batch ID")
         )
     ),
-    DateTimeField(
+    _DateTimeField(
         'BatchDate',
         required=False,
         widget=DateTimeWidget(

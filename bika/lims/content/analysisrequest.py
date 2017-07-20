@@ -27,7 +27,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
-from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
@@ -500,7 +500,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # This field is a mirror of a field in Sample with the same name
-    DateTimeField(
+    _DateTimeField(
         'DateSampled',
         mode="rw",
         read_permission=permissions.View,
@@ -592,7 +592,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),# This field is a mirror of a Sample field with the same name
-    DateTimeField(
+    _DateTimeField(
         'SamplingDate',
         required=1,
         mode="rw",
@@ -1308,7 +1308,7 @@ schema = BikaSchema.copy() + Schema((
     # AnalysisRequest and Sample's DateReceived fields needn't to have
     # the same value.
     # This field is updated in workflow_script_receive method.
-    DateTimeField(
+    _DateTimeField(
         'DateReceived',
         mode="rw",
         read_permission=permissions.View,

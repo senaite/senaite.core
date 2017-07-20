@@ -15,7 +15,8 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.references import HoldingReference
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DateTimeField, UIDReferenceField
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -36,7 +37,7 @@ schema = BikaSchema.copy() + Schema((
         subfields=('UID', 'Username', 'Fullname', 'EmailAddress',
                    'PublicationModes'),
     ),
-    DateTimeField(
+    _DateTimeField(
         'DatePrinted',
         mode="rw",
         widget=DateTimeWidget(

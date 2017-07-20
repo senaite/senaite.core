@@ -13,7 +13,8 @@ from DateTime import DateTime
 from decimal import Decimal
 from persistent.mapping import PersistentMapping
 from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.ATExtensions.ateapi import DateTimeWidget
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from Products.CMFCore.permissions import View
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
@@ -38,7 +39,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('SupplyOrder',),
         relationship='SupplyOrderInvoice',
     ),
-    DateTimeField('InvoiceDate',
+    _DateTimeField('InvoiceDate',
         required=1,
         default_method='current_date',
         widget=DateTimeWidget(

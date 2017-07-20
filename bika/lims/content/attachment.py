@@ -6,7 +6,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import Schema, ReferenceWidget, DateTimeField
+from Products.Archetypes.public import Schema, ReferenceWidget
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -15,6 +15,7 @@ from bika.lims.browser.widgets import DateTimeWidget
 from DateTime import DateTime
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from plone.app.blob.field import FileField
 
 schema = BikaSchema.copy() + Schema((
@@ -37,7 +38,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Attachment Keys"),
         ),
     ),
-    DateTimeField('DateLoaded',
+    _DateTimeField('DateLoaded',
         required = 1,
         default_method = 'current_date',
         widget = DateTimeWidget(

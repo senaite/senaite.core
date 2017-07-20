@@ -20,6 +20,7 @@ from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
@@ -94,40 +95,40 @@ schema = BikaSchema.copy() + Schema((
             append_only = True,
         ),
     ),
-    DateTimeField('DateSampled',
+    _DateTimeField('DateSampled',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label=_("Date Sampled"),
         ),
     ),
-    DateTimeField('DateReceived',
+    _DateTimeField('DateReceived',
         schemata = 'Dates',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
             label=_("Date Received"),
         ),
     ),
-    DateTimeField('DateOpened',
+    _DateTimeField('DateOpened',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label=_("Date Opened"),
         ),
     ),
-    DateTimeField('ExpiryDate',
+    _DateTimeField('ExpiryDate',
         schemata = 'Dates',
         required = 1,
         widget = bika_DateTimeWidget(
             label=_("Expiry Date"),
         ),
     ),
-    DateTimeField('DateExpired',
+    _DateTimeField('DateExpired',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label=_("Date Expired"),
             visible = {'edit':'hidden'},
         ),
     ),
-    DateTimeField('DateDisposed',
+    _DateTimeField('DateDisposed',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
             label=_("Date Disposed"),

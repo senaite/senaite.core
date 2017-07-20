@@ -36,8 +36,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
-
-from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.fields import DateTimeField as _DateTimeField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
@@ -225,7 +224,7 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('SamplingWorkflowEnabled',
                  default_method='getSamplingWorkflowEnabledDefault'
     ),
-    DateTimeField('DateSampled',
+    _DateTimeField('DateSampled',
         mode="rw",
         read_permission=permissions.View,
         write_permission=SampleSample,
@@ -302,7 +301,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    DateTimeField('SamplingDate',
+    _DateTimeField('SamplingDate',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -446,7 +445,7 @@ schema = BikaSchema.copy() + Schema((
     # AnalysisRequest and Sample's DateReceived fields needn't to have
     # the same value.
     # This field is updated in workflow_script_receive method.
-    DateTimeField('DateReceived',
+    _DateTimeField('DateReceived',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -511,7 +510,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    DateTimeField('DateExpired',
+    _DateTimeField('DateExpired',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -554,7 +553,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    DateTimeField('DateDisposed',
+    _DateTimeField('DateDisposed',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
