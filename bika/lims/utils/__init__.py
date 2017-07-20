@@ -42,7 +42,11 @@ allow_module('csv')
 def to_utf8(text):
     if text is None:
         text = ''
-    return safe_unicode(text).encode('utf-8')
+    unicode_obj = safe_unicode(text)
+    # If it receives a dictionary or list, it will not work
+    if isinstance(unicode_obj, unicode):
+        return unicode_obj.encode('utf-8')
+    return unicode_obj
 
 
 def to_unicode(text):
@@ -55,7 +59,13 @@ def t(i18n_msg):
     """Safely translate and convert to UTF8, any zope i18n msgid returned from
     a bikaMessageFactory _
     """
-    return to_utf8(translate(to_unicode(i18n_msg)))
+    text = to_unicode(i18n_msg)
+    try:
+        text = translate(text)
+    except UnicodeDecodeError:
+        # TODO: This is only a quick fix
+        logger.warn("{} couldn't be translated".format(text))
+    return to_utf8(text)
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private

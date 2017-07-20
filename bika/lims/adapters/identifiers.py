@@ -5,7 +5,7 @@ import json
 from archetypes.schemaextender.interfaces import IOrderableSchemaExtender
 from archetypes.schemaextender.interfaces import ISchemaModifier
 from plone.indexer import indexer
-
+from bika.lims.utils import to_utf8
 from bika.lims import bikaMessageFactory as _, safe_unicode
 from bika.lims.browser import BrowserView
 from bika.lims.browser.widgets import RecordsWidget
@@ -77,7 +77,7 @@ def SearchableText(self):
         fieldname = field.getName()
         if IHaveIdentifiers.providedBy(self) and fieldname == 'Identifiers':
             identifiers = self.Schema()['Identifiers'].get(self)
-            idents = [safe_unicode(i['Identifier']) for i in identifiers]
+            idents = [to_utf8(i['Identifier']) for i in identifiers]
             if idents:
                 data.extend(idents)
             continue
@@ -106,16 +106,15 @@ def SearchableText(self):
                 datum = ' '.join(datum)
             elif isinstance(datum, basestring):
                 if isinstance(datum, unicode):
-                    datum = datum.encode('utf-8')
+                    datum = to_utf8(datum)
                 value = vocab.getValue(datum, '')
                 if isinstance(value, unicode):
-                    value = value.encode('utf-8')
+                    value = to_utf8(value)
                 datum = "%s %s" % (datum, value,)
 
             if isinstance(datum, unicode):
-                datum = datum.encode('utf-8')
+                datum = to_utf8(datum)
             data.append(str(datum))
-
     data = ' '.join(data)
     return data
 
