@@ -95,6 +95,8 @@ function CommonUtils() {
             if (page_size == undefined) {
                 request_data.page_size = 0
             }
+            // In case we want ajax call to be sent synchronously, we can set aj_async value to False.
+            // By default it is true in AJAX. So if undefined, just leave it true.
             var aj_async = request_data.aj_async;
             if (aj_async == undefined) {
                 aj_async = true

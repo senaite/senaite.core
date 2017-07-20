@@ -5,6 +5,8 @@ $(document).ready(function(){
     _ = jarn.i18n.MessageFactory('bika');
     window.jarn.i18n.loadCatalog("plone");
     PMF = jarn.i18n.MessageFactory('plone');
+
+    // Get date/datetime formats from Bika Setup via json API.
     var formats = {}
     request_data = {
         portal_type: "BikaSetup",
@@ -32,7 +34,7 @@ $(document).ready(function(){
         minuteGrid: 10,
         changeMonth:true,
         changeYear:true,
-        yearRange: "-60:+1"
+        yearRange: "-100:+1"
     });
 
     $('[datepicker_nofuture="1"]').live("click", function() {
@@ -57,6 +59,11 @@ $(document).ready(function(){
       validate_input('date_format_long', this);
     });
 
+    /**
+    Validate date/datetime strings according to formats from Bika Setup. Displays an error message if fails.
+    @param {String} type is either 'date_format_long' or 'date_format_long'
+    @param {Element} field is the '<input>' element of DateTimeField.
+    */
     function validate_input(type, field){
         request_data = {
             date_format: type,

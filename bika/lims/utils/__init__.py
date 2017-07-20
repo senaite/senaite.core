@@ -488,10 +488,18 @@ def get_date_format(d_type, f_type='PythonFormat', context=None):
 
 
 def time_to_string(time_obj, long_format=None, time_only=None, context=None):
+    """
+    Converts DateTime objects to Strings, with the respect to formats from Bika Setup.
+    :param time_obj: DateTime obj to be converted
+    :param long_format: to check whether it is just a date or it contains hours and minutes too.
+    :param time_only: must be set true when 'Date' should be hidden
+    :param context: to access bika setup faster, context can be sent as a parameter
+    :return String:
+    """
     if not long_format:
         formatstring = get_date_format('date_format_short', context=context)
     elif time_only:
-        formatstring = get_date_format('time_only', context)
+        formatstring = get_date_format('time_only', context=context)
     else:
         formatstring = get_date_format('date_format_long', context=context)
 

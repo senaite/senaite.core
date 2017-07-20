@@ -852,7 +852,12 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RecordsWidget(
             label=_("Date formats in String"),
             description=_("Define The String Formats of Date and Time values users prefer to use. Also fill Python \
-                           formats according to User Input Formats."),
+                           formats according to User Input Formats carefully. In case UI and Python formats are not \
+                           identical, system will fail to save Date values. E.g:  In order to represent "
+                          "'13:00 o'clock (1 PM) on the Second of January, in the year of 2017' "
+                          "as '2017-01-02 13:00', use 'yy-mm-dd HH:mm' for UIFormat, and '%Y-%m-%d %H:%M' for "
+                          "PythonFormat. It is recommended to read JS and Python Date Formatters, before making "
+                          "any changes on these fields."),
             visible=True,
             allowDelete=False,
         ),
