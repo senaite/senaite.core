@@ -175,11 +175,14 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def getCalculationDependants(self):
         """Return a flat list of services who's calculations depend on this."""
         deps = []
-        for service in self.getBackReferences('AnalysisServiceCalculation'):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        services_b = bsc(
+            portal_type='AnalysisService', inactive_state="active")
+        for service_b in services_b:
+            service = service_b.getObject()
             calc = service.getCalculation()
-            if calc and calc.UID() != self.UID():
-                calc.getCalculationDependants(deps)
-            deps.append(service)
+            if calc and calc.UID() == self.UID():
+                deps.append(service)
         return deps
 
     def workflow_script_activate(self):

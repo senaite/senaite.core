@@ -495,7 +495,7 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         calc = self.getCalculation()
         if calc:
-            return calc.getCalculationDependencies(self, flat=False)
+            return calc.getCalculationDependencies(flat=True)
         return []
 
     @security.public
@@ -508,52 +508,27 @@ class AnalysisService(AbstractBaseAnalysis):
         deps_uids = [service.UID() for service in deps]
         return deps_uids
 
-    @security.private
-    def _getServiceDependantsBaseMethod(self, get_uids=False):
-        """
-        This methods returns a list with analysis services UIDs or objects.
-        Those uids/objs are the dependants on this analysis service.
-
-        :param get_uids: if true, returns a list of uids. Otherwise it
-        returns a list of objects.
-        :type get_uids: boolean
-        :return: A list of UIDs or AnalysisService objects.
-        """
-        result = []
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        # A service cannot be deactivated if "active" calculations list it
-        # as a dependency.
-        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
-        calculations = [c.getObject() for c in active_calcs]
-        for calc in calculations:
-            tmp_objs = []
-            tmp_uids = []
-            for dep in calc.getDependentServices():
-                tmp_objs.append(dep)
-                tmp_uids.append(dep.UID())
-            if self.UID() in tmp_uids and get_uids:
-                result = result + tmp_uids
-            elif self.UID() in tmp_uids:
-                result = result + tmp_objs
-        return result
-
     @security.public
     def getServiceDependants(self):
-        """
-        This methods returns a list with the dependants for this
-        service.
-        :return: A list of AnalysisService objects
-        """
-        return self._getServiceDependantsBaseMethod(get_uids=False)
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
+        calculations = [c.getObject() for c in active_calcs]
+        dependants = []
+        for calc in calculations:
+            calc_dependants = calc.getDependentServices()
+            if self in calc_dependants:
+                calc_dependencies = calc.getCalculationDependants()
+                dependants = dependants + calc_dependencies
+        dependants = list(set(dependants))
+        if self in dependants:
+            dependants.remove(self)
+        return dependants
 
     @security.public
     def getServiceDependantsUIDs(self):
-        """
-        This methods returns a list with the dependants for this
-        service.
-        :return: A list of UIDs
-        """
-        return self._getServiceDependantsBaseMethod(get_uids=True)
+        deps = self.getServiceDependants()
+        deps_uids = [service.UID() for service in deps]
+        return deps_uids
 
     def workflow_script_activate(self):
         workflow = getToolByName(self, 'portal_workflow')
