@@ -5,8 +5,9 @@
 
 from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
-from zExceptions import BadRequest
-from bika.lims.utils import safe_unicode
+from bika.lims.utils import to_utf8
+from bika.lims import logger
+
 import json
 import Missing
 import sys, traceback
@@ -85,14 +86,14 @@ def load_field_values(instance, include_fields):
             if field.type == 'reference':
                 if type(val) in (list, tuple):
                     ret[fieldname + "_uid"] = [v.UID() for v in val]
-                    val = [safe_unicode(v.Title()) for v in val]
+                    val = [to_utf8(v.Title()) for v in val]
                 else:
                     ret[fieldname + "_uid"] = val.UID()
-                    val = safe_unicode(val.Title())
+                    val = to_utf8(val.Title())
             elif field.type == 'boolean':
                 val = True if val else False
             elif field.type == 'text':
-                val = safe_unicode(val)
+                val = to_utf8(val)
 
         try:
             json.dumps(val)
@@ -177,7 +178,10 @@ def set_fields_from_request(obj, request):
             if value:
                 brains = resolve_request_lookup(obj, request, fieldname)
                 if not brains:
-                    raise BadRequest("Can't resolve reference: %s" % fieldname)
+                    logger.warning(
+                        "JSONAPI: Can't resolve reference: {} {}"
+                        .format(fieldname, value))
+                    return []
             if schema[fieldname].multiValued:
                 value = [b.UID for b in brains] if brains else []
             else:
@@ -197,7 +201,10 @@ def set_fields_from_request(obj, request):
             try:
                 value = eval(value)
             except:
-                raise BadRequest(fieldname + ": Invalid JSON/Python variable")
+                logger.warning(
+                    "JSONAPI: " + fieldname + ": Invalid "
+                    "JSON/Python variable")
+                return []
         mutator = field.getMutator(obj)
         if mutator:
             mutator(value)

@@ -426,14 +426,13 @@ class ajaxAnalysisRequestSubmit():
                 samplingdate = state.get('SamplingDate', '')
                 try:
                     samp_date = datetime.datetime.strptime(
-                        samplingdate, "%Y-%m-%d %H:%M")
+                        samplingdate.strip(), "%Y-%m-%d %H:%M")
                 except ValueError:
                     print traceback.format_exc()
                     msg =\
                         "Bad time formatting: Getting '{}' but expecting an"\
                         " string with '%Y-%m-%d %H:%M' format."\
                         .format(samplingdate)
-                    logger.error(msg)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
                 now = datetime.datetime.now()

@@ -60,6 +60,13 @@
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
+   <browser:page
+    for="*"
+    name="js_warn"
+    class="bika.lims.utils.js_warn"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
   <browser:page
     for="*"
     name="js_err"

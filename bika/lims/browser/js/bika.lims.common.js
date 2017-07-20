@@ -78,7 +78,15 @@ function CommonUtils() {
                         "_authenticator": $("input[name='_authenticator']").val()}
             });
         };
-
+        window.bika.lims.warning = function(e) {
+            var message = "(" + window.location.href + "): " + e;
+            $.ajax({
+                type: "POST",
+                url: "js_warn",
+                data: {"message":message,
+                        "_authenticator": $("input[name='_authenticator']").val()}
+            });
+        };
         window.bika.lims.error = function(e) {
             var message = "(" + window.location.href + "): " + e;
             $.ajax({
