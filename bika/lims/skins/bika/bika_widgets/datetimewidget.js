@@ -50,18 +50,34 @@ $(document).ready(function(){
     });
 
     $('[datepicker="1"]').change(function() {
-      if(!this.value.includes("-") && !this.value.includes("/")){
-        alert("Please enter valid date");
-        this.text='';
-        this.value='';
-      }else{
-        var d = $(this).datepicker('getDate');
-        if (d && d.getFullYear() < 1901){
-          alert("Please choose a valid year...");
-          this.text='';
-          this.value='';
-        }
-      }
+      validate_input('date_format_short', this);
     });
+
+    $('[datetimepicker="1"]').change(function() {
+      validate_input('date_format_long', this);
+    });
+
+    function validate_input(type, field){
+        request_data = {
+            date_format: type,
+            string_value: field.value
+         }
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: window.portal_url + "/ajax_validate_date",
+            data: request_data,
+            success: function(data) {
+                if(data.success){
+                    return true;
+                }else{
+                    field.value = '';
+                    field.text = '';
+                    window.bika.lims.portalMessage(data.message + " for '" + field.name + "' field.")
+                }
+            }
+        });
+    };
+
 });
 });

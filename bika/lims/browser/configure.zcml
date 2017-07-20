@@ -17,6 +17,7 @@
   <include file="bika_listing.zcml"/>
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
+  <include file="datevalidator.zcml"/>
   <include file="invoicefolder.zcml"/>
   <include file="invoicebatch.zcml"/>
   <include file="invoice.zcml"/>
