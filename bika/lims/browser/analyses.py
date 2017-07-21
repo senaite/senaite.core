@@ -43,7 +43,7 @@ class AnalysesView(BikaListingView):
         self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'created'
+        self.contentFilter['sort_on'] = 'title'
         self.contentFilter['sort_order'] = 'ascending'
         self.sort_order = 'ascending'
         self.context_actions = {}
