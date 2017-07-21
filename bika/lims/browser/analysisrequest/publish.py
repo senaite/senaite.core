@@ -668,6 +668,14 @@ class AnalysisRequestPublishView(BrowserView):
                 out = "%s<br/>%s'%s':''" % (out, padding, str(k))
         return out
 
+    def currentDate(self):
+        """
+        This method returns the current time. It is useful if you want to
+        get the current time in a report.
+        :return: DateTime()
+        """
+        return DateTime()
+
 
 class AnalysisRequestDigester:
     """Read AR data which could be useful during publication, into a data
