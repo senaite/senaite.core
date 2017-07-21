@@ -34,7 +34,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'AnalysisService',
-                              'sort_on': 'sortable_title',
                               'inactive_state': 'active', }
         self.context_actions = {}
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
@@ -53,10 +52,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
             self.expand_all_categories = False
             self.ajax_categories = True
             self.category_index = 'getCategoryTitle'
-
         self.columns = {
             'Title': {'title': _('Service'),
-                      'index': 'getId',
+                      'index': 'title',
                       'sortable': False, },
             'Hidden': {'title': _('Hidden'),
                        'sortable': False,
@@ -172,7 +170,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.expand_all_categories = False
 
         wf = getToolByName(self.context, 'portal_workflow')
-
+        self.contentFilter['sort_on'] = 'title'
+        self.contentFilter['sort_order'] = 'ascending'
         items = BikaListingView.folderitems(self)
 
         parts = self.context.getSample().objectValues('SamplePartition')
