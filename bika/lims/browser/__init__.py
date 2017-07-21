@@ -15,6 +15,8 @@ from bika.lims import logger
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
 from time import strptime as _strptime
+from time import mktime
+from datetime import datetime
 import traceback
 
 
@@ -32,7 +34,10 @@ def strptime(context, value):
         except ValueError:
             continue
         try:
-            val = DateTime(*list(val)[:-6])
+            # Create Plone's DateTime object based on datetime object from python.
+            # It helps to save TZ, and hours and minutes correctly.
+            val = datetime.fromtimestamp(mktime(val))
+            val = DateTime(val)
         except DateTimeError:
             val = ""
         if val.timezoneNaive():

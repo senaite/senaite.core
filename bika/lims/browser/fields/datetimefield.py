@@ -3,12 +3,9 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from time import strptime
-
 from AccessControl import ClassSecurityInfo
 
 from DateTime.DateTime import DateTime, safelocaltime
-from DateTime.interfaces import DateTimeError
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.interfaces import IDateTimeField
 from Products.Archetypes.public import *

@@ -496,12 +496,12 @@ def time_to_string(time_obj, long_format=None, time_only=None, context=None):
     :param context: to access bika setup faster, context can be sent as a parameter
     :return String:
     """
-    if not long_format:
-        formatstring = get_date_format('date_format_short', context=context)
+    if long_format:
+        formatstring = get_date_format('date_format_long', context=context)
     elif time_only:
         formatstring = get_date_format('time_only', context=context)
     else:
-        formatstring = get_date_format('date_format_long', context=context)
+        formatstring = get_date_format('date_format_short', context=context)
 
     return time_obj.strftime(formatstring)
 
