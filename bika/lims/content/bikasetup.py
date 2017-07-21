@@ -857,7 +857,7 @@ schema = BikaFolderSchema.copy() + Schema((
                           "'13:00 o'clock (1 PM) on the Second of January, in the year of 2017' "
                           "as '2017-01-02 13:00', use 'yy-mm-dd HH:mm' for UIFormat, and '%Y-%m-%d %H:%M' for "
                           "PythonFormat. It is recommended to read JS and Python Date Formatters, before making "
-                          "any changes on these fields."),
+                          "any changes in these fields."),
             visible=True,
             allowDelete=False,
         ),

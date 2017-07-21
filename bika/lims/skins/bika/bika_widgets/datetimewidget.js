@@ -19,7 +19,15 @@ $(document).ready(function(){
             formats[raw_formats[i].Type] = raw_formats[i].UIFormat
         }
     });
-
+    // In case formats are not found in Bika, just use default values.
+    if(Object.keys(formats).length == 0){
+        console.warn("Date formats not found in Bika Setup. This shouldn't happen.");
+        formats = {
+            date_format_long:"yy-mm-dd HH:mm",
+            date_format_short: "yy-mm-dd",
+            time_only: "HH:mm"
+        }
+    }
     $('[datepicker="1"]').datepicker({
         dateFormat: formats.date_format_short,
         changeMonth:true,
