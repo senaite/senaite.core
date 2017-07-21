@@ -950,10 +950,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         Further information at AbstractBaseAnalysis.getPrecision()
         """
-        schu = self.getField('Uncertainty').get(self)
-        if all([schu,
-                self.getAllowManualUncertainty(),
-                self.getPrecisionFromUncertainty()]):
+        allow_manual = self.getAllowedManualUncertainty()
+        precision_unc = self.getPrecisionFromUncertainty()
+        if allow_manual or precision_unc:
             uncertainty = self.getUncertainty(result)
             if uncertainty == 0:
                 return 1
