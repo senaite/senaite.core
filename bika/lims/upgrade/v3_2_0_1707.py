@@ -39,6 +39,7 @@ def upgrade(tool):
 
     # importing toolset in order to add bika_catalog_report
     setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
 
     # Renames some guard expressions from several transitions
     set_guard_expressions(portal)
