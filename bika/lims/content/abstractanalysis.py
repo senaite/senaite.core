@@ -938,22 +938,21 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getPrecision(self, result=None):
         """Returns the precision for the Analysis.
 
-        - ManualUncertainty not set: returns the precision from the
-            AnalysisService.
+        - If ManualUncertainty is set, calculates the precision of the result
+          in accordance with the manual uncertainty set.
 
-        - ManualUncertainty set and Calculate Precision from Uncertainty
-          is also set in Analysis Service: calculates the precision of the
-          result according to the manual uncertainty set.
+        - If Calculate Precision from Uncertainty is set in Analysis Service,
+          calculates the precision in accordance with the uncertainty infered
+          from uncertainties ranges.
 
-        - ManualUncertainty set and Calculatet Precision from Uncertainty
-          not set in Analysis Service: returns the result as-is.
+        - If neither Manual Uncertainty nor Calculate Precision from
+          Uncertainty are set, returns the precision from the Analysis Service
 
         Further information at AbstractBaseAnalysis.getPrecision()
         """
-        schu = self.getField('Uncertainty').get(self)
-        if all([schu,
-                self.getAllowManualUncertainty(),
-                self.getPrecisionFromUncertainty()]):
+        allow_manual = self.getAllowManualUncertainty()
+        precision_unc = self.getPrecisionFromUncertainty()
+        if allow_manual or precision_unc:
             uncertainty = self.getUncertainty(result)
             if uncertainty == 0:
                 return 1

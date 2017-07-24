@@ -668,6 +668,14 @@ class AnalysisRequestPublishView(BrowserView):
                 out = "%s<br/>%s'%s':''" % (out, padding, str(k))
         return out
 
+    def currentDate(self):
+        """
+        This method returns the current time. It is useful if you want to
+        get the current time in a report.
+        :return: DateTime()
+        """
+        return DateTime()
+
 
 class AnalysisRequestDigester:
     """Read AR data which could be useful during publication, into a data
@@ -1055,8 +1063,10 @@ class AnalysisRequestDigester:
             cfullname = contact.getFullname() if contact else None
             cemail = contact.getEmailAddress() if contact else None
             physical_address = self._format_address(
-                contact.getPhysicalAddress())
-            postal_address = self._format_address(contact.getPostalAddress())
+                contact.getPhysicalAddress()) if contact else ''
+            postal_address =\
+                self._format_address(contact.getPostalAddress())\
+                if contact else ''
             data = {'id': member.id,
                     'fullname': to_utf8(cfullname) if cfullname else to_utf8(
                         mfullname),
@@ -1067,8 +1077,8 @@ class AnalysisRequestDigester:
                     'mobile_phone': contact.getMobilePhone() if contact else '',
                     'job_title': to_utf8(contact.getJobTitle()) if contact else '',
                     'department': to_utf8(contact.getDepartment()) if contact else '',
-                    'physical_address': physical_address if contact else '',
-                    'postal_address': postal_address if contact else '',
+                    'physical_address': physical_address,
+                    'postal_address': postal_address,
                     'home_page': to_utf8(mhomepage)}
         return data
 

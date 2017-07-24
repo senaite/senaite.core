@@ -10,7 +10,7 @@ import sys
 from AccessControl import ClassSecurityInfo
 from decimal import Decimal
 from operator import methodcaller
-
+from Products.Archetypes.utils import DisplayList
 from DateTime import DateTime
 from Products.ATExtensions.field import RecordsField
 from Products.Archetypes import atapi
@@ -2823,7 +2823,7 @@ class AnalysisRequest(BaseFolder):
             .getField('ScheduledSamplingSampler').get(self)
 
     def getSamplers(self):
-        return getUsers(self, ['LabManager', 'Sampler'])
+        return getUsers(self, ['Sampler', ])
 
     def getPreparationWorkflows(self):
         """Return a list of sample preparation workflows.  These are identified

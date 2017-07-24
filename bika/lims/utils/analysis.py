@@ -112,7 +112,7 @@ def get_significant_digits(numeric_value):
     """
     try:
         numeric_value = float(numeric_value)
-    except ValueError:
+    except (TypeError, ValueError):
         return None
     if numeric_value == 0:
         return 0
