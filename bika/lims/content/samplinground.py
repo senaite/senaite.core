@@ -160,7 +160,7 @@ class ISamplingRound(model.Schema):
                 title=_(u"Sampler"),
                 description=_(u"The default Sampler for these Sampling Round"),
                 required=True,
-                source=Samplers(['LabManager', 'Sampler']),
+                source=Samplers(['Sampler']),
                 )
 
         department = schema.Choice(
