@@ -393,8 +393,7 @@ class AnalysisServicesView(BikaListingView):
         return item
 
     def folderitems(self):
-        self.contentFilter['sort_on'] = 'title'
-        self.contentFilter['sort_order'] = 'ascending'
+
         items = super(AnalysisServicesView, self).folderitems()
         if self.do_cats:
             self.categories = map(lambda x: x[0],
