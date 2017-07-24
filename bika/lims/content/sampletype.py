@@ -58,6 +58,7 @@ schema = BikaSchema.copy() + Schema((
         required = True,
         widget = StringWidget(
             label=_("Sample Type Prefix"),
+            description=_("It is recommended not to use spaces in prefixes."),
         ),
     ),
     StringField('MinimumVolume',
