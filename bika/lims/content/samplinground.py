@@ -13,7 +13,7 @@ from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
 from zope.schema.interfaces import IContextSourceBinder
-from datetime import date
+from datetime import datetime
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
@@ -177,10 +177,10 @@ class ISamplingRound(model.Schema):
                 default=7,
                 )
 
-        sampling_date = schema.Date(
+        sampling_date = schema.Datetime(
                 title=_(u"Sampling date"),
                 description=_(u"The date to do the sampling process"),
-                default=date.today(),
+                default=datetime.now(),
                 required=True
                 )
 
@@ -234,7 +234,7 @@ def analysisRequestTemplates(obj):
 @indexer(ISamplingRound)
 def samplingRoundSamplingDate(obj):
     date = obj.sampling_date
-    return date.strftime("%Y-%m-%d")
+    return date.strftime("%Y-%m-%d %H:%M")
 
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
