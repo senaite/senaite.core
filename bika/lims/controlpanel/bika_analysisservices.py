@@ -135,8 +135,7 @@ class AnalysisServicesView(BikaListingView):
 
         super(AnalysisServicesView, self).__init__(context, request)
         self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'AnalysisService',
-                              'sort_on': 'sortable_title'}
+        self.contentFilter = {'portal_type': 'AnalysisService', }
         self.context_actions = {
             _('Add'):
                 {'url': 'createObject?type_name=AnalysisService',
@@ -149,7 +148,7 @@ class AnalysisServicesView(BikaListingView):
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 25
-
+        self.sort_on = 'Title'
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
@@ -162,7 +161,7 @@ class AnalysisServicesView(BikaListingView):
         self.columns = {
             'Title': {
                 'title': _('Service'),
-                'index': 'sortable_title',
+                'index': 'title',
                 'replace_url': 'absolute_url',
             },
             'Keyword': {
@@ -299,7 +298,7 @@ class AnalysisServicesView(BikaListingView):
 
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.an_cats = bsc(portal_type="AnalysisCategory",
-                           sort_on="sortable_title")
+                           sort_on="title")
         self.an_cats_order = dict([(b.Title, "{:04}".format(a))
                                   for a, b in enumerate(self.an_cats)])
 
@@ -394,6 +393,7 @@ class AnalysisServicesView(BikaListingView):
         return item
 
     def folderitems(self):
+
         items = super(AnalysisServicesView, self).folderitems()
         if self.do_cats:
             self.categories = map(lambda x: x[0],
