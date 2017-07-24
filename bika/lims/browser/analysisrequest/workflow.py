@@ -637,7 +637,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 logger.warn('Cannot create analysis %s inside %s (%s)'%
                             an.getService().Title(), newar, e)
                 continue
-            nan.setService(an.getService())
+            nan.setAnalysisService(an.getAnalysisService())
             nan.setCalculation(an.getCalculation())
             nan.setInterimFields(an.getInterimFields())
             nan.setResult(an.getResult())
