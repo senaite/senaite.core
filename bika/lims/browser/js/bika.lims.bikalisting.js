@@ -157,9 +157,9 @@ function BikaListingTableView() {
 	* The process requires an ajax call, so the function keeps checkboxes
 	* disabled until the allowed transitions for the associated object are set.
 	*/
-	function load_transitions(blisting='') {
+	function load_transitions(blisting) {
 		"use strict";
-		if (blisting == '') {
+		if (blisting == '' || typeof blisting === 'undefined') {
             var blistings = $('table.bika-listing-table');
             $(blistings).each(function(i) {
                 load_transitions($(this));
