@@ -11,6 +11,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import encode_header
+from bika.lims.utils import copy_field_values
 from bika.lims.utils import isActive
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
@@ -595,33 +596,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
     def cloneAR(self, ar):
         newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
-        newar.title = ar.title
-        newar.description = ar.description
-        newar.setContact(ar.getContact())
-        newar.setCCContact(ar.getCCContact())
-        newar.setCCEmails(ar.getCCEmails())
-        newar.setBatch(ar.getBatch())
-        newar.setTemplate(ar.getTemplate())
-        newar.setProfile(ar.getProfile())
-        newar.setSamplingDate(ar.getSamplingDate())
-        newar.setSampleType(ar.getSampleType())
-        newar.setSamplePoint(ar.getSamplePoint())
-        newar.setStorageLocation(ar.getStorageLocation())
-        newar.setSamplingDeviation(ar.getSamplingDeviation())
-        newar.setSampleCondition(ar.getSampleCondition())
         newar.setSample(ar.getSample())
-        newar.setClientOrderNumber(ar.getClientOrderNumber())
-        newar.setClientReference(ar.getClientReference())
-        newar.setClientSampleID(ar.getClientSampleID())
-        newar.setDefaultContainerType(ar.getDefaultContainerType())
-        newar.setAdHoc(ar.getAdHoc())
-        newar.setComposite(ar.getComposite())
-        newar.setReportDryMatter(ar.getReportDryMatter())
-        newar.setInvoiceExclude(ar.getInvoiceExclude())
-        newar.setAttachment(ar.getAttachment())
-        newar.setInvoice(ar.getInvoice())
-        newar.setDateReceived(ar.getDateReceived())
-        newar.setMemberDiscount(ar.getMemberDiscount())
+        ignore_fieldnames = ['Analyses', 'DatePublished', 'DatePublishedViewer',
+                             'ParentAnalysisRequest', 'ChildAnaysisRequest',
+                             'Digest', 'Sample']
+        copy_field_values(ar, newar, ignore_fieldnames=ignore_fieldnames)
+
         # Set the results for each AR analysis
         ans = ar.getAnalyses(full_objects=True)
         # If a whole AR is retracted and contains retracted Analyses, these
@@ -630,26 +610,19 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         analyses = [x for x in ans
                 if workflow.getInfoFor(x, "review_state") not in ("retracted")]
         for an in analyses:
+            if hasattr(an, 'IsReflexAnalysis') and an.IsReflexAnalysis:
+                # We don't want reflex analyses to be copied
+                continue
             try:
                 nan = _createObjectByType("Analysis", newar, an.getKeyword())
             except Exception as e:
                 from bika.lims import logger
                 logger.warn('Cannot create analysis %s inside %s (%s)'%
-                            an.getService().Title(), newar, e)
+                            an.getAnalysisService().Title(), newar, e)
                 continue
-            nan.setAnalysisService(an.getAnalysisService())
-            nan.setCalculation(an.getCalculation())
-            nan.setInterimFields(an.getInterimFields())
-            nan.setResult(an.getResult())
-            nan.setResultDM(an.getResultDM())
-            nan.setRetested = False,
-            nan.setMaxTimeAllowed(an.getMaxTimeAllowed())
-            nan.setDueDate(an.getDueDate())
-            nan.setDuration(an.getDuration())
-            nan.setReportDryMatter(an.getReportDryMatter())
-            nan.setAnalyst(an.getAnalyst())
-            nan.setInstrument(an.getInstrument())
-            nan.setSamplePartition(an.getSamplePartition())
+            # Make a copy
+            ignore_fieldnames = ['Verificators', 'DataAnalysisPublished']
+            copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
             nan.unmarkCreationFlag()
             zope.event.notify(ObjectInitializedEvent(nan))
             changeWorkflowState(nan, 'bika_analysis_workflow',
