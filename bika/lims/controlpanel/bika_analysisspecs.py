@@ -25,9 +25,9 @@ class AnalysisSpecsView(BikaListingView):
         super(AnalysisSpecsView, self).__init__(context, request)
         self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'AnalysisSpec',
-                              'sort_on': 'sortable_title',
                               'path': {'query':"/".join(self.context.getPhysicalPath()),
                                        'level':0}}
+        self.sort_on = 'Title'
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=AnalysisSpec',
                                  'icon': '++resource++bika.lims.images/add.png'}}
@@ -42,9 +42,12 @@ class AnalysisSpecsView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Title'),
-                           'index': 'title'},
+                      'index': 'title',
+                      'replace_url': 'absolute_url'},
             'SampleType': {'title': _('Sample Type'),
-                           'index': 'sortable_title'},
+                           'index': 'getSampleTypeTitle',
+                           'attr': 'getSampleType.Title',
+                           'replace_url': 'getSampleType.absolute_url'},
         }
 
         self.review_states = [
@@ -64,18 +67,6 @@ class AnalysisSpecsView(BikaListingView):
              'columns': ['Title', 'SampleType']},
         ]
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Title'] = obj.Title()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-            st = obj.getSampleType()
-            items[x]['SampleType'] = obj.getSampleType().Title() \
-                if obj.getSampleType() else ""
-        return items
 
 schema = ATFolderSchema.copy()
 class AnalysisSpecs(ATFolder):
