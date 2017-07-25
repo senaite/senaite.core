@@ -21,7 +21,7 @@ class SRTemplateARTemplatesView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'ARTemplate',
-            'sort_on': 'sortable_title',
+            'sort_on': 'title',
             'inactive_state': 'active',
         }
         self.context_actions = {}
@@ -36,11 +36,13 @@ class SRTemplateARTemplatesView(BikaListingView):
         self.expand_all_categories = True
         self.pagesize = 999999
         self.allow_edit = allow_edit
+        self.clientUID = None
         self.form_id = "artemplates"
         self.columns = {
             'Title': {
                 'title': _('Service'),
-                'index': 'sortable_title',
+                'index': 'title',
+                'replace_url': 'absolute_url',
                 'sortable': False,
             },
         }
@@ -54,22 +56,19 @@ class SRTemplateARTemplatesView(BikaListingView):
         self.fieldvalue = fieldvalue
         self.selected = [o.UID() for o in fieldvalue]
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        clientUID = self.context.aq_parent.aq_parent.UID()
-        out_items = []
-        for item in items:
-            if not item.has_key('obj'): continue
-            if item['obj'].getClientUID() and item['obj'].getClientUID()!=clientUID:
-                # Only display client's and lab's arts
-                continue
-            obj = item['obj']
-            title_link = "<a href='%s'>%s</a>" % (item['url'], item['title'])
-            item['replace']['Title'] = title_link
-            item['selected'] = item['uid'] in self.selected
-            out_items.append(item)
+    def isItemAllowed(self, obj):
+        if self.clientUID is None:
+            self.clientUID = self.context.aq_parent.aq_parent.UID()
+        # Only display client's and lab's arts
+        if obj.aq_parent.aq_inner.meta_type == 'Client':
+            obj_client = obj.getClientUID()
+            if obj_client != self.clientUID:
+                return False
+        return True
 
-        return out_items
+    def folderitem(self, obj, item, index):
+        item['selected'] = item['uid'] in self.selected
+        return item
 
 
 class SRTemplateARTemplatesWidget(TypesWidget):
