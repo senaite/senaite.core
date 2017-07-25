@@ -2465,7 +2465,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDate(value)
-            self.Schema()['DateSampled'].set(self, value)
+            self.Schema()['SamplingDate'].set(self, value)
         elif not sample:
             logger.warning(
                 "setSamplingDate has failed for Analysis Request %s because "
