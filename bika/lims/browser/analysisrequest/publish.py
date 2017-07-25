@@ -720,22 +720,25 @@ class AnalysisRequestDigester:
         # if AR was previously digested, use existing data (if exists)
         if not overwrite:
             # Prevent any error related with digest
-            data = ar.getDigest() if hasattr(ar, 'getDigest') else ''
-            # Check if the department managers have changed since the
-            # verification:
-            saved_managers = data.get('managers', {})
-            saved_managers_ids = set(saved_managers.get('ids', []))
-            current_managers = self.context.getManagers()
-            current_managers_ids = set([man.getId() for man in
-                                        current_managers])
-            # The symmetric difference of two sets A and B is the set of
-            # elements which are in either of the sets A or B but not in both.
-            are_differenet = saved_managers_ids.symmetric_difference(
-                current_managers_ids)
-            if data and len(are_differenet) == 0:
-                # Seems that sometimes the 'obj' is wrong in the saved data.
-                data['obj'] = ar
-                return data
+            data = ar.getDigest() if hasattr(ar, 'getDigest') else {}
+            if data:
+                # Check if the department managers have changed since
+                # verification:
+                saved_managers = data.get('managers', {})
+                saved_managers_ids = set(saved_managers.get('ids', []))
+                current_managers = self.context.getManagers()
+                current_managers_ids = set([man.getId() for man in
+                                            current_managers])
+                # The symmetric difference of two sets A and B is the set of
+                # elements which are in either of the sets A or B but not
+                # in both.
+                are_different = saved_managers_ids.symmetric_difference(
+                    current_managers_ids)
+                if len(are_different) == 0:
+                    # Seems that sometimes the 'obj' is wrong in the saved
+                    # data.
+                    data['obj'] = ar
+                    return data
 
         logger.info("=========== creating new data for %s" % ar)
 
