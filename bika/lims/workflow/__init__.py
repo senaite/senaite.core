@@ -341,7 +341,7 @@ def isActive(instance):
 def getReviewHistoryActionsList(instance):
     """Returns a list with the actions performed for the instance, from oldest
     to newest"""
-    review_history = getReviewHistory()
+    review_history = getReviewHistory(instance)
     review_history.reverse()
     actions = [event['action'] for event in review_history]
     return actions
