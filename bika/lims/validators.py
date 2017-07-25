@@ -1178,3 +1178,23 @@ class ReflexRuleValidator:
         return True
 
 validation.register(ReflexRuleValidator())
+
+
+class NoWhiteSpaceValidator:
+    """ String, not containing space(s). """
+
+    implements(IValidator)
+    name = "no_white_space_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        translate = getToolByName(instance, 'translation_service').translate
+
+        if value and " " in value:
+            msg = _(
+                "Invalid value: Please enter a value without spaces.")
+            return to_utf8(translate(msg))
+
+        return True
+
+validation.register(NoWhiteSpaceValidator())

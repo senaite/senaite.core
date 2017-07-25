@@ -56,6 +56,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Prefix',
         required = True,
+        validators=('no_white_space_validator'),
         widget = StringWidget(
             label=_("Sample Type Prefix"),
             description=_("Prefixes can not contain spaces."),
