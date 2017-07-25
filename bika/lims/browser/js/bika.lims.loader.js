@@ -106,10 +106,6 @@ window.bika.lims.controllers =  {
     ".portaltype-artemplate.template-base_edit":
         ['ARTemplateEditView'],
 
-    // Sample Type
-    ".portaltype-sampletype.template-base_edit":
-        ['SampleTypeView'],
-
     // Analysis Requests
     ".portaltype-analysisrequest":
         ['SampleView',
