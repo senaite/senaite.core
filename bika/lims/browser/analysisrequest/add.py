@@ -48,6 +48,7 @@ class AnalysisServicesView(ASV):
 
         self.contentFilter['getPointOfCapture'] = poc
         self.contentFilter['inactive_state'] = 'active'
+        self.show_workflow_action_buttons = False
 
         if category:
             self.contentFilter['getCategoryTitle'] = category
