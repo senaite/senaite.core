@@ -659,3 +659,23 @@ def measure_time(func_to_measure):
         print log
         return return_value
     return wrap
+
+
+def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
+    ignore_fields = ignore_fieldnames if ignore_fieldnames else []
+    ignore_types = ignore_fieldtypes if ignore_fieldtypes else []
+    if 'id' not in ignore_fields:
+        ignore_fields.append('id')
+
+    src_schema = src.Schema()
+    dst_schema = dst.Schema()
+
+    for field in src_schema.fields():
+        fieldname = field.getName()
+        if fieldname in ignore_fields \
+                or field.type in ignore_types \
+                or fieldname not in dst_schema:
+            continue
+        value = field.get(src)
+        if value:
+            dst_schema[fieldname].set(dst, value)
