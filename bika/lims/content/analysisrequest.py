@@ -1838,7 +1838,6 @@ class AnalysisRequest(BaseFolder):
             else:
                 return "0.00"
 
-    security.declareProtected(View, 'getResponsible')
 
     def _getAnalysesNum(self):
         """ Return the amount of analyses verified/total in the current AR """
@@ -1852,6 +1851,7 @@ class AnalysisRequest(BaseFolder):
                 total += 1
         return verified,total
 
+    @security.public
     def getResponsible(self):
         """ Return all manager info of responsible departments """
         managers = {}
@@ -1888,8 +1888,7 @@ class AnalysisRequest(BaseFolder):
 
         return mngr_info
 
-    security.declareProtected(View, 'getResponsible')
-
+    @security.public
     def getManagers(self):
         """ Return all managers of responsible departments """
         manager_ids = []

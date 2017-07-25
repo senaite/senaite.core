@@ -720,11 +720,25 @@ class AnalysisRequestDigester:
         # if AR was previously digested, use existing data (if exists)
         if not overwrite:
             # Prevent any error related with digest
-            data = ar.getDigest() if hasattr(ar, 'getDigest') else ''
+            data = ar.getDigest() if hasattr(ar, 'getDigest') else {}
             if data:
-                # Seems that sometimes the 'obj' is wrong in the saved data.
-                data['obj'] = ar
-                return data
+                # Check if the department managers have changed since
+                # verification:
+                saved_managers = data.get('managers', {})
+                saved_managers_ids = set(saved_managers.get('ids', []))
+                current_managers = self.context.getManagers()
+                current_managers_ids = set([man.getId() for man in
+                                            current_managers])
+                # The symmetric difference of two sets A and B is the set of
+                # elements which are in either of the sets A or B but not
+                # in both.
+                are_different = saved_managers_ids.symmetric_difference(
+                    current_managers_ids)
+                if len(are_different) == 0:
+                    # Seems that sometimes the 'obj' is wrong in the saved
+                    # data.
+                    data['obj'] = ar
+                    return data
 
         logger.info("=========== creating new data for %s" % ar)
 
@@ -732,6 +746,7 @@ class AnalysisRequestDigester:
         data = self._ar_data(ar)
         if hasattr(ar, 'setDigest'):
             ar.setDigest(data)
+        logger.info("=========== new data for %s created." % ar)
         return data
 
     def _schema_dict(self, instance, skip_fields=None, recurse=True):
