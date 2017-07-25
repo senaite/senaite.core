@@ -12,6 +12,7 @@ from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -231,6 +232,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         return specstr
 
     def getClientUID(self):
-        return self.aq_parent.UID();
+        return self.aq_parent.UID()
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
