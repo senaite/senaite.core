@@ -1881,7 +1881,7 @@ function AnalysisRequestAddByCol() {
                         $("#singleservice").focus()
                     }
                     var title = $(this).parents("[title]").attr("title")
-                    deps_calc(arnum, [uid], false, title)
+                    deps_calc(arnum, [uid], true, title)
                     partition_indicators_set(arnum)
                     recalc_prices(arnum)
                 })
@@ -2048,10 +2048,11 @@ function AnalysisRequestAddByCol() {
                 var Dependencies = lims.AnalysisService.Dependencies(uid)
                 for (i = 0; i < Dependencies.length; i++) {
                     var Dep = Dependencies[i]
-                    dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
+                    dep_element = $("tr[uid='" + Dep + "'] " +
                                     "td[class*='ar\\." + arnum + "'] " +
                                     "input[type='checkbox']")
                     if (!$(dep_element).prop("checked")) {
+                        // not working because Dep is a uid
                         dep_titles.push(Dep['Service'])
                         dep_services.push(Dep)
                     }
@@ -2080,10 +2081,11 @@ function AnalysisRequestAddByCol() {
                 var Dependants = lims.AnalysisService.Dependants(uid)
                 for (i = 0; i < Dependants.length; i++) {
                     Dep = Dependants[i]
-                    dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
+                    dep_element = $("tr[uid='" + Dep + "'] " +
                                     "td[class*='ar\\." + arnum + "'] " +
                                     "input[type='checkbox']")
                     if ($(dep_element).prop("checked")) {
+                        // not working because Dep is a uid
                         dep_titles.push(Dep['Service'])
                         dep_services.push(Dep)
                     }
@@ -2111,6 +2113,7 @@ function AnalysisRequestAddByCol() {
 
     function dependants_remove_confirm(initiator, dep_services,
                                        dep_titles) {
+        // this function is not used!
         var d = $.Deferred()
         $("body").append(
           "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>" +
@@ -2144,7 +2147,7 @@ function AnalysisRequestAddByCol() {
     function dependants_remove_yes(arnum, dep_services) {
         for (var i = 0; i < dep_services.length; i += 1) {
             var Dep = dep_services[i]
-            var uid = Dep['Service_uid']
+            var uid = Dep
             analysis_cb_uncheck(arnum, uid)
         }
         _partition_indicators_set(arnum)
@@ -2163,6 +2166,7 @@ function AnalysisRequestAddByCol() {
          initiator_title is the dialog title, this could be a service but also could
          be "Dry Matter" or some other name
          */
+         // this function is not used!
         var d = $.Deferred()
         var html = "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"
         html = html + _("<p>${service} requires the following services to be selected:</p>" +
@@ -2202,7 +2206,7 @@ function AnalysisRequestAddByCol() {
          */
         for (var i = 0; i < dep_services.length; i++) {
             var Dep = dep_services[i]
-            var uid = Dep['Service_uid']
+            var uid = Dep
             var dep_cb = $("tr[uid='" + uid + "'] " +
                            "td[class*='ar\\." + arnum + "'] " +
                            "input[type='checkbox']")
@@ -2214,12 +2218,10 @@ function AnalysisRequestAddByCol() {
                 }
             }
             else {
-                // create new row for all services we may need
-                singleservice_duplicate(Dep['Service_uid'],
-                                        Dep["Service"],
-                                        Dep["Keyword"],
-                                        Dep["Price"],
-                                        Dep["VAT"])
+//                TODO: We should create a function that gets the
+//                categories of the selected dependants. Expand those
+//                categories and selected the dependants.
+                expand_category_for_service(Dep)
             }
             // finally check the service
             analysis_cb_check(arnum, uid);
@@ -2613,4 +2615,13 @@ function AnalysisRequestAddByCol() {
         $('table tr th[id^="foldercontents-ar."]').css({'width':arcolswidth, 'text-align':'center'});
         $('table tr[id^="folder-contents-item-"] td[class*="ar"]').css({'width':arcolswidth, 'text-align':'center'});
     }
+}
+
+function expand_category_for_service(uid){
+
+    // Ajax getting the category uid
+
+    // Expand category by uid
+
+    // Wait until all services are loaded
 }
