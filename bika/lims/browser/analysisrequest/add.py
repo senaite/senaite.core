@@ -141,7 +141,6 @@ class AnalysisServicesView(ASV):
         # run multiple times.  This is necessary so that AR Add can check
         # the item count before choosing to render the table at all.
         if not self.ar_add_items:
-            bs = self.context.bika_setup
             # The parent folder can be a client or a batch, but we need the
             # client.  It is possible that this will be None!  This happens
             # when the AR is inside a batch, and the batch has no Client set.
@@ -149,12 +148,14 @@ class AnalysisServicesView(ASV):
             if not self.context.aq_parent.portal_type == "AnalysisRequestsFolder":
                 client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
                     else self.context.aq_parent.getClient()
+            # TODO: Forcing the sort_on value. We should find a better way,
+            # this is just a quick fix.
+            self.contentFilter['sort_on'] = 'title'
             items = super(AnalysisServicesView, self).folderitems()
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
                     continue
                 obj = items[x]['obj']
-                kw = obj.getKeyword()
                 for arnum in range(self.ar_count):
                     key = 'ar.%s' % arnum
                     # If AR Specification fields are enabled, these should
