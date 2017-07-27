@@ -610,14 +610,26 @@ function AnalysisRequestAnalysesView() {
         }
 
     }
-
+    /**
+    * Given a selected service, this function selects the dependencies for
+    * the selected service.
+    * @param {String} dlg: The dialog to display (Not working!)
+    * @param {DOM object} element: The checkbox object.
+    * @param {Object} dep_services: A list of UIDs.
+    * @return {None} nothing.
+    */
     function add_Yes(dlg, element, dep_services){
-    var service_uid;
+        var service_uid, dep_cb;
         for(var i = 0; i<dep_services.length; i++){
             service_uid = dep_services[i];
-            if(! $("#list_cb_"+service_uid).prop("checked") ){
-                check_service(service_uid);
-                $("#list_cb_"+service_uid).prop("checked",true);
+            dep_cb = $("#list_cb_"+service_uid);
+            if(dep_cb.length > 0){
+                if(!$(dep_cb).prop("checked")){
+                    check_service(service_uid);
+                    $("#list_cb_"+service_uid).prop("checked",true);
+                }
+            }else{
+                expand_category_for_service(service_uid);
             }
         }
         if(dlg !== false){
@@ -754,5 +766,39 @@ function AnalysisRequestAnalysesView() {
                 }
             }
         }
+    }
+    /**
+    * Given an analysis service UID, this function expands the category for
+    * that service and selects it.
+    * @param {String} serv_uid: uid of the analysis service.
+    * @return {None} nothing.
+    */
+    function expand_category_for_service(serv_uid){
+        // Ajax getting the category from uid
+        var request_data = {
+            catalog_name: "uid_catalog",
+            UID: serv_uid,
+            include_methods: 'getCategoryTitle',
+        };
+        window.bika.lims.jsonapi_read(request_data, function(data) {
+            if (data.objects.length < 1 ) {
+               var msg =
+                   '[bika.lims.analysisrequest.add_by_col.js] No data returned ' +
+                   'while running "expand_category_for_service" for ' + serv_uid;
+               console.warn(msg);
+               window.bika.lims.warning(msg);
+            } else {
+                var cat_title = data.objects[0].getCategoryTitle;
+                // Expand category by uid and select the service
+                var element = $("th[cat='" + cat_title + "']");
+                //category_header_expand_handler(element, arnum, serv_uid);
+                window.bika.lims.BikaListingTableView
+                .category_header_expand_handler(element).done(
+                    function(){
+                    check_service(serv_uid);
+                    $("#list_cb_"+serv_uid).prop("checked",true);
+                });
+            }
+        });
     }
 }

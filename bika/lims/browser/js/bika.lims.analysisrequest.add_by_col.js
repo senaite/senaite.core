@@ -2237,7 +2237,7 @@ function AnalysisRequestAddByCol() {
                 }
             }
             else{
-                expand_category_for_service(Dep, arnum, uid);
+                expand_category_for_service(Dep, arnum);
             }
         }
         recalc_prices(arnum)

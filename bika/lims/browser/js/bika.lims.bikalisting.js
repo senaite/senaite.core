@@ -360,7 +360,7 @@ function BikaListingTableView() {
 		// expand/collapse categorised rows
 		$(".bika-listing-table th.collapsed").live("click", function () {
 			if (!$(this).hasClass("ignore_bikalisting_default_handler")){
-				category_header_expand_handler(this)
+				that.category_header_expand_handler(this)
 			}
 		});
         $(".bika-listing-table th.expanded").live("click", function () {
@@ -379,7 +379,7 @@ function BikaListingTableView() {
         })
     }
 
-	function category_header_expand_handler(element) {
+	that.category_header_expand_handler = function (element) {
 		// element is the category header TH.
 		// duplicated in bika.lims.analysisrequest.add_by_col.js
 		var def = $.Deferred()
