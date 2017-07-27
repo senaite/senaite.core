@@ -738,6 +738,8 @@ class AnalysisRequestDigester:
                     # Seems that sometimes the 'obj' is wrong in the saved
                     # data.
                     data['obj'] = ar
+                    # Always set results interpretation
+                    self._set_results_interpretation(ar, data)
                     return data
 
         logger.info("=========== creating new data for %s" % ar)
@@ -915,7 +917,7 @@ class AnalysisRequestDigester:
                 'prepublish': False,
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None,
-                'resultsinterpretation': ar.getResultsInterpretation()}
+                }
 
         # Sub-objects
         excludearuids.append(ar.UID())
@@ -1004,13 +1006,7 @@ class AnalysisRequestDigester:
         data['laboratory'] = self._lab_data()
 
         # results interpretation
-        ri = {}
-        if ar.getResultsInterpretationByDepartment(None):
-            ri[''] = ar.getResultsInterpretationByDepartment(None)
-        depts = ar.getDepartments()
-        for dept in depts:
-            ri[dept.Title()] = ar.getResultsInterpretationByDepartment(dept)
-        data['resultsinterpretationdepts'] = ri
+        data = self._set_results_interpretation(data, ar)
 
         return data
 
@@ -1382,6 +1378,25 @@ class AnalysisRequestDigester:
             managers['dict'][mngr]['departments'] = final_depts
 
         return managers
+
+    def _set_results_interpretation(self, ar, data):
+        """
+        This function updates the 'results interpretation' data.
+        :param ar: an AnalysisRequest object.
+        :param data: The data dictionary.
+        :return: The 'data' dictionary with the updated values.
+        """
+        # General interpretation
+        data['resultsinterpretation'] = ar.getResultsInterpretation()
+        # Interpretations by departments
+        ri = {}
+        if ar.getResultsInterpretationByDepartment(None):
+            ri[''] = ar.getResultsInterpretationByDepartment(None)
+        depts = ar.getDepartments()
+        for dept in depts:
+            ri[dept.Title()] = ar.getResultsInterpretationByDepartment(dept)
+        data['resultsinterpretationdepts'] = ri
+        return data
 
     def isHiddenAnalysesVisible(self):
         """Returns true if hidden analyses are visible
