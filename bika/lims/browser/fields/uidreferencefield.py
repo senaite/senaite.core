@@ -166,14 +166,14 @@ class UIDReferenceField(StringField):
         :type aslist: bool
         :param kwargs: kwargs are passed directly to the underlying get.
         :type kwargs: dict
-        :return: object or list of objects for multiValued fields.
-        :rtype: BaseContent | list[BaseContent]
+        :return: UID or list of UIDs for multiValued fields.
+        :rtype: string | list[string]
         """
         value = StringField.get(self, context, **kwargs)
         if self.multiValued:
             ret = value
         else:
-            ret = self.get_object(context, value)
+            ret = self.get_uid(context, value)
             if aslist:
                 ret = [ret]
         return ret

@@ -3,13 +3,16 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       i18n:domain="plone">
+
 <head>
     <title></title>
 </head>
 
 <body>
 
-    <!-- This is a copy of Selectin Widget with the only difference: instead of value itself, sending value.UID() as a parameter to get the selection list.-->
+    <!-- This is a copy of Selection Widget with the only difference: instead
+    of value itself, sending value.UID() as a parameter to get the selection
+    value in veiw.-->
     <!-- Selection Widgets -->
 
     <metal:view_macro define-macro="view"
@@ -22,9 +25,7 @@
             tal:attributes="class kss_class;
                             id string:parent-fieldname-$fieldName-$uid">
             <span metal:define-slot="inside"
-                tal:define="vocab python:field.Vocabulary(context);
-                            value python:accessor();
-                            display python:context.displayValue(vocab, value, widget)"
+                tal:define="display python:widget.getValueToView(field, context)"
                             i18n:translate=""
                 tal:replace="structure display" />
         </span>
@@ -38,8 +39,7 @@
                         tal:define="vocab python:field.Vocabulary(context);
                                     vlen python:len(vocab);
                                     selectionview context/@@at_selection_widget;
-                                    value_uid python: value.UID() if hasattr(value, 'UID') else '';
-                                    selection python:selectionview.getSelected(vocab, value_uid);
+                                    selection python:selectionview.getSelected(vocab, value);
                                     format python:widget.format">
                 <span tal:condition="python:(vlen &lt; 4 and format == 'flex') or (format == 'radio')"
                       tal:attributes="id fieldName;">
