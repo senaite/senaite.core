@@ -1783,17 +1783,21 @@ function AnalysisRequestAddByCol() {
             $(this).removeClass("expanded").addClass("collapsed")
         })
     }
-
-    function category_header_expand_handler(element) {
-        /* Deferred function to expand the category with ajax (or not!!)
-         on first expansion.  duplicated from bika.lims.bikalisting.js, this code
-         fires when categories are expanded automatically (eg, when profiles or templates require
-         that the category contents are visible for selection)
-
-         Also, this code returns deferred objects, not their promises.
-
-         :param: element - The category header TH element which normally receives 'click' event
-         */
+    /* Deferred function to expand the category with ajax (or not!!)
+    * on first expansion.  duplicated from bika.lims.bikalisting.js, this code
+    * fires when categories are expanded automatically (eg, when profiles or
+    * templates require
+    * that the category contents are visible for selection)
+    *
+    * Also, this code returns deferred objects, not their promises.
+    *
+    * @param {DOM Object} element - The category header TH element which
+    * normally receives 'click' event.
+    * @param {Number} arnum: the analysis request column number.
+    * @param {String} serv_uid: uid of the analysis service.
+    * @return {Object} deferred objects, not their promises.
+    */
+    function category_header_expand_handler(element, arnum, serv_uid) {
         var def = $.Deferred()
         // with form_id allow multiple ajax-categorised tables in a page
         var form_id = $(element).parents("[form_id]").attr("form_id")
@@ -1833,6 +1837,12 @@ function AnalysisRequestAddByCol() {
                     $("[form_id='" + form_id + "'] tr[data-ajax_category='" + cat_title + "']").replaceWith(rows);
                     $(element).removeClass("collapsed").addClass("expanded");
                     specification_apply();
+                    // If service data defined, set the checkbox
+                    if (arnum !== undefined && serv_uid !== undefined){
+                        analysis_cb_check(arnum, serv_uid);
+                        recalc_prices(arnum);
+                        _partition_indicators_set(arnum);
+                    }
                     def.resolve();
                 })
         }
@@ -1840,6 +1850,12 @@ function AnalysisRequestAddByCol() {
             // When ajax_categories are disabled, all cat items exist as TR elements:
             $(element).parent().nextAll("tr[cat='" + cat_title + "']").toggle(true)
             $(element).removeClass("collapsed").addClass("expanded")
+            // If service data defined, set the checkbox
+            if (arnum !== undefined && serv_uid !== undefined){
+                analysis_cb_check(arnum, serv_uid);
+                recalc_prices(arnum);
+                _partition_indicators_set(arnum);
+            }
             def.resolve()
         }
         return def
@@ -2216,15 +2232,13 @@ function AnalysisRequestAddByCol() {
                     // skip if checked already
                     continue
                 }
+                else {
+                    analysis_cb_check(arnum, uid);
+                }
             }
-            else {
-//                TODO: We should create a function that gets the
-//                categories of the selected dependants. Expand those
-//                categories and selected the dependants.
-                expand_category_for_service(Dep)
+            else{
+                expand_category_for_service(Dep, arnum, uid);
             }
-            // finally check the service
-            analysis_cb_check(arnum, uid);
         }
         recalc_prices(arnum)
         _partition_indicators_set(arnum)
@@ -2615,13 +2629,35 @@ function AnalysisRequestAddByCol() {
         $('table tr th[id^="foldercontents-ar."]').css({'width':arcolswidth, 'text-align':'center'});
         $('table tr[id^="folder-contents-item-"] td[class*="ar"]').css({'width':arcolswidth, 'text-align':'center'});
     }
-}
 
-function expand_category_for_service(uid){
+    /**
+    * Given an analysis service UID, this function expands the category for
+    * that service and selects it.
+    * @param {String} serv_uid: uid of the analysis service.
+    * @param {Number} arnum: the analysis request column number.
+    * @return {None} nothing.
+    */
+    function expand_category_for_service(serv_uid, arnum){
 
-    // Ajax getting the category uid
-
-    // Expand category by uid
-
-    // Wait until all services are loaded
+        // Ajax getting the category from uid
+        var request_data = {
+            catalog_name: "uid_catalog",
+            UID: serv_uid,
+            include_methods: 'getCategoryTitle',
+        };
+        window.bika.lims.jsonapi_read(request_data, function(data) {
+            if (data.objects.length < 1 ) {
+               var msg =
+                   '[bika.lims.analysisrequest.add_by_col.js] No data returned ' +
+                   'while running "expand_category_for_service" for ' + serv_uid;
+               console.warn(msg);
+               window.bika.lims.warning(msg);
+            } else {
+                var cat_title = data.objects[0].getCategoryTitle;
+                // Expand category by uid and select the service
+                var element = $("th[cat='" + cat_title + "']");
+                category_header_expand_handler(element, arnum, serv_uid);
+            }
+        });
+    }
 }
