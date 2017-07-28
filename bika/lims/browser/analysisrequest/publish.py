@@ -1006,7 +1006,7 @@ class AnalysisRequestDigester:
         data['laboratory'] = self._lab_data()
 
         # results interpretation
-        data = self._set_results_interpretation(data, ar)
+        data = self._set_results_interpretation(ar, data)
 
         return data
 
