@@ -5,6 +5,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -12,6 +13,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IMethod
 from bika.lims.utils import t
+from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from plone.app.blob.field import FileField as BlobFileField
 from zope.interface import implements
 
@@ -96,7 +98,9 @@ schema = BikaSchema.copy() + Schema((
         'Calculation',
         vocabulary='_getCalculations',
         allowed_types=('Calculation',),
-        widget=ReferenceWidget(
+        widget=UIDSelectionWidget(
+            visible={'edit': 'visible', 'view': 'visible'},
+            format='select',
             checkbox_bound=0,
             label=_("Calculation"),
             description=_(
@@ -151,7 +155,7 @@ class Method(BaseFolder):
                              inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
-        return DisplayList(list(items))
+        return DisplayList(items)
 
     def getInstruments(self):
         """ Instruments capable to perform this method
