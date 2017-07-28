@@ -120,12 +120,20 @@ def handle_AS_wo_category(portal):
         logger.info("SKIPPING. There is no Analysis Service without category.")
         return
 
-    # First , create a new 'Uknown' Category
-    category = _createObjectByType("AnalysisCategory", portal.bika_setup.bika_analysiscategories, tmpID())
-    category.setTitle("Unknown")
-    category._renameAfterCreation()
-    category.reindexObject()
-    logger.info("Category 'Uknown' was created...")
+    # First , create a new 'Uknown' Category, if doesn't exist
+    uc = getToolByName(portal, 'uid_catalog')
+    acats = uc(portal_type='AnalysisCategory')
+    for acat in acats:
+        if acat.Title == 'Unknown':
+            logger.info("Category 'Uknown' already exists...")
+            category = acat.getObject()
+            break
+    else:
+        category = _createObjectByType("AnalysisCategory", portal.bika_setup.bika_analysiscategories, tmpID())
+        category.setTitle("Unknown")
+        category._renameAfterCreation()
+        category.reindexObject()
+        logger.info("Category 'Uknown' was created...")
 
     counter = 0
     total = len(services)
