@@ -352,7 +352,9 @@ class SecondaryARSampleInfo(BrowserView):
                     ret.append([fieldname + '_uid', fieldvalue.UID()])
                     fieldvalue = fieldvalue.Title()
                 if hasattr(fieldvalue, 'year'):
-                    fieldvalue = fieldvalue.strftime(self.date_format_short)
+                    # TODO Parsing with hardcoded date format is not good. Replace it with global format.
+                    # We do it now because of parsing format in line 433.
+                    fieldvalue = fieldvalue.strftime("%Y-%m-%d")
             else:
                 fieldvalue = ''
             ret.append([fieldname, fieldvalue])
