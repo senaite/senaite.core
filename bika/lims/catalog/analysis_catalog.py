@@ -30,6 +30,7 @@ _indexes_dict = {
     'getResultCaptureDate': 'DateIndex',
     'getDateAnalysisPublished': 'DateIndex',
     'getClientUID': 'FieldIndex',
+    'getClientTitle': 'FieldIndex',
     'getAnalyst': 'FieldIndex',
     'getRequestID': 'FieldIndex',
     'getClientOrderNumber': 'FieldIndex',

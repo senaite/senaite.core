@@ -14,6 +14,7 @@ import transaction
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.utils import tmpID
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.utils import getToolByName
@@ -52,6 +53,9 @@ def upgrade(tool):
     # Add missing Geo Columns to AR Catalog
     ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDistrict')
     ut.addColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getProvince')
+
+    # Add getClientTitle to Analyses catalog to enable filtering by Client.
+    ut.addIndex(CATALOG_ANALYSIS_LISTING, 'getClientTitle', 'FieldIndex')
 
     create_report_catalog(portal, ut)
     ut.refreshCatalogs()
