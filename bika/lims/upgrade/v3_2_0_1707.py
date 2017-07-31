@@ -10,6 +10,7 @@ from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 from Products.CMFCore.utils import getToolByName
+import transaction
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.utils import tmpID
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
@@ -103,10 +104,14 @@ def removeDatePublishedFromAR(portal):
             delattr(obj, f_name)
             counter += 1
         tot_counter += 1
-        logger.info("Removing Date Published attribute from ARs: %d of %d" % (tot_counter, total))
-
-    logger.info("'DatePublished' attribute has been removed from %d AnalysisRequest objects."
-                % counter)
+        if tot_counter % 1000 == 0:
+            logger.info(
+                "Removing Date Published attribute from "
+                "ARs: %d of %d" % (tot_counter, total))
+            transaction.commit()
+    logger.info(
+        "'DatePublished' attribute has been removed from %d "
+        "AnalysisRequest objects." % counter)
 
 
 def handle_AS_wo_category(portal):
