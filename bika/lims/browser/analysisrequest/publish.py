@@ -36,7 +36,6 @@ from bika.lims.utils import attachPdf, createPdf, encode_header, \
 from bika.lims.utils import formatDecimalMark, to_utf8
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.vocabularies import getARReportTemplates
-from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import wasTransitionPerformed
 from plone.api.portal import get_registry_record
 from plone.api.portal import set_registry_record
