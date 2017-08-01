@@ -718,7 +718,8 @@ class AnalysisRequestDigester:
         self.request = ar.REQUEST
 
         # if AR was previously digested, use existing data (if exists)
-        if not overwrite:
+        verified = wasTransitionPerformed(ar, 'verify')
+        if not overwrite and verified:
             # Prevent any error related with digest
             data = ar.getDigest() if hasattr(ar, 'getDigest') else {}
             if data:
@@ -1063,7 +1064,7 @@ class AnalysisRequestDigester:
             memail = member.getProperty('email')
             mhomepage = member.getProperty('home_page')
             pc = getToolByName(self.context, 'portal_catalog')
-            contact = pc(portal_type='LabContact', getUsername=member.id)
+            contact = pc(portal_type='LabContact', getUsername=member.getId())
             # Only one LabContact should be found
             if len(contact) > 1:
                 logger.warn(
