@@ -17,6 +17,7 @@ from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import to_unicode
 
 
 def duplicateAnalysis(analysis):
@@ -449,7 +450,7 @@ def get_method_instrument_constraints(context, uids):
             tprem = ''.join(premises)
 
             fiuid = v_instrs[0] if v_instrs else ''
-            instrtitle = a_dinstrum.Title() if a_dinstrum else ''
+            instrtitle = to_unicode(a_dinstrum.Title()) if a_dinstrum else ''
             iinstrs = ', '.join([i.Title() for i in instrs
                                  if i.UID() not in v_instrs])
             dmeth = method.Title() if method else ''
