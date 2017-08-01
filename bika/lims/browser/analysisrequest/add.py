@@ -425,6 +425,14 @@ class ajaxAnalysisRequestSubmit():
                     required.remove('SamplingDate')
                 if 'SampleType' in required:
                     required.remove('SampleType')
+            # If this is not a Secondary AR, make sure that Sample Type UID is valid. This shouldn't
+            # happen, but making sure just in case.
+            else:
+                st_uid = state.get('SampleType', None)
+                if not st_uid or not bsc(portal_type='SampleType', UID=st_uid):
+                    msg = t(_("Not a valid Sample Type."))
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
             # checking if sampling date is not future
             if state.get('SamplingDate', ''):
                 samplingdate = state.get('SamplingDate', '')
