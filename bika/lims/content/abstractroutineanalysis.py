@@ -528,7 +528,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
             # All dependencies from this dependent analysis are ok?
             deps = dependent.getDependencies()
-            dsub = [dep for dep in deps if wasTransitionPerformed(sp, 'submit')]
+            dsub = [dep for dep in deps if wasTransitionPerformed(dep, 'submit')]
             if len(deps) == len(dsub):
                 # The statuses of all dependencies of this dependent are ok
                 # (at least, all of them have been submitted already)

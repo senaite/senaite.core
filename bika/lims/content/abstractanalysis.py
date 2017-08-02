@@ -1005,11 +1005,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return False
 
         # Check if the analysis has dependencies not yet verified
+        # Commented because we want the transition verify to appear when an
+        # analysis with dependencies is selected in manage results view. The
+        # after transition event will be in charge to deal with dependencies.
         for d in self.getDependencies():
-            review_state = workflow.getInfoFor(d, "review_state")
-            if review_state in (
-                    "to_be_sampled", "to_be_preserved", "sample_due",
-                    "sample_received", "attachment_due", "to_be_verified"):
+            if not d.isVerifiable() \
+                    and not wasTransitionPerformed(d, 'verify'):
                 return False
 
         # All checks passsed
