@@ -509,6 +509,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Date Sampled"),
             size=20,
             show_time=True,
+            datepicker_nofuture=1,
             visible={
                 'edit': 'visible',
                 'view': 'visible',

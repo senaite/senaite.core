@@ -452,6 +452,27 @@ class ajaxAnalysisRequestSubmit():
                     msg = t(_("Sampling Date can't be in the past"))
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
+            # If Sampling Date is not set, we are checking whether it is the user left it empty,
+            # or it is because we have Sampling Workflow Disabled
+            elif not self.context.bika_setup.getSamplingWorkflowEnabled():
+                # Date Sampled is required in this case
+                date_sampled = state.get('DateSampled', '')
+                if not date_sampled:
+                    msg = \
+                        "Date Sampled Field is required."
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
+                try:
+                    date_sampled = datetime.datetime.strptime(
+                        date_sampled.strip(), "%Y-%m-%d %H:%M")
+                except ValueError:
+                    print traceback.format_exc()
+                    msg =\
+                        "Bad time formatting: Getting '{}' but expecting an"\
+                        " string with '%Y-%m-%d %H:%M' format."\
+                        .format(date_sampled)
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
             # fields flagged as 'hidden' are not considered required because
             # they will already have default values inserted in them
             for fieldname in required:

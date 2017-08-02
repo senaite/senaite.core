@@ -179,8 +179,15 @@ function AnalysisRequestAddByCol() {
         })
 
         // Nihadness: SampleType and SamplingDate handler
+        // If Sampling Workflow Enabled then We must hide Date Sampled Field.
+        // If Sampling Workflow Disabled then We must hide Sampling Dare Field.
         if($("#bika_setup").attr("samplingwfenabled")){
             $("tr[fieldname=DateSampled]").hide();
+        }else{
+            $("tr[fieldname=SamplingDate]").hide();
+            // Date Sampled is required in this case, display 'required' icon.
+            $("tr[fieldname=DateSampled]").find("em")
+                .before('<span class="fieldRequired" title="Required">&nbsp;</span>')
         }
 
         // clear existing values (on page reload).
