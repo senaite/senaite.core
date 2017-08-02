@@ -178,6 +178,11 @@ function AnalysisRequestAddByCol() {
             $(div).attr('id', 'archetypes-fieldname-' + fieldname + '-' + arnum)
         })
 
+        // Nihadness: SampleType and SamplingDate handler
+        if($("#bika_setup").attr("samplingwfenabled")){
+            $("tr[fieldname=DateSampled]").hide();
+        }
+
         // clear existing values (on page reload).
         $("#singleservice").val("")
         $("#singleservice").attr("uid", "new")

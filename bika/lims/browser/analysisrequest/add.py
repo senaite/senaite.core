@@ -447,9 +447,9 @@ class ajaxAnalysisRequestSubmit():
                         .format(samplingdate)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
-                now = datetime.datetime.now()
-                if now < samp_date:
-                    msg = t(_("Sampling Date can't be future"))
+                today = date.today()
+                if today > samp_date.date():
+                    msg = t(_("Sampling Date can't be in the past"))
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
             # fields flagged as 'hidden' are not considered required because

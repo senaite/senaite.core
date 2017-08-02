@@ -512,6 +512,7 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'edit': 'visible',
                 'view': 'visible',
+                'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'prominent',
                 'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
@@ -594,15 +595,18 @@ schema = BikaSchema.copy() + Schema((
     ),# This field is a mirror of a Sample field with the same name
     DateTimeField(
         'SamplingDate',
-        required=1,
+        required=0,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=DateTimeWidget(
-            label=_("Sampling Date"),
+            label=_("Expected Sampling Date"),
             size=20,
             show_time=True,
             render_own_label=True,
+            datepicker_nopast=1,
+            # We must use SamplingWOrkflowWidgetVisibility soon. For now we will
+            # handle it through JS
             # see SamplingWOrkflowWidgetVisibility
             visible={
                 'edit': 'visible',
