@@ -449,7 +449,7 @@ class ajaxAnalysisRequestSubmit():
                     continue
                 today = date.today()
                 if today > samp_date.date():
-                    msg = t(_("Sampling Date can't be in the past"))
+                    msg = t(_("Expected Sampling Date can't be in the past"))
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
             # If Sampling Date is not set, we are checking whether it is the user left it empty,
