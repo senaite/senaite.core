@@ -58,6 +58,7 @@ class Report(BrowserView):
             for analysis in analyses:
                 analysis = analysis.getObject()
                 ds = sample.getDateSampled()
+                sd = sample.getSamplingDate()
                 dataline = {'AnalysisKeyword': analysis.getKeyword(),
                             'AnalysisTitle': analysis.Title(),
                             'SampleID': sample.getSampleID(),
@@ -65,7 +66,9 @@ class Report(BrowserView):
                             'DateReceived': self.ulocalized_time(
                                 sample.getDateReceived(), long_format=1),
                             'DateSampled': self.ulocalized_time(
-                                ds, long_format=1)
+                                ds, long_format=1),
+                            'SamplingDate': self.ulocalized_time(
+                                sd, long_format=1)
                             }
                 datalines.append(dataline)
                 analyses_count += 1
@@ -93,6 +96,8 @@ class Report(BrowserView):
                 'AnalysisTitle',
                 'AnalysisKeyword',
             ]
+            if self.context.bika_setup.getSamplingWorkflowEnabled():
+                fieldnames.append('SamplingDate')
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
