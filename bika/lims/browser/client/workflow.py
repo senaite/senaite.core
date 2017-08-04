@@ -64,6 +64,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     ar = obj
                     sample = obj.getSample()
                 else:
+                    # If it is a Sample, then fieldname is DateSampled
                     dsfn='DateSampled'
                     sample = obj
                     ar = sample.aq_parent

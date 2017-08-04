@@ -178,7 +178,6 @@ function AnalysisRequestAddByCol() {
             $(div).attr('id', 'archetypes-fieldname-' + fieldname + '-' + arnum)
         })
 
-        // Nihadness: SampleType and SamplingDate handler
         // If Sampling Workflow Enabled then We must hide Date Sampled Field.
         // If Sampling Workflow Disabled then We must hide Sampling Dare Field.
         if($("#bika_setup").attr("samplingwfenabled")){
