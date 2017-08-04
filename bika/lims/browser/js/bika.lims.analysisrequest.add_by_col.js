@@ -1504,7 +1504,7 @@ function AnalysisRequestAddByCol() {
                                   console.log('Selector #' + fieldname + '-' + arnum + ' not present in form')
                                   continue
                               }
-                              if(element.getAttribute("datetimepicker") && fieldvalue.indexOf(" ")==-1){
+                              if(element.getAttribute("datetimepicker") && fieldvalue && fieldvalue.indexOf(" ")==-1){
                                 fieldvalue = fieldvalue + " 00:00";
                               }
                               // here we go
