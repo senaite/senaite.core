@@ -361,6 +361,8 @@ function AnalysisRequestAddByCol() {
         uids = [uid, $("#bika_setup").attr("bika_analysisspecs_uid")]
         element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
+        element = $("tr[fieldname=Sample] td[arnum=" + arnum + "] input")[0]
+        filter_combogrid(element, "getClientUID", uids);
     }
     /**
     * If client only has one contact, then Auto-complete the Contact field.
