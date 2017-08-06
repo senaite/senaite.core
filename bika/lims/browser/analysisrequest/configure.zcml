@@ -12,13 +12,6 @@
     />
 
     <adapter
-      factory="bika.lims.browser.analysisrequest.ReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
-      for="bika.lims.interfaces.IAnalysisRequest
-           zope.publisher.interfaces.browser.IBrowserRequest"
-    />
-
-    <adapter
       factory="bika.lims.browser.analysisrequest.JSONReadExtender"
       provides="bika.lims.interfaces.IJSONReadExtender"
     />
