@@ -341,6 +341,18 @@ function AnalysisRequestAddByCol() {
          */
         var element,uids
         var uid = $($("tr[fieldname='Client'] td[arnum='" + arnum + "'] input")[0]).attr("uid")
+        var client_set = uid !== undefined && uid != '';
+        var elements = ['Contact', 'CCContact', 'InvoiceContact',
+                        'SamplePoint', 'Template', 'Profiles',
+                        'Specification', 'Sample']
+        for (var i=0; i<elements.length; i++) {
+            element = $("tr[fieldname="+elements[i]+"] td[arnum=" + arnum + "] input")[0];
+            $(element).prop('disabled', !client_set);
+        }
+        if (!client_set) {
+            return;
+        }
+
         element = $("tr[fieldname=Contact] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getParentUID", uid)
         // If client only has one contact then Auto-complete first Contact field.
@@ -362,7 +374,7 @@ function AnalysisRequestAddByCol() {
         element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
         element = $("tr[fieldname=Sample] td[arnum=" + arnum + "] input")[0]
-        filter_combogrid(element, "getClientUID", uids);
+        filter_combogrid(element, "getClientUID", [uid,]);
     }
     /**
     * If client only has one contact, then Auto-complete the Contact field.
@@ -1447,7 +1459,9 @@ function AnalysisRequestAddByCol() {
         $("tr[fieldname='Sample'] td[arnum] input[type='text']")
           .live('selected copy', function (event, item) {
                     var arnum = get_arnum(this)
-                    sample_set(arnum)
+                    if ($(this).val()) {
+                        sample_set(arnum)
+                    }
                 })
           .each(function (i, e) {
                     if ($(e).val()) {
