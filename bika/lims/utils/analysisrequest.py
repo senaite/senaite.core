@@ -108,6 +108,7 @@ def create_analysisrequest(client, request, values, analyses=None,
                 analyses
             )
 
+    import pdb;pdb.set_trace()
     # At this point, we have a fully created AR, with a Sample, Partitions and
     # Analyses, but the state of all them is the initial ("sample_registered").
     # We can now transition the whole thing (instead of doing it manually for
