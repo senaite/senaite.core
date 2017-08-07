@@ -79,6 +79,11 @@ def after_verify(obj):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+
+    # If the analysis has dependencies, transition them
+    for dependency in obj.getDependencies():
+        doActionFor(dependency, 'verify')
+
     # Do all the reflex rules process
     obj._reflex_rule_process('verify')
 

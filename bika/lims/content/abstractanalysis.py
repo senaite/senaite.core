@@ -1004,15 +1004,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if review_state != 'to_be_verified':
             return False
 
-        # Check if the analysis has dependencies not yet verified
+        # If the analysis has at least one dependency that hasn't been verified
+        # yet and because of its current state cannot be verified, then return
+        # false. The idea is that an analysis that requires from results of
+        # other analyses cannot be verified unless all its dependencies have
+        # already been verified or are in a suitable state for doing so.
         for d in self.getDependencies():
-            review_state = workflow.getInfoFor(d, "review_state")
-            if review_state in (
-                    "to_be_sampled", "to_be_preserved", "sample_due",
-                    "sample_received", "attachment_due", "to_be_verified"):
+            if not d.isVerifiable() \
+                    and not wasTransitionPerformed(d, 'verify'):
                 return False
 
-        # All checks passsed
+        # All checks passed
         return True
 
     # TODO Workflow, Analysis - Move to analysis.guard.verify?
