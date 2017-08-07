@@ -361,6 +361,8 @@ function AnalysisRequestAddByCol() {
         uids = [uid, $("#bika_setup").attr("bika_analysisspecs_uid")]
         element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
+        element = $("tr[fieldname=Sample] td[arnum=" + arnum + "] input")[0]
+        filter_combogrid(element, "getClientUID", uids);
     }
     /**
     * If client only has one contact, then Auto-complete the Contact field.
@@ -1472,6 +1474,7 @@ function AnalysisRequestAddByCol() {
                       '_authenticator': $('input[name="_authenticator"]').val()
                   },
                   function (data) {
+                      var filled = [];
                       for (var i = 0; i < data.length; i++) {
                           var fieldname = data[i][0];
                           var fieldvalue = data[i][1];
@@ -1482,6 +1485,13 @@ function AnalysisRequestAddByCol() {
                               var element = $('#' + fieldname + '-' + arnum)[0]
                               $(element).attr('uid', fieldvalue)
                               $(element).val(fieldvalue)
+                              // Sometimes, there are both <fieldname_uid> and
+                              // <fieldname> keys in the data dictionary. In
+                              // those cases, the field that ends with '_uid'
+                              // gets preference over the field that doeesn't
+                              // ends with '_uid' when setting the state value.
+                              filled.push(fieldname);
+                              state_set(arnum, fieldname, fieldvalue);
                           }
                           // This
                           else {
@@ -1518,7 +1528,14 @@ function AnalysisRequestAddByCol() {
                                   default:
                                       console.log('Unhandled field type for field ' + fieldname + ': ' + element.type)
                               }
-                              state_set(arnum, fieldname, fieldvalue)
+                              if (filled.indexOf(fieldname) === -1) {
+                                  // Sometimes, there are both <fieldname_uid> and
+                                  // <fieldname> keys in the data dictionary. In
+                                  // those cases, the field that ends with '_uid'
+                                  // gets preference over the field that doeesn't
+                                  // ends with '_uid' when setting the state value.
+                                  state_set(arnum, fieldname, fieldvalue);
+                              }
                           }
                       }
                   })

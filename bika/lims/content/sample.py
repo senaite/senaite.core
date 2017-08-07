@@ -853,6 +853,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
             prep_workflows.append([workflow_id, workflow.title])
         return DisplayList(prep_workflows)
 
+    def getSamplePartitions(self):
+        """Returns the Sample Partitions associated to this Sample
+        """
+        partitions = self.objectValues('SamplePartition')
+        return partitions
+
     @deprecated('[1705] Use events.after_no_sampling_workflow from '
                 'bika.lims.workflow.sample')
     @security.public
