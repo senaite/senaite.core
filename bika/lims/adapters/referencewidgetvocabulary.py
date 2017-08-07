@@ -60,9 +60,10 @@ class DefaultReferenceWidgetVocabulary(object):
                 index = catalog.Indexes.get(field_name, None)
                 if not index:
                     fields_wo_index.append(field_name)
+                    continue
                 if index.meta_type in ('ZCTextIndex'):
-                    searchTerm += '*'
-                    criterias.append(MatchRegexp(field_name, searchTerm))
+                    temp_st = searchTerm + '*'
+                    criterias.append(MatchRegexp(field_name, temp_st))
                 elif index.meta_type in ('FieldIndex'):
                     criterias.append(MatchRegexp(field_name, searchTerm))
                 elif index.meta_type == 'DateIndex':
