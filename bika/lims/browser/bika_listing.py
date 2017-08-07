@@ -150,6 +150,28 @@ class WorkflowAction:
         self.request.response.redirect(url)
         return
 
+    def workflow_action_print_stickers(self):
+        """Invoked from an AR listing form in the current context, passing the selected AR
+        titles and default sticker template as request parameters.
+        """
+        objects = WorkflowAction._get_selected_items(self)
+        if not objects:
+            message = self.context.translate(
+                _("No ARs have been selected"))
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.context.absolute_url()
+            self.request.response.redirect(self.destination_url)
+            return
+
+        ids = []
+        for key in objects.keys():
+            ids.append(objects[key].Title())
+        url = self.context.absolute_url() + "/sticker?autoprint=1&template=%s&items=%s" % (
+                self.portal.bika_setup.getAutoStickerTemplate(),
+                ','.join(ids))
+        self.request.response.redirect(url)
+        return
+
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
@@ -171,7 +193,7 @@ class WorkflowAction:
                 method()
             else:
                 self.workflow_action_default(action, came_from)
-        if form.get('bika_listing_filter_bar_submit', ''):
+        elif form.get('bika_listing_filter_bar_submit', ''):
             # Getting all the filter inputs with the key starting with:
             # 'bika_listing_filter_bar_'
             filter_val = \
