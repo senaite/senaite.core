@@ -95,11 +95,11 @@ def create_analysisrequest(client, request, values, analyses=None,
         partitions = [{'services': service_uids}]
 
     part_num = 0
+    prefix = sample.getId() + "-P"
     if secondary:
         # Always create new partitions if is a Secondary AR, cause it does
         # not make sense to reuse the partitions used in a previous AR!
         sparts = sample.getSamplePartitions()
-        prefix = sample.getId() + "-P"
         for spart in sparts:
             spartnum = int(spart.getId().split(prefix)[1])
             if spartnum > part_num:
@@ -107,8 +107,7 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     for n, partition in enumerate(partitions):
         # Calculate partition id
-        partition_prefix = sample.getId() + "-P"
-        partition_id = '%s%s' % (partition_prefix, part_num + 1)
+        partition_id = '%s%s' % (prefix, part_num + 1)
         partition['part_id'] = partition_id
         # Point to or create sample partition
         if partition_id in sample.objectIds():
