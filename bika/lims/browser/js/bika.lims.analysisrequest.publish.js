@@ -27,9 +27,9 @@ function AnalysisRequestPublishView() {
     that.load = function() {
 
         // The report will be loaded dynamically by reloadReport()
-        //$('#report').html('').hide();
+        $('#report').html('').hide();
         // Load the report
-        //reloadReport();
+        reloadReport();
 
         // This replaces the above lines, prevents reloadReport
         // from taking new data from the server and re-rendering on
