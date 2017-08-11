@@ -1166,16 +1166,17 @@ class Sample_Point_Sample_Types(WorksheetImporter):
             samplepoint = self.get_object(bsc,
                                           'SamplePoint',
                                           row['SamplePoint_title'])
+            if samplepoint:
+                sampletypes = samplepoint.getSampleTypes()
+                if sampletype not in sampletypes:
+                    sampletypes.append(sampletype)
+                    samplepoint.setSampleTypes(sampletypes)
 
-            sampletypes = samplepoint.getSampleTypes()
-            if sampletype not in sampletypes:
-                sampletypes.append(sampletype)
-                samplepoint.setSampleTypes(sampletypes)
-
-            samplepoints = sampletype.getSamplePoints()
-            if samplepoint not in samplepoints:
-                samplepoints.append(samplepoint)
-                sampletype.setSamplePoints(samplepoints)
+            if sampletype:
+                samplepoints = sampletype.getSamplePoints()
+                if samplepoint not in samplepoints:
+                    samplepoints.append(samplepoint)
+                    sampletype.setSamplePoints(samplepoints)
 
 class Storage_Locations(WorksheetImporter):
 
