@@ -914,7 +914,7 @@ class AnalysisRequestsView(BikaListingView):
                     # TODO Can LabManagers be a Sampler?!
                     samplers = getUsers(
                         full_object.getSample(),
-                        ['Sampler', 'LabManager', 'Manager'])
+                        ['Sampler', ])
                     username = self.member.getUserName()
                     users = [({
                         'ResultValue': u,
