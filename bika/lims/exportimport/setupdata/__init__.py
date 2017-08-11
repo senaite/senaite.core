@@ -1926,7 +1926,7 @@ class Setup(WorksheetImporter):
                                       values.get('DryMatterService'))
         dry_uid = dry_service.UID() if dry_service else None
         if not dry_uid and values.get('DryMatterService'):
-            print("DryMatter service %s does not exist (%s)"
+            print("DryMatter service %s does not exist"
                   % values['DryMatterService'])
         self.context.bika_setup.edit(
             PasswordLifetime=int(values['PasswordLifetime']),
