@@ -28,7 +28,8 @@ function BarcodeUtils() {
             $(this).barcode(id, code,
                             {'barHeight': parseInt(barHeight),
                              'addQuietZone': (addQuietZone == 'true'),
-                             'showHRI': (showHRI == 'true') });
+                             'showHRI': (showHRI == 'true'),
+                             'output': "bmp", });
         });
     }
 }
