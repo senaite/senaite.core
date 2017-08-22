@@ -213,7 +213,6 @@
             </div>
         </div>
 
-        <!-- Container where all the stickers are embedded. -->
         <div id="stickers-wrapper">
             <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
             <div id="sticker-rule">
