@@ -88,6 +88,14 @@
             border-bottom: 1px dotted #cdcdcd;
             box-shadow: 1px 2px 5px #cdcdcd;
         }
+        .barcode-hri {
+            clear:both;
+            width: 100%;
+            background-color: #FFFFFF;
+            color: #000000;
+            text-align: center;
+            font-size: 10px;
+        }
 
         @media print {
             html, body {
