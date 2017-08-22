@@ -738,7 +738,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """
         if hasattr(value, "portal_type") and value.portal_type == "SamplePoint":
             pass
-        else:
+        elif value:
             bsc = getToolByName(self, 'bika_setup_catalog')
             sampletypes = bsc(portal_type='SamplePoint', title=to_unicode(value))
             if sampletypes:
