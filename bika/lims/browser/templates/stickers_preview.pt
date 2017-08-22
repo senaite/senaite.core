@@ -103,6 +103,20 @@
               box-shadow:none;
               border-bottom:none;
             }
+            .page-break, .page-break-after, .page-break-before {
+                display: block !important;
+                border:none !important;
+                padding:0 !important;
+                margin:0 !important;
+                background-color:transparent !important;
+            }
+            div.page-break,
+            div.page-break-after {
+                page-break-after: always;
+            }
+            div.page-break-before {
+                page-break-before: always;
+            }
             #sticker-rule {
                 display:none !important;
             }
