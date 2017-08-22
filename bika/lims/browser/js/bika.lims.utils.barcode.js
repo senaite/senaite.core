@@ -28,7 +28,17 @@ function BarcodeUtils() {
             $(this).barcode(id, code,
                             {'barHeight': parseInt(barHeight),
                              'addQuietZone': (addQuietZone == 'true'),
-                             'showHRI': (showHRI == 'true') });
+                             'showHRI': (showHRI == 'true'),
+                             'output': "bmp", });
+
+            if (showHRI == 'true') {
+                // When output is set to "bmp", the showHRI parameter (that
+                // prints the ID below the barcode) is dissmissed by barcode.js
+                // so we need to add it manually
+                $(this).find('.barcode-hri').remove();
+                var barcode_hri = '<div class="barcode-hri">'+id+'</div>';
+                $(this).append(barcode_hri);
+            }
         });
     }
 }
