@@ -2462,17 +2462,12 @@ class AnalysisRequest(BaseFolder):
         :value: a date as a date object.
         """
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setSamplingDate(value)
             self.Schema()['SamplingDate'].set(self, value)
-        elif not sample:
-            logger.warning(
-                "setSamplingDate has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
-        else:
-            logger.warning(
-                "setSamplingDate has failed for Analysis Request %s because "
-                "'value' doesn't have a value'." % self.id)
+        logger.warning(
+            "setSamplingDate has failed for Analysis Request %s because "
+            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSamplingDate')
 
@@ -2494,17 +2489,12 @@ class AnalysisRequest(BaseFolder):
         :value: a user id.
         """
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setSampler(value)
             self.Schema()['Sampler'].set(self, value)
-        elif not sample:
-            logger.warning(
-                "setSampler has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
-        else:
-            logger.warning(
-                "setSampler has failed for Analysis Request %s because "
-                "'value' doesn't have a value'." % self.id)
+        logger.warning(
+            "setSampler has failed for Analysis Request %s because "
+            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSampler')
 
@@ -2526,17 +2516,12 @@ class AnalysisRequest(BaseFolder):
         :value: the time value
         """
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setDateSampled(value)
             self.Schema()['DateSampled'].set(self, value)
-        elif not sample:
-            logger.warning(
-                "setDateSampled has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
-        else:
-            logger.warning(
-                "setDateSampled has failed for Analysis Request %s because "
-                "'value' doesn't have a value'." % self.id)
+        logger.warning(
+            "setDateSampled has failed for Analysis Request %s because "
+            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getDateSampled')
 
@@ -2562,17 +2547,12 @@ class AnalysisRequest(BaseFolder):
 
     def setSamplePoint(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setSamplePoint(value)
             self.Schema()['SamplePoint'].set(self, value)
-        elif not sample:
-            logger.warning(
-                "setSamplePoint has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
-        else:
-            logger.warning(
-                "setSamplePoint has failed for Analysis Request %s because "
-                "'value' doesn't have a value'." % self.id)
+        logger.warning(
+            "setSamplePoint has failed for Analysis Request %s because "
+            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSamplepoint')
 
@@ -2587,17 +2567,12 @@ class AnalysisRequest(BaseFolder):
 
     def setSampleType(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setSampleType(value)
             self.Schema()['SampleType'].set(self, value)
-        elif not sample:
-            logger.warning(
-                "setSampleType has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
-        else:
-            logger.warning(
-                "setSampleType has failed for Analysis Request %s because "
-                "'value' doesn't have a value'." % self.id)
+        logger.warning(
+            "setSampleType has failed for Analysis Request %s because "
+            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSampleType')
 
@@ -2612,7 +2587,7 @@ class AnalysisRequest(BaseFolder):
 
     def setClientReference(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setClientReference(value)
         self.Schema()['ClientReference'].set(self, value)
 
@@ -2628,7 +2603,7 @@ class AnalysisRequest(BaseFolder):
 
     def setClientSampleID(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setClientSampleID(value)
         self.Schema()['ClientSampleID'].set(self, value)
 
@@ -2644,17 +2619,12 @@ class AnalysisRequest(BaseFolder):
 
     def setSamplingDeviation(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setSamplingDeviation(value)
             self.Schema()['SamplingDeviation'].set(self, value)
-        elif not sample:
-            logger.warning(
-                "setSamplingDeviation has failed for Analysis Request %s "
-                "because it hasn't got a sample." % self.id)
-        else:
-            logger.warning(
-                "setSamplingDeviation has failed for Analysis Request %s "
-                "because 'value' doesn't have a value'." % self.id)
+        logger.warning(
+            "setSamplingDeviation has failed for Analysis Request %s "
+            "because it hasn't got a sample." % self.id)
 
     security.declarePublic('getSamplingDeviation')
 
@@ -2720,7 +2690,7 @@ class AnalysisRequest(BaseFolder):
 
     def setSampleCondition(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setSampleCondition(value)
         self.Schema()['SampleCondition'].set(self, value)
 
@@ -2736,7 +2706,7 @@ class AnalysisRequest(BaseFolder):
 
     def setEnvironmentalConditions(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setEnvironmentalConditions(value)
         self.Schema()['EnvironmentalConditions'].set(self, value)
 
@@ -2752,7 +2722,7 @@ class AnalysisRequest(BaseFolder):
 
     def setComposite(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setComposite(value)
         self.Schema()['Composite'].set(self, value)
 
@@ -2768,17 +2738,12 @@ class AnalysisRequest(BaseFolder):
 
     def setStorageLocation(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setStorageLocation(value)
             self.Schema()['StorageLocation'].set(self, value)
-        elif not sample:
-            logger.warning(
-                "setStorageLocation has failed for Analysis Request %s because"
-                " it hasn't got a sample." % self.id)
-        else:
-            logger.warning(
-                "setStorageLocation has failed for Analysis Request %s because"
-                " 'value' doesn't have a value'." % self.id)
+        logger.warning(
+            "setStorageLocation has failed for Analysis Request %s because"
+            " it hasn't got a sample." % self.id)
 
     security.declarePublic('getStorageLocation')
 
@@ -2792,7 +2757,7 @@ class AnalysisRequest(BaseFolder):
 
     def setAdHoc(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setAdHoc(value)
         self.Schema()['AdHoc'].set(self, value)
 
@@ -2808,7 +2773,7 @@ class AnalysisRequest(BaseFolder):
 
     def setScheduledSamplingSampler(self, value):
         sample = self.getSample()
-        if sample and value:
+        if sample:
             sample.setScheduledSamplingSampler(value)
         self.Schema()['ScheduledSamplingSampler'].set(self, value)
 
