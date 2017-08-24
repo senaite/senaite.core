@@ -419,12 +419,14 @@ class ajaxAnalysisRequestSubmit():
         # in valid_states, all ars that pass validation will be stored
         valid_states = {}
         for arnum, state in nonblank_states.items():
+            secondary = False
             # Secondary ARs are a special case, these fields are not required
             if state.get('Sample', ''):
                 if 'SamplingDate' in required:
                     required.remove('SamplingDate')
                 if 'SampleType' in required:
                     required.remove('SampleType')
+                secondary = True
             # If this is not a Secondary AR, make sure that Sample Type UID is valid. This shouldn't
             # happen, but making sure just in case.
             else:
@@ -448,7 +450,7 @@ class ajaxAnalysisRequestSubmit():
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
                 today = date.today()
-                if today > samp_date.date():
+                if not secondary and today > samp_date.date():
                     msg = t(_("Expected Sampling Date can't be in the past"))
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
