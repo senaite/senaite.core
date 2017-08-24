@@ -95,6 +95,7 @@ Precision = IntegerField(
 ExponentialFormatPrecision = IntegerField(
     'ExponentialFormatPrecision',
     schemata="Analysis",
+    required=True,
     default=7,
     widget=IntegerWidget(
         label=_("Exponential format precision"),

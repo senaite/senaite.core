@@ -811,21 +811,30 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         the fixed-precision will be used.
         :returns: the precision
         """
-        field = self.getField('ExponentialFormatPrecision')
         if not result or self.getPrecisionFromUncertainty() is False:
-            return field.get(self)
+            return self._getExponentialFormatPrecision()
         else:
             uncertainty = self.getUncertainty(result)
             if uncertainty is None:
-                return field.get(self)
+                return self._getExponentialFormatPrecision()
 
             try:
                 float(result)
             except ValueError:
                 # if analysis result is not a number, then we assume in range
-                return field.get(self)
+                return self._getExponentialFormatPrecision()
 
             return get_significant_digits(uncertainty)
+
+    def _getExponentialFormatPrecision(self):
+        field = self.getField('ExponentialFormatPrecision')
+        value = field.get(self)
+        if value is None:
+            # https://github.com/bikalims/bika.lims/issues/2004
+            # We require the field, because None values make no sense at all.
+            value = self.Schema().getField(
+                'ExponentialFormatPrecision').getDefault(self)
+        return value
 
     @security.public
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1,
