@@ -104,6 +104,8 @@ function WorksheetAddAnalysesView() {
                 replaceTarget: true,
                 data: form.formToArray(),
                 success: function () {
+                    // Reload bika listing transitions watchers
+                    window.bika.lims.BikaListingTableView.load();
                 }
             }
             var url = window.location.href.split("?")[0].split("/add_analyses")[0];
