@@ -803,7 +803,8 @@ function BikaListingTableView() {
                 output = data.join('\r\n');
                 urischema = 'data:application/csv;base64;charset=UTF-8,';
             }
-            var uri = urischema + btoa(output);
+            var b64 = window.btoa(unescape(encodeURIComponent(output)));
+            var uri = urischema + b64;
             $(this).attr('href', uri);
         });
 
