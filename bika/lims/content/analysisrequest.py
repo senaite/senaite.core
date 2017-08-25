@@ -2465,9 +2465,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             sample.setSamplingDate(value)
             self.Schema()['SamplingDate'].set(self, value)
-        logger.warning(
-            "setSamplingDate has failed for Analysis Request %s because "
-            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSamplingDate')
 
@@ -2478,8 +2475,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('setSampler')
 
@@ -2492,9 +2488,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             sample.setSampler(value)
             self.Schema()['Sampler'].set(self, value)
-        logger.warning(
-            "setSampler has failed for Analysis Request %s because "
-            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSampler')
 
@@ -2505,8 +2498,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampler()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('setDateSampled')
 
@@ -2519,9 +2511,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             sample.setDateSampled(value)
             self.Schema()['DateSampled'].set(self, value)
-        logger.warning(
-            "setDateSampled has failed for Analysis Request %s because "
-            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getDateSampled')
 
@@ -2532,8 +2521,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getDateSampled()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('getDatePublished')
 
@@ -2550,9 +2538,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             sample.setSamplePoint(value)
             self.Schema()['SamplePoint'].set(self, value)
-        logger.warning(
-            "setSamplePoint has failed for Analysis Request %s because "
-            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSamplepoint')
 
@@ -2560,8 +2545,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplePoint()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('setSampleType')
 
@@ -2570,9 +2554,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             sample.setSampleType(value)
             self.Schema()['SampleType'].set(self, value)
-        logger.warning(
-            "setSampleType has failed for Analysis Request %s because "
-            "it hasn't got a sample." % self.id)
 
     security.declarePublic('getSampleType')
 
@@ -2580,8 +2561,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('setClientReference')
 
@@ -2622,9 +2602,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             sample.setSamplingDeviation(value)
             self.Schema()['SamplingDeviation'].set(self, value)
-        logger.warning(
-            "setSamplingDeviation has failed for Analysis Request %s "
-            "because it hasn't got a sample." % self.id)
 
     security.declarePublic('getSamplingDeviation')
 
@@ -2635,8 +2612,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDeviation()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('getSamplingDeviationTitle')
 
@@ -2647,8 +2623,7 @@ class AnalysisRequest(BaseFolder):
         sd = self.getSamplingDeviation()
         if sd:
             return sd.Title()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('getHazardous')
 
@@ -2659,8 +2634,7 @@ class AnalysisRequest(BaseFolder):
         sample_type = self.getSampleType()
         if sample_type:
             return sample_type.getHazardous()
-        else:
-            return False
+        return False
 
     security.declarePublic('getContactURL')
 
@@ -2671,8 +2645,7 @@ class AnalysisRequest(BaseFolder):
         contact = self.getContact()
         if contact:
             return contact.absolute_url_path()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('getSamplingWorkflowEnabled')
 
@@ -2683,8 +2656,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingWorkflowEnabled()
-        else:
-            return ''
+        return ''
 
     security.declarePublic('setSampleCondition')
 
@@ -2741,9 +2713,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             sample.setStorageLocation(value)
             self.Schema()['StorageLocation'].set(self, value)
-        logger.warning(
-            "setStorageLocation has failed for Analysis Request %s because"
-            " it hasn't got a sample." % self.id)
 
     security.declarePublic('getStorageLocation')
 
@@ -2751,8 +2720,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getStorageLocation()
-        else:
-            return ''
+        return ''
     security.declarePublic('setAdHoc')
 
     def setAdHoc(self, value):
