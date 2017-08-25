@@ -26,6 +26,8 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from bika.lims import interfaces
+from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import wasTransitionPerformed
 
 import json
 import plone
@@ -171,18 +173,20 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis = ar[service.getKeyword()]
                 analysis.setSamplePartition(part)
                 analysis.reindexObject()
+                partans = part.getAnalyses()
+                partans.append(analysis)
+                part.setAnalyses(partans)
+                part.reindexObject()
 
         if new:
+            ar_state = getCurrentState(ar)
+            if wasTransitionPerformed(ar, 'to_be_verified'):
+                # Apply to AR only; we don't want this transition to cascade.
+                ar.REQUEST['workflow_skiplist'].append("retract all analyses")
+                workflow.doActionFor(ar, 'retract')
+                ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
+                ar_state = getCurrentState(ar)
             for analysis in new:
-                # if the AR has progressed past sample_received, we need to bring it back.
-                ar_state = workflow.getInfoFor(ar, 'review_state')
-                if ar_state in ('attachment_due', 'to_be_verified'):
-                    # Apply to AR only; we don't want this transition to cascade.
-                    ar.REQUEST['workflow_skiplist'].append("retract all analyses")
-                    workflow.doActionFor(ar, 'retract')
-                    ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
-                    ar_state = workflow.getInfoFor(ar, 'review_state')
-                # Then we need to forward new analyses state
                 changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
         message = PMF("Changes saved.")
