@@ -21,6 +21,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import checkUserManage
 from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.utils import t
+from bika.lims.vocabularies import CatalogVocabulary
 
 
 class AddAnalysesView(BikaListingView):
@@ -102,9 +103,6 @@ class AddAnalysesView(BikaListingView):
 
         showRejectionMessage(self.context)
 
-        translate = self.context.translate
-
-        form_id = self.form_id
         form = self.request.form
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         if 'submitted' in form:
@@ -123,6 +121,25 @@ class AddAnalysesView(BikaListingView):
                         _("No analyses were added to this worksheet."))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/add_analyses")
+            elif (
+                'list_getCategoryTitle' in form or
+                'list_Title' in form or
+                'list_getClientTitle' in form
+                    ):
+                # Apply filter elements
+                # Note that the name of those fields is '..Title', but we
+                # are getting their UID.
+                category = form.get('list_getCategoryTitle', '')
+                if category:
+                    self.contentFilter['getCategoryUID'] = category
+
+                service = form.get('list_Title', '')
+                if service:
+                    self.contentFilter['getServiceUID'] = service
+
+                client = form.get('list_getClientTitle', '')
+                if client:
+                    self.contentFilter['getClientUID'] = client
 
         self._process_request()
 
@@ -197,32 +214,33 @@ class AddAnalysesView(BikaListingView):
         return item
 
     def getServices(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in
-                bsc(portal_type = 'AnalysisService',
-                   getCategoryUID = self.request.get('list_getCategoryUID', ''),
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')]
+        vocabulary = CatalogVocabulary(self)
+        vocabulary.catalog = 'bika_setup_catalog'
+        categoryUID = self.request.get('list_getCategoryUID', '')
+        if categoryUID:
+            return vocabulary(
+                portal_type='AnalysisService',
+                getCategoryUID=categoryUID,
+                sort_on='sortable_title'
+            )
+        return vocabulary(
+            portal_type='AnalysisService',
+            sort_on='sortable_title'
+        )
 
     def getClients(self):
-        pc = getToolByName(self.context, 'portal_catalog')
-        return [c.Title for c in
-                pc(portal_type = 'Client',
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')]
+        vocabulary = CatalogVocabulary(self)
+        return vocabulary(portal_type='Client', sort_on='sortable_title')
 
     def getCategories(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in
-                bsc(portal_type = 'AnalysisCategory',
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')]
+        vocabulary = CatalogVocabulary(self)
+        vocabulary.catalog = 'bika_setup_catalog'
+        return vocabulary(
+            portal_type='AnalysisCategory',  sort_on='sortable_title')
 
     def getWorksheetTemplates(self):
         """ Return WS Templates """
-        profiles = []
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [(c.UID, c.Title) for c in
-                bsc(portal_type = 'WorksheetTemplate',
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')]
+        vocabulary = CatalogVocabulary(self)
+        vocabulary.catalog = 'bika_setup_catalog'
+        return vocabulary(
+            portal_type='WorksheetTemplate', sort_on='sortable_title')

@@ -43,7 +43,7 @@ function WorksheetAddAnalysesView() {
 
         // search form - selecting a category fills up the service selector
         $('[name="list_getCategoryTitle"]').live("change", function(){
-            val = $('[name="list_getCategoryTitle"]').val();
+            val = $('[name="list_getCategoryTitle"]').find(":selected").val();
             if(val == 'any'){
                 $('[name="list_Title"]').empty();
                 $('[name="list_Title"]').append("<option value='any'>"+_('Any')+"</option>");
@@ -53,7 +53,7 @@ function WorksheetAddAnalysesView() {
                 url: window.location.href.split("?")[0].replace("/add_analyses","") + "/getServices",
                 type: 'POST',
                 data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                       'getCategoryTitle': val},
+                       'getCategoryUID': val},
                 dataType: "json",
                 success: function(data, textStatus, $XHR){
                     current_service_selection = $('[name="list_Title"]').val();
@@ -65,7 +65,9 @@ function WorksheetAddAnalysesView() {
                         } else {
                             selected = '';
                         }
-                        $('[name="list_Title"]').append("<option "+selected+"value='"+data[i]+"'>"+data[i]+"</option>");
+                        $('[name="list_Title"]').append(
+                            "<option "+selected+"value='"+data[i][0]+
+                            "'>"+data[i][1]+"</option>");
                     }
                 }
             });
@@ -102,6 +104,8 @@ function WorksheetAddAnalysesView() {
                 replaceTarget: true,
                 data: form.formToArray(),
                 success: function () {
+                    // Reload bika listing transitions watchers
+                    window.bika.lims.BikaListingTableView.load();
                 }
             }
             var url = window.location.href.split("?")[0].split("/add_analyses")[0];
