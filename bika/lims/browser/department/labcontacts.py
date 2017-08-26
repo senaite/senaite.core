@@ -21,10 +21,8 @@ class LabContactsView(LabContactsView):
         super(LabContactsView, self).__init__(context, request)
         self.show_select_all_checkbox = False
         self.description = self.context.translate(_(
-            """
-            By selecting/unselecting the checboxes, the user will be able to
-            "Lab Contacts" to the department.
-            """))
+            'By selecting/unselecting the checboxes, the user will be able ' \
+            'to assign "Lab Contacts" to the department.'))
         self.context_actions = {}
         self.contentFilter = {
             'portal_type': 'LabContact',
