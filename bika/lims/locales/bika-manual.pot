@@ -109,3 +109,8 @@ msgstr ""
 
 msgid "Unable to load instruments: ${invalid_list}"
 msgstr ""
+
+#. Default: "Prepublish"
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+msgid "prepublish_transition_title"
+msgstr "Prepublish"
