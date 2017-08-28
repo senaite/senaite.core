@@ -137,7 +137,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         # We need a workaround here in order to transition partitions.
         # auto_no_preservation_required and auto_preservation_required are
         # auto transitions applied to analysis requests, but partitions don't
-        # have them, so we need to change them to the sample_workflow
+        # have them, so we need to replace them by the sample_workflow
         # equivalent.
         if 'auto_no_preservation_required' in sampleactions:
             index = sampleactions.index('auto_no_preservation_required')
