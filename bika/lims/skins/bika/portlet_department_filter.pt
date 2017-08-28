@@ -47,7 +47,6 @@
                         <li tal:define="dep_name python:dep.Title if user_name=='admin' else dep.Title();
                                         dep_uid python: dep.UID if user_name=='admin' else dep.UID()">
                             <input type="checkbox"
-                            <input type="checkbox"
                                 tal:attributes="
                                     value python: dep_uid;
                                     name python: 'chb_deps_'+ dep_name;
