@@ -120,3 +120,10 @@ MULTI_VERIFICATION_TYPE = DisplayList((
     ('self_multi_not_cons', _('Allow same user to verify multiple times, but not consecutively')),
     ('self_multi_disabled', _('Disable multi-verification for the same user')),
 ))
+PRIORITIES = DisplayList((
+    ('1', _('Highest')),
+    ('2', _('High')),
+    ('3', _('Medium')),
+    ('4', _('Low')),
+    ('5', _('Lowest')),
+))

@@ -35,6 +35,7 @@ _indexes_dict = {
     'getSampleID': 'FieldIndex',
     # To sort in lists
     'getClientTitle': 'FieldIndex',
+    'getPrioritySortkey': 'FieldIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
@@ -88,6 +89,7 @@ _columns_list = [
     'getAnalysesNum',
     'getPrinted',
     'getSamplingDeviationTitle',
+    'getPrioritySortkey',
     # TODO: This should be updated through a clock
     'getLate',
     'getInvoiceExclude',

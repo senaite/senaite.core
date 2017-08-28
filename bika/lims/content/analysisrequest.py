@@ -31,9 +31,11 @@ from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
+from bika.lims.browser.widgets import PrioritySelectionWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.config import PROJECTNAME
+from bika.lims.config import PRIORITIES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
 from bika.lims.permissions import *
@@ -1049,6 +1051,39 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
+        ),
+    ),
+    StringField(
+        'Priority',
+        default='3',
+        vocabulary=PRIORITIES,
+        mode='rw',
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=PrioritySelectionWidget(
+            label=_('Priority'),
+            format='select',
+            visible={
+                'edit': 'visible',
+                'view': 'visible',
+                'add': 'edit',
+                'header_table': 'visible',
+                'sample_registered':
+                    {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
+                'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
+                'sampled': {'view': 'visible', 'edit': 'visible'},
+                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
+                'sample_due': {'view': 'visible', 'edit': 'visible'},
+                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
+                'sample_received': {'view': 'visible', 'edit': 'visible'},
+                'attachment_due': {'view': 'visible', 'edit': 'visible'},
+                'to_be_verified': {'view': 'visible', 'edit': 'visible'},
+                'verified': {'view': 'visible', 'edit': 'visible'},
+                'published': {'view': 'visible', 'edit': 'invisible'},
+                'invalid': {'view': 'visible', 'edit': 'invisible'},
+                'rejected': {'view': 'visible', 'edit': 'invisible'},
+            },
         ),
     ),
     StringField(
@@ -2927,6 +2962,17 @@ class AnalysisRequest(BaseFolder):
         Returns the date of verification as a DateTime object.
         """
         return getTransitionDate(self, 'verify', return_as_datetime=True)
+
+    def getPrioritySortkey(self):
+        """
+        Returns the key that will be used to sort the current Analysis Request
+        based on both its priority and creation date. On ASC sorting, the oldest
+        item with highest priority will be displayed.
+        :return: string used for sorting
+        """
+        priority = self.getPriority()
+        created_date = self.created().ISO8601()
+        return '%s.%s' % (priority, created_date)
 
     def _getCreatorFullName(self):
         """
