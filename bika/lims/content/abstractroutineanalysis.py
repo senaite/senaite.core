@@ -414,6 +414,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return dependencies
 
     @security.public
+    def getPrioritySortkey(self):
+        """
+        Returns the key that will be used to sort the current Analysis
+        Delegates to getPrioritySortKey function from the AnalysisRequest
+        :return: string used for sorting
+        """
+        analysis_request = self.getRequest()
+        if analysis_request:
+            return analysis_request.getPrioritySortkey()
+
+    @security.public
     def setReflexAnalysisOf(self, analysis):
         """Sets the analysis that has been reflexed in order to create this
         one, but if the analysis is the same as self, do nothing.

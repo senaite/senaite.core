@@ -34,6 +34,7 @@ from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import PRIORITIES
 from bika.lims.content.bikaschema import BikaSchema
@@ -2963,6 +2964,7 @@ class AnalysisRequest(BaseFolder):
         """
         return getTransitionDate(self, 'verify', return_as_datetime=True)
 
+    @security.public
     def getPrioritySortkey(self):
         """
         Returns the key that will be used to sort the current Analysis Request
@@ -2973,6 +2975,25 @@ class AnalysisRequest(BaseFolder):
         priority = self.getPriority()
         created_date = self.created().ISO8601()
         return '%s.%s' % (priority, created_date)
+
+    @security.public
+    def setPriority(self, value):
+        if not value:
+            value = self.Schema().getField('Priority').getDefault(self)
+        self.Schema().getField('Priority').set(self, value)
+        self._reindexAnalyses(['getPrioritySortkey'], True)
+
+    @security.private
+    def _reindexAnalyses(self, idxs=None, update_metadata=False):
+        if not idxs and not update_metadata:
+            return
+        if not idxs:
+            idxs = []
+        analyses = self.getAnalyses()
+        catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
+        for analysis in analyses:
+            analysis_obj = analysis.getObject()
+            catalog.reindexObject(analysis_obj, idxs=idxs, update_metadata=1)
 
     def _getCreatorFullName(self):
         """

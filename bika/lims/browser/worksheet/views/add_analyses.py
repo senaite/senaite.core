@@ -14,6 +14,7 @@ from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.config import PRIORITIES
 from bika.lims import bikaMessageFactory as _
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
@@ -49,6 +50,10 @@ class AddAnalysesView(BikaListingView):
         self.pagesize = 50
 
         self.columns = {
+            'Priority': {
+                'title': '',
+                'sortable': True,
+                'index': 'getPrioritySortkey' },
             'Client': {
                 'title': _('Client'),
                 'attr': 'getClientTitle',
@@ -82,7 +87,8 @@ class AddAnalysesView(BikaListingView):
              'title': _('All'),
              'contentFilter': {},
              'transitions': [{'id':'assign'}, ],
-             'columns':['Client',
+             'columns':['Priority',
+                        'Client',
                         'getClientOrderNumber',
                         'getRequestID',
                         'CategoryTitle',
@@ -211,6 +217,16 @@ class AddAnalysesView(BikaListingView):
                  t(_("Late Analysis")))
         if self.hideclientlink:
             del item['replace']['Client']
+        # Add Priority column
+        priority_sort_key = obj.getPrioritySortkey
+        if not priority_sort_key:
+            # Default priority is Medium = 3.
+            # The format of PrioritySortKey is <priority>.<created>
+            priority_sort_key = '3.%s' % obj.created.ISO8601()
+        priority = priority_sort_key.split('.')[0]
+        priority_text = PRIORITIES.getValue(priority)
+        priority_div = '<div class="priority-ico priority-%s"><span class="notext">%s</span><div>'
+        item['replace']['Priority'] = priority_div % (priority, priority_text)
         return item
 
     def getServices(self):
