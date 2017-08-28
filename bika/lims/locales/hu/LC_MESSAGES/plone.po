@@ -1,13 +1,13 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
 # Translators:
-# Alphons Senki <senki.alphons@gmail.com>, 2016
+# Alphons Senki <senki.alphons@gmail.com>, 2016-2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-17 08:44+0000\n"
-"PO-Revision-Date: 2016-12-07 17:36+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
+"POT-Creation-Date: 2017-08-25 15:25+0000\n"
+"PO-Revision-Date: 2017-08-03 11:39+0000\n"
+"Last-Translator: Alphons Senki <senki.alphons@gmail.com>\n"
 "Language-Team: Hungarian (http://www.transifex.com/bikalabs/bika-lims/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,12 +19,9 @@ msgstr ""
 "Domain: plone\n"
 "Language: hu\n"
 
+#. Default: "AR Imports"
 msgid "AR Imports"
 msgstr "AR importok"
-
-#: bika/lims/profiles/default/types/ARPriorities.xml
-msgid "AR Priorities"
-msgstr "AR elsőbbség"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
@@ -134,6 +131,10 @@ msgstr "Csatolmány típusok"
 msgid "Attachments"
 msgstr "Csatolmányok"
 
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Auto-Import Logs"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
 msgstr "Köteg"
@@ -171,7 +172,7 @@ msgstr "Számítások"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Hitelesítési bizonylat"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
@@ -211,7 +212,7 @@ msgstr "Tárolók"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice"
-msgstr ""
+msgstr "Számla készítés"
 
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
@@ -223,7 +224,7 @@ msgstr "Osztályok"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
-msgstr ""
+msgstr "Dokumentum"
 
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
@@ -239,7 +240,7 @@ msgstr "Export"
 
 #: bika/lims/profiles/default/types/InvoiceBatch.xml
 msgid "Export Batch To CSV"
-msgstr ""
+msgstr "Köteg export CSV-be"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Extracts"
@@ -247,12 +248,12 @@ msgstr "Kivonatok"
 
 #: bika/lims/profiles/default/types/IdentifierType.xml
 msgid "Identifier Type"
-msgstr ""
+msgstr "Azonosító típus"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/IdentifierTypes.xml
 msgid "Identifier Types"
-msgstr ""
+msgstr "Azonosító típusok"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
@@ -264,7 +265,7 @@ msgstr "Műszer"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
-msgstr ""
+msgstr "Műszer elhelyezések"
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
@@ -291,6 +292,7 @@ msgid "Lab Contact"
 msgstr "Labor kapcsolat"
 
 #: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Department.xml
 #: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
 msgstr "Labor kapcsolatok"
@@ -401,7 +403,7 @@ msgstr "Közzétett eredmények"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
+msgstr "QC eredmények"
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
@@ -433,6 +435,18 @@ msgstr "Referencia minták"
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
 msgstr "Referencia értékek"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Reflex Rules"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReflexRuleFolder.xml
+msgid "Reflex Rules Folder"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReflexRule.xml
+msgid "ReflexRule"
+msgstr ""
 
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
@@ -524,7 +538,7 @@ msgstr "Mintavételi eltérések"
 
 #: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "Sampling Round Template"
-msgstr ""
+msgstr "Mintavételi kör sablon"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Client.xml
@@ -535,7 +549,7 @@ msgstr "Mintavételi kör sablonok"
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sampling Rounds"
-msgstr ""
+msgstr "Mintavételi körök"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
@@ -549,17 +563,19 @@ msgstr "Kis címke"
 
 #: bika/lims/profiles/default/types/InvoiceFolder.xml
 msgid "Statements"
-msgstr ""
+msgstr "Megállapítások"
 
+#: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Sticker"
 msgstr "Címke"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Stickers preview"
-msgstr ""
+msgstr "Címke előnézet"
 
 #: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
@@ -603,7 +619,7 @@ msgstr "Jóváhagyás"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "WINE-40: Do not move or remove this entry."
-msgstr ""
+msgstr "WINE-40: Ezt a tételt ne mozgassa, ne törölje"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
@@ -626,60 +642,60 @@ msgstr "Munkalapok"
 #. Default: "Activate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "activate_transition_title"
-msgstr "Aktivizálás"
+msgstr "Activate"
 
 #. Default: "Assign"
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
 msgid "assign_transition_title"
-msgstr "Hozzárendelés"
+msgstr "Assign"
 
 #. Default: "Add attachment"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "attach_transition_title"
-msgstr "Csatolmány hozzáadás"
+msgstr "Add attachment"
 
 #. Default: "Cancel"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "cancel_transition_title"
-msgstr "Mégse"
+msgstr "Cancel"
 
 #. Default: "Close"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "close_transition_title"
-msgstr "Bezár"
+msgstr "Close"
 
 msgid "copy_to_new_transition_title"
-msgstr "Új másolat létrehozás"
+msgstr "Copy to new"
 
 #. Default: "Deactivate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "deactivate_transition_title"
-msgstr "Kikapcsolás/deaktiválás"
+msgstr "Deactivate"
 
 #. Default: "Dispatch order"
 #: ../profiles/default/workflows/bika_order_workflow/definition.xml
 msgid "dispatch_transition_title"
-msgstr "Rendelés szervezés"
+msgstr "Dispatch order"
 
 #. Default: "Dispose"
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "dispose_transition_title"
-msgstr "Leszállítva"
+msgstr "Dispose"
 
 #. Default: "Duplicate"
 msgid "duplicate_transition_title"
-msgstr "Másolás"
+msgstr "Duplicate"
 
 #. Default: "Expire"
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "expire_transition_title"
-msgstr "Lejárat"
+msgstr "Expire"
 
 #. Default: "Import"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -689,193 +705,217 @@ msgstr "Import"
 # This is for the "retract_ar" transition, to invalidate a published AR.
 #. Default: "Invalidate"
 msgid "invalidate_transition_title"
-msgstr "Érvénytelenítés"
+msgstr "Invalidate"
 
+#. Default: "AR Templates"
 msgid "label_schema_AR Templates"
 msgstr "AR sablonok"
 
+#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Számlázás"
 
+#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Cím"
 
+#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Vizsgálatok"
 
+#. Default: "Bank details"
 msgid "label_schema_Bank details"
 msgstr "Bank adatok"
 
+#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Számítás"
 
+#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Tároló és megőrzés"
 
+#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Dátumok"
 
+#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Leírás"
 
+#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "Email, telefon, fax"
 
+#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID szerver"
 
+#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Címkék"
 
+#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Elrendezés"
 
+#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Hely"
 
+#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Módszer"
 
+#. Default: "Preferences"
 msgid "label_schema_Preferences"
 msgstr "Beállítások"
 
+#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "Közzététel beállítás"
 
+#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Referencia érték"
 
+#. Default: "Result Options"
 msgid "label_schema_Result Options"
 msgstr "Eredmény beállítások"
 
+#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Erdemény riportok"
 
+#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "SR sablonok"
 
+#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Minta szét/felosztások"
 
+#. Default: "Security"
 msgid "label_schema_Security"
 msgstr "Biztonság"
 
+#. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
 msgstr "Bizonytalanság"
 
 #. Default: "Open"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "open_transition_title"
-msgstr "Megnyitás"
+msgstr "Open"
 
 msgid "plone_manual_test"
-msgstr "Plone kézi ellenőrzés"
+msgstr "Plone Manual Test"
 
 #. Default: "Prepublish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "prepublish_transition_title"
-msgstr "Előzetes közzététel"
+msgstr "Prepublish"
 
 #. Default: "Preserve"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "preserve_transition_title"
-msgstr "Megőrzés"
+msgstr "Preserve"
 
 #. Default: "Publish"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "publish_transition_title"
-msgstr "Közzététel"
+msgstr "Publish"
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
-msgstr "Újrahozzárendelés"
+msgstr "Reassign"
 
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "receive_transition_title"
-msgstr "Minta átvétel"
+msgstr "Receive sample"
 
 #. Default: "Reinstate"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "reinstate_transition_title"
-msgstr "Visszatétel"
+msgstr "Reinstate"
 
 #. Default: "Reject"
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "reject_transition_title"
-msgstr "Eldob"
+msgstr "Reject"
 
 #. Default: "Republish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "republish_transition_title"
-msgstr "Újra közzététel"
+msgstr "Republish"
 
 #. Default: "Retract"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "retract_transition_title"
-msgstr "Visszavon"
+msgstr "Retract"
 
 #. Default: "Retract worksheet"
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "retract_worksheet_transition_title"
-msgstr "Munkanapló visszavonás"
+msgstr "Retract worksheet"
 
 # This is for the "revert" transition, which is meant to look like a
 # "retract".
 #. Default: "Retract"
 msgid "revert_transition_title"
-msgstr "Visszavon"
+msgstr "Retract"
 
 #. Default: "Sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_worflow/definition.xml
 msgid "sample_transition_title"
-msgstr "Minta"
+msgstr "Sample"
 
 #. Default: "Save analyses"
 msgid "save_analyses_button_transition_title"
-msgstr "Minta vizsgálatok"
+msgstr "Save analyses"
 
 #. Default: "Save partitions"
 msgid "save_partitions_button_transition_title"
-msgstr "Minta részek"
+msgstr "Save partitions"
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
-msgstr "Minta kiválasztás"
+msgstr "Save selection"
 
 #. Default: "Submit ARImport"
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "submit_arimport_transition_title"
-msgstr "AR import elküldés"
+msgstr "Submit ARImport"
 
 #. Default: "Submit for verification"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "submit_transition_title"
-msgstr "Elküldés ellenőrzésre"
+msgstr "Submit for verification"
 
 #. Default: "Remove"
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
 msgid "unassign_transition_title"
-msgstr "Törlés"
+msgstr "Remove"
 
 #. Default: "Verify"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "verify_transition_title"
-msgstr "Ellenőrzés"
+msgstr "Verify"
