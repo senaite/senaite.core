@@ -1288,4 +1288,66 @@ div#semioverlay div.semioverlay-buttons input {
 div#semioverlay div.semioverlay-buttons input:hover {
     background-color:#ccc;
 }
+
+/* Priority Selection Widget */
+.ArchetypesPrioritySelectionWidget { }
+
+    .ArchetypesPrioritySelectionWidget select {
+        border: 1px solid #cdcdcd;
+        border-radius: 5px;
+        box-shadow: 1px 1px 1px #dcdcdc;
+        padding-right: 10px; }
+
+        .ArchetypesPrioritySelectionWidget select,
+        .ArchetypesPrioritySelectionWidget select option {
+            padding-left:25px;
+            border: none;
+            background-position: 2px 2px;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            background-attachment: scroll;
+            background-color: #fff; }
+
+        .ArchetypesPrioritySelectionWidget select[value="1"],
+        .ArchetypesPrioritySelectionWidget select option[value="1"] {
+            background-image: url(&dtml-portal_url;/++resource++bika.lims.images/highest.svg); }
+
+        .ArchetypesPrioritySelectionWidget select[value="2"],
+        .ArchetypesPrioritySelectionWidget select option[value="2"] {
+            background-image: url(&dtml-portal_url;/++resource++bika.lims.images/high.svg); }
+
+        .ArchetypesPrioritySelectionWidget select[value="3"],
+        .ArchetypesPrioritySelectionWidget select option[value="3"] {
+            background-image: url(&dtml-portal_url;/++resource++bika.lims.images/medium.svg); }
+
+        .ArchetypesPrioritySelectionWidget select[value="4"],
+        .ArchetypesPrioritySelectionWidget select option[value="4"] {
+            background-image: url(&dtml-portal_url;/++resource++bika.lims.images/low.svg); }
+
+        .ArchetypesPrioritySelectionWidget select[value="5"],
+        .ArchetypesPrioritySelectionWidget select option[value="5"] {
+            background-image: url(&dtml-portal_url;/++resource++bika.lims.images/lowest.svg); }
+.priority-ico {
+    background-position: left top;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-attachment: scroll;
+    min-height: 16px;
+    min-width: 16px; }
+
+    .priority-ico.priority-1 {
+        background-image: url(&dtml-portal_url;/++resource++bika.lims.images/highest.svg); }
+
+    .priority-ico.priority-2 {
+        background-image: url(&dtml-portal_url;/++resource++bika.lims.images/high.svg); }
+
+    .priority-ico.priority-3 {
+        background-image: url(&dtml-portal_url;/++resource++bika.lims.images/medium.svg); }
+
+    .priority-ico.priority-4 {
+        background-image: url(&dtml-portal_url;/++resource++bika.lims.images/low.svg); }
+
+    .priority-ico.priority-5 {
+        background-image: url(&dtml-portal_url;/++resource++bika.lims.images/lowest.svg); }
+
 </dtml-with>
