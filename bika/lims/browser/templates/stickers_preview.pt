@@ -88,6 +88,14 @@
             border-bottom: 1px dotted #cdcdcd;
             box-shadow: 1px 2px 5px #cdcdcd;
         }
+        .barcode-hri {
+            clear:both;
+            width: 100%;
+            background-color: #FFFFFF;
+            color: #000000;
+            text-align: center;
+            font-size: 10px;
+        }
 
         @media print {
             html, body {
@@ -102,6 +110,20 @@
               border:none;
               box-shadow:none;
               border-bottom:none;
+            }
+            .page-break, .page-break-after, .page-break-before {
+                display: block !important;
+                border:none !important;
+                padding:0 !important;
+                margin:0 !important;
+                background-color:transparent !important;
+            }
+            div.page-break,
+            div.page-break-after {
+                page-break-after: always;
+            }
+            div.page-break-before {
+                page-break-before: always;
             }
             #sticker-rule {
                 display:none !important;
@@ -199,7 +221,6 @@
             </div>
         </div>
 
-        <!-- Container where all the stickers are embedded. -->
         <div id="stickers-wrapper">
             <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
             <div id="sticker-rule">

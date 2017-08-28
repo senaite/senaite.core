@@ -651,5 +651,10 @@ table.bika-listing-table-transposed table.worksheet-position tbody tr {
 #content .bika_listing_filter_bar .datepicker_range {;
     width: 70px;
 }
+#content table.bika-listing-table tbody.item-listing-tbody tr:hover td,
+#content table.bika-listing-table tbody.item-listing-tbody tr:hover td span {
+    background-color: #fff9ee !important;
+}
+
 
 /* </dtml-with> */

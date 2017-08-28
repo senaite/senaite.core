@@ -85,30 +85,6 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
         )
 
 
-class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
-
-    def __call__(self):
-        base_query = json.loads(self.request['base_query'])
-        # In client context, restrict samples to client samples only
-        if 'portal_type' in base_query \
-        and (base_query['portal_type'] == 'Sample'
-             or base_query['portal_type'][0] == 'Sample'):
-            client_uid = self.get_client_uid()
-            if client_uid:
-                base_query['getClientUID'] = client_uid
-                self.request['base_query'] = json.dumps(base_query)
-        return DefaultReferenceWidgetVocabulary.__call__(self)
-
-    def get_client_uid(self):
-        instance = self.context.aq_parent
-        while not IPloneSiteRoot.providedBy(instance):
-            if IClient.providedBy(instance):
-                return instance.UID()
-            if IBatch.providedBy(instance):
-                client = instance.getClient()
-                if client:
-                    return client.UID()
-
 class JSONReadExtender(object):
 
     """- Adds the full details of all analyses to the AR.Analyses field

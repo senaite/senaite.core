@@ -738,7 +738,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """
         if hasattr(value, "portal_type") and value.portal_type == "SamplePoint":
             pass
-        else:
+        elif value:
             bsc = getToolByName(self, 'bika_setup_catalog')
             sampletypes = bsc(portal_type='SamplePoint', title=to_unicode(value))
             if sampletypes:
@@ -852,6 +852,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
             workflow = wf.getWorkflowById(workflow_id)
             prep_workflows.append([workflow_id, workflow.title])
         return DisplayList(prep_workflows)
+
+    def getSamplePartitions(self):
+        """Returns the Sample Partitions associated to this Sample
+        """
+        partitions = self.objectValues('SamplePartition')
+        return partitions
 
     @deprecated('[1705] Use events.after_no_sampling_workflow from '
                 'bika.lims.workflow.sample')

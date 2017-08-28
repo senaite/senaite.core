@@ -414,6 +414,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return dependencies
 
     @security.public
+    def getPrioritySortkey(self):
+        """
+        Returns the key that will be used to sort the current Analysis
+        Delegates to getPrioritySortKey function from the AnalysisRequest
+        :return: string used for sorting
+        """
+        analysis_request = self.getRequest()
+        if analysis_request:
+            return analysis_request.getPrioritySortkey()
+
+    @security.public
     def setReflexAnalysisOf(self, analysis):
         """Sets the analysis that has been reflexed in order to create this
         one, but if the analysis is the same as self, do nothing.
@@ -528,7 +539,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
             # All dependencies from this dependent analysis are ok?
             deps = dependent.getDependencies()
-            dsub = [dep for dep in deps if wasTransitionPerformed(sp, 'submit')]
+            dsub = [dep for dep in deps if wasTransitionPerformed(dep, 'submit')]
             if len(deps) == len(dsub):
                 # The statuses of all dependencies of this dependent are ok
                 # (at least, all of them have been submitted already)

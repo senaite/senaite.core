@@ -122,6 +122,14 @@ function CommonUtils() {
                 jsonapi_read_handler(window.bika.lims.jsonapi_cache[jsonapi_cacheKey]);
             }
         };
+
+        // Priority Selection Widget
+        $('.ArchetypesPrioritySelectionWidget select').change(function(e){
+            var val = $(this).find('option:selected').val();
+            $(this).attr('value', val);
+        });
+        $('.ArchetypesPrioritySelectionWidget select').change();
+
     }
     that.svgToImage = function(svg) {
         var url = 'data:image/svg+xml;base64,' + btoa(svg);

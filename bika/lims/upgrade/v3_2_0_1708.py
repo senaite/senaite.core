@@ -31,8 +31,13 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
 
-    # importing toolset in order to add bika_catalog_report
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
+    # Add missing Priority Index and Column to AR Catalog
+    ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING,
+                         'getPrioritySortkey', 'FieldIndex')
+    ut.addIndexAndColumn(CATALOG_ANALYSIS_LISTING,
+                         'getPrioritySortkey', 'FieldIndex')
+
+    ut.refreshCatalogs()
 
     # Replace empty 'DateSampled' field with 'SamplingDate' of ARs,
     # which will take care of Samples as well.

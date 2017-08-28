@@ -155,7 +155,7 @@ class LabContact(Contact):
         """
         Returns a vocabulary object with the available departments.
         """
-        bsc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]

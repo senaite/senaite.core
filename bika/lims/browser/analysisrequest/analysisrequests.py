@@ -7,6 +7,7 @@ from plone import api
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import PRIORITIES
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.analysisrequest.analysisrequests_filter_bar\
@@ -72,6 +73,10 @@ class AnalysisRequestsView(BikaListingView):
             getDisplayAdvancedFilterBarForAnalysisRequests()
 
         self.columns = {
+            'Priority': {
+                'title': '',
+                'index': 'getPrioritySortkey',
+                'sortable': True,},
             'getRequestID': {
                 'title': _('Request ID'),
                 'attr': 'getId',
@@ -216,7 +221,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -255,7 +261,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                             ],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -291,7 +298,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              ],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -325,7 +333,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              ],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -365,7 +374,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -401,7 +411,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -439,7 +450,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -475,7 +487,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              ],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -509,7 +522,8 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'republish'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -637,7 +651,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -684,7 +699,8 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['Priority',
+                        'getRequestID',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -796,6 +812,15 @@ class AnalysisRequestsView(BikaListingView):
         item['Creator'] = self.user_fullname(obj.Creator)
         # If we redirect from the folderitems view we should check if the
         # user has permissions to medify the element or not.
+        priority_sort_key = obj.getPrioritySortkey
+        if not priority_sort_key:
+            # Default priority is Medium = 3.
+            # The format of PrioritySortKey is <priority>.<created>
+            priority_sort_key = '3.%s' % obj.created.ISO8601()
+        priority = priority_sort_key.split('.')[0]
+        priority_text = PRIORITIES.getValue(priority)
+        priority_div = '<div class="priority-ico priority-%s"><span class="notext">%s</span><div>'
+        item['replace']['Priority'] = priority_div % (priority, priority_text)
         item['getRequestID'] = obj.getId
         url = obj.getURL() + "?check_edit=1"
         item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \

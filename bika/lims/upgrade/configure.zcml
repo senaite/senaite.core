@@ -612,7 +612,7 @@
         handler="bika.lims.upgrade.v3_2_0_1707.upgrade"
         profile="bika.lims:default"/>
 
-<genericsetup:upgradeStep
+ <genericsetup:upgradeStep
         title="Upgrade to Bika LIMS 3.2.0.1708"
         source="3.2.0.1707"
         destination="3.2.0.1708"

@@ -47,8 +47,9 @@ class CatalogVocabulary(object):
         site = getSite()
         request = aq_get(site, 'REQUEST', None)
         catalog = getToolByName(site, self.catalog)
+        allow_blank = False
         if 'allow_blank' in kwargs:
-            allow_blank = True
+            allow_blank = kwargs.get('allow_blank')
             del (kwargs['allow_blank'])
 
         self.contentFilter.update(**kwargs)

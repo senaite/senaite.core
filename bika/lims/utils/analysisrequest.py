@@ -10,8 +10,7 @@ from bika.lims import logger
 from bika.lims.browser.analysisrequest.reject import \
     AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis, \
-    IRoutineAnalysis
+from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
 from bika.lims.utils import encode_header
@@ -19,19 +18,15 @@ from bika.lims.utils import createPdf
 from bika.lims.utils import attachPdf
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
-from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import doActionsFor
-from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import getReviewHistoryActionsList
 from copy import deepcopy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
-from os.path import join
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
-from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 import os
 import tempfile
 
@@ -93,10 +88,21 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Create sample partitions
     if not partitions:
         partitions = [{'services': service_uids}]
+
+    part_num = 0
+    prefix = sample.getId() + "-P"
+    if secondary:
+        # Always create new partitions if is a Secondary AR, cause it does
+        # not make sense to reuse the partitions used in a previous AR!
+        sparts = sample.getSamplePartitions()
+        for spart in sparts:
+            spartnum = int(spart.getId().split(prefix)[1])
+            if spartnum > part_num:
+                part_num = spartnum
+
     for n, partition in enumerate(partitions):
         # Calculate partition id
-        partition_prefix = sample.getId() + "-P"
-        partition_id = '%s%s' % (partition_prefix, n + 1)
+        partition_id = '%s%s' % (prefix, part_num + 1)
         partition['part_id'] = partition_id
         # Point to or create sample partition
         if partition_id in sample.objectIds():
@@ -107,6 +113,7 @@ def create_analysisrequest(client, request, values, analyses=None,
                 partition,
                 analyses
             )
+        part_num += 1
 
     # At this point, we have a fully created AR, with a Sample, Partitions and
     # Analyses, but the state of all them is the initial ("sample_registered").
@@ -127,7 +134,22 @@ def create_analysisrequest(client, request, values, analyses=None,
         # children) to fit with the Sample Partition's current state
         sampleactions = getReviewHistoryActionsList(sample)
         doActionsFor(ar, sampleactions)
-
+        # We need a workaround here in order to transition partitions.
+        # auto_no_preservation_required and auto_preservation_required are
+        # auto transitions applied to analysis requests, but partitions don't
+        # have them, so we need to replace them by the sample_workflow
+        # equivalent.
+        if 'auto_no_preservation_required' in sampleactions:
+            index = sampleactions.index('auto_no_preservation_required')
+            sampleactions[index] = 'sample_due'
+        elif 'auto_preservation_required' in sampleactions:
+            index = sampleactions.index('auto_preservation_required')
+            sampleactions[index] = 'to_be_preserved'
+        # We need to transition the partition manually
+        # Transition pre-preserved partitions
+        for partition in partitions:
+            part = partition['object']
+            doActionsFor(part, sampleactions)
     else:
         # If Preservation is required for some partitions, and the SamplingWorkflow
         # is disabled, we need to transition to to_be_preserved manually.
@@ -147,18 +169,16 @@ def create_analysisrequest(client, request, values, analyses=None,
                 doActionFor(p, 'sample_due')
             doActionFor(sample, lowest_state)
 
-        # Transition pre-preserved partitions
-        for p in partitions:
-            if 'prepreserved' in p and p['prepreserved']:
-                part = p['object']
-                state = workflow.getInfoFor(part, 'review_state')
-                if state == 'to_be_preserved':
-                    doActionFor(part, 'preserve')
+    # Transition pre-preserved partitions
+    for p in partitions:
+        if 'prepreserved' in p and p['prepreserved']:
+            part = p['object']
+            doActionFor(part, 'preserve')
 
-        # Once the ar is fully created, check if there are rejection reasons
-        reject_field = values.get('RejectionReasons', '')
-        if reject_field and reject_field.get('checkbox', False):
-            doActionFor(ar, 'reject')
+    # Once the ar is fully created, check if there are rejection reasons
+    reject_field = values.get('RejectionReasons', '')
+    if reject_field and reject_field.get('checkbox', False):
+        doActionFor(ar, 'reject')
 
     return ar
 
