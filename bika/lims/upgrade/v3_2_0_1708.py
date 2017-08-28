@@ -9,6 +9,7 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 import transaction
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from Products.CMFCore.utils import getToolByName
 
@@ -30,6 +31,9 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
+
+    # importing toolset in order to add bika_catalog_report
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
 
     # Add missing Priority Index and Column to AR Catalog
     ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING,
