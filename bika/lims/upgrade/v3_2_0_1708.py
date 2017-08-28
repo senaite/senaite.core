@@ -44,6 +44,9 @@ def upgrade(tool):
     # Add missing Priority Index and Column to AR Catalog
     ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING,
                          'getPrioritySortkey', 'FieldIndex')
+    ut.addIndexAndColumn(CATALOG_ANALYSIS_LISTING,
+                         'getPrioritySortkey', 'FieldIndex')
+
     ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
