@@ -37,7 +37,7 @@
     sd                python:sample.getSamplingDate();
     SamplingDate      python:sd.Date() if sd else '';
     Deviation         python:sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '';
-    DateSampled       python:sample.getDateSampled() and sample.getDateSampled().Date();
+    DateSampled       python:sample.getDateSampled().Date() if sample.getDateSampled() else '';
     Composite         python:sample.getComposite();
     AdHoc             python:sample.getAdHoc();
     analyses          python:part.getAnalyses();
@@ -54,8 +54,8 @@
                 <td tal:content="Hazardous"/>
             </tr>
             <tr>
-                <th i18n:translate="">Sampling Date</th>
-                <td tal:content="SamplingDate"/>
+                <th i18n:translate="">Date Sampled</th>
+                <td tal:content="DateSampled"/>
                 <th i18n:translate="">Sampler</th>
                 <td tal:content="Sampler"/>
             </tr>

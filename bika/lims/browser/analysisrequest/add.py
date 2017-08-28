@@ -419,12 +419,14 @@ class ajaxAnalysisRequestSubmit():
         # in valid_states, all ars that pass validation will be stored
         valid_states = {}
         for arnum, state in nonblank_states.items():
+            secondary = False
             # Secondary ARs are a special case, these fields are not required
             if state.get('Sample', ''):
                 if 'SamplingDate' in required:
                     required.remove('SamplingDate')
                 if 'SampleType' in required:
                     required.remove('SampleType')
+                secondary = True
             # If this is not a Secondary AR, make sure that Sample Type UID is valid. This shouldn't
             # happen, but making sure just in case.
             else:
@@ -447,9 +449,30 @@ class ajaxAnalysisRequestSubmit():
                         .format(samplingdate)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
-                now = datetime.datetime.now()
-                if now < samp_date:
-                    msg = t(_("Sampling Date can't be future"))
+                today = date.today()
+                if not secondary and today > samp_date.date():
+                    msg = t(_("Expected Sampling Date can't be in the past"))
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
+            # If Sampling Date is not set, we are checking whether it is the user left it empty,
+            # or it is because we have Sampling Workflow Disabled
+            elif not self.context.bika_setup.getSamplingWorkflowEnabled():
+                # Date Sampled is required in this case
+                date_sampled = state.get('DateSampled', '')
+                if not date_sampled:
+                    msg = \
+                        "Date Sampled Field is required."
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
+                try:
+                    date_sampled = datetime.datetime.strptime(
+                        date_sampled.strip(), "%Y-%m-%d %H:%M")
+                except ValueError:
+                    print traceback.format_exc()
+                    msg =\
+                        "Bad time formatting: Getting '{}' but expecting an"\
+                        " string with '%Y-%m-%d %H:%M' format."\
+                        .format(date_sampled)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
             # fields flagged as 'hidden' are not considered required because

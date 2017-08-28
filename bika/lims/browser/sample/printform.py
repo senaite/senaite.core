@@ -115,7 +115,7 @@ class SamplesPrint(BrowserView):
         """
         ars = sample.getAnalysisRequests()
         for ar in ars:
-            contact = ar.getContactTitle()
+            contact = ar.getContactFullName()
             if contact not in contacts_list:
                 contacts_list.append(contact)
         contacts_list.sort()
@@ -255,7 +255,7 @@ class SamplesPrint(BrowserView):
                     'sample_id',
                     'sample_type',
                     'sampling_point',
-                    'date_sampled',
+                    'sampling_date',
                     'partition',
                     'container',
                     'analyses'],
@@ -272,7 +272,7 @@ class SamplesPrint(BrowserView):
                 'sample_id': _('Sample ID'),
                 'sample_type': _('Sample Type'),
                 'sampling_point': _('Sampling Point'),
-                'date_sampled': _('Date/Time Sampled'),
+                'sampling_date': _('Exp. Sampling Date'),
                 'partition': _('Partition'),
                 'container': _('Container'),
                 'analyses': _('Analysis'),
@@ -334,10 +334,10 @@ class SamplesPrint(BrowserView):
                                 ar.getSamplePoint().title
                                 if ar.getSamplePoint() else '',
                             },
-                        'date_sampled': {
+                        'sampling_date': {
                             'hidden': True if arcell else False,
                             'rowspan': numans,
-                            'value':  '',
+                            'value':  self.ulocalized_time(ar.getSamplingDate()),
                             },
                         'partition': {
                             'hidden': True if partcell else False,

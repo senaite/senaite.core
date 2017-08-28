@@ -152,12 +152,12 @@ class AnalysisRequestsView(BikaListingView):
             # 'AdHoc': {'title': _('Ad-Hoc'),
             #           'toggle': False},
             'SamplingDate': {
-                'title': _('Sampling Date'),
+                'title': _('Expected Sampling Date'),
                 'index': 'getSamplingDate',
-                'toggle': True},
+                'toggle': SamplingWorkflowEnabled},
             'getDateSampled': {
                 'title': _('Date Sampled'),
-                'toggle': SamplingWorkflowEnabled,
+                'toggle': True,
                 'input_class': 'datetimepicker_nofuture',
                 'input_width': '10'},
             'getDateVerified': {
@@ -907,15 +907,17 @@ class AnalysisRequestsView(BikaListingView):
         # TODO-performance: If SamplingWorkflowEnabled, we have to get the
         # full object to check the user permissions, so far this is
         # a performance hit.
-        if obj.getSamplingWorkflowEnabled and\
-                (not obj.getSamplingDate or not
-                    obj.getSamplingDate > DateTime()):
-            datesampled = self.ulocalized_time(
-                obj.getDateSampled, long_format=True)
-            if not datesampled:
+        if obj.getSamplingWorkflowEnabled:
+            # We don't do anything with Sampling Date. User can modify Sampling date
+            # inside AR view. In this listing view, we only let the user to edit Date Sampled
+            # and Sampler if he wants to make 'sample' transaction.
+            if not obj.getDateSampled:
                 datesampled = self.ulocalized_time(
                     DateTime(), long_format=True)
                 item['class']['getDateSampled'] = 'provisional'
+            else:
+                datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
+
             sampler = obj.getSampler
             if sampler:
                 item['replace']['getSampler'] = obj.getSamplerFullName
@@ -934,9 +936,10 @@ class AnalysisRequestsView(BikaListingView):
                     item['allow_edit'] = ['getSampler', 'getDateSampled']
                     # TODO-performance: hit performance while getting the
                     # sample object...
+                    # TODO Can LabManagers be a Sampler?!
                     samplers = getUsers(
                         full_object.getSample(),
-                        ['Sampler', 'LabManager', 'Manager'])
+                        ['Sampler', ])
                     username = self.member.getUserName()
                     users = [({
                         'ResultValue': u,
@@ -945,12 +948,12 @@ class AnalysisRequestsView(BikaListingView):
                     item['choices'] = {'getSampler': users}
                     Sampler = sampler and sampler or \
                         (username in samplers.keys() and username) or ''
-                    item['getSampler'] = Sampler
+                    sampler = Sampler
                 else:
-                    datesampled = ''
-                    sampler = ''
+                    datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
+                    sampler = obj.getSamplerFullName if obj.getSampler else ''
         else:
-            datesampled = ''
+            datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
             sampler = ''
         item['getDateSampled'] = datesampled
         item['getSampler'] = sampler

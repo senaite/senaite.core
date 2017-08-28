@@ -178,6 +178,17 @@ function AnalysisRequestAddByCol() {
             $(div).attr('id', 'archetypes-fieldname-' + fieldname + '-' + arnum)
         })
 
+        // If Sampling Workflow Enabled then We must hide Date Sampled Field.
+        // If Sampling Workflow Disabled then We must hide Sampling Dare Field.
+        if($("#bika_setup").attr("samplingwfenabled")){
+            $("tr[fieldname=DateSampled]").hide();
+        }else{
+            $("tr[fieldname=SamplingDate]").hide();
+            // Date Sampled is required in this case, display 'required' icon.
+            $("tr[fieldname=DateSampled]").find("em")
+                .before('<span class="fieldRequired" title="Required">&nbsp;</span>')
+        }
+
         // clear existing values (on page reload).
         $("#singleservice").val("")
         $("#singleservice").attr("uid", "new")
@@ -1516,7 +1527,7 @@ function AnalysisRequestAddByCol() {
                                   console.log('Selector #' + fieldname + '-' + arnum + ' not present in form')
                                   continue
                               }
-                              if(element.getAttribute("datetimepicker") && fieldvalue.indexOf(" ")==-1){
+                              if(element.getAttribute("datetimepicker") && fieldvalue && fieldvalue.indexOf(" ")==-1){
                                 fieldvalue = fieldvalue + " 00:00";
                               }
                               // here we go
