@@ -132,11 +132,11 @@ class SamplesView(BikaListingView):
                 'index': 'getSamplingDate',
                 'input_class': 'datetimepicker_nofuture autosave',
                 'input_width': '10',
-                'toggle': True},
+                'toggle': SamplingWorkflowEnabled},
             'DateSampled': {
                 'title': _('Date Sampled'),
                 'index': 'getDateSampled',
-                'toggle': SamplingWorkflowEnabled,
+                'toggle': True,
                 'input_class': 'datetimepicker_nofuture autosave',
                 'input_width': '10'},
             'getSampler': {
@@ -418,10 +418,7 @@ class SamplesView(BikaListingView):
         if after_icons:
             item['after']['getSampleID'] = after_icons
 
-        SamplingWorkflowEnabled =\
-            self.context.bika_setup.getSamplingWorkflowEnabled()
-
-        if SamplingWorkflowEnabled and (not sd or not sd > DateTime()):
+        if obj.getSamplingWorkflowEnabled():
             datesampled = self.ulocalized_time(
                 obj.getDateSampled(), long_format=True)
             if not datesampled:
@@ -435,8 +432,9 @@ class SamplesView(BikaListingView):
                 sampler = member.id
                 item['class']['getSampler'] = 'provisional'
         else:
-            datesampled = ''
+            datesampled = self.ulocalized_time(obj.getDateSampled(), long_format=True)
             sampler = ''
+
         item['DateSampled'] = datesampled
         item['getSampler'] = sampler
         # sampling workflow - inline edits for Sampler, Date Sampled and

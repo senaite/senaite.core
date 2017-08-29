@@ -1327,6 +1327,7 @@ div#semioverlay div.semioverlay-buttons input:hover {
         .ArchetypesPrioritySelectionWidget select[value="5"],
         .ArchetypesPrioritySelectionWidget select option[value="5"] {
             background-image: url(&dtml-portal_url;/++resource++bika.lims.images/lowest.svg); }
+
 .priority-ico {
     background-position: left top;
     background-repeat: no-repeat;
@@ -1349,6 +1350,18 @@ div#semioverlay div.semioverlay-buttons input:hover {
 
     .priority-ico.priority-5 {
         background-image: url(&dtml-portal_url;/++resource++bika.lims.images/lowest.svg); }
+
+/* Analysis Request fields table from Add form */
+table.analysisrequest.add {}
+    table.analysisrequest.add tr:hover td,
+    table.analysisrequest.add tr:hover th,
+    table.analysisrequest.add tr:hover td span,
+    table.analysisrequest.add tr:hover th span {
+        background-color: #fff9ee !important; }
+
+    table.analysisrequest.add tr:hover th,
+    table.analysisrequest.add tr:hover th span {
+        border-right:none; }
 
 .progress-bar-container {
     background-color: #efefef;

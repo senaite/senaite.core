@@ -58,11 +58,14 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         if action == "sample":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
+            dsfn='getDateSampled'
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
                     ar = obj
                     sample = obj.getSample()
                 else:
+                    # If it is a Sample, then fieldname is DateSampled
+                    dsfn='DateSampled'
                     sample = obj
                     ar = sample.aq_parent
                 # can't transition inactive items
@@ -71,10 +74,10 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
                 # grab this object's Sampler and DateSampled from the form
                 # (if the columns are available and edit controls exist)
-                if 'getSampler' in form and 'getDateSampled' in form:
+                if 'getSampler' in form and dsfn in form:
                     try:
                         Sampler = form['getSampler'][0][obj_uid].strip()
-                        DateSampled = form['getDateSampled'][0][obj_uid].strip()
+                        DateSampled = form[dsfn][0][obj_uid].strip()
                     except KeyError:
                         continue
                     Sampler = Sampler and Sampler or ''

@@ -26,11 +26,17 @@ $(document).ready(function(){
         timeFormat: "HH:mm",
         changeMonth:true,
         changeYear:true,
-        yearRange: "-100:+1"
+        yearRange: "-100:+2"
     });
 
     $('[datepicker_nofuture="1"]').live("click", function() {
         $(this).datepicker( "option", "maxDate", "0" )
+        .click(function(){$(this).attr("value", "");})
+        .focus();
+    });
+
+    $('[datepicker_nopast="1"]').live("click", function() {
+        $(this).datepicker( "option", "minDate", "0" )
         .click(function(){$(this).attr("value", "");})
         .focus();
     });

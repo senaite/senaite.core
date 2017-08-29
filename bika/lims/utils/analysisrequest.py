@@ -10,8 +10,7 @@ from bika.lims import logger
 from bika.lims.browser.analysisrequest.reject import \
     AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis, \
-    IRoutineAnalysis
+from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
 from bika.lims.utils import encode_header
@@ -19,19 +18,15 @@ from bika.lims.utils import createPdf
 from bika.lims.utils import attachPdf
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
-from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import doActionsFor
-from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import getReviewHistoryActionsList
 from copy import deepcopy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
-from os.path import join
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
-from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 import os
 import tempfile
 
@@ -139,6 +134,17 @@ def create_analysisrequest(client, request, values, analyses=None,
         # children) to fit with the Sample Partition's current state
         sampleactions = getReviewHistoryActionsList(sample)
         doActionsFor(ar, sampleactions)
+        # We need a workaround here in order to transition partitions.
+        # auto_no_preservation_required and auto_preservation_required are
+        # auto transitions applied to analysis requests, but partitions don't
+        # have them, so we need to replace them by the sample_workflow
+        # equivalent.
+        if 'auto_no_preservation_required' in sampleactions:
+            index = sampleactions.index('auto_no_preservation_required')
+            sampleactions[index] = 'sample_due'
+        elif 'auto_preservation_required' in sampleactions:
+            index = sampleactions.index('auto_preservation_required')
+            sampleactions[index] = 'to_be_preserved'
         # We need to transition the partition manually
         # Transition pre-preserved partitions
         for partition in partitions:

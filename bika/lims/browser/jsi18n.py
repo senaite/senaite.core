@@ -31,6 +31,6 @@ class i18njs(BaseView):
                 catalog = td._data[mo_path]._catalog
             catalog = catalog._catalog
             for key, val in catalog.iteritems():
-                if val:
+                if key and val:
                     _catalog[key] = val
         return _catalog
