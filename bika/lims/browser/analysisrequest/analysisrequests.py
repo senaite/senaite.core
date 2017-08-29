@@ -77,6 +77,9 @@ class AnalysisRequestsView(BikaListingView):
                 'title': '',
                 'index': 'getPrioritySortkey',
                 'sortable': True,},
+            'Progress': {
+                'title': 'Progress',
+                'toggle': True},
             'getRequestID': {
                 'title': _('Request ID'),
                 'attr': 'getId',
@@ -222,6 +225,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'reinstate'}],
              'custom_actions': [],
              'columns': ['Priority',
+                         'Progress',
                         'getRequestID',
                         'getSample',
                         'BatchID',
@@ -830,10 +834,30 @@ class AnalysisRequestsView(BikaListingView):
 
         analysesnum = obj.getAnalysesNum
         if analysesnum:
-            item['getAnalysesNum'] = \
-                str(analysesnum[0]) + '/' + str(analysesnum[1])
+            num_verified = str(analysesnum[0])
+            num_total = str(analysesnum[1])
+            item['getAnalysesNum'] = '{0}/{1}'.format(num_verified, num_total)
         else:
             item['getAnalysesNum'] = ''
+
+        # Progress
+        num_verified = 0
+        num_submitted = 0
+        if analysesnum and len(analysesnum) > 1:
+            num_verified = analysesnum[0]
+            num_total = analysesnum[1]
+            num_submitted = num_total - num_verified
+            if len(analysesnum) > 2:
+                num_wo_results = analysesnum[2]
+                num_submitted = num_total - num_verified - num_wo_results
+        num_steps_total = num_total * 2
+        num_steps = (num_verified * 2) + (num_submitted)
+        progress_perc = (num_steps * 100) / num_steps_total
+        progress = '<div class="progress-bar-container">' + \
+                   '<div class="progress-bar" style="width:{0}%"></div>' + \
+                   '<div class="progress-perc">{0}%</div></div>'
+        item['replace']['Progress'] = progress.format(progress_perc)
+
         item['BatchID'] = obj.getBatchID
         if obj.getBatchID:
             item['replace']['BatchID'] = "<a href='%s'>%s</a>" % \
