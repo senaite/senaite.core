@@ -843,6 +843,7 @@ class AnalysisRequestsView(BikaListingView):
         # Progress
         num_verified = 0
         num_submitted = 0
+        num_total = 0
         if analysesnum and len(analysesnum) > 1:
             num_verified = analysesnum[0]
             num_total = analysesnum[1]
