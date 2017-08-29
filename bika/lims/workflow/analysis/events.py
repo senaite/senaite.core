@@ -24,6 +24,10 @@ def after_submit(obj):
     if ws:
         doActionFor(ws, 'submit')
 
+    request = obj.getRequest()
+    if request:
+        request.reindexObject()
+
 
 def after_retract(obj):
     """Function triggered after a 'retract' transition for the analysis passed
@@ -70,6 +74,10 @@ def after_retract(obj):
     for dependent in dependents:
         doActionFor(dependent, 'retract')
 
+    request = obj.getRequest()
+    if request:
+        request.reindexObject()
+
 
 def after_verify(obj):
     """
@@ -102,6 +110,11 @@ def after_verify(obj):
     if ws:
         doActionFor(ws, 'verify')
 
+    request = obj.getRequest()
+    if request:
+        request.reindexObject()
+
+
 
 def after_cancel(obj):
     if skip(obj, "cancel"):
@@ -114,6 +127,9 @@ def after_cancel(obj):
         skip(obj, "cancel", unskip=True)
         ws.removeAnalysis(obj)
     obj.reindexObject()
+    request = obj.getRequest()
+    if request:
+        request.reindexObject()
 
 
 def after_reject(obj):
@@ -126,7 +142,9 @@ def after_reject(obj):
         ws = obj.getWorksheet()
         ws.removeAnalysis(obj)
     obj.reindexObject()
-
+    request = obj.getRequest()
+    if request:
+        request.reindexObject()
 
 def after_attach(obj):
     if skip(obj, "attach"):
@@ -164,3 +182,6 @@ def after_attach(obj):
             if can_attach:
                 workflow.doActionFor(ws, "attach")
     obj.reindexObject()
+    ar = obj.getRequest()
+    if ar:
+        ar.reindexObject()
