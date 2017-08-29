@@ -228,11 +228,11 @@ class Report(BrowserView):
 
                 in_range = a['result_in_range']
                 # result out of range
-                if str(in_range[0]) == 'False':
+                if str(in_range) == 'False':
                     out_of_range_count += 1
                     a['Result'] = "%s %s" % (a['Result'], error_icon)
                 # result almost out of range
-                if str(in_range[0]) == '1':
+                if str(in_range) == '1':
                     in_shoulder_range_count += 1
                     a['Result'] = "%s %s" % (a['Result'], warning_icon)
 

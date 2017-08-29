@@ -32,7 +32,7 @@
     client_sample_id  python:sample.getClientSampleID();
     preservation      python:part.getPreservation() and part.getPreservation().Title() or '';
     container         python:part.getContainer() and part.getContainer().Title() or '';
-    date_sampled      python:sample.getDateSampled() and sample.getDateSampled().Date();
+    date_sampled      python:sample.getDateSampled().Date() if sample.getDateSampled() else '';
     analyses          python:part.getAnalyses();
     field_analyses    python:[analysis for analysis in analyses if analysis.getPointOfCapture()=='field'];
     show_partitions   python:context.bika_setup.getShowPartitions();
@@ -65,7 +65,7 @@
                 <td class="sample-type" tal:content="python: sample_type"></td>
             <tr>
             <tr>
-                <td class="sampling-date" tal:content="python: sampling_date"></td>
+                <td class="sampling-date" tal:content="python: date_sampled"></td>
             <tr>
         </table>
     </div>

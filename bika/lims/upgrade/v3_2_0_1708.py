@@ -8,19 +8,10 @@ from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from plone.api.portal import get_tool
-from Products.CMFCore.utils import getToolByName
 import transaction
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.utils import tmpID
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-
-from Products.CMFCore.Expression import Expression
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from Products.CMFCore.utils import getToolByName
-
-from bika.lims.catalog.report_catalog import bika_catalog_report_definition
-from bika.lims.catalog.report_catalog import CATALOG_REPORT_LISTING
 
 product = 'bika.lims'
 version = '3.2.0.1708'
@@ -41,10 +32,52 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
 
+    # importing toolset in order to add bika_catalog_report
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
+
     # Add missing Priority Index and Column to AR Catalog
     ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING,
                          'getPrioritySortkey', 'FieldIndex')
+    ut.addIndexAndColumn(CATALOG_ANALYSIS_LISTING,
+                         'getPrioritySortkey', 'FieldIndex')
+
     ut.refreshCatalogs()
+
+    # Replace empty 'DateSampled' field with 'SamplingDate' of ARs,
+    # which will take care of Samples as well.
+    set_ar_date_sampled_fields(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def set_ar_date_sampled_fields(portal):
+    """
+    For old ARs has been created in Sampling Workflow Disabled mode,
+    'Date Sampled' values are empty and 'Sampling Date' was "used" as 'Date Sampled'.
+    Copy 'SamplingDate' values to 'DateSampled' if necessary.
+    """
+    uc = getToolByName(portal, CATALOG_ANALYSIS_REQUEST_LISTING)
+    ars = uc(portal_type='AnalysisRequest')
+    counter = 0
+    tot_counter = 0
+    total = len(ars)
+    for ar in ars:
+        # Only the ARS which has Sampling Date but not Date Sampled fields
+        if not ar.getSamplingWorkflowEnabled and ar.getSamplingDate \
+                        and not ar.getDateSampled:
+            obj = ar.getObject()
+            sd = obj.getSamplingDate()
+            obj.setDateSampled(sd)
+            obj.reindexObject()
+            counter += 1
+
+        tot_counter += 1
+        if tot_counter % 500 == 0:
+            logger.info(
+                "Setting missing DateSampled values of "
+                "ARs: %d of %d" % (tot_counter, total))
+            transaction.commit()
+    logger.info(
+        "Done! 'DateSampled' field has been updated for %d "
+        "AnalysisRequest objects." % counter)
