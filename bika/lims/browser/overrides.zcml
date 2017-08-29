@@ -28,6 +28,14 @@
                 permission="zope.Public"
                 template="templates/plone-overview.pt"
             />
+
+            <browser:view
+                 for="*"
+                 name="jsi18n"
+                 class="jarn.jsi18n.view.i18njs"
+                 permission="zope2.View"
+             />
+
         </unconfigure>
     </configure>
 
