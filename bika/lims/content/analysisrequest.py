@@ -2441,8 +2441,6 @@ class AnalysisRequest(BaseFolder):
         """
         if self.getSamplingRound():
             return self.getSamplingRound().UID()
-        else:
-            return ''
 
     def setResultsRange(self, value=None):
         """Sets the spec values for this AR.
@@ -2516,7 +2514,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
-        return ''
 
     security.declarePublic('setSampler')
 
@@ -2539,7 +2536,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampler()
-        return ''
 
     security.declarePublic('setDateSampled')
 
@@ -2562,7 +2558,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getDateSampled()
-        return ''
 
     security.declarePublic('getDatePublished')
 
@@ -2586,7 +2581,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplePoint()
-        return ''
 
     security.declarePublic('setSampleType')
 
@@ -2602,7 +2596,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
-        return ''
 
     security.declarePublic('setClientReference')
 
@@ -2610,7 +2603,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             sample.setClientReference(value)
-        self.Schema()['ClientReference'].set(self, value)
+            self.Schema()['ClientReference'].set(self, value)
 
     security.declarePublic('getClientReference')
 
@@ -2618,7 +2611,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getClientReference()
-        return self.Schema().getField('ClientReference').get(self)
 
     security.declarePublic('setClientSampleID')
 
@@ -2626,7 +2618,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             sample.setClientSampleID(value)
-        self.Schema()['ClientSampleID'].set(self, value)
+            self.Schema()['ClientSampleID'].set(self, value)
 
     security.declarePublic('getClientSampleID')
 
@@ -2634,7 +2626,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getClientSampleID()
-        return self.Schema().getField('ClientSampleID').get(self)
 
     security.declarePublic('setSamplingDeviation')
 
@@ -2653,7 +2644,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDeviation()
-        return ''
 
     security.declarePublic('getSamplingDeviationTitle')
 
@@ -2664,7 +2654,6 @@ class AnalysisRequest(BaseFolder):
         sd = self.getSamplingDeviation()
         if sd:
             return sd.Title()
-        return ''
 
     security.declarePublic('getHazardous')
 
@@ -2686,7 +2675,6 @@ class AnalysisRequest(BaseFolder):
         contact = self.getContact()
         if contact:
             return contact.absolute_url_path()
-        return ''
 
     security.declarePublic('getSamplingWorkflowEnabled')
 
@@ -2697,7 +2685,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingWorkflowEnabled()
-        return ''
 
     security.declarePublic('setSampleCondition')
 
@@ -2705,7 +2692,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             sample.setSampleCondition(value)
-        self.Schema()['SampleCondition'].set(self, value)
+            self.Schema()['SampleCondition'].set(self, value)
 
     security.declarePublic('getSampleCondition')
 
@@ -2713,7 +2700,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleCondition()
-        return self.Schema().getField('SampleCondition').get(self)
 
     security.declarePublic('setEnvironmentalConditions')
 
@@ -2721,7 +2707,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             sample.setEnvironmentalConditions(value)
-        self.Schema()['EnvironmentalConditions'].set(self, value)
+            self.Schema()['EnvironmentalConditions'].set(self, value)
 
     security.declarePublic('getEnvironmentalConditions')
 
@@ -2729,7 +2715,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getEnvironmentalConditions()
-        return self.Schema().getField('EnvironmentalConditions').get(self)
 
     security.declarePublic('setComposite')
 
@@ -2737,7 +2722,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             sample.setComposite(value)
-        self.Schema()['Composite'].set(self, value)
+            self.Schema()['Composite'].set(self, value)
 
     security.declarePublic('getComposite')
 
@@ -2745,7 +2730,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getComposite()
-        return self.Schema().getField('Composite').get(self)
 
     security.declarePublic('setStorageLocation')
 
@@ -2761,14 +2745,14 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getStorageLocation()
-        return ''
+
     security.declarePublic('setAdHoc')
 
     def setAdHoc(self, value):
         sample = self.getSample()
         if sample:
             sample.setAdHoc(value)
-        self.Schema()['AdHoc'].set(self, value)
+            self.Schema()['AdHoc'].set(self, value)
 
     security.declarePublic('getAdHoc')
 
@@ -2776,7 +2760,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getAdHoc()
-        return self.Schema().getField('AdHoc').get(self)
 
     security.declarePublic('setScheduledSamplingSampler')
 
@@ -2784,7 +2767,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             sample.setScheduledSamplingSampler(value)
-        self.Schema()['ScheduledSamplingSampler'].set(self, value)
+            self.Schema()['ScheduledSamplingSampler'].set(self, value)
 
     security.declarePublic('getScheduledSamplingSampler')
 
@@ -2792,8 +2775,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getScheduledSamplingSampler()
-        return self.Schema() \
-            .getField('ScheduledSamplingSampler').get(self)
 
     def getSamplers(self):
         return getUsers(self, ['Sampler', ])
