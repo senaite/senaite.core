@@ -22,6 +22,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
 from collective.taskqueue import taskqueue
+import transaction
 import traceback
 
 
@@ -371,34 +372,23 @@ def ajax_form_error(errors, field=None, arnum=None, message=None):
     errors[error_key] = message
 
 
-class ajaxAnalysisRequestSubmitAsync():
-
-    def __call__(self):
-        #task_queue = queryUtility(ITaskQueue, name=queue_name)
-        #if task_queue is None:
-            # No async
-        #    pass
-        # taskqueue is available, create AR asynchronously
-        # task_queue.queue = Queue.Queue()
-        path = self.request.PATH_INFO
-        path = path.replace('_submit_async', '_submit')
-        taskqueue.add(path, method='POST', queue='ar-create')
-        return json.dumps({'success': 'With taskqueue'})
-
-
-class ajaxAnalysisRequestSubmit():
-    """Handle data submitted from analysisrequest add forms.  As much
-    as possible, the incoming json arrays should already match the requirement
-    of the underlying AR/sample schema.
-    """
+class AbstractAnalysisRequestSubmit():
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        self.valid_states = {}
         # Errors are aggregated here, and returned together to the browser
         self.errors = {}
 
     def __call__(self):
+        self.validate_form()
+        if self.errors:
+            return json.dumps({'errors': self.errors})
+
+        return self.process_form()
+
+    def validate_form(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
@@ -434,7 +424,7 @@ class ajaxAnalysisRequestSubmit():
                     break
 
         # in valid_states, all ars that pass validation will be stored
-        valid_states = {}
+        self.valid_states = {}
         for arnum, state in nonblank_states.items():
             secondary = False
             # Secondary ARs are a special case, these fields are not required
@@ -460,10 +450,10 @@ class ajaxAnalysisRequestSubmit():
                         samplingdate.strip(), "%Y-%m-%d %H:%M")
                 except ValueError:
                     print traceback.format_exc()
-                    msg =\
-                        "Bad time formatting: Getting '{}' but expecting an"\
-                        " string with '%Y-%m-%d %H:%M' format."\
-                        .format(samplingdate)
+                    msg = \
+                        "Bad time formatting: Getting '{}' but expecting an" \
+                        " string with '%Y-%m-%d %H:%M' format." \
+                            .format(samplingdate)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
                 today = date.today()
@@ -486,10 +476,10 @@ class ajaxAnalysisRequestSubmit():
                         date_sampled.strip(), "%Y-%m-%d %H:%M")
                 except ValueError:
                     print traceback.format_exc()
-                    msg =\
-                        "Bad time formatting: Getting '{}' but expecting an"\
-                        " string with '%Y-%m-%d %H:%M' format."\
-                        .format(date_sampled)
+                    msg = \
+                        "Bad time formatting: Getting '{}' but expecting an" \
+                        " string with '%Y-%m-%d %H:%M' format." \
+                            .format(date_sampled)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
             # fields flagged as 'hidden' are not considered required because
@@ -506,24 +496,44 @@ class ajaxAnalysisRequestSubmit():
                 ajax_form_error(self.errors, arnum=arnum, message=msg)
                 continue
             # This ar is valid!
-            valid_states[arnum] = state
+            self.valid_states[arnum] = state
 
         # - Expand lists of UIDs returned by multiValued reference widgets
         # - Transfer _uid values into their respective fields
-        for arnum in valid_states.keys():
-            for field, value in valid_states[arnum].items():
+        for arnum in self.valid_states.keys():
+            for field, value in self.valid_states[arnum].items():
                 if field.endswith('_uid') and ',' in value:
-                    valid_states[arnum][field] = value.split(',')
+                    self.valid_states[arnum][field] = value.split(',')
                 elif field.endswith('_uid'):
-                    valid_states[arnum][field] = value
+                    self.valid_states[arnum][field] = value
 
-        if self.errors:
-            return json.dumps({'errors': self.errors})
+    def process_form(self):
+        # To be implemented by child classes
+        pass
 
+
+class AsyncAnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
+
+    def process_form(self):
+        path = self.request.PATH_INFO
+        path = path.replace('_submit_async', '_submit')
+        taskqueue.add(path, method='POST', queue='ar-create')
+        transaction.commit()
+        return json.dumps({'success': 'With taskqueue'})
+
+
+class AnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
+    """Handle data submitted from analysisrequest add forms.  As much
+    as possible, the incoming json arrays should already match the requirement
+    of the underlying AR/sample schema.
+    """
+
+    def process_form(self):
         # Now, we will create the specified ARs.
+        portal_catalog = getToolByName(self.context, 'portal_catalog')
         ARs = []
         new_ar_uids = []
-        for arnum, state in valid_states.items():
+        for arnum, state in self.valid_states.items():
             # Create the Analysis Request
             ar = crar(
                 portal_catalog(UID=state['Client'])[0].getObject(),
