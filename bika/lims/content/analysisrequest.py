@@ -315,13 +315,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    ComputedField(
-        'BatchUID',
-        expression='here.getBatch().UID() if here.getBatch() else ""',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ReferenceField(
         'SamplingRound',
         allowed_types=('SamplingRound',),
@@ -1858,6 +1851,7 @@ class AnalysisRequest(BaseFolder):
         client = self.aq_parent
         return client.getProvince()
 
+    @security.public
     def getBatch(self):
         # The parent type may be "Batch" during ar_add.
         # This function fills the hidden field in ar_add.pt
@@ -1865,6 +1859,19 @@ class AnalysisRequest(BaseFolder):
             return self.aq_parent
         else:
             return self.Schema()['Batch'].get(self)
+
+    @security.public
+    def getBatchUID(self):
+        batch = self.getBatch()
+        if batch:
+            return batch.UID()
+
+    @security.public
+    def setBatch(self, value=None):
+        original_value = self.Schema().getField('Batch').get(self)
+        if original_value != value:
+            self.Schema().getField('Batch').set(self, value)
+            self._reindexAnalyses(['getBatchUID'], False)
 
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """
@@ -3000,8 +3007,10 @@ class AnalysisRequest(BaseFolder):
     def setPriority(self, value):
         if not value:
             value = self.Schema().getField('Priority').getDefault(self)
-        self.Schema().getField('Priority').set(self, value)
-        self._reindexAnalyses(['getPrioritySortkey'], True)
+        original_value = self.Schema().getField('Priority').get(self)
+        if original_value != value:
+            self.Schema().getField('Priority').set(self, value)
+            self._reindexAnalyses(['getPrioritySortkey'], True)
 
     @security.private
     def _reindexAnalyses(self, idxs=None, update_metadata=False):

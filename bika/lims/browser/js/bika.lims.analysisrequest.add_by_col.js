@@ -1773,10 +1773,11 @@ function AnalysisRequestAddByCol() {
             // Expand category
             var service = service_data[si]
             services.push(service)
-            var th = $("table[form_id='" + service['PointOfCapture'] + "'] " +
-                       "th[cat='" + service['CategoryTitle'] + "']")
-            if(expanded_categories.indexOf(th) < 0) {
-                expanded_categories.push(th)
+            var th_key = "table[form_id='" + service['PointOfCapture'] + "'] " +
+                       "th[cat='" + service['CategoryTitle'] + "']"
+            var th = $(th_key)
+            if(expanded_categories.indexOf(th_key) < 0) {
+                expanded_categories.push(th_key)
                 var def = $.Deferred()
                 def = category_header_expand_handler(th)
                 defs.push(def)

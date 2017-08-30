@@ -84,11 +84,11 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     workflow = getToolByName(instance, "portal_workflow")
     skipaction = skip(instance, action_id, peek=True)
     if skipaction:
-        clazzname = instance.__class__.__name__
-        msg = "Skipping transition '{0}': {1} '{2}'".format(action_id,
-                                                            clazzname,
-                                                            instance.getId())
-        logger.info(msg)
+        #clazzname = instance.__class__.__name__
+        #msg = "Skipping transition '{0}': {1} '{2}'".format(action_id,
+        #                                                    clazzname,
+        #                                                    instance.getId())
+        #logger.info(msg)
         return actionperformed, message
 
     if allowed_transition:
@@ -319,11 +319,8 @@ def wasTransitionPerformed(instance, transition_id):
     """Checks if the transition has already been performed to the object
     Instance's workflow history is checked.
     """
-    review_history = getReviewHistory(instance)
-    for event in review_history:
-        if event['action'] == transition_id:
-            return True
-    return False
+    transitions = getReviewHistoryActionsList(instance)
+    return transition_id in transitions
 
 
 def isActive(instance):
