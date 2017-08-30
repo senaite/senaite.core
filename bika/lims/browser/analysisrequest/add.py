@@ -21,6 +21,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
+from collective.taskqueue import taskqueue
 import traceback
 
 
@@ -368,6 +369,22 @@ def ajax_form_error(errors, field=None, arnum=None, message=None):
     else:
         error_key = 'Form Error'
     errors[error_key] = message
+
+
+class ajaxAnalysisRequestSubmitAsync():
+
+    def __call__(self):
+        #task_queue = queryUtility(ITaskQueue, name=queue_name)
+        #if task_queue is None:
+            # No async
+        #    pass
+        # taskqueue is available, create AR asynchronously
+        # task_queue.queue = Queue.Queue()
+        path = self.request.PATH_INFO
+        path = path.replace('_submit_async', '_submit')
+        taskqueue.add(path, method='POST', queue='ar-create')
+        return json.dumps({'success': 'With taskqueue'})
+
 
 class ajaxAnalysisRequestSubmit():
     """Handle data submitted from analysisrequest add forms.  As much

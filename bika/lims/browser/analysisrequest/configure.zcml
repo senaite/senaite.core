@@ -81,6 +81,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="ar_add_async"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="*"
       name="secondary_ar_sample_info"
       class="bika.lims.browser.analysisrequest.add.SecondaryARSampleInfo"
@@ -148,6 +156,14 @@
       for="*"
       name="analysisrequest_submit"
       class="bika.lims.browser.analysisrequest.add.ajaxAnalysisRequestSubmit"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_submit_async"
+      class="bika.lims.browser.analysisrequest.add.ajaxAnalysisRequestSubmitAsync"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
