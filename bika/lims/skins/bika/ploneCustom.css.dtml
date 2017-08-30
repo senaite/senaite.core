@@ -1363,4 +1363,21 @@ table.analysisrequest.add {}
     table.analysisrequest.add tr:hover th span {
         border-right:none; }
 
+.progress-bar-container {
+    background-color: #efefef;
+    border: 1px solid #c1c1c1;
+    border-radius: 3px;
+    height: 14px;
+    width: 50px;
+    margin-top:-2px;
+}
+    .progress-bar-container .progress-bar {
+        background-color: #a2d0ce;
+        height: inherit;
+    }
+    .progress-bar-container .progress-perc {
+        font-size: 0.85em;
+        margin-top: -15px;
+        width: inherit;
+        text-align:center; }
 </dtml-with>
