@@ -599,12 +599,18 @@ class BikaListingView(BrowserView):
         self.sort_order = self.request.get(form_id + '_sort_order', self.sort_order)
         self.manual_sort_on = self.request.get(form_id + '_manual_sort_on', None)
 
+        # When Column header with 'index' is clicked, we replace 'self.sort_on' value with its index to
+        # fill 'self.contentFilter'. sort_column_name variable will be used to reset
+        # 'self.sort_on' value to its initial value. 'sort_on' must always be a column name, otherwise
+        # GET_url generates malformed url.
+        sort_column_name = None
         if self.sort_on:
             if self.sort_on in self.columns.keys():
                if self.columns[self.sort_on].get('index', None):
                    self.request.set(form_id+'_sort_on', self.sort_on)
                    # The column can be sorted directly using an index
                    idx = self.columns[self.sort_on]['index']
+                   sort_column_name = self.sort_on
                    self.sort_on = idx
                    # Don't sort manually!
                    self.manual_sort_on = None
@@ -643,6 +649,8 @@ class BikaListingView(BrowserView):
         self.contentFilter['sort_order'] = self.sort_order
         if self.sort_on:
             self.contentFilter['sort_on'] = self.sort_on
+            if sort_column_name:
+                self.sort_on = sort_column_name
 
         # pagesize
         pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
