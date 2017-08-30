@@ -23,6 +23,8 @@ from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from collective.taskqueue.interfaces import ITaskQueue
+from zope.component import getUtility
 from datetime import datetime, date
 import json
 
@@ -55,7 +57,6 @@ class AnalysisRequestsView(BikaListingView):
             self.view_url = self.view_url + "/analysisrequests"
 
         self.allow_edit = True
-
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -1024,6 +1025,10 @@ class AnalysisRequestsView(BikaListingView):
                          "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
                          t(_("Cannot verify: Submitted by current user"))
         return item
+
+    def pending_tasks(self):
+        task_queue = getUtility(ITaskQueue, name='ar-create')
+        return len(task_queue)
 
     @property
     def copy_to_new_allowed(self):

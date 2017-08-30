@@ -69,6 +69,24 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
+	<tal:queued define="num_tasks python:view.pending_tasks()"
+		 condition="python: num_tasks &gt; 0">
+		 <script type="text/javascript">
+		 	(function( $ ) {
+			$(document).ready(function(){
+				$('.queued-items').not(':visible').slideDown();
+			});
+			}(jQuery));
+		 </script>
+		 <div class="queued-items" style="display:none;">
+			 <span i18n:translate=''>
+				 There are <span class="queued-items-number"
+					   tal:content='python: num_tasks'
+					   i18n:name='num'/> jobs in queue for the creation of new Analysis Requests
+			 </span>.&nbsp;
+			 <a href='' i18n:translate='' class="button">Refresh</a>
+		 </div>
+	</tal:queued>
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
 
