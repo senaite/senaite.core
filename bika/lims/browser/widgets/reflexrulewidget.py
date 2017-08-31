@@ -266,6 +266,9 @@ class ReflexRuleWidget(RecordsWidget):
             # Getting the visibility in report
             showinreport_key = 'showinreport-'+str(a_count)
             showinreport = raw_set.get(showinreport_key, '')
+            # Getting the analysis to show or hide in report
+            setvisibilityof_key = 'setvisibilityof-'+str(a_count)
+            setvisibilityof = raw_set.get(setvisibilityof_key, '')
             # Building the action dict
             action_dict = {
                 'action': raw_set[key],
@@ -278,6 +281,7 @@ class ReflexRuleWidget(RecordsWidget):
                 'setresultvalue': setresultvalue,
                 'an_result_id': local_id,
                 'showinreport': showinreport,
+                'setvisibilityof': setvisibilityof,
                 }
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
@@ -431,7 +435,8 @@ class ReflexRuleWidget(RecordsWidget):
         return DisplayList([
             ('repeat', 'Repeat'),
             ('duplicate', 'Duplicate'),
-            ('setresult', 'Set result')])
+            ('setresult', 'Set result'),
+            ('setvisibility', 'Set Visibility')])
 
     def getShowInRepVoc(self):
         """

@@ -62,6 +62,7 @@ jQuery(function($){
         });
         // Setting up the selected analysis services outside the main rule
         setup_as(setupdata);
+        setup_svof(setupdata);
         // Setting up the worksheet templates select options
         setup_worksheettemplate(setupdata);
     });
@@ -556,6 +557,27 @@ jQuery(function($){
         });
     }
 
+    function setup_svof(setupdata){
+        /**
+        */
+        var rules = setupdata.saved_actions.rules;
+        var rulescontainers = $('td.rulescontainer');
+
+        $.each(rulescontainers,function(index1, element1){
+            var action_set_div = $(element1).find('div[id^="ReflexRules-actionsset-"]');
+            var action_divs = $(action_set_div).find('div[class="action"]');
+            var actions = rules[index1].actions;
+
+            $.each(action_divs,function(index2, element2){
+                var sv_select = $(element2).find('select[id^="ReflexRules-setvisibilityof-"]');
+                sv = actions[index2].setvisibilityof;
+                $(sv_select).find('option[value="'+ sv + '"]')
+                    .prop("selected", true);
+            });
+
+        });
+    }
+
     /**
      * This function looks for all worksheet template 'select' elements and
      * selects their option takeing in consideration the setupdata.
@@ -641,6 +663,7 @@ jQuery(function($){
             // Showing the analyst-section div
             var action_define_div = $(action_div).find('div.action_define_result');
             $(action_define_div).css('display', 'inline');
+            $(action_div).find('div.action_define_visibility').hide();
             $(action_div).find('div.to_other_worksheet').hide();
             $(action_div)
                 .find('div.to_other_worksheet')
@@ -668,12 +691,26 @@ jQuery(function($){
                 $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                     .first().val('');}
         }
+        else if(selection=="setvisibility"){
+            // Hide the temporary ID for this analysis
+            $(action_div).find('input[id^=ReflexRules-an_result_id-]').hide();
+            $(action_div).find('div.action_define_result').hide();
+            $(action_div).find('div.to_other_worksheet').hide();$(action_div)
+                .find('div.to_other_worksheet')
+                .find('select[id^="ReflexRules-otherWS-"]').find(":selected")
+                .prop("selected", false);
+            $(action_div).find('div.action_define_visibility').show();
+            local_id = $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val();
+            update_analysis_selectors();
+        }
         else{
             // Show the temporary ID of the analysis to be generated
             $(action_div).find('input[id^=ReflexRules-an_result_id-]').show();
             // Hide the options-set
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
             $(action_div).find('div.action_define_result').hide();
+            $(action_div).find('div.action_define_visibility').hide();
             if (!first_setup){
                 local_id = new_localid(selection);
                 $(action_div).find("input[id^='ReflexRules-an_result_id-']")
@@ -807,6 +844,35 @@ jQuery(function($){
                 prevtr = $(prevtr).prev();
             }
             // Sort the options and add them to the selection list
+            options = options.sort();
+            $(element).append(options.join(''));
+        });
+
+        update_visibility_selectors();
+    }
+
+    function update_visibility_selectors() {
+        // Getting the selectors from the containers.
+        var selectors = $("select[id^='ReflexRules-setvisibilityof-']");
+        $.each($(selectors), function(index, element){
+            var options = [];
+            var selected = $('#'+$(element).attr('id')+" :selected").text();
+            $(element).find('option').remove();
+            // We fetch the local-ids from previous rows (rules)
+            var prevtr = $(element).closest('tr').prev();
+            while ($(prevtr).hasClass('records_row_ReflexRules')) {
+                $(prevtr).find('.derivative-id').each(function(index, el2) {
+                    var did = $(el2).val();
+                    if (did !== '') {
+                        var optd = did == selected ? " selected" : "";
+                        options.push('<option value="'+did+'"'+optd+'>'+did+'</option>');
+                    }
+                });
+                prevtr = $(prevtr).prev();
+            }
+            // Add Original analysis to the list,
+            // sort the options and add them to the selection list
+            options.push('<option value="original">Original Analysis</option>');
             options = options.sort();
             $(element).append(options.join(''));
         });

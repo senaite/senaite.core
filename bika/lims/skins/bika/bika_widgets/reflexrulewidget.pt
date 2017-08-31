@@ -308,6 +308,23 @@
                                     value python:widget.getReflexRuleActionElement(idx, act_row_idx, 'setresultvalue');"
                                     i18n:domain="python:i18n_domain">
                         </div>
+                        <div class="action_define_visibility inline">
+                            <span i18n:translate="" class="reflex_rule_text"> of </span>
+                            <!-- Define to which analysis to show or to hide
+                            (repeating the analysis) -->
+                            <select
+                                tal:define="
+                                    act_row_idx python:action_row['act_row_idx'];"
+                                tal:attributes="
+                                    name string:${fieldName}.setvisibilityof-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-setvisibilityof-${repeat/idx/index}-${act_row_idx};
+                                    tabindex tabindex/next|nothing;"
+                                    i18n:domain="python:i18n_domain">
+                                <option
+                                    i18n:translate=""/>
+                            </select>
+                            <span i18n:translate="" class="reflex_rule_text">as</span>
+                        </div>
                         <div class="to_other_worksheet inline">
                             <!-- Other worksheet selector -->
                             <select
