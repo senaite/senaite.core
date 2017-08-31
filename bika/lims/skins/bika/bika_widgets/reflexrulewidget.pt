@@ -371,6 +371,23 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="show_in_report inline">
+                            <select
+                                tal:define="
+                                    act_row_idx python:action_row['act_row_idx'];
+                                    olist widget/getShowInRepVoc"
+                                tal:attributes="
+                                    name string:${fieldName}.showinreport-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-showinreport-${repeat/idx/index}-${act_row_idx};">
+                                <option
+                                    tal:repeat="option olist"
+                                    tal:content="python:olist.getValue(option)"
+                                    tal:attributes="
+                                        value python: option;
+                                        selected python:'selected' if option==action_row['action'] else None"
+                                    i18n:translate=""/>
+                            </select>
+                        </div>
                         <!-- delete action-->
                         <img class="action_deletebtn"
                             tal:attributes="

@@ -153,6 +153,7 @@ class ReflexRuleWidget(RecordsWidget):
         }
         """
         keys = raw_data.keys()
+        import pdb; pdb.set_trace()
         # 'formatted_action_row' is the dict which will be added in the
         # 'value' list
         formatted_set = {}
@@ -428,6 +429,14 @@ class ReflexRuleWidget(RecordsWidget):
             ('repeat', 'Repeat'),
             ('duplicate', 'Duplicate'),
             ('setresult', 'Set result')])
+
+    def getShowInRepVoc(self):
+        """
+        Return the different Visibility in Report values.
+        """
+        return DisplayList([
+            ('visible', 'Show in Report'),
+            ('invisible', 'Hide In Report')])
 
     def getAndOrVoc(self):
         """
