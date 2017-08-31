@@ -153,7 +153,6 @@ class ReflexRuleWidget(RecordsWidget):
         }
         """
         keys = raw_data.keys()
-        import pdb; pdb.set_trace()
         # 'formatted_action_row' is the dict which will be added in the
         # 'value' list
         formatted_set = {}
@@ -264,6 +263,9 @@ class ReflexRuleWidget(RecordsWidget):
             # Getting the local analysis id
             worksheettemplate_key = 'worksheettemplate-'+str(a_count)
             worksheettemplate = raw_set.get(worksheettemplate_key, '')
+            # Getting the visibility in report
+            showinreport_key = 'showinreport-'+str(a_count)
+            showinreport = raw_set.get(showinreport_key, '')
             # Building the action dict
             action_dict = {
                 'action': raw_set[key],
@@ -275,6 +277,7 @@ class ReflexRuleWidget(RecordsWidget):
                 'setresultdiscrete': setresultdiscrete,
                 'setresultvalue': setresultvalue,
                 'an_result_id': local_id,
+                'showinreport': showinreport,
                 }
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)

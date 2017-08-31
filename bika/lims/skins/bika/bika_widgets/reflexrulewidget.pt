@@ -384,7 +384,7 @@
                                     tal:content="python:olist.getValue(option)"
                                     tal:attributes="
                                         value python: option;
-                                        selected python:'selected' if option==action_row['action'] else None"
+                                        selected python:'selected' if option==action_row.get('showinreport', '') else None"
                                     i18n:translate=""/>
                             </select>
                         </div>
