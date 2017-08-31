@@ -1189,11 +1189,8 @@ class AnalysisRequestDigester:
                 full_objects=True, review_state=analysis_states):
 
             # Omit hidden analyses?
-            if not showhidden:
-                asets = ar.getAnalysisServiceSettings(an.getServiceUID())
-                if asets.get('hidden'):
-                    # Hide analysis
-                    continue
+            if not showhidden and an.getHidden():
+                continue
 
             # Build the analysis-specific dict
             andict = self._analysis_data(an, dm)
