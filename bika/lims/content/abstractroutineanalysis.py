@@ -448,9 +448,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         If the value for the field HiddenManually is set to True, this function
         will return the value of the field Hidden.
         :return: true or false
+        :rtype: bool
         """
         if self.getHiddenManually():
-            return self.getSchema().getField('Hidden').get(self)
+            return self.getField('Hidden').get(self)
         request = self.getRequest()
         if request:
             service_uid = self.getServiceUID()
@@ -467,11 +468,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         criteria set at Analysis Request, Template or Profile levels (see
         field AnalysisServiceSettings from Analysis Request. To achieve this
         behavior, this setter also sets the value to HiddenManually to true.
-        :param hidden: true if the analysis must be hidden in results
-        :rtype hidden: bool
+        :param hidden: true if the analysis must be hidden in report
+        :type hidden: bool
         """
         self.setHiddenManually(True)
-        self.Schema().getField('Hidden').set(self, hidden)
+        self.getField('Hidden').set(self, hidden)
 
     @security.public
     def setReflexAnalysisOf(self, analysis):
