@@ -443,6 +443,7 @@ class ReflexRuleWidget(RecordsWidget):
         Return the different Visibility in Report values.
         """
         return DisplayList([
+            ('default', 'Visibility (default)'),
             ('visible', 'Show in Report'),
             ('invisible', 'Hide In Report')])
 

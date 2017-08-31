@@ -24,6 +24,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 import sys
+from Products.CMFCore.interfaces import ISiteRoot
 
 schema = BikaSchema.copy() + Schema((
     # Methods associated to the Reflex rule
@@ -82,29 +83,6 @@ class ReflexRule(BaseContent):
                  for i in bsc(portal_type='Method', inactive_state='active')]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
-
-    @security.private
-    def _fetch_analysis_for_local_id(self, analysis, ans_cond):
-        """
-        This function returns an analysis when the derivative IDs conditions
-        are met.
-        :analysis: the analysis full object which we want to obtain the
-            rules for.
-        :ans_cond: the local id with the target derivative reflex rule id.
-        """
-        # Getting the first reflexed analysis from the chain
-        first_reflexed = analysis.getOriginalReflexedAnalysis()
-        # Getting all reflexed analysis created due to this first analysis
-        derivatives_brains = self.analyses_catalog(
-            getOriginalReflexedAnalysisUID=first_reflexed.UID()
-        )
-        # From all the related reflexed analysis, return the one that matches
-        # with the local id 'ans_cond'
-        for derivative in derivatives_brains:
-            derivative = derivative.getObject()
-            if derivative.getReflexRuleLocalID() == ans_cond:
-                return derivative
-        return None
 
     @security.private
     def _areConditionsMet(self, action_set, analysis, forceuid=False):
@@ -206,7 +184,7 @@ class ReflexRule(BaseContent):
                 # (e.g dup-2) and get its analysis object in order to compare
                 # the results of the 'analysis variable' with the analysis
                 # object obtained here
-                curranalysis = self._fetch_analysis_for_local_id(
+                curranalysis = _fetch_analysis_for_local_id(
                     analysis, ans_cond)
             else:
                 # if the local_id of the 'analysis' is the same as the
@@ -287,6 +265,29 @@ class ReflexRule(BaseContent):
 atapi.registerType(ReflexRule, PROJECTNAME)
 
 
+def _fetch_analysis_for_local_id(analysis, ans_cond):
+    """
+    This function returns an analysis when the derivative IDs conditions
+    are met.
+    :analysis: the analysis full object which we want to obtain the
+        rules for.
+    :ans_cond: the local id with the target derivative reflex rule id.
+    """
+    # Getting the first reflexed analysis from the chain
+    first_reflexed = analysis.getOriginalReflexedAnalysis()
+    # Getting all reflexed analysis created due to this first analysis
+    analyses_catalog = getToolByName(analysis, CATALOG_ANALYSIS_LISTING)
+    derivatives_brains = analyses_catalog(
+        getOriginalReflexedAnalysisUID=first_reflexed.UID()
+    )
+    # From all the related reflexed analysis, return the one that matches
+    # with the local id 'ans_cond'
+    for derivative in derivatives_brains:
+        derivative = derivative.getObject()
+        if derivative.getReflexRuleLocalID() == ans_cond:
+            return derivative
+    return None
+
 def doActionToAnalysis(base, action):
     """
     This functions executes the action against the analysis.
@@ -299,7 +300,14 @@ def doActionToAnalysis(base, action):
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
     action_rule_name = ''
-    if action.get('action', '') == 'repeat' and state != 'retracted':
+    if action.get('action', '') == 'setvisibility':
+        action_rule_name = 'Visibility set'
+        target_analysis = action.get('setvisibilityof', '')
+        if target_analysis == "original":
+            analysis = base
+        else:
+            analysis = _fetch_analysis_for_local_id(base, target_analysis)
+    elif action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
         # one (always working with the same sample). It'll do a retract
@@ -337,6 +345,12 @@ def doActionToAnalysis(base, action):
     analysis.setReflexRuleActionsTriggered(
         base.getReflexRuleActionsTriggered()
     )
+    if action.get('showinreport', '') == "invisible":
+        visibility = False
+        analysis.setHidden(visibility)
+    elif action.get('showinreport', '') == "visible":
+        visibility = True
+        analysis.setHidden(visibility)
     # Setting the original reflected analysis
     if base.getOriginalReflexedAnalysis():
         analysis.setOriginalReflexedAnalysis(
