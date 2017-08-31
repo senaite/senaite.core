@@ -22,6 +22,8 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
 from collective.taskqueue import taskqueue
+from collective.taskqueue.interfaces import ITaskQueue
+from zope.component import queryUtility
 import transaction
 import traceback
 
@@ -512,16 +514,6 @@ class AbstractAnalysisRequestSubmit():
         pass
 
 
-class AsyncAnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
-
-    def process_form(self):
-        path = self.request.PATH_INFO
-        path = path.replace('_submit_async', '_submit')
-        taskqueue.add(path, method='POST', queue='ar-create')
-        transaction.commit()
-        return json.dumps({'success': 'With taskqueue'})
-
-
 class AnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
     """Handle data submitted from analysisrequest add forms.  As much
     as possible, the incoming json arrays should already match the requirement
@@ -564,6 +556,23 @@ class AnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
             })
         else:
             return json.dumps({'success': message})
+
+
+class AsyncAnalysisRequestSubmit(AnalysisRequestSubmit):
+
+    def process_form(self):
+        # Only load asynchronously if queue ar-create is available
+        task_queue = queryUtility(ITaskQueue, name='ar-create')
+        if task_queue:
+            # ar-create queue registered, create asynchronously
+            path = self.request.PATH_INFO
+            path = path.replace('_submit_async', '_submit')
+            taskqueue.add(path, method='POST', queue='ar-create')
+            transaction.commit()
+            return json.dumps({'success': 'With taskqueue'})
+        else:
+            # ar-create queue not registered. Proceed synchronously
+            return AnalysisRequestSubmit.process_form(self)
 
 
 @deprecated(comment="[160525] bika.lims.browser.analysisrequest.add."

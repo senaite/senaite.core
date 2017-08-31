@@ -24,7 +24,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from collective.taskqueue.interfaces import ITaskQueue
-from zope.component import getUtility
+from zope.component import queryUtility
 from datetime import datetime, date
 import json
 
@@ -1027,8 +1027,10 @@ class AnalysisRequestsView(BikaListingView):
         return item
 
     def pending_tasks(self):
-        task_queue = getUtility(ITaskQueue, name='ar-create')
-        return len(task_queue)
+        task_queue = queryUtility(ITaskQueue, name='ar-create')
+        if task_queue:
+            return len(task_queue)
+        return 0
 
     @property
     def copy_to_new_allowed(self):
