@@ -14,6 +14,7 @@ from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import isActive
@@ -137,6 +138,12 @@ class AnalysesView(BikaListingView):
                 'title': _('Due Date'),
                 'index': 'getDueDate',
                 'sortable': False},
+            'Hidden': {
+                'title': _('Hidden'),
+                'toggle': True,
+                'sortable': False,
+                'input_class': 'autosave',
+                'type': 'boolean'},
         }
 
         self.review_states = [
@@ -154,7 +161,8 @@ class AnalysesView(BikaListingView):
                          'Uncertainty',
                          'CaptureDate',
                          'DueDate',
-                         'state_title']
+                         'state_title',
+                         'Hidden']
              },
         ]
         if not context.bika_setup.getShowPartitions():
@@ -914,6 +922,23 @@ class AnalysesView(BikaListingView):
                 t(_('It comes form a reflex rule'))
             ))
         item['after']['Service'] = '&nbsp;'.join(after_icons)
+
+
+        # Users that can Add Analyses to an Analysis Request must be able to
+        # set the visibility of the analysis in results report, also if the
+        # current state of the Analysis Request (e.g. verified) does not allow
+        # the edition of other fields. Note that an analyst has no privileges
+        # by default to edit this value, cause this "visibility" field is
+        # related with results reporting and/or visibility from the client side.
+        # This behavior only applies to routine analyses, the visibility of QC
+        # analyses is managed in publish and are not visible to clients.
+        if 'Hidden' in self.columns:
+            # TODO Performance. Use brain instead
+            full_obj = full_obj if full_obj else obj.getObject()
+            item['Hidden'] = full_obj.getHidden()
+            if IRoutineAnalysis.providedBy(full_obj):
+                    item['allow_edit'].append('Hidden')
+
         return item
 
     def folderitems(self):
@@ -943,6 +968,17 @@ class AnalysesView(BikaListingView):
                 can_edit_analyses = checkPermission(EditResults, self.context)
             self.allow_edit = can_edit_analyses
         self.show_select_column = self.allow_edit
+
+        # Users that can Add Analyses to an Analysis Request must be able to
+        # set the visibility of the analysis in results report, also if the
+        # current state of the Analysis Request (e.g. verified) does not allow
+        # the edition of other fields. Note that an analyst has no privileges
+        # by default to edit this value, cause this "visibility" field is
+        # related with results reporting and/or visibility from the client side.
+        # This behavior only applies to routine analyses, the visibility of QC
+        # analyses is managed in publish and are not visible to clients.
+        if not self.mtool.checkPermission(AddAnalysis, self.context):
+            self.remove_column('Hidden')
 
         self.categories = []
         # Getting the multi-verification type of bika_setup

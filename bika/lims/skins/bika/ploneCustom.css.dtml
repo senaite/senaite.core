@@ -1031,11 +1031,13 @@ h2 a.add-button {
     padding: 5px 20px 20px 70px;
 }
 div#viewlet-above-content-title #panel-notification {
-    left: 0;
-    margin: 100px;
-    padding: 0 280px;
-    position: absolute;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 1000;
+    border: 1px solid #efefef;
+    box-shadow: 1px 1px 10px #fff;
 }
 div#viewlet-above-content-title #panel-notification div.error-notification-item {
     background: url("/Plone/++resource++bika.lims.images/warning.png") no-repeat scroll 15px center #fff680;

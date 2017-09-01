@@ -813,6 +813,14 @@ class BikaListingView(BrowserView):
         """
         pass
 
+    def remove_column(self, column):
+        """Removes the column passed-in, if exists"""
+        if column in self.columns:
+            del self.columns[column]
+            for item in self.review_states:
+                if column in item.get('columns', []):
+                    item['columns'].remove(column)
+
     def __call__(self):
         """ Handle request parameters and render the form."""
 

@@ -674,6 +674,9 @@ function BikaListingTableView() {
          */
         var fieldvalue, fieldname, requestdata={}, uid, tr;
         fieldvalue = $(pointer).val();
+        if ($(pointer).is(':checkbox')) {
+            fieldvalue = $(pointer).is(':checked');
+        }
         fieldname = $(pointer).attr('field');
         tr = $(pointer).closest('tr');
         uid = $(pointer).attr('uid');
@@ -689,7 +692,6 @@ function BikaListingTableView() {
         var url = window.location.href.replace('/base_view', '');
         // Staff for the notification
         var name = $(tr).attr('title');
-        var anch =  "<a href='"+ url + "'>" + name + "</a>";
         $.ajax({
             type: "POST",
             url: window.portal_url+"/@@API/update",
@@ -698,18 +700,18 @@ function BikaListingTableView() {
         .done(function(data) {
             //success alert
             if (data != null && data['success'] == true) {
-                bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', "succeed");
+                bika.lims.SiteView.notificationPanel(name + ' updated successfully', "succeed");
             } else {
-                bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
-                var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+                bika.lims.SiteView.notificationPanel('Error while updating ' + name, "error");
+                var msg = 'Error while updating ' + name;
                 console.warn(msg);
                 window.bika.lims.error(msg);
             }
         })
         .fail(function(){
             //error
-            bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
-            var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+            bika.lims.SiteView.notificationPanel('Error while updating ' + name, "error");
+            var msg = 'Error while updating ' + name;
             console.warn(msg);
             window.bika.lims.error(msg);
         });
