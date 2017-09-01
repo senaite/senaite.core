@@ -557,18 +557,24 @@ jQuery(function($){
         });
     }
 
+    /**
+     * This function handles 'setvisibilityof' select elements' selected value
+     * Parses setup data, and makes the proper option be selected.
+     * @param {string} setupdata an object containing the setup data.
+     */
     function setup_svof(setupdata){
-        /**
-        */
         var rules = setupdata.saved_actions.rules;
         var rulescontainers = $('td.rulescontainer');
 
         $.each(rulescontainers,function(index1, element1){
             var action_set_div = $(element1).find('div[id^="ReflexRules-actionsset-"]');
+            // 'action_divs' are "lines" of each 'action_set_div'.
             var action_divs = $(action_set_div).find('div[class="action"]');
+            // This actions variable is actually actions sets.
             var actions = rules[index1].actions;
 
             $.each(action_divs,function(index2, element2){
+                // Now from each "line", we are getting select element.
                 var sv_select = $(element2).find('select[id^="ReflexRules-setvisibilityof-"]');
                 sv = actions[index2].setvisibilityof;
                 $(sv_select).find('option[value="'+ sv + '"]')
@@ -694,11 +700,13 @@ jQuery(function($){
         else if(selection=="setvisibility"){
             // Hide the temporary ID for this analysis
             $(action_div).find('input[id^=ReflexRules-an_result_id-]').hide();
+            // Hide fields of the other actions
             $(action_div).find('div.action_define_result').hide();
             $(action_div).find('div.to_other_worksheet').hide();$(action_div)
                 .find('div.to_other_worksheet')
                 .find('select[id^="ReflexRules-otherWS-"]').find(":selected")
                 .prop("selected", false);
+            // Show analysis id selector
             $(action_div).find('div.action_define_visibility').show();
             local_id = $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                 .first().val();
@@ -847,10 +855,15 @@ jQuery(function($){
             options = options.sort();
             $(element).append(options.join(''));
         });
-
+        // Now update analysis selectors of 'setvisibility' actions.
         update_visibility_selectors();
     }
 
+    /**
+     * This function updates analysis local ids in 'setvisibilityof' options list.
+     * Onnly ids form previous containers can be added. Also adding 'Orginial Analysis'
+     * since it doesn't have a local id.
+     */
     function update_visibility_selectors() {
         // Getting the selectors from the containers.
         var selectors = $("select[id^='ReflexRules-setvisibilityof-']");
