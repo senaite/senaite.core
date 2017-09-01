@@ -21,7 +21,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
-from collective.taskqueue import taskqueue
 from collective.taskqueue.interfaces import ITaskQueue
 from zope.component import queryUtility
 import transaction
@@ -561,18 +560,32 @@ class AnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
 class AsyncAnalysisRequestSubmit(AnalysisRequestSubmit):
 
     def process_form(self):
+
+        # We want to first know the total number of analyses to be created
+        num_analyses = 0
+        uids_arr = [ar.get('Analyses', []) for ar in self.valid_states.values()]
+        for arr in uids_arr:
+            num_analyses += len(arr)
+
+        if num_analyses < 50:
+            # Do not process asynchronously
+            return AnalysisRequestSubmit.process_form(self)
+
         # Only load asynchronously if queue ar-create is available
         task_queue = queryUtility(ITaskQueue, name='ar-create')
-        if task_queue:
+        if task_queue is None:
+            # ar-create queue not registered. Proceed synchronously
+            logger.info("SYNC: total = %s" % num_analyses)
+            return AnalysisRequestSubmit.process_form(self)
+        else:
             # ar-create queue registered, create asynchronously
+            logger.info("[A]SYNC: total = %s" % num_analyses)
             path = self.request.PATH_INFO
             path = path.replace('_submit_async', '_submit')
-            taskqueue.add(path, method='POST', queue='ar-create')
-            transaction.commit()
+            task_queue.add(path, method='POST')
+            msg = _('One job added to the Analysis Request creation queue')
+            self.context.plone_utils.addPortalMessage(msg, 'info')
             return json.dumps({'success': 'With taskqueue'})
-        else:
-            # ar-create queue not registered. Proceed synchronously
-            return AnalysisRequestSubmit.process_form(self)
 
 
 @deprecated(comment="[160525] bika.lims.browser.analysisrequest.add."

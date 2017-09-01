@@ -21,6 +21,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
+from plone.protect import CheckAuthenticator
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from collective.taskqueue.interfaces import ITaskQueue
@@ -1028,9 +1029,9 @@ class AnalysisRequestsView(BikaListingView):
 
     def pending_tasks(self):
         task_queue = queryUtility(ITaskQueue, name='ar-create')
-        if task_queue:
-            return len(task_queue)
-        return 0
+        if task_queue is None:
+            return 0
+        return len(task_queue)
 
     @property
     def copy_to_new_allowed(self):
@@ -1133,3 +1134,14 @@ class AnalysisRequestsView(BikaListingView):
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
+
+
+class QueuedAnalysisRequestsCount():
+
+    def __call__(self):
+        """Returns the number of tasks in the queue ar-create, responsible of
+        creating Analysis Requests asynchronously"""
+        CheckAuthenticator(self.request.form)
+        task_queue = queryUtility(ITaskQueue, name='ar-create')
+        count = len(task_queue) if task_queue is not None else 0
+        return json.dumps({'count': count})
