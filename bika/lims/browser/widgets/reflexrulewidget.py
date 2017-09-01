@@ -1,23 +1,13 @@
-from AccessControl import ClassSecurityInfo
-from Products.Archetypes.Registry import registerWidget
-from Products.Archetypes.interfaces import IVocabulary
-from zope.interface import implements
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema.vocabulary import SimpleTerm
-from bika.lims.utils import getUsers
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets.reflexrulewidget_description import description
-from plone.api.portal import get_tool
 import json
 
-try:
-    from zope.component.hooks import getSite
-except:
-    # Plone < 4.3
-    from zope.app.component.hooks import getSite
-
+from AccessControl import ClassSecurityInfo
+from Products.Archetypes.Registry import registerWidget
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets.reflexrulewidget_description import description
+from bika.lims.utils import getUsers
 
 class ReflexRuleWidget(RecordsWidget):
     _properties = RecordsWidget._properties.copy()
@@ -263,6 +253,12 @@ class ReflexRuleWidget(RecordsWidget):
             # Getting the local analysis id
             worksheettemplate_key = 'worksheettemplate-'+str(a_count)
             worksheettemplate = raw_set.get(worksheettemplate_key, '')
+            # Getting the visibility in report
+            showinreport_key = 'showinreport-'+str(a_count)
+            showinreport = raw_set.get(showinreport_key, '')
+            # Getting the analysis to show or hide in report
+            setvisibilityof_key = 'setvisibilityof-'+str(a_count)
+            setvisibilityof = raw_set.get(setvisibilityof_key, '')
             # Building the action dict
             action_dict = {
                 'action': raw_set[key],
@@ -274,6 +270,8 @@ class ReflexRuleWidget(RecordsWidget):
                 'setresultdiscrete': setresultdiscrete,
                 'setresultvalue': setresultvalue,
                 'an_result_id': local_id,
+                'showinreport': showinreport,
+                'setvisibilityof': setvisibilityof,
                 }
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
@@ -425,9 +423,19 @@ class ReflexRuleWidget(RecordsWidget):
         Return the different action available
         """
         return DisplayList([
-            ('repeat', 'Repeat'),
-            ('duplicate', 'Duplicate'),
-            ('setresult', 'Set result')])
+            ('repeat', _('Repeat')),
+            ('duplicate', _('Duplicate')),
+            ('setresult', _('Set result')),
+            ('setvisibility', _('Set Visibility'))])
+
+    def getShowInRepVoc(self):
+        """
+        Return the different Visibility in Report values.
+        """
+        return DisplayList([
+            ('default', _('Visibility (default)')),
+            ('visible', _('Show in Report')),
+            ('invisible', _('Hide In Report'))])
 
     def getAndOrVoc(self):
         """

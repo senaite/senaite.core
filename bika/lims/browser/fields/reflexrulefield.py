@@ -270,7 +270,7 @@ def _check_actions(instance, actions):
             logger.warn('The act_row_idx must be a number. Now its value is: '
                         '%s' % (act_row_idx))
             return False
-        if action_name not in ['repeat', 'duplicate', 'setresult']:
+        if action_name not in ['repeat', 'duplicate', 'setresult','setvisibility']:
             logger.warn(
                 'Not correct action_name value')
             return False
