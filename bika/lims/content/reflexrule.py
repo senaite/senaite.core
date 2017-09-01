@@ -346,9 +346,9 @@ def doActionToAnalysis(base, action):
         base.getReflexRuleActionsTriggered()
     )
     if action.get('showinreport', '') == "invisible":
-        analysis.setHidden(False)
-    elif action.get('showinreport', '') == "visible":
         analysis.setHidden(True)
+    elif action.get('showinreport', '') == "visible":
+        analysis.setHidden(False)
     # Setting the original reflected analysis
     if base.getOriginalReflexedAnalysis():
         analysis.setOriginalReflexedAnalysis(
