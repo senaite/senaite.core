@@ -32,6 +32,10 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
 
+    # Importing 'typeinfo' and 'cssregistry' due to changes on Department View.
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
+
     # importing toolset in order to add bika_catalog_report
     setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
 
