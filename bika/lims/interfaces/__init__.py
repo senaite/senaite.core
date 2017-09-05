@@ -454,6 +454,11 @@ class IBikaCatalogWorksheetListing(Interface):
 class IBikaCatalogReport(Interface):
     """Marker interface for custom catalog"""
 
+
+class IBikaCatalogSample(Interface):
+    """Marker interface for custom catalog"""
+
+
 class IIdServer(Interface):
 
     """ Interface for ID server """
