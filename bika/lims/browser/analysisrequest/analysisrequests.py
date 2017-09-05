@@ -855,7 +855,9 @@ class AnalysisRequestsView(BikaListingView):
                 num_submitted = num_total - num_verified - num_wo_results
         num_steps_total = num_total * 2
         num_steps = (num_verified * 2) + (num_submitted)
-        progress_perc = (num_steps * 100) / num_steps_total
+        progress_perc = 0
+        if num_steps > 0 and num_steps_total > 0:
+            progress_perc = (num_steps * 100) / num_steps_total
         progress = '<div class="progress-bar-container">' + \
                    '<div class="progress-bar" style="width:{0}%"></div>' + \
                    '<div class="progress-perc">{0}%</div></div>'
