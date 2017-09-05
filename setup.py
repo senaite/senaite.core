@@ -73,6 +73,7 @@ setup(name='bika.lims',
           'z3c.jbot',
           'plone.resource',
           'CairoSVG==1.0.20',
+          'collective.taskqueue',
       ],
       extras_require={
           'test': [

@@ -1382,4 +1382,19 @@ table.analysisrequest.add {}
         margin-top: -15px;
         width: inherit;
         text-align:center; }
+
+.queued-items {
+    background: #fff9ee url(&dtml-portal_url;/++resource++bika.lims.images/exclamation2_big.png) no-repeat scroll 15px center / 24px auto;
+    border-radius: 5px;
+    font-size: 1.1em;
+    margin-top: 10px;
+    padding: 15px 0 15px 48px;
+}
+.queued-items > a {
+    background-color: #436976;
+    border-radius: 5px;
+    font-size: 0.85em;
+    padding: 4px 10px;
+}
+
 </dtml-with>

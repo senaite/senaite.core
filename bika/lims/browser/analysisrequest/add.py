@@ -21,6 +21,9 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
+from collective.taskqueue.interfaces import ITaskQueue
+from zope.component import queryUtility
+import transaction
 import traceback
 
 
@@ -369,19 +372,24 @@ def ajax_form_error(errors, field=None, arnum=None, message=None):
         error_key = 'Form Error'
     errors[error_key] = message
 
-class ajaxAnalysisRequestSubmit():
-    """Handle data submitted from analysisrequest add forms.  As much
-    as possible, the incoming json arrays should already match the requirement
-    of the underlying AR/sample schema.
-    """
+
+class AbstractAnalysisRequestSubmit():
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        self.valid_states = {}
         # Errors are aggregated here, and returned together to the browser
         self.errors = {}
 
     def __call__(self):
+        self.validate_form()
+        if self.errors:
+            return json.dumps({'errors': self.errors})
+
+        return self.process_form()
+
+    def validate_form(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
@@ -417,7 +425,7 @@ class ajaxAnalysisRequestSubmit():
                     break
 
         # in valid_states, all ars that pass validation will be stored
-        valid_states = {}
+        self.valid_states = {}
         for arnum, state in nonblank_states.items():
             secondary = False
             # Secondary ARs are a special case, these fields are not required
@@ -443,10 +451,10 @@ class ajaxAnalysisRequestSubmit():
                         samplingdate.strip(), "%Y-%m-%d %H:%M")
                 except ValueError:
                     print traceback.format_exc()
-                    msg =\
-                        "Bad time formatting: Getting '{}' but expecting an"\
-                        " string with '%Y-%m-%d %H:%M' format."\
-                        .format(samplingdate)
+                    msg = \
+                        "Bad time formatting: Getting '{}' but expecting an" \
+                        " string with '%Y-%m-%d %H:%M' format." \
+                            .format(samplingdate)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
                 today = date.today()
@@ -469,10 +477,10 @@ class ajaxAnalysisRequestSubmit():
                         date_sampled.strip(), "%Y-%m-%d %H:%M")
                 except ValueError:
                     print traceback.format_exc()
-                    msg =\
-                        "Bad time formatting: Getting '{}' but expecting an"\
-                        " string with '%Y-%m-%d %H:%M' format."\
-                        .format(date_sampled)
+                    msg = \
+                        "Bad time formatting: Getting '{}' but expecting an" \
+                        " string with '%Y-%m-%d %H:%M' format." \
+                            .format(date_sampled)
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
             # fields flagged as 'hidden' are not considered required because
@@ -489,24 +497,34 @@ class ajaxAnalysisRequestSubmit():
                 ajax_form_error(self.errors, arnum=arnum, message=msg)
                 continue
             # This ar is valid!
-            valid_states[arnum] = state
+            self.valid_states[arnum] = state
 
         # - Expand lists of UIDs returned by multiValued reference widgets
         # - Transfer _uid values into their respective fields
-        for arnum in valid_states.keys():
-            for field, value in valid_states[arnum].items():
+        for arnum in self.valid_states.keys():
+            for field, value in self.valid_states[arnum].items():
                 if field.endswith('_uid') and ',' in value:
-                    valid_states[arnum][field] = value.split(',')
+                    self.valid_states[arnum][field] = value.split(',')
                 elif field.endswith('_uid'):
-                    valid_states[arnum][field] = value
+                    self.valid_states[arnum][field] = value
 
-        if self.errors:
-            return json.dumps({'errors': self.errors})
+    def process_form(self):
+        # To be implemented by child classes
+        pass
 
+
+class AnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
+    """Handle data submitted from analysisrequest add forms.  As much
+    as possible, the incoming json arrays should already match the requirement
+    of the underlying AR/sample schema.
+    """
+
+    def process_form(self):
         # Now, we will create the specified ARs.
+        portal_catalog = getToolByName(self.context, 'portal_catalog')
         ARs = []
         new_ar_uids = []
-        for arnum, state in valid_states.items():
+        for arnum, state in self.valid_states.items():
             # Create the Analysis Request
             ar = crar(
                 portal_catalog(UID=state['Client'])[0].getObject(),
@@ -537,6 +555,37 @@ class ajaxAnalysisRequestSubmit():
             })
         else:
             return json.dumps({'success': message})
+
+
+class AsyncAnalysisRequestSubmit(AnalysisRequestSubmit):
+
+    def process_form(self):
+
+        # We want to first know the total number of analyses to be created
+        num_analyses = 0
+        uids_arr = [ar.get('Analyses', []) for ar in self.valid_states.values()]
+        for arr in uids_arr:
+            num_analyses += len(arr)
+
+        if num_analyses < 50:
+            # Do not process asynchronously
+            return AnalysisRequestSubmit.process_form(self)
+
+        # Only load asynchronously if queue ar-create is available
+        task_queue = queryUtility(ITaskQueue, name='ar-create')
+        if task_queue is None:
+            # ar-create queue not registered. Proceed synchronously
+            logger.info("SYNC: total = %s" % num_analyses)
+            return AnalysisRequestSubmit.process_form(self)
+        else:
+            # ar-create queue registered, create asynchronously
+            logger.info("[A]SYNC: total = %s" % num_analyses)
+            path = self.request.PATH_INFO
+            path = path.replace('_submit_async', '_submit')
+            task_queue.add(path, method='POST')
+            msg = _('One job added to the Analysis Request creation queue')
+            self.context.plone_utils.addPortalMessage(msg, 'info')
+            return json.dumps({'success': 'With taskqueue'})
 
 
 @deprecated(comment="[160525] bika.lims.browser.analysisrequest.add."
