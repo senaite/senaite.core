@@ -560,6 +560,7 @@ schema = BikaSchema.copy() + Schema((
                 'verified': {'view': 'visible', 'edit': 'invisible'},
                 'published': {'view': 'visible', 'edit': 'invisible'},
                 'invalid': {'view': 'visible', 'edit': 'invisible'},
+                'rejected': {'view': 'visible', 'edit': 'invisible'},
             },
             render_own_label=True,
         ),
