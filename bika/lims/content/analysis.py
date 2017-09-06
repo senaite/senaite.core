@@ -32,6 +32,14 @@ class Analysis(AbstractRoutineAnalysis):
             return sample
 
     @security.public
+    def getClientSampleID(self):
+        """Used to populate catalog values.
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.getClientSampleID()
+
+    @security.public
     def getSiblings(self):
         """Returns the list of analyses of the Analysis Request to which this
         analysis belongs to, but with the current analysis excluded
