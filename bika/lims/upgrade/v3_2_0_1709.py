@@ -56,7 +56,7 @@ def create_sample_catalog(portal, upgrade_utils):
     for col in sample_columns:
         upgrade_utils.addColumn(CATALOG_SAMPLE_LISTING, col)
     # define objects to be catalogued
-    at.setCatalogsByType('Report', [CATALOG_SAMPLE_LISTING, ])
+    at.setCatalogsByType('Sample', [CATALOG_SAMPLE_LISTING, ])
     # retrieve brains of objects to be catalogued from UID catalog
     logger.info('Recovering samples to reindex')
     bika_catalog = getToolByName(portal, 'bika_catalog')
