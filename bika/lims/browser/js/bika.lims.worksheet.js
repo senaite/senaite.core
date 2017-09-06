@@ -86,13 +86,14 @@ function WorksheetAddAnalysesView() {
             var filter_indexes = ['getCategoryTitle', 'Title', 'getClientTitle'];
             var field_set = $(this).parent('fieldset');
             for (var i=0; i<filter_indexes.length; i++) {
-                var field_name = form_id+"_"+filter_indexes[i];
+                var idx_name = filter_indexes[i];
+                var field_name = form_id+"_"+idx_name;
                 var element = $(field_set).find('[name="'+field_name+'"]');
                 var value = $(element).val();
                 if (value == undefined || value == null || value == 'any') {
                     continue;
                 }
-                params[field_name] = value;
+                params[idx_name] = value;
             }
             // Add other fields required from bikalisting form
             params['form_id'] = form_id;
