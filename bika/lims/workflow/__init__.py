@@ -289,7 +289,11 @@ def isTransitionAllowed(instance, transition_id, active_only=True):
     :returns: True if transition can be performed
     :rtype: bool
     """
-    if active_only and not isBasicTransitionAllowed(instance):
+    #TODO Workflow to allow reinstate transition to be performed
+    inactive_transitions = ['reinstate',]
+
+    if transition_id not in inactive_transitions and \
+            active_only and not isBasicTransitionAllowed(instance):
         return False
 
     wftool = getToolByName(instance, "portal_workflow")
