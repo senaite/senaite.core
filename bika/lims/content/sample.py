@@ -475,12 +475,6 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    ComputedField('SampleTypeUID',
-        expression = 'context.getSampleType().UID()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
     ComputedField('SamplePointUID',
         expression = 'context.getSamplePoint() and context.getSamplePoint().UID() or None',
         widget = ComputedWidget(
@@ -707,6 +701,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 value.append(val)
         return value
 
+    def getSampleTypeUID(self):
+        if self.getSampleType():
+            return self.getSampleType().UID()
+        return ''
+
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
     def setSampleType(self, value, **kw):
@@ -794,6 +793,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ar = tool.lookupObject(reference.sourceUID)
             ars.append(ar)
         return ars
+
+    security.declarePublic('getAnalysisRequestsUID')
+
+    def getAnalysisRequestsUID(self):
+        if self.getAnalysisRequests():
+            return [ar.UID() for ar in self.getAnalysisRequests()]
+        return []
 
     security.declarePublic('getAnalyses')
 
