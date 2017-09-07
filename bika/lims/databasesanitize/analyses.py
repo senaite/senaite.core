@@ -1,0 +1,71 @@
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from plone.api.portal import get_tool
+from bika.lims import logger
+from DateTime import DateTime
+import transaction
+
+
+def analyses_creation_date_recover():
+    """
+    This function walks over all Analysis Request objects, obtains their
+    associate analyses and checks if their creation date is older than the
+    Analysis Request one. If this condition is met, the system sets the
+    analyses creation date with the Analysis Request one.
+    :return: Boolean. True if the process succeed, and False otherwise.
+    """
+
+    ar_catalog = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    start = DateTime('2016/06/24 01:00:00.999999 GMT+0')
+    end = DateTime('2017/06/26 23:59:59.999999 GMT+0')
+    date_range_query = {'query': (start, end), 'range': 'min:max'}
+    ans_catalog = get_tool(CATALOG_ANALYSIS_LISTING)
+    # Getting all analysis requests to walk through
+    ar_brains = ar_catalog({
+        "created": date_range_query,
+    })
+    total_ars = len(ar_brains)
+    total_iterated = 0
+    logger.info("Analysis Requests to walk over: {}".format(total_ars))
+
+    for ar_brain in ar_brains:
+        ans_brains = ans_catalog({"getAnalysisRequestUID": ar_brain.UID})
+        set_correct_created_date(ar_brain.created, ans_brains)
+        total_iterated = commit_action(total_ars, total_iterated)
+    transaction.commit()
+    logger.info("Analyses creation date sanitized.")
+    return True
+
+
+def set_correct_created_date(ar_creation_date, ans_brains):
+    """
+    Checks if the Analysis Request's creation date is older than their
+    analyses ones. If not, sets the Analyses creation that with the Analysis
+    Request one and reindex the object.
+    :param ar_creation_date: A DateTime objects with an Analysis Request
+    creation date.
+    :param ans_brains: An Analysis Service brain.
+    """
+    for an_brain in ans_brains:
+        if ar_creation_date > an_brain.created:
+            # update analysis date with request's one
+            analysis = an_brain.getObject()
+            analysis.creation_date = ar_creation_date
+            analysis.reindexObject(idxs=['created', ])
+
+
+def commit_action(total_ars, total_iterated):
+    """
+    Does a tranaction commit in order to save the changes.
+    :param total_ars: An integer as the total amount of Analysis Requests
+    to walk over.
+    :param total_iterated: An integer as the total amount of Analysis Requests
+    checked.
+    """
+    total_iterated += 1
+    if total_iterated % 20 == 0:
+        transaction.commit()
+        logger.info(
+            "Sanitize progress of analyses creation date: {} out of {}"
+            .format(total_iterated, total_ars))
+    return total_iterated
