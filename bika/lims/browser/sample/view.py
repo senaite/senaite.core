@@ -16,10 +16,13 @@ from bika.lims.browser.sample.samples_filter_bar\
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from . import SampleEdit
+from bika.lims.catalog.sample_catalog import CATALOG_SAMPLE_LISTING
+from bika.lims.catalog.analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import json
 from datetime import datetime, date
 import plone
 import App
+import os
 
 
 class SampleView(SampleEdit):
@@ -42,9 +45,8 @@ class SamplesView(BikaListingView):
 
         request.set('disable_plone.rightcolumn', 1)
 
-        self.catalog = 'bika_catalog'
-        self.contentFilter = {'portal_type': 'Sample',
-                              'sort_on':'created',
+        self.catalog = CATALOG_SAMPLE_LISTING
+        self.contentFilter = {'sort_on':'created',
                               'sort_order': 'reverse',
                               'path': {'query': "/",
                                        'level': 0 }
@@ -368,6 +370,8 @@ class SamplesView(BikaListingView):
     def folderitem(self, obj, item, index):
         workflow = getToolByName(self.context, "portal_workflow")
         mtool = getToolByName(self.context, 'portal_membership')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        arc = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         member = mtool.getAuthenticatedMember()
         translate = self.context.translate
         roles = member.getRoles()
@@ -380,32 +384,34 @@ class SamplesView(BikaListingView):
         obj = item['obj']
 
         item['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
-            (item['url'], obj.getSampleID())
+            (item['url'], obj.getSampleID)
+        analysis_requests_brains = arc(portal_type='AnalysisRequest', UID=obj.getAnalysisRequestsUID)
         item['replace']['Requests'] = ",".join(
-            ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
-             for o in obj.getAnalysisRequests()])
-        item['Client'] = obj.aq_parent.Title()
+            ["<a href='%s'>%s</a>" % (o.getURL(), o.Title)
+             for o in analysis_requests_brains])
+        item['Client'] = obj.getClientTitle
         if hideclientlink == False:
+            head, tail = os.path.split(obj.getURL())
             item['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-        item['Creator'] = self.user_fullname(obj.Creator())
+                (head, obj.getClientTitle)
+        item['Creator'] = self.user_fullname(obj.Creator)
 
-        item['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
+        item['DateReceived'] = self.ulocalized_time(obj.getDateReceived)
 
-        deviation = obj.getSamplingDeviation()
-        item['SamplingDeviation'] = deviation and deviation.Title() or ''
+        item['SamplingDeviation'] = obj.getSamplingDeviationTitle
 
-        item['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
-        item['AdHoc'] = obj.getAdHoc() and True or ''
+        item['getStorageLocation'] = obj.getStorageLocationTitle
+        item['AdHoc'] = obj.getAdHoc
 
-        item['Created'] = self.ulocalized_time(obj.created())
+        item['Created'] = self.ulocalized_time(obj.created)
 
-        sd = obj.getSamplingDate()
+        sd = obj.getSamplingDate
         item['SamplingDate'] = \
             self.ulocalized_time(sd, long_format=1) if sd else ''
 
         after_icons = ''
-        if obj.getSampleType().getHazardous():
+        sample_type = bsc(portal_type='SampleType', UID=obj.getSampleTypeUID)[0]
+        if sample_type.getHazardous:
             after_icons += "<img title='%s' " \
                 "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
                 (t(_("Hazardous")),
@@ -417,22 +423,21 @@ class SamplesView(BikaListingView):
                  self.portal_url)
         if after_icons:
             item['after']['getSampleID'] = after_icons
-
-        if obj.getSamplingWorkflowEnabled():
+        if obj.getSamplingWorkflowEnabled:
             datesampled = self.ulocalized_time(
-                obj.getDateSampled(), long_format=True)
+                obj.getDateSampled, long_format=True)
             if not datesampled:
                 datesampled = self.ulocalized_time(
                     DateTime(), long_format=True)
                 item['class']['DateSampled'] = 'provisional'
-            sampler = obj.getSampler().strip()
+            sampler = obj.getSampler.strip()
             if sampler:
                 item['replace']['getSampler'] = self.user_fullname(sampler)
             if 'Sampler' in member.getRoles() and not sampler:
                 sampler = member.id
                 item['class']['getSampler'] = 'provisional'
         else:
-            datesampled = self.ulocalized_time(obj.getDateSampled(), long_format=True)
+            datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
             sampler = ''
 
         item['DateSampled'] = datesampled
@@ -440,23 +445,24 @@ class SamplesView(BikaListingView):
         # sampling workflow - inline edits for Sampler, Date Sampled and
         # Scheduled Sampling Sampler
         checkPermission = self.context.portal_membership.checkPermission
-        state = workflow.getInfoFor(obj, 'review_state')
+        state = obj.review_state
         if state in ['to_be_sampled', 'scheduled_sampling']:
             item['required'] = []
             item['allow_edit'] = []
             item['choices'] = {}
-            samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
+            samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'])
             users = [(
                 {'ResultValue': u, 'ResultText': samplers.getValue(u)})
                 for u in samplers]
             # both situations
-            if checkPermission(SampleSample, obj) or\
+            full_object = obj.getObject()
+            if checkPermission(SampleSample, full_object) or\
                     self._schedule_sampling_permissions():
                 item['required'].append('getSampler')
                 item['allow_edit'].append('getSampler')
                 item['choices']['getSampler'] = users
             # sampling permissions
-            if checkPermission(SampleSample, obj):
+            if checkPermission(SampleSample, full_object):
                 getAuthenticatedMember = self.context.\
                     portal_membership.getAuthenticatedMember
                 username = getAuthenticatedMember().getUserName()
@@ -484,25 +490,24 @@ class SamplesView(BikaListingView):
         item['field']['getScheduledSamplingSampler'] =\
             'ScheduledSamplingSampler'
         # inline edits for Preserver and Date Preserved
-        checkPermission = self.context.portal_membership.checkPermission
-        if checkPermission(PreserveSample, obj):
-            item['required'] = ['getPreserver', 'getDatePreserved']
-            item['allow_edit'] = ['getPreserver', 'getDatePreserved']
-            preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-            getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-            username = getAuthenticatedMember().getUserName()
-            users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
-                     for u in preservers]
-            item['choices'] = {'getPreserver': users}
-            preserver = username in preservers.keys() and username or ''
-            item['getPreserver'] = preserver
-            item['getDatePreserved'] = self.ulocalized_time(DateTime())
-            item['class']['getPreserver'] = 'provisional'
-            item['class']['getDatePreserved'] = 'provisional'
+        # if checkPermission(PreserveSample, obj):
+        #     item['required'] = ['getPreserver', 'getDatePreserved']
+        #     item['allow_edit'] = ['getPreserver', 'getDatePreserved']
+        #     preservers = getUsers(self.context, ['Preserver', 'LabManager', 'Manager'])
+        #     getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+        #     username = getAuthenticatedMember().getUserName()
+        #     users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+        #              for u in preservers]
+        #     item['choices'] = {'getPreserver': users}
+        #     preserver = username in preservers.keys() and username or ''
+        #     item['getPreserver'] = preserver
+        #     item['getDatePreserved'] = self.ulocalized_time(DateTime())
+        #     item['class']['getPreserver'] = 'provisional'
+        #     item['class']['getDatePreserved'] = 'provisional'
         return item
 
     def folderitems(self, full_objects=False):
-        items = BikaListingView.folderitems(self, full_objects=False)
+        items = BikaListingView.folderitems(self, full_objects=False, classic=False)
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
         # Hide schedule_sampling if user has no rights
@@ -548,7 +553,7 @@ class SamplesView(BikaListingView):
     def isItemAllowed(self, obj):
         """
         Checks the BikaLIMS conditions and also checks filter bar conditions
-        @Obj: it is a sample object.
+        @Obj: it is a sample brain.
         @return: boolean
         """
         # TODO-performance:we are expecting for the sample object.
