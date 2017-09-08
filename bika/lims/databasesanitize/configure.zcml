@@ -12,5 +12,20 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="async_analyses_creation_date_recover"
+      class="bika.lims.databasesanitize.controller_view.AsyncAnalysesCreationDateRecover"
+      permission="cmf.ModifyPortalContent"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="queued_sanitation_tasks"
+      class="bika.lims.databasesanitize.controller_view.QueuedSanitationTasksCount"
+      permission="cmf.ModifyPortalContent"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
 </configure>

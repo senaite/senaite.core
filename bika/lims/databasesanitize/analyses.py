@@ -1,9 +1,10 @@
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from plone.api.portal import get_tool
-from bika.lims import logger
-from DateTime import DateTime
 import transaction
+from DateTime import DateTime
+from plone.api.portal import get_tool
+
+from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 
 
 def analyses_creation_date_recover():
@@ -27,11 +28,14 @@ def analyses_creation_date_recover():
     total_ars = len(ar_brains)
     total_iterated = 0
     logger.info("Analysis Requests to walk over: {}".format(total_ars))
-
+    total_modified = 0
     for ar_brain in ar_brains:
         ans_brains = ans_catalog({"getAnalysisRequestUID": ar_brain.UID})
-        set_correct_created_date(ar_brain.created, ans_brains)
-        total_iterated = commit_action(total_ars, total_iterated)
+        analyses_modified = set_correct_created_date(
+            ar_brain.created, ans_brains)
+        total_modified += analyses_modified
+        total_iterated = commit_action(
+            total_ars, total_iterated, total_modified)
     transaction.commit()
     logger.info("Analyses creation date sanitized.")
     return True
@@ -45,27 +49,35 @@ def set_correct_created_date(ar_creation_date, ans_brains):
     :param ar_creation_date: A DateTime objects with an Analysis Request
     creation date.
     :param ans_brains: An Analysis Service brain.
+    :return: The number of analyses modified this time
     """
+    counter = 0
     for an_brain in ans_brains:
         if ar_creation_date > an_brain.created:
             # update analysis date with request's one
             analysis = an_brain.getObject()
             analysis.creation_date = ar_creation_date
             analysis.reindexObject(idxs=['created', ])
+            counter += 1
+    return counter
 
 
-def commit_action(total_ars, total_iterated):
+def commit_action(total_ars, total_iterated, total_modified):
     """
-    Does a tranaction commit in order to save the changes.
+    Does a tranaction commit in order to save the changes. It also logs some
+    info about the process.
     :param total_ars: An integer as the total amount of Analysis Requests
     to walk over.
     :param total_iterated: An integer as the total amount of Analysis Requests
     checked.
+    :param total_modified: An integer as the total amount of analyses modified
+    :return: The total of analyses iterated.
     """
     total_iterated += 1
     if total_iterated % 20 == 0:
         transaction.commit()
         logger.info(
-            "Sanitize progress of analyses creation date: {} out of {}"
-            .format(total_iterated, total_ars))
+            "Sanitize progress of analyses creation date: {} out of {}. "
+            "Number of modified analyses: {}"
+            .format(total_iterated, total_ars, total_modified))
     return total_iterated
