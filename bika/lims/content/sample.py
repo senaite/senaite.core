@@ -149,12 +149,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    ComputedField('SampleTypeTitle',
-        expression="here.getSampleType() and here.getSampleType().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ReferenceField('SamplePoint',
         vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('SamplePoint',),
@@ -183,12 +177,6 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
-        ),
-    ),
-    ComputedField('SamplePointTitle',
-        expression = "here.getSamplePoint() and here.getSamplePoint().Title() or ''",
-        widget = ComputedWidget(
-            visible=False,
         ),
     ),
     ReferenceField(
@@ -469,18 +457,6 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    ComputedField('ClientUID',
-        expression = 'context.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('SamplePointUID',
-        expression = 'context.getSamplePoint() and context.getSamplePoint().UID() or None',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
     BooleanField('Composite',
         default = False,
         mode="rw",
@@ -659,6 +635,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """ Return the Sample ID as title """
         return safe_unicode(self.getId()).encode('utf-8')
 
+    def getSampleTypeTitle(self):
+        if self.getSampleType():
+            return self.getSampleType().Title()
+        return ''
+
     def Title(self):
         """ Return the Sample ID as title """
         return self.getSampleID()
@@ -705,6 +686,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
         if self.getSampleType():
             return self.getSampleType().UID()
         return ''
+
+    def getClientUID(self):
+        return self.aq_parent.UID()
+
+    def getSamplePointUID(self):
+        if self.getSamplePoint():
+            return self.getSamplePoint().UID()
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
@@ -873,6 +861,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def getStorageLocationTitle(self):
         if self.getStorageLocation():
             return self.getStorageLocation().Title()
+        return ''
+
+    def getSamplePointTitle(self):
+        if self.getSamplePoint():
+            return self.getSamplePoint().Title()
         return ''
 
     @deprecated('[1705] Use events.after_no_sampling_workflow from '
