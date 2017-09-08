@@ -21,8 +21,6 @@ _indexes_dict = {
 _columns_list = [
     'getSampleID',
     'getDateReceived',
-    'getSamplingDeviation',
-    'getStorageLocation',
     'getSamplingDate',
     'getClientTitle',
     'getAdHoc',
@@ -30,7 +28,9 @@ _columns_list = [
     'getSamplingWorkflowEnabled',
     'getDateSampled',
     'getSampler',
-    'getAnalysisRequestsUID'
+    'getAnalysisRequestsUID',
+    'getSamplingDeviationTitle',
+    'getStorageLocationTitle',
 ]
 
 # Adding basic indexes

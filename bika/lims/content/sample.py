@@ -865,6 +865,16 @@ class Sample(BaseFolder, HistoryAwareMixin):
         partitions = self.objectValues('SamplePartition')
         return partitions
 
+    def getSamplingDeviationTitle(self):
+        if self.getSamplingDeviation():
+            return self.getSamplingDeviation().Title()
+        return ''
+
+    def getStorageLocationTitle(self):
+        if self.getStorageLocation():
+            return self.getStorageLocation().Title()
+        return ''
+
     @deprecated('[1705] Use events.after_no_sampling_workflow from '
                 'bika.lims.workflow.sample')
     @security.public
