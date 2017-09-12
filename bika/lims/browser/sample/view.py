@@ -386,6 +386,9 @@ class SamplesView(BikaListingView):
         item['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
             (item['url'], obj.getSampleID)
         analysis_requests_brains = arc(portal_type='AnalysisRequest', UID=obj.getAnalysisRequestsUID)
+        # From the book Professional Plone 4 development:
+        # The getURL() method returns, as with the absolute_url() method, the current referenced
+        # object URL. This may be different from the server URL at the time that the object was indexed
         item['replace']['Requests'] = ",".join(
             ["<a href='%s'>%s</a>" % (o.getURL(), o.Title)
              for o in analysis_requests_brains])
