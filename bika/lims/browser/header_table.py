@@ -40,6 +40,7 @@ class HeaderTableView(BrowserView):
                     else:
                         # other fields
                         field.getMutator(self.context)(form[fieldname])
+            self.context.reindexObject()
             message = _p("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
         return self.template()
