@@ -6,6 +6,7 @@
 function SiteView() {
 
     var that = this;
+    var pause_spinner = false;
 
     that.load = function() {
 
@@ -363,7 +364,9 @@ function SiteView() {
             counter++;
             setTimeout(function () {
                 if (counter > 0) {
-                    spinner.show('fast');
+                    if (!pause_spinner) {
+                        spinner.show('fast');
+                    }
                 }
             }, 500);
         });
@@ -383,6 +386,13 @@ function SiteView() {
             stop_spinner();
             window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
         });
+    }
+
+    that.pauseSpinner = function() {
+        pause_spinner = true;
+    }
+    that.resumeSpinner = function() {
+        pause_spinner = false;
     }
 
     function portalAlert(html) {

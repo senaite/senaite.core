@@ -21,8 +21,11 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
+from plone.protect import CheckAuthenticator
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from collective.taskqueue.interfaces import ITaskQueue
+from zope.component import queryUtility
 from datetime import datetime, date
 import json
 
@@ -55,7 +58,6 @@ class AnalysisRequestsView(BikaListingView):
             self.view_url = self.view_url + "/analysisrequests"
 
         self.allow_edit = True
-
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -853,7 +855,9 @@ class AnalysisRequestsView(BikaListingView):
                 num_submitted = num_total - num_verified - num_wo_results
         num_steps_total = num_total * 2
         num_steps = (num_verified * 2) + (num_submitted)
-        progress_perc = (num_steps * 100) / num_steps_total
+        progress_perc = 0
+        if num_steps > 0 and num_steps_total > 0:
+            progress_perc = (num_steps * 100) / num_steps_total
         progress = '<div class="progress-bar-container">' + \
                    '<div class="progress-bar" style="width:{0}%"></div>' + \
                    '<div class="progress-perc">{0}%</div></div>'
@@ -1025,6 +1029,12 @@ class AnalysisRequestsView(BikaListingView):
                          t(_("Cannot verify: Submitted by current user"))
         return item
 
+    def pending_tasks(self):
+        task_queue = queryUtility(ITaskQueue, name='ar-create')
+        if task_queue is None:
+            return 0
+        return len(task_queue)
+
     @property
     def copy_to_new_allowed(self):
         mtool = getToolByName(self.context, 'portal_membership')
@@ -1126,3 +1136,14 @@ class AnalysisRequestsView(BikaListingView):
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
+
+
+class QueuedAnalysisRequestsCount():
+
+    def __call__(self):
+        """Returns the number of tasks in the queue ar-create, responsible of
+        creating Analysis Requests asynchronously"""
+        CheckAuthenticator(self.request.form)
+        task_queue = queryUtility(ITaskQueue, name='ar-create')
+        count = len(task_queue) if task_queue is not None else 0
+        return json.dumps({'count': count})

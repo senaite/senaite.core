@@ -41,6 +41,7 @@ from .published_results import AnalysisRequestPublishedResults
 from .results_not_requested import AnalysisRequestResultsNotRequestedView
 from .workflow import AnalysisRequestWorkflowAction
 from .analysisrequests import AnalysisRequestsView
+from .analysisrequests import QueuedAnalysisRequestsCount
 
 
 class ResultOutOfRange(object):

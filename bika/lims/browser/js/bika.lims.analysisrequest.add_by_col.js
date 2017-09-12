@@ -2610,7 +2610,7 @@ function AnalysisRequestAddByCol() {
                 {
                     type: "POST",
                     dataType: "json",
-                    url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
+                    url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit_async",
                     data: request_data,
                     success: function (data) {
                         /*
