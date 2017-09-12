@@ -14,7 +14,15 @@ from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
 CATALOG_SAMPLE_LISTING = 'bika_sample_catalog'
 # Defining the indexes for this catalog
 _indexes_dict = {
-
+    'getSamplePointTitle': 'FieldIndex',
+    'getClientTitle': 'FieldIndex',
+    'getSampleID': 'FieldIndex',
+    'getClientReference': 'FieldIndex',
+    'getClientSampleID': 'FieldIndex',
+    'getSampleTypeTitle': 'FieldIndex',
+    'getSamplingDate': 'DateIndex',
+    'getDateSampled': 'DateIndex',
+    'getDateReceived': 'DateIndex',
 }
 
 # Defining the columns for this catalog
@@ -31,6 +39,10 @@ _columns_list = [
     'getAnalysisRequestsUID',
     'getSamplingDeviationTitle',
     'getStorageLocationTitle',
+    'getSamplePointTitle',
+    'getClientSampleID',
+    'getSampleTypeTitle',
+    'getClientReference',
 ]
 
 # Adding basic indexes
