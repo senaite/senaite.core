@@ -66,28 +66,91 @@ class PrefixesField(RecordsField):
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type': 'prefixes',
-        'subfields': ('portal_type', 'prefix', 'separator', 'padding', 'sequence_start'),
-        'subfield_labels': {'portal_type': 'Portal type',
-                            'prefix': 'Prefix',
-                            'separator': 'Prefix Separator',
-                            'padding': 'Padding',
-                            'sequence_start': 'Sequence Start'},
-        'subfield_readonly': {'portal_type': False,
-                              'prefix': False,
-                              'padding': False,
-                              'separator': False,
-                              'sequence_start': False},
-        'subfield_sizes': {'portal_type': 32,
-                           'prefix': 12,
-                           'padding': 12,
-                           'separator': 5,
-                           'sequence_start': 12},
-        'subfield_types': {'padding': 'int',
-                           'sequence_start': 'int'},
+        'subfields': (
+            'portal_type',
+            'form',
+            'sequence_type',
+            'context',
+            'counter_type',
+            'counter_reference',
+            'prefix',
+            'split_length',
+            'separator',
+            'padding',
+            'sequence_start'
+        ),
+        'subfield_labels': {
+            'portal_type': 'Portal Type',
+            'form': 'Format',
+            'sequence_type': 'Seq Type',
+            'context': 'Context',
+            'counter_type': 'Counter Type',
+            'counter_reference': 'Counter Ref',
+            'prefix': 'Prefix',
+            'split_length': 'Split Length',
+            'separator': 'Prefix Separator',
+            'padding': 'Padding',
+            'sequence_start': 'Sequence Start'
+        },
+        'subfield_readonly': {
+            'portal_type': False,
+            'form': False,
+            'sequence_type': False,
+            'context': False,
+            'counter_type': False,
+            'counter_reference': False,
+            'prefix': False,
+            'padding': False,
+            'separator': False,
+            'sequence_start': False,
+            'split_length': False,
+        },
+        'subfield_sizes': {
+            'portal_type': 20,
+            'form': 30,
+            'sequence_type': 1,
+            'context': 12,
+            'counter_type': 1,
+            'counter_reference': 12,
+            'prefix': 12,
+            'padding': 12,
+            'separator': 5,
+            'split_length': 5,
+            'padding': 5,
+            'separator': 5,
+            'sequence_start': 5,
+        },
+        'subfield_types': {
+            'sequence_type': 'selection',
+            'counter_type': 'selection',
+            'split_length': 'int',
+            'padding': 'int',
+            'sequence_start': 'int',
+        },
+        'subfield_vocabularies': {
+            'sequence_type': 'getSequenceTypes',
+            'counter_type': 'getCounterTypes',
+        },
+        'subfield_maxlength': {
+            'form': 256,
+        },
     })
 
     security = ClassSecurityInfo()
 
+    def getSequenceTypes(self, instance=None):
+        return DisplayList([
+            ('', ''),
+            ('counter', 'Counter'),
+            ('generated', 'Generated')
+        ])
+
+    def getCounterTypes(self, instance=None):
+        return DisplayList([
+            ('', ''),
+            ('backreference', 'Backreference'),
+            ('contained', 'Contained')
+        ])
 
 STICKER_AUTO_OPTIONS = DisplayList((
     ('None', _('None')),
@@ -151,7 +214,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowNewReleasesInfo',
-        schemata="Security",
+        schemata="Notifications",
         default=True,
         widget=BooleanWidget(
             label=_("Display an alert on new releases of Bika LIMS"),
@@ -285,26 +348,6 @@ schema = BikaFolderSchema.copy() + Schema((
             append_only=False,
         ),
     ),
-    # IntegerField('BatchFax',
-    #     schemata = "Results Reports",
-    #     required = 1,
-    #     default = 4,
-    #     widget = IntegerWidget(
-    #         label=_("Maximum columns per results fax"),
-    #         description = "Too many AR columns per fax will see the font size minimised and could "
-    #                         "render faxes illegible. 4 ARs maximum per page is recommended",
-    #     )
-    # ),
-    # StringField('SMSGatewayAddress',
-    #     schemata = "Results Reports",
-    #     required = 0,
-    #     widget = StringWidget(
-    #         label=_("SMS Gateway Email Address"),
-    #         description = "The email to SMS gateway address. Either a complete email address, "
-    #                         "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
-    #                         "number will be prepended to",
-    #     )
-    # ),
     BooleanField(
         'PrintingWorkflowEnabled',
         schemata="Results Reports",
@@ -429,19 +472,20 @@ schema = BikaFolderSchema.copy() + Schema((
         default=1,
         vocabulary="_getNumberOfRequiredVerificationsVocabulary",
         widget=SelectionWidget(
+            format="select",
             label=_("Number of required verifications"),
             description=_(
                 "Number of required verifications before a given result being "
                 "considered as 'verified'. This setting can be overrided for "
                 "any Analysis in Analysis Service edit view. By default, 1"),
-            format="select",
          ),
     ),
-    StringField('TypeOfmultiVerification',
-        schemata = "Analyses",
-        default = 'self_multi_enabled',
-        vocabulary = MULTI_VERIFICATION_TYPE,
-        widget = SelectionWidget(
+    StringField(
+        'TypeOfmultiVerification',
+        schemata="Analyses",
+        default='self_multi_enabled',
+        vocabulary=MULTI_VERIFICATION_TYPE,
+        widget=SelectionWidget(
             label=_("Multi Verification type"),
             description = _(
                 "Choose type of multiple verification for the same user."
@@ -457,7 +501,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=('AnalysisService',),
         relationship='SetupDryAnalysisService',
-        vocabulary='getAnalysisServicesVocabulary',
+        vocabulary='getAnalysisServices',
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
             label=_("Dry matter analysis"),
@@ -567,7 +611,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'WorksheetLayout',
-        schemata="Analyses",
+        schemata="Appearance",
         default='1',
         vocabulary=WORKSHEET_LAYOUT_OPTIONS,
         widget=SelectionWidget(
@@ -583,7 +627,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'DashboardByDefault',
-        schemata="Analyses",
+        schemata="Appearance",
         default=True,
         widget=BooleanWidget(
             label=_("Use Dashboard as default front page"),
@@ -592,7 +636,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     ReferenceField(
         'LandingPage',
-        schemata="Analyses",
+        schemata="Appearance",
         multiValued=0,
         allowed_types=('Document', ),
         relationship='SetupLandingPage',
@@ -609,9 +653,108 @@ schema = BikaFolderSchema.copy() + Schema((
             base_query={'review_state': 'published'},
         ),
     ),
+    BooleanField(
+        'SamplingWorkflowEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable Sampling"),
+            description=_("Select this to activate the sample collection workflow steps.")
+        ),
+    ),
+    BooleanField(
+        'ScheduleSamplingEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable Sampling Scheduling"),
+            description=_(
+                "Select this to allow a Sampling Coordinator to" +
+                " schedule a sampling. This functionality only takes effect" +
+                " when 'Sampling workflow' is active")
+        ),
+    ),
+    BooleanField(
+        'ShowPartitions',
+        schemata="Sampling and COC",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Display individual sample partitions "),
+            description=_("Turn this on if you want to work with sample partitions")
+        ),
+    ),
+    BooleanField(
+        'SamplePreservationEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable Sample Preservation"),
+            description=_("")
+        ),
+    ),
+    DurationField(
+        'DefaultSampleLifetime',
+        schemata="Sampling and COC",
+        required=1,
+        default={"days": 30, "hours": 0, "minutes": 0},
+        widget=DurationWidget(
+            label=_("Default sample retention period"),
+            description=_(
+                "The number of days before a sample expires and cannot be analysed "
+                "any more. This setting can be overwritten per individual sample type "
+                "in the sample types setup"),
+        )
+    ),
+    RecordsField(
+        'RejectionReasons',
+        schemata="Sampling and COC",
+        widget=RejectionSetupWidget(
+            label=_("Enable sampling rejection"),
+            description=_("Select this to activate the rejection workflow "
+                          "for Samples and Analysis Requests. A 'Reject' "
+                          "option will be displayed in the actions menu for "
+                          "these objects.")
+        ),
+    ),
+    BooleanField(
+        'NotifyOnRejection',
+        schemata="Notifications",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Sample rejection email notification"),
+            description=_("Select this to activate automatic notifications "
+                          "via email to the Client when a Sample or Analysis "
+                          "Request is rejected.")
+        ),
+    ),
+    BooleanField(
+        'NotifyOnARRetract',
+        schemata="Notifications",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Email notification on AR retract"),
+            description=_("Select this to activate automatic notifications "
+                          "via email to the Client and Lab Managers when an Analysis "
+                          "Request is retracted.")
+        ),
+    ),
+    TextField(
+        'COCAttestationStatement',
+        schemata="Sampling and COC",
+        widget=TextAreaWidget(
+            label=_("COC Attestation Statement"),
+        )
+    ),
+    StringField(
+        'COCFooter',
+        schemata="Sampling and COC",
+        widget=StringWidget(
+            label=_("COC Footer"),
+        )
+    ),
     StringField(
         'AutoPrintStickers',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary=STICKER_AUTO_OPTIONS,
         widget=SelectionWidget(
             format='select',
@@ -624,7 +767,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'AutoStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         widget=SelectionWidget(
             format='select',
@@ -634,7 +777,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'SmallStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x48mm.pt",
         widget=SelectionWidget(
@@ -645,7 +788,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'LargeStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x72mm.pt",
         widget=SelectionWidget(
@@ -745,6 +888,17 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=StringWidget(
             label=_("ID Server URL"),
             description=_("The full URL: http://URL/path:port")
+        ),
+    ),
+    StringField(
+        'IDServerValues',
+        schemata="ID Server",
+        accessor="getIDServerValuesHTML",
+        readonly=True,
+        widget=TextAreaWidget(
+            label=_("ID Server Values"),
+            cols=30,
+            rows=30,
         ),
     ),
     RecordsField(
@@ -927,5 +1081,6 @@ class BikaSetup(folder.ATFolder):
         """
         items = [(1, '1'), (2, '2'), (3, '3'), (4, '4')]
         return IntDisplayList(list(items))
+
 
 registerType(BikaSetup, PROJECTNAME)
