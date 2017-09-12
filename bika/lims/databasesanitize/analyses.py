@@ -17,14 +17,9 @@ def analyses_creation_date_recover():
     """
 
     ar_catalog = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    start = DateTime('2016/06/24 01:00:00.999999 GMT+0')
-    end = DateTime('2017/06/26 23:59:59.999999 GMT+0')
-    date_range_query = {'query': (start, end), 'range': 'min:max'}
     ans_catalog = get_tool(CATALOG_ANALYSIS_LISTING)
     # Getting all analysis requests to walk through
-    ar_brains = ar_catalog({
-        "created": date_range_query,
-    })
+    ar_brains = ar_catalog()
     total_ars = len(ar_brains)
     total_iterated = 0
     logger.info("Analysis Requests to walk over: {}".format(total_ars))
