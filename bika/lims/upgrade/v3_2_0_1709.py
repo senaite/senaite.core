@@ -2,6 +2,7 @@
 #
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 
@@ -33,7 +34,7 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
 
-    # importing toolset in order to add bika_catalog_report
+    # importing toolset in order to add bika_sample_catalog
     setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
 
     create_sample_catalog(portal, ut)
@@ -57,21 +58,21 @@ def create_sample_catalog(portal, upgrade_utils):
         upgrade_utils.addColumn(CATALOG_SAMPLE_LISTING, col)
     # define objects to be catalogued
     at.setCatalogsByType('Sample', [CATALOG_SAMPLE_LISTING, ])
-    # retrieve brains of objects to be catalogued from UID catalog
+    # retrieve brains of objects to be catalogued from bika catalog
     logger.info('Recovering samples to reindex')
     bika_catalog = getToolByName(portal, 'bika_catalog')
-    samples_brains = bika_catalog(portal_type='Sample')
+    sample_brains = bika_catalog(portal_type='Sample')
     i = 0  # already indexed objects counter
-    # reindex the found objects in sample catalog and uncatalog them from bika_catalog
+    # reindex the found objects in the new sample catalog and uncatalog them from bika_catalog
     logger.info('Reindexing samples')
-    for brain in samples_brains:
+    for brain in sample_brains:
         if i % 100 == 0:
-            logger.info('Reindexed {}/{} samples'.format(i, len(samples_brains)))
+            logger.info('Reindexed {}/{} samples'.format(i, len(sample_brains)))
         sample_obj = brain.getObject()
         sample_obj.reindexObject()
-        # uncatalog reports from bika_catalog
+        # uncatalog samples from bika_catalog
         path_uid = '/'.join(sample_obj.getPhysicalPath())
         bika_catalog.uncatalog_object(path_uid)
         i += 1
-    logger.info('Reindexed {}/{} samples'.format(len(samples_brains), len(samples_brains)))
+    logger.info('Reindexed {}/{} samples'.format(len(sample_brains), len(sample_brains)))
 
