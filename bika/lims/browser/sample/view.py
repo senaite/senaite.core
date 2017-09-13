@@ -46,10 +46,10 @@ class SamplesView(BikaListingView):
         request.set('disable_plone.rightcolumn', 1)
 
         self.catalog = CATALOG_SAMPLE_LISTING
-        self.contentFilter = {'sort_on':'created',
+        self.contentFilter = {'sort_on': 'created',
                               'sort_order': 'reverse',
                               'path': {'query': "/",
-                                       'level': 0 }
+                                       'level': 0}
                               }
         # So far we will only print if the sampling workflow is activated
         if self.context.bika_setup.getSamplingWorkflowEnabled():
@@ -105,17 +105,21 @@ class SamplesView(BikaListingView):
             'getClientReference': {
                 'title': _('Client Ref'),
                 'index': 'getClientReference',
+                'attr': 'getClientReference',
                 'toggle': True},
             'getClientSampleID': {
                 'title': _('Client SID'),
                 'index': 'getClientSampleID',
+                'attr': 'getClientSampleID',
                 'toggle': True},
             'getSampleTypeTitle': {
                 'title': _('Sample Type'),
-                'index': 'getSampleTypeTitle'},
+                'index': 'getSampleTypeTitle',
+                'attr': 'getSampleTypeTitle'},
             'getSamplePointTitle': {
                 'title': _('Sample Point'),
                 'index': 'getSamplePointTitle',
+                'attr': 'getSamplePointTitle',
                 'toggle': False},
             'getStorageLocation': {
                 'sortable': False,
@@ -244,9 +248,9 @@ class SamplesView(BikaListingView):
                          'state_title']},
             {'id': 'sample_received',
              'title': _('Received'),
-             'contentFilter': {'review_state':'sample_received',
+             'contentFilter': {'review_state': 'sample_received',
                               'sort_order': 'reverse',
-                              'sort_on':'created'},
+                              'sort_on': 'created'},
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -268,9 +272,9 @@ class SamplesView(BikaListingView):
                          'DateReceived']},
             {'id':'expired',
              'title': _('Expired'),
-             'contentFilter':{'review_state':'expired',
+             'contentFilter':{'review_state': 'expired',
                               'sort_order': 'reverse',
-                              'sort_on':'created'},
+                              'sort_on': 'created'},
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -292,9 +296,9 @@ class SamplesView(BikaListingView):
                          'DateReceived']},
             {'id':'disposed',
              'title': _('Disposed'),
-             'contentFilter':{'review_state':'disposed',
+             'contentFilter':{'review_state': 'disposed',
                               'sort_order': 'reverse',
-                              'sort_on':'created'},
+                              'sort_on': 'created'},
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -318,8 +322,8 @@ class SamplesView(BikaListingView):
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled',
                                'sort_order': 'reverse',
-                               'sort_on':'created'},
-             'transitions': [{'id':'reinstate'}, ],
+                               'sort_on': 'created'},
+             'transitions': [{'id': 'reinstate'}, ],
              'columns': ['getSampleID',
                          'Client',
                          'Creator',
@@ -386,7 +390,7 @@ class SamplesView(BikaListingView):
         item['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
             (item['url'], obj.getSampleID)
         analysis_requests_brains = arc(portal_type='AnalysisRequest', UID=obj.getAnalysisRequestsUID)
-        # From the book Professional Plone 4 development:
+        # From Professional Plone 4 development:
         # The getURL() method returns, as with the absolute_url() method, the current referenced
         # object URL. This may be different from the server URL at the time that the object was indexed
         item['replace']['Requests'] = ",".join(
