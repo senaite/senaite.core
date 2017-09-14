@@ -73,7 +73,7 @@ def create_sample_catalog(portal, upgrade_utils):
             logger.info('Reindexed {}/{} samples'.format(i, len(sample_brains)))
         sample_obj = brain.getObject()
         sample_obj.reindexObject()
-        # uncatalog samples from bika catalog
+        # uncatalog samples from bika catalog and portal catalog
         path_uid = '/'.join(sample_obj.getPhysicalPath())
         bika_catalog.uncatalog_object(path_uid)
         portal_catalog.uncatalog_object(path_uid)
