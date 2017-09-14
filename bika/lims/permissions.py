@@ -12,7 +12,7 @@
     both valid.
 
 """
-from Products.CMFCore.permissions import AddPortalContent
+from Products.CMFCore import permissions
 
 # Add Permissions:
 # ----------------
@@ -25,7 +25,6 @@ AddAttachment = 'BIKA: Add Attachment'
 AddARTemplate = 'BIKA: Add ARTemplate'
 AddBatch = 'BIKA: Add Batch'
 AddClient = 'BIKA: Add Client'
-AddClientFolder = 'BIKA: Add ClientFolder'
 AddInvoice = 'BIKA: Add Invoice'
 AddMethod = 'BIKA: Add Method'
 AddMultifile = 'BIKA: Add Multifile'
@@ -35,14 +34,13 @@ AddSample = 'BIKA: Add Sample'
 AddSampleMatrix = 'BIKA: Add SampleMatrix'
 AddSamplePartition = 'BIKA: Add SamplePartition'
 AddSamplePoint = 'BIKA: Add SamplePoint'
-AddStorageLocation = 'BIKA: Add StorageLocation'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 AddSamplingRound = 'BIKA: Add SamplingRound'
 AddSRTemplate = 'BIKA: Add SRTemplate'
 AddSubGroup = 'BIKA: Add Sub-group'
 
 # Default Archetypes Add Permission
-ADD_CONTENT_PERMISSION = AddPortalContent
+ADD_CONTENT_PERMISSION = permissions.AddPortalContent
 
 # Add Permissions for specific types, if required
 ADD_CONTENT_PERMISSIONS = {
@@ -73,8 +71,6 @@ ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
 ManageSamples = 'BIKA: Manage Samples'
 ManageSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
-PostInvoiceBatch = 'BIKA: Post Invoice batch'
-ManagePricelists = 'BIKA: Manage Pricelists'
 
 # This allows to edit all client fields, and perform admin tasks on Clients.
 ManageClients = 'BIKA: Manage Clients'
@@ -101,7 +97,6 @@ Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
 Publish = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
-EditAR = 'BIKA: Edit AR'
 ResultsNotRequested = 'BIKA: Results not requested'
 ManageInvoices = 'BIKA: Manage Invoices'
 ViewResults = 'BIKA: View Results'
@@ -170,3 +165,345 @@ ReopenSamplingRound = 'BIKA: Reopen SamplingRound'
 # Manage AR Imports
 # ----------------------------------------------
 ManageARImport = 'BIKA: Manage ARImport'
+
+
+def setup_permissions(portal):
+    # Root permissions
+    mp = portal.manage_permission
+
+    mp(AccessJSONAPI, ['Manager', 'LabManager'], 0)
+
+    mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'],
+       1)
+    mp(AddAnalysisProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddAnalysisSpec, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddAttachment,
+       ['Manager', 'LabManager', 'Owner' 'Analyst', 'LabClerk', 'Sampler',
+        'Client'], 0)
+    mp(AddBatch, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
+    mp(AddInvoice, ['Manager', 'LabManager'], 1)
+    mp(AddMethod, ['Manager', 'LabManager'], 1)
+    mp(AddMultifile, ['Manager', 'LabManager', 'LabClerk'], 1)
+    mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
+    mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+    mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddSamplePartition,
+       ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler',
+        'SamplingCoordinator'], 1)
+    mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
+    mp(AddSubGroup, ['Manager', 'LabManager', 'LabClerk'], 0)
+
+    mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
+    mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
+    mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'],
+       1)
+    mp(permissions.DeleteObjects,
+       ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
+    mp(permissions.ModifyPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+    mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
+
+    mp(ApplyVersionControl,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
+        'RegulatoryInspector'], 1)
+    mp(SaveNewVersion,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
+        'RegulatoryInspector'], 1)
+    mp(AccessPreviousVersions,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
+        'RegulatoryInspector'], 1)
+
+    mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
+    mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
+    mp(ManageAnalysisRequests,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver',
+        'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
+    mp(ManageBika, ['Manager', 'LabManager'], 1)
+    mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
+    mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)
+    mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+    mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+    mp(ManageSamples,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver',
+        'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
+    mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
+
+    mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
+    mp(ViewRetractedAnalyses,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
+
+    mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
+    mp(SampleSample,
+       ['Manager', 'LabManager', 'Sampler', 'SamplingCoordinator'], 0)
+    mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)
+    mp(ReceiveSample,
+       ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'],
+       1)
+    mp(ExpireSample, ['Manager', 'LabManager', 'LabClerk'], 1)
+    mp(DisposeSample, ['Manager', 'LabManager', 'LabClerk'], 1)
+    mp(ImportAnalysis, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+    mp(Retract, ['Manager', 'LabManager', 'Verifier'], 1)
+    mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
+    mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
+    mp(EditSample,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver',
+        'Owner', 'SamplingCoordinator'], 1)
+    mp(EditAR,
+       ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'],
+       1)
+    mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
+    mp(ResultsNotRequested, ['Manager', 'LabManager', 'LabClerk', 'Analyst'],
+       1)
+    mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
+    mp(ViewResults,
+       ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector',
+        'SamplingCoordinator'], 1)
+    mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
+    mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
+    mp(EditSamplePartition,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver',
+        'Owner', 'SamplingCoordinator'], 1)
+
+    mp('Access contents information', ['Authenticated'], 1)
+    mp(permissions.View, ['Authenticated'], 1)
+
+    mp(ImportInstrumentResults, ['Manager', 'LabManager', 'Analyst'], 1)
+
+    mp(ViewLogTab, ['Manager', 'LabManager'], 1)
+
+    mp = portal.bika_setup.manage_permission
+    mp('Access contents information', ['Authenticated', 'Analyst'], 1)
+    mp(permissions.ModifyPortalContent, ['Manager', 'LabManager'], 0)
+    mp(permissions.View, ['Authenticated', 'Analyst'], 1)
+    mp(permissions.ApplyVersionControl, ['Authenticated'], 1)
+    mp(permissions.SaveNewVersion, ['Authenticated'], 1)
+    mp(permissions.AccessPreviousVersions, ['Authenticated'], 1)
+    portal.bika_setup.reindexObject()
+
+    mp = portal.bika_setup.laboratory.manage_permission
+    mp('Access contents information', ['Authenticated'], 1)
+    mp(permissions.View, ['Authenticated'], 1)
+    portal.bika_setup.laboratory.reindexObject()
+
+    # /clients folder permissions
+
+    # When modifying these defaults, look to subscribers/objectmodified.py
+
+    # Member role must have view permission on /clients, to see the list.
+    # This means within a client, perms granted on Member role are available
+    # in clients not our own, allowing sideways entry if we're not careful.
+    mp = portal.clients.manage_permission
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler',
+        'Preserver', 'SamplingCoordinator'], 0)
+    mp(permissions.View,
+       ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler',
+        'Preserver', 'SamplingCoordinator', 'SamplingCoordinator'], 0)
+    mp(permissions.ModifyPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+    mp('Access contents information',
+       ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler',
+        'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+    mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.AddPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+    mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
+    portal.clients.reindexObject()
+
+    for obj in portal.clients.objectValues():
+        mp = obj.manage_permission
+        mp(permissions.ListFolderContents,
+           ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst',
+            'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+        mp(permissions.View,
+           ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst',
+            'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'],
+           0)
+        mp(AddSupplyOrder, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+        mp('Access contents information',
+           ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst',
+            'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+        obj.reindexObject()
+        for contact in portal.clients.objectValues('Contact'):
+            mp = contact.manage_permission
+            mp(permissions.View,
+               ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst',
+                'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+            mp(permissions.ModifyPortalContent,
+               ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
+
+    # /worksheets folder permissions
+    mp = portal.worksheets.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'],
+       0)
+    mp(permissions.AddPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+    mp(permissions.View,
+       ['Manager', 'LabManager', 'Analyst', 'RegulatoryInspector'], 0)
+    mp('Access contents information',
+       ['Manager', 'LabManager', 'Analyst', 'RegulatoryInspector'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    portal.worksheets.reindexObject()
+
+    # /batches folder permissions
+    mp = portal.batches.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Authenticated',
+        'RegulatoryInspector'], 0)
+    mp(permissions.AddPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+    mp(permissions.View,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'],
+       0)
+    mp('Access contents information',
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Authenticated',
+        'RegulatoryInspector'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    portal.batches.reindexObject()
+
+    # /analysisrequests folder permissions
+    mp = portal.analysisrequests.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler',
+        'RegulatoryInspector', 'SamplingCoordinator'], 0)
+    mp(permissions.AddPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+    mp(permissions.View,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler',
+        'RegulatoryInspector', 'SamplingCoordinator'], 0)
+    mp('Access contents information',
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler',
+        'RegulatoryInspector', 'SamplingCoordinator'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    portal.analysisrequests.reindexObject()
+
+    # /referencesamples folder permissions
+    mp = portal.referencesamples.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+    mp(permissions.AddPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+    mp('Access contents information',
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    portal.referencesamples.reindexObject()
+
+    # /samples folder permissions
+    mp = portal.samples.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver',
+        'RegulatoryInspector', 'SamplingCoordinator'], 0)
+    mp(permissions.AddPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler',
+        'SamplingCoordinator'], 0)
+    mp(permissions.View,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver',
+        'RegulatoryInspector', 'SamplingCoordinator'], 0)
+    mp('Access contents information',
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver',
+        'RegulatoryInspector', 'SamplingCoordinator'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    portal.samples.reindexObject()
+
+    # /reports folder permissions
+    mp = portal.reports.manage_permission
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'Member', 'LabClerk', ], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
+    mp('Access contents information',
+       ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
+    mp(permissions.AddPortalContent,
+       ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
+
+    mp('ATContentTypes: Add Image',
+       ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
+    mp('ATContentTypes: Add File',
+       ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
+    portal.reports.reindexObject()
+
+    # /invoices folder permissions
+    mp = portal.invoices.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents,
+       ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    mp(permissions.View, ['Manager', 'LabManager'], 0)
+    portal.invoices.reindexObject()
+
+    # /pricelists folder permissions
+    mp = portal.pricelists.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents, ['Member'], 1)
+    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    mp(permissions.View, ['Manager', 'LabManager'], 0)
+    portal.pricelists.reindexObject()
+
+    # /methods folder permissions
+    mp = portal.methods.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
+    mp(permissions.ListFolderContents,
+       ['Member', 'Authenticated', 'Anonymous'], 1)
+    mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
+    mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'],
+       1)
+    mp('Access contents information',
+       ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
+    portal.methods.reindexObject()
+
+    try:
+        # /supplyorders folder permissions
+        mp = portal.supplyorders.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner', 'LabClerk'],
+           0)
+        mp(permissions.ListFolderContents, ['LabClerk', ''], 1)
+        mp(permissions.AddPortalContent,
+           ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk'], 0)
+        portal.supplyorders.reindexObject()
+    except:
+        pass
+
+    # Add Analysis Services View permission to Clients
+    # (allow Clients to add attachments to Analysis Services from an AR)
+    mp = portal.bika_setup.bika_analysisservices.manage_permission
+    mp('Access contents information', ['Authenticated', 'Analyst', 'Client'],
+       1)
+    mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
+    portal.bika_setup.bika_analysisservices.reindexObject()
+
+    # Add Attachment Types View permission to Clients
+    # (allow Clients to add attachments to Analysis Services from an AR)
+    mp = portal.bika_setup.bika_attachmenttypes.manage_permission
+    mp('Access contents information', ['Authenticated', 'Analyst', 'Client'],
+       1)
+    mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
+    portal.bika_setup.bika_attachmenttypes.reindexObject()
+
+    # /arimports folder permissions
+    try:
+        mp = portal.arimports.manage_permission
+        mp(ManageARImport, ['Manager', ], 1)
+        mp(permissions.ListFolderContents, ['Manager', 'Member', ], 1)
+        mp(permissions.AddPortalContent, ['Manager', ], 0)
+        mp(permissions.DeleteObjects, ['Manager'], 0)
+        mp(permissions.View, ['Manager', 'Member'], 0)
+        portal.arimports.reindexObject()
+    except:
+        pass

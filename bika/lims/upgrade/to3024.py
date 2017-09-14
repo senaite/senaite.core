@@ -7,7 +7,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.config import REFERENCE_CATALOG
-from bika.lims.permissions import AddStorageLocation
 
 def upgrade(tool):
     """ Add Storage locacations to ARs and Samples.
