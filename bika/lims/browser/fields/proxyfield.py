@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import DateTime
+
 from zope.interface import implements
 
 from AccessControl import ClassSecurityInfo
@@ -96,6 +98,15 @@ class ProxyField(ObjectField):
 
         # set the value on the proxy object
         field.set(proxy_object, value, **kwargs)
+
+        # get the current time
+        now = DateTime.DateTime()
+
+        # update the modification date of the proxied object
+        proxy_object.setModificationDate(now)
+
+        # update the modification date of the holding object
+        instance.setModificationDate(now)
 
 
 # Register the field

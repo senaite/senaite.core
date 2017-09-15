@@ -122,6 +122,26 @@ of the underlying Sample (https://github.com/bikalabs/bika.lims/issues/1992)::
     >>> sample
     <Sample at /plone/clients/client-1/water-0001>
 
+Since Proxy Fields modify *only* the proxied object, the holding object's modification date
+needs to be updated as well (https://github.com/bikalims/bika.lims/issues/2218)::
+
+    >>> ar_mdate = api.get_modification_date(ar)
+    >>> sample_mdate = api.get_modification_date(sample)
+
+Now we update a proxied field value::
+
+    >>> ar.setClientReference(4711)
+
+The modification date of the AR should be updated::
+
+    >>> api.get_modification_date(ar) != ar_mdate
+    True
+
+And the modification date of the Sample should be upated::
+
+    >>> api.get_modification_date(sample) != sample_mdate
+    True
+
 
 DateSampled
 ...........
