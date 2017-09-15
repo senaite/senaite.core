@@ -3,13 +3,26 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-""" All permissions are defined here.
-    They are also defined in permissions.zcml.
-    The two files must be kept in sync.
+"""
+This file has two parts, the first one contains pseudoconstants to get
+permissions titles in other places.
 
-    bika.lims.__init__ imports * from this file, so
-    bika.lims.PermName or bika.lims.permissions.PermName are
-    both valid.
+The second part is a function to set up permissions for some general objects.
+
+All the available permissions are defined in permissions.zcml.
+Each permission has two attributes: a short ID and a long title. The ID
+will be used for zope3-like permissions such as ZCML configuration
+files. The long title will be used for zope2-like
+permissions such as sm.checkPermission.
+
+In order to avoid typo errors, we will use pseudoconstants instead of
+permission string values. these constants are defined in ins this file.
+
+The two files (permissions.py and permissions.zcml) must be kept in sync.
+
+bika.lims.__init__ imports * from this file, so
+bika.lims.PermName or bika.lims.permissions.PermName are
+both valid.
 
 """
 from Products.CMFCore import permissions
@@ -168,6 +181,19 @@ ManageARImport = 'BIKA: Manage ARImport'
 
 
 def setup_permissions(portal):
+    """
+    This function sets permissions for some general objects (or
+    folders) during Bika installation process.
+    Those objects are:
+    the general Portal, bika_setup, laboratory, clients folder, contacts,
+    batches, worksheets folder, etc
+
+    This permissions can be overridden lately using workflow definitions and/or
+    'manage_permission' method.
+
+    :param portal: the site object
+    :return: None
+    """
     # Root permissions
     mp = portal.manage_permission
 

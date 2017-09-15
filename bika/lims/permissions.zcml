@@ -7,9 +7,16 @@
     i18n_domain="bika">
 
 <!--
-    All permissions are defined here.
-    They are also defined in permissions.py.
-    The two files must be kept in sync.
+    All the available permissions are defined here. Each new line will be a
+    new permission. Each permission has two attributes: a short ID and a
+    long title. The ID will be used for zope3-like permissions such as ZCML
+    configuration files. The long title will be used for zope2-like
+    permissions such as sm.checkPermission.
+
+    In order to avoid typo errors, we will use pseudoconstants instead of
+    permission string values. these constants are defined in permissions.py
+
+    The two files (permissions.py and permissions.zcml) must be kept in sync.
 /-->
 
 # Add Permissions:
