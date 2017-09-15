@@ -128,22 +128,22 @@ class AddAnalysesView(BikaListingView):
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/add_analyses")
             elif (
-                'list_getCategoryTitle' in form or
-                'list_Title' in form or
-                'list_getClientTitle' in form
+                'getCategoryTitle' in form or
+                'Title' in form or
+                'getClientTitle' in form
                     ):
                 # Apply filter elements
                 # Note that the name of those fields is '..Title', but we
                 # are getting their UID.
-                category = form.get('list_getCategoryTitle', '')
+                category = form.get('getCategoryTitle', '')
                 if category:
                     self.contentFilter['getCategoryUID'] = category
 
-                service = form.get('list_Title', '')
+                service = form.get('Title', '')
                 if service:
                     self.contentFilter['getServiceUID'] = service
 
-                client = form.get('list_getClientTitle', '')
+                client = form.get('getClientTitle', '')
                 if client:
                     self.contentFilter['getClientUID'] = client
 
