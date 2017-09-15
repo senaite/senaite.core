@@ -289,12 +289,14 @@ def isTransitionAllowed(instance, transition_id, active_only=True):
     :returns: True if transition can be performed
     :rtype: bool
     """
-    #TODO Workflow to allow reinstate transition to be performed
-    inactive_transitions = ['reinstate',]
-
-    if transition_id not in inactive_transitions and \
-            active_only and not isBasicTransitionAllowed(instance):
-        return False
+    # If the instance is not active, cancellation and inactive workflows have
+    # priority over the rest of workflows associated to the object, so only
+    # allow to transition if the transition_id belongs to any of these two
+    # workflows and dismiss the rest
+    if not isActive(instance):
+        inactive_transitions = ['reinstate', 'activate']
+        if transition_id not in inactive_transitions:
+            return False
 
     wftool = getToolByName(instance, "portal_workflow")
     chain = wftool.getChainFor(instance)
