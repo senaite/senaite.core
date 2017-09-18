@@ -9,7 +9,8 @@
         <p> Select the tasks to carry on: </p>
             <p>
                 <label>
-                    <input type="checkbox" name="analysis_date"
+                    <input type="checkbox"
+                           name="sanitize_analyses_creation_date"
                            value="1">
                     Check created date value for Analyses. Some analyses has
                     a wrong value due to old versions of Bika. Those
@@ -23,6 +24,8 @@
             </p>
     </div>
 
-    <p><button>Start</button></p>
+    <p>
+        <input type="submit" id="submit" name="submit" value="Submit">
+    </p>
 
 </form>

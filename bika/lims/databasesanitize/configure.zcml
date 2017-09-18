@@ -14,8 +14,8 @@
 
     <browser:page
       for="*"
-      name="async_analyses_creation_date_recover"
-      class="bika.lims.databasesanitize.controller_view.AsyncAnalysesCreationDateRecover"
+      name="analyses_creation_date_recover"
+      class="bika.lims.databasesanitize.controller_view.AnalysesCreationDateRecover"
       permission="cmf.ModifyPortalContent"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

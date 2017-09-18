@@ -17,8 +17,17 @@ class ControllerView(BrowserView):
     template = ViewPageTemplateFile("templates/main_template.pt")
 
     def __call__(self):
-        # Need to generate a PDF with the stickers?
-        if self.request.form.get('analysis_date', '0') == '1':
+        if not self.request.form.get('submit', None):
+            # The form hasn't been submitted, no tasks required
+            return self.template()
+        # Need to sanitize creation date from analyses
+        if self.request.form.get('sanitize_analyses_creation_date', '0')\
+                == '1':
+            # Fix the creation date of analyses
+            self.sanitize_analyses_creation_date()
+        return self.template()
+
+    def sanitize_analyses_creation(self):
             logger.info("Starting sanitation process 'Analyses creation "
                         "date recover'...")
             # Only load asynchronously if queue sanitation-tasks is available
@@ -26,22 +35,20 @@ class ControllerView(BrowserView):
             if task_queue is None:
                 # sanitation-tasks queue not registered. Proceed synchronously
                 logger.info("SYNC sanitation process started...")
-                task_manager = AsyncAnalysesCreationDateRecover()
+                task_manager = AnalysesCreationDateRecover()
                 task_manager()
             else:
                 # sanitation-tasks queue registered, create asynchronously
                 logger.info("[A]SYNC sanitation process started...")
                 path = self.request.PATH_INFO
                 path = path.replace(
-                    'sanitize_action', 'async_analyses_creation_date_recover')
+                    'sanitize_action', 'analyses_creation_date_recover')
                 task_queue.add(path, method='POST')
                 msg = 'One job added to the sanitation process queue'
                 self.context.plone_utils.addPortalMessage(msg, 'info')
 
-        return self.template()
 
-
-class AsyncAnalysesCreationDateRecover():
+class AnalysesCreationDateRecover():
     """
     This class manages the creation of async tasks.
     """
