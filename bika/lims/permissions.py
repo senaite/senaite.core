@@ -234,13 +234,13 @@ def setup_permissions(portal):
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
     mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
-    mp(ApplyVersionControl,
+    mp(permissions.ApplyVersionControl,
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
         'RegulatoryInspector'], 1)
-    mp(SaveNewVersion,
+    mp(permissions.SaveNewVersion,
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
         'RegulatoryInspector'], 1)
-    mp(AccessPreviousVersions,
+    mp(permissions.AccessPreviousVersions,
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
         'RegulatoryInspector'], 1)
 
@@ -312,8 +312,8 @@ def setup_permissions(portal):
     portal.bika_setup.reindexObject()
 
     mp = portal.bika_setup.laboratory.manage_permission
-    mp('Access contents information', ['Authenticated'], 1)
-    mp(permissions.View, ['Authenticated'], 1)
+    mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
+    mp(permissions.View, ['Authenticated'], 0)
     portal.bika_setup.laboratory.reindexObject()
 
     # /clients folder permissions
@@ -482,14 +482,12 @@ def setup_permissions(portal):
     # /methods folder permissions
     mp = portal.methods.manage_permission
     mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
-    mp(permissions.ListFolderContents,
-       ['Member', 'Authenticated', 'Anonymous'], 1)
+    mp(permissions.ListFolderContents, ['Member', 'Authenticated'], 0)
     mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
     mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
-    mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'],
-       1)
+    mp(permissions.View, ['Manager', 'Member', 'Authenticated'], 0)
     mp('Access contents information',
-       ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
+       ['Manager', 'Member', 'Authenticated'], 0)
     portal.methods.reindexObject()
 
     try:

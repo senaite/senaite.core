@@ -38,6 +38,7 @@
   <!-- Method aliases -->
   <alias from="(Default)" to="folder_view"/>
   <alias from="view" to="folder_view"/>
+  <alias from="base_view" to="folder_view"/>
   <alias from="edit" to="folder_view"/>
 
   <!-- Actions -->
