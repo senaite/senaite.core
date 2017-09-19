@@ -146,6 +146,9 @@ class ContactLoginDetailsView(BrowserView):
         if userid:
             try:
                 self.context.setUser(userid)
+                # If we are linking Client Contact, let it see the Client
+                if self.context.aq_parent.portal_type == 'Client':
+                    self.context.aq_parent.manage_setLocalRoles(self.context.getUsername(), ['Owner', ])
                 self.add_status_message(_("User linked to this Contact"), "info")
             except ValueError, e:
                 self.add_status_message(e, "error")
