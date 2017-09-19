@@ -27,7 +27,7 @@ class ControllerView(BrowserView):
             self.sanitize_analyses_creation_date()
         return self.template()
 
-    def sanitize_analyses_creation(self):
+    def sanitize_analyses_creation_date(self):
             logger.info("Starting sanitation process 'Analyses creation "
                         "date recover'...")
             # Only load asynchronously if queue sanitation-tasks is available
