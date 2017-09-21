@@ -147,6 +147,8 @@
                         batchformkeys python:['_authenticator'];">
 
             <legend i18n:translate="">Link an existing User</legend>
+            <p i18n:translate="">Only existing users in "Client" group will
+            be displayed.</p>
             <form id="user_search_form"
                   method="post">
 
@@ -158,7 +160,8 @@
                         <tr>
                             <th colspan="4" class="nosort">
                                 <input class="quickSearch" type="text" name="searchstring" value="" tal:attributes="value view/searchstring">
-                                <input type="submit" class="searchButton" name="search_button" value="Suche">
+                                <input type="submit" class="searchButton"
+                                       name="search_button" value="Search">
                             </th>
                         </tr>
                         <tr>

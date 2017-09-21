@@ -96,7 +96,7 @@ class ContactLoginDetailsView(BrowserView):
         """Search Plone users which are not linked to a contact
         """
         users = api.user.get_users()
-
+        expected_groups = {'AuthenticatedUsers', 'Clients'}
         out = []
         for user in users:
             userid = user.getId()
@@ -106,7 +106,14 @@ class ContactLoginDetailsView(BrowserView):
             labcontact = LabContact.getContactByUsername(userid)
             if contact or labcontact:
                 continue
-
+            # Checking Plone user belongs to Client group only. Otherwise,
+            # weird things could happen (a client contact assigned to a user
+            # with labman privileges, different contacts from different
+            # clients assigned to the same user, etc.)
+            user_groups = user.getGroups()
+            comparison = expected_groups.symmetric_difference(set(user_groups))
+            if comparison:
+                continue
             userdata = {
                 "userid": user.getId(),
                 "email": user.getProperty("email"),
