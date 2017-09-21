@@ -590,6 +590,7 @@ class Client_Contacts(WorksheetImporter):
                 except Exception as msg:
                     logger.info("Error adding user (%s): %s" % (msg, username))
                 contact.aq_parent.manage_setLocalRoles(row['Username'], ['Owner', ])
+                contact.reindexObject()
                 # add user to Clients group
                 group = portal_groups.getGroupById('Clients')
                 group.addMember(username)
