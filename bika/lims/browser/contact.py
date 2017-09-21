@@ -6,22 +6,21 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import re
-
 from Acquisition import aq_base
 
+import transaction
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-
 from plone import api
 from plone.protect import CheckAuthenticator
 
 from bika.lims import PMF
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.content.contact import Contact
 from bika.lims.content.labcontact import LabContact
-from bika.lims import bikaMessageFactory as _
 
 
 class ContactLoginDetailsView(BrowserView):
@@ -213,7 +212,14 @@ class ContactLoginDetailsView(BrowserView):
             return error('password', PMF("Passwords do not match."))
 
         if len(password) < 5:
-            return error('password', PMF("Passwords must contain at least 5 letters."))
+            return error('password', PMF("Passwords must contain at least 5 "
+                                         "characters."))
+        users = api.user.get_users()
+        for user in users:
+            if user.getId() == username:
+                msg = "Username {} already exists, please, choose " \
+                      "another one.".format(username)
+                return error(None, msg)
 
         try:
             reg_tool.addMember(username,
@@ -248,17 +254,14 @@ class ContactLoginDetailsView(BrowserView):
                 group = self.portal_groups.getGroupById(group)
                 group.addMember(username)
 
-        contact.reindexObject()
-
-        if properties.validate_email or self.request.get('mail_me', 0):
+        if self.request.get('mail_me', 0):
             try:
                 reg_tool.registeredNotify(username)
             except:
-                import transaction
                 transaction.abort()
                 return error(
                     None, PMF("SMTP server disconnected."))
-
+        contact.reindexObject()
         message = PMF("Member registered.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         return self.template()
