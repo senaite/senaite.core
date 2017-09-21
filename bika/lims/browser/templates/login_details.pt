@@ -147,8 +147,10 @@
                         batchformkeys python:['_authenticator'];">
 
             <legend i18n:translate="">Link an existing User</legend>
-            <p i18n:translate="">Only existing users in "Client" group will
-            be displayed.</p>
+            <p tal:condition="view/is_contact"
+               i18n:translate="">
+                Only existing users in "Client" group will be displayed.
+            </p>
             <form id="user_search_form"
                   method="post">
 
