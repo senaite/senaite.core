@@ -12,6 +12,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.subscribers import skip
 from bika.lims.workflow.duplicateanalysis import events
 from zope.interface import implements
@@ -78,9 +79,18 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         requestuid = self.getRequestUID()
         if not requestuid or not worksheet:
             return []
+
+        siblings = []
         analyses = worksheet.getAnalyses()
-        siblings = [an for an in analyses if an.getRequestUID() == requestuid]
-        siblings = [an for an in analyses if an.UID() != self.UID()]
+        for analysis in analyses:
+            if analysis.UID() == self.UID():
+                # Exclude me from the list
+                continue
+            if IRequestAnalysis.providedBy(analysis):
+                # We exclude here all analyses that do not have an analysis
+                # request associated (e.g. IReferenceAnalysis)
+                if analysis.getRequestUID() == requestuid:
+                    siblings.append(analysis)
         return siblings
 
     @security.public

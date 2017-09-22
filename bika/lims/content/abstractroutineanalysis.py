@@ -19,6 +19,7 @@ from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
@@ -113,7 +114,7 @@ schema = schema.copy() + Schema((
 
 
 class AbstractRoutineAnalysis(AbstractAnalysis):
-    implements(IAnalysis, IRoutineAnalysis, ISamplePrepWorkflow)
+    implements(IAnalysis, IRequestAnalysis, IRoutineAnalysis, ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -142,6 +143,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         ar = self.getRequest()
         if ar:
             return ar.UID()
+
+    @security.public
+    def getRequestURL(self):
+        """Returns the url path of the Analysis Request object this analysis
+        belongs to. Returns None if there is no Request assigned.
+        :return: the Analysis Request URL path this analysis belongs to
+        :rtype: str
+        """
+        request = self.getRequest()
+        if request:
+            return request.absolute_url_path()
 
     @security.public
     def getClientTitle(self):
@@ -266,28 +278,25 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return duetime
 
     @security.public
+    @deprecated("[1709] Use getRequestID instead")
     def getAnalysisRequestTitle(self):
         """This is a catalog metadata column
         """
-        request = self.getRequest()
-        if request:
-            return request.Title()
+        return self.getRequestID()
 
     @security.public
+    @deprecated("[1709] Use getRequestUID instead")
     def getAnalysisRequestUID(self):
         """This method is used to populate catalog values
         """
-        request = self.getRequest()
-        if request:
-            return request.UID()
+        return self.getRequestUID()
 
     @security.public
+    @deprecated("[1709] Use getRequestURL instead")
     def getAnalysisRequestURL(self):
         """This is a catalog metadata column
         """
-        request = self.getRequest()
-        if request:
-            return request.absolute_url_path()
+        return self.getRequestURL()
 
     @security.public
     def getSampleTypeUID(self):
