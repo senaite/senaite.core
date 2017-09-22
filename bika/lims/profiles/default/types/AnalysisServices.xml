@@ -22,6 +22,7 @@
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
+ <alias from="base_view" to="folder_view"/>
  <alias from="edit" to="base_edit"/>
 
 </object>
