@@ -50,8 +50,7 @@ class AnalysesTransposedTable(BikaListingTable):
     def _transpose_data(self):
         cached = []
         index = 0
-        #ignore = ['Analysis', 'Service', 'Result', 'ResultDM']
-        include = ['Attachments', 'DetectionLimit', 'DueDate','Pos', 'ResultDM']
+        include = ['Attachments', 'DetectionLimit', 'DueDate', 'Pos']
         for col in self.bika_listing.review_state['columns']:
             if col == 'Result':
                 # Further interims will be inserted in this position

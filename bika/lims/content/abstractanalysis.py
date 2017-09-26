@@ -144,7 +144,6 @@ schema = schema.copy() + Schema((
     NumberOfRequiredVerifications,
     Result,
     ResultCaptureDate,
-    ResultDM,
     Retested,
     Uncertainty,
     Verificators

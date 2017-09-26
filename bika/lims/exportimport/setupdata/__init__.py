@@ -2031,7 +2031,6 @@ class Reference_Samples(WorksheetImporter):
             obj.edit(title=row['id'],
                      ReferenceType=row['ReferenceType'],
                      Result=row['Result'],
-                     ResultDM=row['ResultDM'],
                      Analyst=row['Analyst'],
                      Instrument=row['Instrument'],
                      Retested=row['Retested']
@@ -2155,7 +2154,6 @@ class Analysis_Requests(WorksheetImporter):
                 ar, service,
                 Result=row['Result'],
                 ResultCaptureDate=row['ResultCaptureDate'],
-                ResultDM=row['ResultDM'],
                 Analyst=row['Analyst'],
                 Instrument=row['Instrument'],
                 Retested=self.to_bool(row['Retested']),

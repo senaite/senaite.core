@@ -68,7 +68,6 @@ class bika_ar_export(UniqueObject, SimpleItem):
                 service = analysis.Title()
                 analyses[service] = {}
                 analyses[service]['AsIs'] = analysis.getResult()
-                analyses[service]['DM'] = analysis.getResultDM() or None
                 analyses[service]['attach'] = analysis.getAttachment() or []
                 if not services.has_key(service):
                     category = analysis.getCategoryTitle()
