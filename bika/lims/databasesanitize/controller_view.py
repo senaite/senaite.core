@@ -1,8 +1,10 @@
 import json
+import traceback
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from collective.taskqueue.interfaces import ITaskQueue
 from plone.protect import CheckAuthenticator
+from plone.protect import PostOnly
 from zope.component import queryUtility
 
 from bika.lims import logger
@@ -64,7 +66,16 @@ class QueuedSanitationTasksCount(BrowserView):
         """
         Returns the number of tasks in the sanitation-tasks queue
         """
-        CheckAuthenticator(self.request.form)
+        try:
+            PostOnly(self.context.REQUEST)
+        except:
+            logger.error(traceback.format_exc())
+            return json.dumps({'count': 0})
+        try:
+            CheckAuthenticator(self.request.form)
+        except:
+            logger.error(traceback.format_exc())
+            return json.dumps({'count': 0})
         task_queue = queryUtility(ITaskQueue, name='sanitation-tasks')
         count = len(task_queue) if task_queue is not None else 0
         return json.dumps({'count': count})
