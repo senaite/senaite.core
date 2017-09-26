@@ -114,9 +114,6 @@ class AnalysesView(BikaListingView):
             'Specification': {
                 'title': _('Specification'),
                 'sortable': False},
-            'ResultDM': {
-                'title': _('Dry'),
-                'sortable': False},
             'Uncertainty': {
                 'title': _('+-'),
                 'sortable': False},
@@ -1030,34 +1027,6 @@ class AnalysesView(BikaListingView):
             self.review_states = new_states
             # Allow selecting individual analyses
             self.show_select_column = True
-
-        # Dry Matter.
-        # The Dry Matter column is never enabled for reference sample contexts
-        # and refers to getReportDryMatter in ARs.
-        if items and \
-                (hasattr(self.context, 'getReportDryMatter') and \
-                         self.context.getReportDryMatter()):
-
-            # look through all items
-            # if the item's Service supports ReportDryMatter, add getResultDM().
-            for item in items:
-                if item['obj'].getReportDryMatter():
-                    dry_matter = item['obj'].getObject().getResultDM()
-                    item['ResultDM'] = dry_matter
-                else:
-                    item['ResultDM'] = ''
-                if item['ResultDM']:
-                    item['after']['ResultDM'] = "<em class='discreet'>%</em>"
-
-            # modify the review_states list to include the ResultDM column
-            new_states = []
-            for state in self.review_states:
-                pos = 'Result' in state['columns'] and \
-                      state['columns'].index('Uncertainty') + 1 or len(
-                    state['columns'])
-                state['columns'].insert(pos, 'ResultDM')
-                new_states.append(state)
-            self.review_states = new_states
 
         if self.show_categories:
             self.categories = map(lambda x: x[0],

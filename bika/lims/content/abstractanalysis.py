@@ -81,12 +81,6 @@ ResultCaptureDate = DateTimeField(
     'ResultCaptureDate'
 )
 
-# If ReportDryMatter is True in the AnalysisService, the adjusted result
-# is stored here.
-ResultDM = StringField(
-    'ResultDM'
-)
-
 # If the analysis has previously been retracted, this flag is set True
 # to indicate that this is a re-test.
 Retested = BooleanField(
