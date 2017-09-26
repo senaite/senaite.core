@@ -81,6 +81,7 @@ class AnalysisRequestsView(BikaListingView):
                 'sortable': True,},
             'Progress': {
                 'title': 'Progress',
+                'sortable': False,
                 'toggle': True},
             'getRequestID': {
                 'title': _('Request ID'),
