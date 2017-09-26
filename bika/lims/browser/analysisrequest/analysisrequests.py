@@ -3,31 +3,33 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from plone import api
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import PRIORITIES
-from bika.lims.utils import t
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.analysisrequest.analysisrequests_filter_bar\
-    import AnalysisRequestsBikaListingFilterBar
-from bika.lims.utils import getUsers
-from bika.lims.workflow import getTransitionDate
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import to_utf8, getUsers
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+import json
+import traceback
+
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from collective.taskqueue.interfaces import ITaskQueue
+from plone import api
 from plone.app.layout.globals.interfaces import IViewView
 from plone.protect import CheckAuthenticator
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
-from collective.taskqueue.interfaces import ITaskQueue
+from plone.protect import PostOnly
 from zope.component import queryUtility
-from datetime import datetime, date
-import json
+from zope.interface import implements
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.analysisrequest.analysisrequests_filter_bar \
+    import AnalysisRequestsBikaListingFilterBar
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.config import PRIORITIES
+from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import getUsers
+from bika.lims.utils import t
 
 
 class AnalysisRequestsView(BikaListingView):
@@ -1144,7 +1146,16 @@ class QueuedAnalysisRequestsCount():
     def __call__(self):
         """Returns the number of tasks in the queue ar-create, responsible of
         creating Analysis Requests asynchronously"""
-        CheckAuthenticator(self.request.form)
+        try:
+            PostOnly(self.context.REQUEST)
+        except:
+            logger.error(traceback.format_exc())
+            return json.dumps({'count': 0})
+        try:
+            CheckAuthenticator(self.request.form)
+        except:
+            logger.error(traceback.format_exc())
+            return json.dumps({'count': 0})
         task_queue = queryUtility(ITaskQueue, name='ar-create')
         count = len(task_queue) if task_queue is not None else 0
         return json.dumps({'count': count})
