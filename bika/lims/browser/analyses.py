@@ -1042,7 +1042,8 @@ class AnalysesView(BikaListingView):
             # if the item's Service supports ReportDryMatter, add getResultDM().
             for item in items:
                 if item['obj'].getReportDryMatter():
-                    item['ResultDM'] = item['obj'].getResultDM()
+                    dry_matter = item['obj'].getObject().getResultDM()
+                    item['ResultDM'] = dry_matter
                 else:
                     item['ResultDM'] = ''
                 if item['ResultDM']:
