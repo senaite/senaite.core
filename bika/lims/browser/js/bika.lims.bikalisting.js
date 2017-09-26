@@ -687,7 +687,7 @@ function BikaListingTableView() {
     function save_elements(requestdata, tr) {
         /**
          * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
-         * @requestdata should has the format  {fieldname=fieldvalue, uid=xxxx} ->  { ReportDryMatter=false, uid=xxx}.
+         * @requestdata should has the format  {fieldname=fieldvalue, uid=xxxx}
          */
         var url = window.location.href.replace('/base_view', '');
         // Staff for the notification
