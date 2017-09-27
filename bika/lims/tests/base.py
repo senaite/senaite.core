@@ -4,26 +4,25 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import os
-from AccessControl.SecurityManagement import newSecurityManager
+import unittest
 from Acquisition import aq_base
-from bika.lims import logger
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING, BIKA_SIMPLE_TESTING
-from plone.app.robotframework.remote import RemoteLibrary
-from plone.app.testing import setRoles
+from re import match
+
+from AccessControl.SecurityManagement import newSecurityManager
+from Products.CMFPlone.tests.utils import MockMailHost as _MMH
+from Products.MailHost.interfaces import IMailHost
+from Testing.ZopeTestCase.functional import Functional
 from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import SITE_OWNER_PASSWORD
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import setRoles
 from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
-from Products.CMFPlone.tests.utils import MockMailHost as _MMH
-from Products.MailHost.interfaces import IMailHost
-from re import match
-from Testing.ZopeTestCase.functional import Functional
 from zope.component import getSiteManager
 
-import unittest
+from bika.lims import logger
+from bika.lims.testing import BIKA_FUNCTIONAL_TESTING, BIKA_SIMPLE_TESTING
 
 
 class MockMailHost(_MMH):
