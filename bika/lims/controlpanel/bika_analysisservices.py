@@ -16,7 +16,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
+from Products.ATContentTypes.content.schemata import finalizeATCTSchema
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -409,5 +409,5 @@ class AnalysisServices(ATFolder):
     displayContentsTab = False
     schema = schema
 
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
+finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 atapi.registerType(AnalysisServices, PROJECTNAME)

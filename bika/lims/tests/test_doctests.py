@@ -4,7 +4,6 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from doctest import DocFileSuite
 from doctest import DocTestSuite
 from plone.testing import layered
 import doctest
