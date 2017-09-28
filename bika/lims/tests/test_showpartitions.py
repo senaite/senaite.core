@@ -13,6 +13,7 @@ from bika.lims.browser.stickers import Sticker
 from bika.lims.testing import BIKA_SIMPLE_TESTING
 from bika.lims.tests.base import BikaSimpleTestCase
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.vocabularies import getStickerTemplates
 from bika.lims.workflow import doActionFor
 
@@ -56,7 +57,6 @@ class TestShowPartitions(BikaSimpleTestCase):
                   'Contact': contact.UID(),
                   'SamplingDate': '2015-01-01',
                   'SampleType': sampletype.UID()}
-        from bika.lims.utils.analysisrequest import create_analysisrequest
         for stemp in getStickerTemplates():
 
             # create and receive AR
