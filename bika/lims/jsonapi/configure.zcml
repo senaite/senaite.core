@@ -1,54 +1,200 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:monkey="http://namespaces.plone.org/monkey"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="bika">
 
-  <monkey:patch
-      description="Better jsonapi error handler."
-      module="plone.jsonapi.core.browser.decorators"
-      original="handle_errors"
-      replacement="bika.lims.jsonapi.handle_errors"
+  <!-- CATALOG
+       Unified interface to one or more Portal Catalog tools.
+  -->
+
+  <!-- Default catalog adapter -->
+  <adapter
+      for="*"
+      factory=".catalog.Catalog"
       />
 
-  <utility
-    name="bika.lims.jsonapi.create"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".create.Create" />
+  <!-- Default catalog query adapter -->
+  <adapter
+      for=".interfaces.ICatalog"
+      factory=".catalog.CatalogQuery"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.read"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".read.Read" />
 
-  <utility
-    name="bika.lims.jsonapi.update"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".update.Update" />
+  <!-- DATA PROVIDERS
+       Introspect the Schema/Attributes of Contents and return a JSON compatible
+       dictionary with the help of the Data Managers (see below).
+  -->
 
-  <utility
-    name="bika.lims.jsonapi.remove"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".remove.Remove" />
+  <!-- Default data provider (AT based content types) -->
+  <adapter
+      for="*"
+      factory=".dataproviders.ATDataProvider"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.getusers"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".getusers.getUsers" />
+  <!-- Adapter for Catalog Brains -->
+  <adapter
+      for="Products.ZCatalog.interfaces.ICatalogBrain"
+      factory=".dataproviders.ZCDataProvider"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.doactionfor"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".doactionfor.doActionFor" />
+  <!-- Adapter for the Plone Site -->
+  <adapter
+      for="Products.CMFCore.interfaces.ISiteRoot"
+      factory=".dataproviders.SiteRootDataProvider"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.calculate_partitions"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".calculate_partitions.calculate_partitions" />
+  <!-- Data provider for Dexterity content types -->
+  <adapter
+      for="plone.dexterity.interfaces.IDexterityContent"
+      factory=".dataproviders.DexterityDataProvider"
+      />
 
-  <utility
-    name="bika.lims.jsonapi.allowedtransitionsfor"
-    provides="plone.jsonapi.core.interfaces.IRouteProvider"
-    factory=".allowedtransitionsfor.allowedTransitionsFor" />
+
+  <!-- DATA MANAGERS
+       Context level interface to get and set values (by name) and get a JSON compatible
+       structure of the value with the help of the Field Managers (see below).
+  -->
+
+  <!-- Default Data adapter (AT based content types) -->
+  <adapter
+      for="*"
+      factory=".datamanagers.ATDataManager"
+      />
+
+  <!-- Data adapter for Catalog brains -->
+  <adapter
+      for="Products.ZCatalog.interfaces.ICatalogBrain"
+      factory=".datamanagers.BrainDataManager"
+      />
+
+  <!-- Data adapter for the Portal object -->
+  <adapter
+      for="Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot"
+      factory=".datamanagers.PortalDataManager"
+      />
+
+  <!-- Data manager for Dexterity field manipulation -->
+  <adapter
+      for="plone.dexterity.interfaces.IDexterityContent"
+      factory=".datamanagers.DexterityDataManager"
+      />
+
+
+  <!-- AT FIELD MANAGERS
+       Field level interface to get and set values and get a JSON compatible
+       structure of the value.
+  -->
+
+  <!-- Adapter for AT Fields -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IField"
+      factory=".fieldmanagers.ATFieldManager"
+      />
+
+  <!-- Adapter for Text Fields -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.ITextField"
+      factory=".fieldmanagers.TextFieldManager"
+      />
+
+  <!-- Adapter for DateTime Field -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IDateTimeField"
+      factory=".fieldmanagers.DateTimeFieldManager"
+      />
+
+  <!-- Adapter for Computed Field -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IComputedField"
+      factory=".fieldmanagers.ComputedFieldManager"
+      />
+
+  <!-- Adapter for File Field -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IFileField"
+      factory=".fieldmanagers.FileFieldManager"
+      />
+
+  <!-- Adapter for Blob File Field -->
+  <adapter
+      for="plone.app.blob.interfaces.IBlobField"
+      factory=".fieldmanagers.FileFieldManager"
+      />
+
+  <!-- Adapter for Bika LIMS Proxy Field -->
+  <adapter
+      for="bika.lims.interfaces.IProxyField"
+      factory=".fieldmanagers.ProxyFieldManager"
+      />
+
+  <!-- Adapter for Bika LIMS AR Analyses Field -->
+  <adapter
+      for="bika.lims.interfaces.IARAnalysesField"
+      factory=".fieldmanagers.ARAnalysesFieldManager"
+      />
+
+  <!-- Adapter for Reference Field -->
+  <adapter
+      for="Products.Archetypes.interfaces.field.IReferenceField"
+      factory=".fieldmanagers.ReferenceFieldManager"
+      />
+
+
+  <!-- ZOPE SCHEMA FIELD MANAGERS
+       Field level interface to get and set values and get a JSON compatible
+       structure of the value.
+  -->
+
+  <!-- Adapter for Zope Schema Fields -->
+  <adapter
+      for="zope.schema.interfaces.IField"
+      factory=".fieldmanagers.ZopeSchemaFieldManager"
+      />
+
+  <!-- Adapter for Rich Text Fields -->
+  <configure zcml:condition="installed plone.app.textfield">
+    <adapter
+        for="plone.app.textfield.interfaces.IRichText"
+        factory=".fieldmanagers.RichTextFieldManager"
+        />
+  </configure>
+
+  <!-- Adapter for Relation Fields -->
+  <configure zcml:condition="installed z3c.relationfield">
+    <adapter
+        for="z3c.relationfield.interfaces.IRelationList"
+        factory=".fieldmanagers.RelationListFieldManager"
+        />
+  </configure>
+
+  <!-- Adapter for Named File Fields -->
+  <adapter
+      for="plone.namedfile.interfaces.INamedFileField"
+      factory=".fieldmanagers.NamedFileFieldManager"
+      />
+
+  <!-- Adapter for Named Image Fields -->
+  <adapter
+      for="plone.namedfile.interfaces.INamedImageField"
+      factory=".fieldmanagers.NamedImageFieldManager"
+      />
+
+
+  <!-- BATCHING
+       Provides a unified interface to the Plone Batching Machinery.
+  -->
+
+  <!-- Adapter for Plone Batching -->
+  <adapter
+      for="*"
+      factory=".batch.Batch"
+      />
+
+  <!-- Adapter for Plone 4.2 Batching -->
+  <adapter
+      for="ZTUtils.Batch.Batch"
+      factory=".batch.Batch42"
+      />
 
 </configure>
