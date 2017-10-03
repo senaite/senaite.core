@@ -636,8 +636,9 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return safe_unicode(self.getId()).encode('utf-8')
 
     def getSampleTypeTitle(self):
-        if self.getSampleType():
-            return self.getSampleType().Title()
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.Title()
         return ''
 
     def Title(self):
@@ -683,16 +684,24 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return value
 
     def getSampleTypeUID(self):
-        if self.getSampleType():
-            return self.getSampleType().UID()
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.UID()
         return ''
 
     def getClientUID(self):
         return self.aq_parent.UID()
 
     def getSamplePointUID(self):
-        if self.getSamplePoint():
-            return self.getSamplePoint().UID()
+        sample_point = self.getSamplePoint()
+        if sample_point:
+            return sample_point.UID()
+
+    def getHazardous(self):
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.getHazardous()
+        return False
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
@@ -747,18 +756,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ar.Schema()['ClientReference'].set(ar, value)
         self.Schema()['ClientReference'].set(self, value)
 
-    def getClientReference(self):
-            return self.Schema().getField('ClientReference').get(self)
-
     def setClientSampleID(self, value, **kw):
         """ Set the field on Analysis Requests.
         """
         for ar in self.getAnalysisRequests():
             ar.Schema()['ClientSampleID'].set(ar, value)
         self.Schema()['ClientSampleID'].set(self, value)
-
-    def getClientSampleID(self):
-        return self.Schema().getField('ClientSampleID').get(self)
 
     def setAdHoc(self, value, **kw):
         """ Set the field on Analysis Requests.
@@ -788,11 +791,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ars.append(ar)
         return ars
 
-    security.declarePublic('getAnalysisRequestsUID')
+    security.declarePublic('getAnalysisRequestUIDs')
 
-    def getAnalysisRequestsUID(self):
-        if self.getAnalysisRequests():
-            return [ar.UID() for ar in self.getAnalysisRequests()]
+    def getAnalysisRequestUIDs(self):
+        analysis_requests = self.getAnalysisRequests()
+        if analysis_requests:
+            return [ar.UID() for ar in analysis_requests]
         return []
 
     security.declarePublic('getAnalyses')
@@ -860,18 +864,21 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return partitions
 
     def getSamplingDeviationTitle(self):
-        if self.getSamplingDeviation():
-            return self.getSamplingDeviation().Title()
+        sampling_deviation = self.getSamplingDeviation()
+        if sampling_deviation:
+            return sampling_deviation.Title()
         return ''
 
     def getStorageLocationTitle(self):
-        if self.getStorageLocation():
-            return self.getStorageLocation().Title()
+        storage_location = self.getStorageLocation()
+        if storage_location:
+            return storage_location.Title()
         return ''
 
     def getSamplePointTitle(self):
-        if self.getSamplePoint():
-            return self.getSamplePoint().Title()
+        sample_point = self.getSamplePoint()
+        if sample_point:
+            return sample_point.Title()
         return ''
 
     def getObjectWorkflowStates(self):
