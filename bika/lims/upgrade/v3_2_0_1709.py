@@ -10,6 +10,8 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
+import transaction
+
 from bika.lims.catalog.sample_catalog import CATALOG_SAMPLE_LISTING
 from bika.lims.catalog.sample_catalog import bika_catalog_sample_definition
 
@@ -57,6 +59,7 @@ def create_sample_catalog(portal, upgrade_utils):
     # create sample catalog columns
     for col in sample_columns:
         upgrade_utils.addColumn(CATALOG_SAMPLE_LISTING, col)
+
     # define objects to be catalogued
     at.setCatalogsByType('Sample', [CATALOG_SAMPLE_LISTING, ])
     logger.info('Recovering samples to reindex')
@@ -71,6 +74,9 @@ def create_sample_catalog(portal, upgrade_utils):
     for brain in sample_brains:
         if i % 100 == 0:
             logger.info('Reindexed {}/{} samples'.format(i, len(sample_brains)))
+            if i % 100 == 0:
+                transaction.commit()
+                logger.info('{0} items processed.'.format(i))
         sample_obj = brain.getObject()
         sample_obj.reindexObject()
         # uncatalog samples from bika catalog and portal catalog
@@ -78,6 +84,7 @@ def create_sample_catalog(portal, upgrade_utils):
         bika_catalog.uncatalog_object(path_uid)
         portal_catalog.uncatalog_object(path_uid)
         i += 1
+    transaction.commit()
     logger.info('Reindexed {}/{} samples'.format(len(sample_brains), len(sample_brains)))
 
 def update_bika_catalog(portal, upgrade_utils):
