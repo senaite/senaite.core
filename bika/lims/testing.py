@@ -44,7 +44,7 @@ class SimpleTestLayer(PloneSandboxLayer):
         z2.installProduct(app, 'bika.lims')
 
     def setUpPloneSite(self, portal):
-        login(portal.aq_parent, SITE_OWNER_NAME)
+        login(portal.aq_parent, 'admin')
 
         wf = getToolByName(portal, 'portal_workflow')
         wf.setDefaultChain('plone_workflow')
@@ -54,7 +54,10 @@ class SimpleTestLayer(PloneSandboxLayer):
         portal.getTypeInfo().manage_changeProperties(
             view_methods=['folder_listing'],
             default_view='folder_listing')
+        from AccessControl import getSecurityManager
 
+        user = getSecurityManager().getUser()
+        user.getRolesInContext(portal)
         applyProfile(portal, 'bika.lims:default')
 
         # Add some test users
@@ -131,14 +134,16 @@ BIKA_SIMPLE_TESTING = FunctionalTesting(
 
 
 class BikaTestLayer(SimpleTestLayer):
+    """
+    Loads setupdata file, so you will have a site with initial data.
+    """
     def setUpZope(self, app, configurationContext):
         super(BikaTestLayer, self).setUpZope(app, configurationContext)
 
     def setUpPloneSite(self, portal):
         super(BikaTestLayer, self).setUpPloneSite(portal)
 
-        login(portal.aq_parent, SITE_OWNER_NAME)  # again
-
+        login(portal, 'admin')  # again
         # load test data
         self.request = makerequest(portal.aq_parent).REQUEST
         self.request.form['setupexisting'] = 1
