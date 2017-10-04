@@ -449,39 +449,6 @@ class SamplesView(BikaListingView):
 
         item['DateSampled'] = datesampled
         item['getSampler'] = sampler
-        # sampling workflow - inline edits for Sampler, Date Sampled and
-        # Scheduled Sampling Sampler
-        checkPermission = self.context.portal_membership.checkPermission
-        state = obj.review_state
-        if state in ['to_be_sampled', 'scheduled_sampling']:
-            item['required'] = []
-            item['allow_edit'] = []
-            item['choices'] = {}
-            users = [(
-                {'ResultValue': u, 'ResultText': self.samplers.getValue(u)})
-                for u in self.samplers]
-            # both situations
-            full_object = obj.getObject()
-            if checkPermission(SampleSample, full_object) or\
-                    self._schedule_sampling_permissions():
-                item['required'].append('getSampler')
-                item['allow_edit'].append('getSampler')
-                item['choices']['getSampler'] = users
-            # sampling permissions
-            if checkPermission(SampleSample, full_object):
-                getAuthenticatedMember = self.context.\
-                    portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
-                Sampler = sampler and sampler or \
-                    (username in self.samplers.keys() and username) or ''
-                item['required'].append('DateSampled')
-                item['allow_edit'].append('DateSampled')
-                item['getSampler'] = Sampler
-            # coordinator permissions
-            if self._schedule_sampling_permissions():
-                item['required'].extend(['SamplingDate', 'getScheduledSamplingSampler'])
-                item['allow_edit'].extend(['SamplingDate', 'getScheduledSamplingSampler'])
-                item['choices']['getScheduledSamplingSampler'] = users
         # These don't exist on samples
         # the columns exist just to set "preserve" transition from lists.
         # XXX This should be a list of preservers...
@@ -492,16 +459,48 @@ class SamplesView(BikaListingView):
         item['field']['getSampler'] = 'Sampler'
         item['field']['getScheduledSamplingSampler'] =\
             'ScheduledSamplingSampler'
+        # sampling workflow - inline edits for Sampler, Date Sampled and
+        # Scheduled Sampling Sampler
+        checkPermission = self.context.portal_membership.checkPermission
+        state = obj.review_state
+        if state in ['to_be_sampled', 'scheduled_sampling'] or checkPermission(PreserveSample, obj):
+            getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+            username = getAuthenticatedMember().getUserName()
+            preservers = getUsers(self.context, ['Preserver', 'LabManager', 'Manager'])
+            users = {'samplers':
+                                [({'ResultValue': u, 'ResultText': self.samplers.getValue(u)})
+                                for u in self.samplers],
+                    'preservers':
+                                [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+                                for u in preservers]
+                     }
+
+        if state in ['to_be_sampled', 'scheduled_sampling']:
+            required_field = set()
+            allow_edit_field = set()
+            item['choices'] = {}
+            full_object = obj.getObject()
+            # sampling permissions
+            if checkPermission(SampleSample, full_object):
+                Sampler = sampler and sampler or \
+                    (username in self.samplers.keys() and username) or ''
+                required_field.update({'getSampler', 'DateSampled'})
+                allow_edit_field.update({'getSampler', 'DateSampled'})
+                item['getSampler'] = Sampler
+                item['choices']['getSampler'] = users['samplers']
+            # coordinator permissions
+            if self._schedule_sampling_permissions():
+                required_field.update({'getSampler', 'SamplingDate', 'getScheduledSamplingSampler'})
+                allow_edit_field.update({'getSampler', 'SamplingDate', 'getScheduledSamplingSampler'})
+                item['choices']['getSampler'] = users['samplers']
+                item['choices']['getScheduledSamplingSampler'] = users['samplers']
+            item['required'] = list(required_field)
+            item['allow_edit'] = list(allow_edit_field)
         # inline edits for Preserver and Date Preserved
         if checkPermission(PreserveSample, obj):
             item['required'] = ['getPreserver', 'getDatePreserved']
             item['allow_edit'] = ['getPreserver', 'getDatePreserved']
-            preservers = getUsers(self.context, ['Preserver', 'LabManager', 'Manager'])
-            getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-            username = getAuthenticatedMember().getUserName()
-            users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
-                    for u in preservers]
-            item['choices'] = {'getPreserver': users}
+            item['choices'] = {'getPreserver': users['preservers']}
             preserver = username in preservers.keys() and username or ''
             item['getPreserver'] = preserver
             item['getDatePreserved'] = self.ulocalized_time(DateTime())
