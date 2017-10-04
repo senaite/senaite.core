@@ -26,6 +26,9 @@ both valid.
 
 """
 from Products.CMFCore import permissions
+from Products.CMFEditions.Permissions import AccessPreviousVersions
+from Products.CMFEditions.Permissions import ApplyVersionControl
+from Products.CMFEditions.Permissions import SaveNewVersion
 
 # Add Permissions:
 # ----------------
@@ -234,13 +237,13 @@ def setup_permissions(portal):
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
     mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
-    mp(permissions.ApplyVersionControl,
+    mp(ApplyVersionControl,
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
         'RegulatoryInspector'], 1)
-    mp(permissions.SaveNewVersion,
+    mp(SaveNewVersion,
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
         'RegulatoryInspector'], 1)
-    mp(permissions.AccessPreviousVersions,
+    mp(AccessPreviousVersions,
        ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner',
         'RegulatoryInspector'], 1)
 
@@ -306,9 +309,9 @@ def setup_permissions(portal):
     mp('Access contents information', ['Authenticated', 'Analyst'], 1)
     mp(permissions.ModifyPortalContent, ['Manager', 'LabManager'], 0)
     mp(permissions.View, ['Authenticated', 'Analyst'], 1)
-    mp(permissions.ApplyVersionControl, ['Authenticated'], 1)
-    mp(permissions.SaveNewVersion, ['Authenticated'], 1)
-    mp(permissions.AccessPreviousVersions, ['Authenticated'], 1)
+    mp(ApplyVersionControl, ['Authenticated'], 1)
+    mp(SaveNewVersion, ['Authenticated'], 1)
+    mp(AccessPreviousVersions, ['Authenticated'], 1)
     portal.bika_setup.reindexObject()
 
     mp = portal.bika_setup.laboratory.manage_permission
