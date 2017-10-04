@@ -74,6 +74,7 @@ class SamplesView(BikaListingView):
         self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.title = self.context.translate(_("Samples"))
         self.description = ""
+        self.samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'])
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
@@ -389,7 +390,7 @@ class SamplesView(BikaListingView):
 
         item['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
             (item['url'], obj.getSampleID)
-        analysis_requests_brains = arc(portal_type='AnalysisRequest', UID=obj.getAnalysisRequestsUID)
+        analysis_requests_brains = arc(portal_type='AnalysisRequest', UID=obj.getAnalysisRequestUIDs)
         # From Professional Plone 4 development:
         # The getURL() method returns, as with the absolute_url() method, the current referenced
         # object URL. This may be different from the server URL at the time that the object was indexed
@@ -417,8 +418,7 @@ class SamplesView(BikaListingView):
             self.ulocalized_time(sd, long_format=1) if sd else ''
 
         after_icons = ''
-        sample_type = bsc(portal_type='SampleType', UID=obj.getSampleTypeUID)[0]
-        if sample_type.getHazardous:
+        if obj.getHazardous:
             after_icons += "<img title='%s' " \
                 "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
                 (t(_("Hazardous")),
@@ -457,10 +457,9 @@ class SamplesView(BikaListingView):
             item['required'] = []
             item['allow_edit'] = []
             item['choices'] = {}
-            samplers = getUsers(self.context, ['Sampler', 'LabManager', 'Manager'])
             users = [(
-                {'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                for u in samplers]
+                {'ResultValue': u, 'ResultText': self.samplers.getValue(u)})
+                for u in self.samplers]
             # both situations
             full_object = obj.getObject()
             if checkPermission(SampleSample, full_object) or\
@@ -474,17 +473,14 @@ class SamplesView(BikaListingView):
                     portal_membership.getAuthenticatedMember
                 username = getAuthenticatedMember().getUserName()
                 Sampler = sampler and sampler or \
-                    (username in samplers.keys() and username) or ''
+                    (username in self.samplers.keys() and username) or ''
                 item['required'].append('DateSampled')
                 item['allow_edit'].append('DateSampled')
                 item['getSampler'] = Sampler
             # coordinator permissions
             if self._schedule_sampling_permissions():
-                item['required'].append('SamplingDate')
-                item['allow_edit'].append('SamplingDate')
-                item['required'].append('getScheduledSamplingSampler')
-                item['allow_edit'].append(
-                    'getScheduledSamplingSampler')
+                item['required'].extend(['SamplingDate', 'getScheduledSamplingSampler'])
+                item['allow_edit'].extend(['SamplingDate', 'getScheduledSamplingSampler'])
                 item['choices']['getScheduledSamplingSampler'] = users
         # These don't exist on samples
         # the columns exist just to set "preserve" transition from lists.
@@ -497,20 +493,20 @@ class SamplesView(BikaListingView):
         item['field']['getScheduledSamplingSampler'] =\
             'ScheduledSamplingSampler'
         # inline edits for Preserver and Date Preserved
-        # if checkPermission(PreserveSample, obj):
-        #     item['required'] = ['getPreserver', 'getDatePreserved']
-        #     item['allow_edit'] = ['getPreserver', 'getDatePreserved']
-        #     preservers = getUsers(self.context, ['Preserver', 'LabManager', 'Manager'])
-        #     getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-        #     username = getAuthenticatedMember().getUserName()
-        #     users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
-        #              for u in preservers]
-        #     item['choices'] = {'getPreserver': users}
-        #     preserver = username in preservers.keys() and username or ''
-        #     item['getPreserver'] = preserver
-        #     item['getDatePreserved'] = self.ulocalized_time(DateTime())
-        #     item['class']['getPreserver'] = 'provisional'
-        #     item['class']['getDatePreserved'] = 'provisional'
+        if checkPermission(PreserveSample, obj):
+            item['required'] = ['getPreserver', 'getDatePreserved']
+            item['allow_edit'] = ['getPreserver', 'getDatePreserved']
+            preservers = getUsers(self.context, ['Preserver', 'LabManager', 'Manager'])
+            getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+            username = getAuthenticatedMember().getUserName()
+            users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+                    for u in preservers]
+            item['choices'] = {'getPreserver': users}
+            preserver = username in preservers.keys() and username or ''
+            item['getPreserver'] = preserver
+            item['getDatePreserved'] = self.ulocalized_time(DateTime())
+            item['class']['getPreserver'] = 'provisional'
+            item['class']['getDatePreserved'] = 'provisional'
         return item
 
     def folderitems(self, full_objects=False):

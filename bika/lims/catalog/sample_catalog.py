@@ -36,13 +36,14 @@ _columns_list = [
     'getSamplingWorkflowEnabled',
     'getDateSampled',
     'getSampler',
-    'getAnalysisRequestsUID',
+    'getAnalysisRequestUIDs',
     'getSamplingDeviationTitle',
     'getStorageLocationTitle',
     'getSamplePointTitle',
     'getClientSampleID',
     'getSampleTypeTitle',
     'getClientReference',
+    'getHazardous',
 ]
 
 # Adding basic indexes
