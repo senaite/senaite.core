@@ -832,6 +832,18 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
         )
     ),
+    BooleanField(
+        'EnableSelectAllCheckboxInAggregatedanalyses',
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("'Select all' checkbox in aggregated analyses view"),
+            description=_(
+                "Add a checkbox to select all listed items in aggregated"
+                " analyses view"
+            )
+        ),
+    ),
 ))
 
 schema['title'].validators = ()

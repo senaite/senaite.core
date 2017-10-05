@@ -34,7 +34,8 @@ class AggregatedAnalysesView(AnalysesView):
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request)
         self.title = _("Analyses pending")
-        self.show_select_all_checkbox = False
+        self.show_select_all_checkbox = self.context.bika_setup\
+            .getEnableSelectAllCheckboxInAggregatedanalyses()
         self.show_categories = False
         self.pagesize = 50
         # Get temp objects that are too time consuming to obtain every time
