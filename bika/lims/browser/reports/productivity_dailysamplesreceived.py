@@ -102,7 +102,6 @@ class Report(BrowserView):
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
-            import pdb; pdb.set_trace()
             for row in datalines:
                 dw.writerow(row)
             report_data = output.getvalue()
