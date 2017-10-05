@@ -67,9 +67,10 @@ class Report(BrowserView):
                                 sample.getDateReceived(), long_format=1),
                             'DateSampled': self.ulocalized_time(
                                 ds, long_format=1),
-                            'SamplingDate': self.ulocalized_time(
-                                sd, long_format=1)
                             }
+                if self.context.bika_setup.getSamplingWorkflowEnabled():
+                    dataline['SamplingDate']= self.ulocalized_time(
+                                              sd, long_format=1)
                 datalines.append(dataline)
                 analyses_count += 1
 
