@@ -22,8 +22,8 @@ from plone.testing.z2 import Browser
 from zope.component import getSiteManager
 
 from bika.lims import logger
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING, BIKA_SIMPLE_TESTING
-
+from bika.lims.testing import BIKA_SIMPLE_TESTING
+# from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 
 class MockMailHost(_MMH):
 
@@ -132,13 +132,13 @@ class BikaSimpleTestCase(Functional, BikaTestCase):
         self.request['ACTUAL_URL'] = self.portal.absolute_url()
         setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
 
-class BikaFunctionalTestCase(Functional, BikaTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
-
-    def setUp(self):
-        super(BikaFunctionalTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
+# class BikaFunctionalTestCase(Functional, BikaTestCase):
+#     layer = BIKA_FUNCTIONAL_TESTING
+#
+#     def setUp(self):
+#         super(BikaFunctionalTestCase, self).setUp()
+#         self.app = self.layer['app']
+#         self.portal = self.layer['portal']
+#         self.request = self.layer['request']
+#         self.request['ACTUAL_URL'] = self.portal.absolute_url()
+#         setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])

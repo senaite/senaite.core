@@ -554,6 +554,7 @@ def setupVarious(context):
     """
     Final Bika import steps.
     """
+    import pdb; pdb.set_trace()
     if context.readDataFile('bika.lims_various.txt') is None:
         return
 

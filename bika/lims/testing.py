@@ -54,10 +54,7 @@ class SimpleTestLayer(PloneSandboxLayer):
         portal.getTypeInfo().manage_changeProperties(
             view_methods=['folder_listing'],
             default_view='folder_listing')
-        from AccessControl import getSecurityManager
 
-        user = getSecurityManager().getUser()
-        user.getRolesInContext(portal)
         applyProfile(portal, 'bika.lims:default')
 
         # Add some test users
@@ -133,30 +130,30 @@ BIKA_SIMPLE_TESTING = FunctionalTesting(
 )
 
 
-class BikaTestLayer(SimpleTestLayer):
-    """
-    Loads setupdata file, so you will have a site with initial data.
-    """
-    def setUpZope(self, app, configurationContext):
-        super(BikaTestLayer, self).setUpZope(app, configurationContext)
+# class BikaTestLayer(SimpleTestLayer):
+#     """
+#     Loads setupdata file, so you will have a site with initial data.
+#     """
+#     def setUpZope(self, app, configurationContext):
+#         super(BikaTestLayer, self).setUpZope(app, configurationContext)
+#
+#     def setUpPloneSite(self, portal):
+#         super(BikaTestLayer, self).setUpPloneSite(portal)
+#
+#         login(portal, 'admin')  # again
+#         # load test data
+#         self.request = makerequest(portal.aq_parent).REQUEST
+#         self.request.form['setupexisting'] = 1
+#         self.request.form['existing'] = "bika.lims:test"
+#         lsd = LoadSetupData(portal, self.request)
+#         logger.info('Loading datas...')
+#         lsd()
+#         logger.info('Loading data finished...')
+#         logout()
 
-    def setUpPloneSite(self, portal):
-        super(BikaTestLayer, self).setUpPloneSite(portal)
-
-        login(portal, 'admin')  # again
-        # load test data
-        self.request = makerequest(portal.aq_parent).REQUEST
-        self.request.form['setupexisting'] = 1
-        self.request.form['existing'] = "bika.lims:test"
-        lsd = LoadSetupData(portal, self.request)
-        logger.info('Loading datas...')
-        lsd()
-        logger.info('Loading data finished...')
-        logout()
-
-BIKA_FUNCTIONAL_FIXTURE = BikaTestLayer()
-BIKA_FUNCTIONAL_FIXTURE['getBrowser'] = getBrowser
-BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(BIKA_FUNCTIONAL_FIXTURE,),
-    name="BikaTestingLayer:Functional"
-)
+# BIKA_FUNCTIONAL_FIXTURE = BikaTestLayer()
+# BIKA_FUNCTIONAL_FIXTURE['getBrowser'] = getBrowser
+# BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
+#     bases=(BIKA_FUNCTIONAL_FIXTURE,),
+#     name="BikaTestingLayer:Functional"
+# )

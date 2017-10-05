@@ -198,6 +198,7 @@ def setup_permissions(portal):
     :return: None
     """
     # Root permissions
+    print "permissions!!------------------"
     mp = portal.manage_permission
 
     mp(AccessJSONAPI, ['Manager', 'LabManager'], 0)
