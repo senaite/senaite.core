@@ -26,6 +26,8 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
 
 from bika.lims.browser.widgets import ReferenceWidget
+from zope.component import getAdapters
+from bika.lims.interfaces import IBatchSearchableText
 
 
 class InheritedObjectsUIField(RecordsField):
@@ -68,7 +70,6 @@ class InheritedObjectsUIField(RecordsField):
 schema = BikaFolderSchema.copy() + Schema((
     StringField(
         'BatchID',
-        searchable=True,
         required=False,
         validators=('uniquefieldvalidator',),
         widget=StringWidget(
@@ -95,7 +96,6 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'ClientBatchID',
-        searchable=True,
         required=0,
         widget=StringWidget(
             label=_("Client Batch ID")
@@ -119,7 +119,6 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     TextField(
         'Remarks',
-        searchable=True,
         default_content_type='text/x-web-intelligent',
         allowable_content_types=('text/plain', ),
         default_output_type="text/plain",
@@ -347,6 +346,61 @@ class Batch(ATFolder):
         return revstatus == BatchState.open \
             and canstatus == CancellationState.active
 
+    def SearchableText(self):
+        """
+        Override searchable text logic based on the requirements.
+
+        This method constructs a text blob which contains all full-text
+        searchable text for this content item.
+        https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
+
+        In some cases we may want to override plain_text_fields variable.
+        To do this, an adapter must be added (providing
+        bika.lims.interfaces.IBatchSearchableText) for that content type.
+        """
+
+        # Speed up string concatenation ops by using a buffer
+        entries = []
+
+        # plain text fields we index from ourselves,
+        # a list of accessor methods of the class
+        plain_text_fields = ("BatchID", "ClientBatchID")
+
+        # Checking if an adapter exists. If yes, we will
+        # get plain_text_fields from adapter.
+        for name, adapter in getAdapters((self,), IBatchSearchableText):
+            entries += adapter.get_plain_text_fields()
+
+        def read(accessor):
+            """
+            Call a class accessor method to give a value for certain Archetypes
+            field.
+            """
+            try:
+                value = accessor()
+            except:
+                value = ""
+
+            if value is None:
+                value = ""
+
+            return value
+
+        # Concatenate plain text fields as they are
+        for f in plain_text_fields:
+            accessor = getattr(self, f)
+            value = read(accessor)
+            entries.append(value)
+
+        # Plone accessor methods assume utf-8
+        def convertToUTF8(text):
+            if type(text) == unicode:
+                return text.encode("utf-8")
+            return text
+
+        entries = [convertToUTF8(entry) for entry in entries]
+        # Concatenate all strings to one text blob
+        return " ".join(entries)
 
 registerType(Batch, PROJECTNAME)
 
