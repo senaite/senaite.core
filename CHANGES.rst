@@ -4,220 +4,283 @@ Changelog
 1.0.0 (Unreleased)
 ------------------
 
-- NDEV-98
-- NDEV-93
-- NDEV-90
-- NDEV-96
-- NDEV-94
-- NDEV-92
-- NDEV-91
-- NMRL-402
-- NMRL-401 Error on reinstating cancelled objects
-- NMRL-396
+**Fixed**
+
+- #265 ValueError in productivity report
+- #264 Fix permissions error on site install
+- #262 DateSampled does not appear to users other than labman or administrator
+- #261 Checking async processes fails due to Privileges of Client Contact
+- #259 Error when saving and Analysis Request via the Save button
+- #258 Sorting Analysis Requests by progress column does not work
+- #257 AttributeError (getRequestUID) when submitting duplicate analyses
+- #256 Restrict the linkeage of client contacts to Plone users with Client role only
+- #255 Client contacts cannot see Analysis Requests if department filtering is enabled
+- #254 Anonymous users have access to restricted objects
+- #249 Unable to reinstate cancelled Analysis Requests
+
+**Added**
+
+- #250 Sanitize tool to fix wrong creation dates for old analyses
 
 
 1.0.0b3-a900fe5 (2017-09-06)
 ----------------------------
 
-- NMRL-389
-- NMRL-399
-- NDEV-82
-- NMRL-190
-- NDEV-50
-- NMRL-369
-- NDEV-78
-- NMRL-171
-- NDEV-74
-- NDEV-70
-- NDEV-69
-- NDEV-75
-- NDEV-45
-- NDEV-66
-- NDEV-63
-- NDEV-67
-- NDEV-61
-- NDEV-60
-- NMRL-345
-- NMRL-372
-- NMRL-359
-- NDEV-48
-- NDEV-47
-- NDEV-46
-- NDEV-33
-- NMRL-374
-- NDEV-14
-- NDEV-15
-- NDEV-16
-- NDEV-11
-- NDEV-42
-- NDEV-41
-- NDEV-40
-- NDEV-38
-- NDEV-39
-- NDEV-34
-- NDEV-37
-- NDEV-35
-- NDEV-32
-- NDEV-31
-- NDEV-30
-- NDEV-27
-- NMRL-338
-- NDEV-28
-- NDEV-19
-- NDEV-20
-- NDEV-23
-- NMRL-362
-- NDEV-13
-- NMRL-337
-- NMRL-357
-- NMRL-367
-- NMRL-364
-- NDEV-10N
-- NMRL-352
-- NMRL-337
+**Fixed**
+
+- #248 Search using Client not working in Add Analyses (Worksheet)
+- #247 Sample Type missing in analysis view for rejected samples
+- #246 ZeroDivisionError when calculating progress
+- #245 Missing Lab Contacts tab in Departments View
+- #240 Unable to modify Sample point field in Analysis Request view
+- #235 Fix Jsi18n adapter conflict
+- #239 Sort on column or index is not valid
+- #231 Partition inconsistences on secondary Analysis Requests
+- #230 Priority not showing on Analysis Request listing
+- #228 Translations updated
+- #227 Malformed messages and/or html make i18ndude to fail
+- #226 Action buttons are not translated
+- #225 State inconsistencies when adding an analysis into a previous Analysis Request
+- #224 Remove warnings and unuseful elses in Analysis Request setters
+- #223 TypeError when Analysis Service's exponential format precision is None
+- #221 Filters by Service, Category and Client do not work when adding Analyses into a Worksheet
+- #220 Not all departments are displayed when creating a new Lab Contact
+- #219 When a Sample Point is modified in AR view, it does not get printed in report
+- #217 Setupdata import fixes
+- #216 Results reports appear truncated
+- #215 All Samples are displayed in Analysis Request Add form, regardless of client
+- #214 Status inconsistences in Analyses in secondary Analysis Requests
+- #211 Sorting by columns in batches is not working
+- #210 In some cases, the sampler displayed in results reports is wrong
+- #209 AttributeError: 'NoneType' object has no attribute 'getPrefix' in Analysis Request add view
+- #208 Rendering of plone.abovecontent in bika.lims.instrument_qc_failures_viewlet fails
+- #206 Unknown sort_on index (getClientTitle) in Add Analyses view from Worksheet
+- #202 Once a result is set, the checkbox is automatically checked, but action buttons do not appear
+- #201 Results interpretation field not updated after verification or prepublish
+- #200 Dependent analyses don't get selected when analysis with dependents is choosen in AR Add view
+- #199 AttributeError when adding a Blank in a Worksheet because of Service without category
+- #198 The assignment of a Calculation to a Method doesn't get saved apparently, but does
+- #196 Error invalidating a published test report (retract_ar action)
+- #195 List of Analysis Request Templates appears empty after adding a Sampling Round Template
+- #193 Render transition buttons only if 'show_workflow_action' in view is true
+- #192 Date Sampled is not displayed in Analysis Request View
+- #191 Analysis Specifications folder loads very slow
+- #190 Bad time formatting on Analysis Request creation within a Sampling Round
+- #189 Bad time formatting when creating a secondary Analysis Request
+- #187 After verification, department managers are not updated in results report anymore
+- #185 Analysis services list not sorted by name
+- #183 Decimals rounding is not working as expected when uncertainties are set
+- #181 Client contact fields are not populated in Sampling Round add form
+- #179 Wrong values for "Sampling for" and "Sampler for scheduled sampling" fields after AR creation
+- #178 Sampler information is wrong in results reports
+- #175 Changes in "Manage Analyses" from "Analysis Request" view without effect
+- #173 NameError (global name 'safe_unicode' is not defined) in Analysis Request Add view
+- #171 Error printing contact address
+- #170 Index error while creating an Analysis Request due to empty Profile
+- #169 ValueError (Unterminated string) in Analysis Request Add view
+- #168 AttributeError 'getBatch' after generating barcode
+- #166 Analyses don't get saved when creating an Analysis Request Template
+- #165 AttributeError in Bika Setup while getting Analysis Services vocabulary
+- #164 AttributeError on Data Import: 'NoneType' object has no attribute 'Import'
+- #161 TypeError on allowed instrument for a given analysis retrieval
+- #159 Date published is missing on data pulled through API
+- #158 Date of collection greater than date received on Sample rejection report
+- #157 History view in reports takes 10 seconds to load
+- #156 Calculation selection list in Analysis Service edit view doesn't get displayed
+- #155 Error while rejecting an Analysis Request. Unsuccessful AJAX call
+
+**Added**
+
+- #244 Asynchronous creation of Analysis Requests
+- #242 Visibility of automatically created analyses because of reflex rule actions
+- #241 Fine-grained visibility of analyses in results reports and client views
+- #237 Performance optimizations in Analysis Request creation
+- #236 Progress bar column in Analysis Requests list and Analyses number
+- #233 Background color change on mouse over for fields table from ARAdd view
+- #232 Display Priority in Analyses Add View from Worksheet and allow to sort
+- #229 Highlight rows in bikalisting on mouse over
+- #218 Render barcodes as bitmap images by default
+- #212 Allow direct verification of analyses with dependencies in manage results view
+- #213 Sampling Date and Date Sampled fields refactoring to avoid confusions
 
 
 1.0.0b2-315362b (2017-06-30)
 ----------------------------
 
-- NMRL-342  AttributeError on upgrade step v1705: getDepartmentUID
-- NDEV-9
-- PHWAY-13
-- NMRL-329  AttributeError on publish: getDigest
-- NMRL-349  AttributeError on upgrade.v3_2_0_1705: 'NoneType' object has no attribute 'aq_parent'
-- NMRL-341  IndexError (migrate_refs) on upgrade step 1705
+**Fixed**
+
+- #154 AttributeError on upgrade step v1705: getDepartmentUID
+- #152 Report performance
+- #151 State titles not displayed in listings
+- #149 Decimal point not visible after edition
+- #143 Fix AttributeError 'getProvince' and 'getDistrict' in Analysis Requests view
+- #142 AttributeError on publish: 'getDigest'
+- #141 AttributeError on upgrade.v3_2_0_1705: 'NoneType' object has no attribute 'aq_parent'
+
+**Added**
+
+- #150 Dynamic loading of allowed transitions in lists
+- #146 Stickers to PDF and new sticker 2"x1" (50.8mm x 25.4mm) with barcode 3of9
+- #145 Workflow refactoring: prepublish
+- #144 Workflow refactoring: publish
 
 
 1.0.0b1-baed368 (2017-06-21)
 ----------------------------
 
-- NMRL-294  Show more missing on verified worksheets listing
-- NMRL-296  ValueError on Patients View: No JSON object could be decoded
-- NMRL-315  Worksheets not displaying analysis after upgrading Mpilo
-- NMRL-316  Seems to be issues with analysis which were in workshheets before upgrade
-- NMRL-321  Unsupported operand type in Samples view
-- NMRL-324  CatalogError in Patient's folder view: Unknown sort_on index (Title)
-- NMRL-327  Worsksheet dashboard figures not updating - Mpilo
-- NMRL-328  TypeError while removing an analysis from worksheet: not enough arguments for format string
-- NMRL-330  IndexError while notifying rejection: list index out of range
-- NMRL-335  Publsihing throwing error: Chinhoyi lab
-- NMRL-336  Reference migration fails in 1705 upgrade
+**Fixed**
+
+- #139 Reference migration fails in 1705 upgrade
+- #138 Error on publishing when contact's full name is empty
+- #137 IndexError while notifying rejection: list index out of range
+- #136 Worksheets number not working in Dashboard
+- #135 Fix string formatting error in UIDReferenceField
+- #132 ValueError in worksheets list. No JSON object could be decoded
+- #131 "Show more" is missing on verified worksheets listing
+- #129 Unsupported operand type in Samples view
+
+**Added**
+
+- #133 Multiple use of instrument control in Worksheets
 
 
 1.0.0a5-afc4725 (2017-06-12)
 ----------------------------
 
-- NMRL-312  ValueError on results file import: DateLoaded.default_method is neither a method of <class 'bika.lims.content.attachment.Attachment'...
-- NMRL-313  AR State inconsistence
-- NMRL-317  KeyError in Dashboard: u'Verified'
-- NMRL-318  TypeError in Analysis Request' manage results view: object of type 'Missing.Value' has no len()
-- NMRL-320  AttributeError while copying Service: 'float' object has no attribute 'split'
-- NMRL-322  UnboundLocalError in Samples view: local variable 'ar' referenced before assignment
-- NMRL-323  AttributeError during results publish: getObject
+**Fixed**
+
+- #128 TypeError in Analysis Request' manage results view: object of type 'Missing.Value' has no len()
+- #127 AttributeError while copying Service: 'float' object has no attribute 'split'
+- #126 AttributeError during results publish: getObject
+- #123 Analysis Request state inconsistences after upgrade step v3.2.0.1705
+- #122 ValueError on results file import
 
 
 1.0.0a4-f32494f (2017-06-08)
 ----------------------------
 
-- NMRL-309 Results Publishing not working
-- NMRL-310 Results import throwing an error
-- NMRL-311 Default number of analysis to 1
-- NMRL-299 Replacement of FileField by BlobField
-- NMRL-300 Prevent the creation of multiple attachment objects on results import
-- NMRL-301 Remove Html Field from ARReport
-- NMRL-303 HistoryAwareReferenceField wide removal
-- NMRL-307 HistoryAwareReferenceField: Migration
-- NMRL-187 Site Search nolonger searching analysis requests
-- NMRL-189 System not saving ARs
-- NMRL-205 Worksheet state changed to Verified yet contained analysis remained in old state
-- NMRL-232 Dashboard. AttributeError: bika_catalog_analysisrequest_listing
-- NMRL-250 HistoryAwareReferenceField. TypeError: not all arguments converted during string formatting
-- NMRL-260 Instrument's getReferenceAnalyses. bika.lims.instrument_qc_failures_viewlet fails
-- NMRL-266 Regression: Aggregated Analysis now read only
-- NMRL-267 Regression: Analyis to be verified not showing results
-- NMRL-268 System throwing an error message on submiting for approval
-- NMRL-269 Analysis disappearing on sorting by date verified
-- NMRL-275 WorkflowException on removing analysis from Worksheet: No workflow provides the '${action_id}' action.
-- NMRL-277 TransactionFailedError when rejecting Sample: An operation previously failed, with traceback:
-- NMRL-278 KeyError: FieldIndex: unindex_object could not remove documentId from index review_state
-- NMRL-279 KeyError on Patient's Analysis Requests view: 'allowedRolesAndUsers'
-- NMRL-280 CatalogError on Patient's Analysis Requests view: Unknown sort_on index (getClientReference)
-- NMRL-281 ValueError in strftime while rendering date : <class 'exceptions.ValueError'>
-- NMRL-282 ValueError in Samples View: year is out of range
-- NMRL-283 ValueError when year is before 1900: the datetime strftime() methods require year >= 1900
-- NMRL-284 TypeError while publishing Analysis Request: not all arguments converted during string formatting
-- NMRL-285 ReferenceException while creating Analysis Request: Invalid target UID
-- NMRL-286 WorksheetTemplate Edit View. NameError: global name 'traceback' is not defined
-- NMRL-287 AttributeError in Analysis Request view: getNumberOfVerifications
-- NMRL-288 Workflow transition error: 'attach' action failed for analysis
-- NMRL-289 AttributeError on Analysis Request submission: 'NoneType' object has no attribute 'getDepartment'
-- NMRL-290 CatalogError in Analysis Requests view: Unknown sort_on index (getId)
-- NMRL-292 KeyError on Samples view: 'getSamplingDate'
-- NMRL-293 AttributeError: getDepartmentUID
-- NMRL-298 UnboundLocalError in SamplesView: local variable 'ar' referenced before assignment
-- NMRL-305 ValueError when loading Bika Setup
-- NMRL-306 AttributeError when rerunning upgrade step 17.05
-- NMRL-308 Regression: Analysis Verification
+**Fixed**
+
+- #118 Results import throwing an error
+- #117 Results publishing not working
+- #113 Biohazard symbol blocks the sticker making it impossible to be read
+- #111 Fix error while submitting reference analyses
+- #109 Remarks in analyses (manage results) are not displayed
+- #105 System doesn't save AR when selected analyses are from a department to which current user has no privileges
+- #104 ReferenceException while creating Analysis Request: invalid target UID
+- #99 Instrument's getReferenceAnalyses. bika.lims.instrument_qc_failures_viewlet fails
+- #94 Site Search no longer searching Analysis Requests
+- #93 Analyses did not get reindexed after recalculating results during import
+- #92 Analyses disappearing on sorting by date verified
+- #91 KeyError on Samples view: 'getSamplingDate'
+- #90 AttributeError on Analysis Request submission: 'NoneType' object has no attribute 'getDepartment'
+- #89 Analysis to be verified not showing results
+- #87 AttributeError in analyses list: 'getNumberOfVerifications'
+- #82 JS error while checking for rejection reasons in client view
+- #80 CatalogError: Unknown sort_on index (Priority)
+- #79 ValueError in Bika's DateTimeWidget
+- #78 CatalogError in Batch View. Unknown sort_on index (BatchID)
+- #77 ValueError in AR Add: time data '2016-05-10' does not match format '%Y-%m-%d %H:%M'
+- #76 AttributeError in Client ARs view: bika_catalog
+- #74 AttributeError: 'NoneType' object has no attribute 'getCalculation'
+- #73 Analyses disappearing on sorting by date verified
+- #72 Cancelled analyses appearing in aggregated list of analyses
+- #71 AttributeError on publish: 'getRequestID'
+- #70 The number of pending verifications displayed in analyses list is wrong
+- #69 Selecting a sticker template in AR's sticker preview does nothing
+- #68 Error while listing analyses in Analysis Request details view
+- #67 Show more button is not working in Analysis Services list
+- #66 TypeError in Worksheets view. TypeError: 'list' object is not callable
+- #65 Fix error when an object has no status defined while listing in WS
+- #64 AttributeError: 'NoneType' object has no attribute 'getInstrumentEntryOfResults
+- #63 If login failed, setDepartmentCookies throws an IndexError
+- #61 Show more button is not working in Worksheet's Add Analyses view
+- #60 Index Error in Analysis Request Add view
+- #59 AttributeError (NoneType) in service.getInstruments()
+- #57 Select all departments option is not working
+- #56 Client and District not sortable in Analysis Requests listing
+- #52 System throwing error on opening "Verified" folder
+
+**Added**
+
+- #120 Add a field in Bika Setup to set the default Number of ARs to add
+- #106 Predigest publish data
+- #103 Prevent the creation of multiple attachment objects on results import
+- #101 Performance improvement. Remove Html Field from AR Report
+- #100 Performance improvement. Replacement of FileField by BlobField
+- #97 Performance improvement. Removal of versionable content types
+- #88 GeneXpert Results import interface
+- #85 Sticker for batch
+- #84 Sticker for worksheet
+- #83 Adapter to make the generation of custom IDs easier
+- #82 Added a method the get always the client in stickers
+- #75 Wildcards on searching lists
+- #58 Defaulting client contact in Analysis Request Add view
 
 
 1.0.0a3-0f28b48 (2017-03-30)
 ----------------------------
 
-- NMRL-221 System Throwing error on opening "Verified" folder. PR#52
-- NMRL-214 Error on opening specific client
-- NMRL-168
-- NMRL-199
-- NMRL-185
-- NMRL-204
-- NMRL-211
-- NMRL-212
-- NMRL-182
-- NMRL-173
-- NMRL-160
-- NMRL-179
-- NMRL-187
+**Fixed**
+
+- #48 Error on AR publish. Global name 'traceback' is not defined (getServiceUsingQuery)
+- #47 Error in CloneAR during retraction. AttributeError: setRequestID
+- #46 Error rejecting an Analysis Request
+- #45 CatalogError in Dashboard. Unknown sort_on index (created) in view.get_sections()
+- #44 AttributeError in worksheets view
+- #43 Sort not working on all lists
+- #41 No Service found for UID None
+- #40 Client Sample ID is missing in Analysis Request Add view
+
+**Added**
+
+- #39 Performance improvement. Make use of brains in Worksheets lists
+- #32 Performance improvement. Catalog for analyses and make use of brains
 
 
 1.0.0a2-1c2913e (2017-03-20)
 ----------------------------
 
-- NMRL-180 System not printing labels automatically
-- NMRL-181 Publish results thowing error
+**Fixed**
+
+- #37 Publish results throwing an error
+- #36 System is not printing labels automatically
+- #35 Equipment interface is not working
+- #34 Results import submission error
+
+**Added**
+
+- #33 New Analysis Request Add form outside client
 
 
 1.0.0a1-e596f2d (2017-03-08)
 ----------------------------
 
-- NMRL-161 EOFError in test instance, only 1GB of RAM?
-- NMRL-164 Upgrade step 320 error
-- NMRL-149 Episodical Delays in opening and saving Patients, AR
-- NMRL-130 Instruments result import without user intervention
-- NMRL-150 System not retaining Patient name and Patient Client ID
-- NMRL-131 Restrictions in manual instrument import
-- NMRL-79 Date Tested range filter on lists
-- NMRL-83 Filter bar is missing on Aggregated list of analyses
-- NMRL-55 Allow "verification pending" status in Aggregated list of Analyses
-- NMRL-110 Catalog for Analysis Requests: analysisrequests_listing
-- NMRL-157 Publishing is failing
-- NMRL-156 EID Reflex: Condition rule being effected on duplicate samples
-- NMRL-158 Publishing failing for reflex results
-- NMRL-151 Portlets and Analyses section from Dashboard are not filtering by department
-- NMRL-155 Number of verifications no longer taking effect
-- NMRL-129 Multi-method assignment and Virtual-Real Instrument correspondence
-- NMRL-166 Rejection option does not appear if only one column in AR Add form
-- NMRL-153 Inconsistent status of Analysis in WS after AR rejection
-- NMRL-111 System allowing entries to be saved more than once
-- NMRL-95 Export to CSV/CML missing in some lists
-- NMRL-103 Current Date rejected as sampling date
-- NMRL-99 Error when trying to save analyses in Analysis Request
-- NMRL-102 System throwing error on saving AR
-- NMRL-159 System slowing down as more users connect
-- NMRL-106 Date of Birth: crash if date is before 1900
+**Fixed**
+
+- #26 Publishing bug due to SMTP Authentication
+- #24 Condition rule being affected on duplicate samples
+- #23 Date of Birth: crash if date is before 1900
+- #21 Rejection option does not appear if only one column in AR Add form
+- #19 Inconsistent status of Analysis in WS after AR rejection
+- #13 Number of verifications no longer taking effect
 - HEALTH-568: TaqMan 96 interface not working well
 - HEALTH-567: Nuclisens interface not working well
+
+**Added**
+
+- #25 Instrument import without user intervention
+- #22 Date Tested range filter on lists
+- #20 Added filter bar in Aggregated list of analyses
+- #12 Multi-method assignment and Virtual-Real Instrument correspondence
+- #11 Restrictions in manual instrument import - Instruments and interfaces
+- #10 Performance improvement. Catalog for Analysis Requests and use of brains
 - HEALTH-364: Added country/province/district columns to client listings
 - Add buttons to export lists to csv and xml formats
 - Additional "printed" workflow for analysis requests once published
+
+**Changed**
+
 - Pinned cairosvg to 1.0.20 (support for python 2 removed in later versions)
 
 
@@ -661,7 +724,7 @@ Changelog
 - LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 - LIMS-1353: Analyses don't sort in Attachment look-up
 
-- Preview for Results reports
+- #eview for Results reports
     - Single/Multi-AR preview
     - Allows to cancel the pre-publish/publish process
     - Allows to make visible/invisible the QC analyses
@@ -749,7 +812,7 @@ Changelog
 3.1 (2014-06-23)
 ----------------
 
-- Product and Analysis specifications per AR
+- #oduct and Analysis specifications per AR
 - Incorrect published results invalidation workflow
 - Improved re-testing workflow
 - Adjustment factors on worksheets
@@ -777,7 +840,7 @@ Changelog
    - Invoices by email
    - Invoice 'batches' for selected time period, ARs aand Orders per Invoice line
    - Invoice batch export to accounts systems
-   - Price lists. Analysis Services and Supplies
+   - #ice lists. Analysis Services and Supplies
 
 
 3.1.3036 (2014-05-30)
@@ -990,7 +1053,7 @@ assigned. These defaults can be changed in BikaSetup > Security.
 - Sampler and Preserver roles, users and permissions
 - Sampling and Preservation workflows
 - Inactive and Cancellation Workflows
-- Pre-preserved Containers
+- #e-preserved Containers
 - Automatic versioning for some bika_setup types
 - Analyst and Instrument on Worksheet templates
 - XLSX setup data loader
@@ -1052,7 +1115,7 @@ assigned. These defaults can be changed in BikaSetup > Security.
 - Drymatter formatting on output corrected
 - Correct default none workflows
 - Review portlet optimization
-- Pricelist prints blank for analysis service with price not defined
+- #icelist prints blank for analysis service with price not defined
 
 
 2.2
@@ -1066,7 +1129,7 @@ assigned. These defaults can be changed in BikaSetup > Security.
 - instrument import keywords and analysis profile keywords enforced.
 - Report headings and formats standardized accross different reports
 - AR import alternative layout provided with selection, including profiles
-- Progress bar introduced for long running processes
+- #ogress bar introduced for long running processes
 
 
 2.1.1
@@ -1097,7 +1160,7 @@ assigned. These defaults can be changed in BikaSetup > Security.
 - Interface to Bika Calendar
 - Import of analysisrequests from csv file
 - Export of results to csv file
-- Print as publication option
+- #int as publication option
 - Lab Departments, lab contacts, and department manager introduced
 - Quality Control calculations. Control, blank and duplicate analyses.
 - QC graphs, normal distribution, trends and duplicate variation
