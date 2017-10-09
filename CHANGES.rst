@@ -279,10 +279,6 @@ Changelog
 - Add buttons to export lists to csv and xml formats
 - Additional "printed" workflow for analysis requests once published
 
-**Changed**
-
-- Pinned cairosvg to 1.0.20 (support for python 2 removed in later versions)
-
 
 3.2.1a-26f2c4b (2017-01-17)
 ---------------------------
