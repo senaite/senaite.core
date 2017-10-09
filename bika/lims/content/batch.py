@@ -373,7 +373,7 @@ class Batch(ATFolder):
         plain_text_fields = ("BatchID", "ClientBatchID")
 
         # Checking if an adapter exists. If yes, we will
-        # get plain_text_fields from adapter.
+        # get plain_text_fields from adapters.
         for name, adapter in getAdapters((self,), IBatchSearchableText):
             entries += adapter.get_plain_text_fields()
 
