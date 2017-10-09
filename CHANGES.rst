@@ -4,6 +4,10 @@ Changelog
 1.0.0 (Unreleased)
 ------------------
 
+**Added**
+
+- #250 Sanitize tool to fix wrong creation dates for old analyses
+
 **Fixed**
 
 - #265 ValueError in productivity report
@@ -13,18 +17,39 @@ Changelog
 - #259 Error when saving and Analysis Request via the Save button
 - #258 Sorting Analysis Requests by progress column does not work
 - #257 AttributeError (getRequestUID) when submitting duplicate analyses
-- #256 Restrict the linkeage of client contacts to Plone users with Client role only
 - #255 Client contacts cannot see Analysis Requests if department filtering is enabled
-- #254 Anonymous users have access to restricted objects
 - #249 Unable to reinstate cancelled Analysis Requests
 
-**Added**
+**Security**
 
-- #250 Sanitize tool to fix wrong creation dates for old analyses
+- #256 Restrict the linkeage of client contacts to Plone users with Client role only
+- #254 Anonymous users have access to restricted objects
 
 
 1.0.0b3-a900fe5 (2017-09-06)
 ----------------------------
+
+**Added**
+
+- #244 Asynchronous creation of Analysis Requests
+- #242 Visibility of automatically created analyses because of reflex rule actions
+- #241 Fine-grained visibility of analyses in results reports and client views
+- #237 Performance optimizations in Analysis Request creation
+- #236 Progress bar column in Analysis Requests list and Analyses number
+- #233 Background color change on mouse over for fields table from ARAdd view
+- #232 Display Priority in Analyses Add View from Worksheet and allow to sort
+- #229 Highlight rows in bikalisting on mouse over
+- #157 Catalog for productivity/management reports to make them faster
+
+**Changed**
+
+- #218 Render barcodes as bitmap images by default
+- #212 Allow direct verification of analyses with dependencies in manage results view
+- #213 Sampling Date and Date Sampled fields refactoring to avoid confusions
+- #228 Translations updated
+- #224 Remove warnings and unuseful elses in Analysis Request setters
+- #193 Render transition buttons only if 'show_workflow_action' in view is true
+- #191 Code sanitize to make Analysis Specifications folder to load faster
 
 **Fixed**
 
@@ -37,11 +62,9 @@ Changelog
 - #239 Sort on column or index is not valid
 - #231 Partition inconsistences on secondary Analysis Requests
 - #230 Priority not showing on Analysis Request listing
-- #228 Translations updated
 - #227 Malformed messages and/or html make i18ndude to fail
 - #226 Action buttons are not translated
 - #225 State inconsistencies when adding an analysis into a previous Analysis Request
-- #224 Remove warnings and unuseful elses in Analysis Request setters
 - #223 TypeError when Analysis Service's exponential format precision is None
 - #221 Filters by Service, Category and Client do not work when adding Analyses into a Worksheet
 - #220 Not all departments are displayed when creating a new Lab Contact
@@ -62,9 +85,7 @@ Changelog
 - #198 The assignment of a Calculation to a Method doesn't get saved apparently, but does
 - #196 Error invalidating a published test report (retract_ar action)
 - #195 List of Analysis Request Templates appears empty after adding a Sampling Round Template
-- #193 Render transition buttons only if 'show_workflow_action' in view is true
 - #192 Date Sampled is not displayed in Analysis Request View
-- #191 Analysis Specifications folder loads very slow
 - #190 Bad time formatting on Analysis Request creation within a Sampling Round
 - #189 Bad time formatting when creating a secondary Analysis Request
 - #187 After verification, department managers are not updated in results report anymore
@@ -73,7 +94,7 @@ Changelog
 - #181 Client contact fields are not populated in Sampling Round add form
 - #179 Wrong values for "Sampling for" and "Sampler for scheduled sampling" fields after AR creation
 - #178 Sampler information is wrong in results reports
-- #175 Changes in "Manage Analyses" from "Analysis Request" view without effect
+- #175 Changes in "Manage Analyses" from "Analysis Request" have no effect
 - #173 NameError (global name 'safe_unicode' is not defined) in Analysis Request Add view
 - #171 Error printing contact address
 - #170 Index error while creating an Analysis Request due to empty Profile
@@ -85,48 +106,40 @@ Changelog
 - #161 TypeError on allowed instrument for a given analysis retrieval
 - #159 Date published is missing on data pulled through API
 - #158 Date of collection greater than date received on Sample rejection report
-- #157 History view in reports takes 10 seconds to load
 - #156 Calculation selection list in Analysis Service edit view doesn't get displayed
 - #155 Error while rejecting an Analysis Request. Unsuccessful AJAX call
-
-**Added**
-
-- #244 Asynchronous creation of Analysis Requests
-- #242 Visibility of automatically created analyses because of reflex rule actions
-- #241 Fine-grained visibility of analyses in results reports and client views
-- #237 Performance optimizations in Analysis Request creation
-- #236 Progress bar column in Analysis Requests list and Analyses number
-- #233 Background color change on mouse over for fields table from ARAdd view
-- #232 Display Priority in Analyses Add View from Worksheet and allow to sort
-- #229 Highlight rows in bikalisting on mouse over
-- #218 Render barcodes as bitmap images by default
-- #212 Allow direct verification of analyses with dependencies in manage results view
-- #213 Sampling Date and Date Sampled fields refactoring to avoid confusions
 
 
 1.0.0b2-315362b (2017-06-30)
 ----------------------------
 
+**Added**
+
+- #146 Stickers to PDF and new sticker 2"x1" (50.8mm x 25.4mm) with barcode 3of9
+- #152 Caching to make productivity/management reports to load faster
+
+**Changed**
+
+- #150 Dynamic loading of allowed transitions in lists
+- #145 Workflow refactoring: prepublish
+- #144 Workflow refactoring: publish
+
 **Fixed**
 
 - #154 AttributeError on upgrade step v1705: getDepartmentUID
-- #152 Report performance
 - #151 State titles not displayed in listings
 - #149 Decimal point not visible after edition
 - #143 Fix AttributeError 'getProvince' and 'getDistrict' in Analysis Requests view
 - #142 AttributeError on publish: 'getDigest'
 - #141 AttributeError on upgrade.v3_2_0_1705: 'NoneType' object has no attribute 'aq_parent'
 
-**Added**
-
-- #150 Dynamic loading of allowed transitions in lists
-- #146 Stickers to PDF and new sticker 2"x1" (50.8mm x 25.4mm) with barcode 3of9
-- #145 Workflow refactoring: prepublish
-- #144 Workflow refactoring: publish
-
 
 1.0.0b1-baed368 (2017-06-21)
 ----------------------------
+
+**Added**
+
+- #133 Multiple use of instrument control in Worksheets
 
 **Fixed**
 
@@ -138,10 +151,6 @@ Changelog
 - #132 ValueError in worksheets list. No JSON object could be decoded
 - #131 "Show more" is missing on verified worksheets listing
 - #129 Unsupported operand type in Samples view
-
-**Added**
-
-- #133 Multiple use of instrument control in Worksheets
 
 
 1.0.0a5-afc4725 (2017-06-12)
@@ -158,6 +167,26 @@ Changelog
 
 1.0.0a4-f32494f (2017-06-08)
 ----------------------------
+
+**Added**
+
+- #120 Add a field in Bika Setup to set the default Number of ARs to add
+- #88 GeneXpert Results import interface
+- #85 Sticker for batch
+- #84 Sticker for worksheet
+- #83 Adapter to make the generation of custom IDs easier
+- #82 Added a method the get always the client in stickers
+- #75 Wildcards on searching lists
+
+**Changed**
+
+- #106 Predigest publish data
+- #103 Prevent the creation of multiple attachment objects on results import
+- #101 Performance improvement. Remove Html Field from AR Report
+- #100 Performance improvement. Replacement of FileField by BlobField
+- #97 Performance improvement. Removal of versionable content types
+- #95 Performance improvement. Analysis structure and relationship with Analysis Service refactored
+- #58 Defaulting client contact in Analysis Request Add view
 
 **Fixed**
 
@@ -201,25 +230,14 @@ Changelog
 - #56 Client and District not sortable in Analysis Requests listing
 - #52 System throwing error on opening "Verified" folder
 
-**Added**
-
-- #120 Add a field in Bika Setup to set the default Number of ARs to add
-- #106 Predigest publish data
-- #103 Prevent the creation of multiple attachment objects on results import
-- #101 Performance improvement. Remove Html Field from AR Report
-- #100 Performance improvement. Replacement of FileField by BlobField
-- #97 Performance improvement. Removal of versionable content types
-- #88 GeneXpert Results import interface
-- #85 Sticker for batch
-- #84 Sticker for worksheet
-- #83 Adapter to make the generation of custom IDs easier
-- #82 Added a method the get always the client in stickers
-- #75 Wildcards on searching lists
-- #58 Defaulting client contact in Analysis Request Add view
-
 
 1.0.0a3-0f28b48 (2017-03-30)
 ----------------------------
+
+**Added**
+
+- #39 Performance improvement. Make use of brains in Worksheets lists
+- #32 Performance improvement. Catalog for analyses and make use of brains
 
 **Fixed**
 
@@ -232,14 +250,13 @@ Changelog
 - #41 No Service found for UID None
 - #40 Client Sample ID is missing in Analysis Request Add view
 
-**Added**
-
-- #39 Performance improvement. Make use of brains in Worksheets lists
-- #32 Performance improvement. Catalog for analyses and make use of brains
-
 
 1.0.0a2-1c2913e (2017-03-20)
 ----------------------------
+
+**Added**
+
+- #33 New Analysis Request Add form outside client
 
 **Fixed**
 
@@ -248,13 +265,24 @@ Changelog
 - #35 Equipment interface is not working
 - #34 Results import submission error
 
-**Added**
-
-- #33 New Analysis Request Add form outside client
-
 
 1.0.0a1-e596f2d (2017-03-08)
 ----------------------------
+
+**Added**
+
+- #25 Instrument import without user intervention
+- #22 Date Tested range filter on lists
+- #20 Added filter bar in Aggregated list of analyses
+- HEALTH-364: Added country/province/district columns to client listings
+- Add buttons to export lists to csv and xml formats
+- Additional "printed" workflow for analysis requests once published
+
+**Changed**
+
+- #12 Multi-method assignment and Virtual-Real Instrument correspondence
+- #11 Restrictions in manual instrument import - Instruments and interfaces
+- #10 Performance improvement. Catalog for Analysis Requests and use of brains
 
 **Fixed**
 
@@ -266,18 +294,6 @@ Changelog
 - #13 Number of verifications no longer taking effect
 - HEALTH-568: TaqMan 96 interface not working well
 - HEALTH-567: Nuclisens interface not working well
-
-**Added**
-
-- #25 Instrument import without user intervention
-- #22 Date Tested range filter on lists
-- #20 Added filter bar in Aggregated list of analyses
-- #12 Multi-method assignment and Virtual-Real Instrument correspondence
-- #11 Restrictions in manual instrument import - Instruments and interfaces
-- #10 Performance improvement. Catalog for Analysis Requests and use of brains
-- HEALTH-364: Added country/province/district columns to client listings
-- Add buttons to export lists to csv and xml formats
-- Additional "printed" workflow for analysis requests once published
 
 
 3.2.1a-26f2c4b (2017-01-17)
@@ -338,12 +354,6 @@ Changelog
 - Replacement of pagination by 'Show more' in tables makes the app faster
 - Add Bika LIMS TAL report reference in reports preview
 - Simplify instrument interface creation for basic CSV files
-
-
-3.1.14 (2017-05-26)
--------------------
-
-- Pinned Plone version to 4.3.11
 
 
 3.1.13 (2016-12-28)
