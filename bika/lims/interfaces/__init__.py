@@ -492,7 +492,7 @@ class IBatchSearchableText(Interface):
     """ Interface for BatchSearchableText """
 
     def get_plain_text_fields(self):
-        """ Returns field names as a tuple of strings"""
+        """ Returns field names as a list of strings"""
 
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts
