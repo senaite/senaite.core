@@ -38,19 +38,10 @@ schema = BikaSchema.copy() + Schema((
                             "Category section on results reports."),
             label = _("Comments")),
     ),
-    ReferenceField('Department',
-        required=1,
-        vocabulary='getDepartments',
-        vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('Department',),
-        relationship='AnalysisCategoryDepartment',
-        referenceClass=HoldingReference,
-        widget=ReferenceWidget(
-            checkbox_bound=0,
-            label = _("Department"),
-            description = _("The laboratory department"),
-        ),
-    ),
+    # Department Field of Analysis Category was removed.
+    # It was a required field, but not used anywhere. When creating
+    # an Analysis Request, we use Departments from 'Analysis Services'
+    # instead.
     ComputedField('DepartmentTitle',
         expression="context.getDepartment() and context.getDepartment().Title() or ''",
         widget=ComputedWidget(
