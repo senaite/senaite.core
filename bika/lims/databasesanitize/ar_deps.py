@@ -21,9 +21,23 @@ def set_ar_departments():
     logger.info("Analysis Requests to walk over: {}".format(total_ars))
     total_modified = 0
     for ar_brain in ar_brains:
+        if ar_brain.getDepartmentUIDs:
+            continue
+        ar = ar_brain.getObject()
+        ans = ar.getAnalyses()
+        for an_brain in ans:
+            dep = None
+            an = an_brain.getObject()
+            dep = an.getAnalysisService().getDepartment()
+            if dep:
+                an.setDepartment(dep)
+                an.reindexObject()
+
+        ar.reindexObject()
         total_modified = total_modified+1
         total_iterated = commit_action(
             total_ars, total_iterated, total_modified)
     transaction.commit()
-    logger.info("AR Department assignment is done.")
+    logger.info("AR Department assignment is finished. Total # of modified ARs: \
+                {0}".format(str(total_modified)))
     return True
