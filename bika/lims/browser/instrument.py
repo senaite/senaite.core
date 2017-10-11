@@ -512,7 +512,14 @@ class InstrumentCertificationsViewView(BrowserView):
     _certificationsview = None
 
     def __call__(self):
-        return self.template()
+        view = self.get_certifications_view()
+        view._process_request()
+        if self.request.get('table_only', '') == view.form_id:
+            return view.contents_table()
+        elif self.request.get('rows_only', '') == view.form_id:
+            return view.contents_table()
+        else:
+            return self.template()
 
     def get_certifications_table(self):
         """ Returns the table of Certifications
@@ -560,7 +567,7 @@ class InstrumentCertificationsView(BikaListingView):
         ]
         self.allow_edit = False
         self.show_select_column = False
-        self.show_workflow_action_buttons = False
+        self.show_workflow_action_buttons = True
         uids = [c.UID() for c in self.context.getCertifications()]
         self.catalog = 'portal_catalog'
         self.contentFilter = {'UID': uids, 'sort_on': 'sortable_title'}
