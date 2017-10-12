@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.0.0 (Unreleased)
-------------------
+3.2.0.1710 (Unreleased)
+-----------------------
 
 **Added**
 
@@ -26,8 +26,8 @@ Changelog
 - #254 Anonymous users have access to restricted objects
 
 
-1.0.0b3-a900fe5 (2017-09-06)
-----------------------------
+3.2.0.1709-a900fe5 (2017-09-06)
+-------------------------------
 
 **Added**
 
@@ -110,8 +110,8 @@ Changelog
 - #155 Error while rejecting an Analysis Request. Unsuccessful AJAX call
 
 
-1.0.0b2-315362b (2017-06-30)
-----------------------------
+3.2.0.1706-315362b (2017-06-30)
+-------------------------------
 
 **Added**
 
@@ -134,8 +134,8 @@ Changelog
 - #141 AttributeError on upgrade.v3_2_0_1705: 'NoneType' object has no attribute 'aq_parent'
 
 
-1.0.0b1-baed368 (2017-06-21)
-----------------------------
+3.2.0.1706-baed368 (2017-06-21)
+-------------------------------
 
 **Added**
 
@@ -153,8 +153,8 @@ Changelog
 - #129 Unsupported operand type in Samples view
 
 
-1.0.0a5-afc4725 (2017-06-12)
-----------------------------
+3.2.0.1706-afc4725 (2017-06-12)
+-------------------------------
 
 **Fixed**
 
@@ -165,8 +165,8 @@ Changelog
 - #122 ValueError on results file import
 
 
-1.0.0a4-f32494f (2017-06-08)
-----------------------------
+3.2.0.1706-f32494f (2017-06-08)
+-------------------------------
 
 **Added**
 
@@ -231,8 +231,8 @@ Changelog
 - #52 System throwing error on opening "Verified" folder
 
 
-1.0.0a3-0f28b48 (2017-03-30)
-----------------------------
+3.2.0.1703-0f28b48 (2017-03-30)
+-------------------------------
 
 **Added**
 
@@ -251,8 +251,8 @@ Changelog
 - #40 Client Sample ID is missing in Analysis Request Add view
 
 
-1.0.0a2-1c2913e (2017-03-20)
-----------------------------
+3.2.0.1703-1c2913e (2017-03-20)
+-------------------------------
 
 **Added**
 
@@ -266,8 +266,8 @@ Changelog
 - #34 Results import submission error
 
 
-1.0.0a1-e596f2d (2017-03-08)
-----------------------------
+3.2.0.1703-e596f2d (2017-03-08)
+-------------------------------
 
 **Added**
 
@@ -296,8 +296,8 @@ Changelog
 - HEALTH-567: Nuclisens interface not working well
 
 
-3.2.1a-26f2c4b (2017-01-17)
----------------------------
+3.2.0.1701-26f2c4b (2017-01-17)
+-------------------------------
 
 - LIMS-2477: Reference Analysis has no dependencies; remove guard that assumes it does
 - LIMS-2465: Not possible to translate Bika Listing Table Workflow Action Buttons
