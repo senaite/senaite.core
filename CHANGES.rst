@@ -6,10 +6,14 @@ Changelog
 
 **Added**
 
+- #269 Added IFrontPageAdapter, to make front page custom-redirections easier
 - #250 Sanitize tool to fix wrong creation dates for old analyses
 
 **Fixed**
 
+- #272 Unknown sort_on index (getCategoryTitle) in Worksheet's Add Analyses view
+- #270 ParseError in Reference Widget Search. Query contains only common words
+- #266 Worksheet column appears blank in Aggregated List of Analyses
 - #265 ValueError in productivity report
 - #264 Fix permissions error on site install
 - #262 DateSampled does not appear to users other than labman or administrator
