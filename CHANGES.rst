@@ -107,7 +107,7 @@ Changelog
 - #166 Analyses don't get saved when creating an Analysis Request Template
 - #165 AttributeError in Bika Setup while getting Analysis Services vocabulary
 - #164 AttributeError on Data Import: 'NoneType' object has no attribute 'Import'
-- #161 TypeError on allowed instrument for a given analysis retrieval
+- #161 TypeError from HistoryAwareReferenceField while displaying error message
 - #159 Date published is missing on data pulled through API
 - #158 Date of collection greater than date received on Sample rejection report
 - #156 Calculation selection list in Analysis Service edit view doesn't get displayed
