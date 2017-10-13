@@ -5,15 +5,13 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.analyses import AnalysesView
-from bika.lims.permissions import *
-from bika.lims.browser.aggregatedanalyses.aggregatedanalyses_filter_bar\
-    import AggregatedanalysesBikaListingFilterBar
-import json
 from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.aggregatedanalyses.aggregatedanalyses_filter_bar \
+    import AggregatedanalysesBikaListingFilterBar
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 
 
 class AggregatedAnalysesView(AnalysesView):
@@ -38,7 +36,8 @@ class AggregatedAnalysesView(AnalysesView):
         self.show_categories = False
         self.pagesize = 50
         # Get temp objects that are too time consuming to obtain every time
-        self.bika_catalog = getToolByName(context, 'bika_catalog')
+        self.worksheet_catalog = getToolByName(
+            context, CATALOG_WORKSHEET_LISTING)
         # Check if the filter bar functionality is activated or not
         self.filter_bar_enabled =\
             self.context.bika_setup.getDisplayAdvancedFilterBarForAnalyses()
@@ -145,15 +144,13 @@ class AggregatedAnalysesView(AnalysesView):
 
         # Worksheet
         item['Worksheet'] = ''
-        wss = self.bika_catalog(getAnalysesUIDs={
+        wss = self.worksheet_catalog(getAnalysesUIDs={
                     "query": obj.UID,
                     "operator": "or"
                 })
         if wss and len(wss) == 1:
-            # TODO-performance: don't get the whole object
-            ws = wss[0].getObject()
-            item['Worksheet'] = ws.Title()
-            anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
+            item['Worksheet'] = wss[0].Title
+            anchor = '<a href="%s">%s</a>' % (wss[0].getURL(), wss[0].Title)
             item['replace']['Worksheet'] = anchor
 
         return item

@@ -744,3 +744,11 @@ class IAcquireFieldDefaults(Interface):
     def __call__(context, field):
         """This function must return the surrogate (source) value directly.
         """
+
+
+class IFrontPageAdapter(Interface):
+
+    """ Bika Front Page Url Finder Adapter's Interface"""
+
+    def get_front_page_url(self):
+        """ Get url of necessary front-page """

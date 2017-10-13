@@ -1,8 +1,12 @@
-Bika LIMS, a web-based Laboratory Information Management System (LIMS)
-Add-on Product for Plone.
+This software, henceforth "Bika LIMS Evo", is a derivative work of Bika LIMS,
+a web-based Laboratory Information Management System (LIMS):
+https://github.com/bikalims/bika.lims
 
-The files contained in these directories are part of Bika LIMS.
-Copyright (C) 2000-2016 Bika Lab Systems <info@bikalabs.com>
+As such, Bika LIMS Evo is licensed under the GNU Affero General Public
+License v3.0.
+
+The files contained in these directories are part of "Bika LIMS evolved".
+Copyright (C) 2017 Naralabs <info@naralabs.com>
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -17,5 +21,5 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Bika LIMS uses third party libraries that are distributed under their own terms
-(see LICENSE-3RD-PARTY.txt)
+Bika LIMS evo uses third party libraries that are distributed under their own
+terms (see LICENSE-3RD-PARTY.rst)
