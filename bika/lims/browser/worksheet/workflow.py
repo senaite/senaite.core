@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
@@ -101,7 +107,6 @@ class WorksheetWorkflowAction(WorkflowAction):
 
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
-
             if selected_analyses:
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)
@@ -142,7 +147,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             # default bika_listing.py/WorkflowAction, but then go to view screen.
             self.destination_url = self.context.absolute_url()
             return self.workflow_action_default(action='verify',
-                                                came_from='edit')
+                                                came_from=came_from)
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
@@ -211,7 +216,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                         analysis.setInstrument(instruments[uid])
                         instrument = analysis.getInstrument()
                         instrument.addAnalysis(analysis)
-                        if analysis.portal_type == 'ReferenceAnalysis':
+                        if analysis.meta_type == 'ReferenceAnalysis':
                             instrument.setDisposeUntilNextCalibrationTest(False)
 
             # Need to save the method?

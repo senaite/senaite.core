@@ -6,6 +6,7 @@
 function SiteView() {
 
     var that = this;
+    var pause_spinner = false;
 
     that.load = function() {
 
@@ -15,7 +16,22 @@ function SiteView() {
 
         loadReferenceDefinitionEvents();
 
-    }
+        loadFilterByDepartment();
+        //Date range controllers
+        $('.date_range_start').bind("change", function () {
+            date_range_controller_0(this);
+        });
+        $('.date_range_end').bind("change", function () {
+            date_range_controller_1(this);
+        });
+
+        //Reset default dep list when departments change
+        $(function() {
+          $("select[name='Departments:list']").change(function() {
+            reset_default_deps(this);
+          });
+        });
+    };
 
     function loadClientEvents() {
 
@@ -158,7 +174,19 @@ function SiteView() {
             })
             .click(function(){$(this).attr("value", "");})
             .focus();
-
+        });
+        /**
+        This function defines a datepicker for a date range. Both input
+        elements should be siblings and have the class 'date_range_start' and
+        'date_range_end'.
+        */
+        $("input.datepicker_range").datepicker({
+            showOn:"focus",
+            showAnim:"",
+            changeMonth:true,
+            changeYear:true,
+            dateFormat: dateFormat,
+            yearRange: limitString
         });
 
         $("input.datepicker_nofuture").live("click", function() {
@@ -185,6 +213,27 @@ function SiteView() {
                 numberOfMonths: 2,
                 dateFormat: dateFormat,
                 yearRange: limitString
+            })
+            .click(function(){$(this).attr("value", "");})
+            .focus();
+        });
+
+
+        $("input.datetimepicker_nofuture").live("click", function() {
+            $(this).datetimepicker({
+                showOn:"focus",
+                showAnim:"",
+                changeMonth:true,
+                changeYear:true,
+                maxDate: curDate,
+                dateFormat: dateFormat,
+                yearRange: limitString,
+                timeFormat: "HH:mm",
+                beforeShow: function() {
+                        setTimeout(function(){
+                            $('.ui-datepicker').css('z-index', 99999999999999);
+                        }, 0);
+                    }
             })
             .click(function(){$(this).attr("value", "");})
             .focus();
@@ -250,6 +299,45 @@ function SiteView() {
                 event.preventDefault();
             }
         });
+        // autocomplete input controller
+        var availableTags = $.parseJSON($("input.autocomplete").attr('voc'));
+        function split( val ) {
+            return val.split( /,\s*/ );
+        }
+        function extractLast( term ) {
+            return split( term ).pop();
+        }
+        $("input.autocomplete")
+            // don't navigate away from the field on tab when selecting an item
+            .on( "keydown", function( event ) {
+              if ( event.keyCode === $.ui.keyCode.TAB &&
+                  $( this ).autocomplete( "instance" ).menu.active ) {
+                event.preventDefault();
+              }
+            })
+            .autocomplete({
+                minLength: 0,
+                source: function( request, response ) {
+                    // delegate back to autocomplete, but extract the last term
+                    response( $.ui.autocomplete.filter(
+                        availableTags, extractLast( request.term ) ) );
+                },
+                focus: function() {
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function( event, ui ) {
+                    var terms = split( this.value );
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push( ui.item.value );
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push( "" );
+                    this.value = terms.join( ", " );
+                    return false;
+                }
+        });
 
         // Archetypes :int and IntegerWidget inputs get filtered
         $("input[name*='\\:int'], .ArchetypesIntegerWidget input").keyup(function(e) {
@@ -276,7 +364,9 @@ function SiteView() {
             counter++;
             setTimeout(function () {
                 if (counter > 0) {
-                    spinner.show('fast');
+                    if (!pause_spinner) {
+                        spinner.show('fast');
+                    }
                 }
             }, 500);
         });
@@ -296,6 +386,13 @@ function SiteView() {
             stop_spinner();
             window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
         });
+    }
+
+    that.pauseSpinner = function() {
+        pause_spinner = true;
+    }
+    that.resumeSpinner = function() {
+        pause_spinner = false;
     }
 
     function portalAlert(html) {
@@ -323,5 +420,138 @@ function SiteView() {
                 $('#panel-notification').fadeOut("slow","linear")
             }, 3000)
         });
+    };
+
+    function loadFilterByDepartment() {
+        /**
+        This function sets up the filter by department cookie value by chosen departments.
+        Also it does auto-submit if admin wants to enable/disable the department filtering.
+        */
+        $('#department_filter_submit').click(function() {
+          if(!($('#admin_dep_filter_enabled').is(":checked"))) {
+            var deps =[];
+            $.each($("input[name^=chb_deps_]:checked"), function() {
+              deps.push($(this).val());
+            });
+            var cookiename = 'filter_by_department_info';
+            if (deps.length===0) {
+              deps.push($('input[name^=chb_deps_]:checkbox:not(:checked):visible:first').val());
+            }
+            setCookie(cookiename, deps.toString());
+          }
+          window.location.reload(true);
+        });
+
+        $('#admin_dep_filter_enabled').change(function() {
+            var cookiename = 'filter_by_department_info';
+            if($(this).is(":checked")) {
+                var deps=[];
+                $.each($("input[name^=chb_deps_]:checkbox"), function() {
+                  deps.push($(this).val());
+                });
+                setCookie(cookiename, deps);
+                setCookie('dep_filter_disabled','true');
+                window.location.reload(true);
+              }else{
+                setCookie('dep_filter_disabled','false');
+                window.location.reload(true);
+              }
+            });
+          loadFilterByDepartmentCookie();
+    }
+
+    function loadFilterByDepartmentCookie(){
+        /**
+        This function checks if the cookie 'filter_by_department_info' is
+        available. If the cookie exists, do nothing, if the cookie has not been
+        created yet, checks the selected department in the checkbox group and creates the cookie with the UID of the first department.
+        If cookie value "dep_filter_disabled" is true, it means the user is admin and filtering is disabled.
+        */
+        // Gettin the cookie
+        var cookiename = 'filter_by_department_info';
+        var cookie_val = readCookie(cookiename);
+
+        if (cookie_val === null || cookie_val===""){
+            var dep_uid = $('input[name^=chb_deps_]:checkbox:visible:first').val();
+            setCookie(cookiename, dep_uid);
+        }
+        var dep_filter_disabled=readCookie('dep_filter_disabled');
+        if (dep_filter_disabled=="true" || dep_filter_disabled=='"true"'){
+            $('#admin_dep_filter_enabled').prop("checked",true);
+        }
+    }
+
+
+    /**
+    This function updates the minimum selectable date of date_range_end
+    @param {object} input_element is the <input> object for date_range_start
+    */
+    function date_range_controller_0(input_element){
+        var date_element = $(input_element).datepicker("getDate");
+        var brother = $(input_element).siblings('.date_range_end');
+        $(brother).datepicker("option", "minDate", date_element );
+    }
+    /**
+    This function updates the maximum selectable date of date_range_start
+    @param {object} input_element is the <input> object for date_range_end
+    */
+    function date_range_controller_1(input_element){
+        var date_element = $(input_element).datepicker("getDate");
+        var brother = $(input_element).siblings('.date_range_start');
+        $(brother).datepicker("option", "maxDate", date_element );
+    }
+
+    /**
+    Updating default department list when assigned departments change
+    @param {object} deps_element is the multiple select of deparments
+    */
+    function reset_default_deps(deps_element){
+      //Resetting def_dep_list
+      def_deps=$("select[name='DefaultDepartment']")[0];
+      def_deps.options.length=0;
+      var null_opt = document.createElement("option");
+      null_opt.text = "";
+      null_opt.value = "";
+      null_opt.selected="selected";
+      def_deps.add(null_opt);
+      //Adding selected deps
+      $('option:selected', deps_element).each(function() {
+        var option = document.createElement("option");
+        option.text = $(this).text();
+        option.value = $(this).val();
+        option.selected="selected";
+        def_deps.add(option);
+      });
+    }
+
+    /**
+    This function sets cookie value
+    @param {String} cname is name of the cookie
+    @param {String} cvalue is value of the cookie
+    */
+    function setCookie(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    /**
+    This function is to read cookie value
+    @param {String} cname is name of the cookie to be read
+    */
+    function readCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return null;
     }
 }

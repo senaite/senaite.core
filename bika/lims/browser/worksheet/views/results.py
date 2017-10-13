@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
@@ -70,7 +76,7 @@ class ManageResultsView(BrowserView):
 
             if service_uid:
                 workflow = getToolByName(self.context, 'portal_workflow')
-                for analysis in self.context.getAnalyses():
+                for analysis in self._getAnalyses():
                     if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
                         continue
                     if not analysis.getServiceUID() == service_uid:
@@ -156,25 +162,24 @@ class ManageResultsView(BrowserView):
         """
         outdict = {}
         allowed_states = ['sample_received']
-        for analysis in self.context.getAnalyses():
+        for analysis in self._getAnalyses():
             wf = getToolByName(analysis, 'portal_workflow')
             if wf.getInfoFor(analysis, 'review_state') not in allowed_states:
                 continue
 
-            service = analysis.getService()
-            if service.getKeyword() in outdict.keys():
+            if analysis.getKeyword() in outdict.keys():
                 continue
 
-            calculation = service.getCalculation()
+            calculation = analysis.getCalculation()
             if not calculation:
                 continue
 
-            andict = {'analysis': service.Title(),
-                      'keyword': service.getKeyword(),
+            andict = {'analysis': analysis.Title(),
+                      'keyword': analysis.getKeyword(),
                       'interims': {}}
 
             # Analysis Service interim defaults
-            for field in service.getInterimFields():
+            for field in analysis.getInterimFields():
                 if field.get('wide', False):
                     andict['interims'][field['keyword']] = field
 
@@ -185,7 +190,7 @@ class ManageResultsView(BrowserView):
                     andict['interims'][field['keyword']] = field
 
             if andict['interims']:
-                outdict[service.getKeyword()] = andict
+                outdict[analysis.getKeyword()] = andict
         return outdict
 
     def checkInstrumentsValidity(self):
@@ -195,7 +200,7 @@ class ManageResultsView(BrowserView):
             will be displayed.
         """
         invalid = []
-        ans = [a for a in self.context.getAnalyses()]
+        ans = self._getAnalyses()
         for an in ans:
             valid = an.isInstrumentValid()
             if not valid:
@@ -207,9 +212,34 @@ class ManageResultsView(BrowserView):
             message = "%s: %s" % (message, (', '.join(invalid)))
             self.context.plone_utils.addPortalMessage(message, 'warn')
 
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
+    def _getAnalyses(self):
+        """
+        This function returns a list with the analyses related to the worksheet
+        and filtered by the current selected department in the department
+        porlet.
+        @returna list of analyses objects.
+        """
+        ans = [a for a in self.context.getAnalyses() if self._isItemAllowed(a)]
+        return ans
+
+    def _isItemAllowed(self, obj):
+        """
+        It checks if the analysis service can be added to the list depending
+        on the department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        serv_dep = obj.getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+        return result

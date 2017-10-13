@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -6,7 +11,6 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.browser.sample import SamplePartitionsView
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
@@ -39,6 +43,14 @@ class AnalysisRequestViewView(BrowserView):
 
     def __call__(self):
         ar = self.context
+        if 'check_edit' in self.request and\
+                self.request.get('check_edit') == '1':
+                # Another check, here to increase performance, is it stupid?
+                state = ar.getObjectWorkflowStates().get('review_state', '')
+                if state in ['to_be_verified', 'sample_received']:
+                    # It mens we should redirect to manage_results
+                    redirect = self.context.absolute_url() + '/manage_results'
+                    self.request.response.redirect(redirect)
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'transition' in self.request.form:
             doActionFor(self.context, self.request.form['transition'])
@@ -75,7 +87,8 @@ class AnalysisRequestViewView(BrowserView):
                 t = self.createAnalysesView(ar,
                                  self.request,
                                  getPointOfCapture=poc,
-                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
+                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices(),
+                                 getAnalysisRequestUID=self.context.UID())
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id': 'submit'},
@@ -87,11 +100,6 @@ class AnalysisRequestViewView(BrowserView):
                    and poc == 'field':
                     t.review_states[0]['columns'].remove('DueDate')
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
-        # Un-captured field analyses may cause confusion
-        if ar.getAnalyses(getPointOfCapture='field',
-                          review_state=['sampled', 'sample_due']):
-            message = _("There are field analyses without submitted results.")
-            self.addMessage(message, 'info')
         # Create QC Analyses View for this AR
         show_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         qcview = self.createQCAnalyesView(ar,
@@ -121,7 +129,8 @@ class AnalysisRequestViewView(BrowserView):
                 else:
                     allstatus.append(status)
             if len(allstatus) > 0:
-                self.addMessage("General Retract Done", 'warning')
+                message = "General Retract Done.  Submit this AR manually."
+                self.addMessage(message, 'warning')
 
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
@@ -154,8 +163,10 @@ class AnalysisRequestViewView(BrowserView):
         ar_atts = self.context.getAttachment()
         analyses = self.context.getAnalyses(full_objects = True)
         for att in ar_atts:
-            file = att.getAttachmentFile()
-            fsize = file.getSize() if file else 0
+            file_obj = att.getAttachmentFile()
+            fsize = file_obj.get_size() if file_obj else 0
+            if isinstance(fsize, tuple):
+                fsize = 0
             if fsize < 1024:
                 fsize = '%s b' % fsize
             else:
@@ -164,8 +175,8 @@ class AnalysisRequestViewView(BrowserView):
                 'keywords': att.getAttachmentKeys(),
                 'analysis': '',
                 'size': fsize,
-                'name': file.filename,
-                'Icon': file.icon,
+                'name': file_obj.filename,
+                'Icon': file_obj.icon,
                 'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
                 'absolute_url': att.absolute_url(),
                 'UID': att.UID(),
@@ -174,8 +185,8 @@ class AnalysisRequestViewView(BrowserView):
         for analysis in analyses:
             an_atts = analysis.getAttachment()
             for att in an_atts:
-                file = att.getAttachmentFile()
-                fsize = file.getSize() if file else 0
+                file_obj = att.getAttachmentFile()
+                fsize = file_obj.get_size() if file_obj else 0
                 if fsize < 1024:
                     fsize = '%s b' % fsize
                 else:
@@ -184,8 +195,8 @@ class AnalysisRequestViewView(BrowserView):
                     'keywords': att.getAttachmentKeys(),
                     'analysis': analysis.Title(),
                     'size': fsize,
-                    'name': file.filename,
-                    'Icon': file.icon,
+                    'name': file_obj.filename,
+                    'Icon': file_obj.icon,
                     'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
                     'absolute_url': att.absolute_url(),
                     'UID': att.UID(),
@@ -303,10 +314,9 @@ class AnalysisRequestViewView(BrowserView):
         for analysis in bac(portal_type="Analysis",
                            getRequestID=self.context.RequestID):
             analysis = analysis.getObject()
-            service = analysis.getService()
-            res.append([service.getPointOfCapture(),
-                        service.getCategoryUID(),
-                        service.UID()])
+            res.append([analysis.getPointOfCapture(),
+                        analysis.getCategoryUID(),
+                        analysis.getServiceUID()])
         return res
 
     def getRestrictedCategories(self):
@@ -382,8 +392,7 @@ class AnalysisRequestViewView(BrowserView):
         for analysis in self.context.getAnalyses(full_objects=True):
             if analysis.review_state == 'not_requested':
                 continue
-            service = analysis.getService()
-            category_name = service.getCategoryTitle()
+            category_name = analysis.getCategoryTitle()
             if not category_name in cats:
                 cats[category_name] = {}
             cats[category_name][analysis.Title()] = analysis
@@ -464,10 +473,3 @@ class AnalysisRequestViewView(BrowserView):
                 'value': anchor
             }
         return custom
-
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())

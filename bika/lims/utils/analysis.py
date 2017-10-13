@@ -1,39 +1,97 @@
 # -*- coding: utf-8 -*-
 
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
+
 import math
+
 import zope.event
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import formatDecimalMark
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims import bikaMessageFactory as _, logger
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import to_unicode
 
 
-def create_analysis(context, service, keyword, interim_fields):
-    # Determine if the sampling workflow is enabled
-    workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
-    # Create the analysis
-    analysis = _createObjectByType("Analysis", context, keyword)
-    analysis.setService(service)
-    analysis.setInterimFields(interim_fields)
-    analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())
+def duplicateAnalysis(analysis):
+    """
+    Duplicate an analysis consist on creating a new analysis with
+    the same analysis service for the same sample. It is used in
+    order to reduce the error procedure probability because both
+    results must be similar.
+    :base: the analysis object used as the creation base.
+    """
+    ar = analysis.aq_parent
+    kw = analysis.getKeyword()
+    # Rename the analysis to make way for it's successor.
+    # Support multiple duplicates by renaming to *-0, *-1, etc
+    cnt = [x for x in ar.objectValues("Analysis") if x.getId().startswith(kw)]
+    a_id = "{0}-{1}".format(kw, len(cnt))
+    dup = create_analysis(ar, analysis, id=a_id, Retested=True)
+    changeWorkflowState(dup, "bika_analysis_workflow", "sample_received")
+    return dup
+
+
+def copy_analysis_field_values(source, analysis, **kwargs):
+    src_schema = source.Schema()
+    dst_schema = analysis.Schema()
+    # Some fields should not be copied from source!
+    # BUT, if these fieldnames are present in kwargs, the value will
+    # be set accordingly.
+    IGNORE_FIELDNAMES = [
+        'UID', 'id', 'allowDiscussion', 'subject', 'location', 'contributors',
+        'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
+        'creation_date', 'modification_date', 'IsReflexAnalysis',
+        'OriginalReflexedAnalysis', 'ReflexAnalysisOf', 'ReflexRuleAction',
+        'ReflexRuleLocalID', 'ReflexRuleActionsTriggered', 'Hidden']
+    for field in src_schema.fields():
+        fieldname = field.getName()
+        if fieldname in IGNORE_FIELDNAMES and fieldname not in kwargs:
+            continue
+        if fieldname not in dst_schema:
+            continue
+        value = kwargs.get(fieldname, field.get(source))
+        if value:
+            # Campbell's mental note:never ever use '.set()' directly to a
+            # field. If you can't use the setter, then use the mutator in order
+            # to give the value. We have realized that in some cases using
+            # 'set' when the value is a string, it saves the value
+            # as unicode instead of plain string.
+            mutator_name = analysis.getField(fieldname).mutator
+            mutator = getattr(analysis, mutator_name)
+            mutator(value)
+
+def create_analysis(context, source, **kwargs):
+    """Create a new Analysis.  The source can be an Analysis Service or
+    an existing Analysis, and all possible field values will be set to the
+    values found in the source object.
+    :param context: The analysis will be created inside this object.
+    :param source: The schema of this object will be used to populate analysis.
+    :param kwargs: The values of any keys which match schema fieldnames will
+    be inserted into the corrosponding fields in the new analysis.
+    :returns: Analysis object that was created
+    :rtype: Analysis
+    """
+    an_id = kwargs.get('id', source.getKeyword())
+    analysis = _createObjectByType("Analysis", context, an_id)
+    copy_analysis_field_values(source, analysis, **kwargs)
+
+    # AnalysisService field is not present on actual AnalysisServices.
+    if IAnalysisService.providedBy(source):
+        analysis.setAnalysisService(source)
+    else:
+        analysis.setAnalysisService(source.getAnalysisService())
+
     analysis.unmarkCreationFlag()
-    analysis.reindexObject()
-    # Trigger the intitialization event of the new object
     zope.event.notify(ObjectInitializedEvent(analysis))
-    # Perform the appropriate workflow action
-    try:
-        workflow_action =  'sampling_workflow' if workflow_enabled \
-            else 'no_sampling_workflow'
-        context.portal_workflow.doActionFor(analysis, workflow_action)
-    except WorkflowException:
-        # The analysis may have been transitioned already!
-        # I am leaving this code here though, to prevent regression.
-        pass
-    # Return the newly created analysis
     return analysis
-
 
 def get_significant_digits(numeric_value):
     """
@@ -42,7 +100,7 @@ def get_significant_digits(numeric_value):
     Will return positive values if the result is below 1 and will
     return 0 values if the result is above or equal to 1.
     :param numeric_value: the value to get the precision from
-    :return: the numeric_value's precision
+    :returns: the numeric_value's precision
             Examples:
             numeric_value     Returns
             0               0
@@ -55,12 +113,13 @@ def get_significant_digits(numeric_value):
     """
     try:
         numeric_value = float(numeric_value)
-    except ValueError:
+    except (TypeError, ValueError):
         return None
     if numeric_value == 0:
         return 0
     significant_digit = int(math.floor(math.log10(abs(numeric_value))))
     return 0 if significant_digit > 0 else abs(significant_digit)
+
 
 def _format_decimal_or_sci(result, precision, threshold, sciformat):
     # Current result's precision is above the threshold?
@@ -82,12 +141,14 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
     # So, if sig_digits is > 0, the power must be expressed in negative
     # Eg.
     #      result=0.0012345, threshold=3, sig_digit=3 -> 1.2345e-3=1.2345·10-³
-    sci = sig_digits >= threshold and abs(threshold) > 0 and sig_digits <= precision
+    sci = sig_digits >= threshold and abs(
+        threshold) > 0 and sig_digits <= precision
     sign = '-' if sig_digits > 0 else ''
     if sig_digits == 0 and abs(threshold) > 0 and abs(int(float(result))) > 0:
         # Number >= 1, need to check if the number of non-decimal
         # positions is above the threshold
-        sig_digits = int(math.log(abs(float(result)),10)) if abs(float(result)) >= 10 else 0
+        sig_digits = int(math.log(abs(float(result)), 10)) if abs(
+            float(result)) >= 10 else 0
         sci = sig_digits >= abs(threshold)
 
     formatted = ''
@@ -98,38 +159,41 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
 
         if sign:
             # 0.0012345 -> 1.2345
-            res = float(nresult)*(10**sig_digits)
+            res = float(nresult) * (10 ** sig_digits)
         else:
             # Non-decimal positions
             # 123.45 -> 1.2345
-            res = float(nresult)/(10**sig_digits)
+            res = float(nresult) / (10 ** sig_digits)
         res = int(res) if res.is_integer() else res
 
         # Scientific notation
         if sciformat == 2:
             # ax10^b or ax10^-b
-            formatted = "%s%s%s%s" % (res,"x10^",sign,sig_digits)
+            formatted = "%s%s%s%s" % (res, "x10^", sign, sig_digits)
         elif sciformat == 3:
             # ax10<super>b</super> or ax10<super>-b</super>
-            formatted = "%s%s%s%s%s" % (res,"x10<sup>",sign,sig_digits,"</sup>")
+            formatted = "%s%s%s%s%s" % (
+                res, "x10<sup>", sign, sig_digits, "</sup>")
         elif sciformat == 4:
             # ax10^b or ax10^-b
-            formatted = "%s%s%s%s" % (res,"·10^",sign,sig_digits)
+            formatted = "%s%s%s%s" % (res, "·10^", sign, sig_digits)
         elif sciformat == 5:
             # ax10<super>b</super> or ax10<super>-b</super>
-            formatted = "%s%s%s%s%s" % (res,"·10<sup>",sign,sig_digits,"</sup>")
+            formatted = "%s%s%s%s%s" % (
+                res, "·10<sup>", sign, sig_digits, "</sup>")
         else:
             # Default format: aE^+b
             sig_digits = "%02d" % sig_digits
-            formatted = "%s%s%s%s" % (res,"e",sign,sig_digits)
+            formatted = "%s%s%s%s" % (res, "e", sign, sig_digits)
     else:
         # Decimal notation
         prec = precision if precision and precision > 0 else 0
         formatted = str("%%.%sf" % prec) % result
         if float(formatted) == 0 and '-' in formatted:
             # We don't want things like '-0.00'
-            formatted = formatted.replace('-','')
+            formatted = formatted.replace('-', '')
     return formatted
+
 
 def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     """
@@ -189,7 +253,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
                   4. The sci notation has to be formatted as a·10^b
                   5. As 4, but with super html entity for exp
                   By default 1
-    :return: the formatted uncertainty
+    :returns: the formatted uncertainty
     """
     try:
         result = float(result)
@@ -202,8 +266,6 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     except ValueError:
         pass
 
-    service = analysis.getService()
-    uncertainty = None
     if result == objres:
         # To avoid problems with DLs
         uncertainty = analysis.getUncertainty()
@@ -215,9 +277,10 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
 
     # Scientific notation?
     # Get the default precision for scientific notation
-    threshold = service.getExponentialFormatPrecision()
+    threshold = analysis.getExponentialFormatPrecision()
     precision = analysis.getPrecision(result)
-    formatted = _format_decimal_or_sci(uncertainty, precision, threshold, sciformat)
+    formatted = _format_decimal_or_sci(uncertainty, precision, threshold,
+                                       sciformat)
     return formatDecimalMark(formatted, decimalmark)
 
 
@@ -275,7 +338,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
                       5. As 4, but with super html entity for exp
                       By default 1
     :result: should be a string to preserve the decimal precision.
-    :return: the formatted result as string
+    :returns: the formatted result as string
     """
     try:
         result = float(result)
@@ -286,10 +349,9 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     if math.isnan(result):
         return result
 
-    service = analysis.getService()
     # Scientific notation?
     # Get the default precision for scientific notation
-    threshold = service.getExponentialFormatPrecision()
+    threshold = analysis.getExponentialFormatPrecision()
     precision = analysis.getPrecision(result)
     formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
     return formatDecimalMark(formatted, decimalmark)
@@ -312,8 +374,7 @@ def get_method_instrument_constraints(context, uids):
             continue
         analysis = analysis.getObject()
         auid = analysis.UID()
-        service = analysis.getService()
-        suid = service.UID()
+        suid = analysis.getServiceUID()
         refan = analysis.portal_type == 'ReferenceAnalysis'
         cachedkey = "qc" if refan else "re"
         if suid in cached_servs.get(cachedkey, []):
@@ -326,13 +387,16 @@ def get_method_instrument_constraints(context, uids):
             cached_servs[cachedkey][suid] = {}
         constraints[auid] = {}
 
+        allowed_instruments = analysis.getAllowedInstruments()
+
         # Analysis allows manual/instrument entry?
-        s_mentry = service.getManualEntryOfResults()
-        s_ientry = service.getInstrumentEntryOfResults()
-        s_instrums = service.getRawInstruments() if s_ientry else []
-        a_dinstrum = service.getInstrument() if s_ientry else None
-        s_methods = service.getAvailableMethods()
-        s_dmethod = service.getMethod()
+        s_mentry = analysis.getManualEntryOfResults()
+        s_ientry = analysis.getInstrumentEntryOfResults()
+        s_instrums = allowed_instruments if s_ientry else []
+        s_instrums = [instr.UID() for instr in s_instrums]
+        a_dinstrum = analysis.getInstrument() if s_ientry else None
+        s_methods = analysis.getAllowedMethods()
+        s_dmethod = analysis.getMethod()
         dmuid = s_dmethod.UID() if s_dmethod else ''
         diuid = a_dinstrum.UID() if a_dinstrum else ''
 
@@ -344,8 +408,7 @@ def get_method_instrument_constraints(context, uids):
 
         for method in s_methods:
             # Method manual entry?
-            m_mentry = method.isManualEntryOfResults() \
-                       if method else True
+            m_mentry = method.isManualEntryOfResults() if method else True
 
             instrs = []
             if method:
@@ -354,8 +417,8 @@ def get_method_instrument_constraints(context, uids):
                           if i.UID() in s_instrums]
             else:
                 # What about instruments without a method assigned?
-                instrs = [i for i in service.getInstruments()
-                          if i.UID() in s_instrums and not i.getMethod()]
+                instrs = [i for i in allowed_instruments
+                          if i.UID() in s_instrums and not i.getMethods()]
 
             instuids = [i.UID() for i in instrs]
             v_instrobjs = [i for i in instrs if i.isValid()]
@@ -387,10 +450,10 @@ def get_method_instrument_constraints(context, uids):
             tprem = ''.join(premises)
 
             fiuid = v_instrs[0] if v_instrs else ''
-            instrtitle = a_dinstrum.Title() if a_dinstrum else ''
-            iinstrs = ', '.join([i.Title() for i in instrs
-                                if i.UID() not in v_instrs])
-            dmeth = method.Title() if method else ''
+            instrtitle = to_unicode(a_dinstrum.Title()) if a_dinstrum else ''
+            iinstrs = ', '.join([to_unicode(i.Title()) for i in instrs
+                                 if i.UID() not in v_instrs])
+            dmeth = to_unicode(method.Title()) if method else ''
             m1 = _("Invalid instruments are not displayed: %s") % iinstrs
             m2 = _("Default instrument %s is not valid") % instrtitle
             m3 = _("No valid instruments available: %s ") % iinstrs
@@ -430,95 +493,95 @@ def get_method_instrument_constraints(context, uids):
             """
             matrix = {
                 # Regular analyses
-                'RYYYYYYYY':  [1, 1, 1, 1, diuid, 1, ''],  # B1
-                'RYYYYYYYN':  [1, 1, 1, 1, '',    1, ''],  # B2
+                'RYYYYYYYY': [1, 1, 1, 1, diuid, 1, ''],  # B1
+                'RYYYYYYYN': [1, 1, 1, 1, '', 1, ''],  # B2
                 'RYYYYYYNYY': [1, 1, 1, 1, diuid, 1, m1],  # B3
-                'RYYYYYYNYN': [1, 1, 1, 1, '',    1, m2],  # B4
-                'RYYYYYYNN':  [1, 1, 1, 1, '',    1, m1],  # B5
-                'RYYYYYN':    [1, 1, 1, 1, '',    1, m3],  # B6
-                'RYYYYN':     [1, 1, 1, 1, '',    1, ''],  # B7
-                'RYYYNYYYY':  [1, 1, 1, 0, diuid, 1, ''],  # B8
-                'RYYYNYYYN':  [1, 1, 1, 0, fiuid, 1, ''],  # B9
+                'RYYYYYYNYN': [1, 1, 1, 1, '', 1, m2],  # B4
+                'RYYYYYYNN': [1, 1, 1, 1, '', 1, m1],  # B5
+                'RYYYYYN': [1, 1, 1, 1, '', 1, m3],  # B6
+                'RYYYYN': [1, 1, 1, 1, '', 1, ''],  # B7
+                'RYYYNYYYY': [1, 1, 1, 0, diuid, 1, ''],  # B8
+                'RYYYNYYYN': [1, 1, 1, 0, fiuid, 1, ''],  # B9
                 'RYYYNYYNYY': [1, 1, 1, 0, diuid, 1, m1],  # B10
-                'RYYYNYYNYN': [1, 1, 1, 1, '',    0, m2],  # B11
-                'RYYYNYYNN':  [1, 1, 1, 0, fiuid, 1, m1],  # B12
-                'RYYYNYN':    [1, 1, 1, 1, '',    0, m4],  # B13
-                'RYYYNN':     [1, 1, 1, 1, '',    0, m5],  # B14
-                'RYYNYYYYY':  [1, 1, 1, 1, diuid, 1, ''],  # B15
-                'RYYNYYYYN':  [1, 1, 1, 1, '',    1, ''],  # B16
+                'RYYYNYYNYN': [1, 1, 1, 1, '', 0, m2],  # B11
+                'RYYYNYYNN': [1, 1, 1, 0, fiuid, 1, m1],  # B12
+                'RYYYNYN': [1, 1, 1, 1, '', 0, m4],  # B13
+                'RYYYNN': [1, 1, 1, 1, '', 0, m5],  # B14
+                'RYYNYYYYY': [1, 1, 1, 1, diuid, 1, ''],  # B15
+                'RYYNYYYYN': [1, 1, 1, 1, '', 1, ''],  # B16
                 'RYYNYYYNYY': [1, 1, 1, 1, diuid, 1, m1],  # B17
-                'RYYNYYYNYN': [1, 1, 1, 1, '',    1, m2],  # B18
-                'RYYNYYYNN':  [1, 1, 1, 1, '',    1, m1],  # B19
-                'RYYNYYN':    [1, 1, 1, 1, '',    1, m3],  # B20
-                'RYYNYN':     [1, 1, 1, 1, '',    1, ''],  # B21
-                'RYNY':       [2, 0, 0, 0, '',    1, ''],  # B22
-                'RYNN':       [0, 0, 0, 0, '',    1, ''],  # B23
-                'RNYYYYYYY':  [3, 2, 1, 1, diuid, 1, ''],  # B24
-                'RNYYYYYYN':  [3, 2, 1, 1, '',    1, ''],  # B25
+                'RYYNYYYNYN': [1, 1, 1, 1, '', 1, m2],  # B18
+                'RYYNYYYNN': [1, 1, 1, 1, '', 1, m1],  # B19
+                'RYYNYYN': [1, 1, 1, 1, '', 1, m3],  # B20
+                'RYYNYN': [1, 1, 1, 1, '', 1, ''],  # B21
+                'RYNY': [2, 0, 0, 0, '', 1, ''],  # B22
+                'RYNN': [0, 0, 0, 0, '', 1, ''],  # B23
+                'RNYYYYYYY': [3, 2, 1, 1, diuid, 1, ''],  # B24
+                'RNYYYYYYN': [3, 2, 1, 1, '', 1, ''],  # B25
                 'RNYYYYYNYY': [3, 2, 1, 1, diuid, 1, m1],  # B26
-                'RNYYYYYNYN': [3, 2, 1, 1, '',    1, m2],  # B27
-                'RNYYYYYNN':  [3, 2, 1, 1, '',    1, m1],  # B28
-                'RNYYYYN':    [3, 2, 1, 1, '',    1, m3],  # B29
-                'RNYYYN':     [3, 2, 1, 1, '',    0, m6],  # B30
-                'RNYYNYYYY':  [3, 2, 1, 0, diuid, 1, ''],  # B31
-                'RNYYNYYYN':  [3, 2, 1, 0, fiuid, 1, ''],  # B32
+                'RNYYYYYNYN': [3, 2, 1, 1, '', 1, m2],  # B27
+                'RNYYYYYNN': [3, 2, 1, 1, '', 1, m1],  # B28
+                'RNYYYYN': [3, 2, 1, 1, '', 1, m3],  # B29
+                'RNYYYN': [3, 2, 1, 1, '', 0, m6],  # B30
+                'RNYYNYYYY': [3, 2, 1, 0, diuid, 1, ''],  # B31
+                'RNYYNYYYN': [3, 2, 1, 0, fiuid, 1, ''],  # B32
                 'RNYYNYYNYY': [3, 2, 1, 0, diuid, 1, m1],  # B33
-                'RNYYNYYNYN': [3, 2, 1, 1, '',    0, m2],  # B34
-                'RNYYNYYNN':  [3, 2, 1, 0, fiuid, 1, m1],  # B35
-                'RNYYNYN':    [3, 2, 1, 1, '',    0, m3],  # B36
-                'RNYYNN':     [3, 2, 1, 1, '',    0, m6],  # B37
-                'RNYNYYYYY':  [3, 1, 1, 0, diuid, 1, ''],  # B38
-                'RNYNYYYYN':  [3, 1, 1, 0, fiuid, 1, ''],  # B39
+                'RNYYNYYNYN': [3, 2, 1, 1, '', 0, m2],  # B34
+                'RNYYNYYNN': [3, 2, 1, 0, fiuid, 1, m1],  # B35
+                'RNYYNYN': [3, 2, 1, 1, '', 0, m3],  # B36
+                'RNYYNN': [3, 2, 1, 1, '', 0, m6],  # B37
+                'RNYNYYYYY': [3, 1, 1, 0, diuid, 1, ''],  # B38
+                'RNYNYYYYN': [3, 1, 1, 0, fiuid, 1, ''],  # B39
                 'RNYNYYYNYY': [3, 1, 1, 0, diuid, 1, m1],  # B40
-                'RNYNYYYNYN': [3, 1, 1, 1, '',    0, m2],  # B41
-                'RNYNYYYNN':  [3, 1, 1, 0, fiuid, 1, m1],  # B42
-                'RNYNYYN':    [3, 1, 1, 0, '',    0, m3],  # B43
-                'RNYNYN':     [3, 1, 1, 0, '',    0, m7],  # B44
+                'RNYNYYYNYN': [3, 1, 1, 1, '', 0, m2],  # B41
+                'RNYNYYYNN': [3, 1, 1, 0, fiuid, 1, m1],  # B42
+                'RNYNYYN': [3, 1, 1, 0, '', 0, m3],  # B43
+                'RNYNYN': [3, 1, 1, 0, '', 0, m7],  # B44
                 # QC Analyses
-                'QYYYYYYYY':  [1, 1, 1, 1, diuid, 1, ''],  # C1
-                'QYYYYYYYN':  [1, 1, 1, 1, '',    1, ''],  # C2
+                'QYYYYYYYY': [1, 1, 1, 1, diuid, 1, ''],  # C1
+                'QYYYYYYYN': [1, 1, 1, 1, '', 1, ''],  # C2
                 'QYYYYYYNYY': [1, 1, 1, 1, diuid, 1, ''],  # C3
                 'QYYYYYYNYN': [1, 1, 1, 1, diuid, 1, ''],  # C4
-                'QYYYYYYNN':  [1, 1, 1, 1, '',    1, ''],  # C5
-                'QYYYYYN':    [1, 1, 1, 1, '',    1, ''],  # C6
-                'QYYYYN':     [1, 1, 1, 1, '',    1, ''],  # C7
-                'QYYYNYYYY':  [1, 1, 1, 0, diuid, 1, ''],  # C8
-                'QYYYNYYYN':  [1, 1, 1, 0, fiuid, 1, ''],  # C9
+                'QYYYYYYNN': [1, 1, 1, 1, '', 1, ''],  # C5
+                'QYYYYYN': [1, 1, 1, 1, '', 1, ''],  # C6
+                'QYYYYN': [1, 1, 1, 1, '', 1, ''],  # C7
+                'QYYYNYYYY': [1, 1, 1, 0, diuid, 1, ''],  # C8
+                'QYYYNYYYN': [1, 1, 1, 0, fiuid, 1, ''],  # C9
                 'QYYYNYYNYY': [1, 1, 1, 0, diuid, 1, ''],  # C10
                 'QYYYNYYNYN': [1, 1, 1, 0, diuid, 1, ''],  # C11
-                'QYYYNYYNN':  [1, 1, 1, 0, fiuid, 1, ''],  # C12
-                'QYYYNYN':    [1, 1, 1, 0, fiuid, 1, ''],  # C13
-                'QYYYNN':     [1, 1, 1, 1, '',    0, m5],  # C14
-                'QYYNYYYYY':  [1, 1, 1, 1, diuid, 1, ''],  # C15
-                'QYYNYYYYN':  [1, 1, 1, 1, '',    1, ''],  # C16
+                'QYYYNYYNN': [1, 1, 1, 0, fiuid, 1, ''],  # C12
+                'QYYYNYN': [1, 1, 1, 0, fiuid, 1, ''],  # C13
+                'QYYYNN': [1, 1, 1, 1, '', 0, m5],  # C14
+                'QYYNYYYYY': [1, 1, 1, 1, diuid, 1, ''],  # C15
+                'QYYNYYYYN': [1, 1, 1, 1, '', 1, ''],  # C16
                 'QYYNYYYNYY': [1, 1, 1, 1, diuid, 1, ''],  # C17
                 'QYYNYYYNYN': [1, 1, 1, 1, diuid, 1, ''],  # C18
-                'QYYNYYYNN':  [1, 1, 1, 1, fiuid, 1, ''],  # C19
-                'QYYNYYN':    [1, 1, 1, 1, diuid, 1, ''],  # C20
-                'QYYNYN':     [1, 1, 1, 1, '',    1, ''],  # C21
-                'QYNY':       [2, 0, 0, 0, '',    1, ''],  # C22
-                'QYNN':       [0, 0, 0, 0, '',    1, ''],  # C23
-                'QNYYYYYYY':  [3, 2, 1, 1, diuid, 1, ''],  # C24
-                'QNYYYYYYN':  [3, 2, 1, 1, '',    1, ''],  # C25
+                'QYYNYYYNN': [1, 1, 1, 1, fiuid, 1, ''],  # C19
+                'QYYNYYN': [1, 1, 1, 1, diuid, 1, ''],  # C20
+                'QYYNYN': [1, 1, 1, 1, '', 1, ''],  # C21
+                'QYNY': [2, 0, 0, 0, '', 1, ''],  # C22
+                'QYNN': [0, 0, 0, 0, '', 1, ''],  # C23
+                'QNYYYYYYY': [3, 2, 1, 1, diuid, 1, ''],  # C24
+                'QNYYYYYYN': [3, 2, 1, 1, '', 1, ''],  # C25
                 'QNYYYYYNYY': [3, 2, 1, 1, diuid, 1, ''],  # C26
                 'QNYYYYYNYN': [3, 2, 1, 1, diuid, 1, ''],  # C27
-                'QNYYYYYNN':  [3, 2, 1, 1, '',    1, ''],  # C28
-                'QNYYYYN':    [3, 2, 1, 1, '',    1, ''],  # C29
-                'QNYYYN':     [3, 2, 1, 1, '',    0, m6],  # C30
-                'QNYYNYYYY':  [3, 2, 1, 0, diuid, 1, ''],  # C31
-                'QNYYNYYYN':  [3, 2, 1, 0, fiuid, 1, ''],  # C32
+                'QNYYYYYNN': [3, 2, 1, 1, '', 1, ''],  # C28
+                'QNYYYYN': [3, 2, 1, 1, '', 1, ''],  # C29
+                'QNYYYN': [3, 2, 1, 1, '', 0, m6],  # C30
+                'QNYYNYYYY': [3, 2, 1, 0, diuid, 1, ''],  # C31
+                'QNYYNYYYN': [3, 2, 1, 0, fiuid, 1, ''],  # C32
                 'QNYYNYYNYY': [3, 2, 1, 0, diuid, 1, ''],  # C33
                 'QNYYNYYNYN': [3, 2, 1, 0, diuid, 1, ''],  # C34
-                'QNYYNYYNN':  [3, 2, 1, 0, fiuid, 1, ''],  # C35
-                'QNYYNYN':    [3, 2, 1, 0, fiuid, 1, ''],  # C36
-                'QNYYNN':     [3, 2, 1, 1, '',    0, m5],  # C37
-                'QNYNYYYYY':  [3, 1, 1, 0, diuid, 1, ''],  # C38
-                'QNYNYYYYN':  [3, 1, 1, 0, fiuid, 1, ''],  # C39
+                'QNYYNYYNN': [3, 2, 1, 0, fiuid, 1, ''],  # C35
+                'QNYYNYN': [3, 2, 1, 0, fiuid, 1, ''],  # C36
+                'QNYYNN': [3, 2, 1, 1, '', 0, m5],  # C37
+                'QNYNYYYYY': [3, 1, 1, 0, diuid, 1, ''],  # C38
+                'QNYNYYYYN': [3, 1, 1, 0, fiuid, 1, ''],  # C39
                 'QNYNYYYNYY': [3, 1, 1, 0, diuid, 1, ''],  # C40
                 'QNYNYYYNYN': [3, 1, 1, 0, diuid, 1, ''],  # C41
-                'QNYNYYYNN':  [3, 1, 1, 0, fiuid, 1, ''],  # C42
-                'QNYNYYN':    [3, 1, 1, 0, fiuid, 1, ''],  # C43
-                'QNYNYN':     [3, 1, 1, 1, '',    0, m7],  # C44
+                'QNYNYYYNN': [3, 1, 1, 0, fiuid, 1, ''],  # C42
+                'QNYNYYN': [3, 1, 1, 0, fiuid, 1, ''],  # C43
+                'QNYNYN': [3, 1, 1, 1, '', 0, m7],  # C44
             }
             targ = [v for k, v in matrix.items() if tprem.startswith(k)]
             if not targ:

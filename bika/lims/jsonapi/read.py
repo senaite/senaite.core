@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import logger, to_utf8
 from bika.lims.interfaces import IJSONReadExtender
@@ -7,6 +12,8 @@ from plone.jsonapi.core.interfaces import IRouteProvider
 from plone.protect.authenticator import AuthenticatorView
 from bika.lims.jsonapi import load_brain_metadata
 from bika.lims.jsonapi import load_field_values
+from bika.lims.jsonapi import get_include_methods
+from bika.lims.jsonapi import load_method_values
 from Products.CMFCore.utils import getToolByName
 from zope import interface
 from zope.component import getAdapters
@@ -36,6 +43,10 @@ def read(context, request):
     contentFilter = {}
     for index in indexes:
         if index in request:
+            if index == 'UID' and safe_unicode(request[index]) == "":
+                msg = 'Request with no UID for %s catalog. Dismissing UID ' \
+                      'while filtering' % catalog_name
+                logger.warning(msg)
             if index == 'review_state' and "{" in request[index]:
                 continue
             contentFilter[index] = safe_unicode(request[index])
@@ -58,15 +69,26 @@ def read(context, request):
     if sort_order:
         contentFilter['sort_order'] = sort_order
     else:
-        sort_order = 'ascending'
         contentFilter['sort_order'] = 'ascending'
 
     include_fields = get_include_fields(request)
-    if debug_mode:
-        logger.info("contentFilter: " + str(contentFilter))
+
+    include_methods = get_include_methods(request)
 
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
+
+    if debug_mode:
+        if len(proxies) == 0:
+            logger.info("contentFilter {} returned zero objects"
+                        .format(contentFilter))
+        elif len(proxies) == 1:
+            logger.info("contentFilter {} returned {} ({})".format(
+                contentFilter, proxies[0].portal_type, proxies[0].UID))
+        else:
+            types = ','.join(set([p.portal_type for p in proxies]))
+            logger.info("contentFilter {} returned {} items (types: {})"
+                        .format(contentFilter, len(proxies), types))
 
     # batching items
     page_nr = int(request.get("page_nr", 0))
@@ -90,6 +112,8 @@ def read(context, request):
         # Place all schema fields ino the result.
         obj = proxy.getObject()
         obj_data.update(load_field_values(obj, include_fields))
+        # Add methods results
+        obj_data.update(load_method_values(obj, include_methods))
 
         obj_data['path'] = "/".join(obj.getPhysicalPath())
 
@@ -107,8 +131,6 @@ def read(context, request):
         last_object_nr = ret['total_objects']
     ret['last_object_nr'] = last_object_nr
 
-    if debug_mode:
-        logger.info("{0} objects returned".format(len(ret['objects'])))
     return ret
 
 

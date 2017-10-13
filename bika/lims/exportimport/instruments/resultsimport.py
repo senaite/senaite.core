@@ -1,7 +1,13 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.utils import t
 from bika.lims.exportimport.instruments.logger import Logger
 from bika.lims.idserver import renameAfterCreation
@@ -9,6 +15,8 @@ from bika.lims.utils import tmpID
 from Products.Archetypes.config import REFERENCE_CATALOG
 from datetime import datetime
 from DateTime import DateTime
+from bika.lims.workflow import doActionFor
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import os
 
 class InstrumentResultsFileParser(Logger):
@@ -186,8 +194,11 @@ class InstrumentResultsFileParser(Logger):
 
 class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
-    def __init__(self, infile):
+    def __init__(self, infile, encoding=None):
         InstrumentResultsFileParser.__init__(self, infile, 'CSV')
+        # Some Instruments can generate files with different encodings, so we
+        # may need this parameter
+        self._encoding = encoding
 
     def parse(self):
         infile = self.getInputFile()
@@ -195,7 +206,11 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         jump = 0
         # We test in import functions if the file was uploaded
         try:
-            f = open(infile.name, 'rU')
+            if self._encoding:
+                import codecs
+                f = codecs.open(infile.name, 'r', encoding=self._encoding)
+            else:
+                f = open(infile.name, 'rU')
         except AttributeError:
             f = infile
         for line in f.readlines():
@@ -258,6 +273,8 @@ class AnalysisResultsImporter(Logger):
         self._priorizedsearchcriteria = ''
         self.bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.ar_catalog = getToolByName(
+            self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         self.pc = getToolByName(self.context, 'portal_catalog')
         self.bc = getToolByName(self.context, 'bika_catalog')
         self.wf = getToolByName(self.context, 'portal_workflow')
@@ -271,7 +288,7 @@ class AnalysisResultsImporter(Logger):
                                            'attachment_due',
                                            'to_be_verified']
         if not self._idsearch:
-            self._idsearch=['getRequestID']
+            self._idsearch=['getId']
         self.instrument_uid=instrument_uid
 
     def getParser(self):
@@ -307,7 +324,7 @@ class AnalysisResultsImporter(Logger):
     def getIdSearchCriteria(self):
         """ Returns the search criteria for retrieving analyses.
             Example:
-            serachcriteria=['getRequestID', 'getSampleID', 'getClientSampleID']
+            serachcriteria=['getId', 'getSampleID', 'getClientSampleID']
         """
         return self._idsearch
 
@@ -339,7 +356,6 @@ class AnalysisResultsImporter(Logger):
         # Exclude non existing ACODEs
         acodes = []
         ancount = 0
-        arprocessed = []
         instprocessed = []
         importedars = {}
         importedinsts = {}
@@ -357,7 +373,12 @@ class AnalysisResultsImporter(Logger):
         if len(acodes) == 0:
             self.err("Service keywords: no matches found")
 
-        searchcriteria = self.getIdSearchCriteria();
+        # Attachments will be created in any worksheet that contains
+        # analyses that are updated by this import
+        attachments = {}
+        infile = self._parser.getInputFile()
+
+        searchcriteria = self.getIdSearchCriteria()
         #self.log(_("Search criterias: %s") % (', '.join(searchcriteria)))
         for objid, results in self._parser.getRawResults().iteritems():
             # Allowed more than one result for the same sample and analysis.
@@ -446,6 +467,24 @@ class AnalysisResultsImporter(Logger):
                         continue
 
                     analysis = ans[0]
+
+                    # Create attachment in worksheet linked to this analysis.
+                    # Only if this import has not already created the attachment
+                    # And only if the filename of the attachment is unique in
+                    # this worksheet.  Otherwise we will attempt to use existing
+                    # attachment.
+                    wss = analysis.getBackReferences('WorksheetAnalysis')
+                    ws = wss[0] if wss else None
+                    if ws:
+                        if ws.getId() not in attachments:
+                            fn = infile.filename
+                            fn_attachments = self.get_attachment_filenames(ws)
+                            if fn in fn_attachments:
+                                attachments[ws.getId()] = fn_attachments[fn]
+                            else:
+                                attachments[ws.getId()] = \
+                                    self.create_attachment(ws, infile)
+
                     if capturedate:
                         values['DateTime'] = capturedate
                     processed = self._process_analysis(objid, analysis, values)
@@ -462,89 +501,20 @@ class AnalysisResultsImporter(Logger):
                         else:
                             ar = analysis.portal_type == 'Analysis' and analysis.aq_parent or None
                             if ar and ar.UID:
-                                # Set AR imported info
-                                arprocessed.append(ar.UID())
-                                importedar = ar.getRequestID() in importedars.keys() \
-                                            and importedars[ar.getRequestID()] or []
+                                importedar = ar.getId() in importedars.keys() \
+                                            and importedars[ar.getId()] or []
                                 if acode not in importedar:
                                     importedar.append(acode)
-                                importedars[ar.getRequestID()] = importedar
+                                importedars[ar.getId()] = importedar
 
-                        # Create the AttachmentType for mime type if not exists
-                        attuid = None
-                        attachmentType = self.bsc(portal_type="AttachmentType",
-                                                  title=self._parser.getAttachmentFileType())
-                        if len(attachmentType) == 0:
-                            try:
-                                folder = self.context.bika_setup.bika_attachmenttypes
-                                obj = _createObjectByType("AttachmentType", folder, tmpID())
-                                obj.edit(title=self._parser.getAttachmentFileType(),
-                                         description="Autogenerated file type")
-                                obj.unmarkCreationFlag()
-                                renameAfterCreation(obj)
-                                attuid = obj.UID()
-                            except:
-                                attuid = None
-                                self.err(
-                                    "Unable to create the Attachment Type ${mime_type}",
-                                    mapping={
-                                    "mime_type": self._parser.getFileMimeType()})
+                        if ws:
+                            self.attach_attachment(
+                                analysis, attachments[ws.getId()])
                         else:
-                            attuid = attachmentType[0].UID
-
-                        if attuid is not None:
-                            try:
-                                # Attach the file to the Analysis
-                                wss = analysis.getBackReferences('WorksheetAnalysis')
-                                if wss and len(wss) > 0:
-                                    #TODO: Mirar si es pot evitar utilitzar el WS i utilitzar directament l'Anàlisi (útil en cas de CalibrationTest)
-                                    ws = wss[0]
-                                    attachment = _createObjectByType("Attachment", ws, tmpID())
-                                    attachment.edit(
-                                        AttachmentFile=self._parser.getInputFile(),
-                                        AttachmentType=attuid,
-                                        AttachmentKeys='Results, Automatic import')
-                                    attachment.reindexObject()
-                                    others = analysis.getAttachment()
-                                    attachments = []
-                                    for other in others:
-                                        if other.getAttachmentFile().filename != attachment.getAttachmentFile().filename:
-                                            attachments.append(other.UID())
-                                    attachments.append(attachment.UID())
-                                    analysis.setAttachment(attachments)
-
-                            except:
-    #                            self.err(_("Unable to attach results file '${file_name}' to AR ${request_id}",
-    #                                       mapping={"file_name": self._parser.getInputFile().filename,
-    #                                                "request_id": ar.getRequestID()}))
-                                pass
-
-        # Calculate analysis dependencies
-        for aruid in arprocessed:
-            ar = self.bc(portal_type='AnalysisRequest',
-                         UID=aruid)
-            ar = ar[0].getObject()
-            analyses = ar.getAnalyses()
-            for analysis in analyses:
-                analysis = analysis.getObject()
-                if analysis.calculateResult(True, True):
-                    self.log(
-                        "${request_id} calculated result for '${analysis_keyword}': '${analysis_result}'",
-                        mapping={"request_id": ar.getRequestID(),
-                                 "analysis_keyword": analysis.getKeyword(),
-                                 "analysis_result": str(analysis.getResult())}
-                    )
-
-        # Not sure if there's any reason why ReferenceAnalyses have not
-        # defined the method calculateResult...
-        # Needs investigation.
-        #for instuid in instprocessed:
-        #    inst = self.bsc(portal_type='Instrument',UID=instuid)[0].getObject()
-        #    analyses = inst.getAnalyses()
-        #    for analysis in analyses:
-        #        if (analysis.calculateResult(True, True)):
-        #            self.log(_("%s calculated result for '%s': '%s'") %
-        #                 (inst.title, analysis.getKeyword(), str(analysis.getResult())))
+                            self.warn(
+                                "Attachment cannot be linked to analysis as "
+                                "it is not assigned to a worksheet (%s)" %
+                                analysis)
 
         for arid, acodes in importedars.iteritems():
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
@@ -572,23 +542,76 @@ class AnalysisResultsImporter(Logger):
                 mapping={"nr_updated_ars": str(len(importedars)),
                          "nr_updated_results": str(ancount)})
 
+    def create_mime_attachmenttype(self):
+        # Create the AttachmentType for mime type if not exists
+        attachmentType = self.bsc(portal_type="AttachmentType",
+                                  title=self._parser.getAttachmentFileType())
+        if not attachmentType:
+            folder = self.context.bika_setup.bika_attachmenttypes
+            obj = _createObjectByType("AttachmentType", folder, tmpID())
+            obj.edit(title=self._parser.getAttachmentFileType(),
+                     description="Autogenerated file type")
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+            attuid = obj.UID()
+        else:
+            attuid = attachmentType[0].UID
+        return attuid
+
+    def create_attachment(self, ws, infile):
+        attuid = self.create_mime_attachmenttype()
+        attachment = None
+        if attuid and infile:
+            attachment = _createObjectByType("Attachment", ws, tmpID())
+            logger.info("Creating %s in %s" % (attachment, ws))
+            attachment.edit(
+                AttachmentFile=infile,
+                AttachmentType=attuid,
+                AttachmentKeys='Results, Automatic import')
+            attachment.reindexObject()
+        return attachment
+
+    def attach_attachment(self, analysis, attachment):
+        if attachment:
+            an_atts = analysis.getAttachment()
+            attachments = []
+            for an_att in an_atts:
+                if an_att.getAttachmentFile().filename != \
+                        attachment.getAttachmentFile().filename:
+                    logger.info("Attaching %s to %s" % (an_att.UID(), analysis))
+                    attachments.append(attachment.UID())
+                    analysis.setAttachment(attachments)
+                    break
+            else:
+                self.warn("Attachment %s was not linked to analysis %s" %
+                          (attachment, analysis))
+
+    def get_attachment_filenames(self, ws):
+        fn_attachments = {}
+        for att in ws.objectValues('Attachment'):
+            fn = att.getAttachmentFile().filename
+            if fn not in fn_attachments:
+                fn_attachments[fn] = []
+            fn_attachments[fn].append(att)
+        return fn_attachments
+
     def _getObjects(self, objid, criteria, states):
         #self.log("Criteria: %s %s") % (criteria, obji))
         obj = []
         if (criteria == 'arid'):
-            obj = self.bc(portal_type='AnalysisRequest',
-                           getRequestID=objid,
+            obj = self.ar_catalog(
+                           getId=objid,
                            review_state=states)
         elif (criteria == 'sid'):
-            obj = self.bc(portal_type='AnalysisRequest',
+            obj = self.ar_catalog(
                            getSampleID=objid,
                            review_state=states)
         elif (criteria == 'csid'):
-            obj = self.bc(portal_type='AnalysisRequest',
+            obj = self.ar_catalog(
                            getClientSampleID=objid,
                            review_state=states)
         elif (criteria == 'aruid'):
-            obj = self.bc(portal_type='AnalysisRequest',
+            obj = self.ar_catalog(
                            UID=objid,
                            review_state=states)
         elif (criteria == 'rgid'):
@@ -618,7 +641,7 @@ class AnalysisResultsImporter(Logger):
         analyses = []
         # HACK: Use always the full search workflow
         #searchcriteria = self.getIdSearchCriteria()
-        searchcriteria = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        searchcriteria = ['getId', 'getSampleID', 'getClientSampleID']
         allowed_ar_states = self.getAllowedARStates()
         allowed_an_states = self.getAllowedAnalysisStates()
         allowed_ar_states_msg = [_(s) for s in allowed_ar_states]
@@ -661,10 +684,10 @@ class AnalysisResultsImporter(Logger):
         else:
             sortorder = ['arid', 'sid', 'csid', 'aruid'];
             for crit in sortorder:
-                if (crit == 'arid' and 'getRequestID' in allowedsearches) \
+                if (crit == 'arid' and 'getId' in allowedsearches) \
                     or (crit == 'sid' and 'getSampleID' in allowedsearches) \
                     or (crit == 'csid' and 'getClientSampleID' in allowedsearches) \
-                    or (crit == 'aruid' and 'getRequestID' in allowedsearches):
+                    or (crit == 'aruid' and 'getId' in allowedsearches):
                     ars = self._getObjects(objid, crit, arstates)
                     if ars and len(ars) > 0:
                         break
@@ -758,7 +781,7 @@ class AnalysisResultsImporter(Logger):
                                   "interim_keyword": keyword,
                                   "result": str(res)
                          })
-                ninterim = interim
+                ninterim = interim.copy()
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
@@ -769,7 +792,7 @@ class AnalysisResultsImporter(Logger):
             elif values.get(title, '') or values.get(title, '') == 0:
                 res = values.get(title)
                 self.log("%s/'%s:%s': '%s'"%(objid, acode, title, str(res)))
-                ninterim = interim
+                ninterim = interim.copy()
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
@@ -780,8 +803,13 @@ class AnalysisResultsImporter(Logger):
             else:
                 interimsout.append(interim)
 
+        fields_to_reindex = []
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
+            # won't be doing setResult below, so manually calculate result.
+            analysis.calculateResult(override=self._override[1])
+            fields_to_reindex.append('Result')
+
         if resultsaved == False and (values.get(defresultkey, '')
                                      or values.get(defresultkey, '') == 0
                                      or self._override[1] == True):
@@ -795,6 +823,7 @@ class AnalysisResultsImporter(Logger):
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)
+            doActionFor(analysis, 'submit')
             resultsaved = True
 
         elif resultsaved == False:
@@ -809,5 +838,8 @@ class AnalysisResultsImporter(Logger):
             and analysis.portal_type == 'Analysis' \
             and (analysis.getRemarks() != '' or self._override[1] == True):
             analysis.setRemarks(values['Remarks'])
+            fields_to_reindex.append('Remarks')
 
+        if len(fields_to_reindex):
+            analysis.reindexObject(idxs=fields_to_reindex)
         return resultsaved or len(interimsout) > 0

@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.utils import t
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -20,11 +26,13 @@ class GetServices():
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return json.dumps([c.Title for c in
-                bsc(portal_type = 'AnalysisService',
-                   getCategoryTitle = self.request.get('getCategoryTitle', ''),
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')])
+        brains = bsc(
+            portal_type='AnalysisService',
+            getCategoryUID=self.request.get('getCategoryUID', ''),
+            inactive_state='active',
+            sort_on='sortable_title')
+        voc = [[brain.UID, brain.Title] for brain in brains]
+        return json.dumps(voc)
 
 
 class AttachAnalyses():
@@ -60,15 +68,13 @@ class AttachAnalyses():
                 if review_state not in attachable_states:
                     continue
                 parent = analysis.getRequestID()
-                service = analysis.getService()
             elif analysis.portal_type == 'ReferenceAnalysis':
                 if review_state not in attachable_states:
                     continue
                 parent = analysis.aq_parent.Title()
-                service = analysis.getService()
             rows.append({'analysis_uid': analysis.UID(),
                          'slot': analysis_to_slot[analysis.UID()],
-                         'service': service and service.Title() or '',
+                         'service': analysis.Title(),
                          'parent': parent,
                          'type': analysis.portal_type})
 

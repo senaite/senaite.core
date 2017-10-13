@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
@@ -67,6 +72,8 @@ class calculate_partitions(object):
         if not _services:
             raise BadRequest("services are not present in request")
         for uid in _services:
+            if not uid:
+                continue
             try:
                 services.append(uc(UID=uid)[0].getObject())
             except:

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
@@ -175,8 +180,6 @@ class ajaxGetServiceInterimFields:
 class JSONReadExtender(object):
     """- Adds fields to Analysis Service:
 
-    ServiceDependencies - services our calculation depends on
-    ServiceDependants - services who's calculation depend on us
     MethodInstruments - A dictionary of instruments:
         keys: Method UID
         values: list of instrument UIDs
@@ -203,25 +206,6 @@ class JSONReadExtender(object):
 
     def __call__(self, request, data):
         include_fields = get_include_fields(request)
-
-        if not include_fields or "ServiceDependencies" in include_fields:
-            data["ServiceDependencies"] = []
-            calc = self.context.getCalculation()
-            if calc:
-                services = [self.service_info(service) for service
-                    in calc.getCalculationDependencies(flat=True)
-                    if service.UID() != self.context.UID()]
-                data["ServiceDependencies"] = services
-
-        if not include_fields or "ServiceDependants" in include_fields:
-            data["ServiceDependants"] = []
-            calcs = self.context.getBackReferences('CalculationAnalysisService')
-            if calcs:
-                for calc in calcs:
-                    services = [self.service_info(service) for service
-                        in calc.getCalculationDependants()
-                        if service.UID() != self.context.UID()]
-                    data["ServiceDependants"].extend(services)
 
         if not include_fields or "MethodInstruments" in include_fields:
             data["MethodInstruments"] = {}

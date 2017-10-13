@@ -21,6 +21,7 @@
  <property name="default_view_fallback">False</property>
 
  <alias from="(Default)" to="folder_view"/>
+ <alias from="base_view" to="folder_view"/>
  <alias from="view" to="folder_view"/>
 
 </object>

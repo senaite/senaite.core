@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from email.utils import formataddr
 from smtplib import SMTPRecipientsRefused
 from smtplib import SMTPServerDisconnected
@@ -75,11 +81,6 @@ class ResultOutOfRange(object):
         self.context = context
 
     def __call__(self, result=None, specification=None):
-        # Other types of analysis depend on Analysis base class, and therefore
-        # also provide IAnalysis.  We allow them to register their own adapters
-        # for range checking, and manually ignore them here. etc.
-        if self.context.portal_type != 'ReferenceAnalysis':
-            return None
         workflow = getToolByName(self.context, 'portal_workflow')
         # We don't care about retracted objects
         astate = workflow.getInfoFor(self.context, 'review_state')
@@ -91,7 +92,7 @@ class ResultOutOfRange(object):
             result = float(str(result))
         except ValueError:
             return None
-        service_uid = self.context.getService().UID()
+        service_uid = self.context.getServiceUID()
         specification = self.context.aq_parent.getResultsRangeDict()
         # Analysis without specification values. Assume in range
         if service_uid not in specification:
@@ -208,7 +209,7 @@ class AnalysesRetractedListReport(BrowserView):
         added = []
         to = ''
         for analysis in self.analyses:
-            department = analysis.getService().getDepartment()
+            department = analysis.getDepartment()
             if department is None:
                 continue
             department_id = department.UID()

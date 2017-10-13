@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from archetypes.schemaextender.interfaces import ISchemaModifier, \
     IOrderableSchemaExtender
 from bika.lims.browser import BrowserView
@@ -8,6 +13,9 @@ from operator import itemgetter
 from Products.CMFPlone.utils import safe_unicode
 from zope.component import adapts
 from zope.interface import implements
+from Products.CMFCore.utils import getToolByName
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+
 
 import json
 import plone
@@ -43,9 +51,9 @@ class getAnalysisContainers(BrowserView):
         rows = []
 
         ars = []
+        catalog = getToolByName(self, CATALOG_ANALYSIS_REQUEST_LISTING)
         for x in [a.getObject() for a in
-                  self.bika_catalog(
-                    portal_type='AnalysisRequest',
+                catalog(
                     cancellation_state='active',
                     sort_on="created",
                     sort_order="desc")]:

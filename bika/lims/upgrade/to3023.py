@@ -1,8 +1,12 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.config import REFERENCE_CATALOG
-from bika.lims.permissions import AddStorageLocation
 
 def upgrade(tool):
     """ Add Storage locacations to ARs and Samples.
@@ -29,9 +33,6 @@ def upgrade(tool):
 
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
-
-    mp = portal.manage_permission
-    mp(AddStorageLocation, ['Manager', 'Owner', 'LabManager', ], 1)
 
     at = getToolByName(portal, 'archetype_tool')
     at.setCatalogsByType('StorageLocation', ['bika_setup_catalog', 'portal_catalog'])

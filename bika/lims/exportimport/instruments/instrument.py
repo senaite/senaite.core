@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ Generic controller for instrument results import view
 """
 import json
@@ -17,7 +22,7 @@ def GenericImport(context, request, parser, importer=None):
     artoapply = request.form['artoapply']
     override = request.form['results_override']
     sample = request.form.get('sample', 'requestid')
-    instrument = request.form.get('qcinstrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []
@@ -41,9 +46,9 @@ def GenericImport(context, request, parser, importer=None):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

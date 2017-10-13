@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 
@@ -96,6 +101,6 @@ class barcode_entry(BrowserView):
         """
         ars = instance.getAnalysisRequests()
         if len(ars) == 1:
-            return self.handle_AnalysisRequest(instance)
+            return self.handle_AnalysisRequest(ars[0])
         else:
             return instance.absolute_url()

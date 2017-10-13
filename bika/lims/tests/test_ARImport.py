@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import logger
 from bika.lims.content.analysis import Analysis
@@ -43,8 +48,6 @@ class TestARImports(BikaSimpleTestCase):
                       title='Toilet')
         self.addthing(self.portal.bika_setup.bika_containertypes,
                       'ContainerType', title='Cup')
-        self.addthing(self.portal.bika_setup.bika_arpriorities, 'ARPriority',
-                      title='Normal', sortKey=1)
         a = self.addthing(self.portal.bika_setup.bika_analysisservices,
                           'AnalysisService', title='Ecoli', Keyword="ECO")
         b = self.addthing(self.portal.bika_setup.bika_analysisservices,

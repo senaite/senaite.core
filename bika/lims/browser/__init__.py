@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Bika's browser views are based on this one, for a nice set of utilities.
 """
 from DateTime.DateTime import DateTime, safelocaltime
@@ -5,11 +10,12 @@ from DateTime.interfaces import DateTimeError
 from Products.CMFCore.utils import getToolByName
 from AccessControl import ClassSecurityInfo
 from Products.CMFPlone.i18nl10n import ulocalized_time as _ut
-from Products.Five.browser import BrowserView
+from Products.Five.browser import BrowserView as BaseBrowserView
 from bika.lims import logger
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
 from time import strptime as _strptime
+import traceback
 
 
 def strptime(context, value):
@@ -36,32 +42,86 @@ def strptime(context, value):
             val = DateTime(*parts)
         break
     else:
-        logger.warning("DateTimeField failed to format date "
-                       "string '%s' with '%s'" % (value, fmtstr))
+        try:
+            # The following will handle an rfc822 string.
+            value = value.split(" +", 1)[0]
+            val = DateTime(value)
+        except:
+            logger.warning("DateTimeField failed to format date "
+                           "string '%s' with '%s'" % (value, fmtstr))
     return val
 
 
 def ulocalized_time(time, long_format=None, time_only=None, context=None,
                     request=None):
+    """
+    This function gets ans string as time or a DateTime objects and returns a
+    string with the time formatted
+
+    :param time: The time to process
+    :type time: str/DateTime
+    :param long_format:  If True, return time in ling format
+    :type portal_type: boolean/null
+    :param time_only: If True, only returns time.
+    :type title: boolean/null
+    :param context: The current context
+    :type context: ATContentType
+    :param request: The current request
+    :type request: HTTPRequest object
+    :returns: The formatted date as string
+    :rtype: string
+    """
     # if time is a string, we'll try pass it through strptime with the various
     # formats defined.
     if isinstance(time, basestring):
         time = strptime(context, time)
-    if time:
-        # no printing times if they were not specified in inputs
-        if time.second() + time.minute() + time.hour() == 0:
-            long_format = False
-        time_str = _ut(time, long_format, time_only, context,
-                                   'bika', request)
-        return time_str
+
+    if not time or not isinstance(time, DateTime):
+        return ''
+
+    # no printing times if they were not specified in inputs
+    if time.second() + time.minute() + time.hour() == 0:
+        long_format = False
+    try:
+        time_str = _ut(time, long_format, time_only, context, 'bika', request)
+    except ValueError:
+        err_msg = traceback.format_exc() + '\n'
+        logger.warn(
+            err_msg + '\n' +
+            "Error converting '{}' time to string in {}."
+            .format(time, context))
+        time_str = ''
+    return time_str
 
 
-class BrowserView(BrowserView):
+class updateFilerByDepartmentCookie(BaseBrowserView):
+    """
+    This function updates or creates the cookie 'filter_by_department_info'
+    in order to filter the lists by department.
+    @context: is the current view.
+    @value: is a list of UIDs of departments.
+    """
+
+    def __call__(self):
+        # Getting the department uid from the submit
+        dep_uid = self.request.form.get('department_filter_portlet', '')
+        # Create/Update a cookie with the new department uid
+        self.request.response.setCookie(
+            'filter_by_department_info', dep_uid, path='/')
+        # Redirect to the same page
+        url = self.request.get('URL', '')\
+            .replace('portletfilter_by_department', '')
+        self.request.response.redirect(url)
+
+
+class BrowserView(BaseBrowserView):
     security = ClassSecurityInfo()
 
     logger = logger
 
     def __init__(self, context, request):
+        self.context = context
+        self.request = request
         super(BrowserView, self).__init__(context, request)
 
     security.declarePublic('ulocalized_time')
@@ -114,21 +174,31 @@ class BrowserView(BrowserView):
     def checkPermission(self, perm, obj):
         return self.portal_membership.checkPermission(perm, obj)
 
+    # TODO: user_fullname is deprecated and will be removed in Bika LIMS 3.3.
+    # Use bika.utils.user_fullnameinstead
+    # I was having a problem trying to import the function from bika.lims.utils
+    # so i copied the code here.
     def user_fullname(self, userid):
         member = self.portal_membership.getMemberById(userid)
         if member is None:
             return userid
         member_fullname = member.getProperty('fullname')
-        c = self.portal_catalog(portal_type='Contact', getUsername=userid)
+        portal_catalog = getToolByName(self, 'portal_catalog')
+        c = portal_catalog(portal_type='Contact', getUsername=userid)
         contact_fullname = c[0].getObject().getFullname() if c else None
         return contact_fullname or member_fullname or userid
 
+    # TODO: user_fullname is deprecated and will be removed in Bika LIMS 3.3.
+    # Use bika.utils.user_fullnameinstead.
+    # I was having a problem trying to import the function from bika.lims.utils
+    # so i copied the code here.
     def user_email(self, userid):
         member = self.portal_membership.getMemberById(userid)
         if member is None:
             return userid
         member_email = member.getProperty('email')
-        c = self.portal_catalog(portal_type='Contact', getUsername=userid)
+        portal_catalog = getToolByName(self, 'portal_catalog')
+        c = portal_catalog(portal_type='Contact', getUsername=userid)
         contact_email = c[0].getObject().getEmailAddress() if c else None
         return contact_email or member_email or ''
 

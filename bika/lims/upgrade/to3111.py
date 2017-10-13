@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
@@ -24,17 +29,56 @@ def upgrade(tool):
     setup = portal.portal_setup
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
-
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
 
+    reflex_rules(portal)
     return True
+
+
+def reflex_rules(portal):
+    at = getToolByName(portal, 'archetype_tool')
+    # If reflex rules folder is not created yet, we should create it
+    typestool = getToolByName(portal, 'portal_types')
+    qi = portal.portal_quickinstaller
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        typestool.constructContent(type_name="ReflexRuleFolder",
+                                   container=portal['bika_setup'],
+                                   id='bika_reflexrulefolder',
+                                   title='Reflex Rules Folder')
+    obj = portal['bika_setup']['bika_reflexrulefolder']
+    obj.unmarkCreationFlag()
+    obj.reindexObject()
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        logger.info("ReflexRuleFolder not created")
+    # Install Products.DataGridField
+    qi.installProducts(['Products.DataGridField'])
+    # add new types not to list in nav
+    # ReflexRule
+    portal_properties = getToolByName(portal, 'portal_properties')
+    ntp = getattr(portal_properties, 'navtree_properties')
+    types = list(ntp.getProperty('metaTypesNotToList'))
+    types.append("ReflexRule")
+    ntp.manage_changeProperties(MetaTypesNotToQuery=types)
+    pc = getToolByName(portal, 'portal_catalog')
+    addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
+
+
+def addIndexAndColumn(catalog, index, indextype):
+    try:
+        catalog.addIndex(index, indextype)
+    except:
+        pass
+    try:
+        catalog.addColumn(index)
+    except:
+        pass

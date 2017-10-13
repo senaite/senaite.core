@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ Agilent's 'Masshunter Quant'
 """
 from DateTime import DateTime
@@ -36,7 +41,7 @@ def Import(context, request):
     artoapply = request.form['amhq_artoapply']
     override = request.form['amhq_override']
     sample = request.form.get('amhq_sample', 'requestid')
-    instrument = request.form.get('amhq_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
 
@@ -66,9 +71,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample =='requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

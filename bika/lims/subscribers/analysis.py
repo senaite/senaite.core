@@ -1,7 +1,11 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from bika.lims import logger
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import changeWorkflowState
@@ -17,15 +21,9 @@ from zope.interface import alsoProvides
 
 def ObjectInitializedEventHandler(instance, event):
 
-    # This is the easiest place to assign IRoutineAnalysis,
-    # since other anlaysis types subclass Analysis.
-    # (noLongerProvides cannot un-provide interfaces on the class itself)
-    if instance.portal_type == 'Analysis':
-        alsoProvides(instance, IRoutineAnalysis)
-
     wf_tool = getToolByName(instance, 'portal_workflow')
 
-    ar = instance.aq_parent
+    ar = instance.getRequest()
     ar_state = wf_tool.getInfoFor(ar, 'review_state')
     ar_ws_state = wf_tool.getInfoFor(ar, 'worksheetanalysis_review_state')
 
@@ -46,19 +44,18 @@ def ObjectInitializedEventHandler(instance, event):
         ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
 
     if ar_ws_state == 'assigned':
+        # TODO workflow: analysis request can be 'assigned'?
         wf_tool.doActionFor(ar, 'unassign')
         skip(ar, 'unassign', unskip=True)
-
-    instance.updateDueDate()
 
     return
 
 def ObjectRemovedEventHandler(instance, event):
-
+    # TODO Workflow - Review all this function and normalize
     # May need to promote the AR's review_state
     # if all other analyses are at a higher state than this one was.
     workflow = getToolByName(instance, 'portal_workflow')
-    ar = instance.aq_parent
+    ar = instance.getRequest()
     can_submit = True
     can_attach = True
     can_verify = True

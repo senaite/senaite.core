@@ -1,14 +1,15 @@
 bika_analysiscategories,AnalysisCategories
 bika_analysisprofiles,AnalysisProfiles
 bika_artemplates,ARTemplates
-bika_arpriorities,ARPriorities
 bika_analysisservices,AnalysisServices
 bika_analysisspecs,AnalysisSpecs
 bika_attachmenttypes,AttachmentTypes
 bika_batchlabels,BatchLabels
 bika_calculations,Calculations
+bika_identifiertypes,IdentifierTypes
 bika_instruments,Instruments
 bika_instrumenttypes,InstrumentTypes
+bika_instrumentlocations,InstrumentLocations
 bika_labcontacts,LabContacts
 bika_containers,Containers
 bika_containertypes,ContainerTypes
@@ -18,6 +19,7 @@ bika_labproducts,LabProducts
 bika_manufacturers,Manufacturers
 bika_preservations,Preservations
 bika_referencedefinitions,ReferenceDefinitions
+bika_reflexrulefolder,ReflexRuleFolder
 bika_sampleconditions,SampleConditions
 bika_samplematrices,SampleMatrices
 bika_samplepoints,SamplePoints

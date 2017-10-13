@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims import PMF
@@ -6,6 +11,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import encode_header
+from bika.lims.utils import copy_field_values
 from bika.lims.utils import isActive
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
@@ -19,6 +25,9 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
+from bika.lims import interfaces
+from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import wasTransitionPerformed
 
 import json
 import plone
@@ -45,7 +54,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             came_from = came_from[0]
         # Call out to the workflow action method
         # Use default bika_listing.py/WorkflowAction for other transitions
-        method_name = 'workflow_action_' + action
+        method_name = 'workflow_action_' + action if action else ''
         method = getattr(self, method_name, False)
         if method:
             method()
@@ -70,7 +79,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if nr_existing > nr_parts:
             for i in range(nr_existing - nr_parts):
                 part = sample['%s%s' % (part_prefix, nr_existing - i)]
-                for a in part.getBackReferences("AnalysisSamplePartition"):
+                analyses = part.getAnalyses()
+                for a in analyses:
                     a.setSamplePartition(None)
                 sample.manage_delObjects(['%s%s' % (part_prefix, nr_existing - i), ])
         # modify part container/preservation
@@ -84,7 +94,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # Adding the Security Seal Intact checkbox's value to the container object
             container_uid = form['getContainer'][0][part_uid]
             uc = getToolByName(self.context, 'uid_catalog')
-            container_obj = uc(UID=container_uid)[0].getObject()
+            cbr = uc(UID=container_uid)
+            if cbr and len(cbr) > 0:
+                container_obj = cbr[0].getObject()
+            else:
+                continue
             value = form.get('setSecuritySealIntact', {}).get(part_uid, '') == 'on'
             container_obj.setSecuritySealIntact(value)
         objects = WorkflowAction._get_selected_items(self)
@@ -132,7 +146,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         specs = {}
         if form.get("min", None):
             for service_uid in Analyses:
-                service = bsc(UID=service_uid)[0].getObject()
+                service = objects[service_uid]
                 keyword = service.getKeyword()
                 specs[service_uid] = {
                     "min": form["min"][0][service_uid],
@@ -143,7 +157,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 }
         else:
             for service_uid in Analyses:
-                service = bsc(UID=service_uid)[0].getObject()
+                service = objects[service_uid]
                 keyword = service.getKeyword()
                 specs[service_uid] = {"min": "", "max": "", "error": "",
                                       "keyword": keyword, "uid": service_uid}
@@ -159,19 +173,20 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis = ar[service.getKeyword()]
                 analysis.setSamplePartition(part)
                 analysis.reindexObject()
+                partans = part.getAnalyses()
+                partans.append(analysis)
+                part.setAnalyses(partans)
+                part.reindexObject()
 
         if new:
+            ar_state = getCurrentState(ar)
+            if wasTransitionPerformed(ar, 'to_be_verified'):
+                # Apply to AR only; we don't want this transition to cascade.
+                ar.REQUEST['workflow_skiplist'].append("retract all analyses")
+                workflow.doActionFor(ar, 'retract')
+                ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
+                ar_state = getCurrentState(ar)
             for analysis in new:
-                # if the AR has progressed past sample_received, we need to bring it back.
-                ar_state = workflow.getInfoFor(ar, 'review_state')
-                if ar_state in ('attachment_due', 'to_be_verified'):
-                    # Apply to AR only; we don't want this transition to cascade.
-                    ar.REQUEST['workflow_skiplist'].append("retract all analyses")
-                    workflow.doActionFor(ar, 'retract')
-                    ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
-                    ar_state = workflow.getInfoFor(ar, 'review_state')
-                # Then we need to forward new analyses state
-                analysis.updateDueDate()
                 changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
         message = PMF("Changes saved.")
@@ -245,7 +260,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 else self._get_selected_items().values()
         trans, dest = self.submitTransition(action, came_from, items)
         if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
-            transitioned = [item.id for item in items]
+            transitioned = [item.UID() for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
             q = "/sticker?autoprint=1&template=%s&items=" % tmpl
             q += ",".join(transitioned)
@@ -411,6 +426,21 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # and then submit them.
         for analysis in submissable:
             doActionFor(analysis, 'submit')
+
+        # LIMS-2366: Finally, when we are done processing all applicable
+        # analyses, we must attempt to initiate the submit transition on the
+        # AR itself. This is for the case where "general retraction" has been
+        # done, or where the last "received" analysis has been removed, and
+        # the AR is in state "received" while there are no "received" analyses
+        # left to trigger the parent transition.
+        if self.context.portal_type == 'Sample':
+            ar = self.context.getAnalysisRequests()[0]
+        elif self.context.portal_type == 'Analysis':
+            ar = self.context.aq_parent
+        else:
+            ar = self.context
+        doActionFor(ar, 'submit')
+
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         if checkPermission(EditResults, self.context):
@@ -425,6 +455,16 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_republish(self):
         self.workflow_action_publish()
 
+    def workflow_action_print(self):
+        # Calls printLastReport method for selected ARs
+        uids = self.request.get('uids',[])
+        uc = getToolByName(self.context, 'uid_catalog')
+        for obj in uc(UID=uids):
+            ar=obj.getObject()
+            ar.printLastReport()
+        referer = self.request.get_header("referer")
+        self.request.response.redirect(referer)
+
     def workflow_action_publish(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         if not isActive(self.context):
@@ -433,12 +473,19 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.context.absolute_url())
             return
         # AR publish preview
-        self.request.response.redirect(self.context.absolute_url() + "/publish")
+        uids = self.request.form.get('uids', [self.context.UID()])
+        items = ",".join(uids)
+        self.request.response.redirect(
+            self.context.portal_url() + "/analysisrequests/publish?items="
+            + items)
 
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
         self.destination_url = self.context.absolute_url()
-        return self.workflow_action_default(action='verify', came_from='edit')
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+        if type(came_from) in (list, tuple):
+            came_from = came_from[0]
+        return self.workflow_action_default(action='verify', came_from=came_from)
 
     def workflow_action_retract_ar(self):
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -553,34 +600,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
     def cloneAR(self, ar):
         newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
-        newar.title = ar.title
-        newar.description = ar.description
-        newar.setContact(ar.getContact())
-        newar.setCCContact(ar.getCCContact())
-        newar.setCCEmails(ar.getCCEmails())
-        newar.setBatch(ar.getBatch())
-        newar.setTemplate(ar.getTemplate())
-        newar.setProfile(ar.getProfile())
-        newar.setSamplingDate(ar.getSamplingDate())
-        newar.setSampleType(ar.getSampleType())
-        newar.setSamplePoint(ar.getSamplePoint())
-        newar.setStorageLocation(ar.getStorageLocation())
-        newar.setSamplingDeviation(ar.getSamplingDeviation())
-        newar.setPriority(ar.getPriority())
-        newar.setSampleCondition(ar.getSampleCondition())
         newar.setSample(ar.getSample())
-        newar.setClientOrderNumber(ar.getClientOrderNumber())
-        newar.setClientReference(ar.getClientReference())
-        newar.setClientSampleID(ar.getClientSampleID())
-        newar.setDefaultContainerType(ar.getDefaultContainerType())
-        newar.setAdHoc(ar.getAdHoc())
-        newar.setComposite(ar.getComposite())
-        newar.setReportDryMatter(ar.getReportDryMatter())
-        newar.setInvoiceExclude(ar.getInvoiceExclude())
-        newar.setAttachment(ar.getAttachment())
-        newar.setInvoice(ar.getInvoice())
-        newar.setDateReceived(ar.getDateReceived())
-        newar.setMemberDiscount(ar.getMemberDiscount())
+        ignore_fieldnames = ['Analyses', 'DatePublished', 'DatePublishedViewer',
+                             'ParentAnalysisRequest', 'ChildAnaysisRequest',
+                             'Digest', 'Sample']
+        copy_field_values(ar, newar, ignore_fieldnames=ignore_fieldnames)
+
         # Set the results for each AR analysis
         ans = ar.getAnalyses(full_objects=True)
         # If a whole AR is retracted and contains retracted Analyses, these
@@ -589,26 +614,19 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         analyses = [x for x in ans
                 if workflow.getInfoFor(x, "review_state") not in ("retracted")]
         for an in analyses:
+            if hasattr(an, 'IsReflexAnalysis') and an.IsReflexAnalysis:
+                # We don't want reflex analyses to be copied
+                continue
             try:
                 nan = _createObjectByType("Analysis", newar, an.getKeyword())
             except Exception as e:
                 from bika.lims import logger
                 logger.warn('Cannot create analysis %s inside %s (%s)'%
-                            an.getService().Title(), newar, e)
+                            an.getAnalysisService().Title(), newar, e)
                 continue
-            nan.setService(an.getService())
-            nan.setCalculation(an.getCalculation())
-            nan.setInterimFields(an.getInterimFields())
-            nan.setResult(an.getResult())
-            nan.setResultDM(an.getResultDM())
-            nan.setRetested = False,
-            nan.setMaxTimeAllowed(an.getMaxTimeAllowed())
-            nan.setDueDate(an.getDueDate())
-            nan.setDuration(an.getDuration())
-            nan.setReportDryMatter(an.getReportDryMatter())
-            nan.setAnalyst(an.getAnalyst())
-            nan.setInstrument(an.getInstrument())
-            nan.setSamplePartition(an.getSamplePartition())
+            # Make a copy
+            ignore_fieldnames = ['Verificators', 'DataAnalysisPublished']
+            copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
             nan.unmarkCreationFlag()
             zope.event.notify(ObjectInitializedEvent(nan))
             changeWorkflowState(nan, 'bika_analysis_workflow',
@@ -618,9 +636,65 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.reindexObject()
         newar.aq_parent.reindexObject()
         renameAfterCreation(newar)
-        newar.setRequestID(newar.getId())
 
         if hasattr(ar, 'setChildAnalysisRequest'):
             ar.setChildAnalysisRequest(newar)
         newar.setParentAnalysisRequest(ar)
         return newar
+
+    def workflow_action_schedule_sampling(self):
+        """
+        This function prevent the transition if the fields "SamplingDate"
+        and "ScheduledSamplingSampler" are uncompleted.
+        :returns: bool
+        """
+        from bika.lims.utils.workflow import schedulesampling
+        message = 'Not expected transition.'
+        # In Samples Folder we have to get each selected item
+        if interfaces.ISamplesFolder.providedBy(self.context):
+            select_objs = WorkflowAction._get_selected_items(self)
+            message = _('Transition done.')
+            for key in select_objs.keys():
+                sample = select_objs[key]
+                # Getting the sampler
+                sch_sampl = self.request.form.get(
+                    'getScheduledSamplingSampler', None)[0].get(key) if\
+                    self.request.form.get(
+                        'getScheduledSamplingSampler', None) else ''
+                # Getting the date
+                sampl_date = self.request.form.get(
+                    'getSamplingDate', None)[0].get(key) if\
+                    self.request.form.get(
+                        'getSamplingDate', None) else ''
+                # Setting both values
+                sample.setScheduledSamplingSampler(sch_sampl)
+                sample.setSamplingDate(sampl_date)
+                # Transitioning the sample
+                success, errmsg = schedulesampling.doTransition(sample)
+                if errmsg == 'missing':
+                    message = _(
+                        "'Sampling date' and 'Define the Sampler for the" +
+                        " scheduled sampling' must be completed and saved " +
+                        "in order to schedule a sampling. Element: %s" %
+                        sample.getId())
+                elif errmsg == 'cant_trans':
+                    message = _(
+                        "The item %s can't be transitioned." % sample.getId())
+                else:
+                    message = _('Transition done.')
+                self.context.plone_utils.addPortalMessage(message, 'info')
+        else:
+            success, errmsg = schedulesampling.doTransition(self.context)
+            if errmsg == 'missing':
+                message = _(
+                    "'Sampling date' and 'Define the Sampler for the" +
+                    " scheduled sampling' must be completed and saved in " +
+                    "order to schedule a sampling.")
+            elif errmsg == 'cant_trans':
+                message = _("The item can't be transitioned.")
+            else:
+                message = _('Transition done.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+        # Reload the page in order to show the portal message
+        self.request.response.redirect(self.context.absolute_url())
+        return success

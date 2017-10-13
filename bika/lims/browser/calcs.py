@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
@@ -70,8 +75,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
     def calculate(self, uid=None):
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]['result']
-        service = analysis.getService()
-        calculation = service.getCalculation()
+        calculation = analysis.getCalculation()
         if analysis.portal_type == 'ReferenceAnalysis':
             deps = {}
         else:
@@ -130,7 +134,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 if analysisvalues['result']=='':
                     unsatisfied = True
                     break;
-                key = analysisvalues.get('keyword',dependency.getService().getKeyword())
+                key = analysisvalues.get('keyword',dependency.getKeyword())
 
                 # Analysis result
                 # All result mappings must be float, or they are ignored.
@@ -172,7 +176,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
 
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
-                        key = "%s.%s" % (deps[i_uid].getService().getKeyword(),
+                        key = "%s.%s" % (deps[i_uid].getKeyword(),
                                          i['keyword'])
                         mapping[key] = i['value']
                     # this analysis' interims get extra reference
@@ -185,7 +189,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             # interpolation
             hidden_fields = []
             c_fields = calculation.getInterimFields()
-            s_fields = service.getInterimFields()
+            s_fields = analysis.getInterimFields()
             for field in c_fields:
                 if field.get('hidden', False):
                     hidden_fields.append(field['keyword'])
@@ -257,8 +261,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         if analysis.portal_type == 'ReferenceAnalysis':
             # The analysis is a Control or Blank. We might use the
             # reference results instead other specs
-            uid = analysis.getServiceUID()
-            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
+            _uid = analysis.getServiceUID()
+            specs = analysis.aq_parent.getResultsRangeDict().get(_uid, {})
 
         else:
             # Get the specs directly from the analysis. The getResultsRange
@@ -277,13 +281,13 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         # if parent is not an AR, it's never going to be calculable
         dm = hasattr(analysis.aq_parent, 'getReportDryMatter') and \
             analysis.aq_parent.getReportDryMatter() and \
-            analysis.getService().getReportDryMatter()
+            analysis.getReportDryMatter()
         if dm:
             dry_service = self.context.bika_setup.getDryMatterService()
             # get the UID of the DryMatter Analysis from our parent AR
             dry_analysis = [a for a in
                             analysis.aq_parent.getAnalyses(full_objects=True)
-                            if a.getService().UID() == dry_service.UID()]
+                            if a.getServiceUID() == dry_service.UID()]
             if dry_analysis:
                 dry_analysis = dry_analysis[0]
                 dry_uid = dry_analysis.UID()
@@ -414,4 +418,22 @@ class ajaxGetMethodCalculation(BrowserView):
             if calc:
                 calcdict = {'uid': calc.UID(),
                             'title': calc.Title()}
+        return json.dumps(calcdict)
+
+
+class ajaxGetAvailableCalculations(BrowserView):
+    """
+    Returns all available calculations.
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Calculation',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
+        calcdict = [{'uid': calc[0], 'title': calc[1]} for calc in items]
+
         return json.dumps(calcdict)

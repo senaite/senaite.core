@@ -1,0 +1,40 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <adapter
+      factory="bika.lims.workflow.JSONReadExtender"
+      name="workflow_transitions"
+      for="*"
+    />
+
+    <subscriber
+      for="*
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.workflow.AfterTransitionEventHandler"
+    />
+
+    <subscriber
+      for="*
+           Products.DCWorkflow.interfaces.IBeforeTransitionEvent"
+      handler="bika.lims.workflow.BeforeTransitionEventHandler"
+    />
+
+    <!-- Sample preparation workflow transitions are enabled with these,
+         applies to all objects with ISamplePrepWorkflow
+    -->
+    <adapter
+      for="bika.lims.interfaces.ISamplePrepWorkflow
+           Products.CMFCore.interfaces.IWorkflowTool"
+      provides="Products.CMFPlone.interfaces.IWorkflowChain"
+      factory="bika.lims.workflow.SamplePrepWorkflowChain"/>
+
+    <subscriber
+      for="bika.lims.interfaces.ISamplePrepWorkflow
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.workflow.SamplePrepTransitionEventHandler"
+    />
+
+</configure>

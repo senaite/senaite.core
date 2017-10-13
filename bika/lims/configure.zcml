@@ -31,13 +31,14 @@
   <include package=".exportimport" />
   <include package=".jsonapi" />
   <include package=".locales" />
+  <include package=".databasesanitize" />
   <include package=".monkey" />
   <include package=".search" />
   <include package=".subscribers" />
   <include package=".vocabularies" />
+  <include package=".workflow" />
 
   <include file="profiles.zcml" />
-  <include file="workflow.zcml" />
 
   <i18n:registerTranslations directory="locales" />
 
@@ -57,6 +58,13 @@
     for="*"
     name="js_log"
     class="bika.lims.utils.js_log"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+   <browser:page
+    for="*"
+    name="js_warn"
+    class="bika.lims.utils.js_warn"
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />

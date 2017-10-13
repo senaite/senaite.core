@@ -1,7 +1,12 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 # see https://gist.github.com/malthe/704910
 import imp
 import sys
-
+from Products.CMFCore.utils import getToolByName
 
 def create_modules(module_path):
     path = ""
@@ -35,8 +40,17 @@ def skip_pre315(portal):
     # Hack prevent out-of-date upgrading
     # Related: PR #1484
     # https://github.com/bikalabs/Bika-LIMS/pull/1484
-    qi = portal.portal_quickinstaller
-    info = qi.upgradeInfo('bika.lims')
-    if info['installedVersion'] > '315':
-        return True
-    return False
+    from bika.lims.upgrade.utils import UpgradeUtils
+    ut = UpgradeUtils(portal)
+    return ut.isOlderVersion('bika.lims', '315')
+
+
+def upgradestep(upgrade_product, version):
+    """ Decorator for updating the QuickInstaller of a upgrade """
+    def wrap_func(fn):
+        def wrap_func_args(context, *args):
+            p = getToolByName(context, 'portal_quickinstaller').get(upgrade_product)
+            setattr(p, 'installedversion', version)
+            return fn(context, *args)
+        return wrap_func_args
+    return wrap_func

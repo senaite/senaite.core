@@ -32,13 +32,6 @@
       handler="bika.lims.subscribers.analysis.ObjectRemovedEventHandler"
     />
 
-    <!-- Newly created AnalysisRequest -->
-    <subscriber
-      for="bika.lims.interfaces.IAnalysisRequest
-           Products.Archetypes.interfaces.IObjectInitializedEvent"
-      handler="bika.lims.subscribers.analysisrequest.ObjectInitializedEventHandler"
-    />
-
     <subscriber
         for="bika.lims.interfaces.IBikaSetup
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"
@@ -51,4 +44,14 @@
       handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
     />
 
- </configure>
+    <subscriber
+        for="Products.PlonePAS.events.UserLoggedOutEvent"
+      handler="bika.lims.subscribers.dep_cookie.ClearDepartmentCookies"
+       />
+
+      <subscriber
+        for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
+        handler="bika.lims.subscribers.dep_cookie.SetDepartmentCookies"
+        />
+
+    </configure>

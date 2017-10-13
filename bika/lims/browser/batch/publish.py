@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import tempfile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -93,16 +98,13 @@ class PublishView(BrowserView):
                                  _("Analyst")]
         for ar in self.context.getAnalysisRequests():
             datecreated = ar.created()
-            # datereceived = ar.getDateReceived()
-            # datepublished = ar.getDatePublished()
             datalines = []
             for analysis in ar.getAnalyses(full_objects=True):
-                service = analysis.getService()
-                method = service.getMethod()
+                method = analysis.getMethod()
                 sample = ar.getSample()
                 result = analysis.getResult()
                 formatted_result = format_numeric_result(analysis, result)
-                datalines.append({_("Analysis Service"): analysis.getService().Title(),
+                datalines.append({_("Analysis Service"): analysis.Title(),
                                   _("Method"): method and method.Title() or "",
                                   _("Result"): formatted_result,
                                   _("Analyst"): self.user_fullname(analysis.getAnalyst()),

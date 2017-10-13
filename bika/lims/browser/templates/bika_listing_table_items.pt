@@ -54,7 +54,7 @@
 <tal:comment replace="nothing">***************
 Item select checkboxes.
 ********************************</tal:comment>
-<td style="width:24px;"
+<td style="width:20px;"
     tal:condition="view/bika_listing/show_select_column"
     tal:define="cl python:'class' in item and 'select_column' in item['class'] and
                 item['class']['select_column'] or '';"
@@ -113,6 +113,7 @@ Table cells for each column from in review_state's column list.
                         and column in item['allow_edit']
                         and item.get('edit_condition', {}).get(column, True);
         required python:'required' in item and column in item['required'] or False;
+        field python: item['field'].get(column, '') if item.get('field', '') else '';
         before python:column in item['before'] and
             item['before'][column] or '';
         after python:column in item['after'] and
@@ -167,7 +168,7 @@ Table cells for each column from in review_state's column list.
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
-                field python:column;
+                field python:field if field else column;
                 value python:item[column]['value'];"/>
         <tal:comment replace="nothing"><!-- view --></tal:comment>
         <span
@@ -183,7 +184,7 @@ Table cells for each column from in review_state's column list.
                 uid string:${item/uid};
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
-                field python:column;
+                field python:field if field else column;
                 value python:item[column]['value'];"/>
         <tal:comment replace="nothing"><!-- unit for interim field--></tal:comment>
         <em tal:condition="python:'unit' in item[column]"
@@ -193,8 +194,8 @@ Table cells for each column from in review_state's column list.
     </span>
     <tal:comment replace="nothing"><!-- regular field --></tal:comment>
     <span tal:omit-tag="python:True"
-        tal:condition="python:type(item[column]) != type({}) and
-                        not (column == 'Result' and item['calculation'])">
+        tal:condition="python:not isinstance(item[column], dict) and
+                        not (column == 'Result' and item.get('calculation', False))">
         <tal:comment replace="nothing"><!-- edit --></tal:comment>
         <input
             type="text" style="font-size: 100%"
@@ -209,25 +210,25 @@ Table cells for each column from in review_state's column list.
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
-                field python:column;
+                field python:field if field else column;
                 name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
                 value python:item[column] if item[column] is not None else '';"/>
         <tal:comment replace="nothing"><!-- view --></tal:comment>
         <span
             tal:condition="python:not allow_edit and column == 'Result' and item.get('formatted_result', '')"
             tal:content="structure python:item['formatted_result']"
-            tal:attributes="class item/state_class"/>
+            tal:attributes="class item/state_class"></span>
         <span
             tal:condition="python:not allow_edit and column == 'Result' and not item.get('formatted_result', '')"
-            tal:content="python:item['formatted_result']"
-            tal:attributes="class item/state_class"/>
+            tal:content="python:item.get('formatted_result', '')"
+            tal:attributes="class item/state_class"></span>
         <tal:regularlabel condition="python:not allow_edit and column != 'Result'">
         <span tal:condition="python:item.get('structure',False)"
             tal:content="structure python:item[column] if item[column] is not None else ''"
-            tal:attributes="class item/state_class"/>
+            tal:attributes="class item/state_class"></span>
         <span tal:condition="python:not item.get('structure',False)"
             tal:content="python:item[column] if item[column] is not None else ''"
-            tal:attributes="class item/state_class"/>
+            tal:attributes="class item/state_class"></span>
         </tal:regularlabel>
         <input
             type="hidden"
@@ -239,21 +240,20 @@ Table cells for each column from in review_state's column list.
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
-                field python:column;
+                field python:field if field else column;
                 name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
                 value python:item[column];"/>
     </span>
     <tal:comment replace="nothing"><!-- calculated result field. --></tal:comment>
     <span tal:omit-tag="python:True"
-        tal:condition="python:column == 'Result' and
-                            item['calculation']">
+        tal:condition="python:column == 'Result' and item.get('calculation', False)">
         <span
             tal:attributes="
                 field string:formatted_result;
                 uid item/uid;
                 objectId string:${item/id};
                 size input_width;"
-            tal:content="structure python:item['formatted_result']"/>
+            tal:content="structure python:item.get('formatted_result', '')"/>
         <input
             type="hidden"
             tal:attributes="
@@ -277,9 +277,10 @@ Table cells for each column from in review_state's column list.
         tal:condition="allow_edit"
         tal:attributes="
             selector string:${column}_${item/id};
-            class item/state_class;
+            class python: item.get('state_class', '') + ' '  + input_class;
             uid string:${item/uid};
             id python:'%s-%s' % (item['uid'], column);
+            field python:field if field else column;
             name string:${column}.${item/uid}:record:ignore-empty;
             checked python:item.get(column) and 'yes' or '';"/>
     <tal:comment replace="nothing"><!-- will not display if readonly and false --></tal:comment>
@@ -297,12 +298,13 @@ Table cells for each column from in review_state's column list.
 <span tal:omit-tag="python:True"
     tal:condition="python:field_type == 'choices'">
     <span tal:condition="python: allow_edit">
-        <select class="listing_select_entry" style="font-size: 100%"
+        <select style="font-size: 100%"
             tal:condition="python:column in item['choices']"
             tal:attributes="
                 selector string:${column}_${item/id};
                 tabindex tabindex/next;
-                field column;
+                class python:'listing_select_entry %s' % input_class;
+                field python:field if field else column;
                 name string:${column}.${item/uid}:records;
                 as_uid string:${item/service_uid|nothing};
                 uid item/uid;">
@@ -326,7 +328,7 @@ Table cells for each column from in review_state's column list.
                 tal:attributes="
                     as_uid string:${item/service_uid|nothing};
                     uid string:${item/uid};
-                    field python:column;
+                    field python:field if field else column;
                     value python:item[column];
                     name string:${column}.${item/uid}:records"/>
         </span>
@@ -419,10 +421,11 @@ Table cells for each column from in review_state's column list.
     <!-- Row Remarks field (for Analyses) -->
     <tal:remarks_condition
         tal:define="remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();
-                    isanalysis python:'obj' in item and item['obj'].portal_type == 'Analysis';
+                    isanalysis python:'obj' in item and item['obj'].meta_type in ['Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis'];
                     hasremarks python:True if item.get('Remarks','') else False;
                     remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
-                    showremarks python:isanalysis and (hasremarks or remarksedit)">
+                    isforaggregatedlist python: True if review_state_id=='to_be_verified' else False;
+                    showremarks python:isanalysis and (hasremarks or remarksedit or isforaggregatedlist)">
 
         <tr tal:condition="showremarks"
             tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
@@ -441,6 +444,7 @@ Table cells for each column from in review_state's column list.
                     style="width:100%;display:block;"
                     autocomplete="off"
                     rows="1"
+                    tal:content="python:item.get('Remarks','')"
                     tal:condition="python:remarksedit==True"
                     tal:attributes="
                         class python:'listing_remarks';
@@ -453,7 +457,10 @@ Table cells for each column from in review_state's column list.
                 <span
                     autocomplete="off"
                     tal:condition="python:remarksedit==False"
-                    tal:content="python:item.get('Remarks', '')"/>
+                    tal:attributes="
+                        class python:'listing_remarks';
+                        name string:Remarks.${item/uid}:records;"
+                    tal:content="python:item.get('Remarks', '') if hasremarks else 'No Remarks.'"/>
             </td>
         </tr>
     </tal:remarks_condition>

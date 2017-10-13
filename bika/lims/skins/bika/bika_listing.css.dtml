@@ -174,6 +174,11 @@ table.bika-listing-table {
   padding-right:1.5em;
   color: tableHeaderTextColor;
 }
+.bika-listing-table th.sortable.reverse{
+  background: &dtml-tableHeaderBackgroundColor; url(arrowDown.png) 95% 50% no-repeat;
+  padding-right:1.5em;
+  color: tableHeaderTextColor;
+}
 
 .bika-listing-table th.ascending.indexed{
   background: &dtml-tableHeaderBackgroundColor; url(arrowUpAlternative.png) 95% 50% no-repeat !important;
@@ -215,6 +220,7 @@ table.bika-listing-table thead tr td.listing-filter-row {
   margin: 0;
   padding: 2px 10px 2px 2px;
   text-shadow: none;
+  color:#333;
 }
 
 td.review_state_selector{
@@ -551,4 +557,109 @@ table.bika-listing-table-transposed table.worksheet-position tbody tr {
     color: #205c90 !important;
     padding: 4px 10px;
 }
+#content .bika-listing-table a.multi-verification {
+    background-color: #b42e29;
+    border-radius: 5px;
+    color: #fff !important;
+    margin: 0 4px;
+    padding: 1px 4px;
+}
+#content .bika-listing-table a.multi-verification.scale-25 {
+    background-color:#c36349;
+}
+#content .bika-listing-table a.multi-verification.scale-50 {
+    background-color:#c89e55;
+}
+#content .bika-listing-table a.multi-verification.scale-75 {
+    background-color:#afb064;
+}
+
+#content .bika-listing-table td.export-controls {
+    width:90px;
+}
+#content .bika-listing-table td.export-controls,
+#content .bika-listing-table td.export-controls a {
+    color:#333;
+}
+#content .bika-listing-table td.export-controls span.export-toggle {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 3px 10px;
+}
+#content .bika-listing-table td.export-controls span.export-toggle.expanded {
+    border-radius:5px 5px 0px 0px;
+    border-bottom:none;
+}
+#content .bika-listing-table td.export-controls span.export-toggle:hover {
+    color:#666;
+    background-color:#efefef;
+}
+#content .bika-listing-table td.export-controls span.export-toggle:after {
+    content: " ▼";
+}
+#content .bika-listing-table td.export-controls ul {
+    background-color: #efefef;
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    display: none;
+    margin: 1px 0;
+    position: absolute;
+    padding:0 10px;
+}
+#content .bika-listing-table td.export-controls ul li {
+    list-style: outside none none;
+    padding:0;
+    margin: 0 -10px;
+}
+#content .bika-listing-table td.export-controls ul li a {
+    padding:5px 0 5px 10px;
+    display:block;
+    text-shadow:none;
+}
+#content .bika-listing-table td.export-controls ul li:hover,
+#content .bika-listing-table td.export-controls ul li:hover a,
+#content .bika-listing-table td.export-controls ul li a:hover {
+    color:#fff !important;
+    background-color:#205c90;
+}
+
+#content .bika_listing_filter_bar {
+    font-weight: normal;
+    padding: 5px 0 5px 5px;
+}
+.bika_listing_filter_bar.noborder > div:first-child::before {
+    content: "\26A1\ ";
+    font-size: 1.5em;
+}
+#content .bika_listing_filter_bar > div {
+    float: left;
+    padding: 0 10px 0 0;
+}
+#content .bika_listing_filter_bar > div {
+    float: left;
+    padding: 0 10px 0 0;
+}
+#content .bika_listing_filter_bar label {
+    font-weight: normal;
+}
+#content .bika_listing_filter_bar div.filter-buttons input {
+    background: #fff none repeat scroll 0 0 !important;
+    border: 1px solid #bbb !important;
+    color: #205c90 !important;
+    padding: 1px 7px;
+}
+#content .bika_listing_filter_bar input {
+    font-size:1em;
+}
+#content .bika_listing_filter_bar .datepicker_range {;
+    width: 70px;
+}
+#content table.bika-listing-table tbody.item-listing-tbody tr:hover td,
+#content table.bika-listing-table tbody.item-listing-tbody tr:hover td span {
+    background-color: #fff9ee !important;
+}
+
+
 /* </dtml-with> */

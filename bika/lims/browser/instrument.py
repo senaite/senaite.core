@@ -1,7 +1,13 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.subscribers import doActionFor, skip
 from operator import itemgetter
@@ -23,6 +29,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
 from operator import itemgetter
+from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
 
 import plone
 import json
@@ -398,15 +405,19 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
         analyses = self.context.getReferenceAnalyses()
         asuids = [an.UID() for an in analyses]
-        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'UID': asuids}
         self.anjson = {}
 
+    # TODO-performance: Use folderitem and brains
     def folderitems(self):
         items = AnalysesView.folderitems(self)
         items.sort(key=itemgetter('CaptureDate'), reverse=True)
         for i in range(len(items)):
             obj = items[i]['obj']
+            # TODO-performance: getting an object
+            # Note here the object in items[i]['obj'] is a brain, cause the
+            # base class (AnalysesView), calls folderitems(.., classic=False).
+            obj = obj.getObject()
             imgtype = ""
             if obj.portal_type == 'ReferenceAnalysis':
                 antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
@@ -418,9 +429,9 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             elif obj.portal_type == 'DuplicateAnalysis':
                 antype = QCANALYSIS_TYPES.getValue('d')
                 imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
             else:
-                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
 
             items[i]['before']['Service'] = imgtype
 
@@ -605,6 +616,22 @@ class InstrumentCertificationsView(BikaListingView):
         return items
 
 
+class InstrumentAutoImportLogsView(AutoImportLogsView):
+    """ Logs of Auto-Imports of this instrument.
+    """
+
+    def __init__(self, context, request, **kwargs):
+        AutoImportLogsView.__init__(self, context, request, **kwargs)
+        del self.columns['Instrument']
+        self.review_states[0]['columns'].remove('Instrument')
+        self.contentFilter = {'portal_type': 'AutoImportLog',
+                              'getInstrumentUID': self.context.UID(),
+                              'sort_on': 'Created',
+                              'sort_order': 'reverse'}
+        self.title = self.context.translate(_("Auto Import Logs of %s" %
+                                              self.context.Title()))
+
+
 class InstrumentMultifileView(MultifileView):
     implements(IFolderContentsView, IViewView)
 
@@ -615,24 +642,37 @@ class InstrumentMultifileView(MultifileView):
         self.description = "Different interesting documents and files to be attached to the instrument"
 
 
-class ajaxGetInstrumentMethod(BrowserView):
+class ajaxGetInstrumentMethods(BrowserView):
     """ Returns the method assigned to the defined instrument.
         uid: unique identifier of the instrument
     """
+    # Modified to return multiple methods after enabling multiple method
+    # for intruments.
     def __call__(self):
-        methoddict = {}
+        out = {
+            "title": None,
+            "instrument": None,
+            "methods": [],
+        }
         try:
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
-            return json.dumps(methoddict)
+            return json.dumps(out)
         bsc = getToolByName(self, 'bika_setup_catalog')
-        instrument = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
-        if instrument and len(instrument) == 1:
-            method = instrument[0].getObject().getMethod()
-            if method:
-                methoddict = {'uid': method.UID(),
-                              'title': method.Title()}
-        return json.dumps(methoddict)
+        results = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
+        instrument = results[0] if results and len(results) == 1 else None
+        if instrument:
+            instrument_obj = instrument.getObject()
+            out["title"] = instrument_obj.Title()
+            out["instrument"] = instrument.UID
+            # Handle multiple Methods per instrument
+            methods = instrument_obj.getMethods()
+            for method in methods:
+                out["methods"].append({
+                    "uid": method.UID(),
+                    "title": method.Title(),
+                })
+        return json.dumps(out)
 
 
 class InstrumentQCFailuresViewlet(ViewletBase):

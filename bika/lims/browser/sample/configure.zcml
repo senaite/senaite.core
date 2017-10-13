@@ -1,0 +1,98 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <!-- Workflow action button clicked for Samples Folder-->
+    <browser:page
+      for="bika.lims.interfaces.ISamplesFolder"
+      name="workflow_action"
+      class="bika.lims.browser.client.ClientWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISamplesFolder"
+      name="base_view"
+      class="bika.lims.browser.sample.SamplesView"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISamplesFolder"
+      name="print_sampling_sheets"
+      class="bika.lims.browser.sample.SamplesPrint"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Workflow action button clicked for Sample -->
+    <!-- Uses the workflow action in analysisrequest.py, since the
+         forms are basically the same. -->
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="workflow_action"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="base_view"
+      class="bika.lims.browser.sample.SampleView"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="base_edit"
+      class="bika.lims.browser.sample.SampleEdit"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="partitions"
+      class="bika.lims.browser.sample.SamplePartitionsView"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="analyses"
+      class="bika.lims.browser.sample.SampleAnalysesView"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="createSamplePartition"
+      class="bika.lims.browser.sample.createSamplePartition"
+      permission="bika.lims.permissions.AddSamplePartition"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="getsampletypeinfo"
+      class="bika.lims.browser.sample.ajaxGetSampleTypeInfo"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="doActionForSample"
+      class="bika.lims.browser.sample.doActionForSample"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+</configure>

@@ -24,6 +24,7 @@
   <include file="duplicateanalysis.zcml"/>
   <include file="instrument.zcml"/>
   <include file="instrumenttype.zcml"/>
+  <include file="instrumentlocation.zcml"/>
   <include file="late_analyses.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="menu.zcml"/>
@@ -32,20 +33,25 @@
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="pricelist.zcml"/>
-  <include file="sample.zcml"/>
   <include file="stickers.zcml"/>
   <include file="supplier.zcml"/>
   <include file="supplyorder.zcml"/>
   <include file="supplyorderfolder.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
+  <include file="worksheettemplate.zcml"/>
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
+  <include package=".department"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
+  <include package=".sample"/>
   <include package=".worksheet"/>
+  <include package=".dashboard"/>
+  <include package=".resultsimport"/>
+  <include package=".aggregatedanalyses"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>
@@ -71,6 +77,14 @@
       for="*"
       name="at_validate_field"
       class=".validation.InlineValidationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+  <browser:page
+      for="*"
+      name="portletfilter_by_department"
+      class="bika.lims.browser.updateFilerByDepartmentCookie"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

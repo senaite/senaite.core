@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
 import plone
@@ -68,7 +73,7 @@ class ajaxGetMethodServiceInstruments(BrowserView):
         method = uc(portal_type='Method', UID=self.request.get("muid", '0'))
         if not method or len(method) != 1:
             for i in sinstr:
-                if not i.getMethod():
+                if not i.getMethods():
                     instrument = { 'uid' : i.UID(),
                                    'title': i.Title(),
                                    'url': i.absolute_url_path(),

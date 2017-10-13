@@ -1,44 +1,38 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Analysis result range specifications for a client
 """
 from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import delete_objects
-from Products.ATContentTypes.content import schemata
+
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.utils import shasattr
-from Products.CMFCore import permissions
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.permissions import ListFolderContents, View
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisSpec
-from types import ListType, TupleType
-from zope.interface import implements
 from zope.i18n import translate
-import sys
-import time
+from zope.interface import implements
 
 schema = Schema((
-    HistoryAwareReferenceField('SampleType',
-        # schemata = 'Description',
-        # required = 1,
-        vocabulary = "getSampleTypes",
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SampleType',),
-        relationship = 'AnalysisSpecSampleType',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Sample Type"),
+    UIDReferenceField(
+        'SampleType',
+        vocabulary="getSampleTypes",
+        allowed_types=('SampleType',),
+        widget=ReferenceWidget(
+            checkbox_bound=0,
+            label=_("Sample Type"),
         ),
     ),
     ComputedField('SampleTypeTitle',
@@ -59,7 +53,7 @@ Schema((
     RecordsField('ResultsRange',
         # schemata = 'Specifications',
         required = 1,
-        type = 'analysisspec',
+        type = 'resultsrange',
         subfields = ('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax',
                      'rangecomment'),
         required_subfields = ('keyword', 'error'),
@@ -109,6 +103,20 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def Title(self):
+        """ Return the title if possible, else return the Sample type.
+        Fall back on the instance's ID if there's no sample type or title.
+        """
+        if self.title:
+            title = self.title
+        else:
+            sampletype = self.getSampleType()
+            if sampletype:
+                title = sampletype.Title()
+            else:
+                title = self.id
+        return safe_unicode(title).encode('utf-8')
 
     def contextual_title(self):
         parent = self.aq_parent
@@ -207,6 +215,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
         return DisplayList(sampletypes)
 
+    @deprecated('[1703] Orphan. No alternative')
     def getAnalysisSpecsStr(self, keyword):
         specstr = ''
         specs = self.getResultsRangeDict()
@@ -223,6 +232,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         return specstr
 
     def getClientUID(self):
-        return self.aq_parent.UID();
+        return self.aq_parent.UID()
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)

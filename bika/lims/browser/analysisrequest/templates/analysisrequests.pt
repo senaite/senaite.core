@@ -16,44 +16,46 @@
 		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
 	tal:condition="python:not table_only">
     <h1>
-		<img tal:condition="view/icon | nothing"
-			 src="" tal:attributes="src view/icon"/>
-        <img tal:condition="view/getPriorityIcon | nothing"
-             src="" tal:attributes="src view/getPriorityIcon"/>
-		<span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="view/title"/>
-		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
-			<a tal:attributes="
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="view/title"/>
+        <tal:add_actions repeat="add_item python:view.context_actions.keys()">
+            <a tal:attributes="
 				style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
 				href python:view.context_actions[add_item]['url'];
-				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
-				<span tal:replace="python:add_item"/>
-			</a>
-		</tal:add_actions>
-		<select name="ar_count"
-			class='ar_count' style="vertical-align:top !important"
-			tal:condition="python:len(view.context_actions) > 0">
-			<option value='1' i18n:translate="">1</option>
-			<option value='2' i18n:translate="">2</option>
-			<option value='3' i18n:translate="">3</option>
-			<option value='4' i18n:translate="">4</option>
-			<option value='5' i18n:translate="">5</option>
-			<option value='6' i18n:translate="">6</option>
-			<option value='7' i18n:translate="">7</option>
-			<option value='8' i18n:translate="">8</option>
-			<option value='9' i18n:translate="">9</option>
-			<option value='10' i18n:translate="">10</option>
-		</select>
+				class python:'context_action_link %s %s' % (view.context_actions[add_item].get('class',''), 'ar_count')">
+                <span tal:replace="python:add_item"/>
+            </a>
+            <input name="ar_count"
+                   class="ar_count context_action_link"
+                   type="number"
+                   style="width:4em;border-radius:0;border:1px solid #ddd;padding:2px;"
+                   tal:condition="python:len(view.context_actions) > 0"
+                   tal:attributes="
+                      value python: view.getDefaultAddCount()"
+            />
+            <a tal:attributes="
+				href python:view.context_actions[add_item]['url'];
+				class python:'context_action_link %s %s' % (view.context_actions[add_item].get('class',''), 'ar_count')"
+               style="padding:5px 1px 3px 1px;"
+               tal:condition="python:len(view.context_actions) > 0">ARs
+            </a>
+        </tal:add_actions>
     </h1>
-	<script type="text/javascript">
+    <script type="text/javascript">
 	(function( $ ) {
 	$(document).ready(function(){
-		$('.ar_count').change(function(){
-			url = $(".context_action_link").attr('href').split("?")[0];
-			$(".context_action_link").attr('href', url + "?ar_count="+$(this).val());
+		$('input.ar_count').change(function(){
+			url = $("a.ar_count.context_action_link")
+                .attr('href').split("?")[0];
+			$("a.ar_count.context_action_link")
+                .attr('href', url + "?ar_count="+$(this).val());
 		});
+		$('input.ar_count').click(function(e){e.preventDefault();})
+		$('input.ar_count').change();
 	});
 	}(jQuery));
-	</script>
+    </script>
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description"
@@ -67,6 +69,47 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
+	<tal:queued define="num_tasks python:view.pending_tasks()">
+		 <script type="text/javascript">
+		 	(function( $ ) {
+			$(document).ready(function(){
+				var ar_queue_seconds = 1;
+				var ar_queue_max_seconds = 20;
+				function query_pending() {
+					var url = window.portal_url +
+					    "/analysisrequests/queued_ars";
+					var ac = readCookie('__ac');
+					$.post(url, {'__ac': ac}).done(function(data) {
+						var num_jobs = $.parseJSON(data);
+						var num_jobs = num_jobs['count'];
+						if (parseInt(num_jobs) > 0) {
+							$('.queued-items').not(':visible').slideDown();
+							$('.queued-items-number').html(num_jobs);
+						} else {
+							$('.queued-items:visible').slideUp();
+							if (ar_queue_seconds > ar_queue_max_seconds) {
+								ar_queue_seconds = ar_queue_max_seconds;
+							} else {
+								ar_queue_seconds = ar_queue_seconds*2;
+							}
+							setTimeout(function() {
+								query_pending();
+							}, ar_queue_seconds * 1000);
+						}
+					});
+				}
+				query_pending();
+			});
+			}(jQuery));
+		 </script>
+		 <div class="queued-items" style="display:none;">
+			 <span i18n:translate=''>
+				 There are <span class="queued-items-number"
+								 i18n:name='num'></span> jobs in queue for the creation of new Analysis Requests
+			 </span>.&nbsp;
+			 <a href='' i18n:translate='' class="button">Refresh</a>
+		 </div>
+	</tal:queued>
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
 

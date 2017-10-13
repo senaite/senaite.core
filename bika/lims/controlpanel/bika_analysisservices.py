@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -65,9 +70,11 @@ class AnalysisServiceCopy(BrowserView):
                 if field.getType() == "Products.Archetypes.Field.ComputedField" \
                         or fieldname in self.skip_fieldnames:
                     continue
-                getter = field.getAccessor(src_service)
-                setter = dst_service.Schema()[fieldname].getMutator(dst_service)
-                setter(getter())
+                value = field.get(src_service)
+                if value:
+                    mutator_name = dst_service.getField(fieldname).mutator
+                    mutator = getattr(dst_service, mutator_name)
+                    mutator(value)
             dst_service.reindexObject()
             return dst_title
         else:
@@ -128,8 +135,7 @@ class AnalysisServicesView(BikaListingView):
 
         super(AnalysisServicesView, self).__init__(context, request)
         self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'AnalysisService',
-                              'sort_on': 'sortable_title'}
+        self.contentFilter = {'portal_type': 'AnalysisService', }
         self.context_actions = {
             _('Add'):
                 {'url': 'createObject?type_name=AnalysisService',
@@ -142,7 +148,7 @@ class AnalysisServicesView(BikaListingView):
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 25
-
+        self.sort_on = 'Title'
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
@@ -153,30 +159,68 @@ class AnalysisServicesView(BikaListingView):
             self.category_index = 'getCategoryTitle'
 
         self.columns = {
-            'Title': {'title': _('Service'),
-                      'index': 'sortable_title'},
-            'Keyword': {'title': _('Keyword'),
-                        'index': 'getKeyword'},
-            'Category': {'title': _('Category')},
-            'Method': {'title': _('Method'),
-                       'toggle': False},
-            'Department': {'title': _('Department'),
-                           'toggle': False},
-            'Instrument': {'title': _('Instrument')},
-            'Unit': {'title': _('Unit')},
-            'Price': {'title': _('Price')},
-            'MaxTimeAllowed': {'title': _('Max Time'),
-                               'toggle': False},
-            'DuplicateVariation': {'title': _('Dup Var'),
-                                   'toggle': False},
-            'Calculation': {'title': _('Calculation')},
-            'CommercialID': {'title': _('Commercial ID'),
-                             'toggle': True},
-            'ProtocolID': {'title': _('Protocol ID'),
-                           'toggle': True},
-            'SortKey': {'title': _('Sort Key'),
-                           'index': 'sortKey',
-                           'toggle': False},
+            'Title': {
+                'title': _('Service'),
+                'index': 'title',
+                'replace_url': 'absolute_url',
+            },
+            'Keyword': {
+                'title': _('Keyword'),
+                'index': 'getKeyword',
+                'attr': 'getKeyword'
+            },
+            'Category': {
+                'title': _('Category'),
+                'attr': 'getCategoryTitle'
+            },
+            'Method': {
+                'title': _('Method'),
+                'attr': 'getMethod.Title',
+                'replace_url': 'getMethod.absolute_url',
+                'toggle': False
+            },
+            'Department': {
+                'title': _('Department'),
+                'toggle': False,
+                'attr': 'getDepartment.Title'
+            },
+            'Instrument': {
+                'title': _('Instrument')
+            },
+            'Unit': {
+                'title': _('Unit'),
+                'attr': 'getUnit'
+            },
+            'Price': {
+                'title': _('Price')
+            },
+            'MaxTimeAllowed': {
+                'title': _('Max Time'),
+                'toggle': False
+            },
+            'DuplicateVariation': {
+                'title': _('Dup Var'),
+                'toggle': False
+             },
+            'Calculation': {
+                'title': _('Calculation')
+            },
+            'CommercialID': {
+                'title': _('Commercial ID'),
+                'attr': 'getCommercialID',
+                'toggle': True
+            },
+            'ProtocolID': {
+                'title': _('Protocol ID'),
+                'attr': 'getProtocolID',
+                'toggle': True
+            },
+            'SortKey': {
+                'title': _('Sort Key'),
+                'index': 'sortKey',
+                'attr': 'getSortKey',
+                'toggle': False
+            },
         }
 
         self.review_states = [
@@ -252,114 +296,118 @@ class AnalysisServicesView(BikaListingView):
             for i in range(len(self.review_states)):
                 self.review_states[i]['columns'].remove('Price')
 
-    def folderitems(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.an_cats = bsc(portal_type="AnalysisCategory",
+                           sort_on="title")
+        self.an_cats_order = dict([(b.Title, "{:04}".format(a))
+                                  for a, b in enumerate(self.an_cats)])
 
-        items = BikaListingView.folderitems(self)
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        obj_dep = obj.getDepartment()
+        result = True
+        if obj_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', 'no')
+            # Comparing departments' UIDs
+            result = True if obj_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+            return result
+        return result
 
-        bsc = getToolByName(self.context, "bika_setup_catalog")
-        analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
-        analysis_categories_order = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
 
-        for x in range(len(items)):
-            if 'obj' not in items[x]:
-                continue
-            obj = items[x]['obj']
-
+    def folderitem(self, obj, item, index):
+    	if 'obj'  in item:
+            obj = item['obj']
             # Although these should be automatically inserted when bika_listing
             # searches the schema for fields that match columns, it is still
             # not harmful to be explicit:
-            items[x]['Keyword'] = obj.getKeyword()
-            items[x]['CommercialID'] = obj.getCommercialID()
-            items[x]['ProtocolID'] = obj.getProtocolID()
-            items[x]['SortKey'] = obj.getSortKey()
+            item['Keyword'] = obj.getKeyword()
+            item['CommercialID'] = obj.getCommercialID()
+            item['ProtocolID'] = obj.getProtocolID()
+            item['SortKey'] = obj.getSortKey()
 
-            cat = obj.getCategoryTitle()
-            cat_order = analysis_categories_order.get(cat)
-            # Category (upper C) is for display column value
-            items[x]['Category'] = cat
-            if self.do_cats:
-                # category is for bika_listing to groups entries
-                items[x]['category'] = cat
-                if (cat, cat_order) not in self.categories:
-                    self.categories.append((cat, cat_order))
-
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % (
-                items[x]['url'], items[x]['Title'])
-
-            instrument = obj.getInstrument()
-            items[x]['Instrument'] = instrument and instrument.Title() or ''
-            if instrument:
-                items[x]['replace']['Instrument'] = "<a href='%s'>%s</a>" % (
-                    instrument.absolute_url() + "/edit", instrument.Title())
-
-            items[x]['Department'] = obj.getDepartment().Title() \
-                if obj.getDepartment() else ''
-
-            calculation = obj.getCalculation()
-            items[x]['Calculation'] = calculation and calculation.Title()
-            if calculation:
-                items[x]['replace']['Calculation'] = "<a href='%s'>%s</a>" % (
-                    calculation.absolute_url() + "/edit", calculation.Title())
-
-            items[x]['Unit'] = obj.getUnit() and obj.getUnit() or ''
-            items[x]['Price'] = "%s.%02d" % obj.Price
-
-            method = obj.getMethod()
-            items[x]['Method'] = method and method.Title() or ''
-            if method:
-                items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % (
-                    method.absolute_url(), method.Title())
-
-            maxtime = obj.MaxTimeAllowed
-            maxtime_string = ""
-            for field in ('days', 'hours', 'minutes'):
-                if field in maxtime:
-                    try:
-                        val = int(maxtime[field])
-                        if val > 0:
-                            maxtime_string += "%s%s " % (val, _(field[0]))
-                    except:
-                        pass
-            items[x]['MaxTimeAllowed'] = maxtime_string
-
-            if obj.DuplicateVariation is not None:
-                items[x]['DuplicateVariation'] = "%s.%02d" % (
-                    obj.DuplicateVariation)
-            else:
-                items[x]['DuplicateVariation'] = ""
-
-            after_icons = ''
-            ipath = "++resource++bika.lims.images"
-            if obj.getAccredited():
-                after_icons += "<img src='%s/accredited.png' title='%s'>" % (
-                    ipath, _("Accredited"))
-            if obj.getReportDryMatter():
-                after_icons += "<img src='%s/dry.png' title='%s'>" % (
-                    ipath, _("Can be reported as dry matter"))
-            if obj.getAttachmentOption() == 'r':
-                after_icons += "<img src='%s/attach_reqd.png' title='%s'>" % (
-                    ipath, _("Attachment required"))
-            if obj.getAttachmentOption() == 'n':
-                after_icons += "<img src='%s/attach_no.png' title='%s'>" % (
-                    ipath, _('Attachment not permitted'))
-            if after_icons:
-                items[x]['after']['Title'] = after_icons
-
+        cat = obj.getCategoryTitle()
+        cat_order = self.an_cats_order.get(cat)
         if self.do_cats:
-            self.categories = map(lambda x: x[0], sorted(self.categories, key=lambda x: x[1]))
+            # category is for bika_listing to groups entries
+            item['category'] = cat
+            if (cat, cat_order) not in self.categories:
+                self.categories.append((cat, cat_order))
+
+        instrument = obj.getInstrument()
+        item['Instrument'] = instrument.Title() if instrument else ''
+        if instrument:
+            item['replace']['Instrument'] = "<a href='%s'>%s</a>" % (
+                instrument.absolute_url() + "/edit", instrument.Title())
+
+        calculation = obj.getCalculation()
+        item['Calculation'] = calculation.Title() if calculation else ''
+        if calculation:
+            item['replace']['Calculation'] = "<a href='%s'>%s</a>" % (
+                calculation.absolute_url() + "/edit", calculation.Title())
+
+        item['Price'] = "%s.%02d" % obj.Price
+
+        maxtime = obj.MaxTimeAllowed
+        maxtime_string = ""
+        for field in ('days', 'hours', 'minutes'):
+            if field in maxtime:
+                try:
+                    val = int(maxtime[field])
+                    if val > 0:
+                        maxtime_string += "%s%s " % (val, _(field[0]))
+                except:
+                    pass
+        item['MaxTimeAllowed'] = maxtime_string
+
+        if obj.DuplicateVariation:
+            item['DuplicateVariation'] = "%s.%02d" % obj.DuplicateVariation
+        else:
+            item['DuplicateVariation'] = ""
+
+        after_icons = ''
+        ipath = "++resource++bika.lims.images"
+        if obj.getAccredited():
+            after_icons += "<img src='%s/accredited.png' title='%s'>" % (
+                ipath, _("Accredited"))
+        if obj.getReportDryMatter():
+            after_icons += "<img src='%s/dry.png' title='%s'>" % (
+                ipath, _("Can be reported as dry matter"))
+        if obj.getAttachmentOption() == 'r':
+            after_icons += "<img src='%s/attach_reqd.png' title='%s'>" % (
+                ipath, _("Attachment required"))
+        if obj.getAttachmentOption() == 'n':
+            after_icons += "<img src='%s/attach_no.png' title='%s'>" % (
+                ipath, _('Attachment not permitted'))
+        if after_icons:
+            item['after']['Title'] = after_icons
+        return item
+
+    def folderitems(self):
+
+        items = super(AnalysisServicesView, self).folderitems()
+        if self.do_cats:
+            self.categories = map(lambda x: x[0],
+                                  sorted(self.categories, key=lambda x: x[1]))
         else:
             self.categories.sort()
         return items
 
 
 schema = ATFolderSchema.copy()
-
-
 class AnalysisServices(ATFolder):
     implements(IAnalysisServices)
     displayContentsTab = False
     schema = schema
-
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 atapi.registerType(AnalysisServices, PROJECTNAME)

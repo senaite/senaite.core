@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -83,7 +88,7 @@ class Report(BrowserView):
                 sizeunit = "Mb"
             dateloaded = attachment.getDateLoaded()
             dataline = []
-            dataitem = {'value': attachment.getTextTitle()}
+            dataitem = {'value': attachment.Title()}
             dataline.append(dataitem)
             dataitem = {'value': filename,
                         'img_before': icon}

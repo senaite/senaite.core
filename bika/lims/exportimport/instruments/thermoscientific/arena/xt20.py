@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ Thermo Scientific 'Arena 20XT' (The file name for importing staff)
 """
 from bika.lims import bikaMessageFactory as _
@@ -17,7 +22,7 @@ def Import(context, request):
     override = request.form['thermoscientific_arena_20XT_override']
     sample = request.form.get('thermoscientific_arena_20XT_sample',
                               'requestid')
-    instrument = request.form.get('thermoscientific_arena_20XT_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []
@@ -47,9 +52,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

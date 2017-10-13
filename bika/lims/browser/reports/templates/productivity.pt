@@ -109,7 +109,7 @@
                 <input type="hidden" name="report_id"
                        value="productivity_dailysamplesreceived"/>
                 <fieldset>
-                    <tal:x content="structure python:view.selection_macros.select_daterange(
+                    <tal:x content="structure python:view.selection_macros.select_daterange_received(
                                                               field_id='getDateReceived',
                                                               field_title='Date Received')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>
@@ -141,7 +141,7 @@
                 <input type="hidden" name="report_id"
                        value="productivity_samplereceivedvsreported"/>
                 <fieldset>
-                    <tal:x content="structure python:view.selection_macros.select_daterange(
+                    <tal:x content="structure python:view.selection_macros.select_daterange_received(
                                                               field_id='getDateReceived',
                                                               field_title='Date Received')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>
@@ -176,21 +176,21 @@
                    value="productivity_analysesperservice"/>
             <fieldset>
                 <tal:x content="structure context/@@selection_macros/select_client"/>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_requested(
                                                                field_id='Requested',
                                                                field_title='Date Requested')"/>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_published(
                                                                field_id='Published',
                                                                field_title='Date Published')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_analysis(
                                                                workflow_id='bika_analysis_workflow',
                                                                field_id='bika_analysis_workflow',
                                                                field_title='Analysis state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_cancellation(
                                                                workflow_id='bika_cancellation_workflow',
                                                                field_id='bika_cancellation_workflow',
                                                                field_title='Cancellation state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
                                                                workflow_id='bika_worksheetanalysis_workflow',
                                                                field_id='bika_worksheetanalysis_workflow',
                                                                field_title='Worksheet state')"/>
@@ -222,18 +222,18 @@
                    value="productivity_analysespersampletype"/>
             <fieldset>
                 <tal:x content="structure context/@@selection_macros/select_client"/>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_requested(
                                                                field_id='Requested',
                                                                field_title='Date Requested')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_analysis(
                                                                workflow_id='bika_analysis_workflow',
                                                                field_id='bika_analysis_workflow',
                                                                field_title='Analysis state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_cancellation(
                                                                workflow_id='bika_cancellation_workflow',
                                                                field_id='bika_cancellation_workflow',
                                                                field_title='Cancellation state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
                                                                workflow_id='bika_worksheetanalysis_workflow',
                                                                field_id='bika_worksheetanalysis_workflow',
                                                                field_title='Worksheet state')"/>
@@ -275,18 +275,18 @@
                    value="productivity_analysesperclient"/>
             <fieldset>
                 <tal:x content="structure context/@@selection_macros/select_client"/>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_requested(
                                                                field_id='Requested',
                                                                field_title='Date Requested')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_analysis(
                                                                workflow_id='bika_analysis_workflow',
                                                                field_id='bika_analysis_workflow',
                                                                field_title='Analysis state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_cancellation(
                                                                workflow_id='bika_cancellation_workflow',
                                                                field_id='bika_cancellation_workflow',
                                                                field_title='Cancellation state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
                                                                workflow_id='bika_worksheetanalysis_workflow',
                                                                field_id='bika_worksheetanalysis_workflow',
                                                                field_title='Worksheet state')"/>
@@ -318,10 +318,10 @@
                    value="productivity_analysestats"/>
             <fieldset>
                 <tal:x content="structure context/@@selection_macros/select_client"/>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_received(
                                                                field_id='Received',
                                                                field_title='Date Received')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
                                                                workflow_id='bika_worksheetanalysis_workflow',
                                                                field_id='bika_worksheetanalysis_workflow',
                                                                field_title='Worksheet state')"/>
@@ -358,7 +358,7 @@
                 <tal:x content="structure context/@@selection_macros/select_analyst"/>
                 <tal:x content="structure context/@@selection_macros/select_instrument"/>
                 <tal:x content="structure context/@@selection_macros/select_period"/>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_received(
                                                                field_id='Received',
                                                                field_title='Date Received')"/>
                 <tal:x content="structure context/@@selection_macros/select_output_format"/>
@@ -389,10 +389,10 @@
             <input type="hidden" name="report_id"
                    value="productivity_analysesperdepartment"/>
             <fieldset>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_requested(
                                                                field_id='getDateRequested',
                                                                field_title='Date Requested')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
+                <tal:x content="structure python:view.selection_macros.select_state_analysis(
                                                                workflow_id='bika_analysis_workflow',
                                                                field_id='getAnalysisState',
                                                                field_title='Analysis state')"/>
@@ -427,7 +427,7 @@
             <input type="hidden" name="report_id"
                    value="productivity_analysesperformedpertotal"/>
             <fieldset>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
+                <tal:x content="structure python:view.selection_macros.select_daterange_requested(
                                                                field_id='getDateRequested',
                                                                field_title='Date Requested')"/>
                 <tal:x content="structure python:view.selection_macros.select_groupingperiod(
@@ -463,7 +463,7 @@
                        value="productivity_analysesattachments"/>
                 <fieldset>
                     <tal:x content="structure context/@@selection_macros/select_client"/>
-                    <tal:x content="structure python:view.selection_macros.select_daterange(
+                    <tal:x content="structure python:view.selection_macros.select_daterange_loaded(
                                                               field_id='Loaded',
                                                               field_title='Date Loaded')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>
@@ -493,7 +493,7 @@
                 <input type="hidden" name="report_id"
                        value="productivity_dataentrydaybook"/>
                 <fieldset>
-                    <tal:x content="structure python:view.selection_macros.select_daterange(
+                    <tal:x content="structure python:view.selection_macros.select_daterange_created(
                                                               field_id='getDateCreated',
                                                               field_title='Date Created')"/>
                     <tal:x content="structure context/@@selection_macros/select_output_format"/>

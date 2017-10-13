@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ PANalytical - Omnia Axios XRF
 """
 from bika.lims import bikaMessageFactory as _, t
@@ -17,7 +22,7 @@ def Import(context, request):
     override = request.form['panalytical_omnia_axios_override']
     sample = request.form.get('panalytical_omnia_axios_sample',
                               'requestid')
-    instrument = request.form.get('panalytical_omnia_axios_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []
@@ -51,9 +56,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

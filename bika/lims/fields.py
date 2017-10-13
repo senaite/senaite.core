@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Generic field extensions
 """
 from Acquisition import aq_inner
@@ -21,6 +26,11 @@ class ExtensionField(object):
     implements(IExtensionField)
 
     storage = AnnotationStorage()
+
+    def __init__(self, *args, **kwargs):
+        super(ExtensionField, self).__init__(*args, **kwargs)
+        self.args = args
+        self.kwargs = kwargs
 
     def getAccessor(self, instance):
         def accessor():

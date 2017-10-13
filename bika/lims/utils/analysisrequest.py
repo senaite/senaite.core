@@ -1,22 +1,43 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
-from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.analysisrequest.reject import \
+    AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis
 from bika.lims.utils import tmpID
+from bika.lims.utils import to_utf8
+from bika.lims.utils import encode_header
+from bika.lims.utils import createPdf
+from bika.lims.utils import attachPdf
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionsFor
+from bika.lims.workflow import getReviewHistoryActionsList
+from copy import deepcopy
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.Utils import formataddr
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
+import os
+import tempfile
 
-
-def create_analysisrequest(context, request, values, analyses=None,
+def create_analysisrequest(client, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
     """This is meant for general use and should do everything necessary to
     create and initialise an AR and any other required auxilliary objects
     (Sample, SamplePartition, Analysis...)
 
-    :param context:
-        The container in which the ARs will be created.
+    :param client:
+        The container (Client) in which the ARs will be created.
     :param request:
         The current Request object.
     :param values:
@@ -33,87 +54,106 @@ def create_analysisrequest(context, request, values, analyses=None,
         Allow different prices to be set for analyses.  If not set, prices
         are read from the associated analysis service.
     """
-
-    # Gather neccesary tools
-    workflow = getToolByName(context, 'portal_workflow')
-    bc = getToolByName(context, 'bika_catalog')
-
-    # It's necessary to modify these and we don't want to pollute the
-    # parent's data
-    values = values.copy()
-    analyses = analyses if analyses else values.get('Analyses', [])
-    if not analyses:
-        raise RuntimeError(
-                "create_analysisrequest: no analyses provided")
+    # Don't pollute the dict param passed in
+    values = deepcopy(values)
 
     # Create new sample or locate the existing for secondary AR
+    secondary = False
+    sample = None
     if not values.get('Sample', False):
-        secondary = False
-        workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
-        sample = create_sample(context, request, values)
+        sample = create_sample(client, request, values)
     else:
+        sample = get_sample_from_values(client, values)
         secondary = True
-        sample = get_sample_from_values(context, values)
-        workflow_enabled = sample.getSamplingWorkflowEnabled()
 
     # Create the Analysis Request
-    ar = _createObjectByType('AnalysisRequest', context, tmpID())
+    ar = _createObjectByType('AnalysisRequest', client, tmpID())
 
     # Set some required fields manually before processForm is called
     ar.setSample(sample)
     values['Sample'] = sample
     ar.processForm(REQUEST=request, values=values)
-    # Object has been renamed
     ar.edit(RequestID=ar.getId())
 
-    # Set initial AR state
-    action = '{0}sampling_workflow'.format('' if workflow_enabled else 'no_')
-    workflow.doActionFor(ar, action)
+    # Set analysis request analyses. 'Analyses' param are analyses services
+    analyses = analyses if analyses else []
+    service_uids = get_services_uids(
+        context=client, analyses_serv=analyses, values=values)
+    # processForm already has created the analyses, but here we create the
+    # analyses with specs and prices. This function, even it is called 'set',
+    # deletes the old analyses, so eventually we obtain the desired analyses.
+    ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    analyses = ar.getAnalyses(full_objects=True)
 
-    # Set analysis request analyses
-    service_uids = _resolve_items_to_service_uids(analyses)
-    analyses = ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    # Create sample partitions
+    if not partitions:
+        partitions = [{'services': service_uids}]
 
-    # Continue to set the state of the AR
-    skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
+    part_num = 0
+    prefix = sample.getId() + "-P"
     if secondary:
-        # Only 'sample_due' and 'sample_recieved' samples can be selected
-        # for secondary analyses
-        doActionFor(ar, 'sampled')
-        doActionFor(ar, 'sample_due')
-        sample_state = workflow.getInfoFor(sample, 'review_state')
-        if sample_state not in skip_receive:
-            doActionFor(ar, 'receive')
+        # Always create new partitions if is a Secondary AR, cause it does
+        # not make sense to reuse the partitions used in a previous AR!
+        sparts = sample.getSamplePartitions()
+        for spart in sparts:
+            spartnum = int(spart.getId().split(prefix)[1])
+            if spartnum > part_num:
+                part_num = spartnum
 
-    # Set the state of analyses we created.
-    for analysis in analyses:
-        doActionFor(analysis, 'sample_due')
-        analysis_state = workflow.getInfoFor(analysis, 'review_state')
-        if analysis_state not in skip_receive:
-            doActionFor(analysis, 'receive')
+    for n, partition in enumerate(partitions):
+        # Calculate partition id
+        partition_id = '%s%s' % (prefix, part_num + 1)
+        partition['part_id'] = partition_id
+        # Point to or create sample partition
+        if partition_id in sample.objectIds():
+            partition['object'] = sample[partition_id]
+        else:
+            partition['object'] = create_samplepartition(
+                sample,
+                partition,
+                analyses
+            )
+        part_num += 1
 
-    if not secondary:
-        # Create sample partitions
-        if not partitions:
-            partitions = [{'services': analyses}]
-        for n, partition in enumerate(partitions):
-            # Calculate partition id
-            partition_prefix = sample.getId() + "-P"
-            partition_id = '%s%s' % (partition_prefix, n + 1)
-            partition['part_id'] = partition_id
-            # Point to or create sample partition
-            if partition_id in sample.objectIds():
-                partition['object'] = sample[partition_id]
-            else:
-                partition['object'] = create_samplepartition(
-                    sample,
-                    partition,
-                    analyses
-                )
-        # If Preservation is required for some partitions,
-        # and the SamplingWorkflow is disabled, we need
-        # to transition to to_be_preserved manually.
-        if not workflow_enabled:
+    # At this point, we have a fully created AR, with a Sample, Partitions and
+    # Analyses, but the state of all them is the initial ("sample_registered").
+    # We can now transition the whole thing (instead of doing it manually for
+    # each object we created). After and Before transitions will take care of
+    # cascading and promoting the transitions in all the objects "associated"
+    # to this Analysis Request.
+    sampling_workflow_enabled = sample.getSamplingWorkflowEnabled()
+    action = 'no_sampling_workflow'
+    if sampling_workflow_enabled:
+        action = 'sampling_workflow'
+    # Transition the Analysis Request and related objects to "sampled" (if
+    # sampling workflow not enabled) or to "to_be_sampled" statuses.
+    doActionFor(ar, action)
+
+    if secondary:
+        # If secondary AR, then we need to manually transition the AR (and its
+        # children) to fit with the Sample Partition's current state
+        sampleactions = getReviewHistoryActionsList(sample)
+        doActionsFor(ar, sampleactions)
+        # We need a workaround here in order to transition partitions.
+        # auto_no_preservation_required and auto_preservation_required are
+        # auto transitions applied to analysis requests, but partitions don't
+        # have them, so we need to replace them by the sample_workflow
+        # equivalent.
+        if 'auto_no_preservation_required' in sampleactions:
+            index = sampleactions.index('auto_no_preservation_required')
+            sampleactions[index] = 'sample_due'
+        elif 'auto_preservation_required' in sampleactions:
+            index = sampleactions.index('auto_preservation_required')
+            sampleactions[index] = 'to_be_preserved'
+        # We need to transition the partition manually
+        # Transition pre-preserved partitions
+        for partition in partitions:
+            part = partition['object']
+            doActionsFor(part, sampleactions)
+    else:
+        # If Preservation is required for some partitions, and the SamplingWorkflow
+        # is disabled, we need to transition to to_be_preserved manually.
+        if not sampling_workflow_enabled:
             to_be_preserved = []
             sample_due = []
             lowest_state = 'sample_due'
@@ -128,18 +168,20 @@ def create_analysisrequest(context, request, values, analyses=None,
             for p in sample_due:
                 doActionFor(p, 'sample_due')
             doActionFor(sample, lowest_state)
-            doActionFor(ar, lowest_state)
 
-        # Transition pre-preserved partitions
-        for p in partitions:
-            if 'prepreserved' in p and p['prepreserved']:
-                part = p['object']
-                state = workflow.getInfoFor(part, 'review_state')
-                if state == 'to_be_preserved':
-                    workflow.doActionFor(part, 'preserve')
+    # Transition pre-preserved partitions
+    for p in partitions:
+        if 'prepreserved' in p and p['prepreserved']:
+            part = p['object']
+            doActionFor(part, 'preserve')
 
-    # Return the newly created Analysis Request
+    # Once the ar is fully created, check if there are rejection reasons
+    reject_field = values.get('RejectionReasons', '')
+    if reject_field and reject_field.get('checkbox', False):
+        doActionFor(ar, 'reject')
+
     return ar
+
 
 def get_sample_from_values(context, values):
     """values may contain a UID or a direct Sample object.
@@ -152,56 +194,194 @@ def get_sample_from_values(context, values):
         if brains:
             sample = brains[0].getObject()
         else:
-            raise RuntimeError(
-                "create_analysisrequest: invalid sample value provided. values=%s" % values)
+            raise RuntimeError("create_analysisrequest: invalid sample "
+                               "value provided. values=%s" % values)
     if not sample:
+        raise RuntimeError("create_analysisrequest: invalid sample "
+                           "value provided. values=%s" % values)
+    return sample
+
+
+def get_services_uids(context=None, analyses_serv=[], values={}):
+    """
+    This function returns a list of UIDs from analyses services from its
+    parameters.
+    :param analyses_serv: A list (or one object) of service-related info items.
+        see _resolve_items_to_service_uids() docstring.
+    :type analyses_serv: list
+    :param values: a dict, where keys are AR|Sample schema field names.
+    :type values: dict
+    :returns: a list of analyses services UIDs
+    """
+    if not context or (not analyses_serv and not values):
         raise RuntimeError(
-            "create_analysisrequest: invalid sample value provided. values=%s" % values)
+            "get_services_uids: Missing or wrong parameters.")
+    uid_catalog = getToolByName(context, 'uid_catalog')
+    anv = values['Analyses'] if values.get('Analyses', None) else []
+    analyses_services = anv + analyses_serv
+    # It is possible to create analysis requests
+    # by JSON petitions and services, profiles or types aren't allways send.
+    # Sometimes we can get analyses and profiles that doesn't match and we
+    # should act in consequence.
+    # Getting the analyses profiles
+    analyses_profiles = values.get('Profiles')
+    if analyses_profiles:
+        analyses_profiles = analyses_profiles.split(',')
+    if not analyses_services and not analyses_profiles:
+        raise RuntimeError(
+                "create_analysisrequest: no analyses services or analysis"
+                " profile provided")
+    # Add analysis services UIDs from profiles to analyses_services variable.
+    for profile_uid in analyses_profiles:
+        # When creating an AR, JS builds a query from selected fields. Although it doesn't set empty values to any
+        # Field, somehow 'Profiles' field can have an empty value in the set.
+        # Thus, we should avoid querying by empty UID through 'uid_catalog'.
+        if profile_uid:
+            profile = uid_catalog(UID=profile_uid)
+            profile = profile[0].getObject()
+            # Only services UIDs
+            services_uids = profile.getRawService()
+            # _resolve_items_to_service_uids() will remove duplicates
+            analyses_services += services_uids
+    return _resolve_items_to_service_uids(analyses_services)
 
 
 def _resolve_items_to_service_uids(items):
-    portal = api.portal.get()
-    # We need to send a list of service UIDS to setAnalyses function.
-    # But we may have received one, or a list of:
-    #   AnalysisService instances
-    #   Analysis instances
-    #   service titles
-    #   service UIDs
-    #   service Keywords
+    """ Returns a list of service uids without duplicates based on the items
+    :param items:
+        A list (or one object) of service-related info items. The list can be
+        heterogeneous and each item can be:
+        - Analysis Service instance
+        - Analysis instance
+        - Analysis Service title
+        - Analysis Service UID
+        - Analysis Service Keyword
+        If an item that doesn't match any of the criterias above is found, the
+        function will raise a RuntimeError
+    """
+    portal = None
+    bsc = None
     service_uids = []
+
     # Maybe only a single item was passed
     if type(items) not in (list, tuple):
         items = [items, ]
     for item in items:
-        uid = False
         # service objects
         if IAnalysisService.providedBy(item):
             uid = item.UID()
             service_uids.append(uid)
+            continue
+
         # Analysis objects (shortcut for eg copying analyses from other AR)
-        if IAnalysis.providedBy(item):
-            uid = item.getService().UID()
-            service_uids.append(uid)
+        if IRoutineAnalysis.providedBy(item):
+            service_uids.append(item.getServiceUID())
+            continue
+
+        # An object UID already there?
+        if item in service_uids:
+            continue
+
         # Maybe object UID.
-        bsc = getToolByName(portal, 'bika_setup_catalog')
+        portal = portal if portal else api.portal.get()
+        bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
+            continue
+
         # Maybe service Title
-        bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', title=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
+            continue
+
         # Maybe service Keyword
-        bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', getKeyword=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
-        if not uid:
-            raise RuntimeError(
-                str(item) + " should be the UID, title, keyword "
-                            " or title of an AnalysisService.")
-    return service_uids
+            continue
+
+        raise RuntimeError(
+            str(item) + " should be the UID, title, keyword "
+                        " or title of an AnalysisService.")
+    return list(set(service_uids))
+
+
+def notify_rejection(analysisrequest):
+    """
+    Notifies via email that a given Analysis Request has been rejected. The
+    notification is sent to the Client contacts assigned to the Analysis
+    Request.
+
+    :param analysisrequest: Analysis Request to which the notification refers
+    :returns: true if success
+    """
+    arid = analysisrequest.getRequestID()
+
+    # This is the template to render for the pdf that will be either attached
+    # to the email and attached the the Analysis Request for further access
+    tpl = AnalysisRequestRejectPdfView(analysisrequest, analysisrequest.REQUEST)
+    html = tpl.template()
+    html = safe_unicode(html).encode('utf-8')
+    filename = '%s-rejected' % arid
+    pdf_fn = tempfile.mktemp(suffix=".pdf")
+    pdf = createPdf(htmlreport=html, outfile=pdf_fn)
+    if pdf:
+        # Attach the pdf to the Analysis Request
+        attid = analysisrequest.aq_parent.generateUniqueId('Attachment')
+        att = _createObjectByType(
+            "Attachment", analysisrequest.aq_parent, attid)
+        att.setAttachmentFile(open(pdf_fn))
+        # Awkward workaround to rename the file
+        attf = att.getAttachmentFile()
+        attf.filename = '%s.pdf' % filename
+        att.setAttachmentFile(attf)
+        att.unmarkCreationFlag()
+        renameAfterCreation(att)
+        atts = analysisrequest.getAttachment() + [att] if \
+            analysisrequest.getAttachment() else [att]
+        atts = [a.UID() for a in atts]
+        analysisrequest.setAttachment(atts)
+        os.remove(pdf_fn)
+
+    # This is the message for the email's body
+    tpl = AnalysisRequestRejectEmailView(
+        analysisrequest, analysisrequest.REQUEST)
+    html = tpl.template()
+    html = safe_unicode(html).encode('utf-8')
+
+    # compose and send email.
+    mailto = []
+    lab = analysisrequest.bika_setup.laboratory
+    mailfrom = formataddr((encode_header(lab.getName()), lab.getEmailAddress()))
+    mailsubject = _('%s has been rejected') % arid
+    contacts = [analysisrequest.getContact()] + analysisrequest.getCCContact()
+    for contact in contacts:
+        name = to_utf8(contact.getFullname())
+        email = to_utf8(contact.getEmailAddress())
+        if email:
+            mailto.append(formataddr((encode_header(name), email)))
+    if not mailto:
+        return False
+    mime_msg = MIMEMultipart('related')
+    mime_msg['Subject'] = mailsubject
+    mime_msg['From'] = mailfrom
+    mime_msg['To'] = ','.join(mailto)
+    mime_msg.preamble = 'This is a multi-part MIME message.'
+    msg_txt = MIMEText(html, _subtype='html')
+    mime_msg.attach(msg_txt)
+    if pdf:
+        attachPdf(mime_msg, pdf, filename)
+
+    try:
+        host = getToolByName(analysisrequest, 'MailHost')
+        host.send(mime_msg.as_string(), immediate=True)
+    except:
+        logger.warning(
+            "Email with subject %s was not sent (SMTP connection error)" % mailsubject)
+
+    return True

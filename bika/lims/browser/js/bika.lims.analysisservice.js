@@ -11,17 +11,18 @@ function AnalysisServiceEditView() {
     var instr_chk  = $('#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults');
     var methods_fd = $('#archetypes-fieldname-Methods');
     var methods_ms = $('#archetypes-fieldname-Methods #Methods');
-    var method_fd  = $('#archetypes-fieldname-_Method');
-    var method_sel = $('#archetypes-fieldname-_Method #_Method');
+    var method_fd  = $('#archetypes-fieldname-Method');
+    var method_sel = $('#archetypes-fieldname-Method #Method');
     var instrs_fd  = $('#archetypes-fieldname-Instruments');
     var instrs_ms  = $('#archetypes-fieldname-Instruments #Instruments');
     var instr_fd   = $('#archetypes-fieldname-Instrument');
     var instr_sel  = $('#archetypes-fieldname-Instrument #Instrument');
-    var defcalc_chk= $('#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation');
-    var calc_fd    = $('#archetypes-fieldname-_Calculation');
-    var calc_sel   = $('#archetypes-fieldname-_Calculation #_Calculation');
-    var acalc_fd   = $('#archetypes-fieldname-DeferredCalculation');
-    var acalc_sel  = $('#archetypes-fieldname-DeferredCalculation #DeferredCalculation');
+
+    var default_calculation_chk      = $('#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation');
+    var calculation_field            = $('#archetypes-fieldname-Calculation');
+    var calculation_label            = $(calculation_field).find('label');
+    var calculation_select_element   = $('#archetypes-fieldname-Calculation #Calculation');
+
     var interim_fd = $("#archetypes-fieldname-InterimFields");
     var interim_rw = $("#archetypes-fieldname-InterimFields tr.records_row_InterimFields");
     var ldsel_chk  = $('#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector');
@@ -103,6 +104,9 @@ function AnalysisServiceEditView() {
         // select the preservation and disable the input.
         $(".portaltype-analysisservice #Container").bind("selected", function(){
             var container_uid = $(this).attr("uid");
+            if (container_uid === undefined || container_uid === null){
+              container_uid='';
+            }
             var request_data = {
                 catalog_name: "uid_catalog",
                 UID: container_uid
@@ -129,6 +133,9 @@ function AnalysisServiceEditView() {
                 return;
             }
             container_uid = container_uid[0];
+            if (container_uid === undefined || container_uid === null){
+              container_uid='';
+            }
             var request_data = {
                 catalog_name: "uid_catalog",
                 UID: container_uid
@@ -151,17 +158,21 @@ function AnalysisServiceEditView() {
         // $(".portaltype-analysisservice [name^='PartitionSetup.container']").trigger("selected");
 
         // initial setup - hide Interim widget if no Calc is selected
-        if($(".portaltype-analysisservice #Calculation").val() === ""){
-            $("#InterimFields_more").click(); // blank last row
-            var rows = $("tr.records_row_InterimFields"); // Clear the rest
-            if($(rows).length > 1){
-                for (var i = $(rows).length - 2; i >= 0; i--) {
-                    $($(rows)[i]).remove();
-                }
-            }
-            $("#archetypes-fieldname-InterimFields").hide();
-            return;
-        }
+// This is commented because javascript halts execution in this block.
+// I think it's because this code fucks around with non-visible elements.
+// So the same question as always: How did this ever work, and how do
+// we replace it now.
+//        if($(".portaltype-analysisservice #Calculation").val() === ""){
+//            $("#InterimFields_more").click(); // blank last row
+//            var rows = $("tr.records_row_InterimFields"); // Clear the rest
+//            if($(rows).length > 1){
+//                for (var i = $(rows).length - 2; i >= 0; i--) {
+//                    $($(rows)[i]).remove();
+//                }
+//            }
+//            $("#archetypes-fieldname-InterimFields").hide();
+//            return;
+//        }
 
         // Check if there is, at least, one instrument available
         if ($(instrs_ms).find('option').length == 0) {
@@ -183,17 +194,10 @@ function AnalysisServiceEditView() {
         $(manual_chk).change(function() {
             if ($(this).is(':checked')) {
 
-                // The user can select the Analysis Service methods
-                // manually. The default method will be retrieved from
-                // the methods selected in the multiselect box
-
-                // Show the methods multiselector
+                // Insert all methods without instruments into the
+                // methods InOut options widget.
+                insert_manual_methods();
                 $(methods_fd).fadeIn('slow');
-
-                // Show the default method selector
-                $(method_fd).show();
-                $(method_sel).unbind("focus");
-
                 // Delegate remaining actions to Methods change event
                 $(methods_ms).change();
 
@@ -245,12 +249,9 @@ function AnalysisServiceEditView() {
                 });
 
                 // Disable the default calculation selector
-                $(calc_sel).focus(function(e) {
+                $(calculation_select_element).focus(function(e) {
                     $(this).blur();
                 });
-
-                // Hide the alternate calculation selector
-                $(acalc_fd).hide();
 
                 // Delegate remaining actions to Instruments change event
                 $(instrs_ms).change();
@@ -309,6 +310,16 @@ function AnalysisServiceEditView() {
                 $(this).val($(this).find('option').first().val());
             }*/
 
+            // If it has default Instrument, Default method can be only one of that Default Instrument's methods. Do
+            // not do anything.
+            if ($(instr_chk).is(':checked')) {
+                $(method_sel).change(function(e) {
+                    // Delegate actions to Default Calculation change event
+                    $(default_calculation_chk).change();
+                });
+                return;
+            }
+
             $(method_sel).find('option').remove();
 
             // Populate with the methods from the multi-select
@@ -330,14 +341,6 @@ function AnalysisServiceEditView() {
                     defoption = $(method_sel).find('option').first();
                 }
             }
-            if (!$(instr_chk).is(':checked')) {
-                $(method_sel).val(defoption.val());
-            } else {
-                if ($(method_sel).find('option[value="'+prevmethod+'"]').length == 0) {
-                    $(method_sel).append('<option value="'+prevmethod+'">'+prevmethodtxt+'</option>');
-                }
-                $(method_sel).val(prevmethod);
-            }
 
             // Delegate remaining actions to Method change event
             $(method_sel).change();
@@ -345,7 +348,7 @@ function AnalysisServiceEditView() {
 
         $(method_sel).change(function(e) {
             // Delegate actions to Default Calculation change event
-            $(defcalc_chk).change();
+            $(default_calculation_chk).change();
         });
 
 
@@ -408,7 +411,6 @@ function AnalysisServiceEditView() {
 
             // Delegate remaining actions to Instrument change event
             $(instr_sel).change();
-
         });
 
 
@@ -420,7 +422,7 @@ function AnalysisServiceEditView() {
             $(method_sel).append("<option value=''>"+_("None")+"</option>");
             $(method_sel).val('');
             $.ajax({
-                url: window.portal_url + "/get_instrument_method",
+                url: window.portal_url + "/get_instrument_methods",
                 type: 'POST',
                 data: {'_authenticator': $('input[name="_authenticator"]').val(),
                        'uid': $(instr_sel).val() },
@@ -428,34 +430,36 @@ function AnalysisServiceEditView() {
                 async: false
             }).done(function(data) {
                 $(method_sel).find('option').remove();
-                if (data != null && data['uid']) {
-                    // Set the instrument's method
-                    var option = '<option value="'+data['uid']+'">'+data['title']+'</option>';
-                    $(method_sel).append(option);
-                    $(method_sel).val(data['uid']);
+                // Handle multiple methods
+                 if (data != null && data.methods.length > 0) {
+                     // Set the instrument's methods
+                     $.each(data.methods, function(index, value) {
+                         var uid = value.uid;
+                         var title = value.title;
+                         console.debug("Adding Method " + title + " to the Selection");
+                         var option = '<option value="'+uid+'">'+title+'</option>';
+                         $(method_sel).append(option);
+                         $(method_sel).val(uid);
+                     });
                 } else {
                     // Oooopps. The instrument has no method assigned
                     $(method_sel).append("<option value=''>"+_("None")+"</option>");
                     $(method_sel).val('');
                 }
                 // Delegate the action to Default Calc change event
-                $(defcalc_chk).change();
+                $(default_calculation_chk).change();
             });
         });
 
 
         // The 'Default Calculation' checkbox changes
-        $(defcalc_chk).change(function() {
-
-            // Hide Calculation Interims widget
-            //$(interim_fd).hide();
+        $(default_calculation_chk).change(function() {
 
             if ($(this).is(':checked')) {
 
-                // Toggle default/alternative calculation
-                $(acalc_fd).hide();
-                $(calc_fd).show();
-                $(calc_fd).prop('disabled', true);
+                // Using default calculation.
+                // So, we deny access to the "Calculation" selection field.
+                $(calculation_label).hide();
 
                 // Load the calculation for the selected method
                 var muid = $(method_sel).val();
@@ -468,43 +472,58 @@ function AnalysisServiceEditView() {
                                'uid': muid },
                         dataType: 'json'
                     }).done(function(data) {
-                        $(calc_sel).find('option').remove();
+                        $(calculation_select_element).find('option').remove();
                         if (data != null && data['uid']) {
-                            $(calc_sel).prepend('<option value="'+data['uid']+'">'+data['title']+'</option>');
+                            $(calculation_select_element).prepend('<option value="'+data['uid']+'">'+data['title']+'</option>');
                         } else {
-                            $(calc_sel).append('<option value="">'+_('None')+'</option>');
+                            $(calculation_select_element).append('<option value="">'+_('None')+'</option>');
                         }
-                        $(calc_sel).val($(calc_sel).find('option').first().val());
+                        $(calculation_select_element).val($(calculation_select_element).find('option').first().val());
 
                         // Delegate the action to Default Calculation change event
-                        $(calc_sel).change();
+                        $(calculation_select_element).change();
                     });
                 } else {
-                    $(calc_sel).find('option').remove();
-                    $(calc_sel).append('<option value="">'+_('None')+'</option>');
-                    $(calc_sel).change();
+                    $(calculation_select_element).find('option').remove();
+                    $(calculation_select_element).append('<option value="">'+_('None')+'</option>');
+                    $(calculation_select_element).change();
                 }
             } else {
-                $(calc_sel).find('option').remove();
-                $(calc_sel).append('<option value="">'+_('None')+'</option>');
-                $(calc_sel).val('');
+                $(calculation_select_element).find('option').remove();
+                $(calculation_select_element).append('<option value="">'+_('None')+'</option>');
+                $(calculation_select_element).val('');
 
-                // Toggle default/alternative calculation
-                $(calc_fd).hide();
-                $(acalc_fd).show();
+                // Unselected "Use Default Calculation"
+                // So, we allow selection of calculation manually and fill the list with the all available Calculations
+                // in the system.
+                $(calculation_label).show();
+                //$(calculation_select_element).prop('disabled', false);
 
-                // Delegate the action to Alternative Calculation change event
-                $(acalc_sel).change();
+                // Get available Calculations from Bika
+                $.ajax({
+                    url: window.portal_url + "/get_available_calculations",
+                    type: 'POST',
+                    data: {'_authenticator': $('input[name="_authenticator"]').val()},
+                    dataType: 'json'
+                }).done(function(data) {
+                    $(calculation_select_element).find('option').remove();
+                    if (data != null) {
+                        for(i=0; i<data.length;i++){
+                            $(calculation_select_element).append('<option value="'+data[i]['uid']+'">'+data[i]['title']+'</option>');
+                        }
+                    } else {
+                        $(calculation_select_element).append('<option value="">'+_('None')+'</option>');
+                    }
+                    $(calculation_select_element).val($(calculation_select_element).find('option').first().val());
+
+                    // Delegate the action to Default Calculation change event
+                    $(calculation_select_element).change();
+                });
             }
         });
 
         // The 'Default calculation' changes
-        $(calc_sel).change(function() {
-            loadInterims($(this).val());
-        });
-
-        // The 'Alternative calculation' changes
-        $(acalc_sel).change(function() {
+        $(calculation_select_element).change(function() {
             loadInterims($(this).val());
         });
 
@@ -515,6 +534,41 @@ function AnalysisServiceEditView() {
         catchOriginalValues();
     }
 
+    function insert_manual_methods(){
+        $.ajax({
+            url: window.portal_url + "/get_instrument_methods",
+            type: 'POST',
+            data: {'_authenticator': $('input[name="_authenticator"]').val(),
+                   'uid': $(instr_sel).val() },
+            dataType: 'json',
+            async: false
+        }).done(function(data) {
+            $(method_sel).find('option').remove();
+            // Handle multiple methods
+
+            if (data != null && data.methods.length > 0) {
+                // Set the instrument's methods
+                $.each(data.methods, function(index, value) {
+                    var uid = value.uid;
+                    var title = value.title;
+                    console.debug("Adding Method " + title + " to the Selection");
+                    var option = '<option value="'+uid+'">'+title+'</option>';
+                    $(method_sel).append(option);
+                    $(method_sel).val(uid);
+                });
+            } else {
+                // Oooopps. The instrument has no method assigned
+                $(method_sel).append("<option value=''>"+_("None")+"</option>");
+                $(method_sel).val('');
+            }
+            // Delegate the action to Default Calc change event
+            $(default_calculation_chk).change();
+        });
+    }
+
+    /**
+     * Controls the visibility and values of fields generated by Plone automatically.
+     */
     function catchOriginalValues() {
         $(manual_chk).attr('data-default', $(manual_chk).is(':checked'));
         $(instr_chk).attr('data-default', $(instr_chk).is(':checked'));
@@ -522,25 +576,57 @@ function AnalysisServiceEditView() {
         $(method_sel).attr('data-default', $(method_sel).val());
         $(instrs_ms).attr('data-default', $(instrs_ms).val());
         $(instr_sel).attr('data-default', $(instr_sel).val());
-        $(defcalc_chk).attr('data-default', $(defcalc_chk).is(':checked'));
-        $(calc_sel).attr('data-default', $(calc_sel).val());
-        $(acalc_sel).attr('data-default', $(acalc_sel).val());
+        $(default_calculation_chk).attr('data-default', $(default_calculation_chk).is(':checked'));
+        $(calculation_select_element).attr('data-default', $(calculation_select_element).val());
 
+        // If manual entry is disabled, hide and clear the methods multiselector
+        if (!$(manual_chk).is(':checked')) {
+            $(methods_fd).hide();
+            $(methods_ms).find('option[selected]').prop('selected', false);
+            $(methods_ms).val('');
+        }
+
+        // If Instrument assignment is disabled, hide and clear everything related with instruments.
+        if (!$(instr_chk).is(':checked')) {
+            $('#invalid-instruments-alert').remove();
+
+            // Hide the instruments multiselector and unselect all
+            $(instrs_fd).hide();
+            if ($(instrs_ms).find('option[value=""]').length == 0) {
+                $(instrs_ms).prepend('<option value="">None</option>');
+            }
+            $(instrs_ms).val('');
+            $(instrs_ms).find('option[value=""]').prop("selected", true);
+
+            // Hide the default instrument selector
+            $(instr_fd).hide();
+
+            // Unselect the default instrument
+            if ($(instr_sel).find('option[value=""]').length == 0) {
+                $(instr_sel).prepend('<option value="">None</option>');
+            }
+            $(instr_sel).val('');
+            $(instr_sel).find('option[value=""]').prop("selected", true);
+
+            // The user mustn't be allowed to unset manual entry
+            $(manual_chk).click(function(e) {
+                e.preventDefault();
+            });
+        }
+
+        // If there is no calculation assigned, hide interim fields section.
+        if(!$(calculation_select_element).find(":selected").val()){
+            $(interim_fd).hide();
+        }
         // Remove 'None' option from 'Methods' multi-select
         $(methods_ms).find('option[value=""]').remove();
 
-        // Disable the default calculation selector
-        $(calc_sel).focus(function(e) {
-            $(this).blur();
-        });
 
         // Toggle default/alternative calculation
-        if ($(defcalc_chk).is(':checked')) {
-            $(acalc_fd).hide();
-            $(calc_fd).show();
+        if (!$(default_calculation_chk).is(':checked')) {
+            $(calculation_label).show();
         } else {
-            $(calc_fd).hide();
-            $(acalc_fd).show();
+            $(calculation_label).hide();
         }
 
         // Save the manually entered interims to keep them if another
@@ -566,11 +652,9 @@ function AnalysisServiceEditView() {
         }
         var toremove = []
         var calcuid = "";
-        $(calc_sel).find('option').remove();
-        if ($(defcalc_chk).is(':checked')) {
-            calcuid = $(calc_sel).attr('data-default');
-        } else {
-            calcuid = $(acalc_sel).attr('data-default');
+        if ($(default_calculation_chk).is(':checked')) {
+            $(calculation_select_element).find('option').remove();
+            calcuid = $(calculation_select_element).attr('data-default');
         }
         if (calcuid != null && calcuid != '') {
             var request_data = {
@@ -579,28 +663,26 @@ function AnalysisServiceEditView() {
             };
             window.bika.lims.jsonapi_read(request_data, function(data) {
                 if (data.objects.length > 0) {
-                    $(calc_sel).append('<option value="'+data.objects[0].UID+'">'+data.objects[0].Title+'</option>');
-                    $(calc_sel).val(data.objects[0].UID);
+                    $(calculation_select_element).append('<option value="'+data.objects[0].UID+'">'+data.objects[0].Title+'</option>');
+                    $(calculation_select_element).val(data.objects[0].UID);
+                    $(calculation_select_element).find('option').attr('selected','selected');
                     for (i = 0; i < data.objects[0].InterimFields.length; i++) {
                         var row = data.objects[0].InterimFields[i];
                         toremove.push(row.keyword);
                     }
+                    // When a field is disabled, its setter is not called at all. Thus,
+                    //we must avoid use of disabling fields.
+                    //$(calculation_select_element).attr('disabled',true);
                 } else {
-                    $(calc_sel).append('<option value="'+data+'">'+_('None')+'</option>');
-                    $(calc_sel).val('');
+                    $(calculation_select_element).append('<option value="'+data+'">'+_('None')+'</option>');
+                    $(calculation_select_element).val('');
                 }
                 var manualinterims = originals.filter(function(el) {
                     return toremove.indexOf(el[0]) < 0;
                 });
                 // Save the manualinterims in some hidden place
                 $('#temp_manual_interims').val($.toJSON(manualinterims));
-
-                // Fire events cascade
-                $(manual_chk).change();
             });
-        } else {
-            // Fire events cascade
-            $(manual_chk).change();
         }
     }
 
@@ -780,7 +862,6 @@ function AnalysisServiceEditView() {
             .css('padding', '10px')
             .css('margin-bottom', '20px');
 
-        $(acalc_fd).find('label').hide();
-        $(calc_fd).find('label').hide();
+//        $(calculation_field).find('label').hide();
     }
 }

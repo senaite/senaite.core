@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from operator import itemgetter
 from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
@@ -132,17 +137,16 @@ class BatchBookView(BikaListingView):
         self.categories = []
         analyses = {}
         items = []
-        services = []
+        distinct = []  # distinct analyses (each one a different service)
         keywords = []
         for ar in ars:
             analyses[ar.id] = []
             for analysis in ar.getAnalyses(full_objects=True):
                 analyses[ar.id].append(analysis)
-                service = analysis.getService()
-                if service.getKeyword() not in keywords:
+                if analysis.getKeyword() not in keywords:
                     # we use a keyword check, because versioned services are !=.
-                    keywords.append(service.getKeyword())
-                    services.append(service)
+                    keywords.append(analysis.getKeyword())
+                    distinct.append(analysis)
 
             batchlink = ""
             batch = ar.getBatch()
@@ -200,10 +204,10 @@ class BatchBookView(BikaListingView):
         checkPermission = getSecurityManager().checkPermission
 
         # Insert columns for analyses
-        for service in services:
-            keyword = service.getKeyword()
+        for d_a in distinct:
+            keyword = d_a.getKeyword()
             self.columns[keyword] = {
-                'title': service.ShortTitle if service.ShortTitle else service.title,
+                'title': d_a.ShortTitle if d_a.ShortTitle else d_a.Title,
                 'sortable': True
             }
             self.review_states[0]['columns'].insert(
@@ -218,7 +222,7 @@ class BatchBookView(BikaListingView):
                         continue
 
                     edit = checkPermission(EditResults, analysis)
-                    calculation = analysis.getService().getCalculation()
+                    calculation = analysis.getCalculation()
                     if self.allow_edit and edit and not calculation:
                         items[i]['allow_edit'].append(keyword)
                         if not self.insert_submit_button:
@@ -230,7 +234,7 @@ class BatchBookView(BikaListingView):
 
                     if value or (edit and not calculation):
 
-                        unit = unitstr % service.getUnit()
+                        unit = unitstr % d_a.getUnit()
                         items[i]['after'][keyword] = unit
 
                 if keyword not in items[i]['class']:

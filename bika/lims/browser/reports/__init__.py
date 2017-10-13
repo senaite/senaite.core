@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import json
 
 from Products.CMFPlone.utils import _createObjectByType
@@ -13,6 +18,7 @@ from bika.lims.utils import to_utf8 as _c
 from bika.lims.interfaces import IProductivityReport
 from bika.lims.interfaces import IQualityControlReport
 from bika.lims.interfaces import IAdministrationReport
+from bika.lims.catalog.report_catalog import CATALOG_REPORT_LISTING
 from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
@@ -28,6 +34,11 @@ class ProductivityView(BrowserView):
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/productivity.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
 
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
@@ -50,6 +61,11 @@ class QualityControlView(BrowserView):
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/qualitycontrol.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
 
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
@@ -74,6 +90,11 @@ class AdministrationView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/administration.pt")
 
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
@@ -96,14 +117,15 @@ class ReportHistoryView(BikaListingView):
     def __init__(self, context, request):
         super(ReportHistoryView, self).__init__(context, request)
 
-        self.catalog = "bika_catalog"
-        # this will be reset in the call to filter on own reports
-        self.contentFilter = {'portal_type': 'Report',
-                              'sort_order': 'reverse'}
+        self.catalog = CATALOG_REPORT_LISTING
+
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = True
+        self.show_select_column = False
+        self.show_column_toggles = False
+        self.show_workflow_action_buttons = False
+        self.show_select_all_checkbox = False
         self.pagesize = 50
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
@@ -115,48 +137,45 @@ class ReportHistoryView(BikaListingView):
         self.review_states = []
 
     def __call__(self):
+        self.columns = {
+            'Title': {
+                'title': _('Title'),
+                'attr': 'Title',
+                'index': 'title', },
+            'file_size': {
+                'title': _("Size"),
+                'attr': 'getFileSize',
+                'sortable': False, },
+            'created': {
+                'title': _("Created"),
+                'attr': 'created',
+                'index': 'created', },
+            'creator': {
+                'title': _("By"),
+                'attr': 'getCreatorFullName',
+                'index': 'Creator', }, }
+        self.review_states = [
+            {'id': 'default',
+             'title': 'All',
+             'contentFilter': {},
+             'columns': ['Title',
+                         'file_size',
+                         'created',
+                         'creator']},
+        ]
+
+        self.contentFilter = {
+            'portal_type': 'Report',
+            'sort_order': 'reverse'}
+
         this_client = logged_in_client(self.context)
         if this_client:
-            self.contentFilter = {
-                'portal_type': 'Report',
-                'getClientUID': this_client.UID(),
-                'sort_order': 'reverse'}
-            self.columns = {
-                'Title': {'title': _('Title')},
-                'FileSize': {'title': _('Size')},
-                'Created': {'title': _('Created')},
-                'By': {'title': _('By')}, }
-            self.review_states = [
-                {'id': 'default',
-                 'title': 'All',
-                 'contentFilter': {},
-                 'columns': ['Title',
-                             'FileSize',
-                             'Created',
-                             'By']},
-            ]
+            self.contentFilter['getClientUID'] = this_client.UID()
         else:
-            self.contentFilter = {
-                'portal_type': 'Report',
-                'sort_order': 'reverse'}
-
-            self.columns = {
-                'Client': {'title': _('Client')},
-                'Title': {'title': _('Report Type')},
-                'FileSize': {'title': _('Size')},
-                'Created': {'title': _('Created')},
-                'By': {'title': _('By')},
-            }
-            self.review_states = [
-                {'id': 'default',
-                 'title': 'All',
-                 'contentFilter': {},
-                 'columns': ['Client',
-                             'Title',
-                             'FileSize',
-                             'Created',
-                             'By']},
-            ]
+            self.columns['client'] = {
+                'title': _('Client'),
+                'attr': 'getClientTitle',
+                'replace_url': 'getClientURL', }
 
         return super(ReportHistoryView, self).__call__()
 
@@ -168,32 +187,18 @@ class ReportHistoryView(BikaListingView):
         else:
             return name
 
+    def folderitem(self, obj, item, index):
+        item = BikaListingView.folderitem(self, obj, item, index)
+        # https://github.com/collective/uwosh.pfg.d2c/issues/20
+        # https://github.com/collective/uwosh.pfg.d2c/pull/21
+        item['replace']['Title'] = \
+             "<a href='%s/ReportFile'>%s</a>" % \
+             (item['url'], item['Title'])
+        item['replace']['created'] = self.ulocalized_time(item['created'])
+        return item
+
     def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        props = self.context.portal_properties.site_properties
-        for x in range(len(items)):
-            if 'obj' not in items[x]:
-                continue
-            obj = items[x]['obj']
-            obj_url = obj.absolute_url()
-            file = obj.getReportFile()
-            icon = file.icon
-
-            items[x]['Client'] = ''
-            client = obj.getClient()
-            if client:
-                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                                                (client.absolute_url(),
-                                                 client.Title())
-            items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
-            items[x]['Created'] = self.ulocalized_time(obj.created())
-            items[x]['By'] = self.user_fullname(obj.Creator())
-
-            items[x]['replace']['Title'] = \
-                "<a href='%s/at_download/ReportFile'>%s</a>" % \
-                (obj_url, items[x]['Title'])
-        return items
-
+        return BikaListingView.folderitems(self, classic=False)
 
 class SubmitForm(BrowserView):
     """ Redirect to specific report
@@ -202,6 +207,11 @@ class SubmitForm(BrowserView):
     frame_template = ViewPageTemplateFile("templates/report_frame.pt")
     # default and errors use this template:
     template = ViewPageTemplateFile("templates/productivity.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
 
     def __call__(self):
         """Create and render selected report
@@ -325,6 +335,12 @@ class SubmitForm(BrowserView):
 
 
 class ReferenceAnalysisQC_Samples(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Supplier from request
@@ -349,24 +365,29 @@ class ReferenceAnalysisQC_Samples(BrowserView):
 
 
 class ReferenceAnalysisQC_Services(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Sample from request
-        sample = self.request.form.get('ReferenceSampleUID', '')
-        sample = self.reference_catalog.lookupObject(sample)
-        if sample:
+        sample_uid = self.request.form.get('SampleUID', '')
+        uc = getToolByName(self.context, 'uid_catalog')
+        brains = uc(UID=sample_uid)
+        if brains:
+            sample = brains[0].getObject()
             # get ReferenceSamples for this supplier
-            analyses = self.bika_analysis_catalog(portal_type='ReferenceAnalysis',
-                                                  path={"query": "/".join(
-                                                      sample.getPhysicalPath()),
-                                                        "level": 0})
+            analyses = self.bika_analysis_catalog(
+                portal_type='ReferenceAnalysis',
+                path={"query": "/".join(sample.getPhysicalPath()), "level": 0})
             ret = {}
             for analysis in analyses:
-                service = analysis.getObject().getService()
-                if service.UID() in ret:
-                    ret[service.UID()]['analyses'].append(analysis.UID)
+                if analysis.getServiceUID in ret:
+                    ret[analysis.getServiceUID]['analyses'].append(analysis.UID)
                 else:
-                    ret[service.UID()] = {'title': service.Title(),
-                                          'analyses': [analysis.UID, ]}
+                    ret[analysis.getServiceUID] = {
+                        'title': analysis.Title,
+                        'analyses': [analysis.UID]}
             ret = [[k, v['title'], v['analyses']] for k, v in ret.items()]
             return json.dumps(ret)

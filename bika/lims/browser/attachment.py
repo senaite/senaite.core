@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -23,11 +28,5 @@ class ajaxDeleteAnalysisAttachment():
         if not attachment:
             return "%s does not exist" % attachment_uid
         attachment = attachment[0].getObject()
-        for analysis in attachment.getBackReferences("AnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
-        for analysis in attachment.getBackReferences("DuplicateAnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
         attachment.aq_parent.manage_delObjects(ids=[attachment.getId(),])
         return "success"

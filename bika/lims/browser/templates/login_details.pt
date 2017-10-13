@@ -1,136 +1,303 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:tal="http://xml.zope.org/namespaces/tal"
-	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	metal:use-macro="here/main_template/macros/master"
-	i18n:domain="bika">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
 
 <body>
 
 <metal:title fill-slot="content-title">
-	<h1 i18n:translate="">Login details</h1>
+    <h1 i18n:translate="">Login details</h1>
 </metal:title>
 
-<metal:description fill-slot="content-description">
-	<p i18n:translate="" tal:condition="context/hasUser">
-		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
-		can log into the LIMS by using
-		<strong tal:content="here/getUsername" i18n:name="contact_username">username</strong>
-		as username. Contacts must change their own
-		passwords. If a password is forgotten a contact
-		can request a new password from the login form.
-	</p>
-	<div class="portalMessage" i18n:translate=""
-		tal:condition="not:context/hasUser">
-		No user exists for
-		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
-		and he/she will not be able to log in.
-		Fill in the form below to create one for him/her.
-	</div>
-</metal:description>
-
-<metal:content fill-slot="content-core" tal:define="
-	portal context/@@plone_portal_state/portal;
-	tabindex view/tabindex;">
-
-	<form id="contact_edit_form"
-		method="post"
-		tal:condition="not:here/hasUser">
-
-		<span tal:replace="structure context/@@authenticator/authenticator"/>
-		<input type="hidden" name="submitted" value="1"/>
-		<input type="hidden"
-			name="fullname"
-			value="fullname"
-			tal:attributes="value here/getFullname"/>
-
-		<fieldset>
-
-			<div class="field">
-				<label i18n:translate="">User Name</label>
-				<span class="fieldRequired" title="Required"
-					i18n:attributes="title"
-					i18n:translate="">(Required)</span>
-				<div i18n:translate="">
-					Enter a user name, usually something like
-					'jsmith'. No spaces or special characters.
-					Usernames and passwords are case sensitive,
-					make sure the caps lock key is not enabled.
-					This is the name used to log in.
-				</div>
-				<input type="text" name="username" size="30"
-					tal:attributes="value python:view.request.get('username', '')"/>
-			</div>
+<metal:content fill-slot="content-core"
+               tal:define="portal context/@@plone_portal_state/portal;
+                           has_user context/hasUser;
+                           tabindex view/tabindex;">
 
 
-<!--			<tal:password condition="not:context/portal_properties/site_properties/validate_email|nothing">-->
-			<div class="field"
-				tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
-					<label i18n:translate="">Password</label>
-					<span class="fieldRequired" title="Required"
-						i18n:attributes="title"
-						i18n:translate="">(Required)</span>
-					<div class="formHelp" i18n:translate="">
-						Minimum 5 characters.
-					</div>
-					<input type="password" name="password" size="10"/>
-				</div>
+    <!-- Contact has a linked User -->
+    <tal:withuser condition="has_user"
+                  define="userprops    view/get_user_properties;
+                          contactprops view/get_contact_properties;
+                          active       context/isActive;
+                          inactive     not: active">
 
-			<div class="field"
-				tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
-					<label i18n:translate="">Confirm password</label>
-					<span class="fieldRequired" title="Required"
-						i18n:attributes="title"
-						i18n:translate="">(Required)</span>
-					<div class="formHelp" i18n:translate="">
-						Re-enter the password. Make sure the passwords are identical.
-					</div>
-					<input type="password" name="confirm" size="10"/>
-			</div>
-<!--			</tal:password>-->
+        <p i18n:translate="">
+            <span tal:content="contactprops/fullname"
+                    i18n:name="contact_fullname">
+                Pete Smith
+            </span>
+            can log into the LIMS by using
+            <strong tal:content="contactprops/username"
+                    i18n:name="contact_username">
+                username
+            </strong>
+            as username. Contacts must change their own passwords.
+            If a password is forgotten a contact can request a new password from the login form.
+        </p>
 
-			<div class="field">
-                <label i18n:translate="">Email</label>
-				<span class="fieldRequired" title="Required"
-					i18n:attributes="title"
-					i18n:translate="">(Required)</span>
-				<div class="formHelp" i18n:translate="">
-					Enter an email address. This is necessary in case the password
-					is lost. We respect your privacy, and will not give the address
-					away to any third parties or expose it anywhere.
-				</div>
-				<input type="text" name="email" size="30"
-					tal:attributes="value python: context.getEmailAddress() and context.getEmailAddress() or view.request.get('email', '')"/>
-			</div>
 
-            <div class="field"
-                 tal:condition="python: view.context.portal_type == 'LabContact'">
-                <label i18n:translate="label_add_to_groups">Add to the following groups:</label>
-                <span class="fieldRequired" i18n:translate="">(Required)</span>
-                <br/>
-                <select name="groups" size="10" multiple="1">
-                    <option value='LabManagers'>LabManagers</option>
-                    <option value='LabClerks'>LabClerks</option>
-                    <option value='Analysts'>Analysts</option>
-                    <option value='Verifiers'>Verifiers</option>
-                    <option value='Samplers'>Samplers</option>
-                    <option value='Preservers'>Preservers</option>
-                    <option value='Publishers'>Publishers</option>
-                    <option value='Reviewers'>Reviewers</option>
-                </select>
-            </div>
+        <fieldset>
+            <legend i18n:translate="">Manage linked User</legend>
 
-			<input class="context allowMultiSubmit"
-				type="submit"
-				tabindex=""
-				name="save_button"
-				value="Save"
-				i18n:attributes="value"
-				tal:attributes="tabindex tabindex/next;" />
+            <form id="contact_edit_form"
+                  method="post">
 
-		</fieldset>
+                <span tal:replace="structure context/@@authenticator/authenticator"/>
+                <input type="hidden" name="submitted" value="1"/>
 
-	</form>
+                <table class="plain">
+                    <tbody>
+                        <tr>
+                            <td rowspan="5">
+                                <img tal:replace="structure userprops/portrait"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span i18n:translate="">Full Name</span>
+                            </td>
+                            <td>
+                                <span tal:replace="userprops/fullname"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span i18n:translate="">User Name</span>
+                            </td>
+                            <td>
+                                <tal:labcontact condition="view/is_labcontact">
+                                <a href="#"
+                                   tal:attributes="href userprops/edit_url">
+                                    <span tal:replace="userprops/id">labuser</span>
+                                </a>
+                                </tal:labcontact>
+                                <tal:contact condition="view/is_contact">
+                                    <span tal:replace="userprops/id">customeruser</span>
+                                </tal:contact>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span i18n:translate="">Email</span>
+                            </td>
+                            <td>
+                                <a href="#"
+                                   tal:attributes="href string:mailto:${userprops/email}"
+                                   tal:content="userprops/email">labcontact@bikalims.com</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span i18n:translate="">Last Login Time</span>
+                            </td>
+                            <td>
+                                <span tal:replace="python:context.toLocalizedTime(userprops['last_login_time'], long_format=1)"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Form Controls -->
+                <div class="formControls" tal:condition="active">
+                    <input class="context"
+                           style="color:red;"
+                           type="submit"
+                           tabindex=""
+                           name="delete_button"
+                           value="Unlink and delete User"
+                           i18n:attributes="value"
+                           tal:attributes="tabindex tabindex/next;" />
+                    <input class="context"
+                           type="submit"
+                           tabindex=""
+                           name="unlink_button"
+                           value="Unlink User"
+                           i18n:attributes="value"
+                           tal:attributes="tabindex tabindex/next;" />
+                </div>
+                <p tal:condition="inactive">
+                    <img src="++resource++bika.lims.images/exclamation2.png" title="Disabled Contact">
+                    <span i18n:translate="" class="discreet">
+                        Contact is deactivated. User cannot be unlinked.
+                    </span>
+                </p>
+            </form>
+        </fieldset>
+    </tal:withuser>
+    <!-- /Contact has a linked User -->
+
+    <!-- Contact has **no** linked User -->
+    <tal:withoutuser condition="not:has_user"
+                     define="contactprops view/get_contact_properties;">
+
+        <p i18n:translate="">
+            No user exists for
+            <span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
+            and he/she will not be able to log in. Fill in the form below to create one for him/her.
+        </p>
+
+        <fieldset
+            tal:define="Batch python:modules['plone.batching'].Batch;
+                        b_size python:5;
+                        b_start python:0 if view.newSearch else request.get('b_start', 0);
+                        batch python:Batch(view.linkable_users(), b_size, int(b_start), orphan=1) or None;
+                        batchformkeys python:['_authenticator'];">
+
+            <legend i18n:translate="">Link an existing User</legend>
+            <p tal:condition="view/is_contact"
+               i18n:translate="">
+                Only existing users in "Client" group are displayed.
+            </p>
+            <form id="user_search_form"
+                  method="post">
+
+                <input tal:replace="structure context/@@authenticator/authenticator"/>
+                <input type="hidden" name="submitted" value="1"/>
+
+                <table class="listing">
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="nosort">
+                                <input class="quickSearch" type="text" name="searchstring" value="" tal:attributes="value view/searchstring">
+                                <input type="submit" class="searchButton"
+                                       name="search_button" value="Search">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="nosort"></th>
+                            <th i18n:translate="">Full Name</th>
+                            <th i18n:translate="">Email</th>
+                            <th i18n:translate="">User Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr tal:repeat="user batch">
+                            <td>
+                                <input type="radio"
+                                       name="userid"
+                                       value=""
+                                       tal:attributes="value user/userid">
+                            </td>
+                            <td tal:content="user/fullname">Fullname</td>
+                            <td>
+                                <a href="#"
+                                   tal:attributes="href string:mailto:${user/email}"
+                                   tal:content="user/email"></a>
+                                </td>
+                                <td>
+                                    <span tal:replace="user/userid">customeruser</span>
+                                </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="discreet">
+                    <tal:batchnavigation
+                        define="batchnavigation nocall:context/@@batchnavigation"
+                        replace="structure python:batchnavigation(batch, batchformkeys)" />
+                </div>
+
+                <!-- Form Controls -->
+                <div class="formControls">
+                    <input class="context allowMultiSubmit"
+                           type="submit"
+                           tabindex=""
+                           name="link_button"
+                           value="Link User"
+                           i18n:attributes="value"
+                           tal:attributes="tabindex tabindex/next;" />
+                </div>
+            </form>
+        </fieldset>
+
+        <fieldset>
+            <legend i18n:translate="">Create a new User</legend>
+
+            <form id="contact_edit_form"
+                  method="post">
+
+                <span tal:replace="structure context/@@authenticator/authenticator"/>
+                <input type="hidden" name="submitted" value="1"/>
+                <input type="hidden" name="fullname" value="fullname" tal:attributes="value here/getFullname"/>
+
+
+                <div class="field">
+                    <label i18n:translate="">User Name</label>
+                    <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
+                    <div i18n:translate="">
+                        Enter a user name, usually something like
+                        'jsmith'. No spaces or special characters.
+                        Usernames and passwords are case sensitive,
+                        make sure the caps lock key is not enabled.
+                        This is the name used to log in.
+                    </div>
+                    <input type="text" name="username" size="30" tal:attributes="value python:view.request.get('username', '')"/>
+                </div>
+
+
+                <!--<tal:password condition="not:context/portal_properties/site_properties/validate_email|nothing">-->
+                <div class="field" tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
+                    <label i18n:translate="">Password</label>
+                    <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
+                    <div class="formHelp" i18n:translate="">
+                        Minimum 5 characters.
+                    </div>
+                    <input type="password" name="password" size="10"/>
+                </div>
+
+                <div class="field" tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
+                    <label i18n:translate="">Confirm password</label>
+                    <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
+                    <div class="formHelp" i18n:translate="">
+                        Re-enter the password. Make sure the passwords are identical.
+                    </div>
+                    <input type="password" name="confirm" size="10"/>
+                </div>
+                <!--			</tal:password>-->
+
+                <div class="field">
+                    <label i18n:translate="">Email</label>
+                    <span class="fieldRequired" title="Required" i18n:attributes="title" i18n:translate="">(Required)</span>
+                    <div class="formHelp" i18n:translate="">
+                        Enter an email address. This is necessary in case the password
+                        is lost. We respect your privacy, and will not give the address
+                        away to any third parties or expose it anywhere.
+                    </div>
+                    <input type="text" name="email" size="30" tal:attributes="value python: context.getEmailAddress() and context.getEmailAddress() or view.request.get('email', '')"/> </div>
+
+                    <div class="field"
+                         tal:condition="view/is_labcontact">
+                        <label i18n:translate="label_add_to_groups">Add to the following groups:</label>
+                        <span class="fieldRequired" i18n:translate="">(Required)</span>
+                        <br/>
+                        <select name="groups" size="10" multiple="1">
+                            <option value='LabManagers'>LabManagers</option>
+                            <option value='LabClerks'>LabClerks</option>
+                            <option value='Analysts'>Analysts</option>
+                            <option value='Verifiers'>Verifiers</option>
+                            <option value='Samplers'>Samplers</option>
+                            <option value='Preservers'>Preservers</option>
+                            <option value='Publishers'>Publishers</option>
+                            <option value='Reviewers'>Reviewers</option>
+                        </select>
+                    </div>
+
+                    <input class="context allowMultiSubmit"
+                           type="submit"
+                           tabindex=""
+                           name="save_button"
+                           value="Save"
+                           i18n:attributes="value"
+                           tal:attributes="tabindex tabindex/next;" />
+
+            </form>
+        </fieldset>
+    </tal:withoutuser>
+    <!-- /Contact has **no** linked User -->
 
 </metal:content>
 

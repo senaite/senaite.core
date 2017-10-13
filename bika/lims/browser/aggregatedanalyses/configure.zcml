@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="bika">
+
+    <browser:page
+      for="*"
+      name="aggregatedanalyses"
+      class="bika.lims.browser.aggregatedanalyses.AggregatedAnalysesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="aggregatedanalyses_workflow_action"
+      class="bika.lims.browser.aggregatedanalyses.AggregatedAnalysesWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+</configure>

@@ -22,13 +22,14 @@ function CommonUtils() {
             Dependants: function(service_uid){
                 var request_data = {
                     catalog_name: "bika_setup_catalog",
-                    UID: service_uid
+                    UID: service_uid,
+                    include_methods: 'getServiceDependantsUIDs',
                 };
                 var deps = {};
                 $.ajaxSetup({async:false});
                 window.bika.lims.jsonapi_read(request_data, function(data){
                     if (data.objects != null && data.objects.length > 0) {
-                        deps = data.objects[0].ServiceDependants;
+                        deps = data.objects[0].getServiceDependantsUIDs;
                     } else {
                         deps = [];
                     }
@@ -39,13 +40,14 @@ function CommonUtils() {
             Dependencies: function(service_uid){
                 var request_data = {
                     catalog_name: "bika_setup_catalog",
-                    UID: service_uid
+                    UID: service_uid,
+                    include_methods: 'getServiceDependenciesUIDs',
                 };
                 var deps = {};
                 $.ajaxSetup({async:false});
                 window.bika.lims.jsonapi_read(request_data, function(data){
                     if (data.objects != null && data.objects.length > 0) {
-                        deps = data.objects[0].ServiceDependencies;
+                        deps = data.objects[0].getServiceDependenciesUIDs;
                     } else {
                         deps = [];
                     }
@@ -76,7 +78,15 @@ function CommonUtils() {
                         "_authenticator": $("input[name='_authenticator']").val()}
             });
         };
-
+        window.bika.lims.warning = function(e) {
+            var message = "(" + window.location.href + "): " + e;
+            $.ajax({
+                type: "POST",
+                url: "js_warn",
+                data: {"message":message,
+                        "_authenticator": $("input[name='_authenticator']").val()}
+            });
+        };
         window.bika.lims.error = function(e) {
             var message = "(" + window.location.href + "): " + e;
             $.ajax({
@@ -112,6 +122,14 @@ function CommonUtils() {
                 jsonapi_read_handler(window.bika.lims.jsonapi_cache[jsonapi_cacheKey]);
             }
         };
+
+        // Priority Selection Widget
+        $('.ArchetypesPrioritySelectionWidget select').change(function(e){
+            var val = $(this).find('option:selected').val();
+            $(this).attr('value', val);
+        });
+        $('.ArchetypesPrioritySelectionWidget select').change();
+
     }
     that.svgToImage = function(svg) {
         var url = 'data:image/svg+xml;base64,' + btoa(svg);

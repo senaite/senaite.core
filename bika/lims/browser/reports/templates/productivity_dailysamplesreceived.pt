@@ -62,7 +62,7 @@ Available attributes:
             <td tal:content="python:line['AnalysisTitle']"></td>
             <td tal:content="python:line['SampleID']"></td>
             <td tal:content="python:line['SampleType']"></td>
-            <td tal:content="python:line['SampleDateReceived']"></td>
+            <td tal:content="python:line['DateReceived']"></td>
         </tr>
     </metal:block>
     </tbody>

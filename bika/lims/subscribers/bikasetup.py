@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore import permissions
 from bika.lims.permissions import ManageWorksheets
@@ -33,6 +38,7 @@ def BikaSetupModifiedEventHandler(instance, event):
     mp(AddClient, roles, 1)
     mp(EditClient, roles, 1)
     # Set permissions at object level
+    # TODO-performance: We are allways reindexing all clients
     for obj in portal.clients.objectValues():
         mp = obj.manage_permission
         mp(AddClient, roles, 0)

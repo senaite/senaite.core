@@ -28,13 +28,25 @@
 
         <fieldset id="fieldset-instrumentimport">
             <legend id="fieldsetlegend-instrumentimport" i18n:translate="">Instrument Import</legend>
-            <select name="exim" id="exim"
-                tal:define="importers view/getDataInterfaces">
-                <tal:options repeat="option importers">
+            <br>
+            <label for="instrument">Instrument</label><br>
+            <select name="instrument" id="instrument_select"
+                tal:define="instruments view/getInstruments">
+                <tal:options repeat="option instruments">
                     <option
                         tal:attributes="value python:option;"
-                        tal:content="python:importers.getValue(option)"/>
+                        tal:content="python:instruments.getValue(option)"/>
                 </tal:options>
+            </select>
+            <p i18n:translate="" style='color: #3F3F3F;font-size: 0.87em;'>
+                If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate),
+                it will use the record's identifier to find matches with Reference Sample IDs.
+                If a Reference Sample ID is found, the system will automatically create a
+                Calibration Test (Reference Analysis) and will link it to the instrument selected above.<br/>
+                If no instrument selected, no Calibration Test will be created for orphan IDs.
+            </p>
+            <label for="instrument">Import Interface</label><br>
+            <select name="exim" id="exim">
             </select>
             <div id="import_form"/>
             <div id="intermediate" style="display:none"/>
@@ -73,7 +85,14 @@
             </div>
             <input type="hidden" name="projectname" tal:attributes="value view/getProjectName"/>
         </fieldset>
-
+        <fieldset id="fieldset-autoimport">
+            <legend id="fieldsetlegend-autoimport" i18n:translate="">Auto Import Instrument Results</legend>
+            <br>
+            <label>Auto Import</label><br>
+            <a href="autoimportlogs">
+               <input type="button" value="Show Last Results" />
+            </a>
+        </fieldset>
     </form>
 
 </metal:content-core>

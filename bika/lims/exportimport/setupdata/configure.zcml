@@ -9,12 +9,6 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
-      name="AR_Priorities"
-      factory="bika.lims.exportimport.setupdata.AR_Priorities"
-      provides="bika.lims.interfaces.ISetupDataImporter"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
-
-    <adapter
       name="Lab_Information"
       factory="bika.lims.exportimport.setupdata.Lab_Information"
       provides="bika.lims.interfaces.ISetupDataImporter"

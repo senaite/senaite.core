@@ -22,7 +22,16 @@
     items           python:[item1, item2];">
 <table cellpadding="0" cellspacing="0" class="stickers-row">
     <tr>
+        <td class="sticker-horizontal-separator"></td>
+        <td class="sticker-vertical-separator"></td>
+        <td class="sticker-horizontal-separator"></td>
+        <td class="sticker-horizontal-separator"></td>
+        <td class="sticker-vertical-separator"></td>
+        <td class="sticker-horizontal-separator"></td>
+    </tr>
+    <tr>
 <tal:sticker_loop repeat="item items">
+<td class="sticker-horizontal-separator"></td>
 <td class="sticker-cell">
 <tal:sticker define="
     ar                python:item[0];
@@ -39,8 +48,8 @@
     preservation      python:part.getPreservation() and part.getPreservation().Title() or '';
     container         python:part.getContainer() and part.getContainer().Title() or '';
     date_sampled      python:sample.getDateSampled() and sample.getDateSampled().Date();
-    analyses          python:part.getBackReferences('AnalysisSamplePartition');
-    field_analyses    python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+    analyses          python:part.getAnalyses();
+    field_analyses    python:[analysis for analysis in analyses if analysis.getPointOfCapture()=='field'];
     show_partitions   python:context.bika_setup.getShowPartitions();
     smart_id          python:part.getId() if show_partitions else sample.getId();
     hazardous         python:sample.getSampleType().getHazardous();">
@@ -58,10 +67,7 @@
     <div class="analysisrequest-info">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="sample-type" tal:content="client_sample_id">
-                    <!--span tal:content="sample_type"></span><br/>
-                    <span tal:content="sampling_date"></span--->
-                </td>
+                <td class="client-sample-id" tal:content="python:'%s: %s' % ('CSID', client_sample_id if client_sample_id else '---')"/>
                 <td style="text-align:right;padding-right:2mm;">
                     <img tal:condition="hazardous | nothing"
                          tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
@@ -71,7 +77,16 @@
     </div>
 </tal:sticker>
 </td>
+<td class="sticker-horizontal-separator"></td>
 </tal:sticker_loop>
+</tr>
+<tr>
+    <td class="sticker-horizontal-separator"></td>
+    <td class="sticker-vertical-separator"></td>
+    <td class="sticker-horizontal-separator"></td>
+    <td class="sticker-horizontal-separator"></td>
+    <td class="sticker-vertical-separator"></td>
+    <td class="sticker-horizontal-separator"></td>
 </tr>
 </table>
 </tal:stickers>

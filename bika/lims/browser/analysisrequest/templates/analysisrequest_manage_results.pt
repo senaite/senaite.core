@@ -16,8 +16,6 @@
     <h1>
     <img tal:condition="view/icon | nothing"
          src="" tal:attributes="src view/icon"/>
-    <img tal:condition="view/getPriorityIcon | nothing"
-         src="" tal:attributes="src view/getPriorityIcon"/>
     <span class="documentFirstHeading" tal:content="context/title_or_id"></span>
 	<img tal:condition="python:context.getSample().getSampleType().getHazardous()"
 		title="Hazardous"
@@ -69,6 +67,20 @@
 		<p style="margin-top:2em;"/>
 		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
 	</tal:remarks>
+
+    <tal:rejection define="
+        field python:context.Schema()['RejectionReasons'];
+        widget python:field.widget;
+        errors python:{};">
+        <table style="display: none;">
+            <td>
+                <span tal:replace="python:widget.label"/>
+            </td>
+            <td>
+                <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
+            </td>
+        </table>
+    </tal:rejection>
 
 </metal:content-core>
 

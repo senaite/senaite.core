@@ -569,4 +569,60 @@
          handler="bika.lims.upgrade.to3111.upgrade"
          sortkey="1"
          profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.2.0"
+         source="320"
+         destination="3200"
+         handler="bika.lims.upgrade.to320.upgrade"
+         profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.2.0"
+         source="3111"
+         destination="3200"
+         handler="bika.lims.upgrade.to320.upgrade"
+         profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.2.0.1704"
+         source="3200"
+         destination="3.2.0.1704"
+         handler="bika.lims.upgrade.v3_2_0_1704.upgrade"
+         profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.2.0.1705"
+         source="3.2.0.1704"
+         destination="3.2.0.1705"
+         handler="bika.lims.upgrade.v3_2_0_1705.upgrade"
+         profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.2.0.1706"
+         source="3.2.0.1705"
+         destination="3.2.0.1706"
+         handler="bika.lims.upgrade.v3_2_0_1706.upgrade"
+         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Upgrade to Bika LIMS 3.2.0.1707"
+        source="3.2.0.1706"
+        destination="3.2.0.1707"
+        handler="bika.lims.upgrade.v3_2_0_1707.upgrade"
+        profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+        title="Upgrade to Bika LIMS 3.2.0.1708"
+        source="3.2.0.1707"
+        destination="3.2.0.1708"
+        handler="bika.lims.upgrade.v3_2_0_1708.upgrade"
+        profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+        title="Upgrade to Bika LIMS 3.2.0.1709"
+        source="3.2.0.1708"
+        destination="3.2.0.1709"
+        handler="bika.lims.upgrade.v3_2_0_1709.upgrade"
+        profile="bika.lims:default"/>
 </configure>

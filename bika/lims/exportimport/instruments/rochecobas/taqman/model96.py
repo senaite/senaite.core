@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ Roche Cobas Taqman 96
 """
 import csv
@@ -13,12 +19,31 @@ import traceback
 
 title = "Roche Cobas - Taqman - 96"
 
+# see: https://jira.bikalabs.com/browse/HEALTH-568
+NUM_FIELDS = ["Result", "CTM Elbow CH1", "CTM Elbow CH2", "CTM Elbow CH3",
+              "CTM Elbow CH4", "CTM RFI CH1", "CTM RFI CH2",
+              "CTM RFI CH3", "CTM RFI CH4", "CTM AFI CH1", "CTM AFI CH2",
+              "CTM AFI CH3", "CTM AFI CH4", "CTM Calib Coeff a",
+              "CTM Calib Coeff b", "CTM Calib Coeff c", "CTM Calib Coeff d",
+              "CA Sample Value", "QS Copy #", "CA Target1", "CA Target2",
+              "CA Target3", "CA Target4", "CA Target5", "CA Target6",
+              "CA QS1", "CA QS2", "CA QS3", "CA QS4"]
+
 
 class RocheCobasTaqmanRSFParser(InstrumentResultsFileParser):
     """ Parser for Roche Corbase Taqman 96
     """
     def __init__(self, rsf):
         InstrumentResultsFileParser.__init__(self, rsf, 'CSV')
+
+    def parse_field(self, key, value):
+        if value in ["-", ""]:
+            return None
+        if key in NUM_FIELDS:
+            try:
+                return float(value)
+            except ValueError:
+                return value
 
     def parse(self):
         reader = csv.DictReader(self.getInputFile(), delimiter=',')
@@ -46,7 +71,10 @@ class RocheCobasTaqmanRSFParser(InstrumentResultsFileParser):
             if result == "Target Not Detected":
                 remarks = "".join([result, " on Order Number,", resid])
 
-            rawdict = row
+            rawdict = {}
+            for k, v in row.iteritems():
+                rawdict[k] = self.parse_field(k, v)
+
             rawdict['DefaultResult'] = 'Result'
             rawdict['Remarks'] = remarks
             rawdict['DateTime'] = dt
@@ -74,7 +102,7 @@ def Import(context, request):
     override = request.form['rochecobas_taqman_model96_override']
     sample = request.form.get('rochecobas_taqman_model96_sample',
                               'requestid')
-    instrument = request.form.get('rochecobas_taqman_model96_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []
@@ -105,9 +133,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

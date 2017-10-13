@@ -1,19 +1,25 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import isActive
-from operator import itemgetter
 from bika.lims.browser.analyses import AnalysesView
+from datetime import datetime
+from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.ATContentTypes.utils import DT2dt
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getMultiAdapter
 from zope.interface import implements
 import json, plone
-from operator import itemgetter
 
 class ViewView(BrowserView):
     """ Reference Sample View
@@ -75,7 +81,7 @@ class ReferenceAnalysesViewView(BrowserView):
         return self._analysesview
 
     def getReferenceSampleId(self):
-        return self.context.id;
+        return self.context.id
 
     def get_analyses_json(self):
         return self.get_analyses_view().get_analyses_json()
@@ -87,19 +93,13 @@ class ReferenceAnalysesView(AnalysesView):
 
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
-        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'portal_type':'ReferenceAnalysis',
                               'path': {'query':"/".join(self.context.getPhysicalPath()),
                                        'level':0}}
-        self.show_select_row = False
-        self.show_sort_column = False
-        self.show_select_column = False
-        self.allow_edit = False
-
         self.columns = {
             'id': {'title': _('ID'), 'toggle':False},
             'getReferenceAnalysesGroupID': {'title': _('QC Sample ID'), 'toggle': True},
-            'Category': {'title': _('Category'), 'toggle':True},
+            'Category': {'title': _('Category'), 'toggle': True},
             'Service': {'title': _('Service'), 'toggle':True},
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
             'Method': {
@@ -111,7 +111,9 @@ class ReferenceAnalysesView(AnalysesView):
                 'sortable': False,
                 'toggle': True},
             'Result': {'title': _('Result'), 'toggle':True},
-            'Captured': {'title': _('Captured'), 'toggle':True},
+            'CaptureDate': {'title': _('Captured'),
+                'index': 'getResultCaptureDate',
+                'toggle':True},
             'Uncertainty': {'title': _('+-'), 'toggle':True},
             'DueDate': {'title': _('Due Date'),
                         'index': 'getDueDate',
@@ -132,7 +134,7 @@ class ReferenceAnalysesView(AnalysesView):
                         'Method',
                         'Instrument',
                         'Result',
-                        'Captured',
+                        'CaptureDate',
                         'Uncertainty',
                         'DueDate',
                         'state_title'],
@@ -140,61 +142,82 @@ class ReferenceAnalysesView(AnalysesView):
         ]
         self.anjson = {}
 
-    def folderitems(self):
-        items = super(ReferenceAnalysesView, self).folderitems()
-        items.sort(key=itemgetter('CaptureDate'), reverse=True)
-        outitems = []
-        for x in range(len(items)):
-            if not items[x].has_key('obj') or items[x]['Result'] == '':
-                continue
-            obj = items[x]['obj']
-            service = obj.getService()
-            items[x]['id'] = obj.getId()
-            items[x]['Category'] = service.getCategoryTitle()
-            items[x]['Service'] = service.Title()
-            items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
-            brefs = obj.getBackReferences("WorksheetAnalysis")
-            items[x]['Worksheet'] = brefs and brefs[0].Title() or ''
+    def isItemAllowed(self, obj):
+        """
+        :obj: it is a brain
+        """
+        allowed = super(ReferenceAnalysesView, self).isItemAllowed(obj)
+        return allowed if not allowed else obj.getResult != ''
 
-            # Create json
-            qcid = obj.aq_parent.id;
-            serviceref = "%s (%s)" % (items[x]['Service'], items[x]['Keyword'])
-            trows = self.anjson.get(serviceref, {});
-            anrows = trows.get(qcid, []);
-            anid = '%s.%s' % (items[x]['getReferenceAnalysesGroupID'],
-                              items[x]['id'])
-            rr = obj.aq_parent.getResultsRangeDict()
-            uid = service.UID()
-            if uid in rr:
-                specs = rr[uid];
-                try:
-                    smin  = float(specs.get('min', 0))
-                    smax = float(specs.get('max', 0))
-                    error  = float(specs.get('error', 0))
-                    target = float(specs.get('result', 0))
-                    result = float(items[x]['Result'])
-                    error_amount = ((target / 100) * error) if target > 0 else 0
-                    upper  = smax + error_amount
-                    lower   = smin - error_amount
+    def folderitem(self, obj, item, index):
+        """
+        :obj: it is a brain
+        """
+        item = super(ReferenceAnalysesView, self).folderitem(obj, item, index)
+        if not item:
+            return None
+        item['Category'] = obj.getCategoryTitle
+        wss = self.rc.getBackReferences(
+            obj.UID,
+            relationship="WorksheetAnalysis")
+        if not wss:
+            logger.warn(
+                'No Worksheet found for ReferenceAnalysis {}'
+                .format(obj.getId))
+        elif wss and len(wss) == 1:
+            # TODO-performance: We are getting the object here...
+            ws = wss[0].getSourceObject()
+            item['Worksheet'] = ws.Title()
+            anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
+            item['replace']['Worksheet'] = anchor
+        else:
+            logger.warn(
+                'More than one Worksheet found for ReferenceAnalysis {}'
+                .format(obj.getId))
+        service_uid = obj.getServiceUID
+        self.addToJSON(obj, service_uid, item)
+        return item
 
-                    anrow = { 'date': items[x]['CaptureDate'],
-                              'min': smin,
-                              'max': smax,
-                              'target': target,
-                              'error': error,
-                              'erroramount': error_amount,
-                              'upper': upper,
-                              'lower': lower,
-                              'result': result,
-                              'unit': items[x]['Unit'],
-                              'id': items[x]['uid'] }
-                    anrows.append(anrow);
-                    trows[qcid] = anrows;
-                    self.anjson[serviceref] = trows
-                except:
-                    pass
-            outitems.append(items[x])
-        return outitems
+    # TODO-catalog: memoize here?
+    def addToJSON(self, analysis, service_uid, item):
+        """ Adds an analysis item to the self.anjson dict that will be used
+            after the page is rendered to generate a QC Chart
+        """
+        parent = analysis.aq_parent
+        qcid = parent.id
+        serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
+        trows = self.anjson.get(serviceref, {})
+        anrows = trows.get(qcid, [])
+        anid = '%s.%s' % (item['getReferenceAnalysesGroupID'], item['id'])
+        rr = parent.getResultsRangeDict()
+        if service_uid in rr:
+            specs = rr.get(service_uid, None)
+            try:
+                smin = float(specs.get('min', 0))
+                smax = float(specs.get('max', 0))
+                error = float(specs.get('error', 0))
+                target = float(specs.get('result', 0))
+                result = float(item['Result'])
+                error_amount = ((target / 100) * error) if target > 0 else 0
+                upper = smax + error_amount
+                lower = smin - error_amount
+
+                anrow = {'date': item['CaptureDate'],
+                         'min': smin,
+                         'max': smax,
+                         'target': target,
+                         'error': error,
+                         'erroramount': error_amount,
+                         'upper': upper,
+                         'lower': lower,
+                         'result': result,
+                         'unit': item['Unit'],
+                         'id': item['uid']}
+                anrows.append(anrow)
+                trows[qcid] = anrows
+                self.anjson[serviceref] = trows
+            except:
+                pass
 
     def get_analyses_json(self):
         return json.dumps(self.anjson)
@@ -283,18 +306,13 @@ class ReferenceSamplesView(BikaListingView):
         portal = getToolByName(context, 'portal_url').getPortalObject()
         self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
         self.title = self.context.translate(_("Reference Samples"))
-        self.description = self.context.translate(_("All reference samples in the system are displayed here."))
         self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
                               'path':{"query": ["/"], "level" : 0 }, }
         self.context_actions = {}
-        self.show_sort_column = False
-        self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 50
-
         request.set('disable_border', 1)
 
         self.columns = {
@@ -307,10 +325,19 @@ class ReferenceSamplesView(BikaListingView):
                 'toggle':True},
             'Supplier': {
                 'title': _('Supplier'),
-                'toggle':True},
+                'toggle':True,
+                'attr': 'aq_parent.Title',
+                'replace_url': 'aq_parent.absolute_url'},
+            'Manufacturer': {
+                'title': _('Manufacturer'),
+                'toggle': True,
+                'attr': 'getManufacturer.Title',
+                'replace_url': 'getManufacturer.absolute_url'},
             'Definition': {
                 'title': _('Reference Definition'),
-                'toggle':True},
+                'toggle':True,
+                'attr': 'getReferenceDefinition.Title',
+                'replace_url': 'getReferenceDefinition.absolute_url'},
             'DateSampled': {
                 'title': _('Date Sampled'),
                 'index': 'getDateSampled',
@@ -318,6 +345,9 @@ class ReferenceSamplesView(BikaListingView):
             'DateReceived': {
                 'title': _('Date Received'),
                 'index': 'getDateReceived',
+                'toggle':True},
+            'DateOpened': {
+                'title': _('Date Opened'),
                 'toggle':True},
             'ExpiryDate': {
                 'title': _('Expiry Date'),
@@ -334,9 +364,11 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
+                         'Manufacturer',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
+                         'DateOpened',
                          'ExpiryDate']},
             {'id':'expired',
              'title': _('Expired'),
@@ -344,9 +376,11 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
+                         'Manufacturer',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
+                         'DateOpened',
                          'ExpiryDate']},
             {'id':'disposed',
              'title': _('Disposed'),
@@ -354,9 +388,11 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
+                         'Manufacturer',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
+                         'DateOpened',
                          'ExpiryDate']},
             {'id':'all',
              'title': _('All'),
@@ -364,52 +400,47 @@ class ReferenceSamplesView(BikaListingView):
              'columns': ['ID',
                          'Title',
                          'Supplier',
+                         'Manufacturer',
                          'Definition',
                          'DateSampled',
                          'DateReceived',
+                         'DateOpened',
                          'ExpiryDate',
                          'state_title']},
         ]
 
-    def folderitems(self):
-        items = super(ReferenceSamplesView, self).folderitems()
-        outitems = []
-        workflow = getToolByName(self.context, 'portal_workflow')
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            if workflow.getInfoFor(obj, 'review_state') == 'current':
-                # Check expiry date
-                from Products.ATContentTypes.utils import DT2dt
-                from datetime import datetime
-                expirydate = DT2dt(obj.getExpiryDate()).replace(tzinfo=None)
+    def folderitem(self, obj, item, index):
+        if item.get('review_state', 'current') == 'current':
+            # Check expiry date
+            exdate = obj.getExpiryDate()
+            if exdate:
+                expirydate = DT2dt(exdate).replace(tzinfo=None)
                 if (datetime.today() > expirydate):
-                    workflow.doActionFor(obj, 'expire')
-                    items[x]['review_state'] = 'expired'
-                    items[x]['obj'] = obj
-                    if 'review_state' in self.contentFilter \
-                        and self.contentFilter['review_state'] == 'current':
-                        continue
+                    # Trigger expiration
+                    self.workflow.doActionFor(obj, 'expire')
+                    item['review_state'] = 'expired'
+                    item['obj'] = obj
 
-            items[x]['ID'] = obj.id
-            items[x]['replace']['Supplier'] = "<a href='%s'>%s</a>" % \
-                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-            if obj.getReferenceDefinition():
-                items[x]['replace']['Definition'] = "<a href='%s'>%s</a>" % \
-                 (obj.getReferenceDefinition().absolute_url(), obj.getReferenceDefinition().Title())
-            else:
-                items[x]['Definition'] = ' '
+        if self.contentFilter.get('review_state', '') \
+           and item.get('review_state', '') == 'expired':
+            # This item must be omitted from the list
+            return None
 
-            items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
-            items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
-            items[x]['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
+        item['ID'] = obj.id
+        item['DateSampled'] = self.ulocalized_time(obj.getDateSampled(), long_format=True)
+        item['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
+        item['DateOpened'] = self.ulocalized_time(obj.getDateOpened())
+        item['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
 
-            after_icons = ''
-            if obj.getBlank():
-                after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
-            if obj.getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
-            items[x]['replace']['ID'] = "<a href='%s'>%s</a>&nbsp;%s" % \
-                 (items[x]['url'], items[x]['ID'], after_icons)
-            outitems.append(items[x])
-        return outitems
+        after_icons = ''
+        if obj.getBlank():
+            after_icons += "<img\
+            src='%s/++resource++bika.lims.images/blank.png' \
+            title='%s'>" % (self.portal_url, t(_('Blank')))
+        if obj.getHazardous():
+            after_icons += "<img\
+            src='%s/++resource++bika.lims.images/hazardous.png' \
+            title='%s'>" % (self.portal_url, t(_('Hazardous')))
+        item['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
+            (item['url'], item['ID'], after_icons)
+        return item

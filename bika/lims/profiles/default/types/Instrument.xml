@@ -23,6 +23,7 @@
     <element value="Analysis"/>
     <element value="ReferenceAnalysis"/>
     <element value="Multifile"/>
+    <element value="AutoImportLog"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
@@ -126,4 +127,14 @@
         visible="True">
     <permission value="Modify portal content"/>
  </action>
+
+ <action title="Auto-Import Logs"
+       action_id="instrumentautoimportlogs"
+       category="object"
+       condition_expr=""
+       url_expr="string:${object_url}/instrumentautoimportlogs"
+       i18n:attributes="title"
+       visible="True">
+   <permission value="Modify portal content"/>
+</action>
 </object>

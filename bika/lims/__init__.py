@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import warnings
 import pkg_resources
 __version__ = pkg_resources.get_distribution("bika.lims").version
@@ -50,7 +55,6 @@ def initialize(context):
     from content.analysisservice import AnalysisService
     from content.analysisspec import AnalysisSpec
     from content.arimport import ARImport
-    from content.arpriority import ARPriority
     from content.analysisprofile import AnalysisProfile
     from content.arreport import ARReport
     from content.artemplate import ARTemplate
@@ -59,6 +63,7 @@ def initialize(context):
     from content.batch import Batch
     from content.batchfolder import BatchFolder
     from content.batchlabel import BatchLabel
+    from content.bikacache import BikaCache
     from content.bikaschema import BikaSchema
     from content.bikasetup import BikaSetup
     from content.calculation import Calculation
@@ -69,6 +74,7 @@ def initialize(context):
     from content.containertype import ContainerType
     from content.department import Department
     from content.duplicateanalysis import DuplicateAnalysis
+    from content.identifiertype import IdentifierType
     from content.instrument import Instrument
     from content.instrumentcalibration import InstrumentCalibration
     from content.instrumentcertification import InstrumentCertification
@@ -76,6 +82,7 @@ def initialize(context):
     from content.instrumentscheduledtask import InstrumentScheduledTask
     from content.instrumentvalidation import InstrumentValidation
     from content.instrumenttype import InstrumentType
+    from content.instrumentlocation import InstrumentLocation
     from content.invoice import Invoice
     from content.invoicebatch import InvoiceBatch
     from content.invoicefolder import InvoiceFolder
@@ -116,21 +123,24 @@ def initialize(context):
     from content.worksheet import Worksheet
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate
+    from content.reflexrule import ReflexRule
+    from content.autoimportlog import AutoImportLog
 
     from controlpanel.bika_analysiscategories import AnalysisCategories
     from controlpanel.bika_analysisservices import AnalysisServices
     from controlpanel.bika_analysisspecs import AnalysisSpecs
     from controlpanel.bika_analysisprofiles import AnalysisProfiles
     from controlpanel.bika_artemplates import ARTemplates
-    from controlpanel.bika_arpriorities import ARPriorities
     from controlpanel.bika_attachmenttypes import AttachmentTypes
     from controlpanel.bika_batchlabels import BatchLabels
     from controlpanel.bika_calculations import Calculations
     from controlpanel.bika_containers import Containers
     from controlpanel.bika_containertypes import ContainerTypes
     from controlpanel.bika_departments import Departments
+    from controlpanel.bika_identifiertypes import IdentifierTypes
     from controlpanel.bika_instruments import Instruments
     from controlpanel.bika_instrumenttypes import InstrumentTypes
+    from controlpanel.bika_instrumentlocations import InstrumentLocations
     from controlpanel.bika_labcontacts import LabContacts
     from controlpanel.bika_labproducts import LabProducts
     from controlpanel.bika_manufacturers import Manufacturers
@@ -146,6 +156,7 @@ def initialize(context):
     from controlpanel.bika_subgroups import SubGroups
     from controlpanel.bika_suppliers import Suppliers
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
+    from controlpanel.bika_reflexrulefolder import ReflexRuleFolder
 
     content_types, constructors, ftis = process_types(
         listTypes(PROJECTNAME),
@@ -167,26 +178,33 @@ def initialize(context):
 
 
 def deprecated(comment=None, replacement=None):
-    """ A decorator which can be used to mark functions as deprecated.
-        Emits a DeprecationWarning showing the module and method being flagged
-        as deprecated. If replacement is set, the warn will also show which is
-        the function or class to be used instead.
     """
-    def old(oldcall):
-        def new(*args, **kwargs):
-            message = "Deprecated: '%s.%s'" % \
-                (oldcall.__module__,
-                 oldcall.__name__)
-            if replacement is not None:
-                message += ". Use '%s.%s' instead" % \
-                (replacement.__module__,
+    Flags a function as deprecated. A warning will be emitted.
+    :param comment: A human-friendly string, such as 'This  function
+                    will be removed soon'
+    :type comment: string
+    :param replacement: The function to be used instead
+    :type replacement: string or function
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            message = "Call to deprecated function '{}.{}'".format(
+                func.__module__,
+                func.__name__)
+            if replacement and isinstance(replacement, str):
+                message += ". Use '{}' instead".format(replacement)
+            elif replacement:
+                message += ". Use '{}.{}' instead".format(
+                 replacement.__module__,
                  replacement.__name__)
-            if comment is not None:
-                message += ". %s" % comment
+            if comment:
+                message += ". {}".format(comment)
+            warnings.simplefilter('always', DeprecationWarning)
             warnings.warn(message, category=DeprecationWarning, stacklevel=2)
-            return oldcall(*args, **kwargs)
-        return new
-    return old
+            warnings.simplefilter('default', DeprecationWarning)
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 
 class _DeprecatedClassDecorator(object):

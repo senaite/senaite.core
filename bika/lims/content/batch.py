@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -17,6 +22,7 @@ from bika.lims.permissions import EditBatch
 from plone.indexer import indexer
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
 
 from bika.lims.browser.widgets import ReferenceWidget
@@ -249,27 +255,17 @@ class Batch(ATFolder):
     def getProfilesTitle(self):
         return ""
 
-    def getAnalysisCategory(self):
-        analyses = []
-        for ar in self.getAnalysisRequests():
-            analyses += list(ar.getAnalyses(full_objects=True))
-        value = []
-        for analysis in analyses:
-            val = analysis.getCategoryTitle()
-            if val not in value:
-                value.append(val)
-        return value
-
     def getAnalysisService(self):
-        analyses = []
+        analyses = set()
         for ar in self.getAnalysisRequests():
-            analyses += list(ar.getAnalyses(full_objects=True))
+            for an in ar.getAnalyses():
+                analyses.add(an)
         value = []
         for analysis in analyses:
-            val = analysis.getServiceTitle()
+            val = analysis.Title
             if val not in value:
                 value.append(val)
-        return value
+        return list(value)
 
     def getAnalysts(self):
         analyses = []
@@ -297,15 +293,20 @@ class Batch(ATFolder):
             ret.append((p.UID, p.Title))
         return DisplayList(ret)
 
-    def getAnalysisRequests(self, **kwargs):
-        """ Return all the Analysis Requests linked to the Batch
+    def getAnalysisRequestsBrains(self, **kwargs):
+        """ Return all the Analysis Requests brains linked to the Batch
         kargs are passed directly to the catalog.
         """
-        query = kwargs
-        query['portal_type'] = 'AnalysisRequest'
-        query['BatchUID'] = self.UID()
-        bc = api.portal.get_tool('bika_catalog')
-        brains = bc(query)
+        kwargs['getBatchUID'] = self.UID()
+        catalog = getToolByName(self, CATALOG_ANALYSIS_REQUEST_LISTING)
+        brains = catalog(kwargs)
+        return brains
+
+    def getAnalysisRequests(self, **kwargs):
+        """ Return all the Analysis Requests objects linked to the Batch
+        kargs are passed directly to the catalog.
+        """
+        brains = self.getAnalysisRequestsBrains(**kwargs)
         return [b.getObject() for b in brains]
 
     def isOpen(self):

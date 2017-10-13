@@ -3,15 +3,17 @@
  */
 function BikaListingTableView() {
 
-	var that = this
+	var that = this;
+	// To keep track if a transitions loading is taking place atm
+	var loading_transitions = false;
 
 	// Entry-point method for AnalysisServiceEditView
 	that.load = function () {
 
 		column_header_clicked()
-		select_one_clicked()
-		select_all_clicked()
-		manage_select_all_state()
+		load_transitions();
+		select_one_clicked();
+		select_all_clicked();
 		listing_string_input_keypress()
 		listing_string_select_changed()
 		pagesize_change()
@@ -22,6 +24,8 @@ function BikaListingTableView() {
 		column_toggle_context_menu()
 		column_toggle_context_menu_selection()
 		show_more_clicked();
+        autosave();
+		load_export_buttons();
 
 		$('*').click(function () {
 			if ($(".tooltip").length > 0) {
@@ -41,8 +45,21 @@ function BikaListingTableView() {
 			url = url.replace('_limit_from=','_olf=');
 			url += '&'+formid+"_limit_from="+limit_from;
 			$('#'+formid+' a.bika_listing_show_more').fadeOut();
-			var tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody')
-			$.ajax(url)
+			var tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody');
+			// The results must be filtered?
+			var filter_options = [];
+			filters1 = $('.bika_listing_filter_bar input[name][value!=""]');
+			filters2 = $('.bika_listing_filter_bar select option:selected[value!=""]');
+			filters = $.merge(filters1, filters2);
+			$(filters).each(function(e) {
+				var opt = [$(this).attr('name'), $(this).val()];
+				filter_options.push(opt);
+			});
+			var filterbar = {};
+			if (filter_options.length > 0) {
+				filterbar.bika_listing_filter_bar = $.toJSON(filter_options);
+			}
+			$.post(url, filterbar)
 				.done(function(data) {
 					try {
 						// We must surround <tr> inside valid TABLE tags before extracting
@@ -51,22 +68,42 @@ function BikaListingTableView() {
 						$(tbody).append(rows)
 						// Increase limit_from so that next iteration uses correct start point
 						$('#'+formid+' a.bika_listing_show_more').attr('data-limitfrom', limit_from+pagesize);
+						loadNewRemarksEventHandlers();
 					}
 					catch (e) {
 						$('#' + formid + ' a.bika_listing_show_more').hide();
 						console.log(e);
 					}
+					load_transitions();
 				}).fail(function () {
 					$('#'+formid+' a.bika_listing_show_more').hide();
 					console.log("bika_listing_show_more failed");
-    			}).always(function() {
+    		}).always(function() {
 					var numitems = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody tr').length;
 					$('#'+formid+' span.number-items').html(numitems);
 					if (numitems % pagesize == 0) {
-						$('#'+formid+' a.bika_listing_show_more').show();
+						$('#'+formid+' a.bika_listing_show_more').fadeIn();
 					}
 				});
 		});
+	}
+
+	function loadNewRemarksEventHandlers() {
+			// Add a baloon icon before Analyses' name when you'd add a remark. If you click on, it'll display remarks textarea.
+			$('a.add-remark').remove();
+			var txt1 = '<a href="#" class="add-remark"><img src="'+window.portal_url+'/++resource++bika.lims.images/comment_ico.png" title="'+_('Add Remark')+'")"></a>';
+			var pointer = $(".listing_remarks:contains('')").closest('tr').prev().find('td.service_title span.before');
+
+			$(pointer).append(txt1);
+
+			$("a.add-remark").click(function(e){
+					e.preventDefault();
+					var rmks = $(this).closest('tr').next('tr').find('td.remarks');
+					if (rmks.length > 0) {
+							rmks.toggle();
+					}
+			});
+			$("td.remarks").hide();
 	}
 
 	function column_header_clicked() {
@@ -113,81 +150,172 @@ function BikaListingTableView() {
 		})
 	}
 
-	function show_or_hide_transition_buttons() {
-		// Get all transitions for all items, into all_valid_transitions
-		var all_valid_transitions = [] // array of arrays
-		var checked = $("input[name='uids:list']:checked")
-		if (checked.length == 0){
-			$("input[workflow_transition]").hide()
-			return
+	/**
+	* Fetch allowed transitions for all the objects listed in bika_listing and
+	* sets the value for the attribute 'data-valid_transitions' for each check
+	* box next to each row.
+	* The process requires an ajax call, so the function keeps checkboxes
+	* disabled until the allowed transitions for the associated object are set.
+	*/
+	function load_transitions(blisting) {
+		"use strict";
+		if (blisting == '' || typeof blisting === 'undefined') {
+            var blistings = $('table.bika-listing-table');
+            $(blistings).each(function(i) {
+                load_transitions($(this));
+            });
+            return;
 		}
-		for(var i=0; i<checked.length; i++){
-			all_valid_transitions.push($(checked[i]).attr("data-valid_transitions").split(","))
+        var buttonspane = $(blisting).find('span.workflow_action_buttons');
+		if (loading_transitions || $(buttonspane).length == 0) {
+		    // If show_workflow_action_buttons param is set to False in the
+		    // view, or transitions are being loaded already, do nothing
+			return;
 		}
-		// intersect values from all arrays in all_valid_transitions
-		var valid_transitions = all_valid_transitions.shift().filter(function (v) {
-		    return all_valid_transitions.every(function (a) {
-		        return a.indexOf(v) !== -1;
-		    })
-		})
-		// Hide all buttons except the ones listed as valid.
-		$.each($("input[workflow_transition='yes']"), function (i, e) {
-			if($.inArray($(e).attr('transition'), valid_transitions) == -1){
-				$(e).hide()
-			}
-			else {
-				$(e).show()
-			}
-		})
-		// if any checkboxes are checked, then all "custom" action buttons are shown.
-		// This means any action button that is not linked to a workflow transition.
-		if(checked.length>0){
-			$("input[workflow_transition='no']").show()
-		} else {
-			$("input[workflow_transition='no']").hide()
+		loading_transitions = true;
+		var uids = [];
+		var checkall = $("input[id*='select_all']");
+		$(checkall).hide();
+		var wo_trans = $("input[type='checkbox'][id*='_cb_'][data-valid_transitions='']");
+		$(wo_trans).prop("disabled", true);
+		$(wo_trans).each(function(e){
+			uids.push($(this).val());
+		});
+		if (uids.length > 0) {
+			var request_data = {
+				_authenticator: $("input[name='_authenticator']").val(),
+				uid:  $.toJSON(uids),};
+			window.jsonapi_cache = window.jsonapi_cache || {};
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: window.portal_url + "/@@API/allowedTransitionsFor_many",
+				data: request_data,
+				success: function(data) {
+					if ('transitions' in data) {
+						for (var i = 0; i < data.transitions.length; i++) {
+							var uid = data.transitions[i].uid;
+							var trans = data.transitions[i].transitions;
+							var el = $("input[type='checkbox'][id*='_cb_'][value='"+uid+"']");
+							el.attr('data-valid_transitions', trans.join(','));
+							$(el).prop("disabled", false);
+						}
+						$("input[id*='select_all']").fadeIn();
+					}
+				}
+			});
 		}
+		loading_transitions = false;
 	}
 
+	/**
+	* Controls the behavior when a checkbox of row selection is clicked.
+	* Updates the status of the 'select all' checkbox accordingly and also
+	* re-renders the workflow action buttons from the bottom of the list
+	* based on the allowed transitions of the currently selected items
+	*/
 	function select_one_clicked() {
-		$("input[name='uids:list']").live("click", function () {
-			show_or_hide_transition_buttons();
-		})
+		"use strict";
+		$("input[type='checkbox'][id*='_cb_']").live("click", function () {
+			var blst = $(this).parents("table.bika-listing-table");
+			render_transition_buttons(blst);
+			// Modify all checkbox statuses
+			var checked = $("input[type='checkbox'][id*='_cb_']:checked");
+			var all =  $("input[type='checkbox'][id*='_cb_']");
+			var checkall = $(blst).find("input[id*='select_all']");
+			checkall.prop("checked", checked.length == all.length);
+		});
 	}
 
+	/**
+	* Controls the behavior when the 'select all' checkbox is clicked.
+	* Checks/Unchecks all the row selection checkboxes and once done,
+	* re-renders the workflow action buttons from the bottom of the list,
+	* based on the allowed transitions for the currently selected items
+	*/
 	function select_all_clicked() {
+		"use strict";
 		// select all (on this page at least)
 		$("input[id*='select_all']").live("click", function () {
-			var checkboxes = $(this).parents("form").find("[id*='_cb_']")
-			if ($(this).prop("checked")) {
-				$(checkboxes).filter("input:checkbox:not(:checked)").prop("checked", true)
-			}
-			else {
-				$(checkboxes).filter("input:checkbox:checked").prop("checked", false)
-			}
-			show_or_hide_transition_buttons();
-		})
+			var blst = $(this).parents("table.bika-listing-table");
+			var checkboxes = $(blst).find("[id*='_cb_']");
+			$(checkboxes).prop("checked", $(this).prop("checked"));
+			render_transition_buttons(blst);
+		});
 	}
 
-	function manage_select_all_state() {
-		// modify select_all checkbox when regular checkboxes are modified
-		$("input[id*='_cb_']").live("change", function () {
-			form_id = $(this).parents("form").attr("id")
-			all_selected = true
-			$.each($("input[id^='" + form_id + "_cb_']"), function (i, v) {
-				if (!($(v).prop("checked"))) {
-					all_selected = false
-				}
-			})
-			if (all_selected) {
-				$("#" + form_id + "_select_all").prop("checked", true)
+	/**
+	* Re-generates the workflow action buttons from the bottom of the list in
+	* accordance with the allowed transitions for the currently selected items.
+	* This is, makes the intersection within all allowed transitions and adds
+	* the corresponding buttons to the workflow action bar.
+	*/
+	function render_transition_buttons(blst) {
+		"use strict";
+        var buttonspane = $(blst).find('span.workflow_action_buttons');
+        if ($(buttonspane).length == 0) {
+		    // If show_workflow_action_buttons param is set to False in the
+		    // view, do nothing
+		    return;
+		}
+		var allowed_transitions = [];
+		var hidden_transitions = $(blst).find('input[type="hidden"][id="hide_transitions"]');
+		hidden_transitions = $(hidden_transitions).length == 1 ? $(hidden_transitions).val() : '';
+		hidden_transitions = hidden_transitions === '' ? [] : hidden_transitions.split(',');
+		var restricted_transitions = $(blst).find('input[type="hidden"][id="restricted_transitions"]');
+		restricted_transitions = $(restricted_transitions).length == 1 ? $(restricted_transitions).val() : '';
+		restricted_transitions = restricted_transitions === '' ? [] : restricted_transitions.split(',');
+		var checked = $(blst).find("input[type='checkbox'][id*='_cb_']:checked");
+		$(checked).each(function(e) {
+			var transitions = $(this).attr('data-valid_transitions');
+			transitions = transitions.split(',');
+			if (restricted_transitions.length > 0) {
+				// Do not want transitions other than those defined in bikalisting
+				transitions = transitions.filter(function(el) {
+					return restricted_transitions.indexOf(el) != -1;
+				});
 			}
-			else {
-				$("#" + form_id + "_select_all").prop("checked", false)
+			// Do not show hidden transitions
+			transitions = transitions.filter(function(el) {
+				return hidden_transitions.indexOf(el) == -1;
+			});
+			// We only want the intersection within all selected items
+			if (allowed_transitions.length > 0) {
+				transitions = transitions.filter(function(el) {
+					return allowed_transitions.indexOf(el) != -1;
+				});
 			}
-		})
+			allowed_transitions = transitions;
+		});
+		if (restricted_transitions.length > 0) {
+			// Sort the transitions in accordance with bikalisting settings
+			allowed_transitions = restricted_transitions.filter(function(v) {
+			    return allowed_transitions.includes(v);
+			});
+		}
+
+		// Generate the action buttons
+		$(buttonspane).html('');
+		for (var i = 0; i < allowed_transitions.length; i++) {
+			var trans = allowed_transitions[i];
+			var button = '<input id="'+trans+'_transition" class="context workflow_action_button action_button allowMultiSubmit" type="submit" url="" value="'+_(PMF(trans+'_transition_title'))+'" transition="'+trans+'" name="workflow_action_button">&nbsp;';
+			$(buttonspane).append(button);
+		}
+		// Add now custom actions
+		if ($(checked).length > 0) {
+			var custom_actions = $(blst).find('input[type="hidden"].custom_action');
+			$(custom_actions).each(function(e){
+				var trans = $(this).val();
+				var url = $(this).attr('url');
+				var title = $(this).attr('title');
+				var button = '<input id="'+trans+'_transition" class="context workflow_action_button action_button allowMultiSubmit" type="submit" url="'+url+'" value="'+title+'" transition="'+trans+'" name="workflow_action_button">&nbsp;';
+				$(buttonspane).append(button);
+			});
+		}
 	}
 
 	function listing_string_input_keypress() {
+		"use strict";
 		$(".listing_string_entry,.listing_select_entry").live("keypress", function (event) {
 			// Prevent automatic submissions of manage_results forms when enter is pressed
 			var enter = 13
@@ -195,10 +323,13 @@ function BikaListingTableView() {
 				event.preventDefault()
 			}
 			// check the item's checkbox
-			form_id = $(this).parents("form").attr("id")
-			uid = $(this).attr("uid")
-			if (!($("#" + form_id + "_cb_" + uid).prop("checked"))) {
-				$("#" + form_id + "_cb_" + uid).prop("checked", true)
+			var uid = $(this).attr("uid");
+			var tr = $(this).parents('tr#folder-contents-item-'+uid);
+			var checkbox = tr.find('input[id$="_cb_' + uid +'"]');
+			if ($(checkbox).length == 1) {
+                var blst = $(checkbox).parents("table.bika-listing-table");
+                $(checkbox).prop('checked', true);
+                render_transition_buttons(blst);
 			}
 		})
 	}
@@ -206,11 +337,13 @@ function BikaListingTableView() {
 	function listing_string_select_changed() {
 		// always select checkbox when selectable listing item is changed
 		$(".listing_select_entry").live("change", function () {
-			form_id = $(this).parents("form").attr("id")
-			uid = $(this).attr("uid")
-			// check the item's checkbox
-			if (!($("#" + form_id + "_cb_" + uid).prop("checked"))) {
-				$("#" + form_id + "_cb_" + uid).prop("checked", true)
+			var uid = $(this).attr("uid");
+			var tr = $(this).parents('tr#folder-contents-item-'+uid);
+			var checkbox = tr.find('input[id$="_cb_' + uid +'"]');
+			if ($(checkbox).length == 1) {
+			    var blst = $(checkbox).parents("table.bika-listing-table");
+			    $(checkbox).prop("checked", true);
+			    render_transition_buttons(blst);
 			}
 		})
 	}
@@ -232,7 +365,7 @@ function BikaListingTableView() {
 		// expand/collapse categorised rows
 		$(".bika-listing-table th.collapsed").live("click", function () {
 			if (!$(this).hasClass("ignore_bikalisting_default_handler")){
-				category_header_expand_handler(this)
+				that.category_header_expand_handler(this)
 			}
 		});
         $(".bika-listing-table th.expanded").live("click", function () {
@@ -251,7 +384,7 @@ function BikaListingTableView() {
         })
     }
 
-	function category_header_expand_handler(element) {
+	that.category_header_expand_handler = function (element) {
 		// element is the category header TH.
 		// duplicated in bika.lims.analysisrequest.add_by_col.js
 		var def = $.Deferred()
@@ -518,4 +651,179 @@ function BikaListingTableView() {
 								 'left': tPosX
 							 })
 	}
+
+    function autosave() {
+        /*
+        This function looks for the column defined as 'autosave' and if
+        its value is true, the result of this input will be saved after each
+        change via ajax.
+        */
+        $('select.autosave, input.autosave').not('[type="hidden"]')
+            .each(function(i) {
+            // Save select fields
+            $(this).change(function () {
+                var pointer = this;
+                build_typical_save_request(pointer);
+            });
+        });
+    }
+    function build_typical_save_request(pointer) {
+        /**
+         * Build an array with the data to be saved for the typical data fields.
+         * @pointer is the object which has been modified and we want to save its new data.
+         */
+        var fieldvalue, fieldname, requestdata={}, uid, tr;
+        fieldvalue = $(pointer).val();
+        if ($(pointer).is(':checkbox')) {
+            fieldvalue = $(pointer).is(':checked');
+        }
+        fieldname = $(pointer).attr('field');
+        tr = $(pointer).closest('tr');
+        uid = $(pointer).attr('uid');
+        requestdata[fieldname] = fieldvalue;
+        requestdata['obj_uid']= uid;
+        save_elements(requestdata, tr);
+    }
+    function save_elements(requestdata, tr) {
+        /**
+         * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
+         * @requestdata should has the format  {fieldname=fieldvalue, uid=xxxx} ->  { ReportDryMatter=false, uid=xxx}.
+         */
+        var url = window.location.href.replace('/base_view', '');
+        // Staff for the notification
+        var name = $(tr).attr('title');
+        $.ajax({
+            type: "POST",
+            url: window.portal_url+"/@@API/update",
+            data: requestdata
+        })
+        .done(function(data) {
+            //success alert
+            if (data != null && data['success'] == true) {
+                bika.lims.SiteView.notificationPanel(name + ' updated successfully', "succeed");
+            } else {
+                bika.lims.SiteView.notificationPanel('Error while updating ' + name, "error");
+                var msg = 'Error while updating ' + name;
+                console.warn(msg);
+                window.bika.lims.error(msg);
+            }
+        })
+        .fail(function(){
+            //error
+            bika.lims.SiteView.notificationPanel('Error while updating ' + name, "error");
+            var msg = 'Error while updating ' + name;
+            console.warn(msg);
+            window.bika.lims.error(msg);
+        });
+    }
+
+    /**
+     * Load the events regardin to the export (to CSV and to XML) buttons. When
+     * an export button is clicked, the function walksthrough all the items
+     * within the bika listing table, builds a string with the desired format
+     * (CSV or XML) and prompts the user for its download.
+     */
+    function load_export_buttons() {
+        $('.bika-listing-table td.export-controls span.export-toggle').click(function(e) {
+            var ul = $(this).closest('td').find('ul');
+            if ($(ul).is(":visible")) {
+                $(this).removeClass("expanded");
+            } else {
+                $(ul).css('min-width', $(this).width());
+                $(this).addClass("expanded");
+            }
+            $(ul).toggle();
+        });
+        $(".bika-listing-table a[download]").click(function(e) {
+            $(this).closest('.bika-listing-table').find('td.export-controls span.export-toggle').click();
+            var type = $(this).attr('type');
+            var data = [];
+            var headers = [];
+            var omitidx = [];
+
+            // Get the headers, but only if not empty. Store the position index
+            // of those columns that must be omitted later on rows walkthrouugh
+            $(this).closest(".bika-listing-table").find("th.column").each(function(i) {
+                var colname = $.trim($(this).text());
+                if (colname != "") {
+                    colname = colname.replace('"', "'");
+                    headers.push('"' + colname + '"');
+                } else {
+                    omitidx.push(i);
+                }
+            });
+            data.push(headers.join(","));
+
+            // Iterate through all rows an append all data in an array
+            // that later will be transformed into the desired format
+            $(this).closest(".bika-listing-table").find("tbody tr").each(function(r) {
+                // Iterate through all cells from within the current row
+                var rowdata = [];
+                $(this).find("td").each(function(c) {
+                    // Should the current cell be omitted?
+                    if ($.inArray(c, omitidx) > -1) {
+                        return 'non-false';
+                    }
+                    // Each cell's content is structured as follows:
+                    // <span class='before'></span>
+                    // <element>content</element>
+                    // <span class='after'>
+                    var text = $(this).find("span.before")
+                                      .nextUntil("span.after").text();
+                    // If no format specified, always fallback to csv
+                    text = text.replace('"', "'");
+                    rowdata.push('"' + $.trim(text) + '"');
+                });
+                if (rowdata.length == headers.length) {
+                    data.push(rowdata.join(','));
+                }
+            });
+            var output = '';
+            var urischema = '';
+            if (type == 'xml') {
+                output = "<items>\r\n";
+                for (var i = 1; i < data.length; i++) {
+                    row = data[i].substr(1,data[i].length-2);
+                    row = row.split('","');
+                    if (row.length == headers.length) {
+                        output += "  <item>\r\n";
+                        for (var j=0; j < row.length; j++) {
+                            if (j < headers.length) {
+                                var colname = qname(headers[j]);
+                                output += "    <"+colname+">";
+                                output += escapeTxt(row[j]);
+                                output += "</"+colname+">\r\n";
+                            }
+                        }
+                        output += "  </item>\r\n";
+                    }
+                }
+                output += "</items>";
+                urischema = 'data:application/xml;base64;charset-UTF-8,';
+            } else {
+                // Fallback CSV
+                output = data.join('\r\n');
+                urischema = 'data:application/csv;base64;charset=UTF-8,';
+            }
+            var b64 = window.btoa(unescape(encodeURIComponent(output)));
+            var uri = urischema + b64;
+            $(this).attr('href', uri);
+        });
+
+        function unquote(val) {
+            return val.replace( /^\s*\"(.*)\"\s*$/, "$1" );
+        }
+
+        function escapeTxt(val) {
+            var vl = val.replace(/&/g, "&amp;");
+            vl = vl.replace(/</g, "&lt;");
+            vl = vl.replace(/>/g, "&gt;");
+            return unquote(vl);
+        }
+
+        function qname(name) {
+            var nm = name.replace(/(\s)+/g, "_");
+            return unquote(nm);
+        }
+    }
 }

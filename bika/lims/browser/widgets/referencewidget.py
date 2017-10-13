@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -133,6 +138,8 @@ class ReferenceWidget(StringWidget):
     def initial_uid_field_value(self, value):
         if type(value) in (list, tuple):
             ret = ",".join([v.UID() for v in value])
+        elif type(value) in [str, ]:
+            ret = value
         else:
             ret = value.UID() if value else value
         return ret

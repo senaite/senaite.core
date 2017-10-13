@@ -45,6 +45,7 @@ function AnalysisRequestAddByCol() {
          */
         checkbox_change()
         referencewidget_change()
+        rejectionwidget_change();
         select_element_change()
         textinput_change()
         copybutton_selected()
@@ -155,9 +156,38 @@ function AnalysisRequestAddByCol() {
                 e = $(div).find('[type="hidden"]')[0]
                 $(e).attr('name', $(e).attr('name') + '-' + arnum + ':boolean:default')
             }
+            if ($(div).hasClass('RejectionWidget')) {
+                // chechbox
+                e = $(div).find('input[id="RejectionReasons.checkbox"]')[0]
+                $(e).attr('id', fieldname + '.checkbox-' + arnum)
+                $(e).attr('name', fieldname + '.checkbox-' + arnum)
+                // multiple selection
+                e = $(div).find('select[id="RejectionReasons.multiselection"]')[0]
+                $(e).attr('id', fieldname + '.multiselection-' + arnum)
+                $(e).attr('name', fieldname + '.multiselection-' + arnum)
+                // Other checkbox
+                e = $(div).find('input[id="RejectionReasons.checkbox.other"]')[0]
+                $(e).attr('id', fieldname + '.checkbox.other-' + arnum)
+                $(e).attr('name', fieldname + '.checkbox.other-' + arnum)
+                // Other input
+                e = $(div).find('input[id="RejectionReasons.textfield.other"]')[0]
+                $(e).attr('id', fieldname + '.textfield.other-' + arnum)
+                $(e).attr('name', fieldname + '.textfield.other-' + arnum)
+            }
             // then change the ID of the containing div itself
             $(div).attr('id', 'archetypes-fieldname-' + fieldname + '-' + arnum)
         })
+
+        // If Sampling Workflow Enabled then We must hide Date Sampled Field.
+        // If Sampling Workflow Disabled then We must hide Sampling Dare Field.
+        if($("#bika_setup").attr("samplingwfenabled")){
+            $("tr[fieldname=DateSampled]").hide();
+        }else{
+            $("tr[fieldname=SamplingDate]").hide();
+            // Date Sampled is required in this case, display 'required' icon.
+            $("tr[fieldname=DateSampled]").find("em")
+                .before('<span class="fieldRequired" title="Required">&nbsp;</span>')
+        }
 
         // clear existing values (on page reload).
         $("#singleservice").val("")
@@ -166,7 +196,7 @@ function AnalysisRequestAddByCol() {
         $("#singleservice").parents("[uid]").attr("uid", "new")
         $("#singleservice").parents("[keyword]").attr("keyword", "")
         $("#singleservice").parents("[title]").attr("title", "")
-        $("input[type='checkbox']").removeAttr("checked")
+        $("input[type='checkbox']").not("[name^='chb_deps_']").removeAttr("checked")
         $(".min,.max,.error").val("")
 
         // filter fields based on the selected Client
@@ -178,57 +208,6 @@ function AnalysisRequestAddByCol() {
                 filter_by_client(arnum)
             }
         }, 250);
-        /** If client only has one contect, and the analysis request comes from
-          * a client, then Auto-complete first Contact field.
-          * If client only has one contect, and the analysis request comes from
-          * a batch, then Auto-complete all Contact field.
-          */
-        var uid = $($("tr[fieldname='Client'] input")[0]).attr("uid");
-        var request_data = {
-            catalog_name: "portal_catalog",
-            portal_type: "Contact",
-            getParentUID: uid,
-            inactive_state: "active"
-        };
-        window.bika.lims.jsonapi_read(request_data, function (data) {
-            /** If the analysis request comes from a client
-             * window.location.pathname.split('batches') should not be splitted
-             * in 2 parts
-             */
-            if (data.success &&
-                data.total_objects == 1 &&
-                window.location.pathname.split('batches').length < 2) {
-                var contact = data.objects[0];
-                $('input#Contact-0')
-                    .attr('uid', contact['UID'])
-                    .val(contact['Title'])
-                    .attr('uid_check', contact['UID'])
-                    .attr('val_check', contact['UID']);
-                $('#Contact-0_uid').val(contact['UID']);
-                state_set(0, 'Contact', contact['UID']);
-                cc_contacts_set(0);
-            }
-            /** If the analysis request comes from a batch
-             * window.location.pathname.split('batches') should be splitted in
-             * 2 parts
-             */
-            else if (data.success &&
-                data.total_objects == 1 &&
-                window.location.pathname.split('batches').length == 2) {
-                var nr_ars = parseInt($("#ar_count").val(), 10);
-                var contact = data.objects[0];
-                $('input[id^="Contact-"]')
-                    .attr('uid', contact['UID'])
-                    .val(contact['Title'])
-                    .attr('uid_check', contact['UID'])
-                    .attr('val_check', contact['UID']);
-                $('[id^="Contact-"][id$="_uid"]').val(contact['UID']);
-                for (var i=0; i<nr_ars; i++){
-                    state_set(i, 'Contact', contact['UID']);
-                    cc_contacts_set(i);
-                }
-            };
-        });
     };
 
     function state_set(arnum, fieldname, value) {
@@ -262,6 +241,9 @@ function AnalysisRequestAddByCol() {
          * different analysis request templates needed.
          * :samplinground_uid: a string with the sampling round uid
          */
+         if (samplinground_UID === undefined || samplinground_UID === null){
+           samplinground_UID='';
+         }
         var request_data = {
             catalog_name: "portal_catalog",
             portal_type: "SamplingRound",
@@ -292,7 +274,7 @@ function AnalysisRequestAddByCol() {
                     template_set(index);
                 });
                 // Writing the sampling date
-                $('input[id^="SamplingDate-"]:visible').val(spec['samplingRoundSamplingDate']);
+                $('input[id^="SamplingDate-"]:visible').val(spec['samplingRoundSamplingDate']+ " 00:00");
                 // Hiding all fields which depends on the sampling round
                 var to_disable = ['Specification', 'SamplePoint', 'ReportDryMatter', 'Sample', 'Batch',
                     'SubGroup', 'SamplingDate', 'Composite', 'Profiles', 'DefaultContainerType', 'AdHoc'];
@@ -349,8 +331,8 @@ function AnalysisRequestAddByCol() {
             options.url = options.url + "&search_query=" + $(element).attr("search_query")
         }
         else {
-            options.url = options.url + "&base_query=" + $(element).attr("base_query")
-            options.url = options.url + "&search_query=" + $.toJSON(query)
+            options.url = options.url + "&base_query=" + encodeURIComponent($(element).attr("base_query"))
+            options.url = options.url + "&search_query=" + encodeURIComponent($.toJSON(query))
         }
         options.url = options.url + "&colModel=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).colModel)
         options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options"))['search_fields'])
@@ -368,10 +350,24 @@ function AnalysisRequestAddByCol() {
          * cases, the 'getParentUID' or 'getClientUID' index is used
          * to filter against Lab and Client folders.
          */
-        var element, uids
+        var element,uids
         var uid = $($("tr[fieldname='Client'] td[arnum='" + arnum + "'] input")[0]).attr("uid")
+        var client_set = uid !== undefined && uid != '';
+        var elements = ['Contact', 'CCContact', 'InvoiceContact',
+                        'SamplePoint', 'Template', 'Profiles',
+                        'Specification', 'Sample']
+        for (var i=0; i<elements.length; i++) {
+            element = $("tr[fieldname="+elements[i]+"] td[arnum=" + arnum + "] input")[0];
+            $(element).prop('disabled', !client_set);
+        }
+        if (!client_set) {
+            return;
+        }
+
         element = $("tr[fieldname=Contact] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getParentUID", uid)
+        // If client only has one contact then Auto-complete first Contact field.
+        select_contact_if_one(uid, arnum);
         element = $("tr[fieldname=CCContact] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getParentUID", uid)
         element = $("tr[fieldname=InvoiceContact] td[arnum=" + arnum + "] input")[0]
@@ -388,6 +384,45 @@ function AnalysisRequestAddByCol() {
         uids = [uid, $("#bika_setup").attr("bika_analysisspecs_uid")]
         element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
+        element = $("tr[fieldname=Sample] td[arnum=" + arnum + "] input")[0]
+        filter_combogrid(element, "getClientUID", [uid,]);
+    }
+    /**
+    * If client only has one contact, then Auto-complete the Contact field.
+    * @param {String} client_uid the client UID to filter
+    * @param {Number} arnum the analysisrequest column number
+    * @return {None} nothing
+    */
+    function select_contact_if_one(client_uid, arnum) {
+
+        if (client_uid === undefined || client_uid === ''){
+                return;}
+        if (arnum === undefined || arnum === ''){
+                return;}
+        var request_data = {
+            catalog_name: "portal_catalog",
+            portal_type: "Contact",
+            getParentUID: client_uid,
+            inactive_state: "active"
+        };
+        window.bika.lims.jsonapi_read(request_data, function (data) {
+            /** If the analysis request comes from a client
+             * window.location.pathname.split('batches') should not be splitted
+             * in 2 parts
+             */
+            if (data.success &&
+                data.total_objects == 1) {
+                var contact = data.objects[0];
+                $('input#Contact-' + arnum)
+                    .attr('uid', contact['UID'])
+                    .val(contact['Title'])
+                    .attr('uid_check', contact['UID'])
+                    .attr('val_check', contact['UID']);
+                $('#Contact-' + arnum + '_uid').val(contact['UID']);
+                state_set(arnum, 'Contact', contact['UID']);
+                cc_contacts_set(arnum);
+            }
+        });
     }
 
     function hashes_to_hash(hashlist, key) {
@@ -467,6 +502,7 @@ function AnalysisRequestAddByCol() {
          * The checkboxes used to select analyses are handled separately.
          */
         $('tr[fieldname] input[type="checkbox"]')
+            .not('[class^="rejectionwidget-checkbox"]')
             .live('change copy', function () {
                 checkbox_change_handler(this)
             })
@@ -509,6 +545,52 @@ function AnalysisRequestAddByCol() {
             })
     }
 
+    function rejectionwidget_change_handler(element, item) {
+        // It goes to the upper element of the widget and gets all the values
+        // to be stored in the state variable
+        var td = $(element).closest('td');
+        // Init variables
+        var ch_val=false,multi_val = [],other_ch_val=false,other_val='',option;
+        // Getting each value deppending on the checkbox status
+        ch_val = $(td).find('.rejectionwidget-checkbox').prop('checked');
+        if (ch_val){
+            // Getting the selected options and adding them to the list
+            var selected_options = $(td).find('.rejectionwidget-multiselect').find('option');
+            for (var i=0;selected_options.length>i; i++){
+                option = selected_options[i];
+                if (option.selected){
+                    multi_val.push($(option).val());
+                }
+            };
+            other_ch_val = $(td).find('.rejectionwidget-checkbox-other').prop('checked');
+            if (other_ch_val){
+                other_val = $(td).find('.rejectionwidget-input-other').val();
+            }
+        };
+        // Gathering all values and writting them to the "global" variable state
+        var rej_widget_state = {
+            checkbox:ch_val,
+            selected:multi_val,
+            checkbox_other:other_ch_val,
+            other:other_val
+        };
+        var fieldname = $(element).parents('[fieldname]').attr('fieldname');
+        var arnum = get_arnum(element);
+        state_set(arnum, fieldname, rej_widget_state);
+    };
+
+    function rejectionwidget_change() {
+        // Deals with the changes in rejection widgets and register the values to
+        // the state variable as a dictionary.
+        $('tr[fieldname] input.rejectionwidget-checkbox,' +
+        'tr[fieldname] select.rejectionwidget-multiselect,' +
+        'tr[fieldname] input.rejectionwidget-checkbox-other,' +
+        'tr[fieldname] input.rejectionwidget-input-other')
+            .live('change copy select', function (event, item) {
+                rejectionwidget_change_handler(this, item)
+            })
+    };
+
     function select_element_change_handler(element) {
         var arnum = get_arnum(element)
         var fieldname = $(element).parents('[fieldname]').attr('fieldname')
@@ -520,6 +602,7 @@ function AnalysisRequestAddByCol() {
         /* Generic state-setter for SELECT inputs
          */
         $('tr[fieldname] select')
+            .not('[class^="rejectionwidget-multiselect"]')
             .live('change copy', function (event, item) {
                 select_element_change_handler(this)
             })
@@ -540,6 +623,7 @@ function AnalysisRequestAddByCol() {
         /* Generic state-setter for SELECT inputs
          */
         $('tr[fieldname] input[type="text"]')
+            .not('[class^="rejectionwidget-input"]')
             .not("#singleservice")
             .not(".referencewidget")
             .live('change copy', function () {
@@ -581,14 +665,60 @@ function AnalysisRequestAddByCol() {
                     $(e).trigger('copy')
                 }
             }
+            // The rejection widget contains different field types
+            else if ($(td1).find('.RejectionWidget').length > 0) {
+                var checkbox = $(td1).find('.rejectionwidget-checkbox').prop('checked');
+                for (var arnum = 1; arnum < nr_ars; arnum++) {
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-checkbox')[0];
+                    if (checkbox) {
+                        $(e).attr('checked', true);
+                    }
+                    else {
+                        $(e).removeAttr('checked');
+                    }
+                    $(e).trigger('copy');
+                };
+                var checkbox_other = $(td1).find('.rejectionwidget-checkbox-other').prop('checked');
+                for (var arnum = 1; arnum < nr_ars; arnum++) {
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-checkbox-other')[0];
+                    if (checkbox_other) {
+                        $(e).attr('checked', true);
+                    }
+                    else {
+                        $(e).removeAttr('checked');
+                    }
+                    $(e).trigger('copy');
+                };
+                var input_other = $(td1).find('.rejectionwidget-input-other').val();
+                for (var arnum = 1; arnum < nr_ars; arnum++) {
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-input-other')[0];
+                    $(e).val(input_other);
+                    $(e).trigger('copy');
+                };
+                var select_options = $(td1).find('.rejectionwidget-multiselect').find('option');
+                for (var i=0;select_options.length>i; i++){
+                    var option = select_options[i];
+                    var value = $(option).val();
+                    var selected = option.selected;
+                    for (var arnum = 1; arnum < nr_ars; arnum++) {
+                        td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                        e = $(td).find('.rejectionwidget-multiselect option[value="' + value + '"]');
+                        $(e).attr('selected', selected);
+                        $(td).find('select.rejectionwidget-multiselect').trigger('copy');
+                    };
+                }
+            }
             // select element
             else if ($(td1).find('select').length > 0) {
-                var val1 = $(td1).find('select').val()
+                var input = $(td1).find('.rejectionwidget-input-other').val();
                 for (var arnum = 1; arnum < nr_ars; arnum++) {
-                    td = $(tr).find('td[arnum="' + arnum + '"]')[0]
-                    e = $(td).find('select')[0]
-                    $(e).val(val1)
-                    $(e).trigger('copy')
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-input-other')[0];
+                    $(e).val(input);
+                    $(e).trigger('copy');
                 }
             }
             // text input
@@ -727,8 +857,8 @@ function AnalysisRequestAddByCol() {
             var uid = $(this).attr('uid');
             var existing_uids = $('td[arnum="' + arnum + '"] input[name$="_uid"]').val().split(',');
             destroy(existing_uids, uid);
-            $('td[arnum="' + arnum + '"] input[name$="_uid"]').val(existing_uids.join(','));
-            $('td[arnum="' + arnum + '"] input[type="text"]').attr('uid', existing_uids.join(','));
+            $('td[arnum="' + arnum + '"] input[name$="CCContact-'+arnum+'_uid"]').val(existing_uids.join(','));
+            $('td[arnum="' + arnum + '"] input[name="CCContact-0"]').attr('uid', existing_uids.join(','));
             $(this).parent('div').remove();
         });
     }
@@ -824,6 +954,9 @@ function AnalysisRequestAddByCol() {
         if (!spec_uid) {
             d.resolve()
             return d.promise()
+        }
+        if (spec_uid === undefined || spec_uid === null){
+          spec_uid='';
         }
         var request_data = {
             catalog_name: 'bika_setup_catalog',
@@ -1026,6 +1159,9 @@ function AnalysisRequestAddByCol() {
          *  also clear the AR Template field.
          */
         var d = $.Deferred();
+        if (profile_uid === undefined || profile_uid === null){
+          profile_uid='';
+        }
         var request_data = {
             catalog_name: "bika_setup_catalog",
             portal_type: "AnalysisProfile",
@@ -1334,7 +1470,9 @@ function AnalysisRequestAddByCol() {
         $("tr[fieldname='Sample'] td[arnum] input[type='text']")
           .live('selected copy', function (event, item) {
                     var arnum = get_arnum(this)
-                    sample_set(arnum)
+                    if ($(this).val()) {
+                        sample_set(arnum)
+                    }
                 })
           .each(function (i, e) {
                     if ($(e).val()) {
@@ -1361,6 +1499,7 @@ function AnalysisRequestAddByCol() {
                       '_authenticator': $('input[name="_authenticator"]').val()
                   },
                   function (data) {
+                      var filled = [];
                       for (var i = 0; i < data.length; i++) {
                           var fieldname = data[i][0];
                           var fieldvalue = data[i][1];
@@ -1371,6 +1510,13 @@ function AnalysisRequestAddByCol() {
                               var element = $('#' + fieldname + '-' + arnum)[0]
                               $(element).attr('uid', fieldvalue)
                               $(element).val(fieldvalue)
+                              // Sometimes, there are both <fieldname_uid> and
+                              // <fieldname> keys in the data dictionary. In
+                              // those cases, the field that ends with '_uid'
+                              // gets preference over the field that doeesn't
+                              // ends with '_uid' when setting the state value.
+                              filled.push(fieldname);
+                              state_set(arnum, fieldname, fieldvalue);
                           }
                           // This
                           else {
@@ -1380,6 +1526,9 @@ function AnalysisRequestAddByCol() {
                               if (!element) {
                                   console.log('Selector #' + fieldname + '-' + arnum + ' not present in form')
                                   continue
+                              }
+                              if(element.getAttribute("datetimepicker") && fieldvalue && fieldvalue.indexOf(" ")==-1){
+                                fieldvalue = fieldvalue + " 00:00";
                               }
                               // here we go
                               switch (element.type) {
@@ -1404,7 +1553,14 @@ function AnalysisRequestAddByCol() {
                                   default:
                                       console.log('Unhandled field type for field ' + fieldname + ': ' + element.type)
                               }
-                              state_set(arnum, fieldname, fieldvalue)
+                              if (filled.indexOf(fieldname) === -1) {
+                                  // Sometimes, there are both <fieldname_uid> and
+                                  // <fieldname> keys in the data dictionary. In
+                                  // those cases, the field that ends with '_uid'
+                                  // gets preference over the field that doeesn't
+                                  // ends with '_uid' when setting the state value.
+                                  state_set(arnum, fieldname, fieldvalue);
+                              }
                           }
                       }
                   })
@@ -1617,10 +1773,11 @@ function AnalysisRequestAddByCol() {
             // Expand category
             var service = service_data[si]
             services.push(service)
-            var th = $("table[form_id='" + service['PointOfCapture'] + "'] " +
-                       "th[cat='" + service['CategoryTitle'] + "']")
-            if(expanded_categories.indexOf(th) < 0) {
-                expanded_categories.push(th)
+            var th_key = "table[form_id='" + service['PointOfCapture'] + "'] " +
+                       "th[cat='" + service['CategoryTitle'] + "']"
+            var th = $(th_key)
+            if(expanded_categories.indexOf(th_key) < 0) {
+                expanded_categories.push(th_key)
                 var def = $.Deferred()
                 def = category_header_expand_handler(th)
                 defs.push(def)
@@ -1669,17 +1826,21 @@ function AnalysisRequestAddByCol() {
             $(this).removeClass("expanded").addClass("collapsed")
         })
     }
-
-    function category_header_expand_handler(element) {
-        /* Deferred function to expand the category with ajax (or not!!)
-         on first expansion.  duplicated from bika.lims.bikalisting.js, this code
-         fires when categories are expanded automatically (eg, when profiles or templates require
-         that the category contents are visible for selection)
-
-         Also, this code returns deferred objects, not their promises.
-
-         :param: element - The category header TH element which normally receives 'click' event
-         */
+    /* Deferred function to expand the category with ajax (or not!!)
+    * on first expansion.  duplicated from bika.lims.bikalisting.js, this code
+    * fires when categories are expanded automatically (eg, when profiles or
+    * templates require
+    * that the category contents are visible for selection)
+    *
+    * Also, this code returns deferred objects, not their promises.
+    *
+    * @param {DOM Object} element - The category header TH element which
+    * normally receives 'click' event.
+    * @param {Number} arnum: the analysis request column number.
+    * @param {String} serv_uid: uid of the analysis service.
+    * @return {Object} deferred objects, not their promises.
+    */
+    function category_header_expand_handler(element, arnum, serv_uid) {
         var def = $.Deferred()
         // with form_id allow multiple ajax-categorised tables in a page
         var form_id = $(element).parents("[form_id]").attr("form_id")
@@ -1719,6 +1880,12 @@ function AnalysisRequestAddByCol() {
                     $("[form_id='" + form_id + "'] tr[data-ajax_category='" + cat_title + "']").replaceWith(rows);
                     $(element).removeClass("collapsed").addClass("expanded");
                     specification_apply();
+                    // If service data defined, set the checkbox
+                    if (arnum !== undefined && serv_uid !== undefined){
+                        analysis_cb_check(arnum, serv_uid);
+                        recalc_prices(arnum);
+                        _partition_indicators_set(arnum);
+                    }
                     def.resolve();
                 })
         }
@@ -1726,6 +1893,12 @@ function AnalysisRequestAddByCol() {
             // When ajax_categories are disabled, all cat items exist as TR elements:
             $(element).parent().nextAll("tr[cat='" + cat_title + "']").toggle(true)
             $(element).removeClass("collapsed").addClass("expanded")
+            // If service data defined, set the checkbox
+            if (arnum !== undefined && serv_uid !== undefined){
+                analysis_cb_check(arnum, serv_uid);
+                recalc_prices(arnum);
+                _partition_indicators_set(arnum);
+            }
             def.resolve()
         }
         return def
@@ -1767,7 +1940,7 @@ function AnalysisRequestAddByCol() {
                         $("#singleservice").focus()
                     }
                     var title = $(this).parents("[title]").attr("title")
-                    deps_calc(arnum, [uid], false, title)
+                    deps_calc(arnum, [uid], true, title)
                     partition_indicators_set(arnum)
                     recalc_prices(arnum)
                 })
@@ -1934,10 +2107,11 @@ function AnalysisRequestAddByCol() {
                 var Dependencies = lims.AnalysisService.Dependencies(uid)
                 for (i = 0; i < Dependencies.length; i++) {
                     var Dep = Dependencies[i]
-                    dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
+                    dep_element = $("tr[uid='" + Dep + "'] " +
                                     "td[class*='ar\\." + arnum + "'] " +
                                     "input[type='checkbox']")
                     if (!$(dep_element).prop("checked")) {
+                        // not working because Dep is a uid
                         dep_titles.push(Dep['Service'])
                         dep_services.push(Dep)
                     }
@@ -1966,10 +2140,11 @@ function AnalysisRequestAddByCol() {
                 var Dependants = lims.AnalysisService.Dependants(uid)
                 for (i = 0; i < Dependants.length; i++) {
                     Dep = Dependants[i]
-                    dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
+                    dep_element = $("tr[uid='" + Dep + "'] " +
                                     "td[class*='ar\\." + arnum + "'] " +
                                     "input[type='checkbox']")
                     if ($(dep_element).prop("checked")) {
+                        // not working because Dep is a uid
                         dep_titles.push(Dep['Service'])
                         dep_services.push(Dep)
                     }
@@ -1997,6 +2172,7 @@ function AnalysisRequestAddByCol() {
 
     function dependants_remove_confirm(initiator, dep_services,
                                        dep_titles) {
+        // this function is not used!
         var d = $.Deferred()
         $("body").append(
           "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>" +
@@ -2030,7 +2206,7 @@ function AnalysisRequestAddByCol() {
     function dependants_remove_yes(arnum, dep_services) {
         for (var i = 0; i < dep_services.length; i += 1) {
             var Dep = dep_services[i]
-            var uid = Dep['Service_uid']
+            var uid = Dep
             analysis_cb_uncheck(arnum, uid)
         }
         _partition_indicators_set(arnum)
@@ -2049,6 +2225,7 @@ function AnalysisRequestAddByCol() {
          initiator_title is the dialog title, this could be a service but also could
          be "Dry Matter" or some other name
          */
+         // this function is not used!
         var d = $.Deferred()
         var html = "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"
         html = html + _("<p>${service} requires the following services to be selected:</p>" +
@@ -2088,7 +2265,7 @@ function AnalysisRequestAddByCol() {
          */
         for (var i = 0; i < dep_services.length; i++) {
             var Dep = dep_services[i]
-            var uid = Dep['Service_uid']
+            var uid = Dep
             var dep_cb = $("tr[uid='" + uid + "'] " +
                            "td[class*='ar\\." + arnum + "'] " +
                            "input[type='checkbox']")
@@ -2098,17 +2275,13 @@ function AnalysisRequestAddByCol() {
                     // skip if checked already
                     continue
                 }
+                else {
+                    analysis_cb_check(arnum, uid);
+                }
             }
-            else {
-                // create new row for all services we may need
-                singleservice_duplicate(Dep['Service_uid'],
-                                        Dep["Service"],
-                                        Dep["Keyword"],
-                                        Dep["Price"],
-                                        Dep["VAT"])
+            else{
+                expand_category_for_service(Dep, arnum);
             }
-            // finally check the service
-            analysis_cb_check(arnum, uid);
         }
         recalc_prices(arnum)
         _partition_indicators_set(arnum)
@@ -2155,7 +2328,7 @@ function AnalysisRequestAddByCol() {
         var service_uids = bika.lims.ar_add.state[arnum]['Analyses']
 
         // if no sampletype or no selected analyses:  remove partition markers
-        if (!st_uid || !service_uids) {
+        if (!st_uid || service_uids.length < 1) {
             d.resolve()
             return d.promise()
         }
@@ -2346,7 +2519,7 @@ function AnalysisRequestAddByCol() {
                    }
                })
         // other field values which are handled similarly:
-        $.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget'),
+        $.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget').not('[class^="rejectionwidget-input"]'),
                function (i, e) {
                    var arnum = $(e).parents("[arnum]").attr("arnum")
                    var fieldname = $(e).parents("[fieldname]").attr("fieldname")
@@ -2356,7 +2529,7 @@ function AnalysisRequestAddByCol() {
                    state_set(arnum, fieldname, value)
                })
         // checkboxes inside ar_add_widget table.
-        $.each($('[ar_add_ar_widget] input[type="checkbox"]'),
+        $.each($('[ar_add_ar_widget] input[type="checkbox"]').not('[class^="rejectionwidget-checkbox"]'),
                function (i, e) {
                    var arnum = get_arnum(e)
                    var fieldname = $(e).parents("[fieldname]").attr("fieldname")
@@ -2364,7 +2537,7 @@ function AnalysisRequestAddByCol() {
                    state_set(arnum, fieldname, value)
                })
         // select widget values
-        $.each($('td[arnum] select'),
+        $.each($('td[arnum] select').not('[class^="rejectionwidget-multiselect"]'),
                function (i, e) {
                    var arnum = get_arnum(e)
                    var fieldname = $(e).parents("[fieldname]").attr("fieldname")
@@ -2426,8 +2599,9 @@ function AnalysisRequestAddByCol() {
     function form_submit() {
         $("[name='save_button']").click(
           function (event) {
-              event.preventDefault()
-              set_state_from_form_values()
+              $('input[name="save_button"]').prop('disabled', true);
+              event.preventDefault();
+              set_state_from_form_values();
               var request_data = {
                   _authenticator: $("input[name='_authenticator']").val(),
                   state: $.toJSON(bika.lims.ar_add.state)
@@ -2436,7 +2610,7 @@ function AnalysisRequestAddByCol() {
                 {
                     type: "POST",
                     dataType: "json",
-                    url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
+                    url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit_async",
                     data: request_data,
                     success: function (data) {
                         /*
@@ -2463,6 +2637,7 @@ function AnalysisRequestAddByCol() {
                                 }
                                 msg = msg + e + data.errors[error] + "<br/>"
                             }
+                            $('input[name="save_button"]').prop('disabled', false);
                             window.bika.lims.portalMessage(msg)
                             window.scroll(0, 0)
                         }
@@ -2470,7 +2645,7 @@ function AnalysisRequestAddByCol() {
                             var destination = window.location.href.split("/portal_factory")[0]
                             var ars = data['stickers']
                             var stickertemplate = data['stickertemplate']
-                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",")
+                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",") + ''
                             window.location.replace(destination + q)
                         }
                         else {
@@ -2496,5 +2671,36 @@ function AnalysisRequestAddByCol() {
         var arcolswidth = $('table.analysisrequest td[arnum]').width();
         $('table tr th[id^="foldercontents-ar."]').css({'width':arcolswidth, 'text-align':'center'});
         $('table tr[id^="folder-contents-item-"] td[class*="ar"]').css({'width':arcolswidth, 'text-align':'center'});
+    }
+
+    /**
+    * Given an analysis service UID, this function expands the category for
+    * that service and selects it.
+    * @param {String} serv_uid: uid of the analysis service.
+    * @param {Number} arnum: the analysis request column number.
+    * @return {None} nothing.
+    */
+    function expand_category_for_service(serv_uid, arnum){
+
+        // Ajax getting the category from uid
+        var request_data = {
+            catalog_name: "uid_catalog",
+            UID: serv_uid,
+            include_methods: 'getCategoryTitle',
+        };
+        window.bika.lims.jsonapi_read(request_data, function(data) {
+            if (data.objects.length < 1 ) {
+               var msg =
+                   '[bika.lims.analysisrequest.add_by_col.js] No data returned ' +
+                   'while running "expand_category_for_service" for ' + serv_uid;
+               console.warn(msg);
+               window.bika.lims.warning(msg);
+            } else {
+                var cat_title = data.objects[0].getCategoryTitle;
+                // Expand category by uid and select the service
+                var element = $("th[cat='" + cat_title + "']");
+                category_header_expand_handler(element, arnum, serv_uid);
+            }
+        });
     }
 }

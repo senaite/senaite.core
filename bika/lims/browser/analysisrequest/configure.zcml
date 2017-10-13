@@ -12,13 +12,6 @@
     />
 
     <adapter
-      factory="bika.lims.browser.analysisrequest.ReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
-      for="bika.lims.interfaces.IAnalysisRequest
-           zope.publisher.interfaces.browser.IBrowserRequest"
-    />
-
-    <adapter
       factory="bika.lims.browser.analysisrequest.JSONReadExtender"
       provides="bika.lims.interfaces.IJSONReadExtender"
     />
@@ -40,12 +33,6 @@
       factory="bika.lims.browser.analysisrequest.mailto_link_from_ccemails"
       provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
       name="CCEmails"
-    />
-
-    <adapter
-      name="ar_priority_icons"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      factory="bika.lims.adapters.priorityicons.PriorityIcons"
     />
 
     <!-- main site/analysisrequests view -->
@@ -90,6 +77,22 @@
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
       permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="ar_add_async"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="queued_ars"
+      class="bika.lims.browser.analysisrequest.QueuedAnalysisRequestsCount"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -160,7 +163,15 @@
     <browser:page
       for="*"
       name="analysisrequest_submit"
-      class="bika.lims.browser.analysisrequest.add.ajaxAnalysisRequestSubmit"
+      class="bika.lims.browser.analysisrequest.add.AnalysisRequestSubmit"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="analysisrequest_submit_async"
+      class="bika.lims.browser.analysisrequest.add.AsyncAnalysisRequestSubmit"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -196,6 +207,29 @@
       class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Verifying any Analysis will cause a digestion of the parent AR to
+    be triggered at the end of the request -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysis
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.browser.analysisrequest.publish.AnalysisAfterTransitionHandler"
+    />
+
+    <!-- Modifying an AR that has been verified causes a digestion to be
+    triggered at the end of this request. -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.browser.analysisrequest.publish.ARModifiedHandler"
+    />
+
+    <!-- At the end of each request, this will check to see if any ARs are
+    flagged to have their publication data pre-digested. -->
+    <subscriber
+      for="zope.publisher.interfaces.IEndRequestEvent"
+      handler="bika.lims.browser.analysisrequest.publish.EndRequestHandler"
     />
 
 </configure>

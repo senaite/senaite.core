@@ -30,6 +30,8 @@
 		});
 		save_UID_check();
 		check_UID_check();
+		check_missing_UID();
+
 		load_addbutton_overlays();
 		load_editbutton_overlays();
 	});
@@ -60,23 +62,6 @@ function referencewidget_lookups(elements) {
 		if (!options) {
 			continue;
 		}
-
-		// Prevent from saving previous record when input value is empty
-		// By default, a recordwidget input element gets an empty value
-		// when receives the focus, so the underneath values must be
-		// cleared too.
-		// var elName = $(element).attr("name");
-		// $("input[name='"+elName+"']").live("focusin", function(){
-		//  var fieldName = $(this).attr("name");
-		//  if($(this).val() || $(this).val().length===0){
-		//      var val = $(this).val();
-		//      var uid = $(this).attr("uid");
-		//      $(this).val("");
-		//      $(this).attr("uid", "");
-		//      $("input[name='"+fieldName+"_uid']").val("");
-		//      $(this).trigger("unselected", [val,uid]);
-		//  }
-		// });
 
 		options.select = function (event, ui) {
 			event.preventDefault();
@@ -204,6 +189,32 @@ function check_UID_check() {
 			$(this).attr('value', val_chk);
 		}
 	});
+}
+
+
+function check_missing_UID(){
+	/* This will remove the display value (the text-input value) if the
+	uid attribute OR the *_uid hidden field, have no value.
+
+	If the display value is removed, then also verify that both the uid attr
+	and the _uid hidden field are both blanked!
+	*/
+	$.each($(".ArchetypesReferenceWidget").children("input.referencewidget"),
+		function (index, field) {
+			var fieldName = $(this).attr("name");
+			// uid attr of text input
+			var uid = $(this).attr("uid");
+			// uid hidden field for multivalued (actually all) reference widgets
+			var _uidinput = $("input[name^='" + fieldName + "_uid']");
+			var _uid = $(_uidinput).val();
+			if (!uid || uid == undefined || uid == ""
+				|| !_uid || _uid == undefined || _uid == ""){
+					$(field).val("");
+					$(field).attr("uid", "");
+					$(_uidinput).val("");
+				}
+		}
+	)
 }
 
 function apply_button_overlay(button) {

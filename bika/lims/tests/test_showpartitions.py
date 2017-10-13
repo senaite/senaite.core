@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import os
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.browser.stickers import Sticker
@@ -64,7 +69,7 @@ class TestShowPartitions(BikaSimpleTestCase):
             doActionFor(ar, 'receive')
             self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'), 'sample_received')
             # check sticker text
-            ar.REQUEST['items'] = ar.getId()
+            ar.REQUEST['items'] = ar.UID()
             ar.REQUEST['template'] = stemp.get('id')
             sticker = Sticker(ar, ar.REQUEST)()
             pid = ar.getSample().objectValues("SamplePartition")[0].getId()
@@ -76,7 +81,7 @@ class TestShowPartitions(BikaSimpleTestCase):
             doActionFor(ar, 'receive')
             self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'), 'sample_received')
             # check sticker text
-            ar.REQUEST['items'] = ar.getId()
+            ar.REQUEST['items'] = ar.UID()
             ar.REQUEST['template'] = stemp.get('id')
             sticker = Sticker(ar, ar.REQUEST)()
             pid = ar.getSample().objectValues("SamplePartition")[0].getId()

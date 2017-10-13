@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordWidget
 from Products.Archetypes.public import *
@@ -48,18 +53,36 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
         widget = AddressWidget(
            label=_("Physical address"),
         ),
+        subfield_validators = {
+            'country': 'inline_field_validator',
+            'state': 'inline_field_validator',
+            'district': 'inline_field_validator',
+        },
+        inline_field_validator="validate_address",
     ),
     AddressField('PostalAddress',
         schemata = 'Address',
         widget = AddressWidget(
            label=_("Postal address"),
         ),
+        subfield_validators = {
+            'country': 'inline_field_validator',
+            'state': 'inline_field_validator',
+            'district': 'inline_field_validator',
+        },
+        inline_field_validator="validate_address",
     ),
     AddressField('BillingAddress',
         schemata = 'Address',
         widget = AddressWidget(
            label=_("Billing address"),
         ),
+        subfield_validators = {
+            'country': 'inline_field_validator',
+            'state': 'inline_field_validator',
+            'district': 'inline_field_validator',
+        },
+        inline_field_validator="validate_address",
     ),
     StringField('AccountType',
         schemata = 'Bank details',

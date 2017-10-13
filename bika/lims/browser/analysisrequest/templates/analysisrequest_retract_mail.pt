@@ -1,0 +1,41 @@
+
+<tal:retraction define="
+        portal_url nocall:context/portal_url;
+        portal portal_url/getPortalObject;
+        ar python:view.context;
+        rej_widg    python:ar.getRejectionReasons();
+        reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else [];
+        lab python:ar.bika_setup.laboratory;">
+
+    <tal:multiplereasons condition="python:len(reasons)&gt;1">
+    <p tal:content="python: 'The analysis request %s has been rejected because of the following reasons: ' % ar.id"></p>
+    <tal:reason repeat="reason python:r for r in reasons">
+    - <span tal:replace="reason"></span><br/>
+    </tal:reason>
+    </tal:multiplereasons>
+
+    <tal:singlereason tal:condition="python:len(reasons)==1">
+    <p tal:content="python: 'The analysis request %s has been rejected because %s.' % (ar.id,reasons[0].lower())"></p>
+    </tal:singlereason>
+
+    <p i18n:translate="">
+        For further information please contact us under the following address.
+    </p>
+    <br/>
+
+    <p style="font-size:0.9em;">
+        <a tal:attributes="href python:lab.getLabURL() if lab.getLabURL() else portal.absolute_url()">
+            <img tal:attributes="src python:'%s/logo_print.png' % portal.absolute_url()"/>
+        </a><br/>
+        <span tal:replace="lab/Title"></span><br/>
+        <tal:address define="addrkeys python:['address', 'city', 'state', 'zip', 'country'];
+                             labaddrs python:lab.getPostalAddress() or lab.getBillingAddress() or lab.getPhysicalAddress();
+                             addrlist python:[labaddrs.get(v) for v in addrkeys if labaddrs.get(v)];">
+        <tal:addresslines repeat="line addrlist">
+        <span tal:replace="line"></span><br/>
+        </tal:addresslines>
+        <span i18n:translate="">Phone</span>: <span tal:replace="lab/Phone"></span><br/>
+        <span i18n:translate="">Fax</span>: <span tal:replace="lab/Fax"></span><br/>
+        </tal:address>
+    </p>
+</tal:retraction>

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ FOSS 'Winescan FT120'
 """
 from bika.lims import bikaMessageFactory as _
@@ -17,7 +22,7 @@ def Import(context, request):
     artoapply = request.form['wsf_artoapply']
     override = request.form['wsf_override']
     sample = request.form.get('wsf_sample', 'requestid')
-    instrument = request.form.get('wsf_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     warns = []
     logs = []
@@ -48,9 +53,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ Sysmex XS 500i
 """
 from bika.lims import bikaMessageFactory as _
@@ -14,7 +19,7 @@ def getForm(instrument_name, request):
     will be overwrote on i1000 importer to save code.
     :param instrument_name: a string containing the instrument's name with the format: 'sysmex_xs_500i'
     :param request: the request object
-    :return: a dictionary with the requests results.
+    :returns: a dictionary with the requests results.
     """
     d = {'infile': request.form[instrument_name + '_file'],
          'fileformat': request.form[instrument_name + '_format'],
@@ -79,9 +84,9 @@ def Import(context, request, instrumentname='sysmex_xs_500i'):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

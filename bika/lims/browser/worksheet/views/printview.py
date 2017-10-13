@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from DateTime import DateTime
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
@@ -299,8 +305,8 @@ class PrintView(BrowserView):
             # Build the analysis-specific dict
             if an.portal_type == "DuplicateAnalysis":
                 andict = self._analysis_data(an.getAnalysis())
-                andict['id'] = an.getReferenceAnalysesGroupID();
-                andict['obj'] = an;
+                andict['id'] = an.getReferenceAnalysesGroupID()
+                andict['obj'] = an
                 andict['type'] = "DuplicateAnalysis"
                 andict['reftype'] = 'd'
             else:
@@ -366,18 +372,17 @@ class PrintView(BrowserView):
         """
         decimalmark = analysis.aq_parent.aq_parent.getDecimalMark()
         keyword = analysis.getKeyword()
-        service = analysis.getService()
         andict = {'obj': analysis,
                   'id': analysis.id,
                   'title': analysis.Title(),
                   'keyword': keyword,
-                  'scientific_name': service.getScientificName(),
-                  'accredited': service.getAccredited(),
-                  'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
-                  'category': to_utf8(service.getCategoryTitle()),
+                  'scientific_name': analysis.getScientificName(),
+                  'accredited': analysis.getAccredited(),
+                  'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(analysis.getPointOfCapture())),
+                  'category': to_utf8(analysis.getCategoryTitle()),
                   'result': analysis.getResult(),
-                  'unit': to_utf8(service.getUnit()),
-                  'formatted_unit': format_supsub(to_utf8(service.getUnit())),
+                  'unit': to_utf8(analysis.getUnit()),
+                  'formatted_unit': format_supsub(to_utf8(analysis.getUnit())),
                   'capture_date': analysis.getResultCaptureDate(),
                   'request_id': analysis.aq_parent.getId(),
                   'formatted_result': '',
@@ -450,8 +455,10 @@ class PrintView(BrowserView):
             data = {'obj': sample,
                     'id': sample.id,
                     'url': sample.absolute_url(),
-                    'date_sampled': self.ulocalized_time(sample.getDateSampled(), long_format=0),
-                    'date_received': self.ulocalized_time(sample.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(
+                        sample.getDateSampled(), long_format=True),
+                    'date_received': self.ulocalized_time(
+                        sample.getDateReceived(), long_format=0),
                     }
 
             if sample.portal_type == "ReferenceSample":
@@ -499,14 +506,18 @@ class PrintView(BrowserView):
         if ar.portal_type == "AnalysisRequest":
             return {'obj': ar,
                     'id': ar.getRequestID(),
-                    'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
-                    'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'date_received': self.ulocalized_time(
+                        ar.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(
+                        ar.getDateSampled(), long_format=True),
                     'url': ar.absolute_url(),}
         elif ar.portal_type == "ReferenceSample":
             return {'obj': ar,
                     'id': ar.id,
-                    'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
-                    'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'date_received': self.ulocalized_time(
+                        ar.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(
+                        ar.getDateSampled(), long_format=True),
                     'url': ar.absolute_url(),}
         else:
             return {'obj': ar,

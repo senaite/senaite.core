@@ -29,6 +29,89 @@ function InstrumentCertificationEditView() {
         }
     }
 }
+/**
+ * Controller class for Instrument Edit view
+ */
+function InstrumentEditView() {
+
+    var that = this;
+
+    /**
+     * Entry-point method for InstrumentEditView
+     */
+    that.load = function() {
+      // Removing 'More' button of RecordsWidget
+      $('#ResultFilesFolder_more').remove();
+      // Removing 'Delete' button of rows and also deleting last empty row.
+      var rows=$('.records_row_ResultFilesFolder');
+      for(i=0;i< rows.length;i++){
+        if (i>0 && i==(rows.length-1)) {
+          rows[i].remove();
+        }else{
+          rows[i].children[2].remove();
+        }
+      }
+    }
+
+    $('#ImportDataInterface').change(function() {
+        updateFolders();
+    });
+
+    /**
+    When user adds/removes an Interface from select of Interfaces,
+    Interface Results Folder will be updated.
+    */
+    function updateFolders() {
+        // First we delete all rows, and then adding new ones accordingly to
+        // selected Interfaces.
+        var table = $("#ResultFilesFolder_table");
+        var rows = $(".records_row_ResultFilesFolder");
+        var values = $('#ImportDataInterface').val();
+        rows.remove();
+
+        // If no interface is selected we will add empty row
+        if (values == null || (values.length==1 && values[0]=='')) {
+          var new_row = $(rows[rows.length-1]).clone();
+          for(i=0; i<$(new_row).children().length; i++){
+              var td = $(new_row).children()[i];
+              var input = $(td).children()[0];
+              $(input).val('');
+          }
+          $(new_row).appendTo($(table));
+        }else{
+          for(i=0; i< values.length; i++){
+            if (values[i]!='') {
+              var new_row = $(rows[rows.length-1]).clone();
+              var interface_td = $(new_row).children()[0];
+              var interface_input = $(interface_td).children()[0];
+              $(interface_input).val(values[i]);
+              var folder_td = $(new_row).children()[1];
+              var folder_input = $(folder_td).children()[0];
+              $(folder_input).val('');
+              $(new_row).appendTo($(table));
+            }
+          }
+          // Checking if ids are Unique
+          renameInputs();
+        }
+    }
+
+    /**
+    Updating IDs Interface Name and Folder inputs to be sure they are unique
+    */
+    function renameInputs() {
+      var table = $("#ResultFilesFolder_table");
+      var rows = $(".records_row_ResultFilesFolder");
+      for(i=0; i< rows.length; i++){
+        var inputs = $(rows[i]).find("input[id^='ResultFilesFolder']");
+        for(j=0; j< inputs.length; j++){
+          var ID = inputs[j].id;
+          var prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
+          $(inputs[j]).attr('id', prefix + "-" + i);
+        }
+      }
+    }
+}
 
 
 /**

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
@@ -52,7 +57,7 @@ class Report(BrowserView):
         for analysis in analyses:
             analysis = analysis.getObject()
             ankeyword = analysis.getKeyword()
-            antitle = analysis.getServiceTitle()
+            antitle = analysis.Title()
             daterequested = analysis.created()
 
             group = ''

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from operator import itemgetter
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -20,7 +25,11 @@ class AnalysisRequestsView(_ARV, _ARAV):
         super(AnalysisRequestsView, self).__init__(context, request)
 
     def contentsMethod(self, contentFilter):
-        return self.context.getAnalysisRequests(**contentFilter)
+        """
+        Using batch's 'getAnalysisRequests' method in order to get the
+        analysisrequests assigned to it.
+        """
+        return self.context.getAnalysisRequestsBrains(**contentFilter)
 
     def __call__(self):
         self.context_actions = {}

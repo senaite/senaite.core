@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
@@ -52,14 +57,20 @@ class Report(BrowserView):
             analyses = sample.getAnalyses({})
             for analysis in analyses:
                 analysis = analysis.getObject()
+                ds = sample.getDateSampled()
+                sd = sample.getSamplingDate()
                 dataline = {'AnalysisKeyword': analysis.getKeyword(),
-                            'AnalysisTitle': analysis.getServiceTitle(),
+                            'AnalysisTitle': analysis.Title(),
                             'SampleID': sample.getSampleID(),
                             'SampleType': sample.getSampleType().Title(),
-                            'SampleDateReceived': self.ulocalized_time(
+                            'DateReceived': self.ulocalized_time(
                                 sample.getDateReceived(), long_format=1),
-                            'SampleSamplingDate': self.ulocalized_time(
-                                sample.getSamplingDate(), long_format=1)}
+                            'DateSampled': self.ulocalized_time(
+                                ds, long_format=1),
+                            }
+                if self.context.bika_setup.getSamplingWorkflowEnabled():
+                    dataline['SamplingDate']= self.ulocalized_time(
+                                              sd, long_format=1)
                 datalines.append(dataline)
                 analyses_count += 1
 
@@ -81,11 +92,13 @@ class Report(BrowserView):
             fieldnames = [
                 'SampleID',
                 'SampleType',
-                'SampleSamplingDate',
-                'SampleDateReceived',
+                'DateSampled',
+                'DateReceived',
                 'AnalysisTitle',
                 'AnalysisKeyword',
             ]
+            if self.context.bika_setup.getSamplingWorkflowEnabled():
+                fieldnames.append('SamplingDate')
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))

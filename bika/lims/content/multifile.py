@@ -1,5 +1,11 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from zope.interface import implements
 from Products.Archetypes import atapi
+from plone.app.blob.field import FileField
 from Products.Archetypes.public import BaseContent
 from bika.lims.interfaces import IMultifile
 from bika.lims.content.bikaschema import BikaSchema
@@ -17,7 +23,7 @@ schema = BikaSchema.copy() + atapi.Schema((
         )
     ),
 
-    atapi.FileField('File',
+    FileField('File',
     required=1,
     widget = atapi.FileWidget(
         label=_("Document"),

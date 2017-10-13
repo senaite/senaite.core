@@ -1,0 +1,22 @@
+Permissions in Plone are at object level. This means that each object
+has its own required permissions (even class attributes and methods
+can have permissions definition!).
+
+There are three important files taking part in the permissions system:
+
+- permissions.zcml -> This file defines the possible permission to use. no
+assignments, just permissions ID and Title. (permissions.py contains
+pseudoconstants tu use those definitions in code).
+
+- <workflow>.csv -> An object can be linked to one or more workflows. Each
+workflow file have two parts, the 'states' section and 'transitions' section.
+
+The *states sections* defines which states an object can have, and which
+permissions each role have for that object in that state.
+
+The *transition section* defines the transition process and the permissions
+needed in order to run it.
+
+- <configure>.zcml -> Those files have views and utilities definitions,
+those definitions have a permissions attribute where you can define which
+permissions the user (role) must have to access that content.

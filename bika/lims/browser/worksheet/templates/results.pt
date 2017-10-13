@@ -12,8 +12,6 @@
     <h1>
         <img tal:condition="view/icon | nothing"
             src="" tal:attributes="src view/icon"/>
-        <img tal:condition="view/getPriorityIcon | nothing"
-             src="" tal:attributes="src view/getPriorityIcon"/>
         <span class="documentFirstHeading" tal:content="context/title_or_id"/>
     </h1>
 
@@ -156,8 +154,9 @@
         </table>
     </tal:interimwide>
 
-    <span tal:replace="structure view/Analyses/contents_table"/>
 
+    <span tal:replace="structure view/Analyses/contents_table"/>
+    <input type="hidden" id = "instrument_multiple_use" tal:attributes="value python:context.getWorksheetTemplate().getEnableMultipleUseOfInstrument() if context.getWorksheetTemplate() else 'True';"/>
     <tal:remarks define="
         field python:context.Schema()['Remarks'];
         errors python:{};">

@@ -57,6 +57,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Identifier Types" action_id="bika_identifiertypes"
+            appId="bika.lims" category="bika" condition_expr=""
+            icon_expr="string:++resource++bika.lims.images/identifiertype.png"
+            url_expr="string:$portal_url/bika_setup/bika_identifiertypes"
+            visible="True"
+            i18n:attributes="title">
+     <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Analysis Specifications" action_id="bika_analysisspecs"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/analysisspec.png"
@@ -124,6 +133,15 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/instrumenttype.png"
     url_expr="string:$portal_url/bika_setup/bika_instrumenttypes"
+    visible="True"
+    i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Instrument Locations" action_id="bika_instrumentlocations"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/instrumenttype.png"
+    url_expr="string:$portal_url/bika_setup/bika_instrumentlocations"
     visible="True"
     i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
@@ -257,15 +275,6 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="AR Priorities"
-    action_id="bika_arpriorities"
-    appId="bika.lims" category="bika" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/arpriority.png"
-    url_expr="string:$portal_url/bika_setup/bika_arpriorities"
-    visible="True">
-  <permission>BIKA: Manage Bika</permission>
- </configlet>
-
  <configlet title="Storage Locations" action_id="bika_storagelocations"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/storagelocation.png"
@@ -297,6 +306,15 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/batch.png"
     url_expr="string:$portal_url/bika_setup/bika_samplingrounds"
+    visible="True"
+    i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Reflex Rules" action_id="bika_reflexrulefolder"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/reflexrule.png"
+    url_expr="string:$portal_url/bika_setup/bika_reflexrulefolder"
     visible="True"
     i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>

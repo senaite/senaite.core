@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from Products.CMFCore.utils import getToolByName
@@ -38,10 +44,32 @@ class ServicesView(BikaListingView):
             },
         ]
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        serv_dep = obj.getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+        return result
+
     def folderitems(self):
         ws_services = []
         for analysis in self.context.getAnalyses():
-            service_uid = analysis.getService().UID()
+            service_uid = analysis.getServiceUID()
             if service_uid not in ws_services:
                 ws_services.append(service_uid)
         self.categories = []
@@ -51,8 +79,11 @@ class ServicesView(BikaListingView):
                            sort_on = 'sortable_title')
         items = []
         for service in services:
+            service_obj = service.getObject()
+            if not self.isItemAllowed(service_obj):
+                continue
             # if the service has dependencies, it can't have reference analyses
-            calculation = service.getObject().getCalculation()
+            calculation = service_obj.getCalculation()
             if calculation and calculation.getDependentServices():
                 continue
             cat = service.getCategoryTitle

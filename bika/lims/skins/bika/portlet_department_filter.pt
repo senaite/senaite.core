@@ -1,0 +1,76 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="bika">
+<body>
+<div metal:define-macro="portlet"
+    tal:define="
+        member python: context.portal_membership.getAuthenticatedMember();
+        user_name python: member.getUserName();
+        brains python: [] if user_name=='admin'  else here.portal_catalog(portal_type='LabContact',
+                                    getUsername=user_name);"
+    tal:condition="python:context.bika_setup.getAllowDepartmentFiltering() and (len(brains)>0 or user_name=='admin') ">
+<!-- Defining the base variables -->
+<tal:departments
+    tal:define="portal context/portal_url/getPortalObject;
+                plone_view context/@@plone;
+                dep_disabled python:request.cookies.get('dep_filter_disabled','');
+                deps python: here.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending',
+                                            inactive_state='active') if user_name=='admin' else brains[0].getObject().getSortedDepartments();
+                cookie python:request.cookies.get(
+                    'filter_by_department_info','');
+                deps_from_cookie python: cookie.split(',') if cookie and len(deps)>0
+                    else [];
+                first_from_cat python: deps[0].UID if user_name=='admin' and deps else
+                          brains[0].getObject().getDefaultDepartment() if brains and brains[0].getObject().getDefaultDepartment()
+                          else deps[0].UID() if deps else '';
+                first_dep python: deps_from_cookie[0] if len(deps_from_cookie)>1
+                    else first_from_cat if not cookie else '';">
+    <dl class="portlet" id="portletfilter_by_department">
+        <!-- The header of the porlet -->
+        <dt class="portletHeader"
+            i18n:translate="">Department</dt>
+
+        <!-- Opening the form -->
+        <form
+            action="portletfilter_by_department"
+            name="portletfilter_by_department"
+            method="POST">
+            <dd class="portletItem">
+                <input type="checkbox"
+                       name="admin_dep_filter_enabled"
+                       id="admin_dep_filter_enabled"
+                       tal:condition= "python: user_name=='admin'"/>
+                       <label tal:condition= "python: user_name=='admin'">Select All Departments<br><br></label>
+
+                <tal:option repeat="dep deps" tal:condition="python: len(deps)>1">
+                    <ul>
+                        <li tal:define="dep_name python:dep.Title if user_name=='admin' else dep.Title();
+                                        dep_uid python: dep.UID if user_name=='admin' else dep.UID()">
+                            <input type="checkbox"
+                                tal:attributes="
+                                    value python: dep_uid;
+                                    name python: 'chb_deps_'+ dep_name;
+                                    checked python: 'true' if dep_disabled=='true' else 'true' if any(dep_uid in cd for cd in deps_from_cookie) else 'true' if first_dep==dep_uid else ''"/>
+                            <span tal:content="python: dep_name"></span>
+                        </li>
+                    </ul>
+                </tal:option>
+
+                <!-- Only a label with the department if one department only -->
+                <label
+                    i18n:translate=""
+                    tal:condition="python: len(deps)<2"
+                    tal:content="python: deps[0].Title if user_name=='admin' and deps else deps[0].Title() if deps else ''"
+                    >Department</label>
+            </dd><br>
+            <!-- The submit form button -->
+            <dd class="portletFooter">
+                <input type="button" id="department_filter_submit" value="Filter"
+                  tal:condition="python: len(deps)>1"/>
+            </dd>
+        </form>
+    </dl>
+</tal:departments>
+</div>
+</body>
+</html>

@@ -26,4 +26,11 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
+  <browser:page
+      for="*"
+      name="get_available_calculations"
+      class="bika.lims.browser.calcs.ajaxGetAvailableCalculations"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
 </configure>

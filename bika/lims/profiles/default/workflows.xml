@@ -3,7 +3,6 @@
  <property
     name="title">Contains workflow definitions for your portal</property>
  <object name="bika_analysis_workflow" meta_type="Workflow"/>
- <object name="bika_analysis_workflow" meta_type="Workflow"/>
  <object name="bika_ar_workflow" meta_type="Workflow"/>
  <object name="bika_arimport_workflow" meta_type="Workflow"/>
  <object name="bika_batch_workflow" meta_type="Workflow"/>
@@ -36,11 +35,6 @@
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
-  <type type_id="ARPriorities"/>
-  <type type_id="ARPriority">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
  <type type_id="AnalysisProfiles"/>
  <type type_id="AnalysisProfile">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
@@ -148,6 +142,12 @@
    <bound-workflow workflow_id="bika_duplicateanalysis_workflow"/>
   </type>
 
+  <type type_id="IdentifierType">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+  <type type_id="IdentifierTypes"/>
+
   <type type_id="Instruments"/>
   <type type_id="Instrument">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
@@ -168,6 +168,12 @@
 
   <type type_id="InstrumentTypes"/>
   <type type_id="InstrumentType">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
+  <type type_id="InstrumentLocations"/>
+  <type type_id="InstrumentLocation">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
@@ -343,6 +349,22 @@
   <type type_id="SamplingRound">
    <bound-workflow workflow_id="bika_samplinground_workflow"/>
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
+  </type>
+
+  <type type_id="ReflexRuleFolder">
+    <bound-workflow workflow_id="bika_one_state_workflow"/>
+  </type>
+
+  <type type_id="ReflexRule">
+    <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
+  <type type_id="Department">
+    <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
+  <type type_id="AutoImportLog">
+    <bound-workflow workflow_id="bika_one_state_workflow"/>
   </type>
 
  </bindings>

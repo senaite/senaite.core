@@ -94,6 +94,9 @@ function calcdependencies(elements, auto_yes) {
 		// selecting a service; discover dependencies
 		if ($(element).prop("checked")){
 			var Dependencies = lims.AnalysisService.Dependencies(service_uid);
+			if(!Dependencies){
+			    Dependencies = [];
+			}
 			for(i = 0; i<Dependencies.length; i++) {
 				dep = Dependencies[i];
 				if ($("#analyses_cb_"+dep.Service_uid).prop("checked") ){
@@ -134,6 +137,9 @@ function calcdependencies(elements, auto_yes) {
 		// unselecting a service; discover back dependencies
 		else {
 			var Dependants = lims.AnalysisService.Dependants(service_uid);
+			if(!Dependants){
+			    Dependants = [];
+			}
 			for (i=0; i<Dependants.length; i++){
 				dep = Dependants[i];
 				cb = $("#analyses_cb_" + dep.Service_uid);
@@ -240,9 +246,9 @@ function calculate_parts() {
 		var sampletype = {};
 		$.ajaxSetup({async:false});
 		window.bika.lims.jsonapi_read(request_data = {
-			catalog_name: "uid_catalog",
-			UID: st_uid,
-			sort_on: 'Title'
+			catalog_name: "bika_setup_catalog",
+			portal_type: "SampleType",
+			UID: st_uid
 		}, function(data){
 			sampletype = data.objects[0];
 		});
@@ -299,9 +305,10 @@ function setAnalysisProfile(){
 	});
 	//
 	window.bika.lims.jsonapi_read({
-		catalog_name: "uid_catalog",
+		catalog_name: "bika_setup_catalog",
+		portal_type: "AnalysisProfile",
 		UID: $("#AnalysisProfile_uid").val(),
-		sort_on: 'Title'
+		sort_on: 'title'
 	}, function(profile_data){
 		var service_uids = profile_data.objects[0].Service_uid;
 			for (var i = 0; i < service_uids.length; i++){

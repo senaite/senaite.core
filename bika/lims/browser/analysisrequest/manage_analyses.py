@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, dicts_to_dict
@@ -29,7 +34,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         super(AnalysisRequestAnalysesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'AnalysisService',
-                              'sort_on': 'sortable_title',
                               'inactive_state': 'active', }
         self.context_actions = {}
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
@@ -48,22 +52,18 @@ class AnalysisRequestAnalysesView(BikaListingView):
             self.expand_all_categories = False
             self.ajax_categories = True
             self.category_index = 'getCategoryTitle'
-
         self.columns = {
             'Title': {'title': _('Service'),
-                      'index': 'sortable_title',
+                      'index': 'title',
                       'sortable': False, },
             'Hidden': {'title': _('Hidden'),
                        'sortable': False,
                        'type': 'boolean', },
             'Price': {'title': _('Price'),
                       'sortable': False, },
-            'Priority': {'title': _('Priority'),
-                         'sortable': False,
-                         'index': 'Priority',
-                         'toggle': True },
             'Partition': {'title': _('Partition'),
-                          'sortable': False, },
+                          'sortable': False,
+                          'type': 'choices'},
             'min': {'title': _('Min')},
             'max': {'title': _('Max')},
             'error': {'title': _('Permitted Error %')},
@@ -73,7 +73,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         ShowPrices = self.context.bika_setup.getShowPrices()
         if ShowPrices:
             columns.append('Price')
-            columns.append('Priority')
         ShowPartitions = self.context.bika_setup.getShowPartitions()
         if ShowPartitions:
             columns.append('Partition')
@@ -139,6 +138,27 @@ class AnalysisRequestAnalysesView(BikaListingView):
             return dicts_to_dict(spec, 'keyword').get(keyword, empty)
         return empty
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        obj_dep = obj.getDepartment()
+        result = True
+        if obj_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', 'no')
+            # Comparing departments' UIDs
+            result = True if obj_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+            return result
+        return result
+
     def folderitems(self):
         self.categories = []
 
@@ -150,13 +170,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.expand_all_categories = False
 
         wf = getToolByName(self.context, 'portal_workflow')
-        mtool = getToolByName(self.context, 'portal_membership')
-
-        self.allow_edit = mtool.checkPermission('Modify portal content',
-                                                self.context)
-
+        self.contentFilter['sort_on'] = 'title'
+        self.contentFilter['sort_order'] = 'ascending'
         items = BikaListingView.folderitems(self)
-        analyses = self.context.getAnalyses(full_objects=True)
 
         parts = self.context.getSample().objectValues('SamplePartition')
         partitions = [{'ResultValue': o.Title(),
@@ -198,7 +214,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
-            items[x]['Priority'] = ''
 
             if items[x]['selected']:
                 items[x]['allow_edit'] = ['Partition', 'min', 'max', 'error']
@@ -214,20 +229,16 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
                 spec = self.get_spec_from_ar(self.context,
-                                             analysis.getService().getKeyword())
+                                             analysis.getKeyword())
                 items[x]["min"] = spec.get("min",'')
                 items[x]["max"] = spec.get("max",'')
                 items[x]["error"] = spec.get("error",'')
-                # Add priority premium
                 items[x]['Price'] = analysis.getPrice()
-                priority = analysis.getPriority()
-                items[x]['Priority'] = priority and priority.Title() or ''
             else:
                 items[x]['Partition'] = ''
                 items[x]["min"] = ''
                 items[x]["max"] = ''
                 items[x]["error"] = ''
-                items[x]["Priority"] = ''
 
             after_icons = ''
             if obj.getAccredited():
@@ -264,7 +275,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             # Display analyses for this Analysis Service in results?
             ser = self.context.getAnalysisServiceSettings(obj.UID())
-            items[x]['allow_edit'] = ['Hidden', ]
+            items[x]['allow_edit'].append('Hidden')
             items[x]['Hidden'] = ser.get('hidden', obj.getHidden())
 
         self.categories.sort()

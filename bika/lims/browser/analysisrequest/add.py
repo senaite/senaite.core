@@ -1,30 +1,30 @@
 import json
-from bika.lims.utils.sample import create_sample
-from bika.lims.utils.samplepartition import create_samplepartition
-from bika.lims.workflow import doActionFor
 import plone
-
+import datetime
+from datetime import date
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.controlpanel.bika_analysisservices import \
     AnalysisServicesView as ASV
-from bika.lims.interfaces import IAnalysisRequestAddView, ISample
-from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
+from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.utils import t
-from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
-from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
+from collective.taskqueue.interfaces import ITaskQueue
+from zope.component import queryUtility
+import transaction
+import traceback
 
 
 class AnalysisServicesView(ASV):
@@ -51,6 +51,7 @@ class AnalysisServicesView(ASV):
 
         self.contentFilter['getPointOfCapture'] = poc
         self.contentFilter['inactive_state'] = 'active'
+        self.show_workflow_action_buttons = False
 
         if category:
             self.contentFilter['getCategoryTitle'] = category
@@ -143,18 +144,21 @@ class AnalysisServicesView(ASV):
         # run multiple times.  This is necessary so that AR Add can check
         # the item count before choosing to render the table at all.
         if not self.ar_add_items:
-            bs = self.context.bika_setup
             # The parent folder can be a client or a batch, but we need the
             # client.  It is possible that this will be None!  This happens
             # when the AR is inside a batch, and the batch has no Client set.
-            client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
-                else self.context.aq_parent.getClient()
+            client = ''
+            if not self.context.aq_parent.portal_type == "AnalysisRequestsFolder":
+                client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
+                    else self.context.aq_parent.getClient()
+            # TODO: Forcing the sort_on value. We should find a better way,
+            # this is just a quick fix.
+            self.contentFilter['sort_on'] = 'title'
             items = super(AnalysisServicesView, self).folderitems()
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
                     continue
                 obj = items[x]['obj']
-                kw = obj.getKeyword()
                 for arnum in range(self.ar_count):
                     key = 'ar.%s' % arnum
                     # If AR Specification fields are enabled, these should
@@ -221,6 +225,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __call__(self):
         self.request.set('disable_border', 1)
         self.ShowPrices = self.context.bika_setup.getShowPrices()
+        self.analysisrequest_catalog =\
+            getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         if 'ajax_category_expand' in self.request.keys():
             cat = self.request.get('cat')
             asv = AnalysisServicesView(self.context,
@@ -236,19 +242,24 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         specs = {}
         copy_from = self.request.get('copy_from', "")
         if not copy_from:
-            return {}
-        uids =  copy_from.split(",")
-
+            return json.dumps(specs)
+        uids = copy_from.split(",")
+        proxies = self.analysisrequest_catalog(UID=uids)
+        if not proxies:
+            logger.warning(
+                'No object found for UIDs {0} while copying specs'
+                .format(copy_from))
+            return json.dumps(specs)
         n = 0
-        for uid in uids:
-            proxies = self.bika_catalog(UID=uid)
-            rr = proxies[0].getObject().getResultsRange()
+        for proxie in proxies:
+            res_range = proxie.getObject().getResultsRange()
             new_rr = []
-            for i, r in enumerate(rr):
-                s_uid = self.bika_setup_catalog(portal_type='AnalysisService',
-                                              getKeyword=r['keyword'])[0].UID
-                r['uid'] = s_uid
-                new_rr.append(r)
+            for i, rr in enumerate(res_range):
+                s_uid = self.bika_setup_catalog(
+                    portal_type='AnalysisService',
+                    getKeyword=rr['keyword'])[0].UID
+                rr['uid'] = s_uid
+                new_rr.append(rr)
             specs[n] = new_rr
             n += 1
         return json.dumps(specs)
@@ -274,7 +285,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         for field in schema.fields():
             isVisible = field.widget.isVisible
             v = isVisible(self.context, mode, default='invisible', field=field)
-            if v == visibility:
+            visibility_guard = True
+            # visibility_guard is a widget field defined in the schema in order to know the visibility of the widget when the field is related to a dynamically changing content such as workflows. For instance those fields related to the workflow will be displayed only if the workflow is enabled, otherwise they should not be shown.
+            if 'visibility_guard' in dir(field.widget):
+                visibility_guard = eval(field.widget.visibility_guard)
+            if v == visibility and visibility_guard:
                 fields.append(field)
         return fields
 
@@ -284,7 +299,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         in a new AR.  Used in add_by_row view popup, and add_by_col add view.
 
         :param ar_count: number of AR columns to generate columns for.
-        :return: string: rendered HTML content of bika_listing_table.pt.
+        :returns: string: rendered HTML content of bika_listing_table.pt.
             If no items are found, returns "".
         """
 
@@ -340,7 +355,9 @@ class SecondaryARSampleInfo(BrowserView):
                     ret.append([fieldname + '_uid', fieldvalue.UID()])
                     fieldvalue = fieldvalue.Title()
                 if hasattr(fieldvalue, 'year'):
-                    fieldvalue = fieldvalue.strftime(self.date_format_short)
+                    # TODO Parsing with hardcoded date format is not good. Replace it with global format.
+                    # We do it now because of parsing format in line 433.
+                    fieldvalue = fieldvalue.strftime("%Y-%m-%d")
             else:
                 fieldvalue = ''
             ret.append([fieldname, fieldvalue])
@@ -355,19 +372,24 @@ def ajax_form_error(errors, field=None, arnum=None, message=None):
         error_key = 'Form Error'
     errors[error_key] = message
 
-class ajaxAnalysisRequestSubmit():
-    """Handle data submitted from analysisrequest add forms.  As much
-    as possible, the incoming json arrays should already match the requirement
-    of the underlying AR/sample schema.
-    """
+
+class AbstractAnalysisRequestSubmit():
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        self.valid_states = {}
         # Errors are aggregated here, and returned together to the browser
         self.errors = {}
 
     def __call__(self):
+        self.validate_form()
+        if self.errors:
+            return json.dumps({'errors': self.errors})
+
+        return self.process_form()
+
+    def validate_form(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
@@ -403,14 +425,64 @@ class ajaxAnalysisRequestSubmit():
                     break
 
         # in valid_states, all ars that pass validation will be stored
-        valid_states = {}
+        self.valid_states = {}
         for arnum, state in nonblank_states.items():
+            secondary = False
             # Secondary ARs are a special case, these fields are not required
             if state.get('Sample', ''):
                 if 'SamplingDate' in required:
                     required.remove('SamplingDate')
                 if 'SampleType' in required:
                     required.remove('SampleType')
+                secondary = True
+            # If this is not a Secondary AR, make sure that Sample Type UID is valid. This shouldn't
+            # happen, but making sure just in case.
+            else:
+                st_uid = state.get('SampleType', None)
+                if not st_uid or not bsc(portal_type='SampleType', UID=st_uid):
+                    msg = t(_("Not a valid Sample Type."))
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
+            # checking if sampling date is not future
+            if state.get('SamplingDate', ''):
+                samplingdate = state.get('SamplingDate', '')
+                try:
+                    samp_date = datetime.datetime.strptime(
+                        samplingdate.strip(), "%Y-%m-%d %H:%M")
+                except ValueError:
+                    print traceback.format_exc()
+                    msg = \
+                        "Bad time formatting: Getting '{}' but expecting an" \
+                        " string with '%Y-%m-%d %H:%M' format." \
+                            .format(samplingdate)
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
+                today = date.today()
+                if not secondary and today > samp_date.date():
+                    msg = t(_("Expected Sampling Date can't be in the past"))
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
+            # If Sampling Date is not set, we are checking whether it is the user left it empty,
+            # or it is because we have Sampling Workflow Disabled
+            elif not self.context.bika_setup.getSamplingWorkflowEnabled():
+                # Date Sampled is required in this case
+                date_sampled = state.get('DateSampled', '')
+                if not date_sampled:
+                    msg = \
+                        "Date Sampled Field is required."
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
+                try:
+                    date_sampled = datetime.datetime.strptime(
+                        date_sampled.strip(), "%Y-%m-%d %H:%M")
+                except ValueError:
+                    print traceback.format_exc()
+                    msg = \
+                        "Bad time formatting: Getting '{}' but expecting an" \
+                        " string with '%Y-%m-%d %H:%M' format." \
+                            .format(date_sampled)
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
             # fields flagged as 'hidden' are not considered required because
             # they will already have default values inserted in them
             for fieldname in required:
@@ -425,23 +497,34 @@ class ajaxAnalysisRequestSubmit():
                 ajax_form_error(self.errors, arnum=arnum, message=msg)
                 continue
             # This ar is valid!
-            valid_states[arnum] = state
+            self.valid_states[arnum] = state
 
         # - Expand lists of UIDs returned by multiValued reference widgets
         # - Transfer _uid values into their respective fields
-        for arnum in valid_states.keys():
-            for field, value in valid_states[arnum].items():
+        for arnum in self.valid_states.keys():
+            for field, value in self.valid_states[arnum].items():
                 if field.endswith('_uid') and ',' in value:
-                    valid_states[arnum][field] = value.split(',')
+                    self.valid_states[arnum][field] = value.split(',')
                 elif field.endswith('_uid'):
-                    valid_states[arnum][field] = value
+                    self.valid_states[arnum][field] = value
 
-        if self.errors:
-            return json.dumps({'errors': self.errors})
+    def process_form(self):
+        # To be implemented by child classes
+        pass
 
+
+class AnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
+    """Handle data submitted from analysisrequest add forms.  As much
+    as possible, the incoming json arrays should already match the requirement
+    of the underlying AR/sample schema.
+    """
+
+    def process_form(self):
         # Now, we will create the specified ARs.
+        portal_catalog = getToolByName(self.context, 'portal_catalog')
         ARs = []
-        for arnum, state in valid_states.items():
+        new_ar_uids = []
+        for arnum, state in self.valid_states.items():
             # Create the Analysis Request
             ar = crar(
                 portal_catalog(UID=state['Client'])[0].getObject(),
@@ -449,6 +532,10 @@ class ajaxAnalysisRequestSubmit():
                 state
             )
             ARs.append(ar.Title())
+            # Automatic label printing won't print "register" labels for
+            # Secondary ARs
+            if ar.Title()[-2:] == '01':
+                new_ar_uids.append(ar.UID())
 
         # Display the appropriate message after creation
         if len(ARs) > 1:
@@ -458,21 +545,50 @@ class ajaxAnalysisRequestSubmit():
             message = _('Analysis request ${AR} was successfully created.',
                         mapping={'AR': safe_unicode(ARs[0])})
         self.context.plone_utils.addPortalMessage(message, 'info')
-        # Automatic label printing won't print "register" labels for Secondary. ARs
-        new_ars = [ar for ar in ARs if ar[-2:] == '01']
-        if 'register' in self.context.bika_setup.getAutoPrintStickers() \
-                and new_ars:
+
+        if new_ar_uids and 'register'\
+                in self.context.bika_setup.getAutoPrintStickers():
             return json.dumps({
                 'success': message,
-                'stickers': new_ars,
+                'stickers': new_ar_uids,
                 'stickertemplate': self.context.bika_setup.getAutoStickerTemplate()
             })
         else:
             return json.dumps({'success': message})
 
 
-from bika.lims import deprecated
-@deprecated(comment="bika.lims.browser.analysisrequest.add."
+class AsyncAnalysisRequestSubmit(AnalysisRequestSubmit):
+
+    def process_form(self):
+
+        # We want to first know the total number of analyses to be created
+        num_analyses = 0
+        uids_arr = [ar.get('Analyses', []) for ar in self.valid_states.values()]
+        for arr in uids_arr:
+            num_analyses += len(arr)
+
+        if num_analyses < 50:
+            # Do not process asynchronously
+            return AnalysisRequestSubmit.process_form(self)
+
+        # Only load asynchronously if queue ar-create is available
+        task_queue = queryUtility(ITaskQueue, name='ar-create')
+        if task_queue is None:
+            # ar-create queue not registered. Proceed synchronously
+            logger.info("SYNC: total = %s" % num_analyses)
+            return AnalysisRequestSubmit.process_form(self)
+        else:
+            # ar-create queue registered, create asynchronously
+            logger.info("[A]SYNC: total = %s" % num_analyses)
+            path = self.request.PATH_INFO
+            path = path.replace('_submit_async', '_submit')
+            task_queue.add(path, method='POST')
+            msg = _('One job added to the Analysis Request creation queue')
+            self.context.plone_utils.addPortalMessage(msg, 'info')
+            return json.dumps({'success': 'With taskqueue'})
+
+
+@deprecated(comment="[160525] bika.lims.browser.analysisrequest.add."
                     "create_analysisrequest is deprecated and will be removed "
                     "in Bika LIMS 3.3", replacement=crar)
 def create_analysisrequest(context, request, values):

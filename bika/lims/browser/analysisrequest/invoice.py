@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -11,7 +16,7 @@ from bika.lims.config import VERIFIED_STATES
 from bika.lims.interfaces import IInvoiceView
 from bika.lims.permissions import *
 from bika.lims.utils import to_utf8, isAttributeHidden, encode_header
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, getTransitionDate
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
@@ -51,12 +56,9 @@ class InvoiceView(BrowserView):
         self.verified = verified
         self.request['verified'] = verified
         # Collect published date
-        datePublished = context.getDatePublished()
-        if datePublished is not None:
-            datePublished = self.ulocalized_time(
-                datePublished, long_format=1
-            )
-        self.datePublished = datePublished
+        self.datePublished = \
+            self.ulocalized_time(getTransitionDate(context, 'publish'),
+                                 long_format=1)
         # Collect received date
         dateReceived = context.getDateReceived()
         if dateReceived is not None:
@@ -93,19 +95,13 @@ class InvoiceView(BrowserView):
                 self.headers.append(
                     {'title': 'datePublished', 'value': self.datePublished})
 
-        #   <tal:published tal:condition="view/datePublished">
-        #       <th i18n:translate="">Date Published</th>
-        #       <td tal:content="view/datePublished"></td>
-        #   </tal:published>
-        #</tr>
         analyses = []
         profiles = []
         # Retrieve required data from analyses collection
         all_analyses, all_profiles, analyses_from_profiles = context.getServicesAndProfiles()
         # Relating category with solo analysis
         for analysis in all_analyses:
-            service = analysis.getService()
-            categoryName = service.getCategory().Title()
+            categoryName = analysis.getCategoryTitle()
             # Find the category
             try:
                 category = (
@@ -181,16 +177,9 @@ class InvoiceView(BrowserView):
         :analyses: a list of analyses
         """
         for analysis in analyses:
-            if service_keyword == analysis.getService().getKeyword():
+            if service_keyword == analysis.getKeyword():
                 return analysis
-        return 0
-
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
+        return None
 
     def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()

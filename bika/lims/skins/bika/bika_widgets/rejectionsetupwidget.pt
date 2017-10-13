@@ -1,0 +1,73 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="bika">
+     <metal:view_macro define-macro="view">
+        <div metal:use-macro="here/widgets/string/macros/view"></div>
+     </metal:view_macro>
+
+    <metal:define define-macro="edit"
+        tal:define="widget_data python:request.form.get(fieldName, accessor());
+                    options python:widget_data[0] if len(widget_data) > 0 else {};">
+        <div tal:attributes="
+               id string:archetypes-fieldname-${fieldName};
+               class python:'%s %s' % ('field', widget.getName())">
+        <!-- Checkbox -->
+        <input type="checkbox"
+            class="rejectionwidget-checkbox"
+            tal:attributes="
+                name string:${fieldName}.checkbox:records:ignore_empty;
+                id string:${fieldName}-checkbox;
+                checked python:'checked' if len(options) > 1 and 'checkbox' in options and options['checkbox']  == 'on' else ''"/>
+        <!-- Label and description -->
+        <label tal:attributes="for fieldName">
+            <span i18n:translate="" tal:replace="python:widget.Label(here)">
+            </span>
+            <span tal:attributes="id python: fieldName + '_help'"
+                 class="formHelp"
+                 tal:content="python:widget.Description(here)"></span>
+        </label>
+        <!-- input text boxes and delete buttons-->
+        <div class="options-set-container">
+        <div class="options-set" id="options-set">
+            <label i18n:translate="">
+                <span i18n:translate="">Predefined reasons of rejection</span>
+                <span class="formHelp" i18n:translate="">
+                    These reasons will be displayed for its selection during the rejection process.
+                </span>
+            </label>
+            <span tal:repeat="option python:widget.getSortKeys(options.keys())"
+                tal:omit-tag="python:True">
+                <div class="option-set"
+                    tal:condition="python:option != 'checkbox'"
+                    tal:attributes="id string:${fieldName}-option-${repeat/option/index}">
+                    <input type="text"
+                        name=""
+                        value=""
+                        size="30"
+                        tabindex="#"
+                        tal:attributes="
+                            class string:records_inputstring;
+                            name string:${fieldName}.textfield-${repeat/option/index}:records:ignore_empty;
+                            id string:${fieldName}-textfield-${repeat/option/index};
+                            value python:options[option] if option in options.keys() else ''"/>
+                    <!-- delete -->
+                    <img class="rej_deletebtn"
+                        tal:attributes="
+                                src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+                </div>
+            </span>
+        </div>
+        <input
+            type="button"
+            class="context"
+            value="More"
+            tal:attributes="id string:${fieldName}_more;
+                           tabindex tabindex/next|nothing"
+            i18n:attributes="value" />
+        </div>
+    </div>
+</metal:define>
+
+    <div metal:define-macro="search">
+    	<div metal:use-macro="here/widgets/string/macros/search"></div>
+    </div>
+</html>

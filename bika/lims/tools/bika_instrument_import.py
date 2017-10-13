@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
@@ -77,7 +82,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                 these_analyses = ws.getPosAnalyses(pos)
                 ws_analyses = {}
                 for analysis in these_analyses:
-                    ws_analyses[analysis.getService().getId()] = analysis
+                    ws_analyses[analysis.id] = analysis
                 these_service_ids = ws_analyses.keys()
             else:          # Analysis Request
                 r = self.portal_catalog(portal_type = 'AnalysisRequest',

@@ -1,0 +1,115 @@
+#archetypes-fieldname-ReflexRules label[for="ReflexRules"] {
+    cursor: pointer;
+}
+#archetypes-fieldname-ReflexRules label.formQuestion:before {
+    content: '?';
+    background-color: yellow;
+    color: blue;
+    padding: 3px;
+    margin-bottom: 10px;
+}
+tr.records_row_ReflexRules{
+    border: 1px solid #CECECE;
+}
+.action_deletebtn {
+    border: 0;
+    cursor: pointer;
+}
+#ReflexRules_table {
+    width: 100%;
+}
+tr.records_row_ReflexRules td.rulescontainer {
+    width: 100%;
+    padding:10px;
+}
+tr.records_row_ReflexRules td:last-child {
+    background-color: #efefef;
+    padding: 5px;
+    text-align: right;
+    width: 40px;
+}
+
+tr.records_row_ReflexRules td div {
+    padding: 3px 0;
+    white-space: nowrap;
+}
+
+tr.records_row_ReflexRules td div.analyst-section {
+    padding-left:10px;
+}
+
+tr.records_row_ReflexRules td div.worksheet-template-section {
+    padding-left:10px;
+}
+
+tr.records_row_ReflexRules td:first-child input[type="button"] {
+    background-color: #fff;
+    border: medium none;
+    color: #205c90;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+div.inline {
+    display: inline;
+}
+
+tr.records_row_ReflexRules td.rulenumber {
+    background-color: #efefef;
+    border-right: 1px solid #cdcdcd;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px !important;
+    vertical-align: top;
+    white-space: nowrap;
+}
+input.always_disabled {
+    background-color: #efefef;
+    border: medium none;
+    border-radius: 5px;
+    color: #333;
+    font-weight: bold;
+    padding: 3px 10px;
+    width: inherit;
+    margin:0 10px;
+    max-width:60px;
+}
+.action_define_result {
+    margin: 0 10px;
+}
+
+.records_row_ReflexRules.rulenumber-0 {
+    border: medium none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulenumber * {
+    display: none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulenumber span.reflex_rule_text {
+    display:inherit;
+    color:transparent;
+}
+.records_row_ReflexRules.rulenumber-0 td:last-child,
+.records_row_ReflexRules.rulenumber-0 td.rulenumber {
+    background-color: transparent;
+    border: medium none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulescontainer {
+}
+.records_row_ReflexRules.rulenumber-0 td.rulescontainer div.rulescontainer-panel {
+    margin-left: -45px;
+}
+.records_row_ReflexRules td.rulescontainer div.rulescontainer-panel div.derivativeactions-title {
+    display:none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulescontainer div.rulescontainer-panel div.derivativeactions-title {
+    display: block;
+    font-weight: bold;
+    padding: 20px 0 0;
+}
+#ReflexRules_addnew.context {
+    margin-left:5px;
+}
+.title.actions-title {
+    line-height:30px;
+}

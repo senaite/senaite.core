@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Acquisition import aq_parent
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -9,10 +14,68 @@ from zope.interface import implements
 from datetime import datetime
 import string
 import re
+import types
+
+
+class IdentifierTypeAttributesValidator:
+    """Validate IdentifierTypeAttributes to ensure that attributes are
+    not duplicated.
+    """
+
+    implements(IValidator)
+    name = "identifiertypeattributesvalidator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        bsc = getToolByName(instance, "bika_setup_catalog")
+        translate = getToolByName(instance, 'translation_service').translate
+        request = instance.REQUEST
+        form = request.get('form', {})
+        fieldname = kwargs['field'].getName()
+        form_value = form.get(fieldname, False)
+        if form_value == False:
+            # not required...
+            return True
+        if value == instance.get(fieldname):
+            # no change.
+            return True
+
+        return True
+
+
+validation.register(IdentifierTypeAttributesValidator())
+
+
+class IdentifierValidator:
+    """some actual validation should go here.
+    I'm leaving this stub registered, but adding no extra validation.
+    """
+
+    implements(IValidator)
+    name = "identifiervalidator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        bsc = getToolByName(instance, "bika_setup_catalog")
+        translate = getToolByName(instance, 'translation_service').translate
+        request = instance.REQUEST
+        form = request.get('form', {})
+        fieldname = kwargs['field'].getName()
+        form_value = form.get(fieldname, False)
+        if form_value == False:
+            # not required...
+            return True
+        if value == instance.get(fieldname):
+            # no change.
+            return True
+
+        return True
+
+
+validation.register(IdentifierValidator())
 
 
 class UniqueFieldValidator:
-
     """ Verifies that a field value is unique for items
     if the same type in this location """
 
@@ -32,24 +95,25 @@ class UniqueFieldValidator:
 
         for item in aq_parent(instance).objectValues():
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
-               fieldname in item.Schema() and \
-               str(item.Schema()[fieldname].get(item)) == str(value):   # We have to compare them as strings because
-                                                                        # even if a number (as an  id) is saved inside
-                                                                        # a string widget and string field, it will be
-                                                                        # returned as an int. I don't know if it is
-                                                                        # caused because is called with
-                                                                        # <item.Schema()[fieldname].get(item)>,
-                                                                        # but it happens...
+                            fieldname in item.Schema() and \
+                            str(item.Schema()[fieldname].get(item)) == str(
+                        value):  # We have to compare them as strings because
+                # even if a number (as an  id) is saved inside
+                # a string widget and string field, it will be
+                # returned as an int. I don't know if it is
+                # caused because is called with
+                # <item.Schema()[fieldname].get(item)>,
+                # but it happens...
                 msg = _("Validation failed: '${value}' is not unique",
                         mapping={'value': safe_unicode(value)})
                 return to_utf8(translate(msg))
         return True
 
+
 validation.register(UniqueFieldValidator())
 
 
 class InvoiceBatch_EndDate_Validator:
-
     """ Verifies that the End Date is after the Start Date """
 
     implements(IValidator)
@@ -62,19 +126,19 @@ class InvoiceBatch_EndDate_Validator:
         # form = request.get('form', {})
         enddate = value
         startdate = startdate.strftime('%Y-%m-%d %H:%M')
-        
+
         translate = getToolByName(instance, 'translation_service').translate
-        
+
         if not enddate >= startdate:
             msg = _("Start date must be before End Date")
             return to_utf8(translate(msg))
         return True
 
+
 validation.register(InvoiceBatch_EndDate_Validator())
 
 
 class ServiceKeywordValidator:
-
     """Validate AnalysisService Keywords
     must match isUnixLikeName
     may not be the same as another service keyword
@@ -109,7 +173,7 @@ class ServiceKeywordValidator:
                 return to_utf8(translate(msg))
 
         calc = hasattr(instance, 'getCalculation') and \
-            instance.getCalculation() or None
+               instance.getCalculation() or None
         our_calc_uid = calc and calc.UID() or ''
 
         # check the value against all Calculation Interim Field ids
@@ -128,11 +192,11 @@ class ServiceKeywordValidator:
                     return to_utf8(translate(msg))
         return True
 
+
 validation.register(ServiceKeywordValidator())
 
 
 class InterimFieldsValidator:
-
     """Validating InterimField keywords.
         XXX Applied as a subfield validator but validates entire field.
         keyword must match isUnixLikeName
@@ -155,7 +219,8 @@ class InterimFieldsValidator:
         translate = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
 
-        # We run through the validator once per form submit, and check all values
+        # We run through the validator once per form submit, and check all
+        # values
         # this value in request prevents running once per subfield value.
         key = instance.id + fieldname
         if instance.REQUEST.get(key, False):
@@ -165,13 +230,16 @@ class InterimFieldsValidator:
             row = interim_fields[x]
             keys = row.keys()
             if 'title' not in keys:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: title is required")))
+                instance.REQUEST[key] = to_utf8(
+                    translate(_("Validation failed: title is required")))
                 return instance.REQUEST[key]
             if 'keyword' not in keys:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: keyword is required")))
+                instance.REQUEST[key] = to_utf8(
+                    translate(_("Validation failed: keyword is required")))
                 return instance.REQUEST[key]
             if not re.match(r"^[A-Za-z\w\d\-\_]+$", row['keyword']):
-                instance.REQUEST[key] = _("Validation failed: keyword contains invalid characters")
+                instance.REQUEST[key] = _(
+                    "Validation failed: keyword contains invalid characters")
                 return instance.REQUEST[key]
 
         # keywords and titles used once only in the submitted form
@@ -225,32 +293,34 @@ class InterimFieldsValidator:
             if field['keyword'] != value:
                 continue
             if 'title' in field and \
-               field['title'] in title_keywords.keys() and \
-               title_keywords[field['title']] != field['keyword']:
+                            field['title'] in title_keywords.keys() and \
+                            title_keywords[field['title']] != field['keyword']:
                 msg = _("Validation failed: column title '${title}' "
                         "must have keyword '${keyword}'",
                         mapping={'title': safe_unicode(field['title']),
-                                 'keyword': safe_unicode(title_keywords[field['title']])})
+                                 'keyword': safe_unicode(
+                                     title_keywords[field['title']])})
                 instance.REQUEST[key] = to_utf8(translate(msg))
                 return instance.REQUEST[key]
             if 'keyword' in field and \
-               field['keyword'] in keyword_titles.keys() and \
-               keyword_titles[field['keyword']] != field['title']:
+                            field['keyword'] in keyword_titles.keys() and \
+                            keyword_titles[field['keyword']] != field['title']:
                 msg = _("Validation failed: keyword '${keyword}' "
                         "must have column title '${title}'",
                         mapping={'keyword': safe_unicode(field['keyword']),
-                                 'title': safe_unicode(keyword_titles[field['keyword']])})
+                                 'title': safe_unicode(
+                                     keyword_titles[field['keyword']])})
                 instance.REQUEST[key] = to_utf8(translate(msg))
                 return instance.REQUEST[key]
 
         instance.REQUEST[key] = True
         return True
 
+
 validation.register(InterimFieldsValidator())
 
 
 class FormulaValidator:
-
     """ Validate keywords in calculation formula entry
     """
     implements(IValidator)
@@ -268,14 +338,14 @@ class FormulaValidator:
         translate = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
         interim_keywords = interim_fields and \
-            [f['keyword'] for f in interim_fields] or []
+                           [f['keyword'] for f in interim_fields] or []
         keywords = re.compile(r"\[([^\.^\]]+)\]").findall(value)
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.
             dep_service = bsc(getKeyword=keyword, inactive_state="active")
             if not dep_service and \
-               not keyword in interim_keywords:
+                    not keyword in interim_keywords:
                 msg = _("Validation failed: Keyword '${keyword}' is invalid",
                         mapping={'keyword': safe_unicode(keyword)})
                 return to_utf8(translate(msg))
@@ -286,7 +356,7 @@ class FormulaValidator:
         allowedwds = ['LDL', 'UDL', 'BELOWLDL', 'ABOVEUDL']
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
         keysandwildcards = [k for k in keysandwildcards if '.' in k]
-        keysandwildcards = [k.split('.',1) for k in keysandwildcards]
+        keysandwildcards = [k.split('.', 1) for k in keysandwildcards]
         errwilds = [k[1] for k in keysandwildcards if k[0] not in keywords]
         if len(errwilds) > 0:
             msg = _("Wildcards for interims are not allowed: ${wildcards}",
@@ -302,11 +372,11 @@ class FormulaValidator:
 
         return True
 
+
 validation.register(FormulaValidator())
 
 
 class CoordinateValidator:
-
     """ Validate latitude or longitude field values
     """
     implements(IValidator)
@@ -328,59 +398,72 @@ class CoordinateValidator:
         try:
             degrees = int(form_value['degrees'])
         except ValueError:
-            return to_utf8(translate(_("Validation failed: degrees must be numeric")))
+            return to_utf8(
+                translate(_("Validation failed: degrees must be numeric")))
 
         try:
             minutes = int(form_value['minutes'])
         except ValueError:
-            return to_utf8(translate(_("Validation failed: minutes must be numeric")))
+            return to_utf8(
+                translate(_("Validation failed: minutes must be numeric")))
 
         try:
             seconds = int(form_value['seconds'])
         except ValueError:
-            return to_utf8(translate(_("Validation failed: seconds must be numeric")))
+            return to_utf8(
+                translate(_("Validation failed: seconds must be numeric")))
 
         if not 0 <= minutes <= 59:
-            return to_utf8(translate(_("Validation failed: minutes must be 0 - 59")))
+            return to_utf8(
+                translate(_("Validation failed: minutes must be 0 - 59")))
 
         if not 0 <= seconds <= 59:
-            return to_utf8(translate(_("Validation failed: seconds must be 0 - 59")))
+            return to_utf8(
+                translate(_("Validation failed: seconds must be 0 - 59")))
 
         bearing = form_value['bearing']
 
         if fieldname == 'Latitude':
             if not 0 <= degrees <= 90:
-                return to_utf8(translate(_("Validation failed: degrees must be 0 - 90")))
+                return to_utf8(
+                    translate(_("Validation failed: degrees must be 0 - 90")))
             if degrees == 90:
                 if minutes != 0:
-                    return to_utf8(translate(_("Validation failed: degrees is 90; "
-                                "minutes must be zero")))
+                    return to_utf8(
+                        translate(_("Validation failed: degrees is 90; "
+                                    "minutes must be zero")))
                 if seconds != 0:
-                    return to_utf8(translate(_("Validation failed: degrees is 90; "
-                                "seconds must be zero")))
+                    return to_utf8(
+                        translate(_("Validation failed: degrees is 90; "
+                                    "seconds must be zero")))
             if bearing.lower() not in 'sn':
-                return to_utf8(translate(_("Validation failed: Bearing must be N/S")))
+                return to_utf8(
+                    translate(_("Validation failed: Bearing must be N/S")))
 
         if fieldname == 'Longitude':
             if not 0 <= degrees <= 180:
-                return to_utf8(translate(_("Validation failed: degrees must be 0 - 180")))
+                return to_utf8(
+                    translate(_("Validation failed: degrees must be 0 - 180")))
             if degrees == 180:
                 if minutes != 0:
-                    return to_utf8(translate(_("Validation failed: degrees is 180; "
-                                "minutes must be zero")))
+                    return to_utf8(
+                        translate(_("Validation failed: degrees is 180; "
+                                    "minutes must be zero")))
                 if seconds != 0:
-                    return to_utf8(translate(_("Validation failed: degrees is 180; "
-                                "seconds must be zero")))
+                    return to_utf8(
+                        translate(_("Validation failed: degrees is 180; "
+                                    "seconds must be zero")))
             if bearing.lower() not in 'ew':
-                return to_utf8(translate(_("Validation failed: Bearing must be E/W")))
+                return to_utf8(
+                    translate(_("Validation failed: Bearing must be E/W")))
 
         return True
+
 
 validation.register(CoordinateValidator())
 
 
 class ResultOptionsValidator:
-
     """Validating AnalysisService ResultOptions field.
         XXX Applied as a subfield validator but validates
         for x in range(len(interim_fields)):
@@ -408,17 +491,18 @@ class ResultOptionsValidator:
                 float(field['ResultValue'])
             except:
                 return to_utf8(translate(_("Validation failed: "
-                            "Result Values must be numbers")))
+                                           "Result Values must be numbers")))
             if 'ResultText' not in field:
-                return to_utf8(translate(_("Validation failed: Result Text cannot be blank")))
+                return to_utf8(translate(
+                    _("Validation failed: Result Text cannot be blank")))
 
         return True
+
 
 validation.register(ResultOptionsValidator())
 
 
 class RestrictedCategoriesValidator:
-
     """ Verifies that client Restricted categories include all categories
     required by service dependencies. """
 
@@ -459,11 +543,11 @@ class RestrictedCategoriesValidator:
 
         return True
 
+
 validation.register(RestrictedCategoriesValidator())
 
 
 class PrePreservationValidator:
-
     """ Validate PrePreserved Containers.
         User must select a Preservation.
     """
@@ -495,11 +579,11 @@ class PrePreservationValidator:
                     "must have a preservation selected.")
             return to_utf8(translate(msg))
 
+
 validation.register(PrePreservationValidator())
 
 
 class StandardIDValidator:
-
     """Matches against regular expression:
        [^A-Za-z\w\d\-\_]
     """
@@ -526,11 +610,11 @@ class StandardIDValidator:
 
         return True
 
+
 validation.register(StandardIDValidator())
 
 
 class AnalysisSpecificationsValidator:
-
     """Min value must be below max value
        Percentage value must be between 0 and 100
        Values must be numbers
@@ -551,7 +635,8 @@ class AnalysisSpecificationsValidator:
         maxs = request.get('max', {})[0]
         errors = request.get('error', {})[0]
 
-        # We run through the validator once per form submit, and check all values
+        # We run through the validator once per form submit, and check all
+        # values
         # this value in request prevents running once per subfield value.
         key = instance.id + fieldname
         if instance.REQUEST.get(key, False):
@@ -569,31 +654,40 @@ class AnalysisSpecificationsValidator:
             try:
                 minv = float(minv)
             except ValueError:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Min values must be numeric")))
+                instance.REQUEST[key] = to_utf8(translate(
+                    _("Validation failed: Min values must be numeric")))
                 return instance.REQUEST[key]
             try:
                 maxv = float(maxv)
             except ValueError:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Max values must be numeric")))
+                instance.REQUEST[key] = to_utf8(translate(
+                    _("Validation failed: Max values must be numeric")))
                 return instance.REQUEST[key]
             try:
                 err = float(err)
             except ValueError:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Percentage error values must be numeric")))
+                instance.REQUEST[key] = to_utf8(translate(_(
+                    "Validation failed: Percentage error values must be "
+                    "numeric")))
                 return instance.REQUEST[key]
 
             # Min value must be < max
             if minv > maxv:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Max values must be greater than Min values")))
+                instance.REQUEST[key] = to_utf8(translate(_(
+                    "Validation failed: Max values must be greater than Min "
+                    "values")))
                 return instance.REQUEST[key]
 
             # Error percentage must be between 0 and 100
             if err < 0 or err > 100:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Error percentage must be between 0 and 100")))
+                instance.REQUEST[key] = to_utf8(translate(_(
+                    "Validation failed: Error percentage must be between 0 "
+                    "and 100")))
                 return instance.REQUEST[key]
 
         instance.REQUEST[key] = True
         return True
+
 
 validation.register(AnalysisSpecificationsValidator())
 
@@ -614,7 +708,8 @@ class UncertaintiesValidator:
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
 
-        # We run through the validator once per form submit, and check all values
+        # We run through the validator once per form submit, and check all
+        # values
         # this value in request prevents running once per subfield value.
         key = instance.id + fieldname
         if instance.REQUEST.get(key, False):
@@ -626,12 +721,14 @@ class UncertaintiesValidator:
             try:
                 minv = float(value['intercept_min'])
             except ValueError:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Min values must be numeric")))
+                instance.REQUEST[key] = to_utf8(translate(
+                    _("Validation failed: Min values must be numeric")))
                 return instance.REQUEST[key]
             try:
                 maxv = float(value['intercept_max'])
             except ValueError:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Max values must be numeric")))
+                instance.REQUEST[key] = to_utf8(translate(
+                    _("Validation failed: Max values must be numeric")))
                 return instance.REQUEST[key]
 
             # values may be percentages; the rest of the numeric validation must
@@ -644,32 +741,38 @@ class UncertaintiesValidator:
             try:
                 err = float(err)
             except ValueError:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Error values must be numeric")))
+                instance.REQUEST[key] = to_utf8(translate(
+                    _("Validation failed: Error values must be numeric")))
                 return instance.REQUEST[key]
 
             if perc and (err < 0 or err > 100):
                 # Error percentage must be between 0 and 100
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Error percentage must be between 0 and 100")))
+                instance.REQUEST[key] = to_utf8(translate(_(
+                    "Validation failed: Error percentage must be between 0 "
+                    "and 100")))
                 return instance.REQUEST[key]
 
             # Min value must be < max
             if minv > maxv:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Max values must be greater than Min values")))
+                instance.REQUEST[key] = to_utf8(translate(_(
+                    "Validation failed: Max values must be greater than Min "
+                    "values")))
                 return instance.REQUEST[key]
 
             # Error values must be >-1
             if err < 0:
-                instance.REQUEST[key] = to_utf8(translate(_("Validation failed: Error value must be 0 or greater")))
+                instance.REQUEST[key] = to_utf8(translate(
+                    _("Validation failed: Error value must be 0 or greater")))
                 return instance.REQUEST[key]
 
         instance.REQUEST[key] = True
         return True
 
+
 validation.register(UncertaintiesValidator())
 
 
 class DurationValidator:
-
     """Simple stuff - just checking for integer values.
     """
 
@@ -688,14 +791,15 @@ class DurationValidator:
             try:
                 int(v)
             except:
-                return to_utf8(translate(_("Validation failed: Values must be numbers")))
+                return to_utf8(
+                    translate(_("Validation failed: Values must be numbers")))
         return True
+
 
 validation.register(DurationValidator())
 
 
 class ReferenceValuesValidator:
-
     """Min value must be below max value
        Percentage value must be between 0 and 100
        Values must be numbers
@@ -707,65 +811,76 @@ class ReferenceValuesValidator:
 
     def __call__(self, value, *args, **kwargs):
 
-            instance = kwargs['instance']
-            # fieldname = kwargs['field'].getName()
-            request = kwargs.get('REQUEST', {})
-            fieldname = kwargs['field'].getName()
+        instance = kwargs['instance']
+        # fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        fieldname = kwargs['field'].getName()
 
-            translate = getToolByName(instance, 'translation_service').translate
+        translate = getToolByName(instance, 'translation_service').translate
 
-            ress = request.get('result', {})[0]
-            mins = request.get('min', {})[0]
-            maxs = request.get('max', {})[0]
-            errs = request.get('error', {})[0]
+        ress = request.get('result', {})[0]
+        mins = request.get('min', {})[0]
+        maxs = request.get('max', {})[0]
+        errs = request.get('error', {})[0]
 
-            # Retrieve all AS uids
-            uids = ress.keys()
-            for uid in uids:
+        # Retrieve all AS uids
+        uids = ress.keys()
+        for uid in uids:
 
-                # Foreach AS, check spec. input values
-                res = ress[uid] if ress[uid] else '0'
-                min = mins[uid] if mins[uid] else '0'
-                max = maxs[uid] if maxs[uid] else '0'
-                err = errs[uid] if errs[uid] else '0'
+            # Foreach AS, check spec. input values
+            res = ress[uid] if ress[uid] else '0'
+            min = mins[uid] if mins[uid] else '0'
+            max = maxs[uid] if maxs[uid] else '0'
+            err = errs[uid] if errs[uid] else '0'
 
-                # Values must be numbers
-                try:
-                    res = float(res)
-                except ValueError:
-                    return to_utf8(translate(_("Validation failed: Expected values must be numeric")))
-                try:
-                    min = float(min)
-                except ValueError:
-                    return to_utf8(translate(_("Validation failed: Min values must be numeric")))
-                try:
-                    max = float(max)
-                except ValueError:
-                    return to_utf8(translate(_("Validation failed: Max values must be numeric")))
-                try:
-                    err = float(err)
-                except ValueError:
-                    return to_utf8(translate(_("Validation failed: Percentage error values must be numeric")))
+            # Values must be numbers
+            try:
+                res = float(res)
+            except ValueError:
+                return to_utf8(translate(
+                    _("Validation failed: Expected values must be numeric")))
+            try:
+                min = float(min)
+            except ValueError:
+                return to_utf8(translate(
+                    _("Validation failed: Min values must be numeric")))
+            try:
+                max = float(max)
+            except ValueError:
+                return to_utf8(translate(
+                    _("Validation failed: Max values must be numeric")))
+            try:
+                err = float(err)
+            except ValueError:
+                return to_utf8(translate(_(
+                    "Validation failed: Percentage error values must be "
+                    "numeric")))
 
-                # Min value must be < max
-                if min > max:
-                    return to_utf8(translate(_("Validation failed: Max values must be greater than Min values")))
+            # Min value must be < max
+            if min > max:
+                return to_utf8(translate(_(
+                    "Validation failed: Max values must be greater than Min "
+                    "values")))
 
-                # Expected result must be between min and max
-                if res < min or res > max:
-                    return to_utf8(translate(_("Validation failed: Expected values must be between Min and Max values")))
+            # Expected result must be between min and max
+            if res < min or res > max:
+                return to_utf8(translate(_(
+                    "Validation failed: Expected values must be between Min "
+                    "and Max values")))
 
-                # Error percentage must be between 0 and 100
-                if err < 0 or err > 100:
-                    return to_utf8(translate(_("Validation failed: Percentage error values must be between 0 and 100")))
+            # Error percentage must be between 0 and 100
+            if err < 0 or err > 100:
+                return to_utf8(translate(_(
+                    "Validation failed: Percentage error values must be "
+                    "between 0 and 100")))
 
-            return True
+        return True
+
 
 validation.register(ReferenceValuesValidator())
 
 
 class PercentValidator:
-
     """ Floatable, >=0, <=100. """
 
     implements(IValidator)
@@ -786,10 +901,12 @@ class PercentValidator:
             return to_utf8(translate(msg))
 
         if value < 0 or value > 100:
-            msg = _("Validation failed: percent values must be between 0 and 100")
+            msg = _(
+                "Validation failed: percent values must be between 0 and 100")
             return to_utf8(translate(msg))
 
         return True
+
 
 validation.register(PercentValidator())
 
@@ -809,6 +926,7 @@ def _toIntList(numstr, acceptX=0):
     if acceptX and (numstr[-1] in 'Xx'):
         res.append(10)
     return res
+
 
 def _sumLists(a, b):
     """
@@ -837,8 +955,8 @@ class NIBvalidator:
         instance = kwargs['instance']
         translate = getToolByName(instance, 'translation_service').translate
         LEN_NIB = 21
-        table = ( 73, 17, 89, 38, 62, 45, 53, 15, 50,
-                5, 49, 34, 81, 76, 27, 90, 9, 30, 3 )
+        table = (73, 17, 89, 38, 62, 45, 53, 15, 50,
+                 5, 49, 34, 81, 76, 27, 90, 9, 30, 3)
 
         # convert to entire numbers list
         nib = _toIntList(value)
@@ -849,6 +967,7 @@ class NIBvalidator:
             return to_utf8(translate(msg))
         # last numbers algorithm validator
         return nib[-2] * 10 + nib[-1] == 98 - _sumLists(table, nib[:-2]) % 97
+
 
 validation.register(NIBvalidator())
 
@@ -879,7 +998,8 @@ class IBANvalidator:
 
         if len(IBAN) != length_c:
             diff = len(IBAN) - length_c
-            msg = _('Wrong IBAN length by %s: %s' % (('short by %i' % -diff) if diff < 0 else
+            msg = _('Wrong IBAN length by %s: %s' % (
+            ('short by %i' % -diff) if diff < 0 else
             ('too long by %i' % diff), value))
             return to_utf8(translate(msg))
         # Validating procedure
@@ -891,65 +1011,71 @@ class IBANvalidator:
             # Accepted:
             return True
 
+
 validation.register(IBANvalidator())
 
 # Utility to check the integrity of an IBAN bank account No.
-# based on https://www.daniweb.com/software-development/python/code/382069/iban-number-check-refreshed
+# based on https://www.daniweb.com/software-development/python/code/382069
+# /iban-number-check-refreshed
 # Dictionaries - Refer to ISO 7064 mod 97-10
-letter_dic={"A":10, "B":11, "C":12, "D":13, "E":14, "F":15, "G":16, "H":17, "I":18, "J":19, "K":20, "L":21, "M":22,
-            "N":23, "O":24, "P":25, "Q":26, "R":27, "S":28, "T":29, "U":30, "V":31, "W":32, "X":33, "Y":34, "Z":35,
-            "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+letter_dic = {"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15, "G": 16,
+              "H": 17, "I": 18, "J": 19, "K": 20, "L": 21, "M": 22,
+              "N": 23, "O": 24, "P": 25, "Q": 26, "R": 27, "S": 28, "T": 29,
+              "U": 30, "V": 31, "W": 32, "X": 33, "Y": 34, "Z": 35,
+              "0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7,
+              "8": 8, "9": 9}
 
 # ISO 3166-1 alpha-2 country code
 country_dic = {
-    "AL": [28,"Albania"],
-    "AD": [24,"Andorra"],
-    "AT": [20,"Austria"],
-    "BE": [16,"Belgium"],
-    "BA": [20,"Bosnia"],
-    "BG": [22,"Bulgaria"],
-    "HR": [21,"Croatia"],
-    "CY": [28,"Cyprus"],
-    "CZ": [24,"Czech Republic"],
-    "DK": [18,"Denmark"],
-    "EE": [20,"Estonia"],
-    "FO": [18,"Faroe Islands"],
-    "FI": [18,"Finland"],
-    "FR": [27,"France"],
-    "DE": [22,"Germany"],
-    "GI": [23,"Gibraltar"],
-    "GR": [27,"Greece"],
-    "GL": [18,"Greenland"],
-    "HU": [28,"Hungary"],
-    "IS": [26,"Iceland"],
-    "IE": [22,"Ireland"],
-    "IL": [23,"Israel"],
-    "IT": [27,"Italy"],
-    "LV": [21,"Latvia"],
-    "LI": [21,"Liechtenstein"],
-    "LT": [20,"Lithuania"],
-    "LU": [20,"Luxembourg"],
-    "MK": [19,"Macedonia"],
-    "MT": [31,"Malta"],
-    "MU": [30,"Mauritius"],
-    "MC": [27,"Monaco"],
-    "ME": [22,"Montenegro"],
-    "NL": [18,"Netherlands"],
-    "NO": [15,"Northern Ireland"],
-    "PO": [28,"Poland"],
-    "PT": [25,"Portugal"],
-    "RO": [24,"Romania"],
-    "SM": [27,"San Marino"],
-    "SA": [24,"Saudi Arabia"],
-    "RS": [22,"Serbia"],
-    "SK": [24,"Slovakia"],
-    "SI": [19,"Slovenia"],
-    "ES": [24,"Spain"],
-    "SE": [24,"Sweden"],
-    "CH": [21,"Switzerland"],
-    "TR": [26,"Turkey"],
-    "TN": [24,"Tunisia"],
-    "GB": [22,"United Kingdom"]}
+    "AL": [28, "Albania"],
+    "AD": [24, "Andorra"],
+    "AT": [20, "Austria"],
+    "BE": [16, "Belgium"],
+    "BA": [20, "Bosnia"],
+    "BG": [22, "Bulgaria"],
+    "HR": [21, "Croatia"],
+    "CY": [28, "Cyprus"],
+    "CZ": [24, "Czech Republic"],
+    "DK": [18, "Denmark"],
+    "EE": [20, "Estonia"],
+    "FO": [18, "Faroe Islands"],
+    "FI": [18, "Finland"],
+    "FR": [27, "France"],
+    "DE": [22, "Germany"],
+    "GI": [23, "Gibraltar"],
+    "GR": [27, "Greece"],
+    "GL": [18, "Greenland"],
+    "HU": [28, "Hungary"],
+    "IS": [26, "Iceland"],
+    "IE": [22, "Ireland"],
+    "IL": [23, "Israel"],
+    "IT": [27, "Italy"],
+    "LV": [21, "Latvia"],
+    "LI": [21, "Liechtenstein"],
+    "LT": [20, "Lithuania"],
+    "LU": [20, "Luxembourg"],
+    "MK": [19, "Macedonia"],
+    "MT": [31, "Malta"],
+    "MU": [30, "Mauritius"],
+    "MC": [27, "Monaco"],
+    "ME": [22, "Montenegro"],
+    "NL": [18, "Netherlands"],
+    "NO": [15, "Northern Ireland"],
+    "PO": [28, "Poland"],
+    "PT": [25, "Portugal"],
+    "RO": [24, "Romania"],
+    "SM": [27, "San Marino"],
+    "SA": [24, "Saudi Arabia"],
+    "RS": [22, "Serbia"],
+    "SK": [24, "Slovakia"],
+    "SI": [19, "Slovenia"],
+    "ES": [24, "Spain"],
+    "SE": [24, "Sweden"],
+    "CH": [21, "Switzerland"],
+    "TR": [26, "Turkey"],
+    "TN": [24, "Tunisia"],
+    "GB": [22, "United Kingdom"]}
+
 
 class SortKeyValidator:
     """ Check for out of range values.
@@ -973,4 +1099,102 @@ class SortKeyValidator:
 
         return True
 
+
 validation.register(SortKeyValidator())
+
+
+class InlineFieldValidator:
+    """ Inline Field Validator
+
+    calls a field function for validation
+    """
+
+    implements(IValidator)
+    name = "inline_field_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        field = kwargs['field']
+        request = kwargs['REQUEST']
+        instance = kwargs['instance']
+
+        # extract the request values
+        data = request.get(field.getName())
+
+        # check if the field contains a callable
+        validator = getattr(field, self.name, None)
+
+        # validator is a callable
+        if callable(validator):
+            return validator(instance, request, field, data)
+
+        # validator is a string, check if the instance has a method with this name
+        if type(validator) in types.StringTypes:
+            instance_validator = getattr(instance, validator, None)
+            if callable(instance_validator):
+                return instance_validator(request, field, data)
+
+        return True
+
+validation.register(InlineFieldValidator())
+
+class ReflexRuleValidator:
+
+    """
+    - The analysis service have to be related to the method
+    """
+
+    implements(IValidator)
+    name = "reflexrulevalidator"
+
+    def __call__(self, value, *args, **kwargs):
+
+        instance = kwargs['instance']
+        # fieldname = kwargs['field'].getName()
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
+        method = instance.getMethod()
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        query = {'portal_type': 'AnalysisService',
+                 'getAvailableMethodUIDs': method.UID()}
+        method_ans_uids = [b.UID for b in bsc(query)]
+        rules = instance.getReflexRules()
+        error = ''
+        pc = getToolByName(instance, 'portal_catalog')
+        for rule in rules:
+            as_uid = rule.get('analysisservice', '')
+            as_brain = pc(
+                    UID=as_uid,
+                    portal_type='AnalysisService',
+                    inactive_state='active')
+            if as_brain[0] and as_brain[0].UID in method_ans_uids:
+                pass
+            else:
+                error += as_brain['title'] + ' '
+        if error:
+            translate = getToolByName(instance, 'translation_service').translate
+            msg = _("The following analysis services don't belong to the"
+                    "current method: " + error)
+            return to_utf8(translate(msg))
+        return True
+
+validation.register(ReflexRuleValidator())
+
+
+class NoWhiteSpaceValidator:
+    """ String, not containing space(s). """
+
+    implements(IValidator)
+    name = "no_white_space_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        translate = getToolByName(instance, 'translation_service').translate
+
+        if value and " " in value:
+            msg = _(
+                "Invalid value: Please enter a value without spaces.")
+            return to_utf8(translate(msg))
+
+        return True
+
+validation.register(NoWhiteSpaceValidator())

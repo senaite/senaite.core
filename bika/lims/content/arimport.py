@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 import csv
 from DateTime.DateTime import DateTime
@@ -13,12 +18,14 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IARImport, IClient
 from bika.lims.utils import tmpID
 from bika.lims.vocabularies import CatalogVocabulary
+from bika.lims.workflow import doActionFor
 from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import ProgressState
 from collective.progressbar.events import UpdateProgressEvent
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import addStatusMessage
 from Products.CMFCore.utils import getToolByName
@@ -42,7 +49,7 @@ import transaction
 
 _p = MessageFactory(u"plone")
 
-OriginalFile = FileField(
+OriginalFile = BlobFileField(
     'OriginalFile',
     widget=ComputedWidget(
         visible=False
@@ -170,7 +177,6 @@ SampleData = DataGridField(
              'SampleType',  # not a schema field!
              'ContainerType',  # not a schema field!
              'ReportDryMatter',
-             'Priority',
              'Analyses',  # not a schema field!
              'Profiles'  # not a schema field!
              ),
@@ -189,8 +195,6 @@ SampleData = DataGridField(
             'ContainerType': SelectColumn(
                 'Container', vocabulary='Vocabulary_ContainerType'),
             'ReportDryMatter': CheckboxColumn('Dry'),
-            'Priority': SelectColumn(
-                'Priority', vocabulary='Vocabulary_Priority'),
             'Analyses': LinesColumn('Analyses'),
             'Profiles': LinesColumn('Profiles'),
         }
@@ -275,6 +279,7 @@ class ARImport(BaseFolder):
         if 'validate' in trans_ids:
             workflow.doActionFor(self, 'validate')
 
+    # TODO - Workflow. Revisit AR creation (should use utils.analysisrequest)
     def workflow_script_import(self):
         """Create objects from valid ARImport
         """
@@ -303,16 +308,8 @@ class ARImport(BaseFolder):
             event.notify(ObjectInitializedEvent(sample))
             sample.at_post_create_script()
             swe = self.bika_setup.getSamplingWorkflowEnabled()
-            if swe:
-                workflow.doActionFor(sample, 'sampling_workflow')
-            else:
-                workflow.doActionFor(sample, 'no_sampling_workflow')
             part = _createObjectByType('SamplePartition', sample, 'part-1')
             part.unmarkCreationFlag()
-            if swe:
-                workflow.doActionFor(part, 'sampling_workflow')
-            else:
-                workflow.doActionFor(part, 'no_sampling_workflow')
             # Container is special... it could be a containertype.
             container = self.get_row_container(row)
             if container:
@@ -353,14 +350,14 @@ class ARImport(BaseFolder):
             ar.unmarkCreationFlag()
             ar.edit(**row)
             ar._renameAfterCreation()
+            ar.setAnalyses(list(newanalyses))
             for analysis in ar.getAnalyses(full_objects=True):
                 analysis.setSamplePartition(part)
             ar.at_post_create_script()
             if swe:
-                workflow.doActionFor(ar, 'sampling_workflow')
+                doActionFor(ar, 'sampling_workflow')
             else:
-                workflow.doActionFor(ar, 'no_sampling_workflow')
-            ar.setAnalyses(list(newanalyses))
+                doActionFor(ar, 'no_sampling_workflow')
             progress_index = float(row_cnt) / len(gridrows) * 100
             progress = ProgressState(self.REQUEST, progress_index)
             notify(UpdateProgressEvent(progress))
@@ -970,11 +967,6 @@ class ARImport(BaseFolder):
         vocabulary = CatalogVocabulary(self)
         vocabulary.catalog = 'bika_setup_catalog'
         return vocabulary(allow_blank=True, portal_type='ContainerType')
-
-    def Vocabulary_Priority(self):
-        vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = 'bika_setup_catalog'
-        return vocabulary(allow_blank=True, portal_type='ARPriority')
 
     def error(self, msg):
         errors = list(self.getErrors())

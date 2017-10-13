@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ Roche Cobas Taqman 48
 """
 from datetime import datetime
@@ -38,7 +44,7 @@ class RocheCobasTaqmanRSFParser(InstrumentCSVResultsFileParser):
         """
         Parses the data line and builds the dictionary.
         :param sline: a split data line to parse
-        :return: the number of rows to jump and parse the next data line or return the code error -1
+        :returns: the number of rows to jump and parse the next data line or return the code error -1
         """
         # if there are less values founded than headers, it's an error
         if len(sline) != len(self._columns):
@@ -97,7 +103,7 @@ def Import(context, request):
     override = request.form['rochecobas_taqman_model48_override']
     sample = request.form.get('rochecobas_taqman_model48_sample',
                               'requestid')
-    instrument = request.form.get('rochecobas_taqman_model48_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []
@@ -128,9 +134,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

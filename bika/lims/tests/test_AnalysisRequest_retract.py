@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.utils import getToolByName
@@ -41,13 +46,9 @@ class TestAnalysisRequestRetract(BikaFunctionalTestCase):
         request = {}
         ar = create_analysisrequest(client, request, values, service_uids)
         wf = getToolByName(ar, 'portal_workflow')
-        try:
-            wf.doActionFor(ar, 'receive')
-        except WorkflowException:
-            pass
+        wf.doActionFor(ar, 'receive')
 
         # Cheking if everything is going OK
-        #import pdb; pdb.set_trace()
         self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
                                                         'sample_received')
         for analysis in ar.getAnalyses(full_objects=True):

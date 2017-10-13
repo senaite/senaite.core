@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+from Products.CMFCore.utils import getToolByName
 from bika.lims.interfaces import IATWidgetVisibility
 from types import DictType
 from plone import api
@@ -11,7 +16,7 @@ def editableFields(self, instance, visible_only=False):
     """Returns a list of editable fields for the given instance
     """
     ret = []
-    portal = api.portal.get_tool('portal_url').getPortalObject()
+    portal = getToolByName(instance, 'portal_url').getPortalObject()
     for field in self.fields():
         if field.writeable(instance, debug=False) and    \
                (not visible_only or

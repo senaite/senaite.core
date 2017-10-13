@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
@@ -8,6 +13,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
+from bika.lims.utils.analysis import create_analysis
 from zope.interface import implements
 from pkg_resources import resource_filename
 import datetime
@@ -132,8 +138,8 @@ class WorksheetImporter:
             for add_type in ['Physical', 'Postal', 'Billing']:
                 row[add_type] = {}
                 if add_type + "_Address" in row:
-                    for key in ['Address', 'City', 'State', 'Zip', 'Country']:
-                        row[add_type][key] = str(row["%s_%s" % (add_type, key)])
+                    for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
+                        row[add_type][key] = str(row.get("%s_%s" % (add_type, key), ''))
 
             yield row
 
@@ -209,7 +215,7 @@ class WorksheetImporter:
         addresses = {}
         for add_type in ['Physical', 'Postal', 'Billing', 'CountryState']:
             addresses[add_type] = {}
-            for key in ['Address', 'City', 'State', 'Zip', 'Country']:
+            for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
                 addresses[add_type][key.lower()] = str(row.get("%s_%s" % (add_type, key), ''))
 
         if addresses['CountryState']['country'] == '' \
@@ -267,6 +273,10 @@ class WorksheetImporter:
             logger.info("More than one object found for %s" % contentFilter)
             return None
         elif len(brains) == 0:
+            if portal_type == 'AnalysisService':
+                brains = catalog(portal_type=portal_type, getKeyword=title)
+                if brains:
+                    return brains[0].getObject()
             logger.info("No objects found for %s" % contentFilter)
             return None
         else:
@@ -580,6 +590,7 @@ class Client_Contacts(WorksheetImporter):
                 except Exception as msg:
                     logger.info("Error adding user (%s): %s" % (msg, username))
                 contact.aq_parent.manage_setLocalRoles(row['Username'], ['Owner', ])
+                contact.reindexObject()
                 # add user to Clients group
                 group = portal_groups.getGroupById('Clients')
                 group.addMember(username)
@@ -763,7 +774,9 @@ class Instruments(WorksheetImporter):
             obj.setInstrumentType(instrumenttype)
             obj.setManufacturer(manufacturer)
             obj.setSupplier(supplier)
-            obj.setMethod(method)
+            if method:
+                obj.setMethods([method])
+                obj.setMethod(method)
 
             # Attaching the instrument's photo
             if row.get('Photo', None):
@@ -1154,16 +1167,17 @@ class Sample_Point_Sample_Types(WorksheetImporter):
             samplepoint = self.get_object(bsc,
                                           'SamplePoint',
                                           row['SamplePoint_title'])
+            if samplepoint:
+                sampletypes = samplepoint.getSampleTypes()
+                if sampletype not in sampletypes:
+                    sampletypes.append(sampletype)
+                    samplepoint.setSampleTypes(sampletypes)
 
-            sampletypes = samplepoint.getSampleTypes()
-            if sampletype not in sampletypes:
-                sampletypes.append(sampletype)
-                samplepoint.setSampleTypes(sampletypes)
-
-            samplepoints = sampletype.getSamplePoints()
-            if samplepoint not in samplepoints:
-                samplepoints.append(samplepoint)
-                sampletype.setSamplePoints(samplepoints)
+            if sampletype:
+                samplepoints = sampletype.getSamplePoints()
+                if samplepoint not in samplepoints:
+                    samplepoints.append(samplepoint)
+                    sampletype.setSamplePoints(samplepoints)
 
 class Storage_Locations(WorksheetImporter):
 
@@ -1351,7 +1365,7 @@ class Calculations(WorksheetImporter):
         sheet = self.workbook.get_sheet_by_name("Methods")
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, sheet):
-            if row['title'] and row['Calculation_title']:
+            if row.get('title', '') and row.get('Calculation_title', ''):
                 meth = self.get_object(bsc, "Method", row.get('title'))
                 if meth and not meth.getCalculation():
                     calctit = safe_unicode(row['Calculation_title']).encode('utf-8')
@@ -1507,7 +1521,6 @@ class Analysis_Services(WorksheetImporter):
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
-            priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
 
             # Analysis Service - Method considerations:
             # One Analysis Service can have 0 or n Methods associated (field
@@ -1605,7 +1618,6 @@ class Analysis_Services(WorksheetImporter):
                 Separate=self.to_bool(row.get('Separate', False)),
                 Container=container,
                 Preservation=preservation,
-                Priority=priority,
                 CommercialID=row.get('CommercialID', ''),
                 ProtocolID=row.get('ProtocolID', '')
             )
@@ -1792,7 +1804,7 @@ class AR_Templates(WorksheetImporter):
 
             obj = _createObjectByType("ARTemplate", folder, tmpID())
             obj.edit(
-                title=row['title'],
+                title=str(row['title']),
                 description=row.get('description', ''),
                 Remarks=row.get('Remarks', ''),
                 ReportDryMatter=bool(row['ReportDryMatter']))
@@ -1916,18 +1928,20 @@ class Setup(WorksheetImporter):
                                       values.get('DryMatterService'))
         dry_uid = dry_service.UID() if dry_service else None
         if not dry_uid and values.get('DryMatterService'):
-            print("DryMatter service %s does not exist (%s)"
+            print("DryMatter service %s does not exist"
                   % values['DryMatterService'])
         self.context.bika_setup.edit(
             PasswordLifetime=int(values['PasswordLifetime']),
             AutoLogOff=int(values['AutoLogOff']),
             ShowPricing=values.get('ShowPricing', True),
             Currency=values['Currency'],
+            DefaultCountry=values.get('DefaultCountry', ''),
             MemberDiscount=str(Float(values['MemberDiscount'])),
             VAT=str(Float(values['VAT'])),
             MinimumResults=int(values['MinimumResults']),
             BatchEmail=int(values['BatchEmail']),
             SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
+            ScheduleSamplingEnabled=values.get('ScheduleSamplingEnabled', 0),
             CategoriseAnalysisServices=self.to_bool(
                 values['CategoriseAnalysisServices']),
             EnableAnalysisRemarks=self.to_bool(
@@ -2086,7 +2100,7 @@ class Reference_Samples(WorksheetImporter):
                      DateDisposed=row['DateDisposed']
                      )
             obj.setReferenceDefinition(ref_def)
-            obj.setReferenceManufacturer(ref_man)
+            obj.setManufacturer(ref_man)
             obj.unmarkCreationFlag()
 
             self.load_reference_sample_results(obj)
@@ -2145,30 +2159,25 @@ class Analysis_Requests(WorksheetImporter):
             service = bsc(portal_type='AnalysisService',
                           title=row['AnalysisService_title'])[0].getObject()
             # analyses are keyed/named by keyword
-            keyword = service.getKeyword()
             ar = bc(portal_type='AnalysisRequest', id=row['AnalysisRequest_id'])[0].getObject()
-            obj = _createObjectByType("Analysis", ar, keyword)
-            MTA = {
-                'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
-                'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
-                'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
-            }
-            obj.edit(
-                Calculation=service.getCalculation(),
+            obj = create_analysis(
+                ar, service,
                 Result=row['Result'],
                 ResultCaptureDate=row['ResultCaptureDate'],
                 ResultDM=row['ResultDM'],
                 Analyst=row['Analyst'],
                 Instrument=row['Instrument'],
                 Retested=self.to_bool(row['Retested']),
-                MaxTimeAllowed=MTA,
+                MaxTimeAllowed={
+                    'days': int(row.get('MaxTimeAllowed_days', 0)),
+                    'hours': int(row.get('MaxTimeAllowed_hours', 0)),
+                    'minutes': int(row.get('MaxTimeAllowed_minutes', 0)),
+                },
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
-                Service=service,
-                )
-            obj.updateDueDate()
+            )
+
             part = sample.objectValues()[0].UID()
             obj.setSamplePartition(part)
-            obj.setService(service.UID())
             analyses = ar.objectValues('Analyses')
             analyses = list(analyses)
             analyses.append(obj)
@@ -2261,30 +2270,3 @@ class Invoice_Batches(WorksheetImporter):
                 BatchEndDate=row['end'],
             )
             renameAfterCreation(obj)
-
-
-class AR_Priorities(WorksheetImporter):
-
-    def Import(self):
-        folder = self.context.bika_setup.bika_arpriorities
-        for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("ARPriority", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row.get('description', ''),
-                         pricePremium=row.get('pricePremium', 0),
-                         sortKey=row.get('sortKey', 0),
-                         isDefault=row.get('isDefault', 0) == 1,
-                         )
-                small_icon_name = row.get('smallIcon', None)
-                if small_icon_name:
-                    small_icon = self.get_file_data(small_icon_name)
-                    if small_icon:
-                        obj.setSmallIcon(small_icon)
-                big_icon_name = row.get('bigIcon', None)
-                if big_icon_name:
-                    big_icon = self.get_file_data(big_icon_name)
-                    if big_icon:
-                        obj.setBigIcon(big_icon)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)

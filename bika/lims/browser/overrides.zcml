@@ -28,6 +28,14 @@
                 permission="zope.Public"
                 template="templates/plone-overview.pt"
             />
+
+            <browser:view
+                 for="*"
+                 name="jsi18n"
+                 class="jarn.jsi18n.view.i18njs"
+                 permission="zope2.View"
+             />
+
         </unconfigure>
     </configure>
 
@@ -45,6 +53,21 @@
         class="Products.CMFPlone.browser.admin.Overview"
         permission="zope.Public"
         template="templates/plone-overview.pt"
+    />
+
+    <!---
+    jarn.jsi18n uses the first catalog it comes across for a particular domain
+    and language. Bika LIMS has additional plone.mo files that should
+    extend/override the translation strings set by default from Plone and other
+    add-ons:
+    https://github.com/collective/jarn.jsi18n/blob/0f5d8d6e9cf7925e63f97f35245492fcbcd5a789/jarn/jsi18n/view.py#L21
+    See https://github.com/collective/jarn.jsi18n/issues/1
+    -->
+    <browser:view
+        for="*"
+        name="jsi18n"
+        class=".jsi18n.i18njs"
+        permission="zope2.View"
     />
 
 </configure>

@@ -88,9 +88,21 @@
             border-bottom: 1px dotted #cdcdcd;
             box-shadow: 1px 2px 5px #cdcdcd;
         }
+        .barcode-hri {
+            clear:both;
+            width: 100%;
+            background-color: #FFFFFF;
+            color: #000000;
+            text-align: center;
+            font-size: 10px;
+        }
 
         @media print {
-            body {background-color:#fff;}
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background-color:#fff !important;
+            }
             #sticker-preview-header {display:none !important;}
             #stickers-wrapper { margin:0;}
             .sticker {
@@ -98,6 +110,20 @@
               border:none;
               box-shadow:none;
               border-bottom:none;
+            }
+            .page-break, .page-break-after, .page-break-before {
+                display: block !important;
+                border:none !important;
+                padding:0 !important;
+                margin:0 !important;
+                background-color:transparent !important;
+            }
+            div.page-break,
+            div.page-break-after {
+                page-break-after: always;
+            }
+            div.page-break-before {
+                page-break-before: always;
             }
             #sticker-rule {
                 display:none !important;
@@ -108,7 +134,7 @@
         $(function(){
             $('#print-button').click(function(e) {
                 e.preventDefault();
-                window.print();
+                printPdf();
             });
             $('#cancel-button').click(function(e) {
                 e.preventDefault();
@@ -145,14 +171,32 @@
                     $('#sticker-rule').fadeIn();
                 });
             }
+
+            function printPdf() {
+                var url = window.location.href;
+                // Get the stickers style
+                var style = $('#stickers-style').clone().wrap('<div>').parent().html();
+                var stickershtml = '';
+                // Get all stickers
+                $('#stickers-wrapper .sticker').each(function(e) {
+                    stickershtml += $(this).clone().wrap('<div>').parent().html();
+                });
+                // Generate the form (POST request to generate PDF)
+                var form = '<form action="'+url+'" name="topdf" method="post" style="display:none">' +
+                    '<textarea name="html"><div style="padding:0px;"></div>' +
+                    stickershtml + '</textarea>' +
+                    '<input type="hidden" name="pdf" value="1" />' +
+                    '<textarea name="style">' + style + '</textarea>' +
+                    '</form>';
+                $('body').html(form);
+                document.forms.topdf.submit();
+            }
         });
     </script>
 </head>
 <body tal:attributes="onload        python:'this.print()' if view.request.get('autoprint', False) else '';
                       data-itemsurl python:view.getItemsURL();">
     <div id='sticker-preview-wrapper'>
-        <!-- Header of the preview. This will never be printed.
-             Container with preview options and buttons --->
         <div id="sticker-preview-header">
             <div id='options-handler'>
                 <div class='options-line'>
@@ -177,7 +221,6 @@
             </div>
         </div>
 
-        <!-- Container where all the stickers are embedded. -->
         <div id="stickers-wrapper">
             <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
             <div id="sticker-rule">
@@ -190,8 +233,8 @@
               </tal:tick>
             </div>
             <tal:stickers repeat="sticker view/items">
-            <tal:sticker define="partid python:sticker[2].getId() if sticker else None;"
-                         condition="python:not partid or partid not in view.rendered_items">
+            <tal:sticker define="item_id python:sticker[2].getId() if sticker else None;"
+                         condition="python:not item_id or item_id not in view.rendered_items">
             <div class='sticker'
                  tal:content='structure python:view.renderItem()'></div>
             </tal:sticker>

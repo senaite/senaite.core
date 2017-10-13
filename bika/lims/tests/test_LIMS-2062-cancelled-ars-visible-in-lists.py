@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """If ShowPrices is not true, then Invoices, prices, pricelists, should
 all be hidden.
 """
@@ -50,8 +55,7 @@ class Test_ShowPrices(BikaFunctionalTestCase):
         transaction.commit()
 
     def tearDown(self):
-        super(Test_ShowPrices, self).setUp()
-        login(self.portal, TEST_USER_NAME)
+        super(Test_ShowPrices, self).tearDown()
 
     def test_default_view_does_not_show_cancelled_items(self):
         url = self.portal.analysisrequests.absolute_url()

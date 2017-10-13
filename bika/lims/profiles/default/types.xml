@@ -2,8 +2,6 @@
 <object name="portal_types" meta_type="Plone Types Tool">
  <property name="title">Controls the available content types in your portal</property>
  <object name="ARImport" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARPriorities" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARPriority" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisProfile" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisProfiles" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARReport" meta_type="Factory-based Type Information with dynamic views"/>
@@ -25,6 +23,7 @@
  <object name="BatchFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabel" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabels" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="BikaCache" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BikaSetup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>
@@ -38,6 +37,8 @@
  <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Departments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="IdentifierType" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="IdentifierTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentCalibration" meta_type="Factory-based Type Information with dynamic views"/>
@@ -46,6 +47,8 @@
  <object name="InstrumentScheduledTask" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentTypes" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentLocation" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentValidation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
@@ -69,6 +72,8 @@
  <object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReflexRule" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReflexRuleFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReportFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Report" meta_type="Factory-based Type Information with dynamic views"/>
@@ -102,4 +107,5 @@
  <object name="WorksheetFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetTemplates" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AutoImportLog" meta_type="Factory-based Type Information with dynamic views"/>
 </object>

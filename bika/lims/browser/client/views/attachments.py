@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from plone.app.layout.globals.interfaces import IViewView
@@ -25,7 +30,7 @@ class ClientAttachmentsView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'getTextTitle': {'title': _('Request ID')},
+            'Title': {'title': _('Request ID')},
             'AttachmentFile': {'title': _('File')},
             'AttachmentType': {'title': _('Attachment Type')},
             'ContentType': {'title': _('Content Type')},
@@ -36,7 +41,7 @@ class ClientAttachmentsView(BikaListingView):
             {'id': 'default',
              'title': 'All',
              'contentFilter': {},
-             'columns': ['getTextTitle',
+             'columns': ['Title',
                          'AttachmentFile',
                          'AttachmentType',
                          'ContentType',
@@ -52,27 +57,21 @@ class ClientAttachmentsView(BikaListingView):
         else:
             return name
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            obj_url = obj.absolute_url()
-            file = obj.getAttachmentFile()
-            icon = file.icon
+    def folderitem(self, obj, item, index):
+        obj_url = obj.absolute_url()
+        file = obj.getAttachmentFile()
+        icon = file.icon
+        item['AttachmentFile'] = file.filename()
+        item['AttachmentType'] = obj.getAttachmentType().Title()
+        item['AttachmentType'] = obj.getAttachmentType().Title()
+        item['ContentType'] = self.lookupMime(file.getContentType())
+        item['FileSize'] = '%sKb' % (file.get_size() / 1024)
+        item['DateLoaded'] = obj.getDateLoaded()
 
-            items[x]['AttachmentFile'] = file.filename()
-            items[x]['AttachmentType'] = obj.getAttachmentType().Title()
-            items[x]['AttachmentType'] = obj.getAttachmentType().Title()
-            items[x]['ContentType'] = self.lookupMime(file.getContentType())
-            items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
-            items[x]['DateLoaded'] = obj.getDateLoaded()
+        item['replace']['Title'] = \
+            "<a href='%s'>%s</a>" % (obj_url, item['Title'])
 
-            items[x]['replace']['getTextTitle'] = \
-                "<a href='%s'>%s</a>" % (obj_url, items[x]['getTextTitle'])
-
-            items[x]['replace']['AttachmentFile'] = \
-                "<a href='%s/at_download/AttachmentFile'>%s</a>" % \
-                (obj_url, items[x]['AttachmentFile'])
-        return items
+        item['replace']['AttachmentFile'] = \
+            "<a href='%s/at_download/AttachmentFile'>%s</a>" % \
+            (obj_url, item['AttachmentFile'])
+        return item

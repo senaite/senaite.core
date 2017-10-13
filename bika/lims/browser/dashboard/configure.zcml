@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="bika">
+
+    <browser:page
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        name="bika-dashboard"
+        class="bika.lims.browser.dashboard.DashboardView"
+        permission="zope.Public"
+        layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
@@ -15,6 +20,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISampleType
 from magnitude import mg, MagnitudeError
 from zope.interface import implements
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 import json
 import plone
 import sys
@@ -50,8 +56,10 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Prefix',
         required = True,
+        validators=('no_white_space_validator'),
         widget = StringWidget(
             label=_("Sample Type Prefix"),
+            description=_("Prefixes can not contain spaces."),
         ),
     ),
     StringField('MinimumVolume',
@@ -82,8 +90,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('SamplePoint',),
         vocabulary = 'SamplePointsVocabulary',
         relationship = 'SampleTypeSamplePoint',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+        widget = brw(
             label=_("Sample Points"),
             description =_("The list of sample points from which this sample "
                            "type can be collected.  If no sample points are "
@@ -144,7 +151,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
     def SamplePointsVocabulary(self):
         from bika.lims.content.samplepoint import SamplePoints
-        return SamplePoints(self, allow_blank=False)
+        return SamplePoints(self, allow_blank=False, lab_only=False)
 
     def setSamplePoints(self, value, **kw):
         """ For the moment, we're manually trimming the sampletype<>samplepoint
@@ -162,6 +169,10 @@ class SampleType(BaseContent, HistoryAwareMixin):
         removed = existing and [s for s in existing if s not in value] or []
         added = value and [s for s in value if s not in existing] or []
         ret = self.Schema()['SamplePoints'].set(self, value)
+
+        # finally be sure that we aren't trying to set None values here.
+        removed = [x for x in removed if x]
+        added = [x for x in added if x]
 
         for sp in removed:
             sampletypes = sp.getSampleTypes()

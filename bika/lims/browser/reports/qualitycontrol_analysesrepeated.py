@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -120,7 +125,7 @@ class Report(BrowserView):
             dataitem = {'value': analysis.getCategoryTitle()}
             dataline.append(dataitem)
 
-            dataitem = {'value': analysis.getServiceTitle()}
+            dataitem = {'value': analysis.Title()}
             dataline.append(dataitem)
 
             dataitem = {'value': self.ulocalized_time(analysis.getDateReceived())}

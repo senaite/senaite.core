@@ -38,7 +38,6 @@
     <element value="AnalysisService"/>
     <element value="AnalysisSpec"/>
     <element value="ARImport"/>
-    <element value="ARPriority"/>
     <element value="AnalysisProfile"/>
     <element value="ARReport"/>
     <element value="ARTemplate"/>
@@ -58,6 +57,7 @@
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
+    <element value="InstrumentLocation"/>
     <element value="InstrumentValidation"/>
     <element value="Invoice"/>
     <element value="InvoiceBatch"/>
@@ -103,14 +103,12 @@
     <element value="ATPathCriterion"/>
     <element value="ATRelativePathCriterion"/>
     <element value="SamplingRound"/>
+    <element value="ReflexRule"/>
+    <element value="BikaCache"/>
+    <element value="AutoImportLog"/>
   </property>
   <property name="enable_wf_state_filtering" type="boolean">False</property>
   <property name="wf_states_to_show" type="lines"/>
 </object>
 
 </object>
-
-
-
-
-

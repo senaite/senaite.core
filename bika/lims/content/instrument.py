@@ -1,25 +1,31 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
+from datetime import date
+
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.atapi import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.content.bikaschema import BikaFolderSchema, BikaSchema
 from bika.lims.interfaces import IInstrument
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8
+from plone.app.blob.field import FileField as BlobFileField
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
-from datetime import date
-from DateTime import DateTime
-from bika.lims.config import QCANALYSIS_TYPES
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -73,14 +79,28 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    HistoryAwareReferenceField('Method',
+    UIDReferenceField(
+        'Method',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
-        relationship='InstrumentMethod',
         required=0,
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
+            visible=False,
+        ),
+    ),
+
+    ReferenceField('Methods',
+        vocabulary='_getAvailableMethods',
+        allowed_types=('Method',),
+        relationship='InstrumentMethods',
+        required=0,
+        multiValued=1,
+        widget=ReferenceWidget(
+            checkbox_bound=0,
+            format='select',
+            label=_("Methods"),
         ),
     ),
 
@@ -127,6 +147,40 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
+    StringField('ImportDataInterface',
+        vocabulary = "getImportDataInterfacesList",
+        multiValued=1,
+        widget = MultiSelectionWidget(
+            checkbox_bound = 0,
+            label=_("Import Data Interface"),
+            description=_("Select an Import interface for this instrument."),
+            format='select',
+            default='',
+            visible = True,
+        ),
+    ),
+
+    RecordsField(
+        'ResultFilesFolder',
+        subfields=('InterfaceName', 'Folder'),
+        subfield_labels={'InterfaceName': _('Interface Code'),
+                         'Folder': _('Folder that results will be saved')},
+        subfield_readonly={'InterfaceName': True,
+                           'Folder': False},
+        widget=RecordsWidget(
+            label=_("Result files folders"),
+            description=_("For each interface of this instrument, \
+                          you can define a folder where \
+                          the system should look for the results files while \
+                          automatically importing results. Having a folder \
+                          for each Instrument and inside that folder creating \
+                          different folders for each of its Interfaces \
+                          can be a good approach. You can use Interface codes \
+                          to be sure that folder names are unique."),
+            visible=True,
+        ),
+    ),
+
     RecordsField('DataInterfaceOptions',
         type = 'interfaceoptions',
         subfields = ('Key','Value'),
@@ -142,12 +196,11 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
     # References to all analyses performed with this instrument.
     # Includes regular analyses, QC analyes and Calibration tests.
-    ReferenceField('Analyses',
+    UIDReferenceField('Analyses',
         required = 0,
         multiValued = 1,
         allowed_types = ('ReferenceAnalysis', 'DuplicateAnalysis',
                          'Analysis'),
-        relationship = 'InstrumentAnalyses',
         widget = ReferenceWidget(
             visible = False,
         ),
@@ -180,6 +233,17 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
          ),
     ),
 
+    ComputedField('InstrumentLocationName',
+        expression = 'here.getInstrumentLocation().Title() if here.getInstrumentLocation() else ""',
+        widget = ComputedWidget(
+            label=_("Instrument Location"),
+            label_msgid="instrument_location",
+            description=_("The room and location where the instrument is installed"),
+            description_msgid="help_instrument_location",
+            visible=True,
+         ),
+    ),
+
     ComputedField('ManufacturerName',
         expression = 'here.getManufacturer().Title() if here.getManufacturer() else ""',
         widget = ComputedWidget(
@@ -203,11 +267,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    StringField('Location',
+    ReferenceField('InstrumentLocation',
         schemata = 'Additional info.',
-        widget = StringWidget(
-            label=_("Location"),
+        vocabulary='getInstrumentLocations',
+        allowed_types=('InstrumentLocation', ),
+        relationship='InstrumentInstrumentLocation',
+        required=0,
+        widget=SelectionWidget(
+            format='select',
+            label=_("Instrument Location"),
+            label_msgid="instrument_location",
             description=_("The room and location where the instrument is installed"),
+            description_msgid="help_instrument_location",
+            visible={'view': 'invisible', 'edit': 'visible'}
         )
     ),
 
@@ -227,7 +299,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    FileField('InstallationCertificate',
+    BlobFileField('InstallationCertificate',
     schemata = 'Additional info.',
     widget = FileWidget(
         label=_("Installation Certificate"),
@@ -253,6 +325,21 @@ def getDataInterfaces(context, export_only=False):
     for exim_id in instruments.__all__:
         exim = instruments.getExim(exim_id)
         if export_only and not hasattr(exim, 'Export'):
+            pass
+        else:
+            exims.append((exim_id, exim.title))
+    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+    exims.insert(0, ('', t(_('None'))))
+    return DisplayList(exims)
+
+def getImportDataInterfaces(context, import_only=False):
+    """ Return the current list of import data interfaces
+    """
+    from bika.lims.exportimport import instruments
+    exims = []
+    for exim_id in instruments.__all__:
+        exim = instruments.getExim(exim_id)
+        if import_only and not hasattr(exim, 'Import'):
             pass
         else:
             exims.append((exim_id, exim.title))
@@ -288,6 +375,9 @@ class Instrument(ATFolder):
     def getExportDataInterfacesList(self):
         return getDataInterfaces(self, export_only=True)
 
+    def getImportDataInterfacesList(self):
+        return getImportDataInterfaces(self, import_only=True)
+
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
 
@@ -305,6 +395,20 @@ class Instrument(ATFolder):
         items.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(items)
 
+    @deprecated('[1702] Orphan. No alternative')
+    def getMethodUID(self):
+        # TODO Avoid using this function. Returns first method's UID for now.
+        if self.getMethods():
+            return self.getMethods()[0].UID()
+        else:
+            return ''
+
+    def getMethodUIDs(self):
+        uids = []
+        if self.getMethods():
+            uids = [m.UID() for m in self.getMethods()]
+        return uids
+
     def getSuppliers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.getName) \
@@ -319,10 +423,10 @@ class Instrument(ATFolder):
             instrument can only be used in one method.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                for c in bsc(portal_type='Method',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y:cmp(x[1], y[1]))
+        items = [(c.UID, c.Title)
+                 for c in bsc(portal_type='Method',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 
@@ -332,6 +436,15 @@ class Instrument(ATFolder):
                 for c in bsc(portal_type='InstrumentType',
                              inactive_state = 'active')]
         items.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(items)
+
+    def getInstrumentLocations(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(c.UID, c.Title) \
+                 for c in bsc(portal_type='InstrumentLocation',
+                              inactive_state = 'active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 
     def getMaintenanceTasks(self):
@@ -593,33 +706,35 @@ class Instrument(ATFolder):
             The rest of the analyses (regular and duplicates) will not
             be returned.
         """
-        return [analysis for analysis in self.getAnalyses() \
-                if analysis.portal_type=='ReferenceAnalysis']
+        bac = getToolByName(self, 'bika_analysis_catalog')
+        brains = bac(portal_type='ReferenceAnalysis',
+                     getInstrumentUID=self.UID())
+        return [brain.getObject() for brain in brains]
 
     def addAnalysis(self, analysis):
         """ Add regular analysis (included WS QCs) to this instrument
             If the analysis has
         """
-        targetuid = analysis.getRawInstrument()
+        targetuid = analysis.getInstrumentUID()
         if not targetuid:
             return
         if targetuid != self.UID():
             raise Exception("Invalid instrument")
-        ans = self.getRawAnalyses() if self.getRawAnalyses() else []
-        ans.append(analysis.UID())
+        ans = self.getAnalyses() if self.getAnalyses() else []
+        ans.append(analysis)
         self.setAnalyses(ans)
         self.cleanReferenceAnalysesCache()
 
     def removeAnalysis(self, analysis):
         """ Remove a regular analysis assigned to this instrument
         """
-        targetuid = analysis.getRawInstrument()
+        targetuid = analysis.getInstrumentUID()
         if not targetuid:
             return
         if targetuid != self.UID():
             raise Exception("Invalid instrument")
         uid = analysis.UID()
-        ans = [a for a in self.getRawAnalyses() if a != uid]
+        ans = [a for a in self.getAnalyses() if a.UID() != uid]
         self.setAnalyses(ans)
         self.cleanReferenceAnalysesCache()
 
@@ -674,8 +789,6 @@ class Instrument(ATFolder):
                 wf.doActionFor(ref_analysis, 'assign')
             addedanalyses.append(ref_analysis)
 
-        self.setAnalyses(self.getAnalyses() + addedanalyses)
-
         # Initialize LatestReferenceAnalyses cache
         self.cleanReferenceAnalysesCache()
 
@@ -707,8 +820,16 @@ class Instrument(ATFolder):
         prox = bac(portal_type=['Analysis', 'DuplicateAnalysis'],
                    review_state='to_be_verified')
         ans = [p.getObject() for p in prox]
-        return [a for a in ans if a.getRawInstrument() == self.UID()]
+        return [a for a in ans if a.getInstrumentUID() == self.UID()]
 
+    def setImportDataInterface(self, values):
+        """ Return the current list of import data interfaces
+        """
+        exims = self.getImportDataInterfacesList()
+        new_values = [value for value in values if value in exims]
+        if len(new_values) < len(values):
+            logger.warn("Some Interfaces weren't added...")
+        self.Schema().getField('ImportDataInterface').set(self, new_values)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

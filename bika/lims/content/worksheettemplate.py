@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base, aq_inner
 from Products.ATExtensions.field.records import RecordsField
@@ -10,6 +15,8 @@ from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims import PMF, bikaMessageFactory as _
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
 from zope.interface import implements
 import sys
 
@@ -37,7 +44,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('Service',
         schemata = 'Analyses',
-        required = 1,
+        required = 0,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'WorksheetTemplateAnalysisService',
@@ -46,6 +53,25 @@ schema = BikaSchema.copy() + Schema((
             label=_("Analysis Service"),
             description=_("Select which Analyses should be included on the Worksheet"),
         )
+    ),
+    ReferenceField(
+        'RestrictToMethod',
+        schemata="Description",
+        required=0,
+        vocabulary_display_path_bound=sys.maxint,
+        vocabulary='_getMethodsVoc',
+        allowed_types=('Method',),
+        relationship='WorksheetTemplateMethod',
+        referenceClass=HoldingReference,
+        widget = SelectionWidget(
+            format='select',
+            label=_("Method"),
+            description=_(
+                "Restrict the available analysis services and instruments"
+                "to those with the selected method."
+                " In order to apply this change to the services list, you "
+                "should save the change first."),
+        ),
     ),
     ReferenceField('Instrument',
         schemata = "Description",
@@ -66,6 +92,17 @@ schema = BikaSchema.copy() + Schema((
         widget = ComputedWidget(
             visible = False,
         ),
+    ),
+    BooleanField(
+        'EnableMultipleUseOfInstrument',
+        default=True,
+        schemata="Description",
+        widget=BooleanWidget(
+            label=_("Enable Multiple Use of Instrument in Worksheets."),
+            description=_("If unchecked, \
+                          Lab Managers won't be able to assign the same Instrument more than one Analyses while \
+                          creating a Worksheet.")
+        )
     ),
 ))
 
@@ -92,14 +129,38 @@ class WorksheetTemplate(BaseContent):
         return ANALYSIS_TYPES
 
     def getInstruments(self):
+        cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
+        if self.getRestrictToMethod():
+            cfilter['getMethodUIDs'] = {
+                                    "query": self.getRestrictToMethod().UID(),
+                                    "operator": "or"}
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type = 'Instrument',
-                                   inactive_state = 'active')]
+        items = [('', 'No instrument')] + [
+            (o.UID, o.Title) for o in
+            bsc(cfilter)]
         o = self.getInstrument()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def getMethodUID(self):
+        method = self.getRestrictToMethod()
+        if method:
+            return method.UID()
+        return ''
+
+    def _getMethodsVoc(self):
+        """
+        This function returns the registered methods in the system as a
+        vocabulary.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Method',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("Not specified")))
         return DisplayList(list(items))
 
 registerType(WorksheetTemplate, PROJECTNAME)

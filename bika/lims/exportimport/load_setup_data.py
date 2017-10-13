@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from bika.lims import PMF
@@ -86,7 +91,11 @@ class LoadSetupData(BrowserView):
                 workbook = load_workbook(filename=tmp)  # , use_iterators=True)
                 self.dataset_name = 'uploaded'
 
-        assert(workbook is not None)
+        if not workbook:
+            message = PMF("File not found...")
+            self.context.plone_utils.addPortalMessage(message)
+            self.request.RESPONSE.redirect(portal.absolute_url() + "/import")
+            return
 
         adapters = [[name, adapter]
                     for name, adapter

@@ -17,8 +17,6 @@
 	tal:condition="python:not table_only">
 	<h1>
         <img tal:condition="view/icon|nothing" tal:attributes="src view/icon"/>
-        <img tal:condition="view/getPriorityIcon | nothing"
-             src="" tal:attributes="src view/getPriorityIcon"/>
         <span class="documentFirstHeading" tal:content="view/title"/>
     </h1>
 </metal:content-title>
@@ -45,14 +43,15 @@
 				<input type="hidden" name="submitted" value="1"/>
 				<input tal:replace="structure context/@@authenticator/authenticator"/>
 				<label for="getWorksheetTemplate" i18n:translate="">Select template</label>
-				<select id="ProfileSelector" name="getWorksheetTemplate">
+				<select id="ProfileSelector" name="getWorksheetTemplate"
+					tal:define="ws_templates_list view/getWorksheetTemplates">
 					<option value=""></option>
-					<tal:profile repeat="profile view/getWorksheetTemplates">
+					<tal:profile repeat="profile ws_templates_list">
 						<option
 							tal:attributes="
-								value python:profile[0];
+								value python:profile;
 								selected python: view.request.get('WorksheetTemplate', '') == profile[0] and 'selected' or ''"
-							tal:content="python:profile[1]"/>
+							tal:content="python:ws_templates_list.getValue(profile)"/>
 					</tal:profile>
 				</select>&nbsp;
 				<input type="submit"
@@ -64,48 +63,51 @@
 		</td></tr></table>
 
 		<fieldset class="criteria" name="criteria" style="margin-top: 0.5em;">
-			<label tal:attributes="for string:${form_id}_getCategoryTitle"
+			<label tal:attributes="for string:${form_id}_FilterByCategory"
 				i18n:translate="">Category</label>
 			<select id="CategorySelector"
-					tal:attributes="name string:${form_id}_getCategoryTitle"
+					tal:attributes="name string:${form_id}_FilterByCategory"
+					tal:define="categories_list view/getCategories"
 					class="listing-filter">
 				<option value="any" i18n:translate="">Any</option>
-				<tal:options repeat="category view/getCategories">
+				<tal:options repeat="category categories_list">
 					<option
 						tal:attributes="
 							value python:category;
 							selected python: view.request.form.get(form_id+'_getCategoryTitle', '') == category and 'selected' or ''"
-						tal:content="python:category"/>
+						tal:content="python:categories_list.getValue(category)"/>
 				</tal:options>
 			</select>
 
-			<label tal:attributes="for string:${form_id}_Title"
+			<label tal:attributes="for string:${form_id}_FilterByService"
 				i18n:translate="">Service</label>
 			<select id="ServiceSelector"
-					tal:attributes="name string:${form_id}_Title"
+					tal:attributes="name string:${form_id}_FilterByService"
+					tal:define="services_list view/getServices"
 					class="listing-filter">
 				<option value="any" i18n:translate="">Any</option>
-				<tal:options repeat="service view/getServices">
+				<tal:options repeat="service services_list">
 					<option
 						tal:attributes="
 							value python:service;
 							selected python: view.request.form.get(form_id+'_Title', '') == service and 'selected' or ''"
-						tal:content="python:service"/>
+						tal:content="python:services_list.getValue(service)"/>
 				</tal:options>
 			</select>
 
-			<label tal:attributes="for string:${form_id}_getClientTitle"
+			<label tal:attributes="for string:${form_id}_FilterByClient"
 				i18n:translate="">Client</label>
 			<select id="ClientSelector"
-					tal:attributes="name string:${form_id}_getClientTitle"
+					tal:attributes="name string:${form_id}_FilterByClient"
+					tal:define="clients_list view/getClients"
 					class="listing-filter">
 				<option value="any" i18n:translate="">Any</option>
-				<tal:options repeat="client view/getClients">
+				<tal:options repeat="client clients_list">
 					<option
 						tal:attributes="
 							value python:client;
 							selected python: view.request.form.get(form_id+'_getClientTitle', '') == client and 'selected' or ''"
-						tal:content="python:client"/>
+						tal:content="python:clients_list.getValue(client)"/>
 				</tal:options>
 			</select>&nbsp;
 			<a tal:attributes="href view/view_url" i18n:translate=""

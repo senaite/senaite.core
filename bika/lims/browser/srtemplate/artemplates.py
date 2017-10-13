@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -124,7 +129,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
         to the dictionary 'item'
         :param item: a dict which contains the ARTeplate data columns
         :param partition: a dict with some partition info
-        :return: the item dict with the partition's data
+        :returns: the item dict with the partition's data
         """
         uc = getToolByName(self, 'uid_catalog')
         container = uc(UID=partition.get('container_uid', ''))

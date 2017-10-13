@@ -27,7 +27,6 @@ AnalysisRequest views
     given an ar add form in client-1 with columns layout and 1 ars
     select date  SamplingDate-0  1
     I select Rita from the Contact combogrid in column 0
-    I select High from the Priority combogrid in column 0
     I select Bruma from the Template combogrid in column 0
     wait until element is visible  xpath=//span[@class='partnr' and .='1']
     xpath should match x times  .//span[@class='partnr' and .='1']  7
@@ -36,7 +35,6 @@ AnalysisRequest views
     given an ar add form in client-1 with columns layout and 1 ars
     select date  SamplingDate-0  1
     I select Rita from the Contact combogrid in column 0
-    I select High from the Priority combogrid in column 0
     I select Bruma from the Template combogrid in column 0
     sleep  2
     Element should not be visible    xpath=//em[contains(@class, 'partnr')]

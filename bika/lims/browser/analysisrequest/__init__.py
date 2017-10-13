@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_brain_metadata
@@ -36,6 +41,7 @@ from .published_results import AnalysisRequestPublishedResults
 from .results_not_requested import AnalysisRequestResultsNotRequestedView
 from .workflow import AnalysisRequestWorkflowAction
 from .analysisrequests import AnalysisRequestsView
+from .analysisrequests import QueuedAnalysisRequestsCount
 
 
 class ResultOutOfRange(object):
@@ -80,30 +86,6 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
         )
 
 
-class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
-
-    def __call__(self):
-        base_query = json.loads(self.request['base_query'])
-        # In client context, restrict samples to client samples only
-        if 'portal_type' in base_query \
-        and (base_query['portal_type'] == 'Sample'
-             or base_query['portal_type'][0] == 'Sample'):
-            client_uid = self.get_client_uid()
-            if client_uid:
-                base_query['getClientUID'] = client_uid
-                self.request['base_query'] = json.dumps(base_query)
-        return DefaultReferenceWidgetVocabulary.__call__(self)
-
-    def get_client_uid(self):
-        instance = self.context.aq_parent
-        while not IPloneSiteRoot.providedBy(instance):
-            if IClient.providedBy(instance):
-                return instance.UID()
-            if IBatch.providedBy(instance):
-                client = instance.getClient()
-                if client:
-                    return client.UID()
-
 class JSONReadExtender(object):
 
     """- Adds the full details of all analyses to the AR.Analyses field
@@ -120,7 +102,6 @@ class JSONReadExtender(object):
         analyses = self.context.getAnalyses(cancellation_state='active')
         for proxy in analyses:
             analysis = proxy.getObject()
-            service = analysis.getService()
             if proxy.review_state == 'retracted':
                 # these are scraped up when Retested analyses are found below.
                 continue
@@ -128,13 +109,10 @@ class JSONReadExtender(object):
             # These things will be included even if they are not present in
             # include_fields in the request.
             method = analysis.getMethod()
-            if not method:
-                method = service.getMethod()
-            service = analysis.getService()
             analysis_data = {
-                "Uncertainty": service.getUncertainty(analysis.getResult()),
+                "Uncertainty": analysis.getUncertainty(),
                 "Method": method.Title() if method else '',
-                "Unit": service.getUnit(),
+                "Unit": analysis.getUnit(),
             }
             # Place all schema fields ino the result.
             analysis_data.update(load_brain_metadata(proxy, []))
@@ -196,5 +174,3 @@ def mailto_link_from_ccemails(ccemails):
                 address, address)
             ret.append(mailto)
         return ",".join(ret)
-
-

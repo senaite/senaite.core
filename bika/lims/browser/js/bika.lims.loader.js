@@ -29,7 +29,9 @@ window.bika.lims.controllers =  {
     // Atachments
     ".attachments":
         ['AttachmentsUtils'],
-
+    // Bika Listing Filter Bar
+    "tr.bika_listing_filter_bar":
+        ['BikaListingFilterBarController'],
 
     /** JS objects to be loaded always **/
 
@@ -64,6 +66,8 @@ window.bika.lims.controllers =  {
     ".portaltype-instrumentcertification.template-base_edit":
         ['InstrumentCertificationEditView'],
 
+    ".portaltype-instrument.template-base_edit":
+            ['InstrumentEditView'],
 
     // Bika Setup
     ".portaltype-bikasetup.template-base_edit":
@@ -73,6 +77,9 @@ window.bika.lims.controllers =  {
     // Clients
     ".portaltype-client.template-base_edit":
         ['ClientEditView'],
+
+    "div.overlay #client-base-edit":
+        ['ClientOverlayHandler'],
 
     // Client Sampling Rounds
     ".template-bika-lims-content-samplingsround.portaltype-client":
@@ -87,25 +94,33 @@ window.bika.lims.controllers =  {
         ['ReferenceSampleAnalysesView'],
 
 
-    // Samples
+    // Sample
     ".portaltype-sample":
-        ['SampleView'],
-
+        ['SampleView',
+        'RejectionKickOff'],
+    // Samples fodler
+    ".portaltype-samplesfolder":
+        ['SamplesFolderView'],
 
     // Analysis Request Templates
     ".portaltype-artemplate.template-base_edit":
         ['ARTemplateEditView'],
 
-
     // Analysis Requests
     ".portaltype-analysisrequest":
         ['SampleView',
-         'AnalysisRequestView'],
+         'AnalysisRequestView',
+     ],
+     // Analysis request, but not in ARAdd view
+     ".portaltype-analysisrequest:not(.template-ar_add)":
+        [
+        'RejectionKickOff',],
 
     ".portaltype-analysisrequest.template-base_view":
         ['WorksheetManageResultsView',
          'AnalysisRequestViewView',
-         'AnalysisRequestManageResultsView'],
+         'AnalysisRequestManageResultsView',
+         'RejectionKickOff',],
 
     ".portaltype-analysisrequest.template-manage_results":
         ['WorksheetManageResultsView',
@@ -113,6 +128,11 @@ window.bika.lims.controllers =  {
 
     ".portaltype-analysisrequest.template-analyses":
         ['AnalysisRequestAnalysesView'],
+
+    // Aggregated analyses view
+    ".template-aggregatedanalyses.portaltype-plone-site":
+        ['WorksheetManageResultsView',
+         'AnalysisRequestManageResultsView',],
 
 	// Common and utilities for AR Add forms
 	".portaltype-analysisrequest.template-ar_add": ['AnalysisRequestAddView'],
@@ -126,7 +146,11 @@ window.bika.lims.controllers =  {
 	".analysisrequest_add_by_col": ['AnalysisRequestAddByCol'],
 
     "#ar_publish_container":
-        ['AnalysisRequestPublishView', 'RangeGraph'],
+        ['RangeGraph', 'AnalysisRequestPublishView'],
+
+    // Samples PrintView
+     "#preview_container.samples_print_preview":
+         ['FormPrintView'],
 
     // Supply Orders
     ".portaltype-supplyorder.template-base_edit":
@@ -161,9 +185,17 @@ window.bika.lims.controllers =  {
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],
 
+    ".portaltype-worksheettemplate.template-base_edit":
+        ['WorksheetTemplateEdit'],
+
     "#worksheet-printview-wrapper":
         ['WorksheetPrintView'],
 
+    ".portaltype-reflexrule.template-base_edit":
+        ['ReflexRuleEditView'],
+
+    ".template-labcontacts.portaltype-department":
+        ['DepartmentLabContactsView'],
 
     // Reports folder (not AR Reports)
     ".portaltype-reportfolder":

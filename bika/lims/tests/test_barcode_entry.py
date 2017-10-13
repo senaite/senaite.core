@@ -1,7 +1,13 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.testing import BIKA_SIMPLE_FIXTURE
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID, changeWorkflowState
+from bika.lims.workflow import doActionFor
 from plone.app.testing import login
 from plone.app.testing import TEST_USER_NAME
 from Products.CMFCore.utils import getToolByName
@@ -38,7 +44,6 @@ class TestBarcodeEntry(BikaFunctionalTestCase):
         container = self.addthing(bs.bika_containers, 'Container', title='Bottle', capacity="10ml")
         sampletype = self.addthing(bs.bika_sampletypes, 'SampleType', title='Water', Prefix='H2O')
         samplepoint = self.addthing(bs.bika_samplepoints, 'SamplePoint', title='Toilet')
-        priority = self.addthing(bs.bika_arpriorities, 'ARPriority', title='Normal', sortKey=1)
         service = self.addthing(bs.bika_analysisservices, 'AnalysisService', title='Ecoli', Keyword="ECO")
         batch = self.addthing(self.portal.batches, 'Batch', title='B1')
         # Create Sample with single partition
@@ -60,7 +65,7 @@ class TestBarcodeEntry(BikaFunctionalTestCase):
         wf = getToolByName(self.portal, 'portal_workflow')
         for ar in self.ar1, self.ar2, self.ar3:
             # Set initial AR state
-            wf.doActionFor(ar, 'no_sampling_workflow')
+            doActionFor(ar, 'no_sampling_workflow')
 
         transaction.commit()
 

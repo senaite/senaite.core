@@ -90,11 +90,15 @@ function recordswidget_loadEventHandlers(elements) {
         var row = $(rows[rows.length-1]).clone();
         // after cloning, make sure the new element's IDs are unique
         var found = $(row).find("input[id^='"+fieldname+"']");
+        if (found.length === 0) {
+            found = $(row).find("select[id^='"+fieldname+"']");
+        }
         for (var i = found.length - 1; i >= 0; i--) {
             var ID = found[i].id;
             var prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
             var nr = parseInt(ID.split("-")[2]) + 1;
             $(found[i]).attr('id', prefix + "-" + nr);
+            $(found[i]).val('');
         };
         // First check to see that all required subfields are completed,
         // before allowing a new row to be added

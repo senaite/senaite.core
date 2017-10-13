@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import plone, json
 
 from bika.lims.permissions import *
@@ -38,7 +43,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         # portal_workflow transition url.
         came_from = "workflow_action"
         action = form.get(came_from, '')
-        if not action:
+        if not action and not form.get('bika_listing_filter_bar_submit', ''):
             # workflow_action_button is the action name specified in
             # the bika_listing_view table buttons.
             came_from = "workflow_action_button"
@@ -53,11 +58,14 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         if action == "sample":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
+            dsfn='getDateSampled'
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
                     ar = obj
                     sample = obj.getSample()
                 else:
+                    # If it is a Sample, then fieldname is DateSampled
+                    dsfn='DateSampled'
                     sample = obj
                     ar = sample.aq_parent
                 # can't transition inactive items
@@ -66,10 +74,10 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
                 # grab this object's Sampler and DateSampled from the form
                 # (if the columns are available and edit controls exist)
-                if 'getSampler' in form and 'getDateSampled' in form:
+                if 'getSampler' in form and dsfn in form:
                     try:
                         Sampler = form['getSampler'][0][obj_uid].strip()
-                        DateSampled = form['getDateSampled'][0][obj_uid].strip()
+                        DateSampled = form[dsfn][0][obj_uid].strip()
                     except KeyError:
                         continue
                     Sampler = Sampler and Sampler or ''

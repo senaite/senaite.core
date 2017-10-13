@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import logger
 from bika.lims.content.analysis import Analysis
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
@@ -337,7 +342,6 @@ class TestLimitDetections(BikaFunctionalTestCase):
             self.assertEqual(an.isLowerDetectionLimit(), case['isldl'])
             self.assertEqual(an.isUpperDetectionLimit(), case['isudl'])
             self.assertEqual(float(an.getResult()), case['expresult'])
-            #import pdb; pdb.set_trace()
             self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'])
             expres = case['expformattedresult']
             expres = expres.replace('< ', '&lt; ') if an.isBelowLowerDetectionLimit() else expres
@@ -367,10 +371,10 @@ class TestLimitDetections(BikaFunctionalTestCase):
                   'analysisservice-7': 2}
         for a in ar.getAnalyses():
             an = a.getObject()
-            idx = asidxs[an.getService().id]
+            idx = asidxs[an.id]
             self.assertEqual(an.getLowerDetectionLimit(), float(self.lds[idx]['min']))
             self.assertEqual(an.getUpperDetectionLimit(), float(self.lds[idx]['max']))
-            self.assertEqual(an.getService().getAllowManualDetectionLimit(), self.lds[idx]['manual'])
+            self.assertEqual(an.getAllowManualDetectionLimit(), self.lds[idx]['manual'])
 
             # Empty result
             self.assertFalse(an.getDetectionLimitOperand())

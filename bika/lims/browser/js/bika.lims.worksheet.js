@@ -42,82 +42,83 @@ function WorksheetAddAnalysesView() {
     that.load = function() {
 
         // search form - selecting a category fills up the service selector
-        $('[name="list_getCategoryTitle"]').live("change", function(){
-            val = $('[name="list_getCategoryTitle"]').val();
+        $('[name="list_FilterByCategory"]').live("change", function(){
+            val = $('[name="list_FilterByCategory"]').find(":selected").val();
             if(val == 'any'){
-                $('[name="list_Title"]').empty();
-                $('[name="list_Title"]').append("<option value='any'>"+_('Any')+"</option>");
+                $('[name="list_FilterByService"]').empty();
+                $('[name="list_FilterByService"]').append("<option value='any'>"+_('Any')+"</option>");
                 return;
             }
             $.ajax({
                 url: window.location.href.split("?")[0].replace("/add_analyses","") + "/getServices",
                 type: 'POST',
                 data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                       'getCategoryTitle': val},
+                       'getCategoryUID': val},
                 dataType: "json",
                 success: function(data, textStatus, $XHR){
-                    current_service_selection = $('[name="list_Title"]').val();
-                    $('[name="list_Title"]').empty();
-                    $('[name="list_Title"]').append("<option value='any'>"+_('Any')+"</option>");
+                    current_service_selection = $('[name="list_FilterByService"]').val();
+                    $('[name="list_FilterByService"]').empty();
+                    $('[name="list_FilterByService"]').append("<option value='any'>"+_('Any')+"</option>");
                     for(i=0; i<data.length; i++){
                         if (data[i] == current_service_selection){
                             selected = 'selected="selected" ';
                         } else {
                             selected = '';
                         }
-                        $('[name="list_Title"]').append("<option "+selected+"value='"+data[i]+"'>"+data[i]+"</option>");
+                        $('[name="list_FilterByService"]').append(
+                            "<option "+selected+"value='"+data[i][0]+
+                            "'>"+data[i][1]+"</option>");
                     }
                 }
             });
         });
-        $('[name="list_getCategoryTitle"]').trigger("change");
+        $('[name="list_FilterByCategory"]').trigger("change");
 
-        // add_analyses analysis search is handled by bika_listing default __call__
+        // add_analyses analysis search is handled by
+        // worksheet/views/add_analyses/AddAnalysesView/__call__
         $('.ws-analyses-search-button').live('click', function (event) {
             // in this context we already know there is only one bika-listing-form
             var form_id = "list";
-            var form = $("#list");
+            var form = $('form[id="'+form_id+'"]');
+            var params = {};
 
-            // request new table content by re-routing bika_listing_table form submit
-            $(form).append("<input type='hidden' name='table_only' value='" + form_id + "'>");
             // dropdowns are printed in ../templates/worksheet_add_analyses.pt
-            // We add <formid>_<index>=<value>, which are checked in bika_listing.py
-            var filter_indexes = ['getCategoryTitle', 'Title', 'getClientTitle'];
-            var i, fi;
-            for (i = 0; i < filter_indexes.length; i++) {
-                fi = form_id + "_" + filter_indexes[i];
-                var value = $("[name='" + fi + "']").val();
+            // We add <formid>_<filterby_index>=<value>, which are checked in
+            // worksheet/view/add_analyses.py/__call__, that are different
+            // from listing or catalog filters
+            var filter_indexes = ['FilterByCategory', 'FilterByService',
+                'FilterByClient'];
+            var field_set = $(this).parent('fieldset');
+            for (var i=0; i<filter_indexes.length; i++) {
+                var idx_name = filter_indexes[i];
+                var field_name = form_id+"_"+idx_name;
+                var element = $(field_set).find('[name="'+field_name+'"]');
+                var value = $(element).val();
                 if (value == undefined || value == null || value == 'any') {
-                    $("#list > [name='" + fi + "']").remove();
-                    $.query.REMOVE(fi);
+                    continue;
                 }
-                else {
-                    $(form).append("<input type='hidden' name='" + fi + "' value='" + value + "'>");
-                    $.query.SET(fi, value);
+                params[idx_name] = value;
+            }
+            // Add other fields required from bikalisting form
+            params['form_id'] = form_id;
+            params['table_only'] = form_id;
+            params['portal_type'] = 'Analysis';
+            params['submitted'] = '1';
+            var base_fields = ['_authenticator', 'view_url', 'list_sort_on', 'list_sort_order'];
+            for (var i=0; i<base_fields.length; i++) {
+                var field_name = base_fields[i];
+                var field = $(form).find('input[name="'+field_name+'"]');
+                var value = $(field).val();
+                if (value == undefined || value == null) {
+                    continue;
                 }
+                params[field_name] = value;
             }
 
-            var options = {
-                target: $('.bika-listing-table'),
-                replaceTarget: true,
-                data: form.formToArray(),
-                success: function () {
-                }
-            }
-            var url = window.location.href.split("?")[0].split("/add_analyses")[0];
-            url = url + "/add_analyses" + $.query.toString();
-            window.history.replaceState({}, window.document.title, url);
-
-            var stored_form_action = $(form).attr("action");
-            $(form).attr("action", window.location.href);
-            form.ajaxSubmit(options);
-
-            for (i = 0; i < filter_indexes.length; i++) {
-                fi = form_id + "_" + filter_indexes[i];
-                $("#list > [name='" + fi + "']").remove();
-            }
-            $(form).attr("action", stored_form_action);
-            $("[name='table_only']").remove();
+            $.post(window.location.href, params).done(function(data) {
+                $(form).find('.bika-listing-table-container').html(data);
+                window.bika.lims.BikaListingTableView.load();
+            });
 
             return false;
         });
@@ -153,7 +154,7 @@ function WorksheetAddQCAnalysesView() {
             }
             // tell the form handler which services were selected
             selected_service_uids = [];
-            $.each($("input:checked"), function(i,e){
+            $.each($(".worksheet_add_control_services .bika-listing-table input:checked"), function(i,e){
                 selected_service_uids.push($(e).val());
             });
             ssuids = selected_service_uids.join(",");
@@ -242,6 +243,8 @@ function WorksheetManageResultsView() {
         loadRemarksEventHandlers();
 
         loadDetectionLimitsEventHandlers();
+
+        loadInstrumentEventHandlers();
     }
 
     function portalMessage(message) {
@@ -366,7 +369,7 @@ function WorksheetManageResultsView() {
         /// Get all the analysis UIDs from this manage results table, cause
         // we'll need them to retrieve all the IMM constraints/rules to be
         // applied later.
-        var dictuids = $.parseJSON($('#lab_analyses #item_data, #analyses_form #item_data').val());
+        var dictuids = $.parseJSON($('#item_data').val());
         $.each(dictuids, function(key, value) { auids.push(key); });
 
         // Retrieve all the rules/constraints to be applied for each analysis
@@ -451,23 +454,35 @@ function WorksheetManageResultsView() {
             $(m_selector).show();
         }
 
+        // We are going to reload Instrument list.. Enable all disabled options from other Instrument lists which has the
+        // same value as old value of this Instrument Selectbox.
+        ins_old_val=$(i_selector).val();
+        if(ins_old_val && ins_old_val!=''){
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+ins_old_val+'"] option[value="'+ins_old_val+'"]').prop('disabled', false);
+        }
         // Populate instruments list
         $(i_selector).find('option').remove();
-        console.log(constraints[7]);
         if (constraints[7]) {
             $.each(constraints[7], function(key, value) {
-                console.log(key+ ": "+value);
-                $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+                if(is_ins_allowed(key)){
+                    $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+                }else{
+                    $(i_selector).append('<option value="'+key+'" disabled="true">'+value+'</option>');
+                }
             });
         }
 
         // None option in instrument selector?
         if (constraints[3] == 1) {
-            $(i_selector).prepend('<option value="">'+_('None')+'</option>');
+            $(i_selector).prepend('<option selected="selected" value="">'+_('None')+'</option>');
         }
 
         // Select the default instrument
-        $(i_selector).val(constraints[4]);
+        if(is_ins_allowed(constraints[4])){
+           $(i_selector).val(constraints[4]);
+           // Disable this Instrument in the other Instrument SelectBoxes
+           $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+constraints[4]+'"] option[value="'+constraints[4]+'"]').prop('disabled', true);
+        }
 
         // Instrument selector visible?
         if (constraints[2] === 0) {
@@ -562,5 +577,45 @@ function WorksheetManageResultsView() {
             var muid = $(this).val();
             load_analysis_method_constraint(auid, muid);
         });
+    }
+
+    /**
+     * If a new instrument is chosen for the analysis, disable this Instrument for the other analyses. Also, remove
+     * the restriction of previous Instrument of this analysis to be chosen in the other analyses.
+     */
+    function loadInstrumentEventHandlers() {
+        $('table.bika-listing-table select.listing_select_entry[field="Instrument"]').on('focus', function () {
+                // First, getting the previous value
+                previous = this.value;
+            }).change(function() {
+            var auid = $(this).attr('uid');
+            var iuid = $(this).val();
+            // Disable New Instrument for rest of the analyses
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="'+iuid+'"] option[value="'+iuid+'"]').prop('disabled', true);
+            // Enable previous Instrument everywhere
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value="'+previous+'"]').prop('disabled', false);
+            // Enable 'None' option as well.
+            $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value=""]').prop('disabled', false);
+        });
+    }
+
+    /**
+     * Check if the Instrument is allowed to appear in Instrument list of Analysis.
+     * Returns true if multiple use of an Instrument is enabled for assigned Worksheet Template or UID is not in selected Instruments
+     * @param {uid} ins_uid - UID of Instrument.
+     */
+    function is_ins_allowed(uid) {
+        var multiple_enabled = $("#instrument_multiple_use").attr('value');
+        if(multiple_enabled=='True'){
+            return true;
+        }else{
+            var i_selectors = $('select.listing_select_entry[field="Instrument"]');
+            for(i=0; i < i_selectors.length; i++){
+                if(i_selectors[i].value == uid){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Client - the main organisational entity in bika.
 """
 from AccessControl import ClassSecurityInfo
@@ -41,6 +46,20 @@ schema = Organisation.schema.copy() + atapi.Schema((
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
             label=_("Member discount applies"),
+        ),
+    ),
+    atapi.StringField(
+        'CCEmails',
+        schemata = 'Preferences',
+        mode="rw",
+        widget=atapi.StringWidget(
+            label=_("CC Emails"),
+            description=_(
+                "Default Emails to CC all published ARs for this client"),
+            visible={
+                'edit': 'visible',
+                'view': 'visible',
+            },
         ),
     ),
     atapi.LinesField('EmailSubject',
@@ -190,6 +209,43 @@ class Client(Organisation):
         if self.getDefaultDecimalMark() == False:
             return self.Schema()['DecimalMark'].get(self)
         return self.bika_setup.getDecimalMark()
+
+    def getCountry(self, default=None):
+        """ Return the Country from the Physical or Postal Address
+        """
+        physical_address = self.getPhysicalAddress().get("country", default)
+        postal_address = self.getPostalAddress().get("country", default)
+        return physical_address or postal_address
+
+    def getProvince(self, default=None):
+        """ Return the Province from the Physical or Postal Address
+        """
+        physical_address = self.getPhysicalAddress().get("state", default)
+        postal_address = self.getPostalAddress().get("state", default)
+        return physical_address or postal_address
+
+    def getDistrict(self, default=None):
+        """ Return the Province from the Physical or Postal Address
+        """
+        physical_address = self.getPhysicalAddress().get("district", default)
+        postal_address = self.getPostalAddress().get("district", default)
+        return physical_address or postal_address
+
+    def validate_address(self, request, field, data):
+        """ Validates the Address Fields
+
+        If country is "Zimbabwe", the province and district fields are required.
+
+        :returns: (str) message if validation fails, otherwise (bool) True
+        """
+        country = data.get("country", None)
+        province = data.get("state", None)
+        district = data.get("district", None)
+
+        if country == "Zimbabwe" and not all([province, district]):
+            return "Province and district fields are mandatory"
+
+        return True
 
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)

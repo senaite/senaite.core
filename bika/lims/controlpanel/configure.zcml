@@ -45,14 +45,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IARPriorities"
-      name="folder_view"
-      class=".bika_arpriorities.ARPrioritiesView"
-      permission="bika.lims.permissions.ManageARPriority"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAnalysisCategories"
       name="folder_view"
       class=".bika_analysiscategories.AnalysisCategoriesView"
@@ -63,7 +55,7 @@
     <browser:page
       for="bika.lims.interfaces.IAnalysisProfiles"
       name="folder_view"
-      class=".bika_analysisprofiles.ProfilesView"
+      class=".bika_analysisprofiles.AnalysisProfilesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -133,6 +125,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IIdentifierTypes"
+      name="folder_view"
+      class=".bika_identifiertypes.IdentifierTypesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IInstruments"
       name="folder_view"
       class=".bika_instruments.InstrumentsView"
@@ -144,6 +144,14 @@
       for="bika.lims.interfaces.IInstrumentTypes"
       name="folder_view"
       class=".bika_instrumenttypes.InstrumentTypesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IInstrumentLocations"
+      name="folder_view"
+      class=".bika_instrumentlocations.InstrumentLocationsView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -205,9 +213,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISRTemplates"
+      for="bika.lims.interfaces.ISamplingRoundTemplates"
       name="folder_view"
-      class=".bika_srtemplates.TemplatesView"
+      class=".bika_srtemplates.SamplingRoundTemplatesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -240,6 +248,14 @@
       for="bika.lims.interfaces.IBatchLabels"
       name="folder_view"
       class=".bika_batchlabels.BatchLabelsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IReflexRuleFolder"
+      name="folder_view"
+      class=".bika_reflexrulefolder.ReflexRuleFolderView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

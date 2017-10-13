@@ -1,0 +1,31 @@
+<form method="post"
+      action="sanitize_action">
+
+    <div id="progress_bar">
+        <progress value="0" max="100"></progress>
+    </div>
+
+    <div>
+        <p> Select the tasks to carry on: </p>
+            <p>
+                <label>
+                    <input type="checkbox"
+                           name="sanitize_analyses_creation_date"
+                           value="1">
+                    Check created date value for Analyses. Some analyses has
+                    a wrong value due to old versions of Bika. Those
+                    analyses have the creation time of their Analysis
+                    Service. This task checks all analyses and their
+                    Analysis Request creation date, if the analysis creation
+                    date is older than the Analysis Request one, the task
+                    will set the Analysis creation date with the one stored
+                    in the request.
+                </label>
+            </p>
+    </div>
+
+    <p>
+        <input type="submit" id="submit" name="submit" value="Submit">
+    </p>
+
+</form>

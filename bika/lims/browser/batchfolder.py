@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.permissions import AddBatch
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
@@ -35,12 +40,16 @@ class BatchFolderContentsView(BikaListingView):
         self.pagesize = 25
 
         self.columns = {
-            'Title': {'title': _('Title')},
-            'BatchID': {'title': _('Batch ID')},
-            'Description': {'title': _('Description')},
+            'Title': {'title': _('Title'),
+                      'index': 'title'},
+            'BatchID': {'title': _('Batch ID'),
+                        'index': 'getId'},
+            'Description': {'title': _('Description'), 'sortable': False},
             'BatchDate': {'title': _('Date')},
-            'Client': {'title': _('Client')},
+            'Client': {'title': _('Client'),
+                       'index': 'getClientTitle'},
             'state_title': {'title': _('State'), 'sortable': False},
+            'created': {'title': _('Created'), },
         }
 
         self.review_states = [  # leave these titles and ids alone
@@ -99,6 +108,33 @@ class BatchFolderContentsView(BikaListingView):
                 {'url': 'createObject?type_name=Batch',
                  'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
         return super(BatchFolderContentsView, self).__call__()
+
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the batch contains analysis requests
+        with services from the selected department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        @obj: it is a batch.
+        @return: boolean
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the departments from the batch
+        ars = obj.getAnalysisRequests()
+        if not ars:
+            return True
+        # Getting the cookie value
+        cookie_dep_uid = self.request.get('filter_by_department_info', '')
+        filter_uids = set(
+            cookie_dep_uid.split(','))
+        for ar in ars:
+            # Comparing departments' UIDs
+            deps_uids = set(ar.getDepartmentUIDs())
+            matches = deps_uids & filter_uids
+            if len(matches) > 0:
+                return True
+        return False
 
     def folderitems(self):
         self.filter_indexes = None

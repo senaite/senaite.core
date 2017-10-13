@@ -11,6 +11,8 @@
                 tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
         <script type="text/javascript"
                 tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
+        <script type="text/javascript"
+                tal:attributes="src python:portal.absolute_url() + '/bika_widgets/rejectionwidget.js'"></script>
         <link rel="stylesheet" type="text/css" media="all" href=""
                 tal:attributes="href string:${portal/absolute_url}/bika_widgets/referencewidget.css"/>
     </metal:block>
@@ -61,6 +63,7 @@
                     bika_artemplates_uid      python: bika_setup.bika_artemplates.UID();
                     bika_analysisprofiles_uid python: bika_setup.bika_analysisprofiles.UID();
                     bika_analysisspecs_uid    python: bika_setup.bika_analysisspecs.UID();
+                    samplingwfenabled         python: 'true' if bika_setup.getSamplingWorkflowEnabled() else '';
                     bika_analysisspecs_path   python:'/'.join(bika_setup.bika_analysisspecs.getPhysicalPath())">
     </span>
 

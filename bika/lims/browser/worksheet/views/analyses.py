@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from operator import itemgetter
 from Products.CMFPlone.i18nl10n import ulocalized_time
 
@@ -11,23 +17,21 @@ class AnalysesView(BaseView):
     """
     def __init__(self, context, request):
         BaseView.__init__(self, context, request)
-        self.catalog = 'bika_analysis_catalog'
-        self.contentFilter = {'portal_type':'Analysis',
-                              'review_state':'sample_received',
-                              'worksheetanalysis_review_state':'unassigned'}
+        self.context = context
+        self.request = request
+        self.analyst = None
+        self.instrument = None
+        self.contentFilter = {
+            'getWorksheetUID': context.UID(),
+        }
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.contentFilter = {}
-        self.show_select_row = False
-        self.show_sort_column = False
         self.allow_edit = True
         self.show_categories = False
         self.expand_all_categories = False
-
         self.columns = {
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due Date')},
             'Service': {'title': _('Analysis')},
-            'getPriority': {'title': _('Priority')},
             'Method': {'title': _('Method')},
             'DetectionLimit': {
                 'title': _('DL'),
@@ -44,7 +48,6 @@ class AnalysesView(BaseView):
             'Attachments': {'title': _('Attachments')},
             'Instrument': {'title': _('Instrument')},
             'state_title': {'title': _('State')},
-            'Priority': { 'title': _('Priority'), 'index': 'Priority'},
         }
         self.review_states = [
             {'id':'default',
@@ -56,7 +59,6 @@ class AnalysesView(BaseView):
                              {'id':'unassign'}],
              'columns':['Pos',
                         'Service',
-                        'Priority',
                         'Method',
                         'Instrument',
                         'DetectionLimit',
@@ -68,16 +70,16 @@ class AnalysesView(BaseView):
              },
         ]
 
+    # TODO-performance: Refactor this folderitems
     def folderitems(self):
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
-        self.contentsMethod = self.context.getFolderContents
         items = BaseView.folderitems(self)
         layout = self.context.getLayout()
         highest_position = 0
         new_items = []
         for x, item in enumerate(items):
-            obj = item['obj']
+            obj = item['obj'].getObject()
             pos = [slot['position'] for slot in layout if
                    slot['analysis_uid'] == obj.UID()][0]
 
@@ -91,20 +93,18 @@ class AnalysesView(BaseView):
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}
-            service = obj.getService()
-            method = service.getMethod()
-            items[x]['Service'] = service.Title()
-            items[x]['Priority'] = ''
+            method = obj.getMethod()
+            items[x]['Service'] = obj.Title()
             #items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
-            items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
+            items[x]['Category'] = obj.getCategoryTitle()
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
                 items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
 
             items[x]['Order'] = ''
-            instrument = obj.getInstrument()
+            # instrument = obj.getInstrument()
             #items[x]['Instrument'] = instrument and instrument.Title() or ''
 
             new_items.append(item)
@@ -193,8 +193,8 @@ class AnalysesView(BaseView):
                 if isanalysis and (hasremarks or remarksedit):
                     rowspan += 1
             items[x]['rowspan'] = {'Pos': rowspan}
-
-            obj = items[x]['obj']
+            # TODO-performance: getting the object here...
+            obj = items[x]['obj'].getObject()
             # fill the rowspan with a little table
             # parent is either an AR, a Worksheet, or a
             # ReferenceSample (analysis parent).
@@ -202,7 +202,7 @@ class AnalysesView(BaseView):
             if parent.aq_parent.portal_type == "WorksheetFolder":
                 # we're a duplicate; get original object's client
                 client = obj.getAnalysis().aq_parent.aq_parent
-            elif parent.aq_parent.portal_type == "ReferenceSupplier":
+            elif parent.aq_parent.portal_type == "Supplier":
                 # we're a reference sample; get reference definition
                 client = obj.getReferenceDefinition()
             else:
@@ -281,7 +281,6 @@ class AnalysesView(BaseView):
             pos_text += "</table>"
 
             items[x]['replace']['Pos'] = pos_text
-            items[x]['getPriority'] = '' #Icon get added by adapter
 
         for k,v in self.columns.items():
             self.columns[k]['sortable'] = False

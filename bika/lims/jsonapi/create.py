@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from bika.lims.idserver import renameAfterCreation
@@ -5,7 +10,9 @@ from bika.lims.jsonapi import set_fields_from_request
 from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID, dicts_to_dict
+from bika.lims.utils.analysisrequest import get_services_uids
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getReviewHistoryActionsList
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.Archetypes.event import ObjectInitializedEvent
@@ -188,6 +195,7 @@ class Create(object):
             if _renameAfterCreation:
                 renameAfterCreation(obj)
             ret['obj_id'] = obj.getId()
+            ret['obj_uid'] = obj.UID()
             used_fields = set_fields_from_request(obj, request)
             for field in used_fields:
                 self.used(field)
@@ -263,6 +271,7 @@ class Create(object):
         if fieldname in self.unused:
             self.unused.remove(fieldname)
 
+    # TODO Workflow, AR Creation - Remove or delegate function to utils.analysisrequest
     def _create_ar(self, context, request):
         """Creates AnalysisRequest object, with supporting Sample, Partition
         and Analysis objects.  The client is retrieved from the obj_path
@@ -321,12 +330,16 @@ class Create(object):
         except IndexError:
             raise Exception("Client not found")
 
+        secondary = False
+        sample = None
         # Sample_id
         if 'Sample' in request:
+            # Secondary AR
             try:
                 sample = resolve_request_lookup(context, request, 'Sample')[0].getObject()
             except IndexError:
                 raise Exception("Sample not found")
+            secondary = True
         else:
             # Primary AR
             sample = _createObjectByType("Sample", client, tmpID())
@@ -336,13 +349,9 @@ class Create(object):
                 self.used(field)
             sample._renameAfterCreation()
             sample.setSampleID(sample.getId())
+            sample.setSamplingWorkflowEnabled(SamplingWorkflowEnabled)
             event.notify(ObjectInitializedEvent(sample))
             sample.at_post_create_script()
-
-            if SamplingWorkflowEnabled:
-                wftool.doActionFor(sample, 'sampling_workflow')
-            else:
-                wftool.doActionFor(sample, 'no_sampling_workflow')
 
         ret['sample_id'] = sample.getId()
 
@@ -357,13 +366,21 @@ class Create(object):
         fields = set_fields_from_request(ar, request)
         for field in fields:
             self.used(field)
-        ar.setSample(sample.UID())
+        ar.setSample(sample)
         ar._renameAfterCreation()
         ret['ar_id'] = ar.getId()
+
         brains = resolve_request_lookup(context, request, 'Services')
         service_uids = [p.UID for p in brains]
-        new_analyses = ar.setAnalyses(service_uids, specs=specs)
-        ar.setRequestID(ar.getId())
+        # If there is a profile, add its services' UIDs
+        brains = resolve_request_lookup(context, request, 'Profiles')
+        profiles_uids = [p.UID for p in brains]
+        profiles_uids = ','.join(profiles_uids)
+        profiles_dict = {'Profiles': profiles_uids}
+        service_uids = get_services_uids(
+            context=context, analyses_serv=service_uids, values=profiles_dict)
+        ar.setAnalyses(service_uids, specs=specs)
+        new_analyses = ar.getAnalyses(full_objects=True)
         ar.reindexObject()
         event.notify(ObjectInitializedEvent(ar))
         ar.at_post_create_script()
@@ -388,64 +405,55 @@ class Create(object):
                     Preservation=preservation,
                 )
                 part.processForm()
-                if SamplingWorkflowEnabled:
-                    wftool.doActionFor(part, 'sampling_workflow')
-                else:
-                    wftool.doActionFor(part, 'no_sampling_workflow')
                 parts_and_services[part.id] = p['services']
-
-        if SamplingWorkflowEnabled:
-            wftool.doActionFor(ar, 'sampling_workflow')
-        else:
-            wftool.doActionFor(ar, 'no_sampling_workflow')
 
         # Add analyses to sample partitions
         # XXX jsonapi create AR: right now, all new analyses are linked to the first samplepartition
         if new_analyses:
             analyses = list(part.getAnalyses())
             analyses.extend(new_analyses)
-            part.edit(
-                Analyses=analyses,
-            )
             for analysis in new_analyses:
                 analysis.setSamplePartition(part)
+            part.setAnalyses(analyses)
 
-        # If Preservation is required for some partitions,
-        # and the SamplingWorkflow is disabled, we need
-        # to transition to to_be_preserved manually.
-        if not SamplingWorkflowEnabled:
-            to_be_preserved = []
-            sample_due = []
-            lowest_state = 'sample_due'
-            for p in sample.objectValues('SamplePartition'):
-                if p.getPreservation():
-                    lowest_state = 'to_be_preserved'
-                    to_be_preserved.append(p)
-                else:
-                    sample_due.append(p)
-            for p in to_be_preserved:
-                doActionFor(p, 'to_be_preserved')
-            for p in sample_due:
-                doActionFor(p, 'sample_due')
-            doActionFor(sample, lowest_state)
-            for analysis in ar.objectValues('Analysis'):
-                doActionFor(analysis, lowest_state)
-            doActionFor(ar, lowest_state)
+        action = 'no_sampling_workflow'
+        if SamplingWorkflowEnabled:
+            action = 'sampling_workflow'
+        wftool.doActionFor(ar, action)
 
-        # receive secondary AR
-        if request.get('Sample_id', ''):
-            doActionFor(ar, 'sampled')
-            doActionFor(ar, 'sample_due')
-            not_receive = ['to_be_sampled', 'sample_due', 'sampled',
-                           'to_be_preserved']
-            sample_state = wftool.getInfoFor(sample, 'review_state')
-            if sample_state not in not_receive:
-                doActionFor(ar, 'receive')
-            for analysis in ar.getAnalyses(full_objects=1):
-                doActionFor(analysis, 'sampled')
-                doActionFor(analysis, 'sample_due')
-                if sample_state not in not_receive:
-                    doActionFor(analysis, 'receive')
+        if secondary:
+            # If secondary AR, then we need to manually transition the AR (and its
+            # children) to fit with the Sample Partition's current state
+            sampleactions = getReviewHistoryActionsList(sample)
+            doActionsFor(ar, sampleactions)
+
+        else:
+            # If Preservation is required for some partitions,
+            # and the SamplingWorkflow is disabled, we need
+            # to transition to to_be_preserved manually.
+            if not SamplingWorkflowEnabled:
+                to_be_preserved = []
+                sample_due = []
+                lowest_state = 'sample_due'
+                for p in sample.objectValues('SamplePartition'):
+                    if p.getPreservation():
+                        lowest_state = 'to_be_preserved'
+                        to_be_preserved.append(p)
+                    else:
+                        sample_due.append(p)
+                for p in to_be_preserved:
+                    doActionFor(p, 'to_be_preserved')
+                for p in sample_due:
+                    doActionFor(p, 'sample_due')
+                doActionFor(sample, lowest_state)
+
+            # Transition pre-preserved partitions
+            for p in parts:
+                if 'prepreserved' in p and p['prepreserved']:
+                    part = p['object']
+                    state = workflow.getInfoFor(part, 'review_state')
+                    if state == 'to_be_preserved':
+                        doActionFor(part, 'preserve')
 
         if self.unused:
             raise BadRequest("The following request fields were not used: %s.  Request aborted." % self.unused)

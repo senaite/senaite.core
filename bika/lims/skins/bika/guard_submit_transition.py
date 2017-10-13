@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 ## Script (Python) "guard_submit_transition"
 ##bind container=container
 ##bind context=context
@@ -23,8 +28,7 @@ if context.portal_type == "Analysis":
     # dependencies = context.getDependencies()
     # if dependencies:
     #     interim_fields = False
-    #     service = context.getService()
-    #     calculation = service.getCalculation()
+    #     calculation = context.getCalculation()
     #     if calculation:
     #         interim_fields = calculation.getInterimFields()
     #     for dep in dependencies:

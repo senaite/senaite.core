@@ -1,9 +1,17 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+from bika.lims.workflow import getTransitionDate
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from Products.CMFCore.utils import getToolByName
 
 
 class Report(BrowserView):
@@ -24,7 +32,7 @@ class Report(BrowserView):
         # Apply filters
         self.contentFilter = {'portal_type': 'AnalysisRequest'}
         val = self.selection_macros.parse_daterange(self.request,
-                                                    'getDateCreated',
+                                                    'created',
                                                     _('Date Created'))
         if val:
             self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
@@ -32,7 +40,8 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        ars = self.bika_catalog(self.contentFilter)
+        catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        ars = catalog(self.contentFilter)
         if not ars:
             message = _("No Analysis Requests matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")
@@ -51,7 +60,7 @@ class Report(BrowserView):
             ar = ar.getObject()
             datecreated = ar.created()
             datereceived = ar.getDateReceived()
-            datepublished = ar.getDatePublished()
+            datepublished = getTransitionDate(ar, 'publish')
             receptionlag = 0
             publicationlag = 0
             anlcount = len(ar.getAnalyses())
@@ -76,7 +85,7 @@ class Report(BrowserView):
             datalines[ar.getRequestID()] = dataline
 
             totalreceivedcount += ar.getDateReceived() and 1 or 0
-            totalpublishedcount += ar.getDatePublished() and 1 or 0
+            totalpublishedcount += 1 if datepublished else 0
             totalanlcount += anlcount
             totalreceptionlag += receptionlag
             totalpublicationlag += publicationlag
