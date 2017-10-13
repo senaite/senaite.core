@@ -1,15 +1,15 @@
-# This file is part of Bika LIMS
+# This file is part of Bika LIMS Evo
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Copyright 2017 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from setuptools import setup, find_packages
 
-version = '3.2.0.1710'
+version = '1.0.0'
 
 setup(name='bika.lims',
       version=version,
-      description="Bika LIMS",
+      description="Bika LIMS Evo",
       long_description=open("README.rst").read() + "\n" +
                        open("CHANGES.rst").read() + "\n",
       # Get more strings from
