@@ -5,7 +5,7 @@
 
   <genericsetup:registerProfile
       name="default"
-      title="Bika LIMS"
+      title="Bika LIMS Evo"
       directory="profiles/default"
       description='Open Source Web based Laboratory Information Management System suitable for all types of laboratories'
       provides="Products.GenericSetup.interfaces.EXTENSION"/>
