@@ -1,0 +1,23 @@
+For some big processes which do not affect users' use of Bika, it is possible to add
+ASYNCHRONOUS tasks which will run in background. In order to enable that, you must add tho following
+lines in buildout.cfg:
+
+1. Eggs part:
+
+egg=
+...
+collective.taskqueue
+...
+
+
+
+2. and the following lines under [instance] section
+
+zope-conf-additional =
+    %import collective.taskqueue
+    <taskqueue>
+    queue sanitation-tasks
+    </taskqueue>
+    <taskqueue-server>
+    queue sanitation-tasks
+    </taskqueue-server>
