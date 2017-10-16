@@ -38,33 +38,10 @@ def BikaSetupModifiedEventHandler(instance, event):
     mp(AddClient, roles, 1)
     mp(EditClient, roles, 1)
     # Set permissions at object level
-    clients = portal.clients.objectValues()
-    if check_if_client_permissions_has_changed(clients[0], roles):
-        for obj in clients:
-            mp = obj.manage_permission
-            mp(AddClient, roles, 0)
-            mp(EditClient, roles, 0)
-            mp(permissions.ModifyPortalContent, roles, 0)
-            obj.reindexObject()
-
-
-def check_if_client_permissions_has_changed(client, roles):
-    """
-    Checks if client permissions have been changed.
-    :param client: a client archetype object
-    :param roles: a list of strings as role names
-    :return: Boolean
-    """
-    perms = client.rolesOfPermission(AddClient)
-    labclerk = 'LabClerk'
-    has_changed = False
-    for perm in perms:
-        if perm["name"] == labclerk:
-            # will be SELECTED if the permission is granted
-            if perm["selected"] == "" and labclerk in roles:
-                has_changed = True
-                break
-            elif perm["selected"] == "SELECTED" and labclerk not in roles:
-                has_changed = True
-                break
-    return has_changed
+    # TODO-performance: We are allways reindexing all clients
+    for obj in portal.clients.objectValues():
+        mp = obj.manage_permission
+        mp(AddClient, roles, 0)
+        mp(EditClient, roles, 0)
+        mp(permissions.ModifyPortalContent, roles, 0)
+        obj.reindexObject()
