@@ -38,16 +38,10 @@ schema = BikaSchema.copy() + Schema((
                             "Category section on results reports."),
             label = _("Comments")),
     ),
-    # Department Field of Analysis Category was removed.
+    # Department Field (as well as DepartmentTitle) of Analysis Category was removed.
     # It was a required field, but not used anywhere. When creating
     # an Analysis Request, we use Departments from 'Analysis Services'
     # instead.
-    ComputedField('DepartmentTitle',
-        expression="context.getDepartment() and context.getDepartment().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     FloatField('SortKey',
         validators=('SortKeyValidator',),
         widget=DecimalWidget(

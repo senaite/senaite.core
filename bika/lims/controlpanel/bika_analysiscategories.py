@@ -32,11 +32,6 @@ class AnalysisCategoriesView(BikaSetupItemsView):
                 'attr': 'Description',
                 'toggle': False
             },
-            'Department': {
-                'title': _('Department'),
-                'index': 'getDepartmentTitle',
-                'attr': 'getDepartmentTitle',
-            },
             'SortKey': {
                 'title': _('Sort Key'),
                 'index': 'sortKey',
@@ -45,10 +40,12 @@ class AnalysisCategoriesView(BikaSetupItemsView):
             },
         }
         for rs in self.review_states:
-            rs['columns'] += ['Department', 'SortKey']
+            rs['columns'] += ['SortKey']
 
 
 schema = ATFolderSchema.copy()
+
+
 class AnalysisCategories(ATFolder):
     implements(IAnalysisCategories)
     displayContentsTab = False
