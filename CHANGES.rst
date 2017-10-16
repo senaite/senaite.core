@@ -15,6 +15,7 @@ Changelog
 
 **Changed**
 
+- #234 Consistent implementation of Analysis Request accessors that relate to Sample
 
 **Fixed**
 
