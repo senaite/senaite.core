@@ -15,7 +15,7 @@
 .idea/*
 .installed.cfg
 .settings
-bika.lims.egg-info
+*.egg-info
 bin
 build
 develop-eggs

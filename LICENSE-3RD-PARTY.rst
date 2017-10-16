@@ -1,5 +1,8 @@
-Bika LIMS uses third party libraries that are distributed under their own
-terms:
+Third party libraries
+=====================
+
+This software, henceforth "Bika LIMS Evo", uses third party libraries that are
+distributed under their own terms:
 
 - jQuery.query 2.1.7 - Query String Modification and Creation for jQuery
   Written by Blair Mitchelmore (blair DOT mitchelmore AT gmail DOT com)

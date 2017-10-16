@@ -24,7 +24,7 @@
       for="*"
       name="queued_sanitation_tasks"
       class="bika.lims.databasesanitize.controller_view.QueuedSanitationTasksCount"
-      permission="cmf.ModifyPortalContent"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

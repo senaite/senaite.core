@@ -502,7 +502,7 @@ schema = BikaSchema.copy() + Schema((
         'DateSampled',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=SampleSample,
+        write_permission=permissions.ModifyPortalContent,
         widget=DateTimeWidget(
             label=_("Date Sampled"),
             size=20,

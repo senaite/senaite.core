@@ -8,9 +8,9 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from plone import api as ploneapi
-
 from bika.lims.browser import BrowserView
-
+from bika.lims.interfaces import IFrontPageAdapter
+from zope.component import getAdapters
 
 class FrontPageView(BrowserView):
     """Bika default Front Page
@@ -35,6 +35,11 @@ class FrontPageView(BrowserView):
         # Authenticated Users get either the Dashboard, the std. Bika Frontpage
         # or the custom landing page. Furthermore, they can switch between the
         # Dashboard and the landing page.
+        # Add-ons can have an adapter for front-page-url as well.
+        for name, adapter in getAdapters((self.context,), IFrontPageAdapter):
+            redirect_to = adapter.get_front_page_url()
+            if redirect_to:
+                return self.request.response.redirect(self.portal_url + redirect_to)
 
         # First precedence: Request parameter `redirect_to`
         redirect_to = self.request.form.get("redirect_to", None)
