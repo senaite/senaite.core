@@ -6,12 +6,19 @@ Changelog
 
 **Added**
 
+- #271 Sanitize async task to regularize department value for old Analysis Requests w/o department assigned
+- #267 "Select all" checkbox is missing in Aggregated List of Analyses
+
+**Removed**
+
+- #260 Remove Dry Matter functionality
 
 **Changed**
 
 
 **Fixed**
 
+- #275 Filter by "date results submitted" is not working well
 
 **Security**
 
