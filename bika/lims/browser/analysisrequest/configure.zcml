@@ -92,7 +92,7 @@
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="queued_ars"
       class="bika.lims.browser.analysisrequest.QueuedAnalysisRequestsCount"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

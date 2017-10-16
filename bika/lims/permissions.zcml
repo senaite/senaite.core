@@ -7,9 +7,16 @@
     i18n_domain="bika">
 
 <!--
-    All permissions are defined here.
-    They are also defined in permissions.py.
-    The two files must be kept in sync.
+    All the available permissions are defined here. Each new line will be a
+    new permission. Each permission has two attributes: a short ID and a
+    long title. The ID will be used for zope3-like permissions such as ZCML
+    configuration files. The long title will be used for zope2-like
+    permissions such as sm.checkPermission.
+
+    In order to avoid typo errors, we will use pseudoconstants instead of
+    permission string values. these constants are defined in permissions.py
+
+    The two files (permissions.py and permissions.zcml) must be kept in sync.
 /-->
 
 # Add Permissions:
@@ -22,7 +29,6 @@
 <permission id="bika.lims.permissions.AddAttachment" title="BIKA: Add Attachment"/>
 <permission id="bika.lims.permissions.AddBatch" title="BIKA: Add Batch"/>
 <permission id="bika.lims.permissions.AddClient" title="BIKA: Add Client"/>
-<permission id="bika.lims.permissions.AddClientFolder" title="BIKA: Add ClientFolder"/>
 <permission id="bika.lims.permissions.AddInvoice" title="BIKA: Add Invoice"/>
 <permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
 <permission id="bika.lims.permissions.AddMultifile" title="BIKA: Add Multifile"/>
@@ -30,7 +36,6 @@
 <permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
 <permission id="bika.lims.permissions.AddSupplyOrder" title="BIKA: Add SupplyOrder"/>
 <permission id="bika.lims.permissions.AddSamplePoint" title="BIKA: Add SamplePoint"/>
-<permission id="bika.lims.permissions.AddStorageLocation" title="BIKA: Add StorageLocation"/>
 <permission id="bika.lims.permissions.AddSampleMatrix" title="BIKA: Add SampleMatrix"/>
 <permission id="bika.lims.permissions.AddSamplePartition" title="BIKA: Add SamplePartition"/>
 <permission id="bika.lims.permissions.AddSamplingDeviation" title="BIKA: Add SamplingDeviation"/>
@@ -49,8 +54,6 @@
 <permission id="bika.lims.ManageSamples" title="BIKA: Manage Samples"/>
 <permission id="bika.lims.ManageSuppliers" title="BIKA: Manage Reference Suppliers"/>
 <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
-<permission id="bika.lims.ManagePricelists" title="BIKA: Manage Pricelists"/>
-<permission id="bika.lims.PostInvoiceBatch" title="BIKA: Post Invoice batch"/>
 
 # Stuff I sorted out
 # ==================

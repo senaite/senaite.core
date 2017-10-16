@@ -53,19 +53,12 @@ class bika_ar_export(UniqueObject, SimpleItem):
         ars = {}
         services = {}
         categories = {}
-        dry_matter = 0
         for ar in analysisrequests:
             ar_id = ar.getId()
             ars[ar_id] = {}
             ars[ar_id]['Analyses'] = {}
             ars[ar_id]['Price'] = 0
             ars[ar_id]['Count'] = 0
-            if ar.getReportDryMatter():
-                dry_matter = 1
-                ars[ar_id]['DM'] = True
-            else:
-                ars[ar_id]['DM'] = False
-
 
             analyses = {}
             # extract the list of analyses in this batch
@@ -75,7 +68,6 @@ class bika_ar_export(UniqueObject, SimpleItem):
                 service = analysis.Title()
                 analyses[service] = {}
                 analyses[service]['AsIs'] = analysis.getResult()
-                analyses[service]['DM'] = analysis.getResultDM() or None
                 analyses[service]['attach'] = analysis.getAttachment() or []
                 if not services.has_key(service):
                     category = analysis.getCategoryTitle()
@@ -86,16 +78,12 @@ class bika_ar_export(UniqueObject, SimpleItem):
                     categories[category].append(service)
                     services[service] = {}
                     services[service]['unit'] = analysis.getUnit()
-                    services[service]['DM'] = analysis.getReportDryMatter()
                     services[service]['DMOn'] = False
                     if allow_analysis_attach:
                         if analysis.getAttachmentOption() == 'n':
                             services[service]['attach'] = False
                         else:
                             services[service]['attach'] = True
-                if services[service]['DM'] == True \
-                and ar.getReportDryMatter():
-                    services[service]['DMOn'] = True
 
             ars[ar_id]['Analyses'] = analyses
 
@@ -151,12 +139,7 @@ class bika_ar_export(UniqueObject, SimpleItem):
                 analysis_service = '%s (%s)' % (service_name, services[service_name]['unit'])
             else:
                 analysis_service = service_name
-            if services[service_name]['DMOn']:
-                analysis_service = '%s [As Fed]' % (analysis_service)
             header.append(analysis_service)
-            if services[service_name]['DMOn']:
-                analysis_dm = '%s [Dry]' % (service_name)
-                header.append(analysis_dm)
             if services[service_name]['attach']:
                 header.append('Attachments')
         count_cell = len(header)

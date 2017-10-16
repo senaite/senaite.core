@@ -76,8 +76,10 @@
 				var ar_queue_seconds = 1;
 				var ar_queue_max_seconds = 20;
 				function query_pending() {
-					var url = window.portal_url + "/analysisrequests/queued_ars"
-					$.get(url).done(function(data) {
+					var url = window.portal_url +
+					    "/analysisrequests/queued_ars";
+					var ac = readCookie('__ac');
+					$.post(url, {'__ac': ac}).done(function(data) {
 						var num_jobs = $.parseJSON(data);
 						var num_jobs = num_jobs['count'];
 						if (parseInt(num_jobs) > 0) {

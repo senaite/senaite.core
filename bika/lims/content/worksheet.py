@@ -24,6 +24,8 @@ from bika.lims.config import *
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IWorksheet
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.permissions import Verify as VerifyPermission
@@ -192,23 +194,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'analysis_uid': analysis.UID()}, ])
 
         doActionFor(analysis, 'assign')
-
-        # If a dependency of DryMatter service is added here, we need to
-        # make sure that the dry matter analysis itself is also
-        # present.  Otherwise WS calculations refer to the DB version
-        # of the DM analysis, which is out of sync with the form.
-        dms = self.bika_setup.getDryMatterService()
-        if dms:
-            dmk = dms.getKeyword()
-            deps = analysis.getDependents()
-            # if dry matter service in my dependents:
-            if dmk in [a.getKeyword() for a in deps]:
-                # get dry matter analysis from AR
-                dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
-                                                     full_objects=True)[0]
-                # add it.
-                if dma not in self.getAnalyses():
-                    self.addAnalysis(dma)
         # Reindex the worksheet in order to update its columns
         self.reindexObject()
         analysis.reindexObject(idxs=['getWorksheetUID',])
@@ -641,10 +626,29 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analyses = self.getAnalyses()
         return [a for a in analyses if a.portal_type in qc_types]
 
+    def getDuplicateAnalyses(self):
+        """Return the duplicate analyses assigned to the current worksheet
+        :return: List of DuplicateAnalysis
+        :rtype: List of IDuplicateAnalysis objects"""
+        ans = self.getAnalyses()
+        duplicates = [an for an in ans if IDuplicateAnalysis.providedBy(an)]
+        return duplicates
+
+    def getReferenceAnalyses(self):
+        """Return the reference analyses (controls) assigned to the current
+        worksheet
+        :return: List of reference analyses
+        :rtype: List of IReferenceAnalysis objects"""
+        ans = self.getAnalyses()
+        references = [an for an in ans if IReferenceAnalysis.providedBy(an)]
+        return references
+
     def getRegularAnalyses(self):
         """
-        Return the regular analyses.
-        :returns: a list of regular analyses
+        Return the analyses assigned to the current worksheet that are directly
+        associated to an Analysis Request but are not QC analyses. This is all
+        analyses that implement IRoutineAnalysis
+        :return: List of regular analyses
         :rtype: List of ReferenceAnalysis/DuplicateAnalysis
         """
         qc_types = ['ReferenceAnalysis', 'DuplicateAnalysis']

@@ -450,20 +450,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    ReferenceField(
-        'DryMatterService',
-        schemata="Analyses",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
-        allowed_types=('AnalysisService',),
-        relationship='SetupDryAnalysisService',
-        vocabulary='getAnalysisServicesVocabulary',
-        referenceClass=HoldingReference,
-        widget=ReferenceWidget(
-            label=_("Dry matter analysis"),
-            description=_("The analysis to be used for determining dry matter."),
-        )
-    ),
     LinesField(
         'ARImportOption',
         schemata="Analyses",
@@ -831,6 +817,18 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Default count of AR to add."),
             description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
         )
+    ),
+    BooleanField(
+        'EnableSelectAllCheckboxInAggregatedanalyses',
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("'Select all' checkbox in aggregated analyses view"),
+            description=_(
+                "Add a checkbox to select all listed items in aggregated"
+                " analyses view"
+            )
+        ),
     ),
 ))
 
