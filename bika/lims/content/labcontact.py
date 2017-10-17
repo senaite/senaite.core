@@ -63,11 +63,6 @@ schema = Person.schema.copy() + atapi.Schema((
             description=_("The laboratory department"),
         ),
     ),
-    atapi.ComputedField('DepartmentTitle',
-                        expression="context.getDepartment() and context.getDepartment().Title() or ''",
-                        widget=atapi.ComputedWidget(
-                            visible=False,
-                        )),
     atapi.ReferenceField('Departments',
         		required = 0,
         		vocabulary_display_path_bound = sys.maxint,
