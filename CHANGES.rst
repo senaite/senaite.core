@@ -11,6 +11,7 @@ Changelog
 
 **Removed**
 
+- #273 Remove relationship between Department and Analysis Category
 - #260 Remove Dry Matter functionality
 
 **Changed**

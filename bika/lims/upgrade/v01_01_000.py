@@ -27,7 +27,7 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
-    # NDEV-101 Inconsistencies of Department between Analysis Category and AS
+    # NDEV-101 Remove relationship between Department and Category
     # Remove 'getDeparmentTitle' index and metadata from Bika Setup Catalog
     ut.delIndexAndColumn('bika_setup_catalog', 'getDepartmentTitle')
 
