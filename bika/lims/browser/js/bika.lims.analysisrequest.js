@@ -330,7 +330,7 @@ function AnalysisRequestViewView() {
     function save_elements(requestdata) {
         /**
          * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
-         * @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
+         * @requestdata should has the format  {fieldname=fieldvalue}
          */
         var url = window.location.href
             .replace('/base_view', '')

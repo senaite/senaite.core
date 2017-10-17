@@ -27,9 +27,14 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
+    # NDEV-101 Inconsistencies of Department between Analysis Category and AS
     # Remove 'getDeparmentTitle' index and metadata from Bika Setup Catalog
-    ut.delIndexAndColumn(
-        'bika_setup_catalog', 'getDepartmentTitle')
+    ut.delIndexAndColumn('bika_setup_catalog', 'getDepartmentTitle')
+
+    # NMRL-184 Filter by "date results submitted" is not working well
+    # Add missing getDateSubmitted Index into analyses catalog
+    ut.addIndex(CATALOG_ANALYSIS_LISTING, 'getDateSubmitted', 'DateIndex')
     ut.refreshCatalogs()
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

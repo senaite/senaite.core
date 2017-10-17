@@ -10,6 +10,7 @@ from zope.component import queryUtility
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.databasesanitize.analyses import analyses_creation_date_recover
+from bika.lims.databasesanitize.ar_deps import set_ar_departments
 
 
 class ControllerView(BrowserView):
@@ -23,28 +24,42 @@ class ControllerView(BrowserView):
             # The form hasn't been submitted, no tasks required
             return self.template()
         # Need to sanitize creation date from analyses
+        tasks = []
         if self.request.form.get('sanitize_analyses_creation_date', '0')\
                 == '1':
             # Fix the creation date of analyses
-            self.sanitize_analyses_creation_date()
+            task = {"class": AnalysesCreationDateRecover(),
+                    "uri": "analyses_creation_date_recover"
+                    }
+            tasks.append(task)
+
+        if self.request.form.get('sanitize_ar_departments', '0')\
+                == '1':
+            # Fix AR Departments
+            task = {"class": ARDepartmentAssignment(),
+                    "uri": "st_ar_dep_assignment"
+                    }
+            tasks.append(task)
+
+        for t in tasks:
+            self.sanitize(t["class"], t["uri"])
+
         return self.template()
 
-    def sanitize_analyses_creation_date(self):
-            logger.info("Starting sanitation process 'Analyses creation "
-                        "date recover'...")
+    def sanitize(self, klass, uri):
+            logger.info("Starting sanitation process {0} ".format(uri))
             # Only load asynchronously if queue sanitation-tasks is available
             task_queue = queryUtility(ITaskQueue, name='sanitation-tasks')
             if task_queue is None:
                 # sanitation-tasks queue not registered. Proceed synchronously
                 logger.info("SYNC sanitation process started...")
-                task_manager = AnalysesCreationDateRecover()
-                task_manager()
+                klass()
             else:
                 # sanitation-tasks queue registered, create asynchronously
                 logger.info("[A]SYNC sanitation process started...")
                 path = self.request.PATH_INFO
                 path = path.replace(
-                    'sanitize_action', 'analyses_creation_date_recover')
+                    'sanitize_action', uri)
                 task_queue.add(path, method='POST')
                 msg = 'One job added to the sanitation process queue'
                 self.context.plone_utils.addPortalMessage(msg, 'info')
@@ -57,6 +72,16 @@ class AnalysesCreationDateRecover():
 
     def __call__(self):
         analyses_creation_date_recover()
+        return json.dumps({'success': 'With taskqueue'})
+
+
+class ARDepartmentAssignment():
+    """
+    This class manages the creation of async tasks.
+    """
+
+    def __call__(self):
+        set_ar_departments()
         return json.dumps({'success': 'With taskqueue'})
 
 

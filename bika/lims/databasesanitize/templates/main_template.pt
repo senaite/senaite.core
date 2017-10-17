@@ -21,6 +21,13 @@
                     will set the Analysis creation date with the one stored
                     in the request.
                 </label>
+                <br>
+                <label>
+                    <input type="checkbox"
+                           name="sanitize_ar_departments"
+                           value="1">
+                    Reassign AR Departments.
+                </label>
             </p>
     </div>
 

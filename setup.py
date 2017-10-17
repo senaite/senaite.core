@@ -1,45 +1,33 @@
-# This file is part of Bika LIMS
+# This file is part of Bika LIMS Evo
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Copyright 2017 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import os
 from setuptools import setup, find_packages
 
-version = '3.2.0'
-
-
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+version = '1.0.0'
 
 setup(name='bika.lims',
       version=version,
-      description="Bika LIMS",
-      long_description=read("README.rst") + \
-                       read("docs/INSTALL.rst") + \
-                       read("docs/CHANGELOG.txt") + \
-                       "\n\n" + \
-                       "Authors and maintainers\n" + \
-                       "-----------------------\n" + \
-                       "- Bika Lab Systems, http://bikalabs.com\n" + \
-                       "- Naralabs, http://naralabs.com",
+      description="Bika LIMS Evo",
+      long_description=open("README.rst").read() + "\n" +
+                       open("CHANGES.rst").read() + "\n",
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
-          "Framework :: Plone",
-          "Programming Language :: Python",
           "Development Status :: 5 - Production/Stable",
           "Environment :: Web Environment",
+          "Framework :: Plone",
+          "Framework :: Zope2",
           "Intended Audience :: Information Technology",
           "Intended Audience :: Science/Research",
           "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+          "Programming Language :: Python",
       ],
       keywords=['lims', 'bika', 'opensource'],
-      author='Bika Laboratory Systems',
-      author_email='support@bikalabs.com',
-      maintainer='Naralabs',
-      maintainer_email='info@naralabs.com',
-      url='http://www.bikalims.org',
+      author='Naralabs',
+      author_email='support@naralabs.com',
+      url='https://github.com/naralabs/bika.lims',
       license='AGPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['bika'],
@@ -88,7 +76,8 @@ setup(name='bika.lims',
           ]
       },
       entry_points="""
-      [z3c.autoinclude.plugin]
-      target = plone
-      """,
+          # -*- Entry points: -*-
+          [z3c.autoinclude.plugin]
+          target = plone
+          """,
 )
