@@ -1008,14 +1008,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return category.UID()
 
     @security.public
-    def getDepartmentTitle(self):
-        """Used to populate catalog values
-        """
-        department = self.getDepartment()
-        if department:
-            return department.Title()
-
-    @security.public
     def getDepartmentUID(self):
         """Used to populate catalog values
         """
