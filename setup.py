@@ -66,9 +66,6 @@ setup(name='bika.lims',
       extras_require={
           'test': [
               'plone.app.testing',
-              'Products.PloneTestCase',
-              'plone.resource',
-              'plone.app.textfield',
           ]
       },
       entry_points="""
