@@ -62,8 +62,15 @@ class DefaultReferenceWidgetVocabulary(object):
                     fields_wo_index.append(field_name)
                     continue
                 if index.meta_type in ('ZCTextIndex'):
-                    temp_st = searchTerm + '*'
-                    criterias.append(MatchRegexp(field_name, temp_st))
+                    if searchTerm.isspace():
+                        # earchTerm != ' ' added because of
+                        # https://github.com/plone/Products.CMFPlone/issues
+                        # /1537
+                        searchTerm = ''
+                        continue
+                    else:
+                        temp_st = searchTerm + '*'
+                        criterias.append(MatchRegexp(field_name, temp_st))
                 elif index.meta_type in ('FieldIndex'):
                     criterias.append(MatchRegexp(field_name, searchTerm))
                 elif index.meta_type == 'DateIndex':

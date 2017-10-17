@@ -42,11 +42,11 @@ function WorksheetAddAnalysesView() {
     that.load = function() {
 
         // search form - selecting a category fills up the service selector
-        $('[name="list_getCategoryTitle"]').live("change", function(){
-            val = $('[name="list_getCategoryTitle"]').find(":selected").val();
+        $('[name="list_FilterByCategory"]').live("change", function(){
+            val = $('[name="list_FilterByCategory"]').find(":selected").val();
             if(val == 'any'){
-                $('[name="list_Title"]').empty();
-                $('[name="list_Title"]').append("<option value='any'>"+_('Any')+"</option>");
+                $('[name="list_FilterByService"]').empty();
+                $('[name="list_FilterByService"]').append("<option value='any'>"+_('Any')+"</option>");
                 return;
             }
             $.ajax({
@@ -56,25 +56,26 @@ function WorksheetAddAnalysesView() {
                        'getCategoryUID': val},
                 dataType: "json",
                 success: function(data, textStatus, $XHR){
-                    current_service_selection = $('[name="list_Title"]').val();
-                    $('[name="list_Title"]').empty();
-                    $('[name="list_Title"]').append("<option value='any'>"+_('Any')+"</option>");
+                    current_service_selection = $('[name="list_FilterByService"]').val();
+                    $('[name="list_FilterByService"]').empty();
+                    $('[name="list_FilterByService"]').append("<option value='any'>"+_('Any')+"</option>");
                     for(i=0; i<data.length; i++){
                         if (data[i] == current_service_selection){
                             selected = 'selected="selected" ';
                         } else {
                             selected = '';
                         }
-                        $('[name="list_Title"]').append(
+                        $('[name="list_FilterByService"]').append(
                             "<option "+selected+"value='"+data[i][0]+
                             "'>"+data[i][1]+"</option>");
                     }
                 }
             });
         });
-        $('[name="list_getCategoryTitle"]').trigger("change");
+        $('[name="list_FilterByCategory"]').trigger("change");
 
-        // add_analyses analysis search is handled by bika_listing default __call__
+        // add_analyses analysis search is handled by
+        // worksheet/views/add_analyses/AddAnalysesView/__call__
         $('.ws-analyses-search-button').live('click', function (event) {
             // in this context we already know there is only one bika-listing-form
             var form_id = "list";
@@ -82,8 +83,11 @@ function WorksheetAddAnalysesView() {
             var params = {};
 
             // dropdowns are printed in ../templates/worksheet_add_analyses.pt
-            // We add <formid>_<index>=<value>, which are checked in bika_listing.py
-            var filter_indexes = ['getCategoryTitle', 'Title', 'getClientTitle'];
+            // We add <formid>_<filterby_index>=<value>, which are checked in
+            // worksheet/view/add_analyses.py/__call__, that are different
+            // from listing or catalog filters
+            var filter_indexes = ['FilterByCategory', 'FilterByService',
+                'FilterByClient'];
             var field_set = $(this).parent('fieldset');
             for (var i=0; i<filter_indexes.length; i++) {
                 var idx_name = filter_indexes[i];

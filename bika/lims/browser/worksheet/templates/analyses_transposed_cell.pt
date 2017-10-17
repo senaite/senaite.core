@@ -45,7 +45,7 @@
         <!-- Result cell block -->
         <tal:result condition="python:column=='Result'">
             <!--'Attachments', 'DetectionLimit', 'DueDate',
-                   'Instrument', 'Method', 'Pos', 'ResultDM']-->
+                   'Instrument', 'Method', 'Pos']-->
             <!-- Method, Instrument and Detection Limit -->
             <tal:results_additional define="keys python:['Method', 'Instrument', 'DetectionLimit'];">
                 <tal:fieldrepeat repeat="key python:[k for k in keys if view.bika_listing.columns.get(k,{}).get('toggle', False)== True]">
