@@ -11,11 +11,11 @@ import json
 import traceback
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.exportimport.instruments.resultsimport import InstrumentCSVResultsFileParser
-from bika.lims.exportimport.instruments.sysmex.xt import SysmexImporter
+from bika.lims.exportimport.instruments.resultsimport import InstrumentTXTResultsFileParser
+from bika.lims.exportimport.instruments.sysmex.xt import SysmexXTImporter
 from bika.lims.utils import t
 
-title = "Sysmex XT1800i"
+title = "Sysmex XT - 1800i"
 
 
 def Import(context, request):
@@ -70,7 +70,7 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = SysmexImporter(parser=parser,
+        importer = SysmexXTImporter(parser=parser,
                                   context=context,
                                   idsearchcriteria=sam,
                                   allowed_ar_states=status,
@@ -93,33 +93,51 @@ def Import(context, request):
     return json.dumps(results)
 
 SEPARATOR = '|'
+SEGMENT_HEADER = 'H'
+SEGMENT_OBSERVATION_ORDER = 'OBR'
+SEGMENT_RESULT = 'OBX'
+SEGMENT_EOF = 'L'
+SEGMENT_COMMENT = 'C'
 
 
-class TX1800iParser(InstrumentCSVResultsFileParser):
+class TX1800iParser(InstrumentTXTResultsFileParser):
 
     def __init__(self, infile):
-        InstrumentCSVResultsFileParser.__init__(self, infile, 'TXT')
-        self._cur_section = ''  # Current section of CSV
-        self._cur_sub_section = ''  # Current subsection of CSV
-        self._cur_res_id = ''  # Sample or Patient ID of the current record
-        self._cur_values = {}  # Values of the last record
-        self._is_header_line = False  # To get headers of Analyte Result table
-        self._columns = []  # Column names of Analyte Result table
-        self._keyword = ''  # Keyword of Analysis Service
+        InstrumentTXTResultsFileParser.__init__(self, infile, SEPARATOR, encoding="utf-8-sig")
+        self._cur_res_id = ''  # Sample ID of the current record
+        self._cur_values = {}  # 'values' dictionary of current sample
 
     def _parseline(self, line):
         """
-        Result CSV Line Parser.
+        All lines come to this method.
         :param line: a to parse
         :returns: the number of rows to jump and parse the next data line or
         return the code error -1
         """
         sline = line.split(SEPARATOR)
+        print sline
+        if sline[0] == SEGMENT_HEADER:
+            return self._handle_header(sline)
+        elif sline[0] == SEGMENT_OBSERVATION_ORDER:
+            return self._handle_new_record(sline)
+        elif sline[0] == SEGMENT_RESULT:
+            return self._handle_result_line(sline)
+        elif sline[0] == SEGMENT_EOF:
+            return self._handle_eof(sline)
         return 0
 
     def _handle_header(self, sline):
         """
+        From header line we don't need anything so far.
         """
+        return 0
+
+    def _handle_new_record(self, sline):
+        """
+        From header line we don't need anything so far.
+        """
+        self._submit_results()
+        self._cur_res_id = sline[3]
         return 0
 
     def _handle_result_line(self, sline):
@@ -129,44 +147,32 @@ class TX1800iParser(InstrumentCSVResultsFileParser):
         :returns: the number of rows to jump and parse the next data line or
         return the code error -1
         """
-        # If there are less values founded than headers, it's an error
-        if len(sline) != len(self._columns):
-            self.err("One data line has the wrong number of items")
-            return -1
-
+        as_kw = sline[3]
+        a_result = str(sline[5].split('^')[0])
+        self._cur_values[as_kw] = {
+            'DefaultResult': 'Result',
+            'Result': a_result
+        }
         return 0
 
-    def _submit_result(self):
+    def _handle_eof(self, sline):
+        """
+        From header line we don't need anything so far.
+        """
+        self._submit_results()
+        return 0
+
+    def _submit_results(self):
         """
         Adding current values as a Raw Result and Resetting everything.
         """
+        print "Submitting:"
+        print self._cur_values
         if self._cur_res_id and self._cur_values:
             # Setting DefaultResult just because it is obligatory.
-            self._cur_values[self._keyword]['DefaultResult'] = 'DefResult'
-            self._cur_values[self._keyword]['DefResult'] = ''
-            # If we add results as a raw result, AnalysisResultsImporter will
-            # automatically import them to the system. The only important thing
-            # here is to respect the dictionary format.
             self._addRawResult(self._cur_res_id, self._cur_values)
             self._reset()
 
-    def _format_keyword(self, keyword):
-        """
-        Removing special character from a keyword.
-        """
-        import re
-        result = ''
-        if keyword:
-            result = re.sub(r"\W", "", keyword)
-        return result
-
     def _reset(self):
-        self._cur_section = ''
-        self._cur_sub_section = ''
         self._cur_res_id = ''
         self._cur_values = {}
-        self._is_header_line = False
-        self._columns = []
-        self._keyword = ''
-
-

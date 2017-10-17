@@ -7,7 +7,7 @@ from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
 
 
-class SysmexImporter(AnalysisResultsImporter):
+class SysmexXTImporter(AnalysisResultsImporter):
 
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
