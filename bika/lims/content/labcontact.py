@@ -66,7 +66,7 @@ schema = Person.schema.copy() + atapi.Schema((
     atapi.ComputedField('DepartmentTitle',
                         expression="context.getDepartment() and context.getDepartment().Title() or ''",
                         widget=atapi.ComputedWidget(
-                            visible=False,
+                        visible=False,
                         )),
     atapi.ReferenceField('Departments',
         		required = 0,

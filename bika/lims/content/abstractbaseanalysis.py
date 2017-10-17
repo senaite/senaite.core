@@ -25,6 +25,7 @@ from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import to_utf8 as _c
+from bika.lims import deprecated
 
 # Anywhere that there just isn't space for unpredictably long names,
 # this value will be used instead.  It's set on the AnalysisService,
@@ -994,10 +995,8 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         if category:
             return category.UID()
 
-    @security.public
+    @deprecated('[1.1] Use getDepartment().Title() instead')
     def getDepartmentTitle(self):
-        """Used to populate catalog values
-        """
         department = self.getDepartment()
         if department:
             return department.Title()

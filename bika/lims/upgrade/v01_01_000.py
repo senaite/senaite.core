@@ -18,9 +18,6 @@ def upgrade(tool):
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 
-    # Since this upgrade is precisely meant to establish a version regardless
-    # of the version numbering at bikalims/bika.lims, we don't want this check
-    # to be performed.
     if ut.isOlderVersion(product, version):
         logger.info("Skipping upgrade of {0}: {1} > {2}".format(
             product, ver_from, version))
@@ -29,10 +26,15 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
+
+    # NDEV-101 Remove relationship between Department and Category
+    # Remove 'getDeparmentTitle' index and metadata from Bika Setup Catalog
+    ut.delIndexAndColumn('bika_setup_catalog', 'getDepartmentTitle')
+
+    # NMRL-184 Filter by "date results submitted" is not working well
     # Add missing getDateSubmitted Index into analyses catalog
-    ut.addIndex(
-        CATALOG_ANALYSIS_LISTING, 'getDateSubmitted', 'DateIndex')
+    ut.addIndex(CATALOG_ANALYSIS_LISTING, 'getDateSubmitted', 'DateIndex')
     ut.refreshCatalogs()
-    # Do nothing, we just only want the profile version to be 1.0.0
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

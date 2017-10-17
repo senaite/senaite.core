@@ -38,25 +38,10 @@ schema = BikaSchema.copy() + Schema((
                             "Category section on results reports."),
             label = _("Comments")),
     ),
-    ReferenceField('Department',
-        required=1,
-        vocabulary='getDepartments',
-        vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('Department',),
-        relationship='AnalysisCategoryDepartment',
-        referenceClass=HoldingReference,
-        widget=ReferenceWidget(
-            checkbox_bound=0,
-            label = _("Department"),
-            description = _("The laboratory department"),
-        ),
-    ),
-    ComputedField('DepartmentTitle',
-        expression="context.getDepartment() and context.getDepartment().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
+    # Department Field (as well as DepartmentTitle) of Analysis Category was removed.
+    # It was a required field, but not used anywhere. When creating
+    # an Analysis Request, we use Departments from 'Analysis Services'
+    # instead.
     FloatField('SortKey',
         validators=('SortKeyValidator',),
         widget=DecimalWidget(
@@ -100,5 +85,13 @@ class AnalysisCategory(BaseContent):
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException
+
+    @deprecated('[1.1] Returns None. Use departments from Analysis Services instead')
+    def getDepartment(self):
+        return None
+
+    @deprecated('[1.1] Returns None. Use departments from Analysis Services instead')
+    def getDepartmentTitle(self):
+        return None
 
 registerType(AnalysisCategory, PROJECTNAME)
