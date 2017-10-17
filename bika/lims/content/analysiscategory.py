@@ -86,4 +86,12 @@ class AnalysisCategory(BaseContent):
             transaction.get().abort()
             raise WorkflowException
 
+    @deprecated('[1.1] Returns None. Use departments from Analysis Services instead')
+    def getDepartment(self):
+        return None
+
+    @deprecated('[1.1] Returns None. Use departments from Analysis Services instead')
+    def getDepartmentTitle(self):
+        return None
+
 registerType(AnalysisCategory, PROJECTNAME)
