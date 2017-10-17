@@ -115,7 +115,6 @@ class TX1800iParser(InstrumentTXTResultsFileParser):
         return the code error -1
         """
         sline = line.split(SEPARATOR)
-        print sline
         if sline[0] == SEGMENT_HEADER:
             return self._handle_header(sline)
         elif sline[0] == SEGMENT_OBSERVATION_ORDER:
@@ -166,8 +165,6 @@ class TX1800iParser(InstrumentTXTResultsFileParser):
         """
         Adding current values as a Raw Result and Resetting everything.
         """
-        print "Submitting:"
-        print self._cur_values
         if self._cur_res_id and self._cur_values:
             # Setting DefaultResult just because it is obligatory.
             self._addRawResult(self._cur_res_id, self._cur_values)
