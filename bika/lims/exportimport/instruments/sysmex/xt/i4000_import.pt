@@ -1,5 +1,5 @@
 <p></p>
-<label for="tx1800i_file">File</label>&nbsp;
+<label for="tx4000i_file">File</label>&nbsp;
 <input type="file" name="tx4000i_file" id="tx4000i_file"/>
 &nbsp;&nbsp;
 <label for="format">Format</label>&nbsp;

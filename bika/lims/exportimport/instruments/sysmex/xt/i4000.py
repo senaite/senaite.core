@@ -5,7 +5,7 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-""" Sysmex XT1800i
+""" Sysmex XT-4000i
 """
 import json
 import traceback
@@ -39,6 +39,9 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     if fileformat == 'txt':
+        # So far, both Instruments from Sysmex TX Series use the same format for result files.
+        # In both case 'ASTM' protocol is used with the same order of columns. So,
+        # we are going to use TXT Parser from 'TX1800i' Interface.
         parser = TX1800iParser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
