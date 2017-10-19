@@ -9,6 +9,7 @@ from .analysis_catalog import CATALOG_ANALYSIS_LISTING
 from .autoimportlogs_catalog import CATALOG_AUTOIMPORTLOGS_LISTING
 from .worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from .report_catalog import CATALOG_REPORT_LISTING
+from .sample_catalog import CATALOG_SAMPLE_LISTING
 # Catalog classes
 from .bika_catalog import BikaCatalog
 from .bikasetup_catalog import BikaSetupCatalog
@@ -17,6 +18,7 @@ from .analysisrequest_catalog import BikaCatalogAnalysisRequestListing
 from .autoimportlogs_catalog import BikaCatalogAutoImportLogsListing
 from .worksheet_catalog import BikaCatalogWorksheetListing
 from .report_catalog import BikaCatalogReport
+from .sample_catalog import BikaSampleCatalog
 # Catalog public functions
 from .catalog_utilities import getCatalogDefinitions
 from .catalog_utilities import setup_catalogs

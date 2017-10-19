@@ -149,12 +149,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    ComputedField('SampleTypeTitle',
-        expression="here.getSampleType() and here.getSampleType().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ReferenceField('SamplePoint',
         vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('SamplePoint',),
@@ -183,12 +177,6 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
-        ),
-    ),
-    ComputedField('SamplePointTitle',
-        expression = "here.getSamplePoint() and here.getSamplePoint().Title() or ''",
-        widget = ComputedWidget(
-            visible=False,
         ),
     ),
     ReferenceField(
@@ -469,24 +457,6 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    ComputedField('ClientUID',
-        expression = 'context.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('SampleTypeUID',
-        expression = 'context.getSampleType().UID()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('SamplePointUID',
-        expression = 'context.getSamplePoint() and context.getSamplePoint().UID() or None',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
     BooleanField('Composite',
         default = False,
         mode="rw",
@@ -665,6 +635,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """ Return the Sample ID as title """
         return safe_unicode(self.getId()).encode('utf-8')
 
+    def getSampleTypeTitle(self):
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.Title()
+        return ''
+
     def Title(self):
         """ Return the Sample ID as title """
         return self.getSampleID()
@@ -706,6 +682,26 @@ class Sample(BaseFolder, HistoryAwareMixin):
             if val not in value:
                 value.append(val)
         return value
+
+    def getSampleTypeUID(self):
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.UID()
+        return ''
+
+    def getClientUID(self):
+        return self.aq_parent.UID()
+
+    def getSamplePointUID(self):
+        sample_point = self.getSamplePoint()
+        if sample_point:
+            return sample_point.UID()
+
+    def getHazardous(self):
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.getHazardous()
+        return False
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
@@ -795,6 +791,14 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ars.append(ar)
         return ars
 
+    security.declarePublic('getAnalysisRequestUIDs')
+
+    def getAnalysisRequestUIDs(self):
+        analysis_requests = self.getAnalysisRequests()
+        if analysis_requests:
+            return [ar.UID() for ar in analysis_requests]
+        return []
+
     security.declarePublic('getAnalyses')
 
     def getAnalyses(self, contentFilter):
@@ -858,6 +862,37 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """
         partitions = self.objectValues('SamplePartition')
         return partitions
+
+    def getSamplingDeviationTitle(self):
+        sampling_deviation = self.getSamplingDeviation()
+        if sampling_deviation:
+            return sampling_deviation.Title()
+        return ''
+
+    def getStorageLocationTitle(self):
+        storage_location = self.getStorageLocation()
+        if storage_location:
+            return storage_location.Title()
+        return ''
+
+    def getSamplePointTitle(self):
+        sample_point = self.getSamplePoint()
+        if sample_point:
+            return sample_point.Title()
+        return ''
+
+    def getObjectWorkflowStates(self):
+        """
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :returns: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
 
     @deprecated('[1705] Use events.after_no_sampling_workflow from '
                 'bika.lims.workflow.sample')

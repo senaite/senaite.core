@@ -12,7 +12,7 @@ function SampleView() {
         // fires AR workflow transitions when using the schedule samplign transition
         transition_schedule_sampling();
         // Trap the save button
-        $("input[name='save']").click(save_header);
+        $("input[name='form.button.save']").click(save_header);
 
         // Disable Plone UI for preserve transition
         $("#workflow-transition-preserve").click(workflow_transition_preserve);
