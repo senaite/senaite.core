@@ -35,7 +35,7 @@
             name="portletfilter_by_department"
             method="POST">
             <dd class="portletItem">
-                <a id="select_all_deps" style=" cursor: pointer; font-weight: bold; border-radius: 0.5em; border: 2px solid #ccc !important; padding: 3px;"
+                <a id="select_all_deps" class="dp-select-all"
                   tal:condition="python: len(deps)>1">Select All</a> <br><br>
                 <tal:option repeat="dep deps" tal:condition="python: len(deps)>1">
                     <ul>
