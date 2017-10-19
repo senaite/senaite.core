@@ -16,6 +16,7 @@ Changelog
 
 **Changed**
 
+- #278 Enable "Select All" button in the Department Portlet for all users
 - #234 Consistent implementation of Analysis Request accessors that relate to Sample
 
 **Fixed**
