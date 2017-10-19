@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #277 Instrument Import Interface: Sysmex XT-4000i
 - #271 Sanitize async task to regularize department value for old Analysis Requests w/o department assigned
 - #267 "Select all" checkbox is missing in Aggregated List of Analyses
 
