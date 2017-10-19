@@ -17,6 +17,7 @@ Changelog
 
 **Changed**
 
+- #268 Make use of adapters for SearchableText in Batches listings
 - #278 Enable "Select All" button in the Department Portlet for all users
 - #234 Consistent implementation of Analysis Request accessors that relate to Sample
 
