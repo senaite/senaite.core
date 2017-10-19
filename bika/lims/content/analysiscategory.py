@@ -19,6 +19,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
 import sys
 import transaction
+from bika.lims import deprecated
 
 
 @indexer(IAnalysisCategory)

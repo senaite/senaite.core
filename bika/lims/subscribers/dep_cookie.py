@@ -26,7 +26,6 @@ def SetDepartmentCookies(event):
                     inactive_state='active')
             for dep in deps:
                 dep_for_cookie+=dep.UID+','
-            response.setCookie('dep_filter_disabled', 'true',  path = '/', max_age = 24 * 3600)
         else:
             brain = context.portal_catalog(getUsername=username)
             # It is possible that current user is created by Plone ZMI.
@@ -35,7 +34,6 @@ def SetDepartmentCookies(event):
                 logger.warn("No lab Contact found... Plone user or Client Contact logged in. "
                             + username)
                 response.setCookie('filter_by_department_info', None, path='/', max_age=0)
-                response.setCookie('dep_filter_disabled', None, path='/', max_age=0)
                 return
 
             # If it is Client Contact, enable all departments no need to filter.
@@ -45,7 +43,6 @@ def SetDepartmentCookies(event):
                                               inactive_state='active')
                 for dep in deps:
                     dep_for_cookie += dep.UID + ','
-                response.setCookie('dep_filter_disabled', None, path='/', max_age=24 * 3600)
 
             # It is a LabContact, set up departments.
             else:
@@ -58,8 +55,7 @@ def SetDepartmentCookies(event):
 
         response.setCookie('filter_by_department_info',dep_for_cookie,  path = '/', max_age = 24 * 3600)
     else:
-        response.setCookie('filter_by_department_info',None,  path = '/', max_age = 0)
-        response.setCookie('dep_filter_disabled',None,  path = '/', max_age = 0)
+        response.setCookie('filter_by_department_info',None,  path = '/', max_age=0)
 
 
 def ClearDepartmentCookies(event):
@@ -71,7 +67,6 @@ def ClearDepartmentCookies(event):
     response = request.RESPONSE
     # Voiding our special cookie on logout
     response.setCookie('filter_by_department_info',None,  path = '/', max_age = 0)
-    response.setCookie('dep_filter_disabled',None,  path = '/', max_age = 0)
 
 def find_context(request):
     """
