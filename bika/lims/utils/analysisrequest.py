@@ -224,7 +224,7 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     # Sometimes we can get analyses and profiles that doesn't match and we
     # should act in consequence.
     # Getting the analyses profiles
-    analyses_profiles = values.get('Profiles')
+    analyses_profiles = values.get('Profiles', [])
     if analyses_profiles:
         analyses_profiles = analyses_profiles.split(',')
     if not analyses_services and not analyses_profiles:

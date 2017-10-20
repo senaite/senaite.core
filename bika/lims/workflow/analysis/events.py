@@ -1,14 +1,10 @@
+import transaction
 from Products.CMFCore.utils import getToolByName
-from DateTime import DateTime
 
-from bika.lims import logger
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
 
 
@@ -48,6 +44,8 @@ def after_retract(obj):
     # LIMS-1290 - Analyst must be able to retract, which creates a new
     # Analysis.  So, _verifyObjectPaste permission check must be cancelled:
     parent._verifyObjectPaste = str
+    # This is needed for tests:
+    transaction.savepoint()
     parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
     delattr(parent, '_verifyObjectPaste')
 
