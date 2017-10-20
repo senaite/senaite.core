@@ -1059,8 +1059,7 @@ class AnalysisRequestsView(BikaListingView):
         if self.context.portal_type == "AnalysisRequestsFolder" and \
                 (self.mtool.checkPermission(AddAnalysisRequest, self.context)):
             self.context_actions[_('Add')] = \
-                {'url': "portal_factory/AnalysisRequest/Request new analyses/"
-                        + "ar_add?ar_count=1",
+                {'url': "ar_add?ar_count=1",
                  'icon': '++resource++bika.lims.images/add.png'}
 
         self.editresults = -1

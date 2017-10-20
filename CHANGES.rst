@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.1.0 (Unreleased)
+------------------
+
+**Added**
+
+Issue-1999: Allow external Python library functions to be used in Calculation Formulas
+LIMS-1504: Calculation formula test widgets
+#2154: Feature/new ar add form
+
 1.0.0 (2017-10-13)
 ------------------
 

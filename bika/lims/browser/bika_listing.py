@@ -140,10 +140,10 @@ class WorkflowAction:
             self.request.response.redirect(self.destination_url)
             return
 
-        url = self.context.absolute_url() + "/portal_factory/" + \
-              "AnalysisRequest/Request new analyses/ar_add" + \
-              "?ar_count={0}".format(len(objects)) + \
-              "&copy_from={0}".format(",".join(objects.keys()))
+        url = self.context.absolute_url() + "/ar_add" + \
+            "?ar_count={0}".format(len(objects)) + \
+            "&copy_from={0}".format(",".join(reversed(objects.keys())))
+
         self.request.response.redirect(url)
         return
 

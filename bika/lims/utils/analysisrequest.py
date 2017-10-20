@@ -224,9 +224,11 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     # Sometimes we can get analyses and profiles that doesn't match and we
     # should act in consequence.
     # Getting the analyses profiles
-    analyses_profiles = values.get('Profiles')
-    if analyses_profiles:
-        analyses_profiles = analyses_profiles.split(',')
+    analyses_profiles = values.get('Profiles', [])
+    if not isinstance(analyses_profiles, (list, tuple)):
+        # Plone converts the incoming form value to a list, if there are
+        # multiple values; but if not, it will send a string (a single UID).
+        analyses_profiles = [analyses_profiles]
     if not analyses_services and not analyses_profiles:
         raise RuntimeError(
                 "create_analysisrequest: no analyses services or analysis"

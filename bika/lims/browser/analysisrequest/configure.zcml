@@ -1,235 +1,252 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <adapter
-      factory="bika.lims.browser.analysisrequest.ClientContactVocabularyFactory"
-      provides="bika.lims.interfaces.IDisplayListVocabulary"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="getContacts"
-    />
-
-    <adapter
-      factory="bika.lims.browser.analysisrequest.JSONReadExtender"
-      provides="bika.lims.interfaces.IJSONReadExtender"
-    />
-
-    <adapter
-      for="bika.lims.interfaces.IAnalysisRequest"
-      factory="bika.lims.browser.analysisrequest.mailto_link_from_contacts"
-      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
-      name="Contact"
-    />
-    <adapter
-      for="bika.lims.interfaces.IAnalysisRequest"
-      factory="bika.lims.browser.analysisrequest.mailto_link_from_contacts"
-      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
-      name="CContact"
-    />
-    <adapter
-      for="bika.lims.interfaces.IAnalysisRequest"
-      factory="bika.lims.browser.analysisrequest.mailto_link_from_ccemails"
-      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
-      name="CCEmails"
-    />
-
-    <!-- main site/analysisrequests view -->
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequestsFolder"
-      name="base_view"
-      class="bika.lims.browser.analysisrequest.analysisrequests.AnalysisRequestsView"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <!-- Workflow action button clicked in AR folder list-->
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequestsFolder"
-      name="workflow_action"
-      class="bika.lims.browser.client.ClientWorkflowAction"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-
-    <!-- Workflow action button clicked inside AR -->
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="workflow_action"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestWorkflowAction"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <!-- Results Interpretation button clicked iside AR -->
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="arresultsinterpretation_save"
-      class="bika.lims.browser.analysisrequest.resultsinterpretation.Save"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="ar_add"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
+<!-- Async ARs probably are not compatible with ar-add2.
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="ar_add_async"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
+  />
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="queued_ars"
       class="bika.lims.browser.analysisrequest.QueuedAnalysisRequestsCount"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="secondary_ar_sample_info"
-      class="bika.lims.browser.analysisrequest.add.SecondaryARSampleInfo"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="base_view"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="analyses"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestAnalysesView"
-      permission="bika.lims.permissions.AddAnalysis"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="manage_results"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsView"
-      permission="bika.lims.EditResults"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="not_requested"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="published_results"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestPublishedResults"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="log"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestLog"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="invoice"
-      class="bika.lims.browser.analysisrequest.InvoiceView"
-      permission="bika.lims.ManageInvoices"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="analysisrequest_submit"
-      class="bika.lims.browser.analysisrequest.add.AnalysisRequestSubmit"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
+  />
+  <browser:page
       for="*"
       name="analysisrequest_submit_async"
       class="bika.lims.browser.analysisrequest.add.AsyncAnalysisRequestSubmit"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+  />
+-->
 
-    <browser:page
+  <!-- AR Add 2 -->
+  <browser:page
+      for="*"
+      name="ar_add_manage"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestManageView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="ar_add"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="ar_add"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="ar_add"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="ar_add"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="*"
+      name="ajax_ar_add"
+      class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestAddView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+  <!-- /AR Add 2 -->
+
+  <adapter
+      factory="bika.lims.browser.analysisrequest.ClientContactVocabularyFactory"
+      provides="bika.lims.interfaces.IDisplayListVocabulary"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="getContacts"
+  />
+
+  <adapter
+      factory="bika.lims.browser.analysisrequest.JSONReadExtender"
+      provides="bika.lims.interfaces.IJSONReadExtender"
+  />
+
+  <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.mailto_link_from_contacts"
+      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+      name="Contact"
+  />
+  <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.mailto_link_from_contacts"
+      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+      name="CContact"
+  />
+  <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.mailto_link_from_ccemails"
+      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+      name="CCEmails"
+  />
+
+  <!-- main site/analysisrequests view -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="base_view"
+      class="bika.lims.browser.analysisrequest.analysisrequests.AnalysisRequestsView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <!-- Workflow action button clicked in AR folder list-->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="workflow_action"
+      class="bika.lims.browser.client.ClientWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <!-- Workflow action button clicked inside AR -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="workflow_action"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <!-- Results Interpretation button clicked iside AR -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="arresultsinterpretation_save"
+      class="bika.lims.browser.analysisrequest.resultsinterpretation.Save"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="base_view"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="manage_results"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsView"
+      permission="bika.lims.EditResults"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="not_requested"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="published_results"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestPublishedResults"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="log"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestLog"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="invoice"
+      class="bika.lims.browser.analysisrequest.InvoiceView"
+      permission="bika.lims.ManageInvoices"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="invoice_print"
       class="bika.lims.browser.analysisrequest.InvoicePrintView"
       permission="bika.lims.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+  />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="invoice_create"
       class="bika.lims.browser.analysisrequest.InvoiceCreate"
       permission="bika.lims.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+  />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="publish"
       class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+  />
 
-    <!-- Multiple analysis requests results preview -->
-    <browser:page
+  <!-- Multiple analysis requests results preview -->
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="publish"
       class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+  />
 
-    <!-- Verifying any Analysis will cause a digestion of the parent AR to
-    be triggered at the end of the request -->
-    <subscriber
+  <!-- Verifying any Analysis will cause a digestion of the parent AR to
+  be triggered at the end of the request -->
+  <subscriber
       for="bika.lims.interfaces.IAnalysis
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
       handler="bika.lims.browser.analysisrequest.publish.AnalysisAfterTransitionHandler"
-    />
+  />
 
-    <!-- Modifying an AR that has been verified causes a digestion to be
-    triggered at the end of this request. -->
-    <subscriber
+  <!-- Modifying an AR that has been verified causes a digestion to be
+  triggered at the end of this request. -->
+  <subscriber
       for="bika.lims.interfaces.IAnalysisRequest
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"
       handler="bika.lims.browser.analysisrequest.publish.ARModifiedHandler"
-    />
+  />
 
-    <!-- At the end of each request, this will check to see if any ARs are
-    flagged to have their publication data pre-digested. -->
-    <subscriber
+  <!-- At the end of each request, this will check to see if any ARs are
+  flagged to have their publication data pre-digested. -->
+  <subscriber
       for="zope.publisher.interfaces.IEndRequestEvent"
       handler="bika.lims.browser.analysisrequest.publish.EndRequestHandler"
-    />
+  />
 
 </configure>

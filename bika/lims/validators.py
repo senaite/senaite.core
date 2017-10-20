@@ -3,18 +3,18 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import re
+import string
+import types
+
 from Acquisition import aq_parent
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
+from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import to_utf8
 from zope.interface import implements
-from datetime import datetime
-import string
-import re
-import types
 
 
 class IdentifierTypeAttributesValidator:
@@ -1198,3 +1198,29 @@ class NoWhiteSpaceValidator:
         return True
 
 validation.register(NoWhiteSpaceValidator())
+
+
+class ImportValidator(object):
+    """Checks if a dotted name can be imported or not
+    """
+    implements(IValidator)
+    name = "importvalidator"
+
+    def __call__(self, mod, **kwargs):
+
+        # some needed tools
+        instance = kwargs['instance']
+        translate = getToolByName(instance, 'translation_service').translate
+
+        try:
+            # noinspection PyUnresolvedReferences
+            import importlib
+            importlib.import_module(mod)
+        except ImportError:
+            msg = _("Validation failed: Could not import module '%s'" % mod)
+            return to_utf8(translate(msg))
+
+        return True
+
+
+validation.register(ImportValidator())

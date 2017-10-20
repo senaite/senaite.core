@@ -3,45 +3,38 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
+from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_brain_metadata
 from bika.lims.jsonapi import load_field_values
-from bika.lims.utils import dicts_to_dict
-from bika.lims.interfaces import IAnalysisRequest, IClient, IBatch
-from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import IJSONReadExtender
-from bika.lims.permissions import *
-from bika.lims.workflow import get_workflow_actions
 from bika.lims.vocabularies import CatalogVocabulary
-from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
-from DateTime import DateTime
-from Products.Archetypes import PloneMessageFactory as PMF
-from plone.app.layout.globals.interfaces import IViewView
-from plone.registry.interfaces import IRegistry
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.interfaces import IPloneSiteRoot
+from bika.lims.workflow import get_workflow_actions
+from invoice import InvoiceCreate
 from zope.component import adapts
 from zope.component import getAdapters
-from zope.component import queryUtility
 from zope.interface import implements
 
-import json
+# This AnalysisRequestViewView import must be here, above all the ones that are
+# now below it.  Don't reorganise imports carelessly without taking care to read
+# this comment twice.
+from .view import AnalysisRequestViewView
 
-from .view import AnalysisRequestViewView    # view first.
-from .add import AnalysisRequestAddView
+from .add2 import AnalysisRequestAddView  # noqa: F401
+from .add2 import AnalysisRequestManageView  # noqa: F401
+from .add2 import ajaxAnalysisRequestAddView  # noqa: F401
+from .analysisrequests import AnalysisRequestsView
+from .analysisrequests import QueuedAnalysisRequestsCount
 from .invoice import InvoicePrintView
 from .invoice import InvoiceView
-from invoice import InvoiceCreate
 from .log import AnalysisRequestLog
 from .manage_analyses import AnalysisRequestAnalysesView
 from .manage_results import AnalysisRequestManageResultsView
 from .published_results import AnalysisRequestPublishedResults
 from .results_not_requested import AnalysisRequestResultsNotRequestedView
 from .workflow import AnalysisRequestWorkflowAction
-from .analysisrequests import AnalysisRequestsView
-from .analysisrequests import QueuedAnalysisRequestsCount
 
 
 class ResultOutOfRange(object):

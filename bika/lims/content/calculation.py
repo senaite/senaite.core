@@ -1,21 +1,34 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import importlib
+import inspect
 import math
 import re
-from AccessControl import ClassSecurityInfo
+import sys
 
 import transaction
+from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.Archetypes.public import *
+from Products.ATExtensions.field import RecordsField
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -23,37 +36,75 @@ from bika.lims.interfaces import ICalculation
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    InterimFieldsField('InterimFields',
-        schemata='Calculation',
+
+    InterimFieldsField(
+        'InterimFields',
         widget=BikaRecordsWidget(
             label=_("Calculation Interim Fields"),
             description=_(
                 "Define interim fields such as vessel mass, dilution factors, "
-                "should your calculation require them. The field title specified "
-                "here will be used as column headers and field descriptors where "
-                "the interim fields are displayed. If 'Apply wide' is enabled "
-                "the field ill be shown in a selection box on the top of the "
-                "worksheet, allowing to apply a specific value to all the "
-                "corresponding fields on the sheet."),
+                "should your calculation require them. The field title "
+                "specified here will be used as column headers and field "
+                "descriptors where the interim fields are displayed. If "
+                "'Apply wide' is enabled the field will be shown in a "
+                "selection box on the top of the worksheet, allowing to apply "
+                "a specific value to all the corresponding fields on the "
+                "sheet."),
         )
     ),
-    UIDReferenceField(
+
+    HistoryAwareReferenceField(
         'DependentServices',
+        required=1,
         multiValued=1,
+        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('AnalysisService',),
+        relationship='CalculationAnalysisService',
+        referenceClass=HoldingReference,
         widget=ReferenceWidget(
+            checkbox_bound=0,
             visible=False,
+            label=_("Dependent Analyses"),
         ),
     ),
-    TextField('Formula',
-        schemata='Calculation',
+
+    RecordsField(
+        'PythonImports',
+        required=False,
+        subfields=('module', 'function'),
+        subfield_labels={'module': _('Module'), 'function': _('Function')},
+        subfield_readonly={'module': False, 'function': False},
+        subfield_types={'module': 'string', 'function': 'string'},
+        default=[
+            {'module': 'math', 'function': 'ceil'},
+            {'module': 'math', 'function': 'floor'},
+        ],
+        subfield_validators={
+            'module': 'importvalidator',
+        },
+        widget=RecordsWidget(
+            label=_("Additional Python Libraries"),
+            description=_(
+                "If your formula needs a special function from an external "
+                "Python library, you can import it here. E.g. if you want to "
+                "use the 'floor' function from the Python 'math' module, "
+                "you add 'math' to the Module field and 'floor' to the "
+                "function field. The equivalent in Python would be 'from math "
+                "import floor'. In your calculation you could use then "
+                "'floor([Ca] + [Mg])'. "
+            ),
+            allowDelete=True,
+        ),
+    ),
+
+    TextField(
+        'Formula',
         validators=('formulavalidator',),
         default_content_type='text/plain',
         allowable_content_types=('text/plain',),
-        widget = TextAreaWidget(
+        widget=TextAreaWidget(
             label=_("Calculation Formula"),
             description=_(
-                "calculation_formula_description",
                 "<p>The formula you type here will be dynamically calculated "
                 "when an analysis using this calculation is displayed.</p>"
                 "<p>To enter a Calculation, use standard maths operators,  "
@@ -64,21 +115,53 @@ schema = BikaSchema.copy() + Schema((
                 "Calcium (ppm) and Magnesium (ppm) ions in water, is entered "
                 "as [Ca] + [Mg], where Ca and MG are the keywords for those "
                 "two Analysis Services.</p>"),
-            )
+        )
     ),
+
+    RecordsField(
+        'TestParameters',
+        required=False,
+        subfields=('keyword', 'value'),
+        subfield_labels={'keyword': _('Keyword'), 'value': _('Value')},
+        subfield_readonly={'keyword': True, 'value': False},
+        subfield_types={'keyword': 'string', 'value': 'float'},
+        default=[{'keyword': '', 'value': 0}],
+        widget=RecordsWidget(
+            label=_("Test Parameters"),
+            description=_("To test the calculation, enter values here for all "
+                          "calculation parameters.  This includes Interim "
+                          "fields defined above, as well as any services that "
+                          "this calculation depends on to calculate results."),
+            allowDelete=False,
+        ),
+    ),
+
+    TextField(
+        'TestResult',
+        default_content_type='text/plain',
+        allowable_content_types=('text/plain',),
+        widget=TextAreaWidget(
+            label=_('Test Result'),
+            description=_("The result after the calculation has taken place "
+                          "with test values.  You will need to save the "
+                          "calculation before this value will be calculated."),
+        )
+    ),
+
 ))
 
 schema['title'].widget.visible = True
-schema['title'].schemata = 'Description'
 schema['description'].widget.visible = True
-schema['description'].schemata = 'Description'
 
 
 class Calculation(BaseFolder, HistoryAwareMixin):
+    """Calculation for Analysis Results
+    """
+    implements(ICalculation)
+
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-    implements(ICalculation)
 
     _at_rename_after_creation = True
 
@@ -107,7 +190,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.getField('Formula').set(self, Formula)
         else:
             DependentServices = []
-            keywords = re.compile(r"\[([^\.^\]]+)\]").findall(Formula)
+            keywords = re.compile(r"\[([^.^\]]+)\]").findall(Formula)
             for keyword in keywords:
                 service = bsc(portal_type="AnalysisService",
                               getKeyword=keyword)
@@ -124,27 +207,6 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         value = " ".join(self.getFormula().splitlines())
         return value
 
-    def getMappedFormula(self, analysis, mapping):
-        formula = self.getMinifiedFormula()
-        # XXX regex groups to replace only [x] where x in interim keys.
-        keywords = re.compile(r"\[([^\.^\]]+)\]").findall(formula)
-        for keyword in keywords:
-            if keyword in mapping:
-                try:
-                    formula = formula.replace('[%s]'%keyword, '%f'%mapping[keyword])
-                except TypeError:
-                    formula = formula.replace('[%s]'%keyword, '"%s"'%mapping[keyword])
-
-        mapped = eval("'%s'%%mapping" % formula,
-                       {"__builtins__": __builtins__,
-                        'math': math,
-                        'context': analysis},
-                       {'mapping': mapping})
-
-        print analysis, mapped, mapping
-        return mapped
-
-
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.
             The return value is dictionary of dictionaries (of dictionaries....)
@@ -159,8 +221,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
             set flat=True to get a simple list of AnalysisService objects
         """
-        if deps == None:
-            deps = [] if flat == True else {}
+        if deps is None:
+            deps = [] if flat is True else {}
 
         for service in self.getDependentServices():
             calc = service.getCalculation()
@@ -175,15 +237,110 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def getCalculationDependants(self):
         """Return a flat list of services who's calculations depend on this."""
         deps = []
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        services_b = bsc(
-            portal_type='AnalysisService', inactive_state="active")
-        for service_b in services_b:
-            service = service_b.getObject()
+        for service in self.getBackReferences('AnalysisServiceCalculation'):
             calc = service.getCalculation()
-            if calc and calc.UID() == self.UID():
-                deps.append(service)
+            if calc and calc.UID() != self.UID():
+                calc.getCalculationDependants(deps)
+            deps.append(service)
         return deps
+
+    def setTestParameters(self, form_value):
+        """This is called from the objectmodified subscriber, to ensure
+        correct population of the test-parameters field.
+        It collects Keywords for all services that are direct dependencies of
+        this calculatioin, and all of this calculation's InterimFields,
+        and gloms them together.
+        """
+        params = []
+
+        # Set default/existing values for InterimField keywords
+        for interim in self.getInterimFields():
+            keyword = interim.get('keyword')
+            ex = [x.get('value') for x in form_value if
+                  x.get('keyword') == keyword]
+            params.append({'keyword': keyword,
+                           'value': ex[0] if ex else interim.get('value')})
+        # Set existing/blank values for service keywords
+        for service in self.getDependentServices():
+            keyword = service.getKeyword()
+            ex = [x.get('value') for x in form_value if
+                  x.get('keyword') == keyword]
+            params.append({'keyword': keyword,
+                           'value': ex[0] if ex else ''})
+        self.Schema().getField('TestParameters').set(self, params)
+
+    # noinspection PyUnusedLocal
+    def setTestResult(self, form_value):
+        """Calculate formula with TestParameters and enter result into
+         TestResult field.
+        """
+        # Create mapping from TestParameters
+        mapping = {x['keyword']: x['value'] for x in self.getTestParameters()}
+        # Gather up and parse formula
+        formula = self.getMinifiedFormula()
+        test_result_field = self.Schema().getField('TestResult')
+
+        # Flush the TestResult field and return
+        if not formula:
+            return test_result_field.set(self, "")
+
+        formula = formula.replace('[', '{').replace(']', '}').replace('  ', '')
+        result = 'Failure'
+
+        try:
+            # print "pre: {}".format(formula)
+            formula = formula.format(**mapping)
+            # print "formatted: {}".format(formula)
+            result = eval(formula, self._getGlobals())
+            # print "result: {}".format(result)
+        except TypeError as e:
+            # non-numeric arguments in interim mapping?
+            result = "TypeError: {}".format(str(e.args[0]))
+        except ZeroDivisionError as e:
+            result = "Division by 0: {}".format(str(e.args[0]))
+        except KeyError as e:
+            result = "Key Error: {}".format(str(e.args[0]))
+        except ImportError as e:
+            result = "Import Error: {}".format(str(e.args[0]))
+        except Exception as e:
+            result = "Unspecified exception: {}".format(str(e.args[0]))
+        test_result_field.set(self, str(result))
+
+    def _getGlobals(self, **kwargs):
+        """Return the globals dictionary for the formula calculation
+        """
+        # Default globals
+        globs = {"__builtins__": None, 'math': math}
+        # Update with keyword arguments
+        globs.update(kwargs)
+        # Update with additional Python libraries
+        for imp in self.getPythonImports():
+            mod = imp["module"]
+            func = imp["function"]
+            member = self._getModuleMember(mod, func)
+            if member is None:
+                raise ImportError(
+                    "Could not find member {} of module {}".format(
+                        func, mod))
+            globs[func] = member
+        return globs
+
+    def _getModuleMember(self, dotted_name, member):
+        """Get the member object of a module.
+
+        :param dotted_name: The dotted name of the module, e.g. 'scipy.special'
+        :type dotted_name: string
+        :param member: The name of the member function, e.g. 'gammaincinv'
+        :type member: string
+        :returns: member object or None
+        """
+        try:
+            mod = importlib.import_module(dotted_name)
+        except ImportError:
+            return None
+
+        members = dict(inspect.getmembers(mod))
+        return members.get(member)
 
     def workflow_script_activate(self):
         wf = getToolByName(self, 'portal_workflow')
@@ -198,7 +355,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         if inactive_services:
             msg = _("Cannot activate calculation, because the following "
                     "service dependencies are inactive: ${inactive_services}",
-                    mapping={'inactive_services': safe_unicode(", ".join(inactive_services))})
+                    mapping={'inactive_services': safe_unicode(
+                        ", ".join(inactive_services))})
             pu.addPortalMessage(msg, 'error')
             transaction.get().abort()
             raise WorkflowException
@@ -215,11 +373,14 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             if calc and calc.UID() == self.UID():
                 calc_services.append(service.Title())
         if calc_services:
-            msg = _('Cannot deactivate calculation, because it is in use by the '
-                    'following services: ${calc_services}',
-                    mapping={'calc_services': safe_unicode(", ".join(calc_services))})
+            msg = _(
+                'Cannot deactivate calculation, because it is in use by the '
+                'following services: ${calc_services}',
+                mapping={
+                    'calc_services': safe_unicode(", ".join(calc_services))})
             pu.addPortalMessage(msg, 'error')
             transaction.get().abort()
             raise WorkflowException
+
 
 registerType(Calculation, PROJECTNAME)

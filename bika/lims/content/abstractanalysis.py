@@ -560,14 +560,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                             'math': math,
                             'context': self},
                            {'mapping': mapping})
-            result = eval(formula)
+            result = eval(formula, calc._getGlobals())
         except TypeError:
             self.setResult("NA")
             return True
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
-        except KeyError:
+        except KeyError as e:
+            self.setResult("NA")
+            return True
+        except ImportError as e:
             self.setResult("NA")
             return True
 
