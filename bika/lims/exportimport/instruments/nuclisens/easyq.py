@@ -11,6 +11,7 @@ import csv
 import json
 import traceback
 from cStringIO import StringIO
+import xml.etree.ElementTree as ET
 
 import types
 from openpyxl import load_workbook
@@ -87,6 +88,48 @@ class EasyQParser(InstrumentResultsFileParser):
             self._addRawResult(key, {testname: rawdict}, False)
 
 
+class EasyQXMLParser(InstrumentResultsFileParser):
+    """ XML input Parser
+    """
+    def __init__(self, xml):
+        InstrumentResultsFileParser.__init__(self, xml, 'XML')
+        self._assays = {}
+
+    def parse(self):
+        """ parse the data
+        """
+        tree = ET.parse(self.getInputFile())
+        root = tree.getroot()
+        for as_ref in root.find("Assays").findall("AssayRef"):
+            self._assays[as_ref.get("KEY_AssayRef")] = as_ref.get("ID")
+        for t_req in root.iter("TestRequest"):
+            res_id = t_req.get("SampleID")
+            test_name = self._assays.get(t_req.get("KEY_AssayRef"))
+            test_name = self._format_keyword(test_name)
+            result = t_req.find("TestResult").get("Value")
+            if not result:
+                continue
+            result = result.split(" ")[0]
+            values = {}
+            values[test_name] = {
+                "DefaultResult": "Result",
+                "Result": result,
+            }
+            self._addRawResult(res_id, values)
+
+    def _format_keyword(self, keyword):
+        """
+        Removing special character from a keyword. Analysis Services must have
+        this kind of keywords. E.g. if assay name from the Instrument is
+        'HIV-1 2.0', an AS must be created on Bika with the keyword 'HIV120'
+        """
+        import re
+        result = ''
+        if keyword:
+            result = re.sub(r"\W", "", keyword)
+        return result
+
+
 class EasyQImporter(AnalysisResultsImporter):
     """ Importer
     """
@@ -95,7 +138,7 @@ class EasyQImporter(AnalysisResultsImporter):
         ret = AnalysisResultsImporter._process_analysis(self, objid, analysis,
                                                          values)
         # HEALTH-567
-        if values['Value'] and str(values['Value'])[0] in "<>":
+        if values.get('Value') and str(values['Value'])[0] in "<>":
             analysis.setDetectionLimitOperand('<')
         return ret
 
@@ -133,6 +176,8 @@ def Import(context, request):
         errors.append(_("No file selected"))
     if fileformat == 'xlsx':
         parser = EasyQParser(infile)
+    elif fileformat == 'xml':
+        parser = EasyQXMLParser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
