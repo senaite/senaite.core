@@ -66,6 +66,11 @@
 
   <type type_id="AnalysisRequestsFolder"/>
 
+  <!-- AR Reports -->
+  <type type_id="ARReport">
+    <bound-workflow workflow_id="bika_one_state_workflow"/>
+  </type>
+
   <type type_id="AnalysisService">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
