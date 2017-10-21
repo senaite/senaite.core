@@ -152,6 +152,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="analyses"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAnalysesView"
+      permission="bika.lims.permissions.AddAnalysis"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="manage_results"
