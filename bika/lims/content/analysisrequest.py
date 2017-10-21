@@ -1881,8 +1881,7 @@ class AnalysisRequest(BaseFolder):
         """ compute default member discount if it applies """
         if hasattr(self, 'getMemberDiscountApplies'):
             if self.getMemberDiscountApplies():
-                plone = getSite()
-                settings = plone.bika_setup
+                settings = self.bika_setup
                 return settings.getMemberDiscount()
             else:
                 return "0.00"
