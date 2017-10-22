@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="sampleprep_simple"
+             title="Simple one-step"
+             description="Simple single-step sample preparation"
+             state_variable="sampleprep_review_state"
+             initial_state="pending"
+             manager_bypass="False"
+             i18n:domain="bika">
+
+  <state state_id="complete" title="Complete" i18n:attributes="title">
+    <description>Complete</description>
+    <exit-transition transition_id="" />
+  </state>
+
+  <state state_id="pending" title="Pending" i18n:attributes="title">
+    <description>Sample preparation is in progress</description>
+    <exit-transition transition_id="complete" />
+  </state>
+
+  <transition transition_id="complete" title="Complete" new_state="complete" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Complete</action>
+    <guard>
+      <guard-permission>Modify portal content</guard-permission>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+      <guard-permission>Request review</guard-permission>
+      <guard-permission>Review portal content</guard-permission>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

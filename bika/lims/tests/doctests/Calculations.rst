@@ -6,7 +6,7 @@ Analyses with a formula.
 
 Running this test from the buildout directory::
 
-    bin/Test test_textual_doctests -t Calculations
+    bin/test test_textual_doctests -t Calculations
 
 
 Test Setup
@@ -15,6 +15,7 @@ Test Setup
 Needed Imports::
 
     >>> import transaction
+    >>> from operator import methodcaller
     >>> from plone import api as ploneapi
 
     >>> from bika.lims import api
@@ -71,7 +72,7 @@ The `Formula` field references the Keywords from Analysis Services::
 
 The `Calculation` depends now on the two Analysis Services::
 
-    >>> sorted(calc.getCalculationDependencies(flat=True))
+    >>> sorted(calc.getCalculationDependencies(flat=True), key=methodcaller('getId'))
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>, <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>]
 
 It is also possible to find out if an `AnalysisService` depends on the calculation::
