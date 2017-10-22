@@ -16,8 +16,7 @@ PROJECTNAME = "bika.lims"
 
 GLOBALS = globals()
 
-VERSIONABLE_TYPES = ('AnalysisService',
-                     'Calculation',
+VERSIONABLE_TYPES = ('Calculation',
                      )
 
 POINTS_OF_CAPTURE = DisplayList((

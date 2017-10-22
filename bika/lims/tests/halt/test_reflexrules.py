@@ -1,15 +1,12 @@
-from Products.CMFPlone.utils import _createObjectByType
-from plone.app.testing import login, logout
 from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
+from plone.app.testing import login, logout
+
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.workflow import doActionFor
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.content.reflexrule import doReflexRuleAction
-import unittest
+
 try:
     import unittest2 as unittest
 except ImportError:  # Python 2.7

@@ -10,6 +10,13 @@ Issue-1999: Allow external Python library functions to be used in Calculation Fo
 LIMS-1504: Calculation formula test widgets
 #2154: Feature/new ar add form
 
+**Fixed**
+
+
+**Security**
+
+
+
 1.0.0 (2017-10-13)
 ------------------
 

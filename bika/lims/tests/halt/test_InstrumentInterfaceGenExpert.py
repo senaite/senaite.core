@@ -6,23 +6,21 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 
-from bika.lims.content.instrument import Instrument
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
-from plone.app.testing import login, logout
-from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-from bika.lims.utils import tmpID
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.exportimport import instruments
-from bika.lims.exportimport.instruments.genexpert.genexpert \
-                    import GeneXpertParser, GeneXpertImporter
-from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
-import unittest
-import transaction
 import codecs
 import traceback
+
+import transaction
+from Products.CMFCore.utils import getToolByName
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login, logout
+
+from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
+from bika.lims.exportimport import instruments
+from bika.lims.exportimport.instruments.genexpert.genexpert \
+    import GeneXpertParser, GeneXpertImporter
+from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.utils.analysisrequest import create_analysisrequest
 
 try:
     import unittest2 as unittest

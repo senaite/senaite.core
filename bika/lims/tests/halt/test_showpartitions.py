@@ -3,22 +3,19 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import os
+import unittest
+
 from Products.CMFPlone.utils import _createObjectByType
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login, logout
+
 from bika.lims.browser.stickers import Sticker
-from bika.lims.content.analysis import Analysis
 from bika.lims.testing import BIKA_SIMPLE_TESTING
 from bika.lims.tests.base import BikaSimpleTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.vocabularies import getStickerTemplates
 from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
-from plone.app.testing import TEST_USER_NAME
-
-import unittest
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.resource.utils import queryResourceDirectory
 
 
 class TestShowPartitions(BikaSimpleTestCase):
@@ -60,7 +57,6 @@ class TestShowPartitions(BikaSimpleTestCase):
                   'Contact': contact.UID(),
                   'SamplingDate': '2015-01-01',
                   'SampleType': sampletype.UID()}
-
         for stemp in getStickerTemplates():
 
             # create and receive AR

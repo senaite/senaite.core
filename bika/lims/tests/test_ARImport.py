@@ -3,20 +3,16 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import logger
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_SIMPLE_FIXTURE
-from bika.lims.tests.base import BikaSimpleTestCase
-from bika.lims.utils import tmpID
-from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
-from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-
 import re
+
 import transaction
-import unittest
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.utils import tmpID
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, setRoles
+from plone.app.testing import login
 
 try:
     import unittest2 as unittest
@@ -24,8 +20,7 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class TestARImports(BikaSimpleTestCase):
-
+class TestARImports(BikaFunctionalTestCase):
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
         thing.unmarkCreationFlag()
@@ -36,32 +31,41 @@ class TestARImports(BikaSimpleTestCase):
     def setUp(self):
         super(TestARImports, self).setUp()
         login(self.portal, TEST_USER_NAME)
-        self.client = self.addthing(self.portal.clients, 'Client',
-                                    title='Happy Hills', ClientID='HH')
-        self.addthing(self.client, 'Contact', Firstname='Rita Mohale',
-                      Lastname='Mohale')
-        self.addthing(self.portal.bika_setup.bika_sampletypes, 'SampleType',
-                      title='Water', Prefix='H2O')
-        self.addthing(self.portal.bika_setup.bika_samplematrices,
-                      'SampleMatrix', title='Liquids')
-        self.addthing(self.portal.bika_setup.bika_samplepoints, 'SamplePoint',
-                      title='Toilet')
-        self.addthing(self.portal.bika_setup.bika_containertypes,
-                      'ContainerType', title='Cup')
-        a = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Ecoli', Keyword="ECO")
-        b = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Salmonella', Keyword="SAL")
-        c = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Color', Keyword="COL")
-        d = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Taste', Keyword="TAS")
-        self.addthing(self.portal.bika_setup.bika_analysisprofiles,
-                      'AnalysisProfile', title='MicroBio',
-                      Service=[a.UID(), b.UID()])
-        self.addthing(self.portal.bika_setup.bika_analysisprofiles,
-                      'AnalysisProfile', title='Properties',
-                      Service=[c.UID(), d.UID()])
+        setRoles(self.portal, TEST_USER_ID, ['LabManager'])
+        client = self.addthing(
+            self.portal.clients, 'Client', title='Happy Hills', ClientID='HH')
+        self.addthing(
+            client, 'Contact', Firstname='Rita Mohale', Lastname='Mohale')
+        self.addthing(
+            self.portal.bika_setup.bika_sampletypes, 'SampleType',
+            title='Water', Prefix='H2O')
+        self.addthing(
+            self.portal.bika_setup.bika_samplematrices, 'SampleMatrix',
+            title='Liquids')
+        self.addthing(
+            self.portal.bika_setup.bika_samplepoints, 'SamplePoint',
+            title='Toilet')
+        self.addthing(
+            self.portal.bika_setup.bika_containertypes, 'ContainerType',
+            title='Cup')
+        a = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Ecoli', Keyword="ECO")
+        b = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Salmonella', Keyword="SAL")
+        c = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Color', Keyword="COL")
+        d = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Taste', Keyword="TAS")
+        self.addthing(
+            self.portal.bika_setup.bika_analysisprofiles, 'AnalysisProfile',
+            title='MicroBio', Service=[a.UID(), b.UID()])
+        self.addthing(
+            self.portal.bika_setup.bika_analysisprofiles, 'AnalysisProfile',
+            title='Properties', Service=[c.UID(), d.UID()])
 
     def tearDown(self):
         super(TestARImports, self).setUp()
@@ -70,22 +74,39 @@ class TestARImports(BikaSimpleTestCase):
     def test_complete_valid_batch_import(self):
         pc = getToolByName(self.portal, 'portal_catalog')
         workflow = getToolByName(self.portal, 'portal_workflow')
-        arimport = self.addthing(self.client, 'ARImport')
+        client = self.portal.clients.objectValues()[0]
+        arimport = self.addthing(client, 'ARImport')
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
-Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
-Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
-Batch Header, id,       title,     description,    ClientBatchID, ClientBatchComment, BatchLabels, ReturnSampleToClient,,,
-Batch Data,   B15-0123, New Batch, Optional descr, CC 201506,     Just a batch,                  , TRUE                ,,,
-Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
+Header,      File name,  Client name,  Client ID, Contact,     CC Names - 
+Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, 
+No of Samples, Client Order Number, Client Reference,,
+Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                
+  ,                   ,                    ,                    , 10,         
+     HHPO-001,                            ,,
+Batch Header, id,       title,     description,    ClientBatchID, 
+ClientBatchComment, BatchLabels, ReturnSampleToClient,,,
+Batch Data,   B15-0123, New Batch, Optional descr, CC 201506,     Just a 
+batch,                  , TRUE                ,,,
+Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,
+SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number 
+of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
 Analysis price,,,,,,,,,,,,,,
 "Total Analyses or Profiles",,,,,,,,,,,,,9,,,
 Total price excl Tax,,,,,,,,,,,,,,
-"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  1,                                   0,             0,0,0,0,0,1
-"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  2,                                   0,             0,0,0,0,1,1
-"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  4,                                   0,             1,1,1,1,0,0
-"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  2,                                   0,             1,0,0,0,1,0
+"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
+   Water,     Cup,          0,              Normal,  1,                       
+               0,             0,0,0,0,0,1
+"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
+   Water,     Cup,          0,              Normal,  2,                       
+               0,             0,0,0,0,1,1
+"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
+   Water,     Cup,          0,              Normal,  4,                       
+               0,             1,1,1,1,0,0
+"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
+   Water,     Cup,          0,              Normal,  2,                       
+               0,             1,0,0,0,1,0
         """)
 
         # check that values are saved without errors
@@ -142,22 +163,35 @@ Total price excl Tax,,,,,,,,,,,,,,
             self.fail('Analysis states should all be sample_due, but are not!')
 
     def test_LIMS_2080_correctly_interpret_false_and_blank_values(self):
-        pc = getToolByName(self.portal, 'portal_catalog')
-        workflow = getToolByName(self.portal, 'portal_workflow')
-        arimport = self.addthing(self.client, 'ARImport')
+        client = self.portal.clients.objectValues()[0]
+        arimport = self.addthing(client, 'ARImport')
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
-Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
-Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
-Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
+Header,      File name,  Client name,  Client ID, Contact,     CC Names - 
+Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, 
+No of Samples, Client Order Number, Client Reference,,
+Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                
+  ,                   ,                    ,                    , 10,         
+     HHPO-001,                            ,,
+Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,
+SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number 
+of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
 Analysis price,,,,,,,,,,,,,,
 "Total Analyses or Profiles",,,,,,,,,,,,,9,,,
 Total price excl Tax,,,,,,,,,,,,,,
-"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,     Cup,          0,              Normal,  1,                                   0,             0,0,0,0,0,1
-"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   ,     ,     Water,     Cup,          0,              Normal,  2,                                   0,             0,0,0,0,1,1
-"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          1,              Normal,  4,                                   0,             1,1,1,1,0,0
-"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          1,              Normal,  2,                                   0,             1,0,0,0,1,0
+"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,    
+ Cup,          0,              Normal,  1,                                   
+ 0,             0,0,0,0,0,1
+"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   ,     ,     Water,    
+ Cup,          0,              Normal,  2,                                   
+ 0,             0,0,0,0,1,1
+"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
+   Water,     Cup,          1,              Normal,  4,                       
+               0,             1,1,1,1,0,0
+"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
+   Water,     Cup,          1,              Normal,  2,                       
+               0,             1,0,0,0,1,0
         """)
 
         # check that values are saved without errors
@@ -171,32 +205,37 @@ Total price excl Tax,,,,,,,,,,,,,,
         browser = self.getBrowser(loggedIn=True)
         browser.open(arimport.absolute_url() + "/edit")
         content = browser.contents
-        re.match('\<option selected\=\"selected\" value\=\"\d+\"\>Toilet\<\/option\>', content)
-        #
-        if len(re.findall('\<.*selected.*Toilet', content)) != 2:
+        re.match(
+            '<option selected=\"selected\" value=\"\d+\">Toilet</option>',
+            content)
+        if len(re.findall('<.*selected.*Toilet', content)) != 2:
             self.fail("Should be two empty SamplePoints, and two with values")
-        #
-        if len(re.findall('\<.*selected.*Liquids', content)) != 2:
+        if len(re.findall('<.*selected.*Liquids', content)) != 2:
             self.fail("Should be two empty Matrix fields, and two with values")
-        #
-        if len(re.findall('\<.*checked.*ReportDry', content)) != 2:
+        if len(re.findall('<.*checked.*ReportDry', content)) != 2:
             self.fail("Should be two False DryMatters, and two True")
 
-
     def test_LIMS_2081_post_edit_fails_validation_gracefully(self):
-        pc = getToolByName(self.portal, 'portal_catalog')
-        workflow = getToolByName(self.portal, 'portal_workflow')
-        arimport = self.addthing(self.client, 'ARImport')
+        client = self.portal.clients.objectValues()[0]
+        arimport = self.addthing(client, 'ARImport')
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
-Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
-Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
-Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
+Header,      File name,  Client name,  Client ID, Contact,     CC Names - 
+Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, 
+No of Samples, Client Order Number, Client Reference,,
+Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                
+  ,                   ,                    ,                    , 10,         
+     HHPO-001,                            ,,
+Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,
+SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number 
+of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
 Analysis price,,,,,,,,,,,,,,
 "Total Analyses or Profiles",,,,,,,,,,,,,9,,,
 Total price excl Tax,,,,,,,,,,,,,,
-"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,     Cup,          0,              Normal,  1,                                   0,             0,0,0,0,0,1
+"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,    
+ Cup,          0,              Normal,  1,                                   
+ 0,             0,0,0,0,0,1
         """)
 
         # check that values are saved without errors
@@ -215,8 +254,9 @@ Total price excl Tax,,,,,,,,,,,,,,
         if 'test_reference' not in browser.contents:
             self.fail('Failed to modify ARImport object (Client Reference)')
 
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestARImports))
-    suite.layer = BIKA_SIMPLE_FIXTURE
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
