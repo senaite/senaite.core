@@ -57,16 +57,13 @@ Each `AnalysisService` contains a `Keyword` field, which can be referenced in a 
 
     >>> as1 = api.create(bika_analysisservices, "AnalysisService", title="Calcium")
     >>> as1.setKeyword("Ca")
+    >>> as1.reindexObject()
 
     >>> as2 = api.create(bika_analysisservices, "AnalysisService", title="Magnesium")
     >>> as2.setKeyword("Mg")
-
-Test fixture::
-
-    >>> as1.reindexObject()
     >>> as2.reindexObject()
 
-A `Calculation` is created in the `bika_setup.bika_calculations` folder::
+Create one `Calculation`::
 
     >>> calc = api.create(bika_calculations, "Calculation", title="Total Hardness")
 
@@ -115,3 +112,4 @@ A `Calculation` can therefore dynamically get a module and a member::
 
     >>> calc._getModuleMember('math', 'ceil')
     <built-in function ceil>
+
