@@ -21,6 +21,17 @@ Import it first::
     >>> from bika.lims import api
 
 
+Setup the test user
+-------------------
+
+We need certain permissions to create and access objects used in this test,
+so here we will assume the role of Lab Manager.
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+
+
 Getting the Portal
 ------------------
 
@@ -235,7 +246,7 @@ Getting the ID of a Content
 ---------------------------
 
 Getting the ID is a common task in Bika LIMS.
-This function takes care that catalog brains are not waked up for this task::
+This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_id(portal)
     'plone'
@@ -251,7 +262,7 @@ Getting the Title of a Content
 ------------------------------
 
 Getting the Title is a common task in Bika LIMS.
-This function takes care that catalog brains are not waked up for this task::
+This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_title(portal)
     u'Plone site'
@@ -267,7 +278,7 @@ Getting the Description of a Content
 ------------------------------------
 
 Getting the Description is a common task in Bika LIMS.
-This function takes care that catalog brains are not waked up for this task::
+This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_description(portal)
     ''
@@ -283,9 +294,9 @@ Getting the UID of a Content
 ----------------------------
 
 Getting the UID is a common task in Bika LIMS.
-This function takes care that catalog brains are not waked up for this task.
+This function takes care that catalog brains are not woken up for this task.
 
-The portal object actually has no UID. This funciton defines it therfore to be `0`::
+The portal object actually has no UID. This funciton defines it therefore to be `0`::
 
     >>> api.get_uid(portal)
     '0'
@@ -300,7 +311,7 @@ Getting the URL of a Content
 ----------------------------
 
 Getting the URL is a common task in Bika LIMS.
-This function takes care that catalog brains are not waked up for this task::
+This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_url(portal)
     'http://nohost/plone'
@@ -935,16 +946,33 @@ Getting Users by their Roles
 Roles in Bika LIMS are basically a name for one or more permissions. For
 example, a `LabManager` describes a role which is granted the most permissions.
 
+So first I'll add some users with some different roles:
+
+    >>> for user in [{'username': 'labmanager_1', 'roles': ['LabManager']},
+    ...              {'username': 'labmanager_2', 'roles': ['LabManager']},
+    ...              {'username': 'sampler_1', 'roles': ['Sampler']}]:
+    ...    member = portal.portal_registration.addMember(
+    ...        user['username'], user['username'],
+    ...        properties={'username': user['username'],
+    ...                    'email': user['username'] + "@example.com",
+    ...                    'fullname': user['username']})
+    ...    setRoles(portal, user['username'], user['roles'])
+    ...    # If user is a LabManager, add Owner local role on clients folder
+    ...    # TODO ask @ramonski, is this still required?
+    ...    if 'LabManager' in user['roles']:
+    ...        portal.clients.manage_setLocalRoles(user['username'], ['Owner'])
+
+
 To see which users are granted a certain role, you can use this function::
 
     >>> labmanagers = api.get_users_by_roles(["LabManager"])
     >>> sorted(labmanagers, key=methodcaller('getId'))
-    [<PloneUser 'test_labmanager'>, <PloneUser 'test_labmanager1'>, <PloneUser 'test-user'>]
+    [<PloneUser 'labmanager_1'>, <PloneUser 'labmanager_2'>]
 
 A single value can also be passed into this function::
 
-    >>> sorted(api.get_users_by_roles("LabManager"), key=methodcaller('getId'))
-    [<PloneUser 'test_labmanager'>, <PloneUser 'test_labmanager1'>, <PloneUser 'test-user'>]
+    >>> sorted(api.get_users_by_roles("Sampler"), key=methodcaller('getId'))
+    [<PloneUser 'sampler_1'>]
 
 
 Getting the Current User
@@ -983,12 +1011,13 @@ The key should change when the object get modified::
     >>> from zope.lifecycleevent import modified
     >>> client.setClientID("TESTCLIENT")
     >>> modified(client)
+    >>> portal.aq_parent._p_jar.sync()
     >>> key3 = api.get_cache_key(client)
     >>> key3 != key1
     True
 
 .. important:: Workflow changes do not change the modification date!
-               A custom event subscriber will update it therefore.
+A custom event subscriber will update it therefore.
 
 A workflow transition should also change the cache key::
 
@@ -1013,27 +1042,27 @@ the second argument a brain or object::
     ...     @cache(api.bika_cache_key_decorator)
     ...     def get_very_expensive_calculation(self, obj):
     ...         print "very expensive calculation"
-    ...         return api.get_id(obj)
-
-    >>> instance = BikaClass()
+    ...         return "calculation result"
 
 Calling the (expensive) method of the class does the calculation just once::
 
+    >>> instance = BikaClass()
     >>> instance.get_very_expensive_calculation(client)
     very expensive calculation
-    'client-1'
-
+    'calculation result'
     >>> instance.get_very_expensive_calculation(client)
-    'client-1'
+    'calculation result'
 
 The decorator can also handle brains::
 
+    >>> instance = BikaClass()
+    >>> portal_catalog = api.get_tool("portal_catalog")
+    >>> brain = portal_catalog(portal_type="Client")[0]
     >>> instance.get_very_expensive_calculation(brain)
     very expensive calculation
-    'client-1'
-
+    'calculation result'
     >>> instance.get_very_expensive_calculation(brain)
-    'client-1'
+    'calculation result'
 
 
 ID Normalizer
