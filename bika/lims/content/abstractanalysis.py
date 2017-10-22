@@ -49,15 +49,6 @@ AnalysisService = UIDReferenceField(
     'AnalysisService'
 )
 
-# Overrides the AbstractBaseAnalysis. Analyses have a versioned link to the
-# calculation as it was when created.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
-)
-
 # Attachments which are added manually in the UI, or automatically when
 # results are imported from a file supplied by an instrument.
 Attachment = UIDReferenceField(
@@ -142,8 +133,6 @@ schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
     Attachment,
-    # Calculation overrides AbstractBaseClass
-    Calculation,
     DateAnalysisPublished,
     DetectionLimitOperand,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
