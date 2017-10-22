@@ -12,7 +12,7 @@ from Testing import ZopeTestCase as ztc
 from bika.lims.tests.base import BikaFunctionalTestCase
 from pkg_resources import resource_listdir
 
-DOCTESTS = [f for f in resource_listdir("bika.lims", "tests", "doctests")
+DOCTESTS = [f for f in resource_listdir("bika.lims", "tests/doctests")
             if f.endswith(".rst")]
 
 flags = doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE | doctest.REPORT_NDIFF
