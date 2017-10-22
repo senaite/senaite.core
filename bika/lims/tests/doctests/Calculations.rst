@@ -36,6 +36,15 @@ Variables::
     >>> bika_calculations = bika_setup.bika_calculations
     >>> bika_analysisservices = bika_setup.bika_analysisservices
 
+Test user::
+
+We need certain permissions to create and access objects used in this test,
+so here we will assume the role of Lab Manager.
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+
 
 Calculation
 -----------
@@ -77,7 +86,7 @@ The `Calculation` depends now on the two Analysis Services::
 
 It is also possible to find out if an `AnalysisService` depends on the calculation::
 
-    >>> as1.set_Calculation(calc)
+    >>> as1.setCalculation(calc)
     >>> calc.getCalculationDependants()
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
 

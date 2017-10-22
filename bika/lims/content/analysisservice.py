@@ -416,6 +416,28 @@ class AnalysisService(AbstractBaseAnalysis):
 
         return renameAfterCreation(self)
 
+    def setCalculation(self, value):
+        """Maintain back-reference in the target calculation, to allow
+        the calculation to lookup services which refer to it using this field.
+        """
+        # TODO Refactor UIDReferencField to support BackReferences generally
+        # At that time, remove calculation.service_backreferences property
+        field = self.Schema().getField('Calculation')
+        service_uid = self.UID()
+
+        # If the Calculation field already has a value set,
+        # then remove this service from that calculation's backreferences.
+        prev_calc = field.get(self)
+        if prev_calc and service_uid in prev_calc.service_backreferences:
+            prev_calc.service_backreferences.remove(service_uid)
+
+        field.set(self, value)
+
+        # Now append this service to the new calculation's backreferences.
+        cur_calc = field.get(self)
+        if cur_calc:
+            cur_calc.service_backreferences.append(service_uid)
+
     @security.public
     def getCalculationTitle(self):
         """Used to populate catalog values
