@@ -30,6 +30,7 @@
     <exit-transition transition_id="prepublish" />
     <exit-transition transition_id="attach" />
     <exit-transition transition_id="retract" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -161,6 +162,7 @@
   <state state_id="published" title="Published" i18n:attributes="title">
     <exit-transition transition_id="republish" />
     <exit-transition transition_id="retract_ar" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
@@ -221,6 +223,7 @@
     <description>Sample yet to be taken into the lab for analysis</description>
     <exit-transition transition_id="receive" />
     <exit-transition transition_id="submit" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -317,6 +320,8 @@
     <description>Sample is 'in the lab'</description>
     <exit-transition transition_id="prepublish" />
     <exit-transition transition_id="submit" />
+    <exit-transition transition_id="sample_prep" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -409,6 +414,7 @@
     <description>Creating an AR</description>
     <exit-transition transition_id="sampling_workflow" />
     <exit-transition transition_id="no_sampling_workflow" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -482,10 +488,9 @@
 
   <state state_id="sampled" title="Sampled" i18n:attributes="title">
     <description>Sampling completed, Sampler, Date Sampled and Field analysis results captured</description>
-    <exit-transition transition_id="auto_preservation_required" />
-    <exit-transition transition_id="auto_no_preservation_required" />
     <exit-transition transition_id="to_be_preserved" />
     <exit-transition transition_id="sample_due" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -569,6 +574,7 @@
 
   <state state_id="scheduled_sampling" title="Scheduled sampling" i18n:attributes="title">
     <exit-transition transition_id="sample" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -657,6 +663,7 @@
   <state state_id="to_be_preserved" title="To be preserved" i18n:attributes="title">
     <description>Sample was identified as requiring preservation</description>
     <exit-transition transition_id="preserve" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -748,6 +755,7 @@
     <exit-transition transition_id="sample" />
     <exit-transition transition_id="submit" />
     <exit-transition transition_id="schedule_sampling" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -838,6 +846,7 @@
     <exit-transition transition_id="prepublish" />
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retract" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -922,6 +931,7 @@
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="publish" />
     <exit-transition transition_id="retract_ar" />
+    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Add Attachment" acquired="False">
@@ -988,6 +998,42 @@
     </permission-map>
   </state>
 
+  <state state_id="rejected" title="Rejected" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="BIKA: Add Analysis" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Add Attachment" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit AR" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit AR Contact" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Manage Invoices" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Publish" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Results not requested" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
   <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Add attachment</action>
     <guard>
@@ -995,19 +1041,8 @@
     </guard>
   </transition>
 
-  <transition transition_id="auto_no_preservation_required" title="No preservation required" new_state="sample_due" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
-    <guard>
-      <guard-expression>python:here.guard_auto_preservation_required() == False</guard-expression>
-    </guard>
-  </transition>
-
-  <transition transition_id="auto_preservation_required" title="Preservation required" new_state="to_be_preserved" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
-    <guard>
-      <guard-expression>python:here.guard_auto_preservation_required() == True</guard-expression>
-    </guard>
-  </transition>
-
   <transition transition_id="no_sampling_workflow" title="No sampling workflow" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">No sampling workflow</action>
     <guard>
       <guard-permission>BIKA: Add Analysis Request</guard-permission>
     </guard>
@@ -1032,7 +1067,7 @@
     <action url="" category="workflow" icon="">Publish</action>
     <guard>
       <guard-permission>BIKA: Publish</guard-permission>
-      <guard-expression>python:here.guard_cancelled_object()</guard-expression>
+      <guard-expression>python:here.guard_publish_transition()</guard-expression>
     </guard>
   </transition>
 
@@ -1076,18 +1111,19 @@
   </transition>
 
   <transition transition_id="sample_due" title="Sample due" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sample due</action>
     <guard>
     </guard>
   </transition>
 
-  <transition transition_id="sample_prep" title="Sample preparation" new_state="sample_prep" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="sample_prep" title="Sample preparation" new_state="sample_prep" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample Preparation</action>
     <guard>
       <guard-expression>python:here.guard_sample_prep_transition()</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="sample_prep_complete" title="Sample preparation complete" new_state="sample_received" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="sample_prep_complete" title="Sample preparation complete" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample Preparation Complete</action>
     <guard>
       <guard-expression>python:here.guard_sample_prep_complete_transition()</guard-expression>
@@ -1095,13 +1131,14 @@
   </transition>
 
   <transition transition_id="sampling_workflow" title="Sampling workflow" new_state="to_be_sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sampling workflow</action>
     <guard>
       <guard-permission>BIKA: Add Analysis Request</guard-permission>
     </guard>
   </transition>
 
   <transition transition_id="schedule_sampling" title="Schedule sampling" new_state="scheduled_sampling" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Schedule Sampling</action>
+    <action url="" category="workflow" icon="">Schedule sampling</action>
     <guard>
       <guard-permission>BIKA: Schedule Sampling</guard-permission>
       <guard-expression>python:here.guard_schedule_sampling_transition()</guard-expression>
@@ -1116,6 +1153,7 @@
   </transition>
 
   <transition transition_id="to_be_preserved" title="To be preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">To be preserved</action>
     <guard>
     </guard>
   </transition>
@@ -1124,6 +1162,13 @@
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
       <guard-expression>python:here.guard_verify_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reject</action>
+    <guard>
+      <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
     </guard>
   </transition>
 
