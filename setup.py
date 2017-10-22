@@ -65,6 +65,7 @@ setup(name='bika.lims',
       ],
       extras_require={
           'test': [
+              'unittest2',
               'plone.app.testing',
           ]
       },
