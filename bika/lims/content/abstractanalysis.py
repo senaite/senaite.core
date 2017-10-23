@@ -179,12 +179,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             self.setVerificators(username)
         else:
             self.setVerificators(verificators + "," + username)
+        self.reindexObject()
 
     @security.public
     def deleteLastVerificator(self):
         verificators = self.getVerificators().split(',')
         del verificators[-1]
         self.setVerificators(",".join(verificators))
+        self.reindexObject()
 
     @security.public
     def wasVerifiedByUser(self, username):
@@ -194,6 +196,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
+
+    @security.public
+    def setVerificator(self, value):
+        field = self.Schema().getField('Verificators')
+        field.set(self, value)
+        self.reindexObject()
 
     @deprecated('[1705] Use Title() instead.')
     @security.public

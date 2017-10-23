@@ -9,7 +9,7 @@
     i18n:domain="bika"
     tal:attributes="
         id form_id;
-        action python:view.bika_listing.getPOSTAction() if hasattr(view.bika_listing, 'view.bika_listing') else 'workflow_action';"
+        action python:view.bika_listing.getPOSTAction() if hasattr(view.bika_listing, 'getPOSTAction') else 'workflow_action';"
     tal:omit-tag="table_only"
     tal:define="
         form_id view/bika_listing/form_id;
