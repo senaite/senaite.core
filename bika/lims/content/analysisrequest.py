@@ -6,80 +6,44 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import sys
-import sys
 from AccessControl import ClassSecurityInfo
 from decimal import Decimal
 from operator import methodcaller
-
+from plone import api as ploneapi
 from DateTime import DateTime
-from zope.interface import implements
+# AT Fields and AT Widgets
+from Products.ATExtensions.field import RecordsField
 from Products.Archetypes.Widget import RichWidget
-from Products.Archetypes.utils import DisplayList
-from Products.CMFCore import permissions
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import Schema
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
-from plone import api
-from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import DisplayList
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.references import HoldingReference
-
-# AT Fields
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import FixedPointField
-from Products.ATExtensions.field import RecordsField
-
-# Bika Fields
-from bika.lims.browser.fields import ProxyField
-from bika.lims.browser.fields import DateTimeField
-from bika.lims.browser.fields import ARAnalysesField
-# AT Widgets
-from Products.Archetypes.Widget import RichWidget
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import TextAreaWidget
-
-# Bika Widgets
-from bika.lims.browser.widgets import DecimalWidget
-from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-
-# Bika Permissions
-from bika.lims.permissions import SampleSample
-from bika.lims.permissions import ScheduleSampling
-from bika.lims.permissions import EditARContact
-from bika.lims.permissions import ManageInvoices
-from bika.lims.permissions import Verify as VerifyPermission
-
-# Bika Workflow
-from bika.lims.workflow import skip
-from decimal import Decimal
-from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import getUsers, dicts_to_dict
-
-# Bika Utils
-from bika.lims.utils import getUsers
-from bika.lims.utils import dicts_to_dict
-from bika.lims.utils.analysisrequest import notify_rejection
+from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-# Bika Interfaces
-from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces import ISamplePrepWorkflow
+# Bika Fields
 from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
 from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.fields import ProxyField
+# Bika Widgets
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
 from bika.lims.browser.widgets import ReferenceWidget
@@ -90,14 +54,16 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+# Bika Interfaces
 from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
-from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
+# Bika Permissions
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
+# Bika Utils
 from bika.lims.utils import dicts_to_dict, getUsers
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
+# Bika Workflow
 from bika.lims.workflow import getReviewHistoryActionsList
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
@@ -105,12 +71,9 @@ from bika.lims.workflow import isActive
 from bika.lims.workflow.analysisrequest import events
 from bika.lims.workflow.analysisrequest import guards
 
+
 """The request for analysis by a client. It contains analysis instances.
 """
-
-
-
-             if an.getService().getDepartment()]
 
 # SCHEMA DEFINITION
 schema = BikaSchema.copy() + Schema((
@@ -1915,7 +1878,7 @@ class AnalysisRequest(BaseFolder):
         return self.getId()
 
     def Description(self):
-        """Returns searchable data as Description
+        """Returns searchable data as Description"""
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
@@ -2018,7 +1981,6 @@ class AnalysisRequest(BaseFolder):
             different statuses, like follows:
                 [verified, total, not_submitted, to_be_verified]
         """
-        total = 0
         an_nums = [0,0,0,0]
         for analysis in self.getAnalyses():
             review_state = analysis.review_state
@@ -3022,7 +2984,6 @@ class AnalysisRequest(BaseFolder):
     @security.public
     def guard_verify_transition(self):
         return guards.verify(self)
-        :returns: true or false
 
     @deprecated('[1705] Use guards.unassign from '
                 'bika.lims.workflow.analysisrequest')
