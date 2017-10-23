@@ -64,17 +64,29 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 'sortable': False,
 
             },
-            'Hidden': {'title': _('Hidden'),
-                       'sortable': False,
-                       'type': 'boolean', },
-            'Price': {'title': _('Price'),
-                      'sortable': False, },
-            'Partition': {'title': _('Partition'),
-                          'sortable': False,
-                          'type': 'choices'},
-            'min': {'title': _('Min')},
-            'max': {'title': _('Max')},
-            'error': {'title': _('Permitted Error %')},
+            'Hidden': {
+                'title': _('Hidden'),
+                'sortable': False,
+                'type': 'boolean',
+            },
+            'Price': {
+                'title': _('Price'),
+                'sortable': False,
+            },
+            'Partition': {
+                'title': _('Partition'),
+                'sortable': False,
+                'type': 'choices'
+            },
+            'min': {
+                'title': _('Min')
+            },
+            'max': {
+                'title': _('Max')
+            },
+            'error': {
+                'title': _('Permitted Error %')
+            },
         }
 
         columns = ['Title', 'Unit', 'Hidden', ]
@@ -91,12 +103,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
             columns.append('error')
 
         self.review_states = [
-            {'id': 'default',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': columns,
-             'transitions': [{'id': 'empty'}, ],  # none
-             'custom_actions': [{'id': 'save_analyses_button',
+            {
+                'id': 'default',
+                'title': _('All'),
+                'contentFilter': {},
+                'columns': columns,
+                'transitions': [{'id': 'empty'}, ],  # none
+                'custom_actions': [{'id': 'save_analyses_button',
                                  'title': _('Save')}, ],
              },
         ]
@@ -159,7 +172,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         return json.dumps(rr_dict_by_service_uid)
 
     def get_spec_from_ar(self, ar, keyword):
-        empty = {'min': '', 'max': '', 'error': '', 'keyword':keyword}
+        empty = {'min': '', 'max': '', 'error': '', 'keyword': keyword}
         spec = ar.getResultsRange()
         if spec:
             return dicts_to_dict(spec, 'keyword').get(keyword, empty)
