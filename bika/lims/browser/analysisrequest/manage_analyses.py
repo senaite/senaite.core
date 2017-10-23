@@ -4,13 +4,8 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import getSecurityManager
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, dicts_to_dict
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.permissions import *
-from bika.lims.utils import logged_in_client
 from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
 from DateTime import DateTime
@@ -19,6 +14,14 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
+from bika.lims import logger
+from bika.lims.utils import t
+from bika.lims.utils import dicts_to_dict
+from bika.lims.utils import logged_in_client
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.sample import SamplePartitionsView
 from zope.i18n.locales import locales
 from zope.interface import implements
 
@@ -115,24 +118,43 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         self.parts = p.contents_table()
 
+    def get_service_by_keyword(self, keyword, default=None):
+        """Get a service by keyword
+        """
+        logger.info("Get service by keyword={}".format(keyword))
+        bsc = api.get_tool("bika_setup_catalog")
+        results = bsc(portal_type='AnalysisService',
+                      getKeyword=keyword)
+        if not results:
+            logger.exception("No Analysis Service found for Keyword '{}'. "
+                             "Related: LIMS-1614".format(keyword))
+
+            return default
+        elif len(results) > 1:
+            logger.exception("More than one Analysis Service found for Keyword '{}'. "
+                             .format(keyword))
+
+            return default
+        else:
+            return api.get_object(results[0])
+
     def getResultsRange(self):
         """Return the AR Specs sorted by Service UID, so that the JS can
         work easily with the values.
         """
-        bsc = self.bika_setup_catalog
+
         rr_dict_by_service_uid = {}
         rr = self.context.getResultsRange()
         for r in rr:
-            keyword = r['keyword']
-            try:
-                service_uid = bsc(portal_type='AnalysisService',
-                                  getKeyword=keyword)[0].UID
-                rr_dict_by_service_uid[service_uid] = r
-            except IndexError:
-                from bika.lims import logger
-                error = "No Analysis Service found for Keyword '%s'. "\
-                        "Related: LIMS-1614"
-                logger.exception(error, keyword)
+            uid = r.get("uid", None)
+            if not uid:
+                # get the AS by keyword
+                keyword = r.get("keyword")
+                service = self.get_service_by_keyword(keyword, None)
+                if service is not None:
+                    uid = api.get_uid(service)
+            if uid:
+                rr_dict_by_service_uid[uid] = r
 
         return json.dumps(rr_dict_by_service_uid)
 
