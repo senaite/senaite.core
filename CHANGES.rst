@@ -4,7 +4,11 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
-**Added**
+**Merged PRs from upstream**
+# Solved WF Translation issues and fixed WF Action Buttons in Bika Listings (#1917)
+
+
+**Changed**
 
 Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 LIMS-1504: Calculation formula test widgets
