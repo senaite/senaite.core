@@ -36,6 +36,15 @@ Variables::
     >>> bika_calculations = bika_setup.bika_calculations
     >>> bika_analysisservices = bika_setup.bika_analysisservices
 
+Test user::
+
+We need certain permissions to create and access objects used in this test,
+so here we will assume the role of Lab Manager.
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+
 
 Calculation
 -----------
@@ -48,16 +57,13 @@ Each `AnalysisService` contains a `Keyword` field, which can be referenced in a 
 
     >>> as1 = api.create(bika_analysisservices, "AnalysisService", title="Calcium")
     >>> as1.setKeyword("Ca")
+    >>> as1.reindexObject()
 
     >>> as2 = api.create(bika_analysisservices, "AnalysisService", title="Magnesium")
     >>> as2.setKeyword("Mg")
-
-Test fixture::
-
-    >>> as1.reindexObject()
     >>> as2.reindexObject()
 
-A `Calculation` is created in the `bika_setup.bika_calculations` folder::
+Create one `Calculation`::
 
     >>> calc = api.create(bika_calculations, "Calculation", title="Total Hardness")
 
@@ -77,7 +83,7 @@ The `Calculation` depends now on the two Analysis Services::
 
 It is also possible to find out if an `AnalysisService` depends on the calculation::
 
-    >>> as1.set_Calculation(calc)
+    >>> as1.setCalculation(calc)
     >>> calc.getCalculationDependants()
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
 
@@ -106,3 +112,4 @@ A `Calculation` can therefore dynamically get a module and a member::
 
     >>> calc._getModuleMember('math', 'ceil')
     <built-in function ceil>
+
