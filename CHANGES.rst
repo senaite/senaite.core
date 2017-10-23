@@ -12,7 +12,7 @@ LIMS-1504: Calculation formula test widgets
 
 **Fixed**
 
-
+- #280 Integration of PR-2271.Setting 2 or more CCContacts in AR view produces a Traceback on Save
 **Security**
 
 
