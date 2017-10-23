@@ -5,7 +5,7 @@ Changelog
 ------------------
 
 **Merged PRs from upstream**
-# Solved WF Translation issues and fixed WF Action Buttons in Bika Listings (#1917)
+#284 Solved WF Translation issues and fixed WF Action Buttons in Bika Listings (#1917)
 
 
 **Changed**

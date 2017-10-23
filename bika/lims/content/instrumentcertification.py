@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
@@ -10,7 +12,9 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInstrumentCertification
 from plone.app.blob.field import FileField as BlobFileField
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -141,6 +145,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].widget.label=_("Certificate Code")
 
 class InstrumentCertification(BaseFolder):
+    implements(IInstrumentCertification)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
