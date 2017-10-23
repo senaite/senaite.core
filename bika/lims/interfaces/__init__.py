@@ -211,10 +211,6 @@ class IAttachmentTypes(Interface):
     ""
 
 
-class ICalculation(Interface):
-
-    ""
-
 
 class ICalculations(Interface):
 

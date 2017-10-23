@@ -333,45 +333,6 @@ Method = UIDReferenceField(
     )
 )
 
-# Calculation to be used. This field is used in Analysis Service Edit view,
-# use getCalculation() to retrieve the Calculation to be used in this
-# Analysis Service.
-# The default calculation is the one linked to the default method Behavior
-# controlled by js depending on UseDefaultCalculation:
-# - If UseDefaultCalculation is set to False, show this field
-# - If UseDefaultCalculation is set to True, show this field
-# See browser/js/bika.lims.analysisservice.edit.js
-Calculation = UIDReferenceField(
-    'Calculation',
-    schemata="Method",
-    required=0,
-    vocabulary='_getAvailableCalculationsDisplayList',
-    allowed_types=('Calculation',),
-    widget=UIDSelectionWidget(
-        format='select',
-        label=_("Calculation"),
-        description=_("Calculation to be assigned to this content."),
-        catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
-    )
-)
-
-# InterimFields are defined in Calculations, Services, and Analyses.
-# In Analysis Services, the default values are taken from Calculation.
-# In Analyses, the default values are taken from the Analysis Service.
-# When instrument results are imported, the values in analysis are overridden
-# before the calculation is performed.
-InterimFields = InterimFieldsField(
-    'InterimFields',
-    schemata='Method',
-    widget=RecordsWidget(
-        label=_("Calculation Interim Fields"),
-        description=_(
-            "Values can be entered here which will override the defaults "
-            "specified in the Calculation Interim Fields."),
-    )
-)
-
 # Maximum time (from sample reception) allowed for the analysis to be performed.
 # After this amount of time, a late alert is printed, and the analysis will be
 # flagged in turnaround time report.
@@ -711,8 +672,6 @@ schema = BikaSchema.copy() + Schema((
     InstrumentEntryOfResults,
     Instrument,
     Method,
-    Calculation,
-    InterimFields,
     MaxTimeAllowed,
     DuplicateVariation,
     Accredited,
@@ -974,22 +933,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         instrument = self.getInstrument()
         if instrument:
             return instrument.absolute_url_path()
-
-    @security.public
-    def getCalculationTitle(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.Title()
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
 
     @security.public
     def getCategoryTitle(self):

@@ -6,28 +6,27 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-
 from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _, logger
+from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DecimalWidget
+from bika.lims.browser.fields import HistoryAwareReferenceField, \
+    InterimFieldsField, UIDReferenceField
+from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import skip
+from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
-from bika.lims.content.reflexrule import doReflexRuleAction
 
 # The physical sample partition linked to the Analysis.
 SamplePartition = UIDReferenceField(
@@ -100,6 +99,30 @@ HiddenManually = BooleanField(
     default=False,
 )
 
+# Routine Analyses have a versioned link to the calculation at creation time.
+Calculation = HistoryAwareReferenceField(
+    'Calculation',
+    allowed_types=('Calculation',),
+    relationship='AnalysisCalculation',
+    referenceClass=HoldingReference
+)
+
+# InterimFields are defined in Calculations, Services, and Analyses.
+# In Analysis Services, the default values are taken from Calculation.
+# In Analyses, the default values are taken from the Analysis Service.
+# When instrument results are imported, the values in analysis are overridden
+# before the calculation is performed.
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Method',
+    widget=RecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Values can be entered here which will override the defaults "
+            "specified in the Calculation Interim Fields."),
+    )
+)
+
 schema = schema.copy() + Schema((
     IsReflexAnalysis,
     OriginalReflexedAnalysis,
@@ -110,6 +133,8 @@ schema = schema.copy() + Schema((
     SamplePartition,
     Uncertainty,
     HiddenManually,
+    Calculation,
+    InterimFields,
 ))
 
 
@@ -276,6 +301,22 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             starttime = part.getDateReceived()
             duetime = starttime + max_days if starttime else ''
             return duetime
+
+    @security.public
+    def getCalculationTitle(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.Title()
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
 
     @security.public
     @deprecated("[1709] Use getRequestID instead")

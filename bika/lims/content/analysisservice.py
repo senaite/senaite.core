@@ -8,16 +8,17 @@
 
 import transaction
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
+from Products.ATExtensions.ateapi import RecordsField, RecordsWidget
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import BooleanField, BooleanWidget, \
-    DisplayList, MultiSelectionWidget, Schema, SelectionWidget, registerType
+    DisplayList, MultiSelectionWidget, Schema, registerType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
@@ -335,6 +336,48 @@ Instruments = UIDReferenceField(
     )
 )
 
+# Calculation to be used. This field is used in Analysis Service Edit view.
+#
+# AnalysisService defines a setter to maintain back-references on the
+# calculation, so that calculations can easily lookup their dependants based
+# on this field's value.
+#
+#  The default calculation is the one linked to the default method Behavior
+# controlled by js depending on UseDefaultCalculation:
+# - If UseDefaultCalculation is set to False, show this field
+# - If UseDefaultCalculation is set to True, show this field
+#  See browser/js/bika.lims.analysisservice.edit.js
+Calculation = UIDReferenceField(
+    'Calculation',
+    schemata="Method",
+    required=0,
+    vocabulary='_getAvailableCalculationsDisplayList',
+    allowed_types=('Calculation',),
+    widget=UIDSelectionWidget(
+        format='select',
+        label=_("Calculation"),
+        description=_("Calculation to be assigned to this content."),
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+    )
+)
+
+# InterimFields are defined in Calculations, Services, and Analyses.
+# In Analysis Services, the default values are taken from Calculation.
+# In Analyses, the default values are taken from the Analysis Service.
+# When instrument results are imported, the values in analysis are overridden
+# before the calculation is performed.
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Method',
+    widget=RecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Values can be entered here which will override the defaults "
+            "specified in the Calculation Interim Fields."),
+    )
+)
+
 schema = schema.copy() + Schema((
     Separate,
     Preservation,
@@ -343,6 +386,8 @@ schema = schema.copy() + Schema((
     Methods,
     Instruments,
     UseDefaultCalculation,
+    Calculation,
+    InterimFields,
 ))
 
 # Re-order some fields from AbstractBaseAnalysis schema.
@@ -371,8 +416,45 @@ class AnalysisService(AbstractBaseAnalysis):
 
         return renameAfterCreation(self)
 
-    security.declarePublic('getContainers')
+    def setCalculation(self, value):
+        """Maintain back-reference in the target calculation, to allow
+        the calculation to lookup services which refer to it using this field.
+        """
+        # TODO Refactor UIDReferencField to support BackReferences generally
+        # At that time, remove calculation.service_backreferences property
+        field = self.Schema().getField('Calculation')
+        service_uid = self.UID()
 
+        # If the Calculation field already has a value set,
+        # then remove this service from that calculation's backreferences.
+        prev_calc = field.get(self)
+        if prev_calc and service_uid in prev_calc.service_backreferences:
+            prev_calc.service_backreferences.remove(service_uid)
+
+        field.set(self, value)
+
+        # Now append this service to the new calculation's backreferences.
+        cur_calc = field.get(self)
+        if cur_calc:
+            cur_calc.service_backreferences.append(service_uid)
+
+    @security.public
+    def getCalculationTitle(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.Title()
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
+
+    @security.public
     def getContainers(self, instance=None):
         # On first render, the containers must be filtered
         instance = instance or self
