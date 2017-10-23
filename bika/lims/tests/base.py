@@ -6,16 +6,18 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import os
+from re import match
 
 import transaction
 from plone.app.testing import DEFAULT_LANGUAGE
-from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import SITE_OWNER_NAME
+from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
 from plone.app.testing import login
 from plone.app.testing import logout
+from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
-from Testing.ZopeTestCase.functional import Functional
+
 from bika.lims import logger
 from bika.lims.exportimport.load_setup_data import LoadSetupData
 from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
@@ -68,3 +70,8 @@ class BikaFunctionalTestCase(unittest.TestCase):
         lsd()
         logger.info('Loading data finished...')
         logout()
+
+    def getAuthenticator(self):
+        tag = AuthenticatorView('context', 'request').authenticator()
+        pattern = '<input .*name="(\w+)".*value="(\w+)"'
+        return match(pattern, tag).groups()[1]
