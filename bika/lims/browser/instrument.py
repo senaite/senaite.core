@@ -3,36 +3,29 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
-from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
-from bika.lims.subscribers import doActionFor, skip
+import json
 from operator import itemgetter
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from plone.app.layout.viewlets import ViewletBase
-from zope.interface import implements
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.utils import to_utf8
-from bika.lims.permissions import *
-from operator import itemgetter
-from bika.lims.browser import BrowserView
-from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.multifile import MultifileView
-from bika.lims.browser.analyses import QCAnalysesView
+
+import plone
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.multifile import MultifileView
+from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.content.instrumentmaintenancetask import \
+    InstrumentMaintenanceTaskStatuses as mstatus
+from bika.lims.utils import t
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
+from plone.app.layout.viewlets import ViewletBase
 from zExceptions import Forbidden
-from operator import itemgetter
-from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
+from zope.interface import implements
 
-import plone
-import json
 
 class InstrumentMaintenanceView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -510,19 +503,18 @@ class InstrumentCertificationsView(BikaListingView):
         BikaListingView.__init__(self, context, request, **kwargs)
         self.form_id = "instrumentcertifications"
         self.columns = {
-            'Title': {'title': _('Cert. Num'),
-                      'index': 'sortable_title'},
-            'getAgency': {'title': _('Agency')},
-            'getDate': {'title': _('Date')},
-            'getValidFrom': {'title': _('Valid from')},
-            'getValidTo': {'title': _('Valid to')},
-            'getDocument': {'title': _('Document')},
+            'Title': {'title': _('Cert. Num'), 'index': 'sortable_title'},
+            'getAgency': {'title': _('Agency'), 'sortable': False},
+            'getDate': {'title': _('Date'), 'sortable': False},
+            'getValidFrom': {'title': _('Valid from'), 'sortable': False},
+            'getValidTo': {'title': _('Valid to'), 'sortable': False},
+            'getDocument': {'title': _('Document'), 'sortable': False},
         }
         self.review_states = [
             {'id':'default',
              'title':_('All'),
              'contentFilter':{},
-             'columns': [ 'Title',
+             'columns': ['Title',
                          'getAgency',
                          'getDate',
                          'getValidFrom',
@@ -539,10 +531,10 @@ class InstrumentCertificationsView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        valid  = [c.UID() for c in self.context.getValidCertifications()]
+        valid = [c.UID() for c in self.context.getValidCertifications()]
         latest = self.context.getLatestValidCertification()
         latest = latest.UID() if latest else ''
-        for x in range (len(items)):
+        for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
            # items[x]['getAgency'] = obj.getAgency()
