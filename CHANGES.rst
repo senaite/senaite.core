@@ -4,10 +4,10 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
-**Added**
-merging PR 2266 from bikalims/bika.lims
-    fixed Issue-2263: Bika Listing: Clicking on the sorting-header of Instrument Calibrations re-renders the entire page recursively
-    fixed Issue-2264: Bika Listing: Instrument Calibration Table only shows 30 Items w/o pagination controls
+**Merged PRs from upstream**
+#282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
+
+**Changed**
 
 Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 LIMS-1504: Calculation formula test widgets
