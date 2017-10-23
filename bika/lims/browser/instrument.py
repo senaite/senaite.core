@@ -501,7 +501,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         return json.dumps(self.anjson)
 
 
-
 class InstrumentCertificationsView(BikaListingView):
     """ View for the table of Certifications. Includes Internal and
         External Calibrations. Also a bar to filter the results
@@ -529,7 +528,7 @@ class InstrumentCertificationsView(BikaListingView):
                          'getValidFrom',
                          'getValidTo',
                          'getDocument'],
-             'transitions': [{}]},
+             'transitions': []},
         ]
         self.allow_edit = False
         self.show_select_column = False
