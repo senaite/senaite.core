@@ -501,40 +501,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         return json.dumps(self.anjson)
 
 
-class InstrumentCertificationsViewView(BrowserView):
-    """ View of Instrument Certifications
-        Shows the list of Instrument Certifications, either Internal and
-        External Calibrations.
-    """
-
-    implements(IViewView)
-    template = ViewPageTemplateFile("templates/instrument_certifications.pt")
-    _certificationsview = None
-
-    def __call__(self):
-        view = self.get_certifications_view()
-        view._process_request()
-        if self.request.get('table_only', '') == view.form_id:
-            return view.contents_table()
-        elif self.request.get('rows_only', '') == view.form_id:
-            return view.contents_table()
-        else:
-            return self.template()
-
-    def get_certifications_table(self):
-        """ Returns the table of Certifications
-        """
-        return self.get_certifications_view().contents_table()
-
-    def get_certifications_view(self):
-        """ Returns the Certifications Table view
-        """
-        if not self._certificationsview:
-            self._certificationsview = InstrumentCertificationsView(
-                                        self.context,
-                                        self.request)
-        return self._certificationsview
-
 
 class InstrumentCertificationsView(BikaListingView):
     """ View for the table of Certifications. Includes Internal and

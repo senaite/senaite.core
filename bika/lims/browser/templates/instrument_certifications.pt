@@ -48,11 +48,10 @@
     </metal:content-description>
 
     <metal:content-core fill-slot="content-core">
-    <!-- Certifications table -->
-    <tal:certificatestable>
-    <tal:parts replace="structure view/get_certifications_table"/>
-    </tal:certificatestable>
-
+        <!-- Certifications table -->
+        <tal:certificatestable>
+            <tal:parts replace="structure view/contents_table"/>
+        </tal:certificatestable>
     </metal:content-core>
 </body>
 </html>
