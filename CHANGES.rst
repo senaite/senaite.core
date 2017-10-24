@@ -10,6 +10,8 @@ Issue-1999: Allow external Python library functions to be used in Calculation Fo
 LIMS-1504: Calculation formula test widgets
 #2154: Feature/new ar add form
 
+- #291 Integration of PR-1972. Landscape Layout for Reports
+
 **Fixed**
 
 - #280 Integration of PR-2271.Setting 2 or more CCContacts in AR view produces a Traceback on Save
