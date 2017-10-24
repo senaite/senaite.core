@@ -156,20 +156,20 @@ class AnalysisRequestAnalysesView(BikaListingView):
         """Return the AR Specs sorted by Service UID, so that the JS can
         work easily with the values.
         """
-
+        bsc = self.bika_setup_catalog
         rr_dict_by_service_uid = {}
         rr = self.context.getResultsRange()
         for r in rr:
-            uid = r.get("uid", None)
-            if not uid:
-                # get the AS by keyword
-                keyword = r.get("keyword")
-                service = self.get_service_by_keyword(keyword, None)
-                if service is not None:
-                    uid = api.get_uid(service)
-            if uid:
-                rr_dict_by_service_uid[uid] = r
-
+            keyword = r['keyword']
+            try:
+                service_uid = bsc(portal_type='AnalysisService',
+                                  getKeyword=keyword)[0].UID
+                rr_dict_by_service_uid[service_uid] = r
+            except IndexError:
+                from bika.lims import logger
+                error = "No Analysis Service found for Keyword '%s'. " \
+                        "Related: LIMS-1614"
+                logger.exception(error, keyword)
         return json.dumps(rr_dict_by_service_uid)
 
     def get_spec_from_ar(self, ar, keyword):
