@@ -1704,7 +1704,6 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-            description=_("The urgency of this request"),
 
     # For comments or results interpretation
     # Old one, to be removed because of the incorporation of
