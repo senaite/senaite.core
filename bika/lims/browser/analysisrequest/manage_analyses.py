@@ -58,7 +58,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Service'),
                       'index': 'title',
-                      'sortable': False, },
+                      'sortable': False,
+            },
             'Unit': {
                 'title': _('Unit'),
                 'sortable': False,
@@ -110,7 +111,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 'columns': columns,
                 'transitions': [{'id': 'empty'}, ],  # none
                 'custom_actions': [{'id': 'save_analyses_button',
-                                 'title': _('Save')}, ],
+                                    'title': _('Save')}, ],
              },
         ]
 
@@ -275,29 +276,29 @@ class AnalysisRequestAnalysesView(BikaListingView):
             after_icons = ''
             if obj.getAccredited():
                 after_icons += "<img\
-                        src='%s/++resource++bika.lims.images/accredited.png'\
-                        title='%s'>" % (
+                src='%s/++resource++bika.lims.images/accredited.png'\
+                title='%s'>" % (
                     self.portal_url,
                     t(_("Accredited"))
                 )
             if obj.getReportDryMatter():
                 after_icons += "<img\
-                        src='%s/++resource++bika.lims.images/dry.png'\
-                        title='%s'>" % (
+                src='%s/++resource++bika.lims.images/dry.png'\
+                title='%s'>" % (
                     self.portal_url,
                     t(_("Can be reported as dry matter"))
                 )
             if obj.getAttachmentOption() == 'r':
                 after_icons += "<img\
-                        src='%s/++resource++bika.lims.images/attach_reqd.png'\
-                        title='%s'>" % (
+                src='%s/++resource++bika.lims.images/attach_reqd.png'\
+                title='%s'>" % (
                     self.portal_url,
                     t(_("Attachment required"))
                 )
             if obj.getAttachmentOption() == 'n':
                 after_icons += "<img\
-                        src='%s/++resource++bika.lims.images/attach_no.png'\
-                        title='%s'>" % (
+                src='%s/++resource++bika.lims.images/attach_no.png'\
+                title='%s'>" % (
                     self.portal_url,
                     t(_('Attachment not permitted'))
                 )
