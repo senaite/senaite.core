@@ -72,6 +72,9 @@ class AnalysisServiceCopy(BrowserView):
                     continue
                 value = field.get(src_service)
                 if value:
+                    # https://github.com/bikalabs/bika.lims/issues/2015
+                    if fieldname in ["UpperDetectionLimit", "LowerDetectionLimit"]:
+                        value = str(value)
                     mutator_name = dst_service.getField(fieldname).mutator
                     mutator = getattr(dst_service, mutator_name)
                     mutator(value)
