@@ -7,7 +7,6 @@ import re
 import string
 import types
 
-from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.validation import validation
@@ -93,7 +92,7 @@ class UniqueFieldValidator:
         if value == instance.get(fieldname):
             return True
 
-        for item in aq_parent(instance).objectValues():
+        for item in instance.aq_parent.objectValues():
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
                             fieldname in item.Schema() and \
                             str(item.Schema()[fieldname].get(item)) == str(
