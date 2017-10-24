@@ -261,7 +261,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 part = part and part or obj
                 item['Partition'] = part.Title()
                 spec = self.get_spec_from_ar(self.context,
-                                             analysis.getService().getKeyword())
+                                             analysis.getKeyword())
                 item["min"] = spec.get("min", '')
                 item["max"] = spec.get("max", '')
                 item["error"] = spec.get("error", '')
