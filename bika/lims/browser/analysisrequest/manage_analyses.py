@@ -246,7 +246,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['before']['Price'] = symbol
             item['Price'] = obj.getPrice()
             item['class']['Price'] = 'nowrap'
-            item['Priority'] = ''
 
             if item['selected']:
                 item['allow_edit'] = ['Partition', 'min', 'max', 'error']
@@ -266,15 +265,12 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 item["min"] = spec.get("min", '')
                 item["max"] = spec.get("max", '')
                 item["error"] = spec.get("error", '')
-                # Add priority premium
                 item['Price'] = analysis.getPrice()
-                item['Priority'] = analysis.getPriority()
             else:
                 item['Partition'] = ''
                 item["min"] = ''
                 item["max"] = ''
                 item["error"] = ''
-                item["Priority"] = ''
 
             after_icons = ''
             if obj.getAccredited():
