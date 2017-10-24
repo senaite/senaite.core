@@ -15,6 +15,7 @@ from Products.validation.interfaces.IValidator import IValidator
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8
 from zope.interface import implements
+from bika.lims import api
 
 
 class IdentifierTypeAttributesValidator:
@@ -84,20 +85,57 @@ class UniqueFieldValidator:
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
+        field = kwargs['field']
+        fieldname = field.getName()
         # request = kwargs.get('REQUEST', {})
         # form = request.get('form', {})
-
         translate = getToolByName(instance, 'translation_service').translate
 
-        if value == instance.get(fieldname):
+        # return directly if nothing changed
+        if value == field.get(instance):
             return True
 
-        for item in aq_parent(instance).objectValues():
+        # We want to use the catalog to speed things up, as using `objectValues`
+        # is very expensive if the parent object contains many items
+        parent_objects = []
+
+        # 1. Get the right catalog for this object
+        catalogs = api.get_catalogs_for(instance)
+        catalog = catalogs[0]
+
+        # 2. Check if the field accessor is indexed
+        field_index = None
+        accessor = field.getAccessor(instance)
+        if accessor:
+            field_index = accessor.__name__
+
+        # 3. Check if the field index is in the indexes
+        # Field is indexed, use the catalog instead of objectValues
+        parent_path = api.get_parent_path(instance)
+        portal_type = instance.portal_type
+        catalog_query = {"portal_type": portal_type,
+                         "path": {"query": parent_path, "depth": 1}}
+
+        # We try here to avoid waking up all the objects, because this can be
+        # likely very expensive if the parent object contains many objects
+        if fieldname in catalog.indexes():
+            # We use the fieldname as index to reduce the results list
+            catalog_query[fieldname] = value
+            parent_objects = map(api.get_object, catalog(catalog_query))
+        elif field_index and field_index in catalog.indexes():
+            # We use the field index to reduce the results list
+            catalog_query[field_index] = value
+            parent_objects = map(api.get_object, catalog(catalog_query))
+        else:
+            # fall back to the objectValues :(
+            parent_object = api.get_parent(instance)
+            parent_objects = parent_object.objectValues()
+
+        for item in parent_objects:
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
-                            fieldname in item.Schema() and \
-                            str(item.Schema()[fieldname].get(item)) == str(
-                        value):  # We have to compare them as strings because
+               fieldname in item.Schema() and \
+               str(item.Schema()[fieldname].get(item)) == str(value):
+                # We have to compare them as strings because
                 # even if a number (as an  id) is saved inside
                 # a string widget and string field, it will be
                 # returned as an int. I don't know if it is

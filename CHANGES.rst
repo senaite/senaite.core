@@ -17,8 +17,11 @@ LIMS-1504: Calculation formula test widgets
 
 **Fixed**
 
-- #280 Integration of PR-2271.Setting 2 or more CCContacts in AR view produces a Traceback on Save
+- #282 Integration of PR-2252. Traceback if the title contains braces on content creation
+- #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
 - #281 Integration of PR-2269. Show the Unit in Manage Analyses View
+
+
 **Security**
 
 
