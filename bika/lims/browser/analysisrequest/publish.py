@@ -261,6 +261,11 @@ class AnalysisRequestPublishView(BrowserView):
         """
         return self.request.form.get('hvisible', '0').lower() in ['true', '1']
 
+    def isLandscape(self):
+        """ Returns if the layout is landscape
+        """
+        return self.request.form.get('landscape', '0').lower() in ['true', '1']
+
     def localise_images(self, htmlreport):
         """WeasyPrint will attempt to retrieve attachments directly from the URL
         referenced in the HTML report, which may refer back to a single-threaded

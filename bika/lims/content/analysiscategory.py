@@ -5,29 +5,18 @@
 
 """Analysis Category - the category of the analysis service
 """
+
+import transaction
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisCategory
-from plone.indexer import indexer
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
-import sys
-import transaction
-
-
-@indexer(IAnalysisCategory)
-def sortable_title_with_sort_key(instance):
-    sort_key = instance.getSortKey()
-    if sort_key:
-        return "{:010.3f}{}".format(sort_key, instance.Title())
-    return instance.Title()
-
 
 schema = BikaSchema.copy() + Schema((
     TextField('Comments',
@@ -41,7 +30,6 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField('Department',
         required=1,
         vocabulary='getDepartments',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Department',),
         relationship='AnalysisCategoryDepartment',
         referenceClass=HoldingReference,
