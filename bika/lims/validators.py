@@ -7,7 +7,6 @@ import re
 import string
 import types
 
-from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.validation import validation
