@@ -21,14 +21,6 @@ import sys
 import transaction
 
 
-@indexer(IAnalysisCategory)
-def sortable_title_with_sort_key(instance):
-    sort_key = instance.getSortKey()
-    if sort_key:
-        return "{:010.3f}{}".format(sort_key, instance.Title())
-    return instance.Title()
-
-
 schema = BikaSchema.copy() + Schema((
     TextField('Comments',
         default_output_type = 'text/plain',

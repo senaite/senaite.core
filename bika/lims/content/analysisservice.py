@@ -177,14 +177,6 @@ class PartitionSetupField(RecordsField):
 registerField(PartitionSetupField, title="", description="")
 
 
-@indexer(IAnalysisService)
-def sortable_title_with_sort_key(instance):
-    sort_key = instance.getSortKey()
-    if sort_key:
-        return "{:010.3f}{}".format(sort_key, instance.Title())
-    return instance.Title()
-
-
 # If this flag is true, then analyses created from this service will be linked
 # to their own Sample Partition, and no other analyses will be linked to that
 # partition.
