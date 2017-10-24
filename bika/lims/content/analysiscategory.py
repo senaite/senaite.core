@@ -24,7 +24,7 @@ import transaction
 @indexer(IAnalysisCategory)
 def sortable_title_with_sort_key(instance):
     sort_key = instance.getSortKey()
-    if sort_key:
+    if sort_key is not None:
         return "{:010.3f}{}".format(sort_key, instance.Title())
     return instance.Title()
 
