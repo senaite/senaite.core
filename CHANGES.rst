@@ -4,16 +4,26 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
-**Added**
+**Merged PRs from upstream**
+#282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
+
+**Changed**
 
 Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 LIMS-1504: Calculation formula test widgets
 #2154: Feature/new ar add form
 
+- #291 Integration of PR-1972. Landscape Layout for Reports
+
 **Fixed**
 
 - #297 Integration of PR-2102.Inline rendered attachments are not displayed in rendered PDF
-- #280 Integration of PR-2271.Setting 2 or more CCContacts in AR view produces a Traceback on Save
+- #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
+- #282 Integration of PR-2252. Traceback if the title contains braces on content creation
+- #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
+- #281 Integration of PR-2269. Show the Unit in Manage Analyses View
+
+
 **Security**
 
 
