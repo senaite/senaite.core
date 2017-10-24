@@ -26,13 +26,14 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import get_object_by_uid
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ICalculation
+from bika.lims.interfaces.calculation import ICalculation
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -235,9 +236,17 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         return deps
 
     def getCalculationDependants(self):
-        """Return a flat list of services who's calculations depend on this."""
+        """Return a flat list of services who depend on this calculation.
+        
+        This refers only to services who's Calculation UIDReferenceField
+        have the value set to point to this calculation.
+        
+        It has nothing to do with the services referenced in the 
+        calculation's Formula.
+        """
         deps = []
-        for service in self.getBackReferences('AnalysisServiceCalculation'):
+        for service_uid in self.service_backreferences:
+            service = get_object_by_uid(service_uid)
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
                 calc.getCalculationDependants(deps)
@@ -341,6 +350,20 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
         members = dict(inspect.getmembers(mod))
         return members.get(member)
+
+    @property
+    def service_backreferences(self):
+        # TODO Refactor UIDReferencField to support BackReferences generally
+        if not hasattr(self, '_service_backreferences'):
+            self._service_backreferences = []
+        return self._service_backreferences
+
+    @service_backreferences.setter
+    def service_backreferences(self, value):
+        # TODO Refactor UIDReferencField to support BackReferences generally
+        if not isinstance(value, (list, tuple)):
+            raise ValueError("service_backreferences must be a list or tuple")
+        self._service_backreferences = value
 
     def workflow_script_activate(self):
         wf = getToolByName(self, 'portal_workflow')
