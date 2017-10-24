@@ -4,7 +4,10 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
-**Added**
+**Merged PRs from upstream**
+#282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
+
+**Changed**
 
 Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 LIMS-1504: Calculation formula test widgets
