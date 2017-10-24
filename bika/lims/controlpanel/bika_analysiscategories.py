@@ -39,9 +39,8 @@ class AnalysisCategoriesView(BikaSetupItemsView):
             },
             'SortKey': {
                 'title': _('Sort Key'),
-                'index': 'getSortKey',
                 'attr': 'getSortKey',
-                'toggle': False
+                'sortable': False
             },
         }
         for rs in self.review_states:

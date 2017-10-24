@@ -25,7 +25,6 @@ from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IAnalysisService, IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
-from plone.indexer import indexer
 from zope.interface import implements
 
 
