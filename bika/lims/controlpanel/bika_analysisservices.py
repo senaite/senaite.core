@@ -164,7 +164,7 @@ class AnalysisServicesView(BikaListingView):
         self.columns = {
             'Title': {
                 'title': _('Service'),
-                'index': 'title',
+                'index': 'sortable_title',
                 'replace_url': 'absolute_url',
             },
             'Keyword': {
@@ -220,8 +220,8 @@ class AnalysisServicesView(BikaListingView):
             },
             'SortKey': {
                 'title': _('Sort Key'),
-                'index': 'sortKey',
                 'attr': 'getSortKey',
+                'sortable': False,
                 'toggle': False
             },
         }
@@ -267,6 +267,7 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
+                         'SortKey',
                          ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
@@ -288,6 +289,7 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
+                         'SortKey',
                          ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
@@ -328,7 +330,7 @@ class AnalysisServicesView(BikaListingView):
 
 
     def folderitem(self, obj, item, index):
-    	if 'obj'  in item:
+        if 'obj'  in item:
             obj = item['obj']
             # Although these should be automatically inserted when bika_listing
             # searches the schema for fields that match columns, it is still
@@ -395,7 +397,7 @@ class AnalysisServicesView(BikaListingView):
             item['after']['Title'] = after_icons
         return item
 
-    def folderitems(self):
+    def folderitems(self, full_objects=False, classic=True):
 
         items = super(AnalysisServicesView, self).folderitems()
         if self.do_cats:
