@@ -95,8 +95,8 @@ class ContactLoginDetailsView(BrowserView):
         """Search Plone users which are not linked to a contact or lab contact
         """
         acl_users = api.portal.get_tool("acl_users")
-        # expected groups for client contacts
         users = acl_users.searchUsers()
+        # expected groups for client contacts
         client_contact_groups = {'AuthenticatedUsers', 'Clients'}
         out = []
         for user in users:
