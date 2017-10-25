@@ -200,7 +200,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowNewReleasesInfo',
-        schemata="Security",
+        schemata="Notifications",
         default=True,
         widget=BooleanWidget(
             label=_("Display an alert on new releases of Bika LIMS"),
@@ -368,7 +368,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'SamplingWorkflowEnabled',
-        schemata="Analyses",
+        schemata="Sampling and COC",
         default=False,
         widget=BooleanWidget(
             label=_("Enable the Sampling workflow"),
@@ -377,7 +377,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ScheduleSamplingEnabled',
-        schemata="Analyses",
+        schemata="Sampling and COC",
         default=False,
         widget=BooleanWidget(
             label=_("Enable the Schedule a Sampling functionality"),
@@ -389,7 +389,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowPartitions',
-        schemata="Analyses",
+        schemata="Sampling and COC",
         default=True,
         widget=BooleanWidget(
             label=_("Display individual sample partitions "),
@@ -556,7 +556,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     DurationField(
         'DefaultSampleLifetime',
-        schemata="Analyses",
+        schemata="Sampling and COC",
         required=1,
         default={"days": 30, "hours": 0, "minutes": 0},
         widget=DurationWidget(
@@ -616,7 +616,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'WorksheetLayout',
-        schemata="Analyses",
+        schemata="Appearance",
         default='1',
         vocabulary=WORKSHEET_LAYOUT_OPTIONS,
         widget=SelectionWidget(
@@ -632,7 +632,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'DashboardByDefault',
-        schemata="Analyses",
+        schemata="Appearance",
         default=True,
         widget=BooleanWidget(
             label=_("Use Dashboard as default front page"),
@@ -641,7 +641,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     ReferenceField(
         'LandingPage',
-        schemata="Analyses",
+        schemata="Appearance",
         multiValued=0,
         allowed_types=('Document', ),
         relationship='SetupLandingPage',
@@ -660,7 +660,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'AutoPrintStickers',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary=STICKER_AUTO_OPTIONS,
         widget=SelectionWidget(
             format='select',
@@ -673,7 +673,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'AutoStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         widget=SelectionWidget(
             format='select',
@@ -683,7 +683,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'SmallStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x48mm.pt",
         widget=SelectionWidget(
@@ -694,7 +694,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'LargeStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x72mm.pt",
         widget=SelectionWidget(
@@ -826,7 +826,7 @@ Configuration Settings:
     ),
     RecordsField(
         'RejectionReasons',
-        schemata="Analyses",
+        schemata="Sampling and COC",
         widget=RejectionSetupWidget(
             label=_("Enable the rejection workflow"),
             description=_("Select this to activate the rejection workflow "
@@ -837,7 +837,7 @@ Configuration Settings:
     ),
     BooleanField(
         'NotifyOnRejection',
-        schemata="Analyses",
+        schemata="Notifications",
         default=False,
         widget=BooleanWidget(
             label=_("Email notification on rejection"),
