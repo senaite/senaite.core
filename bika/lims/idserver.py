@@ -174,3 +174,18 @@ def renameAfterCreation(obj):
         new_id = generateUniqueId(obj)
     obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
     return new_id
+
+
+class AutoGenerateID(object):
+    implements(INameChooser)
+
+    def __init__(self, context):
+        self.context = context
+
+    def chooseName(self, name, object):
+        bika_id = getattr(object, "_bika_id", None)
+        if bika_id is None:
+            new_id = generateUniqueId(object)
+            object._bika_id = new_id
+            bika_id = new_id
+        return bika_id
