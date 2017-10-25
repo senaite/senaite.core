@@ -5,23 +5,25 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import os
+import glob
+import traceback
+
 from DateTime import DateTime
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
 
-from bika.lims import bikaMessageFactory as _, t
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.interfaces import IResultOutOfRange
-from bika.lims.utils import to_utf8, createPdf, formatDecimalMark, format_supsub
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import format_supsub
+from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import format_uncertainty
-
-import glob, os, sys, traceback
-import App
-import Globals
 
 
 class PrintView(BrowserView):
@@ -40,11 +42,9 @@ class PrintView(BrowserView):
     _current_ws_index = 0
     _worksheets = []
 
-
     def __init__(self, context, request):
         super(PrintView, self).__init__(context, request)
         self._worksheets = [self.context]
-
 
     def __call__(self):
         """ Entry point of PrintView.
@@ -61,8 +61,8 @@ class PrintView(BrowserView):
         if self.context.portal_type == 'Worksheet':
             self._worksheets = [self.context]
 
-        elif self.context.portal_type == 'WorksheetFolder' \
-            and self.request.get('items', ''):
+        elif self.context.portal_type == 'WorksheetFolder' and \
+                self.request.get('items', ''):
             uids = self.request.get('items').split(',')
             uc = getToolByName(self.context, 'uid_catalog')
             self._worksheets = [obj.getObject() for obj in uc(UID=uids)]
@@ -70,16 +70,15 @@ class PrintView(BrowserView):
         else:
             # Warn and redirect to referer
             logger.warning('PrintView: type not allowed: %s' %
-                            self.context.portal_type)
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
+                           self.context.portal_type)
+            self.destination_url = self.request.get_header(
+                "referer", self.context.absolute_url())
 
         # Generate PDF?
         if self.request.form.get('pdf', '0') == '1':
             return self._flush_pdf()
         else:
             return self.template()
-
 
     def getWSTemplates(self):
         """ Returns a DisplayList with the available templates found in
@@ -101,7 +100,6 @@ class PrintView(BrowserView):
                     'title': '{0} ({1})'.format(template[:-3], prefix),
                 })
         return out
-
 
     def renderWSTemplate(self):
         """ Returns the current worksheet rendered with the template
@@ -125,7 +123,6 @@ class PrintView(BrowserView):
             self._current_ws_index += 1
         return reptemplate
 
-
     def getCSS(self):
         """ Returns the css style to be used for the current template.
             If the selected template is 'default.pt', this method will
@@ -148,18 +145,15 @@ class PrintView(BrowserView):
                 content = content_file.read()
         return content
 
-
     def getNumColumns(self):
         """ Returns the number of columns to display
         """
         return int(self.request.get('numcols', self._DEFAULT_NUMCOLS))
 
-
     def getWorksheets(self):
         """ Returns the list of worksheets to be printed
         """
-        return self._worksheets;
-
+        return self._worksheets
 
     def getWorksheet(self):
         """ Returns the current worksheet from the list. Returns None when
@@ -170,7 +164,6 @@ class PrintView(BrowserView):
             ws = self._ws_data(self._worksheets[self._current_ws_index])
         return ws
 
-
     def splitList(self, elements, chunksnum):
         """ Splits a list to a n lists with chunksnum number of elements
             each one.
@@ -179,12 +172,11 @@ class PrintView(BrowserView):
             [[3,4,5,6],[7,8,9]]
         """
         if len(elements) < chunksnum:
-            return [elements];
-        groups=zip(*[elements[i::chunksnum] for i in range(chunksnum)])
-        if len(groups)*chunksnum < len(elements):
-            groups.extend([elements[-(len(elements)-len(groups)*chunksnum):]])
+            return [elements]
+        groups = zip(*[elements[i::chunksnum] for i in range(chunksnum)])
+        if len(groups) * chunksnum < len(elements):
+            groups.extend([elements[-(len(elements) - len(groups) * chunksnum):]])
         return groups
-
 
     def _lab_data(self):
         """ Returns a dictionary that represents the lab object
@@ -194,8 +186,8 @@ class PrintView(BrowserView):
         portal = self.context.portal_url.getPortalObject()
         lab = self.context.bika_setup.laboratory
         lab_address = lab.getPostalAddress() \
-                        or lab.getBillingAddress() \
-                        or lab.getPhysicalAddress()
+            or lab.getBillingAddress() \
+            or lab.getPhysicalAddress()
         if lab_address:
             _keys = ['address', 'city', 'state', 'zip', 'country']
             _list = ["<div>%s</div>" % lab_address.get(v) for v in _keys
@@ -213,7 +205,6 @@ class PrintView(BrowserView):
                 'accreditation_body': to_utf8(lab.getAccreditationBody()),
                 'accreditation_logo': lab.getAccreditationBodyLogo(),
                 'logo': "%s/logo_print.png" % portal.absolute_url()}
-
 
     def _ws_data(self, ws):
         """ Creates an ws dict, accessible from the view and from each
@@ -246,7 +237,6 @@ class PrintView(BrowserView):
         data['laboratory'] = self._lab_data()
         return data
 
-
     def _createdby_data(self, ws):
         """ Returns a dict that represents the user who created the ws
             Keys: username, fullmame, email
@@ -261,11 +251,10 @@ class PrintView(BrowserView):
             worksheet.
             Keys: username, fullname, email
         """
-        username = ws.getAnalyst();
+        username = ws.getAnalyst()
         return {'username': username,
                 'fullname': to_utf8(self.user_fullname(username)),
                 'email': to_utf8(self.user_email(username))}
-
 
     def _printedby_data(self, ws):
         """ Returns a dict that represents the user who prints the ws
@@ -294,13 +283,10 @@ class PrintView(BrowserView):
         """
         ans = ws.getAnalyses()
         layout = ws.getLayout()
-        an_count = len(ans)
         pos_count = 0
         prev_pos = 0
-        requestids = []
         ars = {}
-        samples = {}
-        clients = {}
+
         for an in ans:
             # Build the analysis-specific dict
             if an.portal_type == "DuplicateAnalysis":
@@ -313,8 +299,9 @@ class PrintView(BrowserView):
                 andict = self._analysis_data(an)
 
             # Analysis position
-            pos = [slot['position'] for slot in layout \
-                if slot['analysis_uid'] == an.UID()][0]
+            pos = [slot['position'] for slot in layout
+                   if slot['analysis_uid'] == an.UID()][0]
+
             # compensate for possible bad data (dbw#104)
             if type(pos) in (list, tuple) and pos[0] == 'new':
                 pos = prev_pos
@@ -351,7 +338,7 @@ class PrintView(BrowserView):
             else:
                 ar = ars[reqid]
                 if (andict['tmp_position'] < ar['tmp_position']):
-                    ar['tmp_position'] = andict['tmp_position'];
+                    ar['tmp_position'] = andict['tmp_position']
                     ar['position'] = andict['position']
 
             # Sort analyses by position
@@ -361,7 +348,7 @@ class PrintView(BrowserView):
             ar['analyses'] = ans
             ars[reqid] = ar
 
-        ars = [ar for ar in ars.itervalues()]
+        ars = [a for a in ars.itervalues()]
 
         # Sort analysis requests by position
         ars.sort(lambda x, y: cmp(x.get('tmp_position'), y.get('tmp_position')))
@@ -393,16 +380,15 @@ class PrintView(BrowserView):
                   'resultdm': to_utf8(analysis.getResultDM()),
                   'outofrange': False,
                   'type': analysis.portal_type,
-                  'reftype': analysis.getReferenceType() \
-                            if hasattr(analysis, 'getReferenceType')
-                            else None,
+                  'reftype': analysis.getReferenceType() if hasattr(
+                      analysis, 'getReferenceType') else None,
                   'worksheet': None,
                   'specs': {},
                   'formatted_specs': ''}
 
         andict['refsample'] = analysis.getSample().id \
-                            if analysis.portal_type == 'Analysis' \
-                            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
+            if analysis.portal_type == 'Analysis' \
+            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
 
         # Which analysis specs must be used?
         # Try first with those defined at AR Publish Specs level
@@ -435,7 +421,6 @@ class PrintView(BrowserView):
         # Out of range?
         if specs:
             adapters = getAdapters((analysis, ), IResultOutOfRange)
-            bsc = getToolByName(self.context, "bika_setup_catalog")
             for name, adapter in adapters:
                 ret = adapter(specification=specs)
                 if ret and ret['out_of_range']:
@@ -462,8 +447,8 @@ class PrintView(BrowserView):
                     }
 
             if sample.portal_type == "ReferenceSample":
-                data['sample_type'] = None;
-                data['sample_point'] = None;
+                data['sample_type'] = None
+                data['sample_point'] = None
             else:
                 data['sample_type'] = self._sample_type(sample)
                 data['sample_point'] = self._sample_point(sample)
@@ -510,7 +495,7 @@ class PrintView(BrowserView):
                         ar.getDateReceived(), long_format=0),
                     'date_sampled': self.ulocalized_time(
                         ar.getDateSampled(), long_format=True),
-                    'url': ar.absolute_url(),}
+                    'url': ar.absolute_url(), }
         elif ar.portal_type == "ReferenceSample":
             return {'obj': ar,
                     'id': ar.id,
@@ -518,14 +503,13 @@ class PrintView(BrowserView):
                         ar.getDateReceived(), long_format=0),
                     'date_sampled': self.ulocalized_time(
                         ar.getDateSampled(), long_format=True),
-                    'url': ar.absolute_url(),}
+                    'url': ar.absolute_url(), }
         else:
             return {'obj': ar,
                     'id': ar.id,
                     'date_received': "",
                     'date_sampled': "",
-                    'url': ar.absolute_url(),}
-
+                    'url': ar.absolute_url(), }
 
     def _client_data(self, client):
         """ Returns a dict that represents the client specified
@@ -538,7 +522,6 @@ class PrintView(BrowserView):
             data['url'] = client.absolute_url()
             data['name'] = to_utf8(client.getName())
         return data
-
 
     def _flush_pdf():
         """ Generates a PDF using the current layout as the template and
