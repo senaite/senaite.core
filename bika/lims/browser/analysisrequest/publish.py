@@ -873,6 +873,34 @@ class AnalysisRequestDigester:
                             if address.get(v, None)])
         return "<div class='address'>%s</div>" % addr
 
+    def getDimension(self):
+        """ Returns the dimension of the report
+        """
+        return self.request.form.get("layout", "A4")
+
+    def isLandscape(self):
+        """ Returns if the layout is landscape
+        """
+        return self.request.form.get('landscape', '0').lower() in ['true', '1']
+
+    def getDirection(self):
+        """ Return landscape or horizontal
+        """
+        return self.isLandscape() and "landscape" or "horizontal"
+
+    def getLayout(self):
+        """ Returns the layout of the report
+        """
+        mapping = {
+            "A4": (210, 297),
+            "letter": (216, 279)
+        }
+        dimension = self.getDimension()
+        layout = mapping.get(dimension, mapping.get("A4"))
+        if self.isLandscape():
+            layout = tuple(reversed(layout))
+        return layout
+
     def _workflow_data(self, instance):
         """Add some workflow information for all actions performed against
         this instance. Only values for the last action event for any
@@ -1044,7 +1072,7 @@ class AnalysisRequestDigester:
                 attachment.absolute_url()),
             "mimetype": attachment_mime,
             "title": attachment_file.Title(),
-            "icon": attachment_file.icon,
+            "icon": attachment_file.icon(),
             "inline": "<embed src='{}/AttachmentFile' class='inline-attachment inline-attachment-{}'/>".format(
                 attachment.absolute_url(), self.getDirection()),
             "renderoption": attachment.getReportOption(),
