@@ -82,19 +82,25 @@ def load_field_values(instance, include_fields):
             print traceback.format_exc()
 
         if val:
-            if field.type == "blob" or field.type == 'file':
+            field_type = field.type
+            # If it a proxy field, we should know to the type of the proxied
+            # field
+            if field_type == 'proxy':
+                actual_field = field.get_proxy(instance)
+                field_type = actual_field.type
+            if field_type == "blob" or field_type == 'file':
                 continue
             # I put the UID of all references here in *_uid.
-            if field.type == 'reference':
+            if field_type == 'reference':
                 if type(val) in (list, tuple):
                     ret[fieldname + "_uid"] = [v.UID() for v in val]
                     val = [to_utf8(v.Title()) for v in val]
                 else:
                     ret[fieldname + "_uid"] = val.UID()
                     val = to_utf8(val.Title())
-            elif field.type == 'boolean':
+            elif field_type == 'boolean':
                 val = True if val else False
-            elif field.type == 'text':
+            elif field_type == 'text':
                 val = to_utf8(val)
 
         try:
