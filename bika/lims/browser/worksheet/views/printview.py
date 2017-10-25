@@ -15,6 +15,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -79,6 +80,18 @@ class PrintView(BrowserView):
             return self._flush_pdf()
         else:
             return self.template()
+
+    def get_analysis_data_by_title(self, ar_data, title):
+        """A template helper to pick an Analysis identified by the name of the
+        current Analysis Service.
+
+        ar_data is the dictionary structure which is returned by _ws_data
+        """
+        analyses = ar_data.get("analyses", [])
+        for analysis in analyses:
+            if analysis.get("title") == title:
+                return analysis
+        return None
 
     def getWSTemplates(self):
         """ Returns a DisplayList with the available templates found in
