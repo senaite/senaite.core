@@ -1,46 +1,216 @@
-# -*- coding: utf-8 -*-
-#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2017 by it's authors.
+# Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from plone.jsonapi.core import router
-
+from Products.Archetypes.config import TOOL_NAME
+from Products.CMFCore.utils import getToolByName
+from bika.lims.utils import to_utf8
 from bika.lims import logger
 
+import json
+import Missing
+import sys, traceback
 
-def add_route(route, endpoint=None, **kw):
-    """Add a new JSON API route
+
+def handle_errors(f):
+    """ simple JSON error handler
     """
-    def wrapper(f):
+    import traceback
+    from plone.jsonapi.core.helpers import error
+
+    def decorator(*args, **kwargs):
         try:
-            router.DefaultRouter.add_url_rule(route,
-                                              endpoint=endpoint,
-                                              view_func=f,
-                                              options=kw)
-        except AssertionError, e:
-            logger.warn("Failed to register route {}: {}".format(route, e))
-        return f
-    return wrapper
+            return f(*args, **kwargs)
+        except Exception:
+            var = traceback.format_exc()
+            return error(var)
+
+    return decorator
 
 
-def url_for(endpoint, default="bika.lims.jsonapi.get", **values):
-    """Looks up the API URL for the given endpoint
-
-    :param endpoint: The name of the registered route (aka endpoint)
-    :type endpoint: string
-    :returns: External URL for this endpoint
-    :rtype: string/None
+def get_include_fields(request):
+    """Retrieve include_fields values from the request
     """
+    include_fields = []
+    rif = request.get("include_fields", "")
+    if "include_fields" in request:
+        include_fields = [x.strip()
+                          for x in rif.split(",")
+                          if x.strip()]
+    if "include_fields[]" in request:
+        include_fields = request['include_fields[]']
+    return include_fields
 
-    try:
-        return router.url_for(endpoint, force_external=True, values=values)
-    except Exception:
-        # XXX plone.jsonapi.core should catch the BuildError of Werkzeug and
-        #     throw another error which can be handled here.
-        logger.debug("Could not build API URL for endpoint '%s'. "
-                     "No route provider registered?" % endpoint)
 
-        # build generic API URL
-        return router.url_for(default, force_external=True, values=values)
+def load_brain_metadata(proxy, include_fields):
+    """Load values from the catalog metadata into a list of dictionaries
+    """
+    ret = {}
+    for index in proxy.indexes():
+        if index not in proxy:
+            continue
+        if include_fields and index not in include_fields:
+            continue
+        val = getattr(proxy, index)
+        if val != Missing.Value:
+            try:
+                json.dumps(val)
+            except:
+                continue
+            ret[index] = val
+    return ret
+
+
+def load_field_values(instance, include_fields):
+    """Load values from an AT object schema fields into a list of dictionaries
+    """
+    ret = {}
+    schema = instance.Schema()
+    val = None
+    for field in schema.fields():
+        fieldname = field.getName()
+        if include_fields and fieldname not in include_fields:
+            continue
+        try:
+            val = field.get(instance)
+        except AttributeError:
+            # If this error is raised, make a look to the add-on content
+            # expressions used to obtain their data.
+            print "AttributeError:", sys.exc_info()[1]
+            print "Unreachable object. Maybe the object comes from an Add-on"
+            print traceback.format_exc()
+
+        if val:
+            if field.type == "blob" or field.type == 'file':
+                continue
+            # I put the UID of all references here in *_uid.
+            if field.type == 'reference':
+                if type(val) in (list, tuple):
+                    ret[fieldname + "_uid"] = [v.UID() for v in val]
+                    val = [to_utf8(v.Title()) for v in val]
+                else:
+                    ret[fieldname + "_uid"] = val.UID()
+                    val = to_utf8(val.Title())
+            elif field.type == 'boolean':
+                val = True if val else False
+            elif field.type == 'text':
+                val = to_utf8(val)
+
+        try:
+            json.dumps(val)
+        except:
+            val = str(val)
+        ret[fieldname] = val
+    return ret
+
+
+def get_include_methods(request):
+    """Retrieve include_methods values from the request
+    """
+    methods = request.get("include_methods", "")
+    include_methods = [
+        x.strip() for x in methods.split(",") if x.strip()]
+    return include_methods
+
+
+def load_method_values(instance, include_methods):
+    ret = {}
+    for method in include_methods:
+        if hasattr(instance, method):
+            val = getattr(instance, method)()
+            ret[method] = val
+    return ret
+
+
+def resolve_request_lookup(context, request, fieldname):
+    if fieldname not in request:
+        return []
+    brains = []
+    at = getToolByName(context, TOOL_NAME, None)
+    entries = request[fieldname] if type(request[fieldname]) in (list, tuple) \
+        else [request[fieldname], ]
+    for entry in entries:
+        contentFilter = {}
+        for value in entry.split("|"):
+            if ":" in value:
+                index, value = value.split(":", 1)
+            else:
+                index, value = 'id', value
+            if index in contentFilter:
+                v = contentFilter[index]
+                v = v if type(v) in (list, tuple) else [v, ]
+                v.append(value)
+                contentFilter[index] = v
+            else:
+                contentFilter[index] = value
+        # search all possible catalogs
+        if 'portal_type' in contentFilter:
+            catalogs = at.getCatalogsByType(contentFilter['portal_type'])
+        elif 'uid' in contentFilter:
+            # If a uid is found, the object could be searched for its own uid
+            uc = getToolByName(context, 'uid_catalog')
+            return uc(UID=contentFilter['uid'])
+
+        else:
+            catalogs = [getToolByName(context, 'portal_catalog'), ]
+        for catalog in catalogs:
+            _brains = catalog(contentFilter)
+            if _brains:
+                brains.extend(_brains)
+                break
+    return brains
+
+
+def set_fields_from_request(obj, request):
+    """Search request for keys that match field names in obj,
+    and call field mutator with request value.
+
+    The list of fields for which schema mutators were found
+    is returned.
+    """
+    schema = obj.Schema()
+    # fields contains all schema-valid field values from the request.
+    fields = {}
+    for fieldname, value in request.items():
+        if fieldname not in schema:
+            continue
+        if schema[fieldname].type in ('reference'):
+            brains = []
+            if value:
+                brains = resolve_request_lookup(obj, request, fieldname)
+                if not brains:
+                    logger.warning(
+                        "JSONAPI: Can't resolve reference: {} {}"
+                        .format(fieldname, value))
+                    return []
+            if schema[fieldname].multiValued:
+                value = [b.UID for b in brains] if brains else []
+            else:
+                value = brains[0].UID if brains else None
+        fields[fieldname] = value
+    # Write fields.
+    for fieldname, value in fields.items():
+        field = schema[fieldname]
+        fieldtype = field.getType()
+        if fieldtype == 'Products.Archetypes.Field.BooleanField':
+            if value.lower() in ('0', 'false', 'no') or not value:
+                value = False
+            else:
+                value = True
+        elif fieldtype in ['Products.ATExtensions.field.records.RecordsField',
+                           'Products.ATExtensions.field.records.RecordField']:
+            try:
+                value = eval(value)
+            except:
+                logger.warning(
+                    "JSONAPI: " + fieldname + ": Invalid "
+                    "JSON/Python variable")
+                return []
+        mutator = field.getMutator(obj)
+        if mutator:
+            mutator(value)
+        else:
+            field.set(obj, value)
+    obj.reindexObject()
+    return fields.keys()
