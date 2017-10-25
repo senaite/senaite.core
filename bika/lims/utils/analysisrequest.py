@@ -87,7 +87,8 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create sample partitions
     if not partitions:
-        partitions = [{'services': service_uids}]
+        partitions = values.get('Partitions',
+                                [{'services': service_uids}])
 
     part_num = 0
     prefix = sample.getId() + "-P"
