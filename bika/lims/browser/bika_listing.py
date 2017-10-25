@@ -12,6 +12,7 @@ import traceback
 
 from AccessControl import getSecurityManager
 from DateTime import DateTime
+from DateTime.DateTime import DateError, DateTimeError, SyntaxError, TimeError
 from Products.AdvancedQuery import And, Between, Eq, Generic, MatchRegexp, Or
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -27,10 +28,11 @@ from bika.lims.utils import getHiddenAttributesForClass, isActive
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getAllowedTransitions
 from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
 from zope.component import getAdapters, getMultiAdapter
+
+DATETIME_EXCEPTIONS = (DateError, TimeError, DateTimeError, SyntaxError)
 
 
 class WorkflowAction:
@@ -474,7 +476,7 @@ class BikaListingView(BrowserView):
     #     [{'id':'x'}]
     # Transitions will be ordered by and restricted to, these items.
     #
-    # - If review_state[x]['custom_transitions'] is defined. it's a list of dict:
+    # - If review_state[x]['custom_transitions'] is defined it's a list of dict:
     #     [{'id':'x'}]
     # These transitions will be forced into the list of workflow actions.
     # They will need to be handled manually in the appropriate WorkflowAction
@@ -768,19 +770,17 @@ class BikaListingView(BrowserView):
                     if type(value) in (list, tuple):
                         value = value[0]
                     if value.find(":") > -1:
-                        # noinspection PyBroadException
                         try:
                             lohi = [DateTime(x) for x in value.split(":")]
-                        except:
+                        except DATETIME_EXCEPTIONS:
                             logger.info("Error (And, DateIndex='%s')" % index)
                         self.Or.append(Between(index, lohi[0], lohi[1]))
                         self.expand_all_categories = True
                     else:
-                        # noinspection PyBroadException
                         try:
                             self.Or.append(Eq(index, DateTime(value)))
                             self.expand_all_categories = True
-                        except:
+                        except DATETIME_EXCEPTIONS:
                             logger.info("Error (Or, DateIndex='%s')" % index)
                 else:
                     self.Or.append(Generic(index, value))
@@ -797,15 +797,14 @@ class BikaListingView(BrowserView):
                 self.columns[col]['toggle'] = False
 
     def get_toggle_cols(self):
-
+        _form = self.request.form
         toggles = {}
-        # noinspection PyBroadException
         try:
-            # request OR cookie OR default
-            toggles = json.loads(self.request.get(self.form_id + "_toggle_cols",
-                                                  self.request.get(
-                                                      "toggle_cols", "{}")))
-        except:
+            default_toggles = _form.get("toggle_cols", "{}")
+            _key = self.form_id + "_toggle_cols"
+            form_toggles = _form.get(_key, default_toggles)
+            toggles = json.loads(form_toggles)
+        except (ValueError, TypeError):
             pass
         finally:
             if not toggles:
@@ -909,7 +908,7 @@ class BikaListingView(BrowserView):
                 or self.request.get('rows_only', '') == self.form_id:
             return self.contents_table(table_only=self.form_id)
         else:
-            return self.template()
+            return self.template(self.context)
 
     def selected_cats(self, items):
         """Return a list of categories that will be expanded by default when
@@ -1049,20 +1048,14 @@ class BikaListingView(BrowserView):
             ptype = obj.portal_type
             for state_var, state in states.items():
                 results_dict[state_var] = state
-                st_title = self.state_titles.get(state, None)
-                if not st_title:
-                    # noinspection PyBroadException
-                    try:
-                        st_title = self.workflow.getTitleForStateOnType(state,
-                                                                        ptype)
-                        if st_title:
-                            st_title = t(PMF(st_title))
-                            self.state_titles[state] = st_title
-                    except:
-                        logger.warning("Cannot obtain title for state {0} and "
-                                       "object {1}".format(state, obj.getId))
-                if st_title and state == obj.review_state:
-                    results_dict['state_title'] = st_title
+                _title = self.state_titles.get(state, None)
+                if not _title:
+                    _title = self.workflow.getTitleForStateOnType(state, ptype)
+                    if _title:
+                        _title = t(PMF(_title))
+                        self.state_titles[state] = _title
+                if _title and state == obj.review_state:
+                    results_dict['state_title'] = _title
 
             # extra classes for individual fields on this item
             # { field_id : "css classes" }
@@ -1268,15 +1261,9 @@ class BikaListingView(BrowserView):
                 after={},
                 replace={},
             )
-            # noinspection PyBroadException
-            try:
-                rs = self.workflow.getInfoFor(obj, 'review_state')
-                st_title = \
-                    self.workflow.getTitleForStateOnType(rs, obj.portal_type)
-                st_title = t(PMF(st_title))
-            except:
-                rs = 'active'
-                st_title = None
+            rs = self.workflow.getInfoFor(obj, 'review_state')
+            st_title = self.workflow.getTitleForStateOnType(rs, obj.portal_type)
+            st_title = t(PMF(st_title))
             if rs:
                 results_dict['review_state'] = rs
             for state_var, state in states.items():
@@ -1365,7 +1352,7 @@ class BikaListingView(BrowserView):
         self.this_cat_selected = True
         self.this_cat_batch = self.folderitems()
 
-        data = self.render_items()
+        data = self.render_items(self.context)
         return data
 
     def get_transitions_for_items(self, items):
@@ -1560,7 +1547,7 @@ class BikaListingTable(tableview.Table):
         for item in self.batch:
             if item.get('category', 'None') == cat:
                 self.this_cat_batch.append(item)
-        return self.render_items()
+        return self.render_items(self.context)
 
     def hide_hidden_attributes(self):
         """Use the bika_listing's contentFilter's portal_type
