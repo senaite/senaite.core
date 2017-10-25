@@ -134,15 +134,14 @@
 #report #section-qcresults .outofrange {
     width:10px;
 }
-
-#report #section-attachments ul {
-    list-style-type:none;
-    margin:0px;
-    padding:0px;
-    margin-bottom:20px;
+#report .attachment {
+    padding-bottom: 1em;
 }
-#report #section-attachments table#analysis-attachments td {
-    padding-right:20px;
+#report .inline-attachment-horizontal {
+    width: 100%;
+}
+#report .inline-attachment-landscape {
+    width: 100%;
 }
 #report #section-signatures {
     padding:10mm 0 5mm;
