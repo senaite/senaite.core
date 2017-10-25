@@ -640,25 +640,7 @@ class AnalysisRequestPublishView(BrowserView):
         lab_address = lab.getPostalAddress() \
                       or lab.getBillingAddress() \
                       or lab.getPhysicalAddress()
-        return self._format_address(lab_address)
-
-    def _client_address(self, client):
-        client_address = client.getPostalAddress() \
-                         or client.getBillingAddress() \
-                         or client.getPhysicalAddress()
-        return self._format_address(client_address)
-
-    def _format_address(self, address):
-        """Takes a value from an AddressField, returns a div class=address
-        with spans inside, containing the address field values.
-        """
-        addr = ''
-        if address:
-            # order of divs in output html
-            keys = ['address', 'city', 'district', 'state', 'zip', 'country']
-            addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
-                            if address.get(v, None)])
-        return "<div class='address'>%s</div>" % addr
+        return _format_address(lab_address)
 
     def explode_data(self, data, padding=''):
         out = ''
@@ -844,7 +826,7 @@ class AnalysisRequestDigester:
 
             elif fld.type == 'address':
                 # This is just a Record field
-                data[fieldname + "_formatted"] = self._format_address(rawvalue)
+                data[fieldname + "_formatted"] = _format_address(rawvalue)
                 # Also include un-formatted address
                 data[fieldname] = rawvalue
 
@@ -860,18 +842,6 @@ class AnalysisRequestDigester:
                 data[fieldname] = rawvalue
 
         return data
-
-    def _format_address(self, address):
-        """Takes a value from an AddressField, returns a div class=address
-        with spans inside, containing the address field values.
-        """
-        addr = ''
-        if address:
-            # order of divs in output html
-            keys = ['address', 'city', 'district', 'state', 'zip', 'country']
-            addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
-                            if address.get(v, None)])
-        return "<div class='address'>%s</div>" % addr
 
     def getDimension(self):
         """ Returns the dimension of the report
@@ -1182,10 +1152,10 @@ class AnalysisRequestDigester:
             contact = contact[0].getObject() if contact else None
             cfullname = contact.getFullname() if contact else None
             cemail = contact.getEmailAddress() if contact else None
-            physical_address = self._format_address(
+            physical_address = _format_address(
                 contact.getPhysicalAddress()) if contact else ''
             postal_address =\
-                self._format_address(contact.getPostalAddress())\
+                    _format_address(contact.getPostalAddress())\
                 if contact else ''
             data = {'id': member.id,
                     'fullname': to_utf8(cfullname) if cfullname else to_utf8(
@@ -1226,7 +1196,7 @@ class AnalysisRequestDigester:
         lab_address = lab.getPostalAddress() \
                       or lab.getBillingAddress() \
                       or lab.getPhysicalAddress()
-        return self._format_address(lab_address)
+        return _format_address(lab_address)
 
     def _lab_data(self):
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
@@ -1252,10 +1222,6 @@ class AnalysisRequestDigester:
                     'pubpref': contact.getPublicationPreference()}
         return data
 
-    def _client_address(self, client):
-        client_address = client.getPostalAddress()
-        return self._format_address(client_address)
-
     def _client_data(self, ar):
         data = {}
         client = ar.aq_parent
@@ -1267,7 +1233,7 @@ class AnalysisRequestDigester:
             data['phone'] = to_utf8(client.getPhone())
             data['fax'] = to_utf8(client.getFax())
 
-            data['address'] = to_utf8(self._client_address(client))
+            data['address'] = to_utf8(get_client_address(ar))
         return data
 
     def _specs_data(self, ar):
@@ -1549,3 +1515,35 @@ def EndRequestHandler(event):
     # If this commit() is not here, then the data does not appear to be
     # saved.  IEndRequest happens outside the transaction?
     transaction.commit()
+
+
+def get_client_address(context):
+    if context.portal_type == 'AnalysisRequest':
+        client = context.aq_parent
+    else:
+        client = context
+    client_address = client.getPostalAddress()
+    if not client_address:
+        ar = context
+        if not IAnalysisRequest.providedBy(ar):
+            return ""
+        # Data from the first contact
+        contact = ar.getContact()
+        if contact and contact.getBillingAddress():
+            client_address = contact.getBillingAddress()
+        elif contact and contact.getPhysicalAddress():
+            client_address = contact.getPhysicalAddress()
+    return _format_address(client_address)
+
+
+def _format_address(address):
+    """Takes a value from an AddressField, returns a div class=address
+    with spans inside, containing the address field values.
+    """
+    addr = ''
+    if address:
+        # order of divs in output html
+        keys = ['address', 'city', 'district', 'state', 'zip', 'country']
+        addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
+                        if address.get(v, None)])
+    return "<div class='address'>%s</div>" % addr

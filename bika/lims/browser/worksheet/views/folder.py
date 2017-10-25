@@ -115,7 +115,8 @@ class FolderView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter': {'review_state':['open', 'to_be_verified',],
+             'contentFilter': {'review_state': ['open',
+                                                'to_be_verified', 'verified'],
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -133,7 +134,8 @@ class FolderView(BikaListingView):
             # so 'mine' is configured further in 'folderitems' below.
             {'id':'mine',
              'title': _('Mine'),
-             'contentFilter': {'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+             'contentFilter': {'review_state':['open', 'to_be_verified',
+                                               'verified', 'rejected'],
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
