@@ -17,6 +17,7 @@ LIMS-1504: Calculation formula test widgets
 
 **Fixed**
 
+- #306 Integration of PR-2077. Client Folder Listing Table decreases Bika LIMS performance and is unusable for many Clients
 - #309 Integration of PR-2130, PR-2233
        Infinite Recursion on Report Publication.
        Copied ARs are created in random order.
