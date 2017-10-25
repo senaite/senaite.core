@@ -189,3 +189,32 @@ class HideClientDiscountFields(object):
         if fieldName in fields and not ShowPrices:
             state = 'invisible'
         return state
+
+
+class HideARDateFields(object):
+    """Hide/Show Date Sampled and Sampling Date feilds of ARs.
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 3
+
+    def __call__(self, context, mode, field, default):
+        fields = ['DateSampled', 'SamplingDate']
+        swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+        state = default if default else 'invisible'
+        fieldName = field.getName()
+        if fieldName not in fields:
+            return state
+        if swf_enabled:
+            if fieldName == 'DateSampled':
+                state = 'invisible'
+            else:
+                state = 'visible'
+        else:
+            if fieldName == 'DateSampled':
+                state = 'visible'
+            else:
+                state = 'invisible'
+        return state
