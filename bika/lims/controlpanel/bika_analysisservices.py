@@ -130,13 +130,14 @@ class AnalysisServiceCopy(BrowserView):
 
 
 class AnalysisServicesView(BikaListingView):
+    """Listing table view for Analysis Services
+    """
     implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
-        """
-        """
-
         super(AnalysisServicesView, self).__init__(context, request)
+        self.an_cats = None
+        self.an_cats_order = None
         self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'AnalysisService', }
         self.context_actions = {
@@ -301,12 +302,6 @@ class AnalysisServicesView(BikaListingView):
             for i in range(len(self.review_states)):
                 self.review_states[i]['columns'].remove('Price')
 
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.an_cats = bsc(portal_type="AnalysisCategory",
-                           sort_on="title")
-        self.an_cats_order = dict([(b.Title, "{:04}".format(a))
-                                  for a, b in enumerate(self.an_cats)])
-
     def isItemAllowed(self, obj):
         """
         It checks if the item can be added to the list depending on the
@@ -328,9 +323,8 @@ class AnalysisServicesView(BikaListingView):
             return result
         return result
 
-
     def folderitem(self, obj, item, index):
-        if 'obj'  in item:
+        if 'obj' in item:
             obj = item['obj']
             # Although these should be automatically inserted when bika_listing
             # searches the schema for fields that match columns, it is still
@@ -398,7 +392,13 @@ class AnalysisServicesView(BikaListingView):
         return item
 
     def folderitems(self, full_objects=False, classic=True):
-
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.an_cats = bsc(
+            portal_type="AnalysisCategory",
+            sort_on="sortable_title")
+        self.an_cats_order = dict([
+            (b.Title, "{:04}".format(a))
+            for a, b in enumerate(self.an_cats)])
         items = super(AnalysisServicesView, self).folderitems()
         if self.do_cats:
             self.categories = map(lambda x: x[0],
@@ -409,10 +409,13 @@ class AnalysisServicesView(BikaListingView):
 
 
 schema = ATFolderSchema.copy()
+finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
+
+
 class AnalysisServices(ATFolder):
     implements(IAnalysisServices)
     displayContentsTab = False
     schema = schema
 
-finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
+
 atapi.registerType(AnalysisServices, PROJECTNAME)

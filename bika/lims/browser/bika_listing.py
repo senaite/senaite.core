@@ -492,6 +492,7 @@ class BikaListingView(BrowserView):
         self.show_more = False
         self.limit_from = 0
         self.mtool = None
+        self.sort_on = None
         self.member = None
         self.workflow = None
         # The listing object is bound to a class called BikaListingFilterBar
@@ -588,10 +589,11 @@ class BikaListingView(BrowserView):
         for k, v in self.review_state.get('contentFilter', {}).items():
             self.contentFilter[k] = v
 
-        # sort on
-        self.sort_on = self.sort_on \
-            if hasattr(self, 'sort_on') and self.sort_on \
-            else None
+        # SORTING
+        # Precedence is request, sort_on attribute, contentFilter sort_on value
+        self.sort_on = getattr(
+            self, "sort_on", self.contentFilter.get("sort_on"))
+        # If sort_on in request, use that one instead
         self.sort_on = self.request.get(form_id + '_sort_on', self.sort_on)
         self.sort_order = self.sort_order \
             if hasattr(self, 'sort_order') and self.sort_order \
@@ -620,30 +622,28 @@ class BikaListingView(BrowserView):
             else:
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: sort_on is '{}', not a valid column".format(
-                    self, self.sort_on)
+                    self.__class__.__name__, self.sort_on)
                 logger.warning(msg)
                 self.sort_on = None
 
         if self.manual_sort_on:
-            self.manual_sort_on = self.manual_sort_on[0] \
-                                if type(self.manual_sort_on) in (list, tuple) \
-                                else self.manual_sort_on
+            if type(self.manual_sort_on) in (list, tuple):
+                self.manual_sort_on = self.manual_sort_on[0]
             if self.manual_sort_on not in self.columns.keys():
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: manual_sort_on is '{}', not a valid column".format(
-                    self, self.manual_sort_on)
+                    self.__class__.__name__, self.manual_sort_on)
                 logger.warning(msg)
                 self.manual_sort_on = None
 
         if self.sort_on or self.manual_sort_on:
             # By default, if sort_on is set, sort the items ASC
             # Trick to allow 'descending' keyword instead of 'reverse'
-            self.sort_order = 'reverse' if self.sort_order \
-                                        and self.sort_order[0] in ['d','r'] \
-                                        else 'ascending'
+            if self.sort_order != "ascending":
+                self.sort_order = "descending"
         else:
             # By default, sort on created
-            self.sort_order = 'reverse'
+            self.sort_order = 'descending'
             self.sort_on = 'created'
 
         self.contentFilter['sort_order'] = self.sort_order
@@ -684,9 +684,10 @@ class BikaListingView(BrowserView):
         for index in self.filter_indexes:
             idx = catalog.Indexes.get(index, None)
             if not idx:
-                logger.debug("index named '%s' not found in %s.  "
-                             "(Perhaps the index is still empty)." %
-                            (index, self.catalog))
+                logger.warn(
+                    "index named '%s' not found in %s. "
+                    "(Perhaps the index is still empty)." %
+                    (index, self.catalog))
                 continue
             request_key = "%s_%s" % (form_id, index)
             value = self.request.get(request_key, '')
@@ -1126,7 +1127,7 @@ class BikaListingView(BrowserView):
         >>> browser.open(portal_url+"/bika_setup/bika_sampletypes/folder_view?",
         ... "list_pagesize=10&list_review_state=default")
         >>> browser.contents
-        '...Water...'
+        '...Apple Pulp...'
         """
         logger.warn("Using folderitems in classic mode, with objects wake-up")
         #self.contentsMethod = self.context.getFolderContents

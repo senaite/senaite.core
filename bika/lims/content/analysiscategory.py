@@ -19,15 +19,18 @@ from bika.lims.interfaces import IAnalysisCategory
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    TextField('Comments',
-        default_output_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
-        widget=TextAreaWidget (
-            description = _("To be displayed below each Analysis "
-                            "Category section on results reports."),
-            label = _("Comments")),
+    TextField(
+        'Comments',
+        default_output_type='text/plain',
+        allowable_content_types=('text/plain',),
+        widget=TextAreaWidget(
+            description=_(
+                "To be displayed below each Analysis Category section on "
+                "results reports."),
+            label=_("Comments")),
     ),
-    ReferenceField('Department',
+    ReferenceField(
+        'Department',
         required=1,
         vocabulary='getDepartments',
         allowed_types=('Department',),
@@ -35,21 +38,18 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
             checkbox_bound=0,
-            label = _("Department"),
-            description = _("The laboratory department"),
+            label=_("Department"),
+            description=_("The laboratory department"),
         ),
     ),
-    ComputedField('DepartmentTitle',
-        expression="context.getDepartment() and context.getDepartment().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    FloatField('SortKey',
+    FloatField(
+        'SortKey',
         validators=('SortKeyValidator',),
         widget=DecimalWidget(
-            label = _("Sort Key"),
-            description = _("Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."),
+            label=_("Sort Key"),
+            description=_(
+                "Float value from 0.0 - 1000.0 indicating the sort "
+                "order. Duplicate values are ordered alphabetically."),
         ),
     ),
 ))
@@ -77,16 +77,22 @@ class AnalysisCategory(BaseContent):
             deps.append((d.UID, d.Title))
         return DisplayList(deps)
 
+    def getDepartmentTitle(self):
+        field = self.Schema().getField('Department')
+        dept = field.get(self)
+        return dept.Title() if dept else ''
+
     def workflow_script_deactivat(self):
         # A instance cannot be deactivated if it contains services
         pu = getToolByName(self, 'plone_utils')
         bsc = getToolByName(self, 'bika_setup_catalog')
         ars = bsc(portal_type='AnalysisService', getCategoryUID=self.UID())
         if ars:
-            message = _("Category cannot be deactivated because "
-                        "it contains Analysis Services")
+            message = _("Category cannot be deactivated because it contains "
+                        "Analysis Services")
             pu.addPortalMessage(message, 'error')
-            transaction.get().abort()
+            transaction.abort()
             raise WorkflowException
+
 
 registerType(AnalysisCategory, PROJECTNAME)
