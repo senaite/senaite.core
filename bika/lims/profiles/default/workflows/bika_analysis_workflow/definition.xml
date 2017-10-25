@@ -42,6 +42,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
   </state>
 
@@ -52,9 +53,9 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="True">
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="True">
+    <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -116,12 +117,12 @@
       <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>LabClerk</permission-role>
       <permission-role>Sampler</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="True">
+   </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Receive Sample" acquired="True">
       <permission-role>LabClerk</permission-role>
@@ -150,7 +151,11 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="True">
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -187,7 +192,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
-      <permission-role>LabClerk</permission-role>
+      <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
