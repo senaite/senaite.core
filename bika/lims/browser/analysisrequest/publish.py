@@ -1252,8 +1252,18 @@ class AnalysisRequestDigester:
                     'pubpref': contact.getPublicationPreference()}
         return data
 
-    def _client_address(self, client):
+    def _client_address(self, ar):
+        client = ar.aq_parent
         client_address = client.getPostalAddress()
+        if not client_address:
+            if not IAnalysisRequest.providedBy(ar):
+                return ""
+            # Data from the first contact
+            contact = ar.getContact()
+            if contact and contact.getBillingAddress():
+                client_address = contact.getBillingAddress()
+            elif contact and contact.getPhysicalAddress():
+                client_address = contact.getPhysicalAddress()
         return self._format_address(client_address)
 
     def _client_data(self, ar):
@@ -1267,7 +1277,7 @@ class AnalysisRequestDigester:
             data['phone'] = to_utf8(client.getPhone())
             data['fax'] = to_utf8(client.getFax())
 
-            data['address'] = to_utf8(self._client_address(client))
+            data['address'] = to_utf8(self._client_address(ar))
         return data
 
     def _specs_data(self, ar):
