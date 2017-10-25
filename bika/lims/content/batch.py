@@ -286,7 +286,7 @@ class Batch(ATFolder):
         if self.BatchID:
             return self.BatchID
         if self.checkCreationFlag():
-                return self.BatchID
+            return self.BatchID
         return self.getId()
 
     def BatchLabelVocabulary(self):
