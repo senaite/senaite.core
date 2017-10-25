@@ -312,6 +312,8 @@
                name="came_from" tal:attributes="value view/came_from"/>
         <input type="hidden" id="ar_count" name="ar_count"
                tal:attributes="value view/ar_count"/>
+        <input type="hidden"
+                name="copy_from" tal:attributes="value request/copy_from|nothing"/>
 
         <!-- ADD Form -->
         <table class="ar-table grid">
