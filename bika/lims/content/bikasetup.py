@@ -909,6 +909,20 @@ Configuration Settings:
             description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
         )
     ),
+    TextField(
+        'COCAttestationStatement',
+        schemata="Sampling and COC",
+        widget=TextAreaWidget(
+            label=_("COC Attestation Statement"),
+        )
+    ),
+    StringField(
+        'COCFooter',
+        schemata="Sampling and COC",
+        widget=StringWidget(
+            label=_("COC Footer"),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
