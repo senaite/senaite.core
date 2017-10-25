@@ -85,8 +85,19 @@
               <span tal:content="ar/date_received"></span>
             </div>
           </td>
-          <tal:results repeat="ans anst">
-            <td tal:attributes="class python:'result' if ans in [an['title'] for an in ar['analyses']] else 'result no-result';"><div>&nbsp;</div></td>
+          <tal:results repeat="antitle anst">
+            <tal:analysis define="analysis python:view.get_analysis_data_by_title(ar, antitle)">
+              <td tal:condition="analysis"
+                  tal:attributes="class string:${analysis/review_state} result">
+                <tal:result condition="analysis/formatted_result">
+                  <span tal:content="string:${analysis/formatted_result}">100</span>
+                  <span tal:content="string:${analysis/unit}">ml</span>
+                </tal:result>
+              </td>
+              <td tal:condition="not:analysis" class='no-result'>
+                <div>&nbsp;</div>
+              </td>
+            </tal:analysis>
           </tal:results>
         </tr>
       </tbody>
