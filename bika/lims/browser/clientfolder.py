@@ -24,7 +24,7 @@ from bika.lims.browser import BrowserView
 class ClientFolderContentsView(BikaListingView):
     """
     Listing view for all Clients
-    """
+       """
     implements(IFolderContentsView)
 
     def __init__(self, context, request):
@@ -48,51 +48,56 @@ class ClientFolderContentsView(BikaListingView):
             'getDistrict': {'title': _('District')},
             'Phone': {'title': _('Phone')},
             'Fax': {'title': _('Fax')},
+            'ClientID': {'title': _('Client ID')},
+            'BulkDiscount': {'title': _('Bulk Discount')},
+            'MemberDiscountApplies': {'title': _('Member Discount')},
         }
 
-
-        self.review_states = [ # leave these titles and ids alone
-            {'id':'default',
-             'contentFilter': {'inactive_state':'active'},
+        self.review_states = [  # leave these titles and ids alone
+            {'id': 'default',
+             'contentFilter': {'inactive_state': 'active'},
              'title': _('Active'),
-             'transitions': [{'id':'deactivate'}, ],
-             'columns':['title',
-                        'getCountry',
-                        'getProvince',
-                        'getDistrict',
-                        'EmailAddress',
-                        'Phone',
-                        'Fax', ]
+             'transitions': [{'id': 'deactivate'}, ],
+             'columns': ['title',
+                         'ClientID',
+                         'getCountry',
+                         'getProvince',
+                         'getDistrict',
+                         'EmailAddress',
+                         'Phone',
+                         'Fax', ]
              },
-            {'id':'inactive',
+            {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': [{'id':'activate'}, ],
-             'columns':['title',
-                        'getCountry',
-                        'getProvince',
-                        'getDistrict',
-                        'EmailAddress',
-                        'Phone',
-                        'Fax', ]
+             'transitions': [{'id': 'activate'}, ],
+             'columns': ['title',
+                         'ClientID',
+                         'getCountry',
+                         'getProvince',
+                         'getDistrict',
+                         'EmailAddress',
+                         'Phone',
+                         'Fax', ]
              },
-            {'id':'all',
+            {'id': 'all',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'transitions': [],
-             'columns':['title',
-                        'getCountry',
-                        'getProvince',
-                        'getDistrict',
-                        'EmailAddress',
-                        'Phone',
-                        'Fax', ]
+             'columns': ['title',
+                         'ClientID',
+                         'getCountry',
+                         'getProvince',
+                         'getDistrict',
+                         'EmailAddress',
+                         'Phone',
+                         'Fax', ]
              },
         ]
 
     def __call__(self):
         self.context_actions = {}
-        mtool = api.get_tool('portal_membership')
+        mtool = api.get_tool(self.context, 'portal_membership')
         if mtool.checkPermission(AddClient, self.context):
             self.context_actions[_('Add')] = \
                 {'url': 'createObject?type_name=Client',
@@ -176,8 +181,6 @@ class ClientFolderContentsView(BikaListingView):
             item['Phone'] = obj.getPhone()
             item['Fax'] = obj.getFax()
             item['ClientID'] = obj.getClientID()
-            item['BulkDiscount'] = obj.getBulkDiscount() and 'Y' or 'N'
-            item['MemberDiscountApplies'] = obj.getMemberDiscountApplies() and 'Y' or 'N'
 
         return items
 
