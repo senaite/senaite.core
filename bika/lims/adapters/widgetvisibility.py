@@ -202,7 +202,10 @@ class HideARDateFields(object):
 
     def __call__(self, context, mode, field, default):
         fields = ['DateSampled', 'SamplingDate']
-        swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+        if hasattr(self.context, 'getSamplingWorkflowEnabled'):
+            swf_enabled = context.getSamplingWorkflowEnabled()
+        else:
+            swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
         state = default if default else 'invisible'
         fieldName = field.getName()
         if fieldName not in fields:
