@@ -72,6 +72,9 @@ class AnalysisServiceCopy(BrowserView):
                     continue
                 value = field.get(src_service)
                 if value:
+                    # https://github.com/bikalabs/bika.lims/issues/2015
+                    if fieldname in ["UpperDetectionLimit", "LowerDetectionLimit"]:
+                        value = str(value)
                     mutator_name = dst_service.getField(fieldname).mutator
                     mutator = getattr(dst_service, mutator_name)
                     mutator(value)
@@ -162,7 +165,7 @@ class AnalysisServicesView(BikaListingView):
         self.columns = {
             'Title': {
                 'title': _('Service'),
-                'index': 'title',
+                'index': 'sortable_title',
                 'replace_url': 'absolute_url',
             },
             'Keyword': {
@@ -218,8 +221,8 @@ class AnalysisServicesView(BikaListingView):
             },
             'SortKey': {
                 'title': _('Sort Key'),
-                'index': 'sortKey',
                 'attr': 'getSortKey',
+                'sortable': False,
                 'toggle': False
             },
         }
@@ -265,6 +268,7 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
+                         'SortKey',
                          ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
@@ -286,6 +290,7 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
+                         'SortKey',
                          ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
@@ -386,7 +391,7 @@ class AnalysisServicesView(BikaListingView):
             item['after']['Title'] = after_icons
         return item
 
-    def folderitems(self):
+    def folderitems(self, full_objects=False, classic=True):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.an_cats = bsc(
             portal_type="AnalysisCategory",
