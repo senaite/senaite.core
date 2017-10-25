@@ -17,7 +17,8 @@ LIMS-1504: Calculation formula test widgets
 
 **Fixed**
 
-- #297 Integration of PR-2102.Inline rendered attachments are not displayed in rendered PDF
+- #306 Integration of PR-2077. Client Folder Listing Table decreases Bika LIMS performance and is unusable for many Clients
+- #297 Integration of PR-2102. Inline rendered attachments are not displayed in rendered PDF
 - #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
 - #282 Integration of PR-2252. Traceback if the title contains braces on content creation
 - #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
