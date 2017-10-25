@@ -100,8 +100,9 @@ class ContactLoginDetailsView(BrowserView):
         # logic to make sure we get all users from all plugins (e.g. LDAP)
         users_view = UsersOverviewControlPanel(self.context, self.request)
 
-        # expected groups for client contacts
-        client_contact_groups = {'AuthenticatedUsers', 'Clients'}
+        # expected roles for client contacts
+        # Client groups users have 'Member' and 'Client' roles.
+        client_contact_roles = {'Authenticated', 'Member', 'Client'}
 
         users = users_view.doSearch("")
         out = []
@@ -122,9 +123,10 @@ class ContactLoginDetailsView(BrowserView):
                 # weird things could happen (a client contact assigned to a
                 # user with labman privileges, different contacts from
                 # different clients assigned to the same user, etc.)
-                user_groups = user.getGroups()
-                comparison = client_contact_groups.symmetric_difference(
-                    set(user_groups))
+                user_obj = api.user.get(userid=userid)
+                user_roles = api.user.get_roles(user=user_obj)
+                comparison = client_contact_roles.symmetric_difference(
+                    set(user_roles))
                 if comparison:
                     continue
             userdata = {
@@ -235,9 +237,16 @@ class ContactLoginDetailsView(BrowserView):
         if len(password) < 5:
             return error('password', PMF("Passwords must contain at least 5 "
                                          "characters."))
-        users = api.user.get_users()
+        # We make use of the existing controlpanel `@@usergroup-userprefs`
+        # view logic to make sure we get all users from all plugins (e.g. LDAP)
+        users_view = UsersOverviewControlPanel(self.context, self.request)
+        users = users_view.doSearch("")
         for user in users:
-            if user.getId() == username:
+            userid = user.get("id", None)
+            if userid is None:
+                continue
+            user_obj = api.user.get(userid=userid)
+            if user_obj.getUserName() == username:
                 msg = "Username {} already exists, please, choose " \
                       "another one.".format(username)
                 return error(None, msg)
@@ -262,9 +271,8 @@ class ContactLoginDetailsView(BrowserView):
             if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
                 contact.aq_parent.reindexObjectSecurity()
 
-            # add user to Clients group
-            group = self.context.portal_groups.getGroupById('Clients')
-            group.addMember(username)
+            # Grant roles to user
+            api.user.grant_roles(username=username, roles=['Member', 'Client'])
 
         # Additional groups for LabContact users.
         # not required (not available for client Contact)
