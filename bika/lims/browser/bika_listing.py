@@ -15,7 +15,7 @@ from DateTime import DateTime
 from Products.AdvancedQuery import And, Between, Eq, Generic, MatchRegexp, Or
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF
+from bika.lims import PMF, deprecated
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -36,7 +36,7 @@ from zope.component import getAdapters, getMultiAdapter
 class WorkflowAction:
     """ Workflow actions taken in any Bika contextAnalysisRequest context
 
-        This function provides the default behaviour for workflow actions 
+        This function provides the default behaviour for workflow actions
         invoked from bika_listing tables.
 
         Some actions (eg, AR copy_to_new) can be invoked from multiple contexts.
@@ -145,7 +145,7 @@ class WorkflowAction:
         return
 
     def workflow_action_print_stickers(self):
-        """Invoked from an AR listing form in the current context, passing the 
+        """Invoked from an AR listing form in the current context, passing the
         selected AR titles and default sticker template as request parameters.
         """
         objects = self._get_selected_items()
@@ -524,6 +524,7 @@ class BikaListingView(BrowserView):
         self.show_more = False
         self.limit_from = 0
         self.mtool = None
+        self.sort_on = None
         self.member = None
         self.workflow = None
         self.items = []
@@ -717,9 +718,9 @@ class BikaListingView(BrowserView):
         for index in self.filter_indexes:
             idx = catalog.Indexes.get(index, None)
             if not idx:
-                logger.debug("index named '%s' not found in %s.  "
+                logger.warn("index named '%s' not found in %s.  "
                              "(Perhaps the index is still empty)." %
-                             (index, self.catalog))
+                            (index, self.catalog))
                 continue
             request_key = "%s_%s" % (form_id, index)
             value = self.request.get(request_key, '')
@@ -1003,6 +1004,7 @@ class BikaListingView(BrowserView):
                 break
 
             # check if the item must be rendered or not (prevents from
+
             # doing it later in folderitems) and dealing with paging
             if not obj or not self.isItemAllowed(obj):
                 continue
@@ -1145,8 +1147,11 @@ class BikaListingView(BrowserView):
         return brains
 
     # noinspection PyUnusedLocal
+    @deprecated("Using bikalisting.folderitems(classic=True) is very slow")
     def _folderitems(self, full_objects=False):
-        logger.warn("Using folderitems in classic mode, with objects wake-up")
+        """WARNING: :full_objects: could create a big performance hit.
+        """
+        logger.warn("")
         if not hasattr(self, 'contentsMethod'):
             self.contentsMethod = getToolByName(self.context, self.catalog)
         # Setting up some attributes
