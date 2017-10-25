@@ -925,7 +925,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'AllowDepartmentFiltering',
-        schemata="Analyses",
+        schemata="Security",
         default=False,
         widget=BooleanWidget(
             label=_("Enable filtering by department"),

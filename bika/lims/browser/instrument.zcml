@@ -15,7 +15,7 @@
     <browser:page
       for="bika.lims.interfaces.IInstrument"
       name="certifications"
-      class="bika.lims.browser.instrument.InstrumentCertificationsViewView"
+      class="bika.lims.browser.instrument.InstrumentCertificationsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
