@@ -213,13 +213,15 @@ class PrintView(BrowserView):
                 ars, createdby, analyst, printedby, analyses_titles,
                 portal, laboratory
         """
-        data = {'obj': ws,
-                'id': ws.id,
-                'url': ws.absolute_url(),
-                'template_title': ws.getWorksheetTemplateTitle(),
-                'remarks': ws.getRemarks(),
-                'date_printed': self.ulocalized_time(DateTime(), long_format=1),
-                'date_created': self.ulocalized_time(ws.created(), long_format=1)}
+        data = {
+            'obj': ws,
+            'id': ws.id,
+            'url': ws.absolute_url(),
+            'template_title': ws.getWorksheetTemplateTitle(),
+            'remarks': ws.getRemarks(),
+            'date_printed': self.ulocalized_time(DateTime(), long_format=1),
+            'date_created': self.ulocalized_time(ws.created(), long_format=1),
+        }
 
         # Sub-objects
         data['ars'] = self._analyses_data(ws)
@@ -227,14 +229,17 @@ class PrintView(BrowserView):
         data['analyst'] = self._analyst_data(ws)
         data['printedby'] = self._printedby_data(ws)
         ans = []
+
         for ar in data['ars']:
             ans.extend([an['title'] for an in ar['analyses']])
+
         data['analyses_titles'] = list(set(ans))
 
         portal = self.context.portal_url.getPortalObject()
         data['portal'] = {'obj': portal,
                           'url': portal.absolute_url()}
         data['laboratory'] = self._lab_data()
+
         return data
 
     def _createdby_data(self, ws):
@@ -334,7 +339,6 @@ class PrintView(BrowserView):
                 if an.portal_type in ("ReferenceAnalysis", "DuplicateAnalysis"):
                     ar['id'] = an.getReferenceAnalysesGroupID()
                     ar['url'] = an.absolute_url()
-
             else:
                 ar = ars[reqid]
                 if (andict['tmp_position'] < ar['tmp_position']):
@@ -359,32 +363,35 @@ class PrintView(BrowserView):
         """
         decimalmark = analysis.aq_parent.aq_parent.getDecimalMark()
         keyword = analysis.getKeyword()
-        andict = {'obj': analysis,
-                  'id': analysis.id,
-                  'title': analysis.Title(),
-                  'keyword': keyword,
-                  'scientific_name': analysis.getScientificName(),
-                  'accredited': analysis.getAccredited(),
-                  'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(analysis.getPointOfCapture())),
-                  'category': to_utf8(analysis.getCategoryTitle()),
-                  'result': analysis.getResult(),
-                  'unit': to_utf8(analysis.getUnit()),
-                  'formatted_unit': format_supsub(to_utf8(analysis.getUnit())),
-                  'capture_date': analysis.getResultCaptureDate(),
-                  'request_id': analysis.aq_parent.getId(),
-                  'formatted_result': '',
-                  'uncertainty': analysis.getUncertainty(),
-                  'formatted_uncertainty': '',
-                  'retested': analysis.getRetested(),
-                  'remarks': to_utf8(analysis.getRemarks()),
-                  'resultdm': to_utf8(analysis.getResultDM()),
-                  'outofrange': False,
-                  'type': analysis.portal_type,
-                  'reftype': analysis.getReferenceType() if hasattr(
-                      analysis, 'getReferenceType') else None,
-                  'worksheet': None,
-                  'specs': {},
-                  'formatted_specs': ''}
+        andict = {
+            'obj': analysis,
+            'id': analysis.id,
+            'title': analysis.Title(),
+            'keyword': keyword,
+            'scientific_name': analysis.getScientificName(),
+            'accredited': analysis.getAccredited(),
+            'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(analysis.getPointOfCapture())),
+            'category': to_utf8(analysis.getCategoryTitle()),
+            'result': analysis.getResult(),
+            'unit': to_utf8(analysis.getUnit()),
+            'formatted_unit': format_supsub(to_utf8(analysis.getUnit())),
+            'capture_date': analysis.getResultCaptureDate(),
+            'request_id': analysis.aq_parent.getId(),
+            'formatted_result': '',
+            'uncertainty': analysis.getUncertainty(),
+            'formatted_uncertainty': '',
+            'retested': analysis.getRetested(),
+            'remarks': to_utf8(analysis.getRemarks()),
+            'resultdm': to_utf8(analysis.getResultDM()),
+            'outofrange': False,
+            'type': analysis.portal_type,
+            'reftype': analysis.getReferenceType() if hasattr(
+                analysis, 'getReferenceType') else None,
+            'worksheet': None,
+            'specs': {},
+            'formatted_specs': '',
+            'review_state': api.get_workflow_status_of(analysis),
+        }
 
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
