@@ -139,7 +139,7 @@ class AnalysisServicesView(BikaListingView):
         self.an_cats = None
         self.an_cats_order = None
         self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'AnalysisService', }
+        self.contentFilter = {'portal_type': 'AnalysisService'}
         self.context_actions = {
             _('Add'):
                 {'url': 'createObject?type_name=AnalysisService',
@@ -167,57 +167,70 @@ class AnalysisServicesView(BikaListingView):
                 'title': _('Service'),
                 'index': 'sortable_title',
                 'replace_url': 'absolute_url',
+                'sortable': not self.do_cats,
             },
             'Keyword': {
                 'title': _('Keyword'),
                 'index': 'getKeyword',
-                'attr': 'getKeyword'
+                'attr': 'getKeyword',
+                'sortable': not self.do_cats,
             },
             'Category': {
                 'title': _('Category'),
-                'attr': 'getCategoryTitle'
+                'attr': 'getCategoryTitle',
+                'sortable': not self.do_cats,
             },
             'Method': {
                 'title': _('Method'),
                 'attr': 'getMethod.Title',
                 'replace_url': 'getMethod.absolute_url',
+                'sortable': not self.do_cats,
                 'toggle': False
             },
             'Department': {
                 'title': _('Department'),
                 'toggle': False,
-                'attr': 'getDepartment.Title'
+                'attr': 'getDepartment.Title',
+                'sortable': not self.do_cats,
             },
             'Instrument': {
-                'title': _('Instrument')
+                'title': _('Instrument'),
+                'sortable': not self.do_cats,
             },
             'Unit': {
                 'title': _('Unit'),
-                'attr': 'getUnit'
+                'attr': 'getUnit',
+                'sortable': False,
             },
             'Price': {
-                'title': _('Price')
+                'title': _('Price'),
+                'sortable': not self.do_cats,
             },
             'MaxTimeAllowed': {
                 'title': _('Max Time'),
-                'toggle': False
+                'toggle': False,
+                'sortable': not self.do_cats,
             },
             'DuplicateVariation': {
                 'title': _('Dup Var'),
-                'toggle': False
+                'toggle': False,
+                'sortable': False,
              },
             'Calculation': {
-                'title': _('Calculation')
+                'title': _('Calculation'),
+                'sortable': False,
             },
             'CommercialID': {
                 'title': _('Commercial ID'),
                 'attr': 'getCommercialID',
-                'toggle': True
+                'toggle': True,
+                'sortable': not self.do_cats,
             },
             'ProtocolID': {
                 'title': _('Protocol ID'),
                 'attr': 'getProtocolID',
-                'toggle': True
+                'toggle': True,
+                'sortable': not self.do_cats,
             },
             'SortKey': {
                 'title': _('Sort Key'),
