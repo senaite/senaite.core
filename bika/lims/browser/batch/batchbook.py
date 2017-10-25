@@ -101,13 +101,13 @@ class BatchBookView(BikaListingView):
         if self.copy_to_new_allowed:
             review_states = []
             for review_state in self.review_states:
-                custom_actions = review_state.get('custom_actions', [])
-                custom_actions.extend(
+                custom_transitions = review_state.get('custom_transitions', [])
+                custom_transitions.extend(
                     [{'id': 'copy_to_new',
                       'title': _('Copy to new'),
                       'url': 'workflow_action?action=copy_to_new'},
                      ])
-                review_state['custom_actions'] = custom_actions
+                review_state['custom_transitions'] = custom_transitions
                 review_states.append(review_state)
             self.review_states = review_states
         return super(BatchBookView, self).__call__()
@@ -240,9 +240,9 @@ class BatchBookView(BikaListingView):
                 if keyword not in items[i]['class']:
                     items[i]['class'][keyword] = 'empty'
         if self.insert_submit_button:
-            custom_actions = self.review_states[0].get('custom_actions', [])
-            custom_actions.append({'id': 'submit'})
-            self.review_states[0]['custom_actions'] = custom_actions
+            transitions = self.review_states[0].get('custom_transitions', [])
+            transitions.append({'id': 'submit'})
+            self.review_states[0]['custom_transitions'] = transitions
 
         self.categories.sort()
         self.categories = [x[1] for x in self.categories]

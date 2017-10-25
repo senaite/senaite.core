@@ -88,9 +88,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
              'contentFilter': {},
              'columns': columns,
              'transitions': [{'id': 'empty'}, ],  # none
-             'custom_actions': [{'id': 'save_analyses_button',
-                                 'title': _('Save')}, ],
-             },
+             'custom_transitions': [{'id': 'save_analyses_button',
+                                     'title': _('Save')}],
+            },
         ]
 
         # Create Partitions View for this ARs sample
@@ -102,7 +102,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         p.show_select_column = False
         p.show_table_footer = False
         p.review_states[0]['transitions'] = [{'id': 'empty'}, ]  # none
-        p.review_states[0]['custom_actions'] = []
+        p.review_states[0]['custom_transitions'] = []
         p.review_states[0]['columns'] = ['PartTitle',
                                          'getContainer',
                                          'getPreservation',

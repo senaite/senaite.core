@@ -22,13 +22,13 @@ from bika.lims import logger
 from bika.lims.api import get_tool
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.subscribers import doActionFor
-from bika.lims.subscribers import skip
 from bika.lims.utils import getFromString
 from bika.lims.utils import getHiddenAttributesForClass, isActive
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
+from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getAllowedTransitions
+from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
 from zope.component import getAdapters, getMultiAdapter
 
@@ -474,7 +474,7 @@ class BikaListingView(BrowserView):
     #     [{'id':'x'}]
     # Transitions will be ordered by and restricted to, these items.
     #
-    # - If review_state[x]['custom_actions'] is defined. it's a list of dict:
+    # - If review_state[x]['custom_transitions'] is defined. it's a list of dict:
     #     [{'id':'x'}]
     # These transitions will be forced into the list of workflow actions.
     # They will need to be handled manually in the appropriate WorkflowAction
@@ -1281,10 +1281,6 @@ class BikaListingView(BrowserView):
                 results_dict[state_var] = state
             results_dict['state_title'] = st_title
 
-            results_dict['valid_transitions'] = getAllowedTransitions(obj)
-
-            # extra classes for individual fields on this item { field_id :
-            # "css classes" }
             results_dict['class'] = {}
             for name, adapter in getAdapters((obj,), IFieldIcons):
                 auid = obj.UID() if hasattr(obj, 'UID') and callable(

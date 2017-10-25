@@ -243,7 +243,7 @@ class AnalysisServicesView(BikaListingView):
                          'Calculation',
                          'SortKey',
                          ],
-             'custom_actions': [{'id': 'duplicate',
+             'custom_transitions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
              },
@@ -265,7 +265,7 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
-             'custom_actions': [{'id': 'duplicate',
+             'custom_transitions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
              },
@@ -286,7 +286,7 @@ class AnalysisServicesView(BikaListingView):
                          'DuplicateVariation',
                          'Calculation',
                          ],
-             'custom_actions': [{'id': 'duplicate',
+             'custom_transitions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
              },
