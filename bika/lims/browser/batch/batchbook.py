@@ -241,7 +241,7 @@ class BatchBookView(BikaListingView):
                     items[i]['class'][keyword] = 'empty'
         if self.insert_submit_button:
             transitions = self.review_states[0].get('custom_transitions', [])
-            transitions.append({'id': 'submit'})
+            transitions.append({'id': 'submit', 'title': _('Submit')})
             self.review_states[0]['custom_transitions'] = transitions
 
         self.categories.sort()
