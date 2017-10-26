@@ -8,7 +8,7 @@
 
 import transaction
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField, RecordsWidget
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import BooleanField, BooleanWidget, \
     DisplayList, MultiSelectionWidget, Schema, registerType
@@ -17,6 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
+from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
@@ -52,7 +53,7 @@ def getContainers(instance,
 
     bsc = getToolByName(instance, 'bika_setup_catalog')
 
-    items = allow_blank and [['', _('Any')]] or []
+    items = [['', _('Any')]] if allow_blank else []
 
     containers = []
     for container in bsc(portal_type='Container', sort_on='sortable_title'):
@@ -77,7 +78,7 @@ def getContainers(instance,
         # containers with no containertype first
         for container in containers:
             if not container.getContainerType():
-                items.append((container.UID(), container.Title()))
+                items.append([container.UID(), container.Title()])
 
     ts = getToolByName(instance, 'translation_service').translate
     cat_str = _c(ts(_('Container Type')))
@@ -87,12 +88,12 @@ def getContainers(instance,
     for ctype_uid, ctype_title in containertypes.items():
         ctype_title = _c(ctype_title)
         if show_container_types:
-            items.append((ctype_uid, "%s: %s" % (cat_str, ctype_title)))
+            items.append([ctype_uid, "%s: %s" % (cat_str, ctype_title)])
         if show_containers:
             for container in containers:
                 ctype = container.getContainerType()
                 if ctype and ctype.UID() == ctype_uid:
-                    items.append((container.UID(), container.Title()))
+                    items.append([container.UID(), container.Title()])
 
     items = tuple(items)
     return items
@@ -158,7 +159,7 @@ class PartitionSetupField(RecordsField):
     def Preservations(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = [(c.UID, c.title) for c in
+        items = [[c.UID, c.title] for c in
                  bsc(portal_type='Preservation',
                      inactive_state='active',
                      sort_on='sortable_title')]

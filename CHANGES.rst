@@ -4,6 +4,11 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
+**Added**
+
+- Issue-288: Worksheet: "Print" does not display/print partial results
+             https://github.com/senaite/bika.lims/issues/288
+
 **Merged PRs from upstream**
 #282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
 
@@ -17,6 +22,10 @@ LIMS-1504: Calculation formula test widgets
 
 **Fixed**
 
+- #306 Integration of PR-2077. Client Folder Listing Table decreases Bika LIMS performance and is unusable for many Clients
+- #309 Integration of PR-2130, PR-2233
+       Infinite Recursion on Report Publication.
+       Copied ARs are created in random order.
 - #304 Integration of PR-2053, PR-2080.
        Computed Sample Field "SampleTypeUID" does not check if a SampleType is set.
        Batch Book raises an Error if the Batch inherits from 2 ARs.
