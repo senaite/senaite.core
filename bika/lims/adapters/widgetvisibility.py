@@ -91,23 +91,37 @@ class SamplingWorkflowWidgetVisibility(object):
         else:
             swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
         if swf_enabled:
-            if mode == 'header_table':
-                state = 'prominent'
-            elif mode == 'view':
-                state = 'visible'
-
+            if fieldName == 'DateSampled':
+                if mode == 'add':
+                    state = 'invisible'
+                    field.required = 0
+            elif fieldName in fields:
+                if mode == 'header_table':
+                    state = 'prominent'
+                elif mode == 'view':
+                    state = 'visible'
         # If SamplingWorkflow is Disabled:
-        #  - Enable DateSampled and even required in 'add' view
-        #  - Disable 'SamplingDate' and 'Sampler' everywhere.
+        #  - DateSampled: visible,
+        #                 not editable after creation,
+        #                 required in 'add' view.
+        #  - 'SamplingDate' and 'Sampler': disabled everywhere.
         else:
             if fieldName == 'DateSampled':
                 if mode == 'add':
                     state = 'edit'
                     field.required = 1
-                else:
+                elif mode == 'edit':
+                    state = 'invisible'
+                elif mode == 'view':
                     state = 'visible'
-            else:
-                state = None
+                elif mode == 'header_table':
+                    # In the Schema definition, DateSampled is 'prominent' for
+                    # 'header_table' to let users edit it after receiving
+                    # the Sample. But if SWF is disbled, DateSampled must be
+                    # filled during creation and never editable.
+                    state = 'visible'
+            elif fieldName in fields:
+                state = 'invisible'
         return state
 
 
