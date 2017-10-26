@@ -368,7 +368,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'SamplingWorkflowEnabled',
-        schemata="Sampling and COC",
+        schemata="Analyses",
         default=False,
         widget=BooleanWidget(
             label=_("Enable the Sampling workflow"),
