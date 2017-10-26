@@ -102,5 +102,10 @@
         </tr>
       </tbody>
     </table>
+    <div id="footer">
+      <div class="" i18n:translate="">
+        Legend: Results in <em>italic</em> font are pending, results in <strong>bold</strong> font are verified.
+      </div>
+    </div>
   </div>
 </tal:print>
