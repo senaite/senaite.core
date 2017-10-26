@@ -174,6 +174,15 @@ class InstrumentValidation(BaseFolder):
 
         return down_from <= today <= down_to
 
+    def isFutureValidation(self):
+        """
+        Check is the current validation has been scheduled for a future time
+        :return: Bool
+        """
+        today = DateTime()
+        down_from = self.getDownFrom()
+        return down_from >= today
+
     def getRemainingDaysInValidation(self):
         """Returns the days until the instrument returns from validation
         """
@@ -188,7 +197,8 @@ class InstrumentValidation(BaseFolder):
         # down_from comes after down_to?
         if down_from > down_to:
             return 0
-        # calculate the time between today and down_to, even if down_from is in the future.
+        # calculate the time between today and down_to, even if down_from
+        # is in the future.
         else:
             delta = down_to - today
 

@@ -15,6 +15,9 @@ Instruments can also be validated by the lab personell for a given time.
 Only valid instruments, which are not currently calibrated or validated are
 available in the system and can be used to fetch results for analysis.
 
+Running this test from the buildout directory::
+
+    bin/test test_textual_doctests -t InstrumentCalibrationCertificationAndValidation
 
 Test Setup
 ==========
@@ -28,29 +31,15 @@ Test Setup
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
 
-    >>> portal = self.getPortal()
+    >>> portal = self.portal
     >>> portal_url = portal.absolute_url()
     >>> bika_setup = portal.bika_setup
-    >>> bika_setup_url = portal_url + "/bika_setup"
-    >>> browser = self.getBrowser()
     >>> setRoles(portal, TEST_USER_ID, ['LabManager', 'Manager', 'Owner'])
 
     >>> def start_server():
     ...     from Testing.ZopeTestCase.utils import startZServer
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
-
-    >>> def login(user=TEST_USER_ID, password=TEST_USER_PASSWORD):
-    ...     browser.open(portal_url + "/login_form")
-    ...     browser.getControl(name='__ac_name').value = user
-    ...     browser.getControl(name='__ac_password').value = password
-    ...     browser.getControl(name='submit').click()
-    ...     assert("__ac_password" not in browser.contents)
-    ...     return ploneapi.user.get_current()
-
-    >>> def logout():
-    ...     browser.open(portal_url + "/logout")
-    ...     assert("You are now logged out" in browser.contents)
 
     >>> def get_roles_for_permission(permission, context):
     ...     allowed = set(rolesForPermissionOn(permission, context))
@@ -155,29 +144,36 @@ The instrument knows if a calibration is in progress::
     False
 
 Since multiple calibrations might be in place, the instrument needs to know
-about the calibration which takes the longes time::
+about the latest calibration which has been done::
 
     >>> calibration3 = create(instrument1, "InstrumentCalibration", title="Calibration-3")
-    >>> calibration3.setDownFrom(DateTime())
-    >>> calibration3.setDownTo(DateTime() + 365)
+    >>> calibration3.setDownFrom(DateTime() - 3)
+    >>> calibration3.setDownTo(DateTime() - 1)
 
     >>> instrument1.getLatestValidCalibration()
     <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-3>
 
-Only calibrations which are currently in progress are returned.
+Only calibrations which are done are returned.
 So if it would start tomorrow, it should not be returned::
 
     >>> calibration3.setDownFrom(DateTime() + 1)
+    >>> calibration3.setDownTo(DateTime() + 3)
     >>> calibration3.isCalibrationInProgress()
     False
+    >>> calibration3.isFutureCalibration()
+    True
     >>> instrument1.getLatestValidCalibration()
-    <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-1>
+
+    >>> calibration4 = create(instrument1, "InstrumentCalibration",title="Calibration-4")
+    >>> calibration4.setDownFrom(DateTime() - 3)
+    >>> calibration4.setDownTo(DateTime() - 1)
+    >>> instrument1.getLatestValidCalibration()
+    <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-4>
 
 If all calibrations are dated in the future, it should return none::
 
-    >>> calibration1.setDownFrom(DateTime() + 1)
-    >>> calibration1.isCalibrationInProgress()
-    False
+    >>> calibration4.setDownFrom(DateTime() + 1)
+    >>> calibration4.setDownTo(DateTime() + 2)
     >>> instrument1.getLatestValidCalibration()
 
 Instruments w/o any calibration should return no valid calibrations::
@@ -368,28 +364,37 @@ The instrument will be available after 7 days::
     7
 
 Since multiple validations might be in place, the instrument needs to know
-about the validation which takes the longes time::
+about the latest validation which has been done::
 
     >>> validation3 = create(instrument1, "InstrumentValidation", title="Validation-3")
-    >>> validation3.setDownFrom(DateTime())
-    >>> validation3.setDownTo(DateTime() + 365)
+    >>> validation3.setDownFrom(DateTime() - 3)
+    >>> validation3.setDownTo(DateTime() - 1)
 
     >>> instrument1.getLatestValidValidation()
     <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-3>
 
-Only validations which are currently in progress are returned.
+Only validations which are done are returned.
 So if it would start tomorrow, it should not be returned::
 
     >>> validation3.setDownFrom(DateTime() + 1)
+    >>> validation3.setDownTo(DateTime() + 3)
     >>> validation3.isValidationInProgress()
     False
+    >>> validation3.isFutureValidation()
+    True
     >>> instrument1.getLatestValidValidation()
-    <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-1>
+
+    >>> validation4 = create(instrument1, "InstrumentValidation", title="Validation-4")
+    >>> validation4.setDownFrom(DateTime() - 3)
+    >>> validation4.setDownTo(DateTime() - 1)
+    >>> instrument1.getLatestValidValidation()
+    <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-4>
 
 If all validations are dated in the future, it should return none::
 
-    >>> validation1.setDownFrom(DateTime() + 1)
-    >>> validation1.isValidationInProgress()
+    >>> validation4.setDownFrom(DateTime() + 1)
+    >>> validation4.setDownTo(DateTime() + 2)
+    >>> validation4.isValidationInProgress()
     False
     >>> instrument1.getLatestValidValidation()
 

@@ -608,12 +608,8 @@ class Instrument(ATFolder):
     def isCalibrationInProgress(self):
         """ Returns if the current instrument is under calibration progress
         """
-        calibration = self.getLatestValidCalibration()
-        today = date.today()
-        if calibration and calibration.getDownTo():
-            validfrom = calibration.getDownFrom().asdatetime().date()
-            validto = calibration.getDownTo().asdatetime().date()
-            if validfrom <= today <= validto:
+        for calibration in self.getCalibrations():
+            if calibration.isCalibrationInProgress():
                 return True
         return False
 
@@ -639,32 +635,36 @@ class Instrument(ATFolder):
         """ Returns the latest valid certification. If no latest valid
             certification found, returns None
         """
-        cert = None
+        saved_cert = None
         lastfrom = None
         lastto = None
-        for c in self.getCertifications():
-            validfrom = c.getValidFrom() if c else None
-            validto = c.getValidTo() if validfrom else None
+        for cert in self.getCertifications():
+            if not cert.isValid():
+                continue
+            validfrom = cert.getValidFrom() if cert else None
+            validto = cert.getValidTo() if validfrom else None
             if not validfrom or not validto:
                 continue
             validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
-            if not cert \
+            if not saved_cert \
                 or validto > lastto \
                 or (validto == lastto and validfrom > lastfrom):
-                cert = c
+                saved_cert = cert
                 lastfrom = validfrom
                 lastto = validto
-        return cert
+        return saved_cert
 
     def getLatestValidValidation(self):
-        """ Returns the latest valid validation. If no latest valid
+        """ Returns the latest *done* validation. If no latest *done*
             validation found, returns None
         """
         validation = None
         lastfrom = None
         lastto = None
         for v in self.getValidations():
+            if v.isValidationInProgress() or v.isFutureValidation():
+                continue
             validfrom = v.getDownFrom() if v else None
             validto = v.getDownTo() if validfrom else None
             if not validfrom or not validto:
@@ -680,24 +680,21 @@ class Instrument(ATFolder):
         return validation
 
     def getLatestValidCalibration(self):
-        """ Returns the latest valid calibration. If no latest valid
+        """ Returns the latest *done* calibration. If no latest *done*
             calibration found, returns None
         """
         calibration = None
-        lastfrom = None
         lastto = None
-        for c in self.getCalibrations():
-            validfrom = c.getDownFrom() if c else None
-            validto = c.getDownTo() if validfrom else None
+        for cal in self.getCalibrations():
+            if cal.isCalibrationInProgress() or cal.isFutureCalibration():
+                continue
+            validfrom = cal.getDownFrom() if cal else None
+            validto = cal.getDownTo() if validfrom else None
             if not validfrom or not validto:
                 continue
-            validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
-            if not calibration \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
-                calibration = c
-                lastfrom = validfrom
+            if calibration is None or validto > lastto:
+                calibration = cal
                 lastto = validto
         return calibration
 
