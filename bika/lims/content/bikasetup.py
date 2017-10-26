@@ -377,7 +377,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ScheduleSamplingEnabled',
-        schemata="Sampling and COC",
+        schemata="Analyses",
         default=False,
         widget=BooleanWidget(
             label=_("Enable the Schedule a Sampling functionality"),
@@ -389,7 +389,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowPartitions',
-        schemata="Sampling and COC",
+        schemata="Analyses",
         default=True,
         widget=BooleanWidget(
             label=_("Display individual sample partitions "),
@@ -556,7 +556,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     DurationField(
         'DefaultSampleLifetime',
-        schemata="Sampling and COC",
+        schemata="Analyses",
         required=1,
         default={"days": 30, "hours": 0, "minutes": 0},
         widget=DurationWidget(
@@ -826,7 +826,7 @@ Configuration Settings:
     ),
     RecordsField(
         'RejectionReasons',
-        schemata="Sampling and COC",
+        schemata="Analyses",
         widget=RejectionSetupWidget(
             label=_("Enable the rejection workflow"),
             description=_("Select this to activate the rejection workflow "
@@ -911,14 +911,14 @@ Configuration Settings:
     ),
     TextField(
         'COCAttestationStatement',
-        schemata="Sampling and COC",
+        schemata="Analyses",
         widget=TextAreaWidget(
             label=_("COC Attestation Statement"),
         )
     ),
     StringField(
         'COCFooter',
-        schemata="Sampling and COC",
+        schemata="Analyses",
         widget=StringWidget(
             label=_("COC Footer"),
         )
