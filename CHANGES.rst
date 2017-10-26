@@ -17,6 +17,7 @@ LIMS-1504: Calculation formula test widgets
 
 **Fixed**
 
+- #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
 - #304 Integration of PR-2053, PR-2080.
        Computed Sample Field "SampleTypeUID" does not check if a SampleType is set.
        Batch Book raises an Error if the Batch inherits from 2 ARs.
