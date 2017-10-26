@@ -5,27 +5,22 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import getSecurityManager
-from bika.lims import bikaMessageFactory as _
-from bika.lims import PMF
-from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
-from bika.lims.permissions import EditResults, EditWorksheet, ManageWorksheets
-from bika.lims.subscribers import doActionFor
-from bika.lims.subscribers import skip
-from bika.lims.utils import isActive
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
-from zope.component import adapts
-from zope.component import getAdapters
-from zope.component import getMultiAdapter
-from zope.interface import implements
-from Products.CMFPlone.i18nl10n import ulocalized_time
+import json
 
 import plone
 import plone.protect
-import json
+from AccessControl import getSecurityManager
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.i18nl10n import ulocalized_time
+from bika.lims import PMF
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
+from bika.lims.permissions import EditResults, ManageWorksheets
+from bika.lims.subscribers import doActionFor
+from bika.lims.subscribers import skip
+from bika.lims.utils import isActive
 
 
 class WorksheetFolderWorkflowAction(WorkflowAction):
