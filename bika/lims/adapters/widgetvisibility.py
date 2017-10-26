@@ -77,19 +77,37 @@ class SamplingWorkflowWidgetVisibility(object):
 
     def __init__(self, context):
         self.context = context
-        self.sort = 100
+        self.sort = 10
 
     def __call__(self, context, mode, field, default):
-        sw_fields = ['Sampler', 'DateSampled']
+        fields = ['Sampler', 'DateSampled', 'SamplingDate']
         state = default if default else 'invisible'
         fieldName = field.getName()
-        if fieldName in sw_fields \
-                and hasattr(self.context, 'getSamplingWorkflowEnabled') \
-                and self.context.getSamplingWorkflowEnabled():
+        if fieldName not in fields:
+            return state
+        if hasattr(self.context, 'getSamplingWorkflowEnabled') and \
+                context.getSamplingWorkflowEnabled() is not '':
+            swf_enabled = context.getSamplingWorkflowEnabled()
+        else:
+            swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+        if swf_enabled:
             if mode == 'header_table':
                 state = 'prominent'
             elif mode == 'view':
                 state = 'visible'
+
+        # If SamplingWorkflow is Disabled:
+        #  - Enable DateSampled and even required in 'add' view
+        #  - Disable 'SamplingDate' and 'Sampler' everywhere.
+        else:
+            if fieldName == 'DateSampled':
+                if mode == 'add':
+                    state = 'edit'
+                    field.required = 1
+                else:
+                    state = 'visible'
+            else:
+                state = None
         return state
 
 
@@ -188,36 +206,4 @@ class HideClientDiscountFields(object):
         fieldName = field.getName()
         if fieldName in fields and not ShowPrices:
             state = 'invisible'
-        return state
-
-
-class HideARDateFields(object):
-    """Hide/Show Date Sampled and Sampling Date feilds of ARs.
-    """
-    implements(IATWidgetVisibility)
-
-    def __init__(self, context):
-        self.context = context
-        self.sort = 3
-
-    def __call__(self, context, mode, field, default):
-        fields = ['DateSampled', 'SamplingDate']
-        if hasattr(self.context, 'getSamplingWorkflowEnabled'):
-            swf_enabled = context.getSamplingWorkflowEnabled()
-        else:
-            swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
-        state = default if default else 'invisible'
-        fieldName = field.getName()
-        if fieldName not in fields:
-            return state
-        if swf_enabled:
-            if fieldName == 'DateSampled':
-                state = 'invisible'
-            else:
-                state = 'visible'
-        else:
-            if fieldName == 'DateSampled':
-                state = 'visible'
-            else:
-                state = 'invisible'
         return state
