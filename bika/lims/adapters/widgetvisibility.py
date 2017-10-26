@@ -70,8 +70,11 @@ class WorkflowAwareWidgetVisibility(object):
 
 
 class SamplingWorkflowWidgetVisibility(object):
-    """This will force the 'Sampler' and 'DateSampled' widget default to 'visible'.
-    We must check the attribute saved on the sample, not the bika_setup value.
+    """
+    This will handle Handling 'DateSampled' and 'SamplingDate' fields'
+    visibilities based on Sampling Workflow (SWF)status. We must check the
+    attribute saved on the sample, not the bika_setup value though. See the
+    internal comments how it enables/disables WidgetVisibility depending on SWF.
     """
     implements(IATWidgetVisibility)
 
@@ -85,11 +88,17 @@ class SamplingWorkflowWidgetVisibility(object):
         fieldName = field.getName()
         if fieldName not in fields:
             return state
+
+        # If object has been already created, get SWF statues from it.
         if hasattr(self.context, 'getSamplingWorkflowEnabled') and \
                 context.getSamplingWorkflowEnabled() is not '':
             swf_enabled = context.getSamplingWorkflowEnabled()
         else:
             swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+
+        # If SWF Enabled, we mostly use the dictionary from the Field, but:
+        # - DateSampled: invisible during creation.
+        # - SamplingDate and Sampler: visible and editable until sample due.
         if swf_enabled:
             if fieldName == 'DateSampled':
                 if mode == 'add':
@@ -102,7 +111,7 @@ class SamplingWorkflowWidgetVisibility(object):
                     state = 'visible'
         # If SamplingWorkflow is Disabled:
         #  - DateSampled: visible,
-        #                 not editable after creation,
+        #                 not editable after creation (appears in header_table),
         #                 required in 'add' view.
         #  - 'SamplingDate' and 'Sampler': disabled everywhere.
         else:
@@ -117,7 +126,7 @@ class SamplingWorkflowWidgetVisibility(object):
                 elif mode == 'header_table':
                     # In the Schema definition, DateSampled is 'prominent' for
                     # 'header_table' to let users edit it after receiving
-                    # the Sample. But if SWF is disbled, DateSampled must be
+                    # the Sample. But if SWF is disabled, DateSampled must be
                     # filled during creation and never editable.
                     state = 'visible'
             elif fieldName in fields:
