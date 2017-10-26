@@ -161,7 +161,7 @@
                 uid = data.transitions[i].uid;
                 trans = data.transitions[i].transitions;
                 el = $("input[id*='_cb_'][value='" + uid + "']");
-                el.attr('data-valid_transitions', trans);
+                el.attr('data-valid_transitions', $.toJSON(trans));
                 $(el).prop('disabled', false);
                 i++;
               }
@@ -217,8 +217,7 @@
      */
     render_transition_buttons = function(blst) {
       'use strict';
-      debugger;
-      var _button, allowed_transitions, buttonspane, checked, custom_transitions, hidden_transitions, i, trans;
+      var _button, allowed_transitions, buttonspane, checked, custom_transitions, hidden_transitions, i, restricted_transitions, trans;
       buttonspane = $(blst).find('span.workflow_action_buttons');
       if ($(buttonspane).length === 0) {
         return;
@@ -227,39 +226,42 @@
       hidden_transitions = $(blst).find('input[id="hide_transitions"]');
       hidden_transitions = $(hidden_transitions).length === 1 ? $(hidden_transitions).val() : '';
       hidden_transitions = hidden_transitions === '' ? [] : hidden_transitions.split(',');
-      custom_transitions = $(blst).find('input[id="custom_transitions"]');
-      custom_transitions = $(custom_transitions).length === 1 ? $(custom_transitions).val() : '';
-      custom_transitions = custom_transitions === '' ? [] : custom_transitions.split(',');
+      restricted_transitions = $(blst).find('input[id="restricted_transitions"]');
+      restricted_transitions = $(restricted_transitions).length === 1 ? $(restricted_transitions).val() : '';
+      restricted_transitions = restricted_transitions === '' ? [] : restricted_transitions.split(',');
       checked = $(blst).find("input[id*='_cb_']:checked");
       $(checked).each(function(e) {
         var transitions;
         transitions = $.parseJSON($(this).attr('data-valid_transitions'));
-        if (custom_transitions.length > 0) {
+        if (restricted_transitions.length > 0) {
           transitions = transitions.filter(function(el) {
-            return custom_transitions.indexOf(el) !== -1;
+            return restricted_transitions.indexOf(el.id) > -1;
           });
         }
-        transitions = transitions.filter(function(el) {
-          return hidden_transitions.indexOf(el) === -1;
-        });
+        if (hidden_transitions.length > 0) {
+          transitions = transitions.filter(function(el) {
+            return hidden_transitions.indexOf(el.id) < 0;
+          });
+        }
         if (allowed_transitions.length > 0) {
           transitions = transitions.filter(function(el) {
-            return allowed_transitions.indexOf(el) !== -1;
+            return allowed_transitions.indexOf(el) > -1;
+          });
+        } else {
+          allowed_transitions = transitions;
+        }
+        if (transitions.length > 0) {
+          allowed_transitions = allowed_transitions.filter(function(el) {
+            return transitions.indexOf(el) > -1;
           });
         }
-        allowed_transitions = transitions;
       });
-      if (custom_transitions.length > 0) {
-        allowed_transitions = custom_transitions.filter(function(v) {
-          return allowed_transitions.includes(v);
-        });
-      }
       $(buttonspane).html('');
       i = 0;
       while (i < allowed_transitions.length) {
         trans = allowed_transitions[i];
-        _button = "<input id='" + trans['id'] + "_transition' class='context workflow_action_button action_button allowMultiSubmit' type='submit' value='" + (PMF(trans['title'])) + "' transition='" + trans['id'] + "' name='workflow_action_button'>&nbsp;";
-        $(buttonspane).append(button);
+        _button = "<input id='" + trans['id'] + "_transition' class='context workflow_action_button action_button allowMultiSubmit' type='submit' value='" + (PMF(trans['title'])) + "' transition='" + trans['id'] + "' name='workflow_action_button'/>&nbsp;";
+        $(buttonspane).append(_button);
         i++;
       }
       if ($(checked).length > 0) {
@@ -267,10 +269,10 @@
         $(custom_transitions).each(function(i, e) {
           var _title, _trans, _url;
           _trans = $(e).val();
-          _url = $(this).attr('url');
-          _title = $(this).attr('title');
-          _button = "<input id='" + _trans + "_transition' class='context workflow_action_button action_button allowMultiSubmit' type='submit' url='" + _url + "' value='" + _title + "' transition='" + _trans + "' name='workflow_action_button'>&nbsp;";
-          $(buttonspane).append(button);
+          _url = $(e).attr('url');
+          _title = $(e).attr('title');
+          _button = "<input id='" + _trans + "_transition' class='context workflow_action_button action_button allowMultiSubmit' type='submit' url='" + _url + "' value='" + _title + "' transition='" + _trans + "' name='workflow_action_button'/>&nbsp;";
+          $(buttonspane).append(_button);
         });
       }
     };

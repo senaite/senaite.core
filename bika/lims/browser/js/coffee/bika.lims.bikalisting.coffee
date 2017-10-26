@@ -162,7 +162,7 @@ window.BikaListingTableView = ->
                             uid = data.transitions[i].uid
                             trans = data.transitions[i].transitions
                             el = $("input[id*='_cb_'][value='#{uid}']")
-                            el.attr 'data-valid_transitions', trans
+                            el.attr 'data-valid_transitions', $.toJSON(trans)
                             $(el).prop 'disabled', false
                             i++
                         $("input[id*='select_all']").fadeIn()
@@ -217,45 +217,44 @@ window.BikaListingTableView = ->
 
     render_transition_buttons = (blst) ->
         'use strict'
-        debugger
         buttonspane = $(blst).find('span.workflow_action_buttons')
         if $(buttonspane).length == 0
             # If show_workflow_action_buttons param is set to False in the
             # view, do nothing
             return
         allowed_transitions = []
-        # hidden_transitions and custom_transitions are hidden fields
+        # hidden_transitions and restricted are hidden fields
         # containing comma separated list of transition IDs.
         hidden_transitions = $(blst).find('input[id="hide_transitions"]')
         hidden_transitions = if $(hidden_transitions).length == 1 then $(hidden_transitions).val() else ''
         hidden_transitions = if hidden_transitions == '' then [] else hidden_transitions.split(',')
-        custom_transitions = $(blst).find('input[id="custom_transitions"]')
-        custom_transitions = if $(custom_transitions).length == 1 then $(custom_transitions).val() else ''
-        custom_transitions = if custom_transitions == '' then [] else custom_transitions.split(',')
+        restricted_transitions = $(blst).find('input[id="restricted_transitions"]')
+        restricted_transitions = if $(restricted_transitions).length == 1 then $(restricted_transitions).val() else ''
+        restricted_transitions = if restricted_transitions == '' then [] else restricted_transitions.split(',')
         checked = $(blst).find("input[id*='_cb_']:checked")
+
         $(checked).each (e) ->
             transitions = $.parseJSON($(this).attr('data-valid_transitions'))
-            if custom_transitions.length > 0
-                # Do not want transitions other than those defined in bikalisting
-                transitions = transitions.filter((el) ->
-                    custom_transitions.indexOf(el) != -1
-                )
+            # Do not want transitions other than those defined in bikalisting
+            if restricted_transitions.length > 0
+                transitions = transitions.filter (el) ->
+                    return restricted_transitions.indexOf(el.id) > -1
             # Do not show hidden transitions
-            transitions = transitions.filter((el) ->
-                hidden_transitions.indexOf(el) == -1
-            )
+            if hidden_transitions.length > 0
+                transitions = transitions.filter (el) ->
+                    return hidden_transitions.indexOf(el.id) < 0
             # We only want the intersection within all selected items
             if allowed_transitions.length > 0
-                transitions = transitions.filter((el) ->
-                    allowed_transitions.indexOf(el) != -1
-                )
-            allowed_transitions = transitions
+                transitions = transitions.filter (el) ->
+                    return allowed_transitions.indexOf(el) > -1
+            else
+                allowed_transitions = transitions
+            # and the inverse of the intersection
+            if transitions.length > 0
+                allowed_transitions = allowed_transitions.filter (el) ->
+                    return transitions.indexOf(el) > -1
             return
-        if custom_transitions.length > 0
-            # Sort the transitions in accordance with bikalisting settings
-            allowed_transitions = custom_transitions.filter((v) ->
-                allowed_transitions.includes v
-            )
+
         # Generate the action buttons
         $(buttonspane).html ''
         i = 0
@@ -266,24 +265,24 @@ window.BikaListingTableView = ->
                        type='submit'
                        value='#{PMF(trans['title'])}'
                        transition='#{trans['id']}'
-                       name='workflow_action_button'>&nbsp;"
-            $(buttonspane).append button
+                       name='workflow_action_button'/>&nbsp;"
+            $(buttonspane).append _button
             i++
         # Add now custom actions
         if $(checked).length > 0
             custom_transitions = $(blst).find('input[type="hidden"].custom_transition')
             $(custom_transitions).each (i, e) ->
                 _trans = $(e).val()
-                _url = $(this).attr('url')
-                _title = $(this).attr('title')
+                _url = $(e).attr('url')
+                _title = $(e).attr('title')
                 _button = "<input id='#{_trans}_transition'
                            class='context workflow_action_button action_button allowMultiSubmit'
                            type='submit'
                            url='#{_url}'
                            value='#{_title}'
                            transition='#{_trans}'
-                           name='workflow_action_button'>&nbsp;"
-                $(buttonspane).append button
+                           name='workflow_action_button'/>&nbsp;"
+                $(buttonspane).append _button
                 return
         return
 
