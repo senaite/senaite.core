@@ -5,20 +5,13 @@
 
 import json
 import traceback
+from plone.api import user
 
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from collective.taskqueue.interfaces import ITaskQueue
-from plone import api
-from plone.app.layout.globals.interfaces import IViewView
-from plone.protect import CheckAuthenticator
-from plone.protect import PostOnly
-from zope.component import queryUtility
-from zope.interface import implements
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.analysisrequest.analysisrequests_filter_bar \
@@ -30,6 +23,12 @@ from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
+from collective.taskqueue.interfaces import ITaskQueue
+from plone.app.layout.globals.interfaces import IViewView
+from plone.protect import CheckAuthenticator
+from plone.protect import PostOnly
+from zope.component import queryUtility
+from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
@@ -228,7 +227,10 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'republish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                          'Progress',
                         'getRequestID',
@@ -1018,7 +1020,7 @@ class AnalysisRequestsView(BikaListingView):
         # Thee conditions to improve performance, some functions to check
         # the condition need to get the full analysis request.
         if states_dict.get('review_state', '') == 'to_be_verified':
-            allowed = api.user.has_permission(
+            allowed = user.has_permission(
                 VerifyPermission,
                 username=self.member.getUserName())
             # TODO-performance: isUserAllowedToVerify getts all analysis
@@ -1099,16 +1101,6 @@ class AnalysisRequestsView(BikaListingView):
                     [{'id': 'copy_to_new',
                       'title': _('Copy to new'),
                       'url': 'workflow_action?action=copy_to_new'}, ])
-                review_states.append(review_state)
-            self.review_states = review_states
-
-        if True:
-            review_states = []
-            for review_state in self.review_states:
-                review_state.get('custom_actions', []).extend(
-                    [{'id': 'print_stickers',
-                      'title': _('Print Stickers'),
-                      'url': 'workflow_action?action=print_stickers'}, ])
                 review_states.append(review_state)
             self.review_states = review_states
 
