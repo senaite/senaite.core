@@ -12,7 +12,10 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.api import is_at_content, is_brain, is_dexterity_content
 from bika.lims.interfaces.field import IUIDReferenceField
+from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
+
+BACKREFS_STORAGE = "bika.lims.browser.fields.uidreferencefield.backreferences"
 
 
 class ReferenceException(Exception):
@@ -170,7 +173,9 @@ class UIDReferenceField(StringField):
                 key = context.portal_type + self.getName()
             uid = context.UID()
             for item in items:
-                backrefs = get_backreferences(item)
+                # Because no relationship is passed to get_backreferences,
+                # the entire set of backrefs is returned by reference.
+                backrefs = get_backreferences(item, relationship=None)
                 if key not in backrefs:
                     backrefs[key] = []
                 if uid not in backrefs[key]:
@@ -218,27 +223,57 @@ class UIDReferenceField(StringField):
                 StringField.set(self, context, '', **kwargs)
 
 
-def get_backreferences(context, relationship=None):
+def get_storage(context):
+    annotation = IAnnotations(context)
+    if annotation.get(BACKREFS_STORAGE) is None:
+        annotation[BACKREFS_STORAGE] = {}
+    return annotation[BACKREFS_STORAGE]
+
+
+def get_backreferences(context, relationship=None, uids=False):
     """Return backreferences informed by UIDReferenceField values.
 
-    Relationship can be provided as a parameter of the UIDReferenceField.  If
-    this is not present on the field, then it will be composed from a
-    concatenation of the portal_type and fieldname of the field that is
-    initiating the reference.  When calling get_backreferences with a
-    relationship argument supplied, the backreferences will be returned as a
-    copy of the backreferences list, with all UIDs dereferenced into objects.
+    When calling get_backreferences with a relationship argument supplied,
+    then a list of matching backreferences will be returned by value
+
+    Relationship can be provided as a parameter of the UIDReferenceField
+    itself.  If this is not present on the field, then it will be composed
+    from a concatenation of the portal_type and fieldname of the field that
+    is initiating the reference.
+
+    get all objects that reference the context object with this relationship:
+
+        >>> items = get_backreferences(context, relationship="RelationName")
+
+    Modifying the list does not change backreferences of context:
+
+        >>> items = []  # harmless
 
     If you do not provide a relationship parameter to get_backreferences,
     then the entire set of backreferences to the context object is returned
-    (by reference).  In this case, UIDs are returned as values, instead of
-    objects, and modifying the resulting variable will cause the
-    backreferences to be modified in the data.
+    by reference, as a dictionary.
+
+    The keys will be the names of relationships, and the values will be
+    lists of objects.
+
+    get all backreferences from all relationships:
+
+        >>> backrefs = get_backreferences(context)
+
+    modifying this variable will modify the backreferences of context!
+
+        >>> backrefs['RelationName'] = []  # RelationName now has no backrefs
+
+    When requesting backreferences for a single relationship, you can provide
+    an extra keyword argument `uids=True` to get_backreferences, to prevent
+    the UIDs from being resolved into objects.  This paramter is IGNORED when
+    requesting the entire set of backreferences!  This usage will always return
+    the UIDs only.
     """
     instance = context.aq_base
-    if not hasattr(instance, '_uidreference_backreferences'):
-        instance._uidreference_backreferences = {}
-    backrefs = instance._uidreference_backreferences
+    backrefs = get_storage(instance)
     if relationship:
-        backrefs = [_get_object(context, b)
-                    for b in backrefs.get(relationship, [])]
+        backrefs = backrefs.get(relationship, [])
+        if not uids:
+            backrefs = [_get_object(context, b) for b in backrefs]
     return backrefs
