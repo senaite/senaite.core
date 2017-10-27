@@ -1966,7 +1966,7 @@ class Setup(WorksheetImporter):
 class ID_Prefixes(WorksheetImporter):
 
     def Import(self):
-        prefixes = self.context.bika_setup.getPrefixes()
+        prefixes = self.context.bika_setup.getIDFormatting()
         for row in self.get_rows(3):
             # remove existing prefix from list
             prefixes = [p for p in prefixes
@@ -1979,7 +1979,7 @@ class ID_Prefixes(WorksheetImporter):
                              'padding': row['padding'],
                              'prefix': row['prefix'],
                              'separator': separator})
-        self.context.bika_setup.setPrefixes(prefixes)
+        #self.context.bika_setup.setIDFormatting(prefixes)
 
 
 class Attachment_Types(WorksheetImporter):

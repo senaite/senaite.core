@@ -58,35 +58,84 @@ from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.locales import COUNTRIES
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.numbergenerator import INumberGenerator
+from zope.component import getUtility
 
-
-class PrefixesField(RecordsField):
+class IDFormattingField(RecordsField):
     """A list of prefixes per portal_type
     """
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type': 'prefixes',
-        'subfields': ('portal_type', 'prefix', 'separator', 'padding', 'sequence_start'),
-        'subfield_labels': {'portal_type': 'Portal type',
-                            'prefix': 'Prefix',
-                            'separator': 'Prefix Separator',
-                            'padding': 'Padding',
-                            'sequence_start': 'Sequence Start'},
-        'subfield_readonly': {'portal_type': False,
-                              'prefix': False,
-                              'padding': False,
-                              'separator': False,
-                              'sequence_start': False},
-        'subfield_sizes': {'portal_type': 32,
-                           'prefix': 12,
-                           'padding': 12,
-                           'separator': 5,
-                           'sequence_start': 12},
-        'subfield_types': {'padding': 'int',
-                           'sequence_start': 'int'},
+        'subfields': (
+            'portal_type',
+            'form',
+            'sequence_type',
+            'context',
+            'counter_type',
+            'counter_reference',
+            'prefix',
+            'split_length'
+        ),
+        'subfield_labels': {
+            'portal_type': 'Portal Type',
+            'form': 'Format',
+            'sequence_type': 'Seq Type',
+            'context': 'Context',
+            'counter_type': 'Counter Type',
+            'counter_reference': 'Counter Ref',
+            'prefix': 'Prefix',
+            'split_length': 'Split Length',
+        },
+        'subfield_readonly': {
+            'portal_type': False,
+            'form': False,
+            'sequence_type': False,
+            'context': False,
+            'counter_type': False,
+            'counter_reference': False,
+            'prefix': False,
+            'split_length': False,
+        },
+        'subfield_sizes': {
+            'portal_type': 20,
+            'form': 30,
+            'sequence_type': 1,
+            'context': 12,
+            'counter_type': 1,
+            'counter_reference': 12,
+            'prefix': 12,
+            'split_length': 5,
+        },
+        'subfield_types': {
+            'sequence_type': 'selection',
+            'counter_type': 'selection',
+            'split_length': 'int',
+        },
+        'subfield_vocabularies': {
+            'sequence_type': 'getSequenceTypes',
+            'counter_type': 'getCounterTypes',
+        },
+        'subfield_maxlength': {
+            'form': 256,
+        },
     })
 
     security = ClassSecurityInfo()
+
+    def getSequenceTypes(self, instance=None):
+        return DisplayList([
+            ('', ''),
+            ('counter', 'Counter'),
+            ('generated', 'Generated')
+        ])
+
+    def getCounterTypes(self, instance=None):
+        return DisplayList([
+            ('', ''),
+            ('backreference', 'Backreference'),
+            ('contained', 'Contained')
+        ])
 
 
 STICKER_AUTO_OPTIONS = DisplayList((
@@ -151,7 +200,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowNewReleasesInfo',
-        schemata="Security",
+        schemata="Notifications",
         default=True,
         widget=BooleanWidget(
             label=_("Display an alert on new releases of Bika LIMS"),
@@ -567,7 +616,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'WorksheetLayout',
-        schemata="Analyses",
+        schemata="Appearance",
         default='1',
         vocabulary=WORKSHEET_LAYOUT_OPTIONS,
         widget=SelectionWidget(
@@ -583,7 +632,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'DashboardByDefault',
-        schemata="Analyses",
+        schemata="Appearance",
         default=True,
         widget=BooleanWidget(
             label=_("Use Dashboard as default front page"),
@@ -592,7 +641,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     ReferenceField(
         'LandingPage',
-        schemata="Analyses",
+        schemata="Appearance",
         multiValued=0,
         allowed_types=('Document', ),
         relationship='SetupLandingPage',
@@ -611,7 +660,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'AutoPrintStickers',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary=STICKER_AUTO_OPTIONS,
         widget=SelectionWidget(
             format='select',
@@ -624,7 +673,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'AutoStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         widget=SelectionWidget(
             format='select',
@@ -634,7 +683,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'SmallStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x48mm.pt",
         widget=SelectionWidget(
@@ -645,7 +694,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField(
         'LargeStickerTemplate',
-        schemata="Stickers",
+        schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x72mm.pt",
         widget=SelectionWidget(
@@ -654,78 +703,95 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker should be used as the 'large' sticker by default")
         )
     ),
-    PrefixesField(
-        'Prefixes',
+    IDFormattingField(
+        'IDFormatting',
         schemata="ID Server",
-        default=[{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'Client', 'prefix': 'client', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
-                 {'portal_type': 'Pricelist', 'prefix': 'PL', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
-                 ],
-        # fixedSize=8,
+        default=[
+            {
+                'form': 'AI-{seq:03d}',
+                'portal_type': 'ARImport',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'form': 'B-{seq:03d}',
+                'portal_type': 'Batch',
+                'prefix': 'batch',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'form': 'D-{seq:03d}',
+                'portal_type': 'DuplicateAnalysis',
+                'prefix': 'duplicate',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'form': 'I-{seq:03d}',
+                'portal_type': 'Invoice',
+                'prefix': 'invoice',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'form': 'QC-{seq:03d}',
+                'portal_type': 'ReferenceSample',
+                'prefix': 'refsample',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'form': 'SA-{seq:03d}',
+                'portal_type': 'ReferenceAnalysis',
+                'prefix': 'refanalysis',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'form': 'WS-{seq:03d}',
+                'portal_type': 'Worksheet',
+                'prefix': 'worksheet',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'form': '{sampleType}-{seq:04d}',
+                'portal_type': 'Sample',
+                'prefix': 'sample',
+                'sequence_type': 'generated',
+                'split_length': 1
+            }, {
+                'context': 'sample',
+                'counter_reference': 'AnalysisRequestSample',
+                'counter_type': 'backreference',
+                'form': '{sampleId}-R{seq:02d}',
+                'portal_type': 'AnalysisRequest',
+                'sequence_type': 'counter'
+            }, {
+                'context': 'sample',
+                'counter_reference': 'SamplePartition',
+                'counter_type': 'contained',
+                'form': '{sampleId}-P{seq:d}',
+                'portal_type': 'SamplePartition',
+                'sequence_type': 'counter'
+            }
+        ],
         widget=RecordsWidget(
-            label=_("Prefixes"),
-            description=_(
-                "Define the prefixes for the unique sequential IDs the system issues for "
-                "objects. In the 'Padding' field, indicate with how many leading zeros the "
-                "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
-                "4, will see them numbered from WS-0001 to WS-9999. Sequence Start "
-                "indicates the number from which the next ID should start. This is "
-                "set only if it is greater than existing id numbers. Note that the "
-                "gap created by jumping IDs cannot be refilled. NB: Note that samples "
-                "and analysis requests are prefixed with sample type abbreviations and are "
-                "not configured in this table - their padding can be set in the specified "
-                "fields below"),
-            allowDelete=False,
-        )
-    ),
-    BooleanField(
-        'YearInPrefix',
-        schemata="ID Server",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Include year in ID prefix"),
-            description=_("Adds a two-digit year after the ID prefix")
-        ),
-    ),
-    IntegerField(
-        'SampleIDPadding',
-        schemata="ID Server",
-        required=1,
-        default=4,
-        widget=IntegerWidget(
-            label=_("Sample ID Padding"),
-            description=_("The length of the zero-padding for Sample IDs"),
-        )
-    ),
-    IntegerField(
-        'SampleIDSequenceStart',
-        schemata="ID Server",
-        required=1,
-        default=0,
-        widget=IntegerWidget(
-            label=_("Sample ID Sequence Start"),
-            description=_(
-                "The number from which the next id should start. This "
-                "is set only if it is greater than existing id numbers. "
-                "Note that the resultant gap between IDs cannot be filled."),
-        )
-    ),
-    IntegerField(
-        'ARIDPadding',
-        schemata="ID Server",
-        required=1,
-        default=2,
-        widget=IntegerWidget(
-            label=_("AR ID Padding"),
-            description=_("The length of the zero-padding for the AR number in AR IDs"),
+            label=_("Formatting Configuration"),
+            allowDelete=True,
+            description=_("""The ID Server in Bika LIMS provides IDs for content items base of the given format specification.
+The format string is constructed in the same way as a python format() method
+based predefined variables per content type. The only variable available to all
+type is 'seq'. Currently, 'seq' can be constructed either using number generator
+or a counter of existing items. For generated IDs, one can specify the point at
+which the format string will be split to create the generator key. For counter
+IDs, one must specify the context and the type of counter which is either the
+number of backreferences or the number of contained objects.
+Configuration Settings:
+* format:
+  - a python format string constructed from predefined variables like sampleId, client, sampleType.
+  - special variable 'seq' must be positioned last in the format string
+* sequence type: [generated|counter]
+* context: if type counter, provides context the counting function
+* counter type: [backreference|contained]
+* counter reference: a parameter to the counting function
+* prefix: default prefix if none provided in format string
+* split length: the number of parts to be included in the prefix
+""")
         )
     ),
     BooleanField(
@@ -747,6 +813,17 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("The full URL: http://URL/path:port")
         ),
     ),
+    StringField(
+        'IDServerValues',
+        schemata="ID Server",
+        accessor="getIDServerValuesHTML",
+        readonly=True,
+        widget=TextAreaWidget(
+            label=_("ID Server Values"),
+            cols=30,
+            rows=30,
+        ),
+    ),
     RecordsField(
         'RejectionReasons',
         schemata="Analyses",
@@ -760,7 +837,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'NotifyOnRejection',
-        schemata="Analyses",
+        schemata="Notifications",
         default=False,
         widget=BooleanWidget(
             label=_("Email notification on rejection"),
@@ -832,6 +909,20 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
         )
     ),
+    TextField(
+        'COCAttestationStatement',
+        schemata="Analyses",
+        widget=TextAreaWidget(
+            label=_("COC Attestation Statement"),
+        )
+    ),
+    StringField(
+        'COCFooter',
+        schemata="Analyses",
+        widget=StringWidget(
+            label=_("COC Footer"),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
@@ -895,7 +986,7 @@ class BikaSetup(folder.ATFolder):
         """Return the prefix for a portal_type.
            If not found, simply uses the portal_type itself
         """
-        prefix = [p for p in self.getPrefixes() if p['portal_type'] == portal_type]
+        prefix = [p for p in self.getIDFormatting() if p['portal_type'] == portal_type]
         if prefix:
             return prefix[0]['prefix']
         else:
@@ -927,5 +1018,14 @@ class BikaSetup(folder.ATFolder):
         """
         items = [(1, '1'), (2, '2'), (3, '3'), (4, '4')]
         return IntDisplayList(list(items))
+
+    def getIDServerValuesHTML(self):
+        number_generator = getUtility(INumberGenerator)
+        keys = number_generator.keys()
+        values = number_generator.values()
+        results = []
+        for i in range(len(keys)):
+            results.append('%s: %s' % (keys[i], values[i]))
+        return "\n".join(results)
 
 registerType(BikaSetup, PROJECTNAME)
