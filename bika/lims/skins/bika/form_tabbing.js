@@ -27,7 +27,7 @@ This is mainly done for the Bika Setup, which get's confusing to the user if the
 var ploneFormTabbing = {
         // standard jQueryTools configuration options for all form tabs
         jqtConfig:{current:'selected'},
-        max_tabs: 8  // Allow more Schemata to be side-by-side
+        max_tabs: 10  // Allow more Schemata to be side-by-side
     };
 
 
