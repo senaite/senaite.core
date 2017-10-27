@@ -7,13 +7,11 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.BaseContent import BaseContent
-from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.Field import Field, StringField
 from Products.CMFCore.utils import getToolByName
-from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
+from bika.lims.api import is_at_content, is_brain, is_dexterity_content
 from bika.lims.interfaces.field import IUIDReferenceField
-from plone.api.portal import get_tool
 from zope.interface import implements
 
 
@@ -23,12 +21,12 @@ class ReferenceException(Exception):
 
 def is_uid(context, value):
     """Checks that the string passed is a valid UID of an existing object
-    
-    :param context: Context is only used for acquiring uid_catalog tool. 
+
+    :param context: Context is only used for acquiring uid_catalog tool.
     :type context: BaseContent
     :param value: A UID.
     :type value: string
-    :return: True if the value is a UID and exists as an entry in uid_catalog. 
+    :return: True if the value is a UID and exists as an entry in uid_catalog.
     :rtype: bool
     """
     uc = getToolByName(context, 'uid_catalog')
@@ -36,26 +34,25 @@ def is_uid(context, value):
     return brains and True or False
 
 
-def is_brain(brain_or_object):
-    """Checks if the passed in object is a portal catalog brain
-    
-    :param brain_or_object: Any object; probably a content object or a brain.
-    :type brain_or_object: Any
-    :return: True if the object is a brain
-    :rtype: bool
-    """
-    return ICatalogBrain.providedBy(brain_or_object)
+def _get_object(context, value):
+    """Resolve a UID to an object.
 
-
-def is_at_content(brain_or_object):
-    """Checks if the passed in object is an AT content type
-    
-    :param brain_or_object: Any object; probably a content object or a brain.
-    :type brain_or_object: Any
-    :return: True if object is an AT Content Type (instance of BaseObject).
-    :rtype: bool
+    :param context: context is the object containing the field's schema.
+    :type context: BaseContent
+    :param value: A UID.
+    :type value: string
+    :return: Returns a Content object.
+    :rtype: BaseContent
     """
-    return isinstance(brain_or_object, BaseObject)
+
+    if value:
+        if is_at_content(value) or is_dexterity_content(value):
+            return value
+        else:
+            uc = getToolByName(context, 'uid_catalog')
+            brains = uc(UID=value)
+            if brains:
+                return brains[0].getObject()
 
 
 class UIDReferenceField(StringField):
@@ -87,24 +84,12 @@ class UIDReferenceField(StringField):
         :return: Returns a Content object.
         :rtype: BaseContent
         """
-        if not value:
-            return None
-        elif is_at_content(value):
-            return value
-        else:
-            try:
-                uc = getToolByName(context, 'uid_catalog')
-            except AttributeError:
-                # Sometimes an object doesn't have an acquisition chain,
-                # in these cases we just hope that get_tool's call to
-                # getSite doesn't fuck up.
-                uc = get_tool('uid_catalog')
-            brains = uc(UID=value)
-            if brains:
-                return brains[0].getObject()
-            logger.error(
-                "{}.{}: Resolving UIDReference failed for {}.  No object will "
-                "be returned.".format(context, self.getName(), value))
+        obj = _get_object(context, value)
+        if obj:
+            return obj
+        logger.error(
+            "{}.{}: Resolving UIDReference failed for {}.  No object will "
+            "be returned.".format(context, self.getName(), value))
 
     @security.public
     def get_uid(self, context, value):
@@ -226,7 +211,7 @@ class UIDReferenceField(StringField):
                 value = value[0]
             ret = self.get_object(context, value)
             if ret:
-                self._set_backreferences(context, [ret,])
+                self._set_backreferences(context, [ret, ])
                 uid = self.get_uid(context, ret)
                 StringField.set(self, context, uid, **kwargs)
             else:
@@ -236,17 +221,24 @@ class UIDReferenceField(StringField):
 def get_backreferences(context, relationship=None):
     """Return backreferences informed by UIDReferenceField values.
 
-    Relationship can be specified to match the relationship specified in the
-    field, but this is not required in either of these locations.
+    Relationship can be provided as a parameter of the UIDReferenceField.  If
+    this is not present on the field, then it will be composed from a
+    concatenation of the portal_type and fieldname of the field that is
+    initiating the reference.  When calling get_backreferences with a
+    relationship argument supplied, the backreferences will be returned as a
+    copy of the backreferences list, with all UIDs dereferenced into objects.
 
-    If it is not specified, it will be composed from a concatenation of
-    portal_type + fieldname.
-
-    If relationship is omitted, then a dictionary containing all backrefs
-    is returned.
+    If you do not provide a relationship parameter to get_backreferences,
+    then the entire set of backreferences to the context object is returned
+    (by reference).  In this case, UIDs are returned as values, instead of
+    objects, and modifying the resulting variable will cause the
+    backreferences to be modified in the data.
     """
     instance = context.aq_base
     if not hasattr(instance, '_uidreference_backreferences'):
         instance._uidreference_backreferences = {}
     backrefs = instance._uidreference_backreferences
-    return backrefs.get(relationship, []) if relationship else backrefs
+    if relationship:
+        backrefs = [_get_object(context, b)
+                    for b in backrefs.get(relationship, [])]
+    return backrefs
