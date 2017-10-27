@@ -1,27 +1,39 @@
+/*
+Sticker Dimensions: 54mm x 18mm
+Sticker margins: 1mm, 1mm
+*/
 .sticker {
+    margin:0 auto;
+    padding:1mm;
+    width: 52mm;    /* Total width  = 1 + 1 + 52 = 54mm */
+    height: 16mm;   /* Total height = 1 + 1 + 16 = 18mm */
     font-family: Helvetica, Arial;
     font-size:7pt;
-    /* Total width: 52mm + 2x1mm = 54mm */
-    padding:1mm; width: 52mm;
-}
-.sticker .sample-id {
-    height: 5mm;
     text-align:center;
-    margin-bottom: 5px;
 }
-.sticker .analysisrequest-info table,
-.sticker .sampling-date-info table {
-    border-collapse:collapse;
-    margin: 1px 1px 1px 1px;
+
+.sticker .barcode {
+    margin: 0 !important;
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align:center;
+}
+
+.analysisrequest-info table {
     width:100%;
-}
-.sticker .analysisrequest-info table td,
-.sticker .sampling-date-info table td {
-    border:none;
-}
-.barcode {
-    margin:0 auto;
 }
 .client-sample-id {
     text-align:center;
+}
+
+@media print {
+    @page {
+        size:  54mm 18mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 54mm !important;
+        height: 18mm !important;
+        margin: 0mm !important;
+    }
 }

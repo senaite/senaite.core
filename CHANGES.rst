@@ -4,6 +4,11 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
+**Added**
+
+- Issue-288: Worksheet: "Print" does not display/print partial results
+             https://github.com/senaite/bika.lims/issues/288
+
 **Merged PRs from upstream**
 #282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
 
@@ -17,16 +22,19 @@ LIMS-1504: Calculation formula test widgets
 
 **Fixed**
 
-- #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
+- #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
+- #281 Integration of PR-2269. Show the Unit in Manage Analyses View
+- #282 Integration of PR-2252. Traceback if the title contains braces on content creation
+- #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
+- #297 Integration of PR-2102. Inline rendered attachments are not displayed in rendered PDF
 - #304 Integration of PR-2053, PR-2080.
        Computed Sample Field "SampleTypeUID" does not check if a SampleType is set.
        Batch Book raises an Error if the Batch inherits from 2 ARs.
-- #297 Integration of PR-2102. Inline rendered attachments are not displayed in rendered PDF
-- #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
-- #282 Integration of PR-2252. Traceback if the title contains braces on content creation
-- #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
-- #281 Integration of PR-2269. Show the Unit in Manage Analyses View
-
+- #306 Integration of PR-2077. Client Folder Listing Table decreases Bika LIMS performance and is unusable for many Clients
+- #309 Integration of PR-2130, PR-2233
+       Infinite Recursion on Report Publication.
+       Copied ARs are created in random order.
+- #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
 
 **Security**
 

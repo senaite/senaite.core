@@ -8,6 +8,8 @@
 import copy
 import json
 import traceback
+import collections
+
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 
@@ -92,8 +94,9 @@ class WorkflowAction:
         form = self.request.form
         uc = getToolByName(self.context, 'uid_catalog')
 
-        selected_items = {}
-        for uid in form.get('uids', []):
+        uids = form.get("uids", [])
+        selected_items = collections.OrderedDict()
+        for uid in uids:
             try:
                 item = uc(UID = uid)[0].getObject()
             except:
@@ -142,7 +145,7 @@ class WorkflowAction:
 
         url = self.context.absolute_url() + "/ar_add" + \
             "?ar_count={0}".format(len(objects)) + \
-            "&copy_from={0}".format(",".join(reversed(objects.keys())))
+            "&copy_from={0}".format(",".join(objects.keys()))
 
         self.request.response.redirect(url)
         return
