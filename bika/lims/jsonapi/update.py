@@ -112,7 +112,7 @@ class Update(object):
             brain = uc(UID=self.request.get('obj_uid', ''))
             obj = brain[0].getObject() if brain else None
         if self.request.get('obj_path', '') and not obj:
-            obj_path = self.request['obj_path']
+            obj_path = self.request['obj_path'].split("?")[0]
             site_path = context.portal_url.getPortalObject().getPhysicalPath()
             if site_path and isinstance(site_path, basestring):
                 site_path = site_path if site_path.startswith('/') else '/' + site_path
