@@ -18,6 +18,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.numbergenerator import INumberGenerator
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 
 
 from zope.component import getAdapters
@@ -63,7 +64,7 @@ def generateUniqueId(context, parent=False, portal_type=''):
 
     def getLastCounter(context, config):
         if config.get('counter_type', '') == 'backreference':
-            return len(context.getBackReferences(config['counter_reference'])) - 1
+            return len(get_backreferences(context, config['counter_reference'], uids=True)) - 1
         elif config.get('counter_type', '') == 'contained':
             return len(context.objectItems(config['counter_reference'])) - 1
         else:
