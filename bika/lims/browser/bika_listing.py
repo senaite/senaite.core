@@ -151,8 +151,10 @@ class WorkflowAction:
         return
 
     def workflow_action_print_stickers(self):
-        """Invoked from an AR listing form in the current context, passing the selected AR
-        titles and default sticker template as request parameters.
+        """Invoked from AR or Sample listings in the current context, passing
+           the uids of the selected items and default sticker template as
+           request parameters to the stickers rendering machinery, that
+           generates the PDF
         """
         uids = self.request.form.get("uids", [])
         if not uids:
