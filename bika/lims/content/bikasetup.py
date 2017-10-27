@@ -523,6 +523,18 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        'PrintingWorkflowEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable the Results Report Printing workflow"),
+            description=_("Select this to allow the user to set an "
+                          "additional 'Printed' status to those Analysis "
+                          "Requests tha have been Published. "
+                          "Disabled by default.")
+        ),
+    ),
+    BooleanField(
         'SamplingWorkflowEnabled',
         schemata="Sampling and COC",
         default=False,
