@@ -170,7 +170,9 @@ class UIDReferenceField(StringField):
                 key = context.portal_type + self.getName()
             uid = context.UID()
             for item in items:
-                backrefs = get_backreferences(item)
+                # Because no relationship is passed to get_backreferences,
+                # the entire set of backrefs is returned by reference.
+                backrefs = get_backreferences(item)  # NB: no relationship!
                 if key not in backrefs:
                     backrefs[key] = []
                 if uid not in backrefs[key]:
