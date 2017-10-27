@@ -191,7 +191,7 @@ class WorkflowAction:
                 method()
             else:
                 self.workflow_action_default(action, came_from)
-        elif form.get('bika_listing_filter_bar_submit', ''):
+        if form.get('bika_listing_filter_bar_submit', ''):
             # Getting all the filter inputs with the key starting with:
             # 'bika_listing_filter_bar_'
             filter_val = \
