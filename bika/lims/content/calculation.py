@@ -29,7 +29,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.fields.uidreferencefield import UIDReferenceField, \
+    get_backreferences
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
@@ -55,11 +56,10 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    HistoryAwareReferenceField(
+    UIDReferenceField(
         'DependentServices',
         required=1,
         multiValued=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('AnalysisService',),
         relationship='CalculationAnalysisService',
         referenceClass=HoldingReference,
@@ -247,8 +247,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """
         deps = []
         backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
-        for uid in backrefs:
-            service = get_object_by_uid(uid)
+        for service in backrefs:
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
                 calc.getCalculationDependants(deps)
