@@ -4,6 +4,11 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
+**Added**
+
+- Issue-288: Worksheet: "Print" does not display/print partial results
+             https://github.com/senaite/bika.lims/issues/288
+
 **Merged PRs from upstream**
 #282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
 
