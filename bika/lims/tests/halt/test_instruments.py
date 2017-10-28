@@ -10,7 +10,7 @@ from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.idserver import renameAfterCreation
 from plone.app.testing import login, logout
 from plone.app.testing import TEST_USER_NAME
-from datetime import date
+from datetime import date, timedelta
 import unittest
 
 try:
@@ -33,6 +33,7 @@ class TestInstrumentAlerts(BikaFunctionalTestCase):
         for instrument_name in instrument_names:
             instrument = self.portal.bika_setup.bika_instruments[instrument_name]
             today = date.today()
+            tomorrow = date.today() + timedelta(1)
             # Getting last valid validation
             lastval = instrument.getLatestValidValidation()
             if not lastval:
@@ -41,7 +42,7 @@ class TestInstrumentAlerts(BikaFunctionalTestCase):
                 cal_obj.edit(
                     title='test',
                     DownFrom=today.strftime("%Y/%m/%d"),
-                    DownTo=today.strftime("%Y/%m/%d"),
+                    DownTo=tomorrow.strftime("%Y/%m/%d"),
                     Instrument=instrument
                 )
                 cal_obj.unmarkCreationFlag()
@@ -73,6 +74,7 @@ class TestInstrumentAlerts(BikaFunctionalTestCase):
             # Getting each instrument
             instrument = self.portal.bika_setup.bika_instruments[instrument_name]
             today = date.today()
+            tomorrow = today + timedelta(1)
             # Getting last valid calibration
             lastcal = instrument.getLatestValidCalibration()
             if not lastcal:
@@ -81,15 +83,15 @@ class TestInstrumentAlerts(BikaFunctionalTestCase):
                 cal_obj.edit(
                     title='test',
                     DownFrom=today.strftime("%Y/%m/%d"),
-                    DownTo=today.strftime("%Y/%m/%d"),
+                    DownTo=tomorrow.strftime("%Y/%m/%d"),
                     Instrument=instrument
                 )
                 cal_obj.unmarkCreationFlag()
                 renameAfterCreation(cal_obj)
             else:
                 #  Updating last calibration
-                lastcal.setDownTo(today)
                 lastcal.setDownFrom(today)
+                lastcal.setDownTo(tomorrow)
         #  Testing calibration state
         for instrument_name in instrument_names:
             instrument = self.portal.bika_setup.bika_instruments[instrument_name]

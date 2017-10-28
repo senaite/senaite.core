@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from zope.interface import Interface
@@ -13,6 +15,9 @@ class IBikaLIMS(Interface):
        "bika" theme, this interface must be its layer
     """
 
+class IGenerateID(Interface):
+    """Marker Interface to generate an ID
+    """
 
 class IHaveNoBreadCrumbs(Interface):
 
@@ -69,6 +74,12 @@ class IRoutineAnalysis(Interface):
     """This adapter distinguishes normal analyses from Duplicates, References,
     Rejections, etc.
     """
+
+
+class IAnalysisSpec(Interface):
+
+    """Analysis Specs"""
+
 
 class IDuplicateAnalysis(Interface):
 
@@ -211,6 +222,10 @@ class IAttachmentTypes(Interface):
     ""
 
 
+class ICalculation(Interface):
+
+    ""
+
 
 class ICalculations(Interface):
 
@@ -278,6 +293,18 @@ class IInstrumentLocation(Interface):
 
 class IInstrumentLocations(Interface):
     """Physical places, where instruments can be located
+    """
+
+class IInstrumentCalibration(Interface):
+    """Instrument Calibration
+    """
+
+class IInstrumentCertification(Interface):
+    """Instrument Certification
+    """
+
+class IInstrumentValidation(Interface):
+    """Instrument Validation
     """
 
 class IAnalysisSpecs(Interface):
