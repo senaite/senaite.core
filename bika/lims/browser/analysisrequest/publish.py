@@ -1201,10 +1201,12 @@ class AnalysisRequestDigester:
     def _lab_data(self):
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         lab = self.context.bika_setup.laboratory
-
+        sv = lab.getSupervisor()
+        sv = sv.getFullname() if sv else ""
         return {'obj': lab,
                 'title': to_utf8(lab.Title()),
                 'url': to_utf8(lab.getLabURL()),
+                'supervisor': to_utf8(sv),
                 'address': to_utf8(self._lab_address(lab)),
                 'confidence': lab.getConfidence(),
                 'accredited': lab.getLaboratoryAccredited(),

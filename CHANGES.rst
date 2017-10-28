@@ -7,6 +7,7 @@ Changelog
 **Added**
 - BC-99: Added Print Stickers button to AR listings
 
+- #319 Integration of PR-2112. Laboratory has Supervisor which can appear in reports.
 - Issue-288: Worksheet: "Print" does not display/print partial results
              https://github.com/senaite/bika.lims/issues/288
 
