@@ -150,6 +150,28 @@ class WorkflowAction:
         self.request.response.redirect(url)
         return
 
+    def workflow_action_print_stickers(self):
+        """Invoked from AR or Sample listings in the current context, passing
+           the uids of the selected items and default sticker template as
+           request parameters to the stickers rendering machinery, that
+           generates the PDF
+        """
+        uids = self.request.form.get("uids", [])
+        if not uids:
+            message = self.context.translate(
+                _("No ARs have been selected"))
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.context.absolute_url()
+            self.request.response.redirect(self.destination_url)
+            return
+
+        url = '{0}/sticker?autoprint=1&template={1}&items={2}'.format(
+            self.context.absolute_url(),
+            self.portal.bika_setup.getAutoStickerTemplate(),
+            ','.join(uids)
+        )
+        self.request.response.redirect(url)
+
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)

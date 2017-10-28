@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 **Added**
+- BC-99: Added Print Stickers button to AR listings
 
 - Issue-288: Worksheet: "Print" does not display/print partial results
              https://github.com/senaite/bika.lims/issues/288
