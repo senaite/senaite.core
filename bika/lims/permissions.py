@@ -263,49 +263,72 @@ def setup_permissions(portal):
 
     mp(ViewLogTab, ['Manager', 'LabManager'], 1)
 
+    # Bika Setup
+    # The `/bika_setup` folder follows the `bika_one_state_workflow`.
+    # Please refer to the workflow definition to see the default permissions
     mp = portal.bika_setup.manage_permission
-    mp('Access contents information', ['Authenticated'], 0)  # XXX 1?!
-    mp(permissions.ModifyPortalContent, ['Manager', 'LabManager'], 0)
-    mp(permissions.View, ['Authenticated'], 1)
-    mp(ApplyVersionControl, ['Authenticated'], 1)
-    mp(SaveNewVersion, ['Authenticated'], 1)
-    mp(AccessPreviousVersions, ['Authenticated'], 1)
-    portal.bika_setup.reindexObject()
-
-    mp = portal.bika_setup.laboratory.manage_permission
-    mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
+    # We set explicit permissions to access methods to be persistent with the assigned workflow
     mp(permissions.View, ['Authenticated'], 0)
+    mp(permissions.ListFolderContents, ['Authenticated'], 0)
+    # Front-Page Portlets need to access some information for Anonymous.
+    mp(permissions.AccessContentsInformation, ['Anonymous'], 0)
+
+    # Set modify permissions
+    mp(permissions.ModifyPortalContent, ['Manager', 'LabManager'], 0)
+    mp(ApplyVersionControl, ['Authenticated'], 0)
+    mp(SaveNewVersion, ['Authenticated'], 0)
+    mp(AccessPreviousVersions, ['Authenticated'], 0)
+
+    # Authenticated need to have access to bika_setup objects to create ARs
+    for obj in portal.bika_setup.objectValues():
+        mp = obj.manage_permission
+        mp(permissions.View, ['Authenticated'], 0)
+        mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
+        mp(permissions.ListFolderContents, ['Authenticated'], 0)
+
+    portal.bika_setup.reindexObject()
+    # /Bika Setup
+
+    # Laboratory
+    # The `/bika_setup/laboratory` object follows the `bika_one_state_workflow`.
+    mp = portal.bika_setup.laboratory.manage_permission
+    # We set explicit permissions to access methods to be persistent with the assigned workflow
+    mp(permissions.View, ['Anonymous'], 0)
+    mp(permissions.ListFolderContents, ['Authenticated'], 0)
+    # Front-Page Portlets need to access some information for Anonymous.
+    mp(permissions.AccessContentsInformation, ['Anonymous'], 0)
     portal.bika_setup.laboratory.reindexObject()
+    # /Laboratory
 
-    # /clients folder permissions
-
+    # Clients
     # When modifying these defaults, look to subscribers/objectmodified.py
-
-    # Member role must have view permission on /clients, to see the list.
-    # This means within a client, perms granted on Member role are available
+    # Client role (from the Clients Group) must have view permission on /clients, to see the list.
+    # This means within a client, perms granted on Client role are available
     # in clients not our own, allowing sideways entry if we're not careful.
     mp = portal.clients.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator', 'SamplingCoordinator'], 0)
+
+    # Allow authenticated users to see the contents of the client folder
+    mp(permissions.View, ['Authenticated'], 0)
+    mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
+    mp(permissions.ListFolderContents, ['Authenticated'], 0)
+
+    # Set modify permissions
     mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
     mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
     mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
     mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
     portal.clients.reindexObject()
 
-    for obj in portal.clients.objectValues():
-        mp = obj.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(AddSupplyOrder, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
-        obj.reindexObject()
-        for contact in portal.clients.objectValues('Contact'):
-            mp = contact.manage_permission
-            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
+    # We have to manually set the permissions of Contacts according to
+    # bika.lims.subscribers.objectmodified, as these types do not contain an own workflow
+    contacts = portal.portal_catalog(portal_type="Contact")
+    for contact in contacts:
+        obj = contact.getObject()
+        mp = contact.manage_permission
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
+
+    # /Clients
 
     # /worksheets folder permissions
     mp = portal.worksheets.manage_permission
@@ -363,7 +386,6 @@ def setup_permissions(portal):
     mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
     mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
     mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
-
     mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
     mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
     portal.reports.reindexObject()
@@ -389,11 +411,12 @@ def setup_permissions(portal):
     # /methods folder permissions
     mp = portal.methods.manage_permission
     mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
-    mp(permissions.ListFolderContents, ['Authenticated'], 0)
+    mp(permissions.ListFolderContents, ['Member', 'Authenticated'], 0)
     mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
     mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
-    mp(permissions.View, ['Authenticated'], 0)
-    mp('Access contents information', ['Authenticated'], 0)
+    mp(permissions.View, ['Manager', 'Member', 'Authenticated'], 0)
+    mp('Access contents information',
+       ['Manager', 'Member', 'Authenticated'], 0)
     portal.methods.reindexObject()
 
     try:
@@ -411,15 +434,15 @@ def setup_permissions(portal):
     # Add Analysis Services View permission to Clients
     # (allow Clients to add attachments to Analysis Services from an AR)
     mp = portal.bika_setup.bika_analysisservices.manage_permission
-    mp('Access contents information', ['Authenticated'], 1)
-    mp(permissions.View, ['Authenticated'], 1)
+    mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
+    mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
     portal.bika_setup.bika_analysisservices.reindexObject()
 
     # Add Attachment Types View permission to Clients
     # (allow Clients to add attachments to Analysis Services from an AR)
     mp = portal.bika_setup.bika_attachmenttypes.manage_permission
-    mp('Access contents information', ['Authenticated'], 1)
-    mp(permissions.View, ['Authenticated'], 1)
+    mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
+    mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
     portal.bika_setup.bika_attachmenttypes.reindexObject()
 
     # /arimports folder permissions
