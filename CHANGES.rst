@@ -16,6 +16,7 @@ Changelog
 
 **Changed**
 
+- #331 Sort analyses lists by sortkey as default
 Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 LIMS-1504: Calculation formula test widgets
 #2154: Feature/new ar add form
