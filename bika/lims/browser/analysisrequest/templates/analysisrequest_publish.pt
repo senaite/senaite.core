@@ -75,7 +75,9 @@
             html, body { margin: 0; }
             html { background-color:#cdcdcd; }
             body.A4 #ar_publish_container { width: 210mm; }
+            body.A4.landscape #ar_publish_container { width: 297mm; }
             body.letter #ar_publish_container { width: 216mm; }
+            body.letter.landscape #ar_publish_container { width: 279mm; }
             #report {
                 background-color:#ffffff;
             }

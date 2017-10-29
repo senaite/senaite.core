@@ -7,12 +7,12 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       tal:attributes="lang default_language|default;
-             xml:lang default_language|default;"
+                      xml:lang default_language|default;"
       i18n:domain="bika"
       tal:define="portal_state context/@@plone_portal_state;
-             portal_url portal_state/portal_url;
-             plone_view context/@@plone;
-             portal portal_state/portal;">
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;">
   <head>
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
     <style>
@@ -140,8 +140,8 @@
           </select>
         </div>
         <div id='buttons'>
-          <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
-          <input type="button" id='print_button' i18n:translate="value" value="Print"/>
+          <input type="button" id='cancel_button' i18n:attributes="value" value="Cancel"/>
+          <input type="button" id='print_button' i18n:attributes="value" value="Print"/>
         </div>
       </div>
       <style id='report-style' tal:content='structure python:view.getCSS()'></style>

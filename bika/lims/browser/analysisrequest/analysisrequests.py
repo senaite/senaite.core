@@ -5,20 +5,13 @@
 
 import json
 import traceback
+from plone.api import user
 
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from collective.taskqueue.interfaces import ITaskQueue
-from plone import api
-from plone.app.layout.globals.interfaces import IViewView
-from plone.protect import CheckAuthenticator
-from plone.protect import PostOnly
-from zope.component import queryUtility
-from zope.interface import implements
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.analysisrequest.analysisrequests_filter_bar \
@@ -30,6 +23,12 @@ from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
+from collective.taskqueue.interfaces import ITaskQueue
+from plone.app.layout.globals.interfaces import IViewView
+from plone.protect import CheckAuthenticator
+from plone.protect import PostOnly
+from zope.component import queryUtility
+from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
@@ -228,7 +227,10 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'republish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                          'Progress',
                         'getRequestID',
@@ -269,7 +271,10 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'submit'},
                              {'id': 'cancel'},
                             ],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -306,7 +311,10 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'preserve'},
                              {'id': 'cancel'},
                              ],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -341,7 +349,10 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'sample'},
                              {'id': 'cancel'},
                              ],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -382,7 +393,10 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'receive'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -419,7 +433,10 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'prepublish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -458,7 +475,10 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'prepublish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -495,7 +515,10 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'publish'},
                              {'id': 'cancel'},
                              ],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -613,7 +636,10 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_on': 'Created',
                                'sort_order': 'reverse'},
              'transitions': [],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns':['getRequestID',
                         'getSample',
                         'BatchID',
@@ -659,7 +685,10 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'republish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -707,7 +736,10 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'republish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -744,7 +776,10 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_on': 'Created',
                                'sort_order': 'reverse'},
              'transitions': [],
-             'custom_actions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
@@ -1018,7 +1053,7 @@ class AnalysisRequestsView(BikaListingView):
         # Thee conditions to improve performance, some functions to check
         # the condition need to get the full analysis request.
         if states_dict.get('review_state', '') == 'to_be_verified':
-            allowed = api.user.has_permission(
+            allowed = user.has_permission(
                 VerifyPermission,
                 username=self.member.getUserName())
             # TODO-performance: isUserAllowedToVerify getts all analysis

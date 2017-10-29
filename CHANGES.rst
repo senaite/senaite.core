@@ -4,40 +4,30 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
-**Added**
 
-- Issue-288: Worksheet: "Print" does not display/print partial results
-             https://github.com/senaite/bika.lims/issues/288
-
-**Merged PRs from upstream**
-#282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
-
-**Changed**
-
-- #279 Issue-1999: Allow external Python library functions to be used in Calculation Formulas
-- #279 LIMS-1504: Calculation formula test widgets
-- #279 PR-2154: Feature/new ar add form
-- #291 Integration of PR-1972. Landscape Layout for Reports
-- #317 Added get_backreferences for UIDReferenceField
-
-**Fixed**
-
-- #306 Integration of PR-2077. Client Folder Listing Table decreases Bika LIMS performance and is unusable for many Clients
-- #309 Integration of PR-2130, PR-2233
-       Infinite Recursion on Report Publication.
-       Copied ARs are created in random order.
-- #304 Integration of PR-2053, PR-2080.
+- #279 Integration of Issue-1999: Allow external Python library functions to be used in Calculation Formulas
+- #279 Integration of LIMS-1504: Calculation formula test widgets
+- #279 Feature/new ar add form, PR-2154
+- #280 Setting 2 or more CCContacts in AR view produces a Traceback on Save, PR-2271
+- #281 Show the Unit in Manage Analyses View, PR-2269
+- #282 Instrument Calibration Table fixes, PR-2266
+- #283 Traceback if the title contains braces on content creation, PR-2252
+- #284 Solved WF Translation issues and fixed WF Action Buttons in Bika Listings, PR-1917
+- #291 Landscape Layout for Reports, PR-1972
+- #294 Convert UDL and LDL values to string before copy, PR-2016
+- #297 Inline rendered attachments are not displayed in rendered PDF, PR-2102
+- #304 PR-2080, PR-2053
        Computed Sample Field "SampleTypeUID" does not check if a SampleType is set.
        Batch Book raises an Error if the Batch inherits from 2 ARs.
-- #297 Integration of PR-2102. Inline rendered attachments are not displayed in rendered PDF
-- #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
-- #282 Integration of PR-2252. Traceback if the title contains braces on content creation
-- #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
-- #281 Integration of PR-2269. Show the Unit in Manage Analyses View
-
-
-**Security**
-
+- #306 Client Folder Listing Table decreases Bika LIMS performance and is unusable for many Clients, PR-2077
+- #309 PR-2130, PR-2233
+       Infinite Recursion on Report Publication.
+       Copied ARs are created in random order.
+- #319 Laboratory has Supervisor which can appear in reports, PR-2112
+- #312 Worksheet: "Print" does not display/print partial results
+- #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
+- #317 Added get_backreferences for UIDReferenceField
+- #321 Stickers on listing plus autoprint generates PDF, PR-2158
 
 
 1.0.0 (2017-10-13)
