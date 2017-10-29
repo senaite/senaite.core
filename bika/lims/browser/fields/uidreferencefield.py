@@ -12,6 +12,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.api import is_at_content, is_brain, is_dexterity_content
 from bika.lims.interfaces.field import IUIDReferenceField
+from plone.api.portal import get_tool
+from plone.api.validation import mutually_exclusive_parameters
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 
@@ -22,53 +24,17 @@ class ReferenceException(Exception):
     pass
 
 
-def is_uid(context, value):
-    """Checks that the string passed is a valid UID of an existing object
-
-    :param context: Context is only used for acquiring uid_catalog tool.
-    :type context: BaseContent
-    :param value: A UID.
-    :type value: string
-    :return: True if the value is a UID and exists as an entry in uid_catalog.
-    :rtype: bool
-    """
-    uc = getToolByName(context, 'uid_catalog')
-    brains = uc(UID=value)
-    return brains and True or False
-
-
-def _get_object(context, value):
-    """Resolve a UID to an object.
-
-    :param context: context is the object containing the field's schema.
-    :type context: BaseContent
-    :param value: A UID.
-    :type value: string
-    :return: Returns a Content object.
-    :rtype: BaseContent
-    """
-
-    if value:
-        if is_at_content(value) or is_dexterity_content(value):
-            return value
-        else:
-            uc = getToolByName(context, 'uid_catalog')
-            brains = uc(UID=value)
-            if brains:
-                return brains[0].getObject()
-
-
 class UIDReferenceField(StringField):
-    """A field that stores References as UID values.
+    """A field that stores References as UID values.  This acts as a drop-in
+    replacement for Archetypes' ReferenceField.  A relationship is required
+    but if one is not provided, it will be composed from a concatenation
+    of `portal_type` + `fieldname`.
     """
     _properties = Field._properties.copy()
     _properties.update({
         'type': 'uidreference',
         'default': '',
         'default_content_type': 'text/plain',
-        # a 'relationship' key is required here so that Reference Widgets will
-        # continue to work.  However, if the value is false-ish, then the
-        # relationship will be named portal_type + fieldname
         'relationship': '',
     })
 
@@ -111,7 +77,7 @@ class UIDReferenceField(StringField):
             ret = ''
         elif is_brain(value):
             ret = value.UID
-        elif is_at_content(value):
+        elif is_at_content(value) or is_dexterity_content(value):
             ret = value.UID()
         elif is_uid(context, value):
             ret = value
@@ -134,9 +100,8 @@ class UIDReferenceField(StringField):
         value = StringField.get(self, context, **kwargs)
         if self.multiValued:
             # Only return objects which actually exist; this is necessary here
-            # because there are no BackReferences, or HoldingReferences.
-            # This opens the possibility that deletions leave hanging
-            # references.
+            # because there are no HoldingReferences. This opens the
+            # possibility that deletions leave hanging references.
             ret = filter(
                 lambda x: x, [self.get_object(context, uid) for uid in value])
         else:
@@ -223,6 +188,42 @@ class UIDReferenceField(StringField):
                 StringField.set(self, context, '', **kwargs)
 
 
+def is_uid(context, value):
+    """Checks that the string passed is a valid UID of an existing object
+
+    :param context: Context is only used for acquiring uid_catalog tool.
+    :type context: BaseContent
+    :param value: A UID.
+    :type value: string
+    :return: True if the value is a UID and exists as an entry in uid_catalog.
+    :rtype: bool
+    """
+    uc = getToolByName(context, 'uid_catalog')
+    brains = uc(UID=value)
+    return brains and True or False
+
+
+def _get_object(context, value):
+    """Resolve a UID to an object.
+
+    :param context: context is the object containing the field's schema.
+    :type context: BaseContent
+    :param value: A UID.
+    :type value: string
+    :return: Returns a Content object.
+    :rtype: BaseContent
+    """
+
+    if value:
+        if is_at_content(value) or is_dexterity_content(value):
+            return value
+        else:
+            uc = getToolByName(context, 'uid_catalog')
+            brains = uc(UID=value)
+            if brains:
+                return brains[0].getObject()
+
+
 def get_storage(context):
     annotation = IAnnotations(context)
     if annotation.get(BACKREFS_STORAGE) is None:
@@ -230,50 +231,69 @@ def get_storage(context):
     return annotation[BACKREFS_STORAGE]
 
 
-def get_backreferences(context, relationship=None, uids=False):
-    """Return backreferences informed by UIDReferenceField values.
+@mutually_exclusive_parameters('as_uids', 'as_objects')
+def get_backreferences(context, relationship=None,
+                       as_uids=None, as_objects=None):
+    """Return all objects which use a UIDReferenceField to reference context.
 
-    When calling get_backreferences with a relationship argument supplied,
-    then a list of matching backreferences will be returned by value
+    :param context: The object which is the target of references.
+    :param relationship: The relationship name of the UIDReferenceField.
+    :param as_uids: when a relationship is specified, requests only UIDs.
+    :param as_objects: when a relationship is specified, requests full objects.
 
-    Relationship can be provided as a parameter of the UIDReferenceField
-    itself.  If this is not present on the field, then it will be composed
-    from a concatenation of the portal_type and fieldname of the field that
-    is initiating the reference.
+    This function can be called with or without specifying a relationship.
 
-    get all objects that reference the context object with this relationship:
+    - If a relationship is provided, the return value will be a list of items
+      which reference the context using the provided relationship.
 
-        >>> items = get_backreferences(context, relationship="RelationName")
+      If relationship is provided, then you can provide an extra argument
+      to specify how the back references should be returned: as UIDs,
+      full objects, or brains (the default).
 
-    Modifying the list does not change backreferences of context:
+    - If the relationship is not provided, then the entire set of
+      backreferences to the context object is returned (by reference) as a
+      dictionary.  This value can then be modified in-place, to edit the stored
+      backreferences.
 
-        >>> items = []  # harmless
-
-    If you do not provide a relationship parameter to get_backreferences,
-    then the entire set of backreferences to the context object is returned
-    by reference, as a dictionary.
-
-    The keys will be the names of relationships, and the values will be
-    lists of objects.
-
-    get all backreferences from all relationships:
-
-        >>> backrefs = get_backreferences(context)
-
-    modifying this variable will modify the backreferences of context!
-
-        >>> backrefs['RelationName'] = []  # RelationName now has no backrefs
-
-    When requesting backreferences for a single relationship, you can provide
-    an extra keyword argument `uids=True` to get_backreferences, to prevent
-    the UIDs from being resolved into objects.  This paramter is IGNORED when
-    requesting the entire set of backreferences!  This usage will always return
-    the UIDs only.
+      If relationship is not provided, the returned backreferences will
+      always be returned as UIDs, and it is an error to specify another
+      return type.
     """
+
     instance = context.aq_base
     backrefs = get_storage(instance)
+
     if relationship:
         backrefs = backrefs.get(relationship, [])
-        if not uids:
-            backrefs = [_get_object(context, b) for b in backrefs]
+        if not backrefs:
+            return backrefs
+        # return only UIDs
+        if as_uids:
+            return backrefs
+        # return full objects
+        elif as_objects:
+            return [_get_object(context, b) for b in backrefs]
+        # Return brains from first catalog found.
+        cat = _get_catalog_for_uid(backrefs[0])
+        return cat(UID=backrefs)
+
+    assert not as_objects, "You cannot use as_objects with no relationship"
+
     return backrefs
+
+
+def _get_catalog_for_uid(uid):
+    at = get_tool('archetype_tool')
+    uc = get_tool('uid_catalog')
+    pc = get_tool('portal_catalog')
+    # get uid_catalog brain for uid
+    ub = uc(UID=uid)[0]
+    # get portal_type of brain
+    pt = ub.portal_type
+    # get the registered catalogs for portal_type
+    cats = at.getCatalogsByType(pt)
+    # try avoid 'portal_catalog'; XXX multiple catalogs in setuphandlers.py?
+    cats = [cat for cat in cats if cat != pc]
+    if cats:
+        return cats[0]
+    return pc

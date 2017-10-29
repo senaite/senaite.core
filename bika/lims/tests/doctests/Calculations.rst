@@ -87,28 +87,6 @@ The `Calculation` depends now on the two Analysis Services::
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>, <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>]
 
 
-Backreferences are stored on each object which is a target of a UIDReferenceField,
-this allows a service to ask, "which calculations include me in their
-DependentServices?"::
-
-    >>> from bika.lims.browser.fields.uidreferencefield import get_backreferences
-    >>> get_backreferences(as1, 'CalculationDependentServices')
-    [<Calculation at /plone/bika_setup/bika_calculations/calculation-1>]
-
-
-It is also possible to find out if an `AnalysisService` depends on the calculation::
-
-    >>> as1.setCalculation(calc)
-    >>> calc.getCalculationDependants()
-    [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
-
-
-Or to find out which services have selected a particular calculation as their
-primary Calculation field's value:
-
-    >>> get_backreferences(calc, 'AnalysisServiceCalculation')
-    [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
-
 The `Formula` can be tested with dummy values in the `TestParameters` field::
 
     >>> form_value = [{"keyword": "Ca", "value": 5.6}, {"keyword": "Mg", "value": 3.3},]
