@@ -135,6 +135,7 @@
             $('#print-button').click(function(e) {
                 e.preventDefault();
                 printPdf();
+                window.location = $('#cancel-button').attr('data-url');
             });
             $('#cancel-button').click(function(e) {
                 e.preventDefault();
@@ -188,14 +189,21 @@
                     '<input type="hidden" name="pdf" value="1" />' +
                     '<textarea name="style">' + style + '</textarea>' +
                     '</form>';
-                $('body').html(form);
-                document.forms.topdf.submit();
+                var pdfwindow = window.open();
+                $(pdfwindow.document.body).html(form);
+                pdfwindow.document.forms.topdf.submit();
+            }
+
+            // If autoprint=1, render the pdf automatically
+            var autoprint = $.query.get('autoprint');
+            if (autoprint == '1') {
+                printPdf();
+                window.location = $('#cancel-button').attr('data-url');
             }
         });
     </script>
 </head>
-<body tal:attributes="onload        python:'this.print()' if view.request.get('autoprint', False) else '';
-                      data-itemsurl python:view.getItemsURL();">
+<body tal:attributes="data-itemsurl python:view.getItemsURL();">
     <div id='sticker-preview-wrapper'>
         <div id="sticker-preview-header">
             <div id='options-handler'>

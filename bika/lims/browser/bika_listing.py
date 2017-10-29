@@ -148,26 +148,26 @@ class WorkflowAction:
         return
 
     def workflow_action_print_stickers(self):
-        """Invoked from an AR listing form in the current context, passing the
-        selected AR titles and default sticker template as request parameters.
+        """Invoked from AR or Sample listings in the current context, passing
+           the uids of the selected items and default sticker template as
+           request parameters to the stickers rendering machinery, that
+           generates the PDF
         """
-        objects = self._get_selected_items()
-        if not objects:
+        uids = self.request.form.get("uids", [])
+        if not uids:
             message = self.context.translate(
                 _("No ARs have been selected"))
-            self.addPortalMessage(message, 'info')
+            self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
             return
 
-        ids = []
-        for key in objects.keys():
-            ids.append(objects[key].Title())
-        url = self.context.absolute_url() + \
-              "/sticker?autoprint=1&template=%s&items=%s" % \
-              (self.portal.bika_setup.getAutoStickerTemplate(), ','.join(ids))
+        url = '{0}/sticker?autoprint=1&template={1}&items={2}'.format(
+            self.context.absolute_url(),
+            self.portal.bika_setup.getAutoStickerTemplate(),
+            ','.join(uids)
+        )
         self.request.response.redirect(url)
-        return
 
     def __call__(self):
         request = self.request

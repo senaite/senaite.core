@@ -3,14 +3,11 @@ Changelog
 
 1.1.0 (Unreleased)
 ------------------
-
-- #282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
-
+- BC-99: Added Print Stickers button to AR listings
 
 - #279 Integration of Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 - #279 Integration of LIMS-1504: Calculation formula test widgets
 - #279 Integration of PR-2154: Feature/new ar add form
-- #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
 - #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
 - #281 Integration of PR-2269. Show the Unit in Manage Analyses View
 - #282 Integration of PR-2266. Instrument Calibration Table fixes
@@ -18,7 +15,7 @@ Changelog
 - #284 Integration of PR-1917. Solved WF Translation issues and fixed WF Action Buttons in Bika Listings
 - #291 Integration of PR-1972. Landscape Layout for Reports
 - #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
-- #297 Integration of PR-2102.Inline rendered attachments are not displayed in rendered PDF
+- #297 Integration of PR-2102. Inline rendered attachments are not displayed in rendered PDF
 - #304 Integration of PR-2053, PR-2080.
        Computed Sample Field "SampleTypeUID" does not check if a SampleType is set.
        Batch Book raises an Error if the Batch inherits from 2 ARs.
@@ -27,6 +24,13 @@ Changelog
        Infinite Recursion on Report Publication.
        Copied ARs are created in random order.
 - #312 Worksheet: "Print" does not display/print partial results
+- #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
+- #319 Integration of PR-2112. Laboratory has Supervisor which can appear in reports.
+
+
+**Security**
+
+
 
 1.0.0 (2017-10-13)
 ------------------

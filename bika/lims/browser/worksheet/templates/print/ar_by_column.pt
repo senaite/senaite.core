@@ -11,11 +11,13 @@
     See README.txt for further details about the dict structure
 
 -->
-<tal:print tal:define="worksheet       python:view.getWorksheet();
-                       laboratory      worksheet/laboratory;
-                       portal          worksheet/portal;
-                       ars             worksheet/ars;
-                       anstitles       worksheet/analyses_titles;">
+<tal:print
+  i18n:domain="bika"
+  tal:define="worksheet       python:view.getWorksheet();
+              laboratory      worksheet/laboratory;
+              portal          worksheet/portal;
+              ars             worksheet/ars;
+              anstitles       worksheet/analyses_titles;">
 
   <div id="header">
     <div class='barcode-container'>
