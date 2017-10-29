@@ -159,6 +159,8 @@ class AnalysesView(BaseView):
                     }
                 items.append(item)
 
+        items = sorted(items, key=itemgetter('Pos'))
+
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
             p = items[x]['Pos']
