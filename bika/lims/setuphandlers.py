@@ -34,7 +34,6 @@ class BikaGenerator(object):
         self.remove_default_content(portal)
         self.reindex_structure(portal)
 
-
         portal.bika_setup.laboratory.unmarkCreationFlag()
         portal.bika_setup.laboratory.reindexObject()
 
