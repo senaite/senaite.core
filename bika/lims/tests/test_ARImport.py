@@ -19,6 +19,8 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getCurrentState
 
 try:
     import unittest2 as unittest
@@ -182,10 +184,18 @@ Total price excl Tax,,,,,,,,,,,,,,
         errors = arimport.getErrors()
         if errors:
             self.fail("Unexpected errors while saving data: " + str(errors))
+        transaction.commit()
         browser = self.getBrowser(
             username=TEST_USER_NAME,
             password=TEST_USER_PASSWORD,
             loggedIn=True)
+
+        doActionFor(arimport, 'validate')
+        c_state = getCurrentState(arimport)
+        self.assertTrue(
+            c_state == 'valid',
+            "ARrimport in 'invalid' state after it has been transitioned to "
+            "'valid'.")
         browser.open(arimport.absolute_url() + "/edit")
         content = browser.contents
         re.match(
