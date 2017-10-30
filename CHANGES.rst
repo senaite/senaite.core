@@ -27,7 +27,7 @@ Changelog
 - #312 Worksheet: "Print" does not display/print partial results
 - #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
 - #321 Stickers on listing plus autoprint generates PDF, PR-2158
-
+- #327 Keep Laboratory name when reinstalling
 
 1.0.0 (2017-10-13)
 ------------------
