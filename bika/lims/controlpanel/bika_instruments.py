@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
@@ -108,17 +110,18 @@ class InstrumentsView(BikaListingView):
             items[x]['Model'] = obj.getModel()
 
             data = obj.getCertificateExpireDate()
-            if data == '':
-                items[x]['ExpiryDate'] = "No date avaliable"
+            if not data:
+                items[x]['ExpiryDate'] = _("No date set")
             else:
+                import pdb;pdb.set_trace()
                 items[x]['ExpiryDate'] = data.asdatetime().strftime(self.date_format_short)
 
             if obj.isOutOfDate():
-                items[x]['WeeksToExpire'] = "Out of date"
+                items[x]['WeeksToExpire'] = _("Out of date")
             else:
-                date = int(str(obj.getWeeksToExpire()).split(',')[0].split(' ')[0])
-                weeks,days = divmod(date,7)
-                items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
+                weeks, days = obj.getWeeksToExpire()
+                weeks_to_expire = _("{} weeks and {} day(s)".format(str(weeks), str(days)))
+                items[x]['WeeksToExpire'] = weeks_to_expire
 
             methods = obj.getMethods()
             items[x]["Methods"] = methods

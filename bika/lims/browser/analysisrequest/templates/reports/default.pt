@@ -110,6 +110,11 @@
                    tal:content="laboratory/url"></a>
               </td>
             </tr>
+            <tr tal:condition="laboratory/supervisor">
+              <td id="lab-supervisor">
+                <a tal:content="python:'Supervisor: ' + laboratory.get('supervisor')"></a>
+              </td>
+            </tr>
           </table>
         </td>
       </tr>
