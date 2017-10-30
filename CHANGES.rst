@@ -4,7 +4,34 @@ Changelog
 1.1.0 (Unreleased)
 ------------------
 
+**Added**
+- BC-99: Added Print Stickers button to AR listings
 
+- #319 Integration of PR-2112. Laboratory has Supervisor which can appear in reports.
+- Issue-288: Worksheet: "Print" does not display/print partial results
+             https://github.com/senaite/bika.lims/issues/288
+
+**Merged PRs from upstream**
+#282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
+
+**Changed**
+
+- Issue-1999: Allow external Python library functions to be used in Calculation Formulas
+- LIMS-1504: Calculation formula test widgets
+- #2154: Feature/new ar add form
+- #333 Sort analyses by sortkey in results report
+- #331 Sort analyses lists by sortkey as default
+- #291 Integration of PR-1972. Landscape Layout for Reports
+
+**Fixed**
+
+- #330 Show action buttons when shorting by column in listings
+- #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
+- #281 Integration of PR-2269. Show the Unit in Manage Analyses View
+- #282 Integration of PR-2252. Traceback if the title contains braces on content creation
+- #294 Integration of PR-2016. Convert UDL and LDL values to string before copy
+- #297 Integration of PR-2102. Inline rendered attachments are not displayed in rendered PDF
+- #304 Integration of PR-2053, PR-2080.
 - #279 Integration of Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 - #279 Integration of LIMS-1504: Calculation formula test widgets
 - #279 Feature/new ar add form, PR-2154
@@ -28,6 +55,7 @@ Changelog
 - #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
 - #321 Stickers on listing plus autoprint generates PDF, PR-2158
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
+- #327 Keep Laboratory name when reinstalling
 
 1.0.0 (2017-10-13)
 ------------------
