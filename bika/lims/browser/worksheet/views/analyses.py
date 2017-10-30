@@ -23,7 +23,9 @@ class AnalysesView(BaseView):
         self.instrument = None
         self.contentFilter = {
             'getWorksheetUID': context.UID(),
+            'sort_on': 'sortable_title'
         }
+        self.sort_on = 'sortable_title'
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.allow_edit = True
         self.show_categories = False
@@ -157,11 +159,7 @@ class AnalysesView(BaseView):
                     }
                 items.append(item)
 
-        items = sorted(items, key = itemgetter('Service'))
-        try:
-            items = sorted(items, key = itemgetter('Pos'))
-        except:
-            pass
+        items = sorted(items, key=itemgetter('Pos'))
 
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
