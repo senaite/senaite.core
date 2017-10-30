@@ -26,7 +26,9 @@ from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
+from bika.lims.api import get_tool
 from bika.lims.browser import BrowserView, ulocalized_time
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest, IResultOutOfRange
 from bika.lims.interfaces.field import IUIDReferenceField
@@ -1261,9 +1263,13 @@ class AnalysisRequestDigester:
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         showhidden = self.isHiddenAnalysesVisible()
-        for an in ar.getAnalyses(
-                full_objects=True, review_state=analysis_states):
 
+        catalog = get_tool(CATALOG_ANALYSIS_LISTING)
+        brains = catalog({'getAnalysisRequestUID': ar.UID(),
+                          'review_state': analysis_states,
+                          'sort_on': 'sortable_title'})
+        for brain in brains:
+            an = brain.getObject()
             # Omit hidden analyses?
             if not showhidden and an.getHidden():
                 continue
