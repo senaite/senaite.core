@@ -16,12 +16,11 @@ Changelog
 
 **Changed**
 
+- Issue-1999: Allow external Python library functions to be used in Calculation Formulas
+- LIMS-1504: Calculation formula test widgets
+- #2154: Feature/new ar add form
 - #333 Sort analyses by sortkey in results report
 - #331 Sort analyses lists by sortkey as default
-Issue-1999: Allow external Python library functions to be used in Calculation Formulas
-LIMS-1504: Calculation formula test widgets
-#2154: Feature/new ar add form
-
 - #291 Integration of PR-1972. Landscape Layout for Reports
 - #279 Integration of Issue-1999: Allow external Python library functions to be used in Calculation Formulas
 - #279 Integration of LIMS-1504: Calculation formula test widgets
