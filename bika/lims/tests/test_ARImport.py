@@ -36,8 +36,8 @@ class TestARImports(BikaFunctionalTestCase):
 
     def setUp(self):
         super(TestARImports, self).setUp()
-        login(self.portal, TEST_USER_NAME)
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        login(self.portal, TEST_USER_NAME)
         client = self.addthing(
             self.portal.clients, 'Client', title='Happy Hills', ClientID='HH')
         self.addthing(
@@ -150,6 +150,10 @@ Total price excl Tax,,,,,,,,,,,,,,
             self.fail('12 Analysis not found! We found %s' % l)
         states = [workflow.getInfoFor(a.getObject(), 'review_state')
                   for a in analyses]
+        ars_states = [ar.review_state for ar in ars]
+        if ars_states != ['sample_due'] * 4:
+            self.fail('Analysis Requests states should all be sample_due, '
+                      'but are not!')
         if states != ['sample_due'] * 12:
             self.fail('Analysis states should all be sample_due, but are not!')
 

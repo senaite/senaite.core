@@ -185,7 +185,7 @@ def get_sample_from_values(context, values):
     return sample
 
 
-def get_services_uids(context=None, analyses_serv=[], values={}):
+def get_services_uids(context=None, analyses_serv=None, values=None):
     """
     This function returns a list of UIDs from analyses services from its
     parameters.
@@ -196,6 +196,11 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     :type values: dict
     :returns: a list of analyses services UIDs
     """
+    if analyses_serv is None:
+        analyses_serv = []
+    if values is None:
+        values = {}
+
     if not context or (not analyses_serv and not values):
         raise RuntimeError(
             "get_services_uids: Missing or wrong parameters.")
@@ -218,7 +223,8 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
                 " profile provided")
     # Add analysis services UIDs from profiles to analyses_services variable.
     for profile_uid in analyses_profiles:
-        # When creating an AR, JS builds a query from selected fields. Although it doesn't set empty values to any
+        # When creating an AR, JS builds a query from selected fields.
+        # Although it doesn't set empty values to any
         # Field, somehow 'Profiles' field can have an empty value in the set.
         # Thus, we should avoid querying by empty UID through 'uid_catalog'.
         if profile_uid:
