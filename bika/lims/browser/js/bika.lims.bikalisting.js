@@ -142,7 +142,8 @@ function BikaListingTableView() {
 			var options = {
 				target: $(this).parents("table"),
 				replaceTarget: true,
-				data: form.formToArray()
+				data: form.formToArray(),
+				success: load_transitions
 			}
 			form.ajaxSubmit(options)
 			$("[name='table_only']").remove()
