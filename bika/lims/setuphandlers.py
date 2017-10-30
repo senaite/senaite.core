@@ -30,12 +30,11 @@ class BikaGenerator(object):
 
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
-
         self.fix_frontpage_permissions(portal)
         self.remove_default_content(portal)
         self.reindex_structure(portal)
 
-        portal.bika_setup.laboratory.edit(title=_('Laboratory'))
+
         portal.bika_setup.laboratory.unmarkCreationFlag()
         portal.bika_setup.laboratory.reindexObject()
 
