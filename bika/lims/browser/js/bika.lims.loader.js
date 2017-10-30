@@ -69,6 +69,10 @@ window.bika.lims.controllers =  {
     ".portaltype-instrument.template-base_edit":
             ['InstrumentEditView'],
 
+    // Editing a calculation
+    ".portaltype-calculation":
+        ['CalculationEditView'],
+
     // Bika Setup
     ".portaltype-bikasetup.template-base_edit":
         ['BikaSetupEditView'],
@@ -137,13 +141,8 @@ window.bika.lims.controllers =  {
 	// Common and utilities for AR Add forms
 	".portaltype-analysisrequest.template-ar_add": ['AnalysisRequestAddView'],
 
-	// the file "bika.lims.analysisrequest.add_by_row.js itself is included
-	// from ar_add_by_row.pt
-	".analysisrequest_add_by_row": ['AnalysisRequestAddByRow'],
-
-	// the file "bika.lims.analysisrequest.add_by_col.js itself is included
-	// from ar_add_by_row.pt
-	".analysisrequest_add_by_col": ['AnalysisRequestAddByCol'],
+  // AR Add 2
+	"#analysisrequest_add_form": ['AnalysisRequestAdd'],
 
     "#ar_publish_container":
         ['RangeGraph', 'AnalysisRequestPublishView'],

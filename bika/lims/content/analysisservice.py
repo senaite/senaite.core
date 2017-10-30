@@ -11,20 +11,21 @@ from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import BooleanField, BooleanWidget, \
-    DisplayList, MultiSelectionWidget, Schema, SelectionWidget, registerType
+    DisplayList, MultiSelectionWidget, Schema, registerType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
+from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IAnalysisService, IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
-from plone.indexer import indexer
 from zope.interface import implements
 
 
@@ -52,7 +53,7 @@ def getContainers(instance,
 
     bsc = getToolByName(instance, 'bika_setup_catalog')
 
-    items = allow_blank and [['', _('Any')]] or []
+    items = [['', _('Any')]] if allow_blank else []
 
     containers = []
     for container in bsc(portal_type='Container', sort_on='sortable_title'):
@@ -77,7 +78,7 @@ def getContainers(instance,
         # containers with no containertype first
         for container in containers:
             if not container.getContainerType():
-                items.append((container.UID(), container.Title()))
+                items.append([container.UID(), container.Title()])
 
     ts = getToolByName(instance, 'translation_service').translate
     cat_str = _c(ts(_('Container Type')))
@@ -87,12 +88,12 @@ def getContainers(instance,
     for ctype_uid, ctype_title in containertypes.items():
         ctype_title = _c(ctype_title)
         if show_container_types:
-            items.append((ctype_uid, "%s: %s" % (cat_str, ctype_title)))
+            items.append([ctype_uid, "%s: %s" % (cat_str, ctype_title)])
         if show_containers:
             for container in containers:
                 ctype = container.getContainerType()
                 if ctype and ctype.UID() == ctype_uid:
-                    items.append((container.UID(), container.Title()))
+                    items.append([container.UID(), container.Title()])
 
     items = tuple(items)
     return items
@@ -158,7 +159,7 @@ class PartitionSetupField(RecordsField):
     def Preservations(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = [(c.UID, c.title) for c in
+        items = [[c.UID, c.title] for c in
                  bsc(portal_type='Preservation',
                      inactive_state='active',
                      sort_on='sortable_title')]
@@ -174,14 +175,6 @@ class PartitionSetupField(RecordsField):
 
 
 registerField(PartitionSetupField, title="", description="")
-
-
-@indexer(IAnalysisService)
-def sortable_title_with_sort_key(instance):
-    sort_key = instance.getSortKey()
-    if sort_key:
-        return "{:010.3f}{}".format(sort_key, instance.Title())
-    return instance.Title()
 
 
 # If this flag is true, then analyses created from this service will be linked
@@ -335,6 +328,48 @@ Instruments = UIDReferenceField(
     )
 )
 
+# Calculation to be used. This field is used in Analysis Service Edit view.
+#
+# AnalysisService defines a setter to maintain back-references on the
+# calculation, so that calculations can easily lookup their dependants based
+# on this field's value.
+#
+#  The default calculation is the one linked to the default method Behavior
+# controlled by js depending on UseDefaultCalculation:
+# - If UseDefaultCalculation is set to False, show this field
+# - If UseDefaultCalculation is set to True, show this field
+#  See browser/js/bika.lims.analysisservice.edit.js
+Calculation = UIDReferenceField(
+    'Calculation',
+    schemata="Method",
+    required=0,
+    vocabulary='_getAvailableCalculationsDisplayList',
+    allowed_types=('Calculation',),
+    widget=UIDSelectionWidget(
+        format='select',
+        label=_("Calculation"),
+        description=_("Calculation to be assigned to this content."),
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+    )
+)
+
+# InterimFields are defined in Calculations, Services, and Analyses.
+# In Analysis Services, the default values are taken from Calculation.
+# In Analyses, the default values are taken from the Analysis Service.
+# When instrument results are imported, the values in analysis are overridden
+# before the calculation is performed.
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Method',
+    widget=RecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Values can be entered here which will override the defaults "
+            "specified in the Calculation Interim Fields."),
+    )
+)
+
 schema = schema.copy() + Schema((
     Separate,
     Preservation,
@@ -343,6 +378,8 @@ schema = schema.copy() + Schema((
     Methods,
     Instruments,
     UseDefaultCalculation,
+    Calculation,
+    InterimFields,
 ))
 
 # Re-order some fields from AbstractBaseAnalysis schema.
@@ -371,8 +408,45 @@ class AnalysisService(AbstractBaseAnalysis):
 
         return renameAfterCreation(self)
 
-    security.declarePublic('getContainers')
+    def setCalculation(self, value):
+        """Maintain back-reference in the target calculation, to allow
+        the calculation to lookup services which refer to it using this field.
+        """
+        # TODO Refactor UIDReferencField to support BackReferences generally
+        # At that time, remove calculation.service_backreferences property
+        field = self.Schema().getField('Calculation')
+        service_uid = self.UID()
 
+        # If the Calculation field already has a value set,
+        # then remove this service from that calculation's backreferences.
+        prev_calc = field.get(self)
+        if prev_calc and service_uid in prev_calc.service_backreferences:
+            prev_calc.service_backreferences.remove(service_uid)
+
+        field.set(self, value)
+
+        # Now append this service to the new calculation's backreferences.
+        cur_calc = field.get(self)
+        if cur_calc:
+            cur_calc.service_backreferences.append(service_uid)
+
+    @security.public
+    def getCalculationTitle(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.Title()
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
+
+    @security.public
     def getContainers(self, instance=None):
         # On first render, the containers must be filtered
         instance = instance or self

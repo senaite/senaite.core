@@ -1,44 +1,43 @@
+/*
+Two stickers horizontaly aligned
+Sticker Dimensions: (40mm x 21mm) x 2
+Sticker margins: (1mm, 1mm) x 2
+*/
 .sticker {
+    margin:0 auto;
+    padding:0mm;    /* The horizontal padding is done by sticker-*-separator */
+    width: 86mm;    /* Total width  = 1 + 40 + 1 + 2 + 1 + 40 + 1 = 86mm */
+    height: 19mm;   /* Total height = 1 + 1 + 19 = 21mm */
+    max-width:86mm;
+    max-height: 19mm;
     font-family: Helvetica, Arial;
     font-size:7pt;
-    /* Total width: 1.5mm + 38mm + 1.5mm + 1.5mm + 38mm + 1.5mm = 82mm */
-    width: 82mm;
-    min-width:82mm;
-    max-width:82mm;
-    /* Total height: 1.5mm + 18mm + 1.5mm = 21mm */
-    height:21mm;
-    min-height:21mm;
-    max-height:21mm;
-
+    text-align:center;
     overflow:hidden;
-    border-bottom:none;
+    background-color:#dcdcdc;
 }
+
+/* Each sticker row contains 2 stickers */
 .sticker table.stickers-row {
     width:100%;
     border-collapse: separate;
-    background-color:#f5f5f5;
-}
-.sticker table.stickers-row td.sticker-vertical-separator {
-    height:1.5mm;
-    min-height:1.5mm;
-    max-height:1.5mm;
     background-color:#dcdcdc;
 }
-.sticker table.stickers-row td.sticker-horizontal-separator {
-    width:1.5mm;
-    min-width:1.5mm;
-    max-width:1.5mm;
-    background-color:#dcdcdc;
-}
+
+/** Each sticker is rendered inside a sticker-cell */
 .sticker table.stickers-row td.sticker-cell {
     background-color:#fff;
     width:38mm;
-    height:18mm;
+    height:17mm;
     max-width:38mm;
-    max-height:18mm;
+    max-height:19mm;
+    padding:0mm;
 }
-.sticker .analysisrequest-info table td.sample-type {
-    width:100%;
+.sticker table.stickers-row td.sticker-horizontal-separator {
+    width:0.5mm;
+    min-width:0.5mm;
+    max-width:0.5mm;
+    background-color:#dcdcdc;
 }
 .sticker .analysisrequest-info table,
 .sticker .sampling-date-info table {
@@ -51,9 +50,26 @@
     padding-left:2mm;
 }
 
-.barcode {
-    margin:0 auto;
-}
-.client-sample-id {
+.sticker .barcode {
+    margin: 0 !important;
+    margin: 0 auto;
+    padding: 0mm 0 !important;
     text-align:center;
+}
+
+@media print {
+    @page {
+        size:  86mm 21mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 86mm !important;
+        height: 21mm !important;
+        margin: 0mm !important;
+    }
+    .sticker,
+    .sticker table.stickers-row,
+    .sticker table.stickers-row td.sticker-horizontal-separator{
+        background-color: #fff;
+    }
 }

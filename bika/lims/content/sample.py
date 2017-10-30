@@ -307,7 +307,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label=_("Sampling Date"),
+            label=_("Expected Sampling Date"),
             description=_("Define when the sampler has to take the samples"),
             show_time=True,
             visible={'edit': 'visible',
@@ -476,10 +476,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('SampleTypeUID',
-        expression = 'context.getSampleType().UID()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
+                  expression='context.getSampleType() and \
+                             context.getSampleType().UID() or None',
+                  widget=ComputedWidget(
+                    visible=False,
+                  ),
     ),
     ComputedField('SamplePointUID',
         expression = 'context.getSamplePoint() and context.getSamplePoint().UID() or None',

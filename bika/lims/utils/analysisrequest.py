@@ -87,7 +87,8 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create sample partitions
     if not partitions:
-        partitions = [{'services': service_uids}]
+        partitions = values.get('Partitions',
+                                [{'services': service_uids}])
 
     part_num = 0
     prefix = sample.getId() + "-P"
@@ -207,8 +208,10 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     # should act in consequence.
     # Getting the analyses profiles
     analyses_profiles = values.get('Profiles', [])
-    if analyses_profiles:
-        analyses_profiles = analyses_profiles.split(',')
+    if not isinstance(analyses_profiles, (list, tuple)):
+        # Plone converts the incoming form value to a list, if there are
+        # multiple values; but if not, it will send a string (a single UID).
+        analyses_profiles = [analyses_profiles]
     if not analyses_services and not analyses_profiles:
         raise RuntimeError(
                 "create_analysisrequest: no analyses services or analysis"

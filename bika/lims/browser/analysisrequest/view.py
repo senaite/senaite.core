@@ -161,12 +161,12 @@ class AnalysisRequestViewView(BrowserView):
     def getAttachments(self):
         attachments = []
         ar_atts = self.context.getAttachment()
-        analyses = self.context.getAnalyses(full_objects = True)
+        analyses = self.context.getAnalyses(full_objects=True)
         for att in ar_atts:
-            file_obj = att.getAttachmentFile()
-            fsize = file_obj.get_size() if file_obj else 0
-            if isinstance(fsize, tuple):
-                fsize = 0
+            fsize = 0
+            file = att.getAttachmentFile()
+            if file:
+                fsize = file.get_size()
             if fsize < 1024:
                 fsize = '%s b' % fsize
             else:
@@ -175,18 +175,19 @@ class AnalysisRequestViewView(BrowserView):
                 'keywords': att.getAttachmentKeys(),
                 'analysis': '',
                 'size': fsize,
-                'name': file_obj.filename,
-                'Icon': file_obj.icon,
-                'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                'name': file.filename,
+                'Icon': file.icon,
+                'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                 'absolute_url': att.absolute_url(),
                 'UID': att.UID(),
+                'report_option': att.getReportOption(),
             })
 
         for analysis in analyses:
             an_atts = analysis.getAttachment()
             for att in an_atts:
-                file_obj = att.getAttachmentFile()
-                fsize = file_obj.get_size() if file_obj else 0
+                file = att.getAttachmentFile()
+                fsize = file.get_size() if file else 0
                 if fsize < 1024:
                     fsize = '%s b' % fsize
                 else:
@@ -195,11 +196,12 @@ class AnalysisRequestViewView(BrowserView):
                     'keywords': att.getAttachmentKeys(),
                     'analysis': analysis.Title(),
                     'size': fsize,
-                    'name': file_obj.filename,
-                    'Icon': file_obj.icon,
-                    'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                    'name': file.filename,
+                    'Icon': file.icon,
+                    'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                     'absolute_url': att.absolute_url(),
                     'UID': att.UID(),
+                    'report_option': att.getReportOption(),
                 })
         return attachments
 

@@ -263,8 +263,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
         # Call the folderitem method from the base class
         item = _ARV.folderitem(self, obj, item, index)
         # In sampling rounds, analysis request list will be listed per Sample
-        # Partition/Container
-        # Obtaining analysis requests
+        # Partition/Container Obtaining analysis requests
         # TODO-performance: don't get the full object
         obj = obj.getObject()
         # Getting the sampling round template uid
@@ -275,20 +274,17 @@ class AnalysisRequestsView(_ARV, _ARAV):
         # Getting the partitions and creating a row per partition
         partitions = obj.getPartitions()
         for part in partitions:
-            item_copy = item.copy()
-            # We ave to make a copy of 'replace' because it's a reference to a dict object
-            item_copy['replace'] = item_copy[x]['replace'].copy()
-            item_copy['partition'] = part.id
+            item['partition'] = part.id
             if part.getContainer():
                 img_url = '<img src="'+self.portal_url+'/++resource++bika.lims.images/ok.png"/>'
-                item_copy['securitySealIntact'] = part.getContainer().getSecuritySealIntact()
-                item_copy['replace']['securitySealIntact'] = img_url \
+                item['securitySealIntact'] = part.getContainer().getSecuritySealIntact()
+                item['replace']['securitySealIntact'] = img_url \
                     if part.getContainer().getSecuritySealIntact() else ' '
             else:
-                item_copy['securitySealIntact'] = ' '
-            item_copy['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item_copy['partition'])
-            item_copy['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
+                item['securitySealIntact'] = ' '
+            item['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item['partition'])
+            item['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
             if srTemplateObj:
-                item_copy['replace']['samplingRoundTemplate'] = \
-                    "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item_copy['samplingRoundTemplate'])
-        return item_copy
+                item['replace']['samplingRoundTemplate'] = \
+                    "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item['samplingRoundTemplate'])
+        return item
