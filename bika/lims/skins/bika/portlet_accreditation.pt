@@ -7,15 +7,16 @@
 <div metal:define-macro="portlet"
      tal:define="portal_state context/@@plone_portal_state;
                  portal_url portal_state/portal_url;
-                 member python: context.portal_membership.getAuthenticatedMember();
+                 anonymous portal_state/anonymous;
                  plone_view context/@@plone;"
-     tal:condition="python: member.getId()">
+     tal:condition="python: not anonymous">
 
     <div class="portlet" id="portlet-accreditation"
         tal:condition="python:context.bika_setup.laboratory.LaboratoryAccredited"
         tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
         <a href="#"
             tal:attributes="href string:${context/portal_url}/accreditation">
+        <span tal:content="portal_state"></span><br>
         <img
             tal:condition="logo"
             tal:attributes="src string:${context/portal_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
