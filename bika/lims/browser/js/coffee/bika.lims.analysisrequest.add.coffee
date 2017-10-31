@@ -292,6 +292,8 @@ class window.AnalysisRequestAdd
     base_url = window.location.href
     if base_url.search("/portal_factory") >= 0
       return base_url.split("/portal_factory")[0]
+    if base_url.search("/ar_edit") >= 0
+      return base_url.split("/ar_edit")[0]
     return base_url.split("/ar_add")[0]
 
 

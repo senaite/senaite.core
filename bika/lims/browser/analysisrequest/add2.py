@@ -13,7 +13,6 @@ from DateTime import DateTime
 from BTrees.OOBTree import OOBTree
 
 from plone import protect
-from plone.memoize import view
 
 from plone.memoize.volatile import cache
 from plone.memoize.volatile import DontCache
@@ -35,7 +34,6 @@ from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
-SKIP_FIELD_ON_COPY = ["Sample"]
 
 
 def returns_json(func):
@@ -75,6 +73,7 @@ def mg(value):
 class AnalysisRequestAddView(BrowserView):
     """AR Add view
     """
+    SKIP_FIELD_ON_COPY = ["Sample"]
     template = ViewPageTemplateFile("templates/ar_add2.pt")
 
     def __init__(self, context, request):
@@ -85,6 +84,12 @@ class AnalysisRequestAddView(BrowserView):
         self.tmp_ar = None
 
     def __call__(self):
+        self.update()
+        return self.template()
+
+    def update(self):
+        """Called before the template is rendered
+        """
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
         self.bika_setup = api.get_bika_setup()
@@ -93,12 +98,12 @@ class AnalysisRequestAddView(BrowserView):
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
+        self.copy_from = self.get_copy_from()
 
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
-        return self.template()
 
     def get_view_url(self):
         """Return the current view url including request parameters
@@ -170,6 +175,12 @@ class AnalysisRequestAddView(BrowserView):
         logger.info("*** GET AR FIELDS ***")
         schema = self.get_ar_schema()
         return schema.fields()
+
+    def get_required_ar_fields(self):
+        """Return all required AR fields
+        """
+        fields = self.get_ar_fields()
+        return [field.getName() for field in fields if field.required]
 
     def get_fieldname(self, field, arnum):
         """Generate a new fieldname with a '-<arnum>' suffix
@@ -261,11 +272,18 @@ class AnalysisRequestAddView(BrowserView):
         widget = context.widget(new_fieldname, **kw)
         return widget
 
+    def get_came_from(self, default="add"):
+        """Returns the "came_from" request parameter
+        """
+        return self.request.get("came_from", default)
+
     def get_copy_from(self):
         """Returns a mapping of UID index -> AR object
         """
         # Create a mapping of source ARs for copy
-        copy_from = self.request.form.get("copy_from", "").split(",")
+        copy_from = self.request.form.get("copy_from", "")
+        if isinstance(copy_from, basestring):
+            copy_from = copy_from.split(",")
         # clean out empty strings
         copy_from_uids = filter(lambda x: x, copy_from)
         out = dict().fromkeys(range(len(copy_from_uids)))
@@ -340,7 +358,7 @@ class AnalysisRequestAddView(BrowserView):
         ar_context = self.get_ar()
 
         # mapping of UID index to AR objects {1: <AR1>, 2: <AR2> ...}
-        copy_from = self.get_copy_from()
+        copy_from = self.copy_from
 
         out = {}
         # the original schema fields of an AR (including extended fields)
@@ -352,7 +370,7 @@ class AnalysisRequestAddView(BrowserView):
             for field in fields:
                 value = None
                 fieldname = field.getName()
-                if source and fieldname not in SKIP_FIELD_ON_COPY:
+                if source and fieldname not in self.SKIP_FIELD_ON_COPY:
                     # get the field value stored on the source
                     value = self.get_field_value(field, source)
                 else:
@@ -816,6 +834,17 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         raise TypeError("{} is neiter an instance of DateTime nor datetime"
                         .format(repr(dt)))
 
+    def to_uid_list(self, value):
+        """Return a list of UIDs from a given value
+        """
+        if value is None:
+            return []
+        if isinstance(value, basestring):
+            value = value.split(",")
+        if isinstance(value, (list, tuple)):
+            return filter(lambda uid: uid, value)
+        return []
+
     def get_records(self):
         """Returns a list of AR records
 
@@ -843,27 +872,110 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             records.append(record)
         return records
 
-    def get_uids_from_record(self, record, key):
-        """Returns a list of parsed UIDs from a single form field identified by the given key.
-
-        A form field ending with `_uid` can contain an empty value, a
-        single UID or multiple UIDs separated by a comma.
-
-        This method parses the UID value and returns a list of non-empty UIDs.
+    def get_uid_fields_from_record(self, record):
+        """Returns a list of all fields that end with _uid
         """
-        value = record.get(key, None)
-        if value is None:
-            return []
-        if isinstance(value, basestring):
-            value = value.split(",")
-        return filter(lambda uid: uid, value)
+        return filter(lambda f: f.endswith("_uid"), record)
+
+    def get_file_fields_from_record(self, record):
+        """Returns a list of all fields that end with _file
+        """
+        return filter(lambda f: f.endswith("_file"), record)
 
     def get_objs_from_record(self, record, key):
         """Returns a mapping of UID -> object
         """
-        uids = self.get_uids_from_record(record, key)
+        value = record.get(key)
+        uids = self.to_uid_list(value)
         objs = map(self.get_object_by_uid, uids)
         return dict(zip(uids, objs))
+
+    def get_attachments_from_record(self, record):
+        """Returns attachments from record
+        """
+        # Extract file uploads (fields ending with _file)
+        file_fields = self.get_file_fields_from_record(record)
+        return map(lambda f: record.get(f), file_fields)
+
+    def get_specifications_from_record(self, record):
+        """Returns specifications from record
+        """
+        # Process Specifications field (dictionary like records instance).
+        # -> Convert to a standard Python dictionary.
+        return map(lambda x: dict(x), record.get("Specifications", []))
+
+    def get_partitions_from_record(self, record):
+        """Returns the partition settings
+        """
+        # Selected Analysis UIDs
+        selected_analysis_uids = record.get("Analyses", [])
+
+        # Partitions defined in Template
+        template_parts = {}
+        template_uid = record.get("Template_uid")
+        if template_uid:
+            template = api.get_object_by_uid(template_uid)
+            for part in template.getPartitions():
+                # remember the part setup by part_id
+                template_parts[part.get("part_id")] = part
+
+        # The final data structure should look like this:
+        # [{"part_id": "...", "container_uid": "...", "services": []}]
+        partitions = {}
+        parts = record.pop("Parts", [])
+        for part in parts:
+            part_id = part.get("part")
+            service_uid = part.get("uid")
+            # skip unselected Services
+            if service_uid not in selected_analysis_uids:
+                continue
+            # Container UID for this part
+            container_uids = []
+            template_part = template_parts.get(part_id)
+            if template_part:
+                container_uid = template_part.get("container_uid")
+                if container_uid:
+                    container_uids.append(container_uid)
+
+            # remember the part id and the services
+            if part_id not in partitions:
+                partitions[part_id] = {
+                    "part_id": part_id,
+                    "container_uid": container_uids,
+                    "services": [service_uid],
+                }
+            else:
+                partitions[part_id]["services"].append(service_uid)
+
+        return partitions.values()
+
+    def get_processed_record(self, record):
+        # Process UID fields first and set their values to the linked field
+        # (the ones without the _uid suffix)
+        uid_fields = self.get_uid_fields_from_record(record)
+        for field in uid_fields:
+            name = field.replace("_uid", "")
+            value = record.get(field)
+            if "," in value:
+                value = value.split(",")
+            record[name] = value
+        return record
+
+    def get_missing_fields(self, record):
+        # Required fields
+        required_fields = self.get_required_ar_fields()
+
+        # Client field is required but hidden in the AR Add form. We remove
+        # it therefore from the list of required fields to let empty
+        # columns pass the required check below.
+        if record.get("Client", False):
+            required_fields.remove('Client')
+
+        # None of the required fields are filled, skip this record
+        if not any(map(lambda rf: record.get(rf), required_fields)):
+            return []
+
+        return [f for f in required_fields if not record.get(f, None)]
 
     @cache(cache_key)
     def get_base_info(self, obj):
@@ -1616,58 +1728,74 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return prices
 
     def ajax_submit(self):
-        """Submit & create the ARs
+        """Handle Ajax Submit
         """
+        came_from = self.get_came_from()
+        func_name = "submit_{}".format(came_from)
+        func = getattr(self, func_name, None)
+        if func is None:
+            return self.error("Invalid function", status=400)
+        return func()
 
-        # Get AR required fields (including extended fields)
-        fields = self.get_ar_fields()
+    def submit_edit(self):
+        """Edit ARs
+        """
+        records = self.get_records()
 
+        # XXX rename to edit_ars
+        ARs = []
+        for arnum, obj in self.get_copy_from().items():
+            # KeyError, but I want that
+            record = records[arnum]
+
+            record = self.get_processed_record(record)
+
+            # Specifications
+            specifications = self.get_specifications_from_record(record)
+            # remove specifications from the record
+            record.pop("Specifications", None)
+
+            # Partitions
+            partitions = self.get_partitions_from_record(record)
+            record["Partitions"] = partitions
+
+            # remove file fields from the record
+            file_fields = self.get_file_fields_from_record(record)
+            map(lambda ff: record.pop(ff), file_fields)
+
+            obj.edit(specifications=specifications, **record)
+            ARs.append(obj)
+
+        level = "info"
+        if len(ARs) == 0:
+            message = _('No Analysis Requests could be updated.')
+            level = "error"
+        elif len(ARs) > 1:
+            message = _('Analysis requests ${ARs} were successfully updated.',
+                        mapping={'ARs': safe_unicode(', '.join(ARs))})
+        else:
+            message = _('Analysis request ${AR} was successfully updated.',
+                        mapping={'AR': safe_unicode(ARs[0])})
+
+        # Display a portal message
+        self.context.plone_utils.addPortalMessage(message, level)
+        return {"success": True}
+
+    def submit_add(self):
+        """Create ARs
+        """
         # extract records from request
         records = self.get_records()
 
         errors = {}
-        attachments = {}
         valid_records = []
 
-        # Validate required fields
+        # Process all records
         for n, record in enumerate(records):
-
-            # Process UID fields first and set their values to the linked field
-            uid_fields = filter(lambda f: f.endswith("_uid"), record)
-            for field in uid_fields:
-                name = field.replace("_uid", "")
-                value = record.get(field)
-                if "," in value:
-                    value = value.split(",")
-                record[name] = value
-
-            # Extract file uploads (fields ending with _file)
-            # These files will be added later as attachments
-            file_fields = filter(lambda f: f.endswith("_file"), record)
-            attachments[n] = map(lambda f: record.pop(f), file_fields)
-
-            # Process Specifications field (dictionary like records instance).
-            # -> Convert to a standard Python dictionary.
-            specifications = map(lambda x: dict(x), record.pop("Specifications", []))
-            record["Specifications"] = specifications
-
-            # Required fields and their values
-            required_keys = [field.getName() for field in fields if field.required]
-            required_values = [record.get(key) for key in required_keys]
-            required_fields = dict(zip(required_keys, required_values))
-
-            # Client field is required but hidden in the AR Add form. We remove
-            # it therefore from the list of required fields to let empty
-            # columns pass the required check below.
-            if record.get("Client", False):
-                required_fields.pop('Client', None)
-
-            # None of the required fields are filled, skip this record
-            if not any(required_fields.values()):
-                continue
+            record = self.get_processed_record(record)
 
             # Missing required fields
-            missing = [f for f in required_fields if not record.get(f, None)]
+            missing = self.get_missing_fields(record)
 
             # If there are required fields missing, flag an error
             for field in missing:
@@ -1675,50 +1803,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 msg = _("Field '{}' is required".format(field))
                 errors[fieldname] = msg
 
-            # Selected Analysis UIDs
-            selected_analysis_uids = record.get("Analyses", [])
-
-            # Partitions defined in Template
-            template_parts = {}
-            template_uid = record.get("Template_uid")
-            if template_uid:
-                template = api.get_object_by_uid(template_uid)
-                for part in template.getPartitions():
-                    # remember the part setup by part_id
-                    template_parts[part.get("part_id")] = part
-
-            # The final data structure should look like this:
-            # [{"part_id": "...", "container_uid": "...", "services": []}]
-            partitions = {}
-            parts = record.pop("Parts", [])
-            for part in parts:
-                part_id = part.get("part")
-                service_uid = part.get("uid")
-                # skip unselected Services
-                if service_uid not in selected_analysis_uids:
-                    continue
-                # Container UID for this part
-                container_uids = []
-                template_part = template_parts.get(part_id)
-                if template_part:
-                    container_uid = template_part.get("container_uid")
-                    if container_uid:
-                        container_uids.append(container_uid)
-
-                # remember the part id and the services
-                if part_id not in partitions:
-                    partitions[part_id] = {
-                        "part_id": part_id,
-                        "container_uid": container_uids,
-                        "services": [service_uid],
-                    }
-                else:
-                    partitions[part_id]["services"].append(service_uid)
-
-            # Inject the Partitions to the record (will be picked up during the AR creation)
-            record["Partitions"] = partitions.values()
-
-            # Process valid record
+            # Only non-empty values are processed in add
             valid_record = dict()
             for fieldname, fieldvalue in record.iteritems():
                 # clean empty
@@ -1732,7 +1817,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if errors:
             return {'errors': errors}
 
-        # Process Form
+        # create ARs
         ARs = []
         for n, record in enumerate(valid_records):
             client_uid = record.get("Client")
@@ -1741,8 +1826,20 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             if not client:
                 raise RuntimeError("No client found")
 
-            # get the specifications and pass them directly to the AR create function.
-            specifications = record.pop("Specifications", {})
+            # Specifications
+            specifications = self.get_specifications_from_record(record)
+            # remove specifications from the record
+            record.pop("Specifications", None)
+
+            # Partitions
+            partitions = self.get_partitions_from_record(record)
+            record["Partitions"] = partitions
+
+            # Attachments
+            attachments = self.get_attachments_from_record(record)
+            # remove file fields from the record
+            file_fields = self.get_file_fields_from_record(record)
+            map(lambda ff: record.pop(ff), file_fields)
 
             # Create the Analysis Request
             ar = crar(
@@ -1754,13 +1851,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             ARs.append(ar.Title())
 
             _attachments = []
-            for attachment in attachments.get(n, []):
+            for attachment in attachments:
                 if not attachment.filename:
                     continue
                 att = _createObjectByType("Attachment", self.context, tmpID())
                 att.setAttachmentFile(attachment)
                 att.processForm()
                 _attachments.append(att)
+            # link the attachment to the AR
             if _attachments:
                 ar.setAttachment(_attachments)
 

@@ -77,6 +77,18 @@
   />
   <!-- /AR Add 2 -->
 
+
+  <!-- AR Edit -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="ar_edit"
+      class="bika.lims.browser.analysisrequest.edit.AnalysisRequestEditView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+  <!-- /AR Edit -->
+
+
   <adapter
       factory="bika.lims.browser.analysisrequest.ClientContactVocabularyFactory"
       provides="bika.lims.interfaces.IDisplayListVocabulary"
