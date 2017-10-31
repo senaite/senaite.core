@@ -16,15 +16,16 @@ from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
 from Products.Archetypes.utils import DisplayList, IntDisplayList
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField, InterimFieldsField, \
-    UIDReferenceField
+from bika.lims.browser.fields import DurationField, UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.utils import to_utf8 as _c
+from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
 # this value will be used instead.  It's set on the AnalysisService,
@@ -703,6 +704,7 @@ schema['title']._validationLayer()
 
 
 class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
+    implements(IBaseAnalysis)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
