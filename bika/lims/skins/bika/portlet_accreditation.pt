@@ -16,7 +16,6 @@
         tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
         <a href="#"
             tal:attributes="href string:${context/portal_url}/accreditation">
-        <span tal:content="portal_state"></span><br>
         <img
             tal:condition="logo"
             tal:attributes="src string:${context/portal_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
