@@ -708,7 +708,7 @@ class BikaListingView(BrowserView):
         # all conditions using ${form_id}_{index_name} are searched with AND
         for index in self.filter_indexes:
             idx = catalog.Indexes.get(index, None)
-            if not idx:
+            if idx is None:
                 logger.warn(
                     "index named '%s' not found in %s. "
                     "(Perhaps the index is still empty)." %
@@ -736,7 +736,7 @@ class BikaListingView(BrowserView):
         if len(value) > 1:
             for index in self.filter_indexes:
                 idx = catalog.Indexes.get(index, None)
-                if not idx:
+                if idx is None:
                     logger.debug("index named '%s' not found in %s.  "
                                  "(Perhaps the index is still empty)." %
                                  (index, self.catalog))
