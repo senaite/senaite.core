@@ -453,7 +453,7 @@ class BikaListingView(BrowserView):
 
     # Additional indexes to be searched
     # any index name not specified in self.columns[] can be added here.
-    filter_indexes = ['Title', 'Description', 'SearchableText']
+    filter_indexes = ['title', 'SearchableText']
 
     # The current or default review_state when one hasn't been selected.
     # With this setting, BikaListing instances must be careful to change it,
@@ -708,7 +708,7 @@ class BikaListingView(BrowserView):
         # all conditions using ${form_id}_{index_name} are searched with AND
         for index in self.filter_indexes:
             idx = catalog.Indexes.get(index, None)
-            if not idx:
+            if idx is None:
                 logger.warn(
                     "index named '%s' not found in %s. "
                     "(Perhaps the index is still empty)." %
@@ -736,7 +736,7 @@ class BikaListingView(BrowserView):
         if len(value) > 1:
             for index in self.filter_indexes:
                 idx = catalog.Indexes.get(index, None)
-                if not idx:
+                if idx is None:
                     logger.debug("index named '%s' not found in %s.  "
                                  "(Perhaps the index is still empty)." %
                                  (index, self.catalog))
