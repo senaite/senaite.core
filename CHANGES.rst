@@ -56,6 +56,7 @@ Changelog
 - #321 Stickers on listing plus autoprint generates PDF, PR-2158
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
 - #327 Keep Laboratory name when reinstalling
+- #339 Index not found warnings in bika listing.
 
 1.0.0 (2017-10-13)
 ------------------
