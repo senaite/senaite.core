@@ -483,13 +483,14 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         :return: string used for sorting
         """
         analysis_request = self.getRequest()
-        if analysis_request:
-            ar_sort_key = analysis_request.getPrioritySortkey()
-            ar_id = analysis_request.getId().lower()
-            title = sortable_title(self)
-            if callable(title):
-                title = title()
-            return '{}.{}.{}'.format(ar_sort_key, ar_id, title)
+        if analysis_request is None:
+            return None
+        ar_sort_key = analysis_request.getPrioritySortkey()
+        ar_id = analysis_request.getId().lower()
+        title = sortable_title(self)
+        if callable(title):
+            title = title()
+        return '{}.{}.{}'.format(ar_sort_key, ar_id, title)
 
 
     @security.public
