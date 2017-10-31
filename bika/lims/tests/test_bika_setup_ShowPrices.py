@@ -3,19 +3,17 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-"""If ShowPrices is not true, then Invoices, prices, pricelists, should
-all be hidden.
-"""
-from bika.lims.testing import BIKA_SIMPLE_FIXTURE
-from bika.lims.tests.base import BikaSimpleTestCase
-from bika.lims.utils import tmpID
-from DateTime.DateTime import DateTime
-from plone.app.testing import login, logout
-from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 import transaction
-import unittest
+from DateTime.DateTime import DateTime
+from Products.CMFPlone.utils import _createObjectByType
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
+
+from bika.lims.tests.base import BIKA_LIMS_FUNCTIONAL_TESTING
+from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.utils import tmpID
 
 try:
     import unittest2 as unittest
@@ -23,7 +21,10 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class Test_ShowPrices(BikaSimpleTestCase):
+class Test_ShowPrices(BikaFunctionalTestCase):
+    """If ShowPrices is not true, then Invoices, prices, pricelists, should
+    all be hidden.
+    """
 
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
@@ -35,6 +36,7 @@ class Test_ShowPrices(BikaSimpleTestCase):
     def setUp(self):
         # @formatter:off
         super(Test_ShowPrices, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
         login(self.portal, TEST_USER_NAME)
         self.client = self.addthing(
             self.portal.clients,
@@ -48,10 +50,19 @@ class Test_ShowPrices(BikaSimpleTestCase):
         sampletype = self.addthing(
             self.portal.bika_setup.bika_sampletypes,
             'SampleType', title='Water', Prefix='H2O')
+        labcontact = self.addthing(
+            self.portal.bika_setup.bika_labcontacts,
+            'LabContact', title='Lab Contact 1',)
+        department = self.addthing(
+            self.portal.bika_setup.bika_departments,
+            'Department', title='Department 1', Manager=labcontact)
+        category = self.addthing(
+            self.portal.bika_setup.bika_analysiscategories,
+            'AnalysisCategory', title='Category 1', Department=department)
         service = self.addthing(
             self.portal.bika_setup.bika_analysisservices,
             'AnalysisService', title='Ecoli', Keyword='ECO', Accredited=True,
-            Price='409')
+            Price='409', Category=category.UID())
         self.profile = self.addthing(
             self.portal.bika_setup.bika_analysisprofiles,
             'AnalysisProfile', title='Profile', Service=[service,])
@@ -206,5 +217,5 @@ class Test_ShowPrices(BikaSimpleTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Test_ShowPrices))
-    suite.layer = BIKA_SIMPLE_FIXTURE
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
