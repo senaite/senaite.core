@@ -453,7 +453,7 @@ class BikaListingView(BrowserView):
 
     # Additional indexes to be searched
     # any index name not specified in self.columns[] can be added here.
-    filter_indexes = ['Title', 'Description', 'SearchableText']
+    filter_indexes = ['title', 'SearchableText']
 
     # The current or default review_state when one hasn't been selected.
     # With this setting, BikaListing instances must be careful to change it,
