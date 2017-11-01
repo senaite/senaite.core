@@ -25,7 +25,8 @@ Changelog
 
 **Fixed**
 
-- #330 Show action buttons when shorting by column in listings
+- #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
+- #330 Show action buttons when sorting by column in listings
 - #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
 - #281 Integration of PR-2269. Show the Unit in Manage Analyses View
 - #282 Integration of PR-2252. Traceback if the title contains braces on content creation
