@@ -47,8 +47,13 @@ def upgrade(tool):
     return True
 
 def prepare_number_generator(portal):
-    # Load IDServer defaults
+    number_generator = getUtility(INumberGenerator)
+    if len(number_generator.keys()) > 1:
+        logger.info('Skip number generator initialisation')
+        return
 
+    logger.info('Initialise number generator')
+    # Load IDServer defaults
     config_map = [
         {'context': 'sample',
          'counter_reference': 'AnalysisRequestSample',
