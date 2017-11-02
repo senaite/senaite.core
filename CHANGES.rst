@@ -54,6 +54,7 @@ Changelog
 - #319 Laboratory has Supervisor which can appear in reports, PR-2112
 - #312 Worksheet: "Print" does not display/print partial results
 - #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
+- #317 Added get_backreferences for UIDReferenceField
 - #321 Stickers on listing plus autoprint generates PDF, PR-2158
 - #336 Accreditation Portlet renders an error message for anonymous users.
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation

@@ -24,6 +24,7 @@ from bika.lims import api as api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
+from persistent.mapping import PersistentMapping
 from plone.memoize import ram
 from plone.registry.interfaces import IRegistry
 from weasyprint import CSS, HTML
