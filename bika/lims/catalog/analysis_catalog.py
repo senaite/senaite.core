@@ -69,7 +69,7 @@ _columns_list = [
     'getClientURL',
     'getAnalysisRequestTitle',
     'getResult',
-    'getCalculation',
+    'getCalculationUID',
     'getUnit',
     'getKeyword',
     'getCategoryTitle',

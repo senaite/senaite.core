@@ -25,7 +25,8 @@ Changelog
 
 **Fixed**
 
-- #330 Show action buttons when shorting by column in listings
+- #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
+- #330 Show action buttons when sorting by column in listings
 - #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
 - #281 Integration of PR-2269. Show the Unit in Manage Analyses View
 - #282 Integration of PR-2252. Traceback if the title contains braces on content creation
@@ -54,8 +55,10 @@ Changelog
 - #312 Worksheet: "Print" does not display/print partial results
 - #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
 - #321 Stickers on listing plus autoprint generates PDF, PR-2158
+- #336 Accreditation Portlet renders an error message for anonymous users.
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
 - #327 Keep Laboratory name when reinstalling
+- #339 Index not found warnings in bika listing.
 
 1.0.0 (2017-10-13)
 ------------------
