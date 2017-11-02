@@ -13,7 +13,6 @@ from bika.lims import logger
 from bika.lims.api import is_at_content, is_brain, is_dexterity_content
 from bika.lims.interfaces.field import IUIDReferenceField
 from plone.api.portal import get_tool
-from plone.api.validation import mutually_exclusive_parameters
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 
@@ -54,11 +53,11 @@ class UIDReferenceField(StringField):
         :rtype: BaseContent
         """
         obj = _get_object(context, value)
-        if obj:
-            return obj
-        logger.error(
-            "{}.{}: Resolving UIDReference failed for {}.  No object will "
-            "be returned.".format(context, self.getName(), value))
+        if obj is None:
+            logger.error(
+                "{}.{}: Resolving UIDReference failed for {}.  No object will "
+                "be returned.".format(context, self.getName(), value))
+        return obj
 
     @security.public
     def get_uid(self, context, value):
@@ -214,14 +213,13 @@ def _get_object(context, value):
     :rtype: BaseContent
     """
 
-    if value:
-        if is_at_content(value) or is_dexterity_content(value):
-            return value
-        else:
-            uc = getToolByName(context, 'uid_catalog')
-            brains = uc(UID=value)
-            if brains:
-                return brains[0].getObject()
+    if is_at_content(value) or is_dexterity_content(value):
+        return value
+    elif value and is_uid(context, value):
+        uc = getToolByName(context, 'uid_catalog')
+        brains = uc(UID=value)
+        assert len(brains) == 1
+        return brains[0].getObject()
 
 
 def get_storage(context):
@@ -229,57 +227,6 @@ def get_storage(context):
     if annotation.get(BACKREFS_STORAGE) is None:
         annotation[BACKREFS_STORAGE] = {}
     return annotation[BACKREFS_STORAGE]
-
-
-@mutually_exclusive_parameters('as_uids', 'as_objects')
-def get_backreferences(context, relationship=None,
-                       as_uids=None, as_objects=None):
-    """Return all objects which use a UIDReferenceField to reference context.
-
-    :param context: The object which is the target of references.
-    :param relationship: The relationship name of the UIDReferenceField.
-    :param as_uids: when a relationship is specified, requests only UIDs.
-    :param as_objects: when a relationship is specified, requests full objects.
-
-    This function can be called with or without specifying a relationship.
-
-    - If a relationship is provided, the return value will be a list of items
-      which reference the context using the provided relationship.
-
-      If relationship is provided, then you can provide an extra argument
-      to specify how the back references should be returned: as UIDs,
-      full objects, or brains (the default).
-
-    - If the relationship is not provided, then the entire set of
-      backreferences to the context object is returned (by reference) as a
-      dictionary.  This value can then be modified in-place, to edit the stored
-      backreferences.
-
-      If relationship is not provided, the returned backreferences will
-      always be returned as UIDs, and it is an error to specify another
-      return type.
-    """
-
-    instance = context.aq_base
-    backrefs = get_storage(instance)
-
-    if relationship:
-        backrefs = backrefs.get(relationship, [])
-        if not backrefs:
-            return backrefs
-        # return only UIDs
-        if as_uids:
-            return backrefs
-        # return full objects
-        elif as_objects:
-            return [_get_object(context, b) for b in backrefs]
-        # Return brains from first catalog found.
-        cat = _get_catalog_for_uid(backrefs[0])
-        return cat(UID=backrefs)
-
-    assert not as_objects, "You cannot use as_objects with no relationship"
-
-    return backrefs
 
 
 def _get_catalog_for_uid(uid):
@@ -297,3 +244,45 @@ def _get_catalog_for_uid(uid):
     if cats:
         return cats[0]
     return pc
+
+
+def get_backreferences(context, relationship=None, as_brains=None):
+    """Return all objects which use a UIDReferenceField to reference context.
+
+    :param context: The object which is the target of references.
+    :param relationship: The relationship name of the UIDReferenceField.
+    :param as_brains: Requests that this function returns only catalog brains.
+        as_brains can only be used if a relationship has been specified.
+
+    This function can be called with or without specifying a relationship.
+
+    - If a relationship is provided, the return value will be a list of items
+      which reference the context using the provided relationship.
+
+      If relationship is provided, then you can request that the backrefs
+      should be returned as catalog brains.  If you do not specify as_brains,
+      the raw list of UIDs will be returned.
+
+    - If the relationship is not provided, then the entire set of
+      backreferences to the context object is returned (by reference) as a
+      dictionary.  This value can then be modified in-place, to edit the stored
+      backreferences.
+    """
+
+    instance = context.aq_base
+    raw_backrefs = get_storage(instance)
+
+    if relationship:
+        # get relation from storage
+        backrefs = raw_backrefs.get(relationship, None)
+        if not backrefs:
+            backrefs = []
+        # as_brains: return brains
+        if as_brains:
+            cat = _get_catalog_for_uid(backrefs[0])
+            backrefs = cat(UID=backrefs)
+    else:
+        assert not as_brains, "You cannot use as_brains with no relationship"
+        backrefs = raw_backrefs
+
+    return backrefs

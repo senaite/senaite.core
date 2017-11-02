@@ -244,8 +244,9 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         calculation's Formula.
         """
         deps = []
-        backrefs = get_backreferences(self, 'AnalysisServiceCalculation', as_objects=1)
-        for service in backrefs:
+        backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
+        services = map(get_object_by_uid, backrefs)
+        for service in services:
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
                 calc.getCalculationDependants(deps)
