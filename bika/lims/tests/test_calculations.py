@@ -269,6 +269,23 @@ class TestCalculations(BikaFunctionalTestCase):
                     },
                 ],
             },
+            {'formula': '([Ca]/[Mg])+0.000001',
+             'analyses': {'Ca': '1', 'Mg': '20'},
+             'interims': {},
+             'test_fixed_precision': [
+                 {'fixed_precision': 6,
+                  'expected_result': '0.050001',
+                  },
+             ],
+             'test_uncertainties_precision': [
+                 {'uncertainties': [
+                     {'intercept_min': 0, 'intercept_max': 0.09,
+                      'errorvalue': 0},
+                 ],
+                     'expected_result': '0.050001'
+                 },
+             ],
+             },
 
         ]
 
@@ -503,8 +520,12 @@ class TestCalculations(BikaFunctionalTestCase):
                     self.assertEqual(an.getInterimFields(), intermap)
 
                 # Let's go.. calculate and check result
-                calcanalysis.calculateResult(True, True)
-                self.assertEqual(calcanalysis.getFormattedResult(), case['expected_result'])
+                success = calcanalysis.calculateResult(True, True)
+                self.assertTrue(success, True)
+                self.assertEqual(
+                    calcanalysis.getFormattedResult(),
+                    case['expected_result'])
+
 
 def test_suite():
     suite = unittest.TestSuite()
