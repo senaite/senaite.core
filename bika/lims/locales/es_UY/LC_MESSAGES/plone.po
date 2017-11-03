@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-10-29 00:19+0000\n"
+"POT-Creation-Date: 2017-11-03 11:38+0000\n"
 "PO-Revision-Date: 2012-02-17 22:31+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish (Uruguay) (http://www.transifex.com/bikalabs/bika-lims/language/es_UY/)\n"
