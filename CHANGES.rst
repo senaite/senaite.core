@@ -30,8 +30,6 @@ Changelog
 - #309 PR-2130, PR-2233
        Infinite Recursion on Report Publication.
        Copied ARs are created in random order.
-- #310 ID Server and bika setup updates along with migration step.
-       Integration of PR-2210
 - #312 Worksheet: "Print" does not display/print partial results
 - #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly.
 - #317 Added get_backreferences for UIDReferenceField
@@ -43,6 +41,8 @@ Changelog
 - #336 Accreditation Portlet renders an error message for anonymous users.
 - #339 Index not found warnings in bika listing.
 - #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
+- #344 ID Server and bika setup updates along with migration step.
+       Integration of PR-2210
 
 1.0.0 (2017-10-13)
 ------------------
