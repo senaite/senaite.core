@@ -17,12 +17,6 @@ class ICalculation(Interface):
 
     schema = Attribute("This is the Archetypes Schema for a calculation.")
 
-    service_backreferences = Attribute(
-        "Used to allow a calculation to quickly lookup the list of services "
-        "which have selected it as the service's active Calculation.  This "
-        "field is set when the AnalysisService.Calculation field is modified."
-        "The value in this attribute is a list of UIDs.")
-
     def _renameAfterCreation(check_auto_id=False):
         """Calls bika.lims.idserver.renameAfterCreation to set the ID
         for this object

@@ -206,6 +206,9 @@ class IAnalysisCategories(Interface):
 
     ""
 
+class IBaseAnalysis(Interface):
+    ""
+
 
 class IAnalysisService(Interface):
 

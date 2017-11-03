@@ -20,6 +20,7 @@ Needed Imports::
 
     >>> from bika.lims import api
 
+
 Functional Helpers::
 
     >>> def start_server():
@@ -35,6 +36,7 @@ Variables::
     >>> bika_setup = portal.bika_setup
     >>> bika_calculations = bika_setup.bika_calculations
     >>> bika_analysisservices = bika_setup.bika_analysisservices
+
 
 Test user::
 
@@ -63,9 +65,11 @@ Each `AnalysisService` contains a `Keyword` field, which can be referenced in a 
     >>> as2.setKeyword("Mg")
     >>> as2.reindexObject()
 
+
 Create one `Calculation`::
 
     >>> calc = api.create(bika_calculations, "Calculation", title="Total Hardness")
+
 
 The `Formula` field references the Keywords from Analysis Services::
 
@@ -76,16 +80,12 @@ The `Formula` field references the Keywords from Analysis Services::
     >>> calc.getMinifiedFormula()
     '[Ca] + [Mg]'
 
+
 The `Calculation` depends now on the two Analysis Services::
 
     >>> sorted(calc.getCalculationDependencies(flat=True), key=methodcaller('getId'))
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>, <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>]
 
-It is also possible to find out if an `AnalysisService` depends on the calculation::
-
-    >>> as1.setCalculation(calc)
-    >>> calc.getCalculationDependants()
-    [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
 
 The `Formula` can be tested with dummy values in the `TestParameters` field::
 
@@ -94,6 +94,7 @@ The `Formula` can be tested with dummy values in the `TestParameters` field::
     >>> calc.setTestResult(form_value)
     >>> calc.getTestResult()
     '8.9'
+
 
 Within a `Calculation` it is also possible to use a Python function to calculate
 a result. The user can add a Python `module` as a dotted name and a member
@@ -107,6 +108,7 @@ function in the `PythonImports` field::
     >>> calc.setTestResult(form_value)
     >>> calc.getTestResult()
     '8.0'
+
 
 A `Calculation` can therefore dynamically get a module and a member::
 

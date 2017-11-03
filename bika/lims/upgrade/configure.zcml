@@ -17,4 +17,24 @@
        handler="bika.lims.upgrade.v01_00_000.upgrade"
        profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.0"
+       source="1.0.0"
+       destination="1.1.0"
+       handler="bika.lims.upgrade.v01_01_000.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.1"
+       source="1.1.0"
+       destination="1.1.1"
+       handler="bika.lims.upgrade.v01_01_001.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.2"
+       source="1.1.1"
+       destination="1.1.2"
+       handler="bika.lims.upgrade.v01_01_002.upgrade"
+       profile="bika.lims:default"/>
 </configure>

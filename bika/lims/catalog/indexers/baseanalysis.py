@@ -1,9 +1,9 @@
-from bika.lims.interfaces import IAnalysisService
-from plone.indexer import indexer
 from Products.CMFPlone.CatalogTool import sortable_title as _sortable_title
+from bika.lims.interfaces import IBaseAnalysis
+from plone.indexer import indexer
 
 
-@indexer(IAnalysisService)
+@indexer(IBaseAnalysis)
 def sortable_title(instance):
     sort_key = instance.getSortKey()
     if sort_key is None:
