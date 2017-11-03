@@ -25,6 +25,7 @@ Changelog
 
 **Fixed**
 
+- #343 Fix publication preferences for CC Contacts
 - #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
 - #330 Show action buttons when sorting by column in listings
 - #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
@@ -60,6 +61,7 @@ Changelog
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
 - #327 Keep Laboratory name when reinstalling
 - #339 Index not found warnings in bika listing.
+- #348  Add Attachment objects to portal_catalog, to allow idserver to function correctly.
 
 1.0.0 (2017-10-13)
 ------------------

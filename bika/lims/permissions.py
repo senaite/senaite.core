@@ -223,7 +223,6 @@ def setup_permissions(portal):
     mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
 
     mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
-    mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(ManageBika, ['Manager', 'LabManager'], 1)
     mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -444,16 +443,3 @@ def setup_permissions(portal):
     mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
     mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
     portal.bika_setup.bika_attachmenttypes.reindexObject()
-
-    # /arimports folder permissions
-    try:
-        mp = portal.arimports.manage_permission
-        mp(ManageARImport, ['Manager', ], 1)
-        mp(permissions.ListFolderContents, ['Manager', 'Member', ], 1)
-        mp(permissions.AddPortalContent, ['Manager', ], 0)
-        mp(permissions.DeleteObjects, ['Manager'], 0)
-        mp(permissions.View, ['Manager', 'Member'], 0)
-        portal.arimports.reindexObject()
-    except:
-        pass
-    # @formatter:on

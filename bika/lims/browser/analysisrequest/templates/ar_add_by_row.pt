@@ -124,9 +124,7 @@
                                       tal:condition="python:context.bika_setup.getShowPartitions()">
                                     &nbsp;</span>
                             </span>
-                            <span class="alert"
-                                  tal:attributes="field string:ar.${arnum}">
-                                &nbsp;</span>
+                            <span class="bika-alert" tal:attributes="field string:ar.${arnum}">&nbsp;</span>
                         </td>
                     </tal:columns>
                 </tal:def>
