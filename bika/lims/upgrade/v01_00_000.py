@@ -1,18 +1,15 @@
-from Acquisition import aq_inner
-from Acquisition import aq_parent
-
 from bika.lims import logger
+from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.config import  PROJECTNAME as product
 
-version = '1.0.0'
+version = '1.0.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
 
 @upgradestep(product, version)
 def upgrade(tool):
-    portal = aq_parent(aq_inner(tool))
+    portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
@@ -20,7 +17,7 @@ def upgrade(tool):
     # Since this upgrade is precisely meant to establish a version regardless
     # of the version numbering at bikalims/bika.lims, we don't want this check
     # to be performed.
-    #if ut.isOlderVersion(product, version):
+    # if ut.isOlderVersion(product, version):
     #    logger.info("Skipping upgrade of {0}: {1} > {2}".format(
     #        product, ufrom, version))
     #    # The currently installed version is more recent than the target

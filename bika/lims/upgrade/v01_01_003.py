@@ -1,10 +1,10 @@
+from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
-version = '1.1.1'  # Remember version number in metadata.xml and setup.py
+version = '1.1.3'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
 
@@ -24,12 +24,10 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
-    # Reindex getPrioritySortkey index. The priority sort key from analyses
-    # takes also into account analyses have to be sorted by their sortkey, so
-    # two analyses with same priority, same AR, but different sort key values
-    # don't get mixed.
-    ut.reindexIndex(CATALOG_ANALYSIS_LISTING, 'getPrioritySortkey')
-    ut.refreshCatalogs()
+    # Attachments must be present in a catalog, otherwise the idserver
+    # will fall apart.  https://github.com/senaite/bika.lims/issues/323
+    at = getToolByName(portal, 'archetype_tool')
+    at.setCatalogsByType('Attachment', ['portal_catalog'])
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
