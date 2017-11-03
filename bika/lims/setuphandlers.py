@@ -399,7 +399,7 @@ class BikaGenerator(object):
         at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Multifile', ['bika_setup_catalog'])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
-        at.setCatalogsByType('Attachment', [])
+        at.setCatalogsByType('Attachment', ['portal_catalog'])
         at.setCatalogsByType('Calculation',
                              ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('AnalysisProfile',
