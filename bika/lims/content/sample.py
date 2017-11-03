@@ -8,6 +8,8 @@
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _, logger
+from bika.lims.api import get_object_by_uid
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.utils import t, getUsers
 from Products.ATExtensions.field import RecordsField
 from bika.lims import deprecated
@@ -785,15 +787,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
     security.declarePublic('getAnalysisRequests')
 
     def getAnalysisRequests(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        ar = ''
-        ars = []
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'AnalysisRequestSample')]
-        for uid in uids:
-            reference = uid
-            ar = tool.lookupObject(reference.sourceUID)
-            ars.append(ar)
+        backrefs = get_backreferences(self, 'AnalysisRequestSample')
+        ars = map(get_object_by_uid, backrefs)
         return ars
 
     security.declarePublic('getAnalyses')
