@@ -244,6 +244,7 @@ class WorkflowAction:
                             if not success:
                                 # If failed, delete last verificator.
                                 item.deleteLastVerificator()
+                        item.reindexObject()
                     else:
                         success, message = doActionFor(item, action)
                     if success:
