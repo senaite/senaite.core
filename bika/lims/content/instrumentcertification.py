@@ -35,7 +35,9 @@ from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInstrumentCertification
 from plone.app.blob.field import FileField as BlobFileField
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
