@@ -20,7 +20,8 @@ from bika.lims import PMF, deprecated
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.api import get_tool
+from bika.lims.api import get_tool, get_object_by_uid, get_current_user, \
+    get_object, get_transitions_for
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import getFromString
@@ -83,24 +84,17 @@ class WorkflowAction:
 
         return action, came_from
 
-    # noinspection PyUnusedLocal
     def _get_selected_items(self):
         """ return a list of selected form objects
             full_objects defaults to True
         """
         form = self.request.form
-        uc = getToolByName(self.context, 'uid_catalog')
-        uids = form.get("uids", [])
-
         uids = form.get("uids", [])
         selected_items = collections.OrderedDict()
         for uid in uids:
-            try:
-                item = uc(UID=uid)[0].getObject()
-            except IndexError:
-                # ignore selected item if object no longer exists
-                continue
-            selected_items[uid] = item
+            obj = get_object_by_uid(uid)
+            if obj:
+                selected_items[uid] = obj
         return selected_items
 
     def workflow_action_default(self, action, came_from):
@@ -242,8 +236,7 @@ class WorkflowAction:
                         message = "Unknown error while submitting."
                         revers = item.getNumberOfRequiredVerifications()
                         nmvers = item.getNumberOfVerifications()
-                        mtool = getToolByName(self.context, 'portal_membership')
-                        member = mtool.getAuthenticatedMember()
+                        member = get_current_user()
                         username = member.getUserName()
                         item.addVerificator(username)
                         if revers - nmvers <= 1:
@@ -1047,16 +1040,17 @@ class BikaListingView(BrowserView):
             )
             # Set states and state titles
             ptype = obj.portal_type
+            workflow = get_tool('portal_workflow')
             for state_var, state in states.items():
                 results_dict[state_var] = state
-                _title = self.state_titles.get(state, None)
-                if not _title:
-                    _title = self.workflow.getTitleForStateOnType(state, ptype)
-                    if _title:
-                        _title = t(PMF(_title))
-                        self.state_titles[state] = _title
-                if _title and state == obj.review_state:
-                    results_dict['state_title'] = _title
+                state_title = self.state_titles.get(state, None)
+                if not state_title:
+                    state_title = workflow.getTitleForStateOnType(state, ptype)
+                    if state_title:
+                        state_title = t(PMF(state_title))
+                        self.state_titles[state] = state_title
+                if state_title and state == obj.review_state:
+                    results_dict['state_title'] = state_title
 
             # extra classes for individual fields on this item
             # { field_id : "css classes" }
@@ -1359,19 +1353,11 @@ class BikaListingView(BrowserView):
     def get_transitions_for_items(self, items):
         """Extract Worfklow transitions for the bika listing items
         """
-        workflow = get_tool('portal_workflow')
         out = {}
 
-        # helper method to extract the object from an bika listing item
-        def get_object_from_item(item):
-            brain_or_object = item.get("obj")
-            return api.get_object(brain_or_object)
-
         # extract all objects from the items
-        objects = map(get_object_from_item, items)
-
-        for obj in objects:
-            for transition in workflow.getTransitionsFor(obj):
+        for obj in map(get_object, [item.get('obj') for item in items]):
+            for transition in get_transitions_for(obj):
                 # append the transition by its id to the transitions dictionary
                 out[transition['id']] = transition
         return out
@@ -1433,14 +1419,6 @@ class BikaListingView(BrowserView):
         #     action['title'] = t(_(action['title']))
 
         return actions
-
-    def getPriorityIcon(self):
-        if hasattr(self.context, 'getPriority'):
-            priority = self.context.getPriority()
-            if priority:
-                icon = priority.getBigIcon()
-                if icon:
-                    return '/'.join(icon.getPhysicalPath())
 
     def tabindex(self):
         i = 0
@@ -1583,7 +1561,7 @@ class BikaListingFilterBar(BrowserView):
     BikaListingView. This filter shouldn't override the 'filter by state'
     functionality
     """
-    _render = ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")
+    template = ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")
     _filter_bar_dict = {}
 
     def render(self):
@@ -1591,7 +1569,7 @@ class BikaListingFilterBar(BrowserView):
         Returns a ViewPageTemplateFile instance with the filter inputs and
         submit button.
         """
-        return self._render()
+        return self.template()
 
     def setRender(self, new_template):
         """
@@ -1600,15 +1578,7 @@ class BikaListingFilterBar(BrowserView):
             'ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")'
         """
         if new_template:
-            self._render = new_template
-
-    def filter_bar_button_title(self):
-        """
-        This function returns a string with the name for the input. A function
-        is used in order to translate the name.
-        :return: an string with the title.
-        """
-        return _('Filter')
+            self.template = new_template
 
     def save_filter_bar_values(self, filter_bar_items=None):
         """

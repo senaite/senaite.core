@@ -31,7 +31,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'inactive_state': 'active', }
         self.context_actions = {}
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
+        self.icon = self.portal_url + \
+                    "/++resource++bika.lims.images/analysisrequest_big.png"
         self.title = self.context.Title()
         self.show_sort_column = False
         self.show_select_row = False
@@ -51,11 +52,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
             'Title': {'title': _('Service'),
                       'index': 'title',
                       'sortable': False,
-            },
+                      },
             'Unit': {
                 'title': _('Unit'),
                 'sortable': False,
-
             },
             'Hidden': {
                 'title': _('Hidden'),
@@ -102,7 +102,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
              'columns': columns,
              'transitions': [{'id': 'empty'}, ],  # none
              'custom_transitions': [{'id': 'save_analyses_button',
-                                 'title': _('Save')} ],
+                                     'title': _('Save')}],
              },
         ]
 
@@ -136,7 +136,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             return default
         elif len(results) > 1:
-            logger.exception("More than one Analysis Service found for Keyword '{}'. "
+            logger.exception("More than one Analysis Service found for '{}'."
                              .format(keyword))
 
             return default
@@ -191,7 +191,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             return result
         return result
 
-    def folderitems(self):
+    def folderitems(self, full_objects=False, classic=True):
         self.categories = []
 
         analyses = self.context.getAnalyses(full_objects=True)
