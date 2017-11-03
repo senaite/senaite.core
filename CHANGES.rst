@@ -60,6 +60,8 @@ Changelog
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
 - #327 Keep Laboratory name when reinstalling
 - #339 Index not found warnings in bika listing.
+- #345 'SearchableText' field and adapter in Batches.
+
 
 1.0.0 (2017-10-13)
 ------------------
