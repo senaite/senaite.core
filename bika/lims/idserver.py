@@ -64,7 +64,9 @@ def generateUniqueId(context, parent=False, portal_type=''):
 
     def getLastCounter(context, config):
         if config.get('counter_type', '') == 'backreference':
-            return len(get_backreferences(context, config['counter_reference'], uids=True)) - 1
+            relationship = config['counter_reference']
+            backrefs = get_backreferences(context, relationship)
+            return len(backrefs) - 1
         elif config.get('counter_type', '') == 'contained':
             return len(context.objectItems(config['counter_reference'])) - 1
         else:
@@ -138,7 +140,7 @@ def generateUniqueId(context, parent=False, portal_type=''):
         if config.get('split_length', None) == 0:
             prefix_config = '-'.join(form.split('-')[:-1])
             prefix = prefix_config.format(**variables_map)
-        elif config.get('split_length', None) > 0:
+        elif config.get('split_length', 0) > 0:
             prefix_config = '-'.join(form.split('-')[:config['split_length']])
             prefix = prefix_config.format(**variables_map)
         else:
@@ -168,8 +170,8 @@ def renameAfterCreation(obj):
     # get new_id from adapter.
     for name, adapter in getAdapters((obj, ), IIdServer):
         if new_id:
-            logger.warn(('More than one ID Generator Adapter found for\
-                            content type -> %s') % (obj.portal_type))
+            logger.warn(('More than one ID Generator Adapter found for'
+                         'content type -> %s') % (obj.portal_type))
         new_id = adapter.generate_id(obj.portal_type)
     if not new_id:
         new_id = generateUniqueId(obj)
