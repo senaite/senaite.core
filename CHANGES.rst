@@ -60,6 +60,7 @@ Changelog
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
 - #327 Keep Laboratory name when reinstalling
 - #339 Index not found warnings in bika listing.
+- #346 Convert all ReferenceField to UIDReferenceField, with upgrade step.
 
 1.0.0 (2017-10-13)
 ------------------
