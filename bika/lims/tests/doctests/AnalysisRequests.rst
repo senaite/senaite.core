@@ -51,6 +51,15 @@ Variables::
     >>> portal_url = portal.absolute_url()
     >>> bika_setup_url = portal_url + "/bika_setup"
 
+Test user::
+
+We need certain permissions to create and access objects used in this test,
+so here we will assume the role of Lab Manager.
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+
 
 Analysis Requests (AR)
 ----------------------
@@ -96,11 +105,11 @@ An `AnalysisService` defines a analysis service offered by the laboratory::
 Finally, the `AnalysisRequest` can be created::
 
     >>> values = {
-    ...           'Client': client,
-    ...           'Contact': contact,
+    ...           'Client': client.UID(),
+    ...           'Contact': contact.UID(),
     ...           'SamplingDate': date_now,
     ...           'DateSampled': date_now,
-    ...           'SampleType': sampletype
+    ...           'SampleType': sampletype.UID()
     ...          }
 
     >>> service_uids = [analysisservice.UID()]
