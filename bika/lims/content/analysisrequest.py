@@ -265,12 +265,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Sample',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Sample',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestSample',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
