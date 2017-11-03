@@ -237,7 +237,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return None
 
     @security.public
-    def getUncertainty(self, result=None, test=False):
+    def getUncertainty(self, result=None):
         """Returns the uncertainty for this analysis and result.
         Returns the value from Schema's Uncertainty field if the Service has
         the option 'Allow manual uncertainty'. Otherwise, do a callback to
@@ -830,7 +830,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1,
-                           html=True, test=False):
+                           html=True):
         """Formatted result:
         1. If the result is a detection limit, returns '< LDL' or '> UDL'
         2. Print ResultText of matching ResultOptions
