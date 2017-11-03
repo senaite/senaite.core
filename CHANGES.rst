@@ -61,7 +61,8 @@ Changelog
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
 - #327 Keep Laboratory name when reinstalling
 - #339 Index not found warnings in bika listing.
--      Add Attachment objects to portal_catalog, to allow idserver to function correctly.
+- #348  Add Attachment objects to portal_catalog, to allow idserver to function correctly.
+
 1.0.0 (2017-10-13)
 ------------------
 
