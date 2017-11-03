@@ -354,7 +354,7 @@ Table cells for each column from in review_state's column list.
     <tal:field_icons define="uid python:item['uid'];
                             val python:view.bika_listing.field_icons.get(uid, []);
                             field_icons python: [i for i in val if i['field'] == column];">
-        <span class="alert"
+        <span class="bika-alert"
                 tal:attributes="uid uid;
                                 field column;">
                 <img tal:repeat="field_icon field_icons"
