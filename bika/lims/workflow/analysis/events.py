@@ -45,6 +45,13 @@ def after_retract(obj):
     # Analysis.  So, _verifyObjectPaste permission check must be cancelled:
     parent._verifyObjectPaste = str
     # This is needed for tests:
+    # https://docs.plone.org/develop/plone/content/rename.html
+    # Testing warning: Rename mechanism relies of Persistent attribute
+    # called _p_jar to be present on the content object. By default, this is
+    # not the case on unit tests. You need to call transaction.savepoint() to
+    # make _p_jar appear on persistent objects.
+    # If you don't do this, you'll receive a "CopyError" when calling
+    # manage_renameObjects that the operation is not supported.
     transaction.savepoint()
     parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
     delattr(parent, '_verifyObjectPaste')
