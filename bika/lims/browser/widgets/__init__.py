@@ -1,6 +1,6 @@
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from .datetimewidget import DateTimeWidget
@@ -26,3 +26,4 @@ from .rejectionsetupwidget import RejectionSetupWidget
 from .reflexrulewidget import ReflexRuleWidget
 from .rejectionwidget import RejectionWidget
 from .priorityselectionwidget import  PrioritySelectionWidget
+from .comboboxwidget import ComboBoxWidget

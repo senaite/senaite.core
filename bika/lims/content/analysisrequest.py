@@ -1913,7 +1913,7 @@ class AnalysisRequest(BaseFolder):
         return self.getId()
 
     @deprecated('[1703] Use setId(new_id) instad')
-    def setRequestID(self, new_id):
+    def setRequestID(self, new_id, **kwargs):
         """
         Delegates to setId() function
         :param new_id: The new id to define

@@ -150,6 +150,28 @@ class WorkflowAction:
         self.request.response.redirect(url)
         return
 
+    def workflow_action_print_stickers(self):
+        """Invoked from AR or Sample listings in the current context, passing
+           the uids of the selected items and default sticker template as
+           request parameters to the stickers rendering machinery, that
+           generates the PDF
+        """
+        uids = self.request.form.get("uids", [])
+        if not uids:
+            message = self.context.translate(
+                _("No ARs have been selected"))
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.context.absolute_url()
+            self.request.response.redirect(self.destination_url)
+            return
+
+        url = '{0}/sticker?autoprint=1&template={1}&items={2}'.format(
+            self.context.absolute_url(),
+            self.portal.bika_setup.getAutoStickerTemplate(),
+            ','.join(uids)
+        )
+        self.request.response.redirect(url)
+
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
@@ -431,7 +453,7 @@ class BikaListingView(BrowserView):
 
     # Additional indexes to be searched
     # any index name not specified in self.columns[] can be added here.
-    filter_indexes = ['Title', 'Description', 'SearchableText']
+    filter_indexes = ['title', 'SearchableText']
 
     # The current or default review_state when one hasn't been selected.
     # With this setting, BikaListing instances must be careful to change it,
@@ -686,7 +708,7 @@ class BikaListingView(BrowserView):
         # all conditions using ${form_id}_{index_name} are searched with AND
         for index in self.filter_indexes:
             idx = catalog.Indexes.get(index, None)
-            if not idx:
+            if idx is None:
                 logger.warn(
                     "index named '%s' not found in %s. "
                     "(Perhaps the index is still empty)." %
@@ -714,7 +736,7 @@ class BikaListingView(BrowserView):
         if len(value) > 1:
             for index in self.filter_indexes:
                 idx = catalog.Indexes.get(index, None)
-                if not idx:
+                if idx is None:
                     logger.debug("index named '%s' not found in %s.  "
                                  "(Perhaps the index is still empty)." %
                                  (index, self.catalog))

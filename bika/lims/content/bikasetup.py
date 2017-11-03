@@ -2,21 +2,13 @@
 #
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import sys
 
 from AccessControl import ClassSecurityInfo
-
-from zope.interface import implements
-from plone.app.folder import folder
-
-from Products.CMFCore.utils import getToolByName
 from Products.ATExtensions.ateapi import RecordsField
-
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import registerType
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import DecimalWidget
@@ -27,25 +19,23 @@ from Products.Archetypes.atapi import LinesField
 from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
-from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
-
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
-from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IBikaSetup
-from bika.lims.interfaces import IHaveNoBreadCrumbs
-from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
-
 from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
@@ -55,11 +45,16 @@ from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.interfaces import IBikaSetup
+from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.locales import COUNTRIES
-
-from bika.lims import bikaMessageFactory as _
 from bika.lims.numbergenerator import INumberGenerator
+from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
+from plone.app.folder import folder
 from zope.component import getUtility
+from zope.interface import implements
+
 
 class IDFormattingField(RecordsField):
     """A list of prefixes per portal_type
@@ -334,68 +329,6 @@ schema = BikaFolderSchema.copy() + Schema((
             append_only=False,
         ),
     ),
-    # IntegerField('BatchFax',
-    #     schemata = "Results Reports",
-    #     required = 1,
-    #     default = 4,
-    #     widget = IntegerWidget(
-    #         label=_("Maximum columns per results fax"),
-    #         description = "Too many AR columns per fax will see the font size minimised and could "
-    #                         "render faxes illegible. 4 ARs maximum per page is recommended",
-    #     )
-    # ),
-    # StringField('SMSGatewayAddress',
-    #     schemata = "Results Reports",
-    #     required = 0,
-    #     widget = StringWidget(
-    #         label=_("SMS Gateway Email Address"),
-    #         description = "The email to SMS gateway address. Either a complete email address, "
-    #                         "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
-    #                         "number will be prepended to",
-    #     )
-    # ),
-    BooleanField(
-        'PrintingWorkflowEnabled',
-        schemata="Results Reports",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Enable the Results Report Printing workflow"),
-            description=_("Select this to allow the user to set an "
-                          "additional 'Printed' status to those Analysis "
-                          "Requests tha have been Published. "
-                          "Disabled by default.")
-        ),
-    ),
-    BooleanField(
-        'SamplingWorkflowEnabled',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Enable the Sampling workflow"),
-            description=_("Select this to activate the sample collection workflow steps.")
-        ),
-    ),
-    BooleanField(
-        'ScheduleSamplingEnabled',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Enable the Schedule a Sampling functionality"),
-            description=_(
-                "Select this to allow a Sampling Coordinator to" +
-                " schedule a sampling. This functionality only takes effect" +
-                " when 'Sampling workflow' is active")
-        ),
-    ),
-    BooleanField(
-        'ShowPartitions',
-        schemata="Analyses",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Display individual sample partitions "),
-            description=_("Turn this on if you want to work with sample partitions")
-        ),
-    ),
     BooleanField(
         'CategoriseAnalysisServices',
         schemata="Analyses",
@@ -470,7 +403,7 @@ schema = BikaFolderSchema.copy() + Schema((
                 "(by default, managers, labmanagers and verifiers)."
                 "This setting can be overrided for a given Analysis in "
                 "Analysis Service edit view. By default, disabled."),
-         ),
+        ),
     ),
     IntegerField(
         'NumberOfRequiredVerifications',
@@ -478,21 +411,22 @@ schema = BikaFolderSchema.copy() + Schema((
         default=1,
         vocabulary="_getNumberOfRequiredVerificationsVocabulary",
         widget=SelectionWidget(
+            format="select",
             label=_("Number of required verifications"),
             description=_(
                 "Number of required verifications before a given result being "
                 "considered as 'verified'. This setting can be overrided for "
                 "any Analysis in Analysis Service edit view. By default, 1"),
-            format="select",
-         ),
+        ),
     ),
-    StringField('TypeOfmultiVerification',
-        schemata = "Analyses",
-        default = 'self_multi_enabled',
-        vocabulary = MULTI_VERIFICATION_TYPE,
-        widget = SelectionWidget(
+    StringField(
+        'TypeOfmultiVerification',
+        schemata="Analyses",
+        default='self_multi_enabled',
+        vocabulary=MULTI_VERIFICATION_TYPE,
+        widget=SelectionWidget(
             label=_("Multi Verification type"),
-            description = _(
+            description=_(
                 "Choose type of multiple verification for the same user."
                 "This setting can enable/disable verifying/consecutively verifying"
                 "more than once for the same user."),
@@ -554,32 +488,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "own configuration"),
         )
     ),
-    DurationField(
-        'DefaultSampleLifetime',
-        schemata="Analyses",
-        required=1,
-        default={"days": 30, "hours": 0, "minutes": 0},
-        widget=DurationWidget(
-            label=_("Default sample retention period"),
-            description=_(
-                "The number of days before a sample expires and cannot be "
-                "analysed any more. This setting can be overwritten per "
-                "individual sample type in the sample types setup"),
-        )
-    ),
-    DurationField(
-        'DefaultTurnaroundTime',
-        schemata="Analyses",
-        required=1,
-        default={"days": 5, "hours": 0, "minutes": 0},
-        widget=DurationWidget(
-            label=_("Default turnaround time for analyses."),
-            description=_(
-                "This is the default maximum time allowed for performing "
-                "analyses.  It is only used for analyses where the analysis "
-                "service does not specify a turnaround time."),
-        )
-    ),
     StringField(
         'ResultsDecimalMark',
         schemata="Analyses",
@@ -604,7 +512,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     IntegerField(
         'AutoImportInterval',
-        schemata="Analyses",
+        schemata="Sampling and COC",
         default="0",
         widget=IntegerWidget(
             label=_("Interval of Auto-Importing Files in minutes"),
@@ -657,6 +565,130 @@ schema = BikaFolderSchema.copy() + Schema((
             default_search_index='SearchableText',
             base_query={'review_state': 'published'},
         ),
+    ),
+    BooleanField(
+        'PrintingWorkflowEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable the Results Report Printing workflow"),
+            description=_("Select this to allow the user to set an "
+                          "additional 'Printed' status to those Analysis "
+                          "Requests tha have been Published. "
+                          "Disabled by default.")
+        ),
+    ),
+    BooleanField(
+        'SamplingWorkflowEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable Sampling"),
+            description=_("Select this to activate the sample collection workflow steps.")
+        ),
+    ),
+    BooleanField(
+        'ScheduleSamplingEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable Sampling Scheduling"),
+            description=_(
+                "Select this to allow a Sampling Coordinator to" +
+                " schedule a sampling. This functionality only takes effect" +
+                " when 'Sampling workflow' is active")
+        ),
+    ),
+    BooleanField(
+        'ShowPartitions',
+        schemata="Sampling and COC",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Display individual sample partitions "),
+            description=_("Turn this on if you want to work with sample partitions")
+        ),
+    ),
+    BooleanField(
+        'SamplePreservationEnabled',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable Sample Preservation"),
+            description=_("")
+        ),
+    ),
+    DurationField(
+        'DefaultTurnaroundTime',
+        schemata="Sampling and COC",
+        required=1,
+        default={"days": 5, "hours": 0, "minutes": 0},
+        widget=DurationWidget(
+            label=_("Default turnaround time for analyses."),
+            description=_(
+                "This is the default maximum time allowed for performing "
+                "analyses.  It is only used for analyses where the analysis "
+                "service does not specify a turnaround time."),
+        )
+    ),
+    DurationField(
+        'DefaultSampleLifetime',
+        schemata="Sampling and COC",
+        required=1,
+        default={"days": 30, "hours": 0, "minutes": 0},
+        widget=DurationWidget(
+            label=_("Default sample retention period"),
+            description=_(
+                "The number of days before a sample expires and cannot be analysed "
+                "any more. This setting can be overwritten per individual sample type "
+                "in the sample types setup"),
+        )
+    ),
+    RecordsField(
+        'RejectionReasons',
+        schemata="Sampling and COC",
+        widget=RejectionSetupWidget(
+            label=_("Enable sampling rejection"),
+            description=_("Select this to activate the rejection workflow "
+                          "for Samples and Analysis Requests. A 'Reject' "
+                          "option will be displayed in the actions menu for "
+                          "these objects.")
+        ),
+    ),
+    BooleanField(
+        'NotifyOnRejection',
+        schemata="Notifications",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Sample rejection email notification"),
+            description=_("Select this to activate automatic notifications "
+                          "via email to the Client when a Sample or Analysis "
+                          "Request is rejected.")
+        ),
+    ),
+    BooleanField(
+        'NotifyOnARRetract',
+        schemata="Notifications",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Email notification on AR retract"),
+            description=_("Select this to activate automatic notifications "
+                          "via email to the Client and Lab Managers when an Analysis "
+                          "Request is retracted.")
+        ),
+    ),
+    TextField(
+        'COCAttestationStatement',
+        schemata="Sampling and COC",
+        widget=TextAreaWidget(
+            label=_("COC Attestation Statement"),
+        )
+    ),
+    StringField(
+        'COCFooter',
+        schemata="Sampling and COC",
+        widget=StringWidget(
+            label=_("COC Footer"),
+        )
     ),
     StringField(
         'AutoPrintStickers',
@@ -837,7 +869,7 @@ Configuration Settings:
     ),
     BooleanField(
         'NotifyOnRejection',
-        schemata="Notifications",
+        schemata="Analyses",
         default=False,
         widget=BooleanWidget(
             label=_("Email notification on rejection"),
@@ -938,6 +970,11 @@ class BikaSetup(folder.ATFolder):
 
     schema = schema
     security = ClassSecurityInfo()
+
+    # needed to access the field for the front-page Portlet for Anonymous, w/o
+    # making the whole Laboratory viewable by Anonymous.
+    # Only the permission "Access contents information" is needed
+    security.declarePublic('getAllowDepartmentFiltering')
 
     def getAttachmentsPermitted(self):
         """Attachments permitted

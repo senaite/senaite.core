@@ -8,8 +8,10 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
+from bika.lims.api import get_tool
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.permissions import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
@@ -105,16 +107,17 @@ class WorksheetWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
-            selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
-            if selected_analyses:
-                for uid in selected_analysis_uids:
-                    analysis = rc.lookupObject(uid)
-                    # Double-check the state first
-                    if (workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'unassigned'
-                    and workflow.getInfoFor(analysis, 'review_state') == 'sample_received'
-                    and workflow.getInfoFor(analysis, 'cancellation_state') == 'active'):
-                        self.context.addAnalysis(analysis)
+            analysis_uids = form.get("uids", [])
+            if analysis_uids:
+                # We retrieve the analyses from the database sorted by AR ID
+                # ascending, so the positions of the ARs inside the WS are
+                # consistent with the order of the ARs
+                catalog = get_tool(CATALOG_ANALYSIS_LISTING)
+                brains = catalog({'UID': analysis_uids,
+                                 'sort_on': 'getRequestID'})
+                for brain in brains:
+                    analysis = brain.getObject()
+                    self.context.addAnalysis(analysis)
 
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)

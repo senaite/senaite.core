@@ -86,16 +86,6 @@ The `Calculation` depends now on the two Analysis Services::
     >>> sorted(calc.getCalculationDependencies(flat=True), key=methodcaller('getId'))
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>, <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>]
 
-
-Backreferences are stored on each object which is a target of a UIDReferenceField,
-this allows a service to ask, "which calculations include me in their
-DependentServices?"::
-
-    >>> from bika.lims.browser.fields.uidreferencefield import get_backreferences
-    >>> import pdb;pdb.set_trace()
-    >>> get_backreferences(as1, 'CalculationDependentServices')
-
-
 It is also possible to find out if an `AnalysisService` depends on the calculation::
 
     >>> as1.setCalculation(calc)

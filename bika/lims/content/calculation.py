@@ -61,8 +61,6 @@ schema = BikaSchema.copy() + Schema((
         required=1,
         multiValued=1,
         allowed_types=('AnalysisService',),
-        relationship='CalculationAnalysisService',
-        referenceClass=HoldingReference,
         widget=ReferenceWidget(
             checkbox_bound=0,
             visible=False,
@@ -247,7 +245,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """
         deps = []
         backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
-        for service in backrefs:
+        services = map(get_object_by_uid, backrefs)
+        for service in services:
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
                 calc.getCalculationDependants(deps)

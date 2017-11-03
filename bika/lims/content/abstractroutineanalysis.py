@@ -16,6 +16,7 @@ from bika.lims import deprecated
 from bika.lims.browser.fields import HistoryAwareReferenceField, \
     InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
+from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.reflexrule import doReflexRuleAction
@@ -477,13 +478,20 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     @security.public
     def getPrioritySortkey(self):
         """
-        Returns the key that will be used to sort the current Analysis
-        Delegates to getPrioritySortKey function from the AnalysisRequest
+        Returns the key that will be used to sort the current Analysis, from
+        most prioritary to less prioritary.
         :return: string used for sorting
         """
         analysis_request = self.getRequest()
-        if analysis_request:
-            return analysis_request.getPrioritySortkey()
+        if analysis_request is None:
+            return None
+        ar_sort_key = analysis_request.getPrioritySortkey()
+        ar_id = analysis_request.getId().lower()
+        title = sortable_title(self)
+        if callable(title):
+            title = title()
+        return '{}.{}.{}'.format(ar_sort_key, ar_id, title)
+
 
     @security.public
     def getHidden(self):
