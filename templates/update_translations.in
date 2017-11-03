@@ -1,0 +1,91 @@
+#!/bin/bash
+
+BASE=${buildout:directory}
+I18N=$BASE/bin/i18ndude
+LOCALES=$BASE/bika/lims/locales
+
+function die() {
+    echo "ERROR: $1"
+}
+
+# Check if we have i18n in place
+if test ! -x $I18N; then
+    echo "You must install i18ndude in your buildout: https://pypi.python.org/pypi/i18ndude"
+    echo "See https://github.com/collective/collective.developermanual/blob/master/source/i18n/localization.txt"
+    die "i18ndude not installed"
+fi
+
+# Check Transifex Installed
+function has_tx() {
+  TX=$(which tx)
+  if test ! -x $TX || test -z $TX; then
+     return -1
+  else
+      return 0
+  fi
+}
+
+# Transifex Pull Function
+function tx_pull() {
+    if has_tx; then
+        cd $LOCALES
+        echo "Transifex Pull"
+        tx pull -a -f
+    else
+        die "Please install the Transifex Client first: $ pip install transifex-client"
+    fi
+    cd $BASE
+}
+
+# Transifex Push Function
+function tx_push() {
+    if has_tx; then
+        cd $LOCALES
+        echo "Transifex Push"
+        tx push -s -t --skip
+    else
+        die "Please install the Transifex Client first: $ pip install transifex-client"
+    fi
+    cd $BASE
+}
+
+# Clean all generated .mo files
+find $LOCALES -name "*.mo" -delete
+
+# Pull Transifex
+tx_pull
+
+# Generate the Bika Domain
+DOMAIN=bika
+echo "Processing Domain $DOMAIN"
+# Flush the english (transifex source language) po files
+# If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
+echo -n "" > $LOCALES/en/LC_MESSAGES/$DOMAIN.po
+# Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
+$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude "build" --create $DOMAIN bika
+# Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
+$I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $LOCALES/$DOMAIN-manual.pot
+# Overwrite the existing $DOMAIN.pot
+mv $LOCALES/$DOMAIN-tmp.pot $LOCALES/$DOMAIN.pot
+# Synchronize all .po files with the new $DOMAIN.pot
+$I18N sync --pot $LOCALES/$DOMAIN.pot $LOCALES/*/LC_MESSAGES/$DOMAIN.po
+echo "Domain $DOMAIN [DONE]"
+
+# Generate Plone Domain
+DOMAIN=plone
+echo "Processing Domain $DOMAIN"
+# Flush the english (transifex source language) po files
+# If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
+echo -n "" > $LOCALES/en/LC_MESSAGES/$DOMAIN.po
+# Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
+$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude "build" --create $DOMAIN bika/lims/profiles
+# Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
+$I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $LOCALES/$DOMAIN-manual.pot
+# Overwrite the existing $DOMAIN.pot
+mv $LOCALES/$DOMAIN-tmp.pot $LOCALES/$DOMAIN.pot
+# Synchronize all .po files with the new $DOMAIN.pot
+$I18N sync --pot $LOCALES/$DOMAIN.pot $LOCALES/*/LC_MESSAGES/$DOMAIN.po
+echo "Domain $DOMAIN [DONE]"
+
+# Push Transifex
+tx_push

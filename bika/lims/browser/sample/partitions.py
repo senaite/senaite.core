@@ -80,7 +80,7 @@ class SamplePartitionsView(BikaListingView):
                              {'id': 'receive'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions':[{'id': 'save_partitions_button',
+             'custom_transitions':[{'id': 'save_partitions_button',
                                 'title': _('Save')}, ],
             },
         ]
@@ -118,7 +118,7 @@ class SamplePartitionsView(BikaListingView):
                     and workflow.getInfoFor(self.sample, 'cancellation_state') == 'active'
         self.show_select_column = self.allow_edit
         if self.allow_edit == False:
-            self.review_states[0]['custom_actions'] = []
+            self.review_states[0]['custom_transitions'] = []
 
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 

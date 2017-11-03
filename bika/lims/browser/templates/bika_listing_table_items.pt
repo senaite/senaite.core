@@ -75,7 +75,7 @@ Item select checkboxes.
             tabindex string:1000;
             selector python:str(item['obj'].aq_parent.getId() if hasattr(item.get('obj', ''), 'aq_parent') else '') + '_' + item['id'];
             checked python:item.has_key('selected') and item['selected'] and 'yes' or '';
-            data-valid_transitions python:','.join(item.get('valid_transitions', []))"/>
+            data-valid_transitions python:'{}'"/>
     <input type="hidden"
         name="selected_obj_uids:list"
         value="#"

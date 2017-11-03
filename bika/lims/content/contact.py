@@ -255,6 +255,9 @@ class Contact(Person):
         # Grant local Owner role
         self._addLocalOwnerRole(username)
 
+        # Add user to "Clients" group
+        self._addUserToGroup(username, group="Clients")
+
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
@@ -286,6 +289,9 @@ class Contact(Person):
 
         # Revoke local Owner role
         self._delLocalOwnerRole(username)
+
+        # Remove user from "Clients" group
+        self._delUserFromGroup(username, group="Clients")
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
