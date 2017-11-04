@@ -75,7 +75,7 @@ Item select checkboxes.
             tabindex string:1000;
             selector python:str(item['obj'].aq_parent.getId() if hasattr(item.get('obj', ''), 'aq_parent') else '') + '_' + item['id'];
             checked python:item.has_key('selected') and item['selected'] and 'yes' or '';
-            data-valid_transitions python:','.join(item.get('valid_transitions', []))"/>
+            data-valid_transitions python:'{}'"/>
     <input type="hidden"
         name="selected_obj_uids:list"
         value="#"
@@ -354,7 +354,7 @@ Table cells for each column from in review_state's column list.
     <tal:field_icons define="uid python:item['uid'];
                             val python:view.bika_listing.field_icons.get(uid, []);
                             field_icons python: [i for i in val if i['field'] == column];">
-        <span class="alert"
+        <span class="bika-alert"
                 tal:attributes="uid uid;
                                 field column;">
                 <img tal:repeat="field_icon field_icons"

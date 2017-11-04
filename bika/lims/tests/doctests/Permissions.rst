@@ -16,8 +16,9 @@ Test Setup
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from plone.app.testing import setRoles
 
-    >>> portal = self.getPortal()
+    >>> portal = self.portal
     >>> portal_url = portal.absolute_url()
     >>> bika_setup = portal.bika_setup
     >>> bika_setup_url = portal_url + "/bika_setup"
@@ -217,21 +218,6 @@ Anonymous should not be able to edit the `laboratory` folder::
     ...
     Unauthorized: ...
 
-Anonymous should be able to view the `AccreditationBodyLogo` in the portlet of
-the front-page view::
-
-    >>> logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
-    >>> laboratory.setAccreditationBodyLogo(open(logo_path))
-    >>> transaction.commit()
-    >>> logo = laboratory.getAccreditationBodyLogo()
-
-    >>> logo
-    <Image at /plone/bika_setup/laboratory/AccreditationBodyLogo>
-
-    >>> browser.open(logo.absolute_url())
-    >>> logo.data == browser.contents
-    True
-
 
 Lab Contact(s)
 --------------
@@ -244,6 +230,7 @@ Test Workflow
 A `labcontact` lives in the `bika_setup/bika_labcontacts` folder::
 
     >>> labcontacts = bika_setup.bika_labcontacts
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
     >>> labcontact = create(labcontacts, "LabContact")
 
 The `bika_labcontacts` folder follows the `bika_one_state_workflow` and is
@@ -393,10 +380,10 @@ Exactly these roles have should have a `View` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("View", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
 
     >>> get_roles_for_permission("View", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
 
 Exactly these roles have should have the `Access contents information` permission::
 
@@ -404,10 +391,10 @@ Exactly these roles have should have the `Access contents information` permissio
     ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler']
 
     >>> get_roles_for_permission("Access contents information", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -415,10 +402,10 @@ Exactly these roles have should have the `List folder contents` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
 
     >>> get_roles_for_permission("List folder contents", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler', 'SamplingCoordinator']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
@@ -547,14 +534,6 @@ Or modify other clients::
     Traceback (most recent call last):
     ...
     Unauthorized: ...
-
-To create a new Analysis Request, the user needs to access the information from
-the `bika_setup` object, like e.g. `bika_sampletype`::
-
-    >>> sampletype = create(bika_setup.bika_sampletypes, "SampleType", title="Sample 1")
-    >>> browser.open(bika_setup_url + "/bika_sampletypes/base_view")
-    >>> "sampletype-1" in browser.contents
-    True
 
 Unlink the user to revoke all access to the client::
 
@@ -740,26 +719,26 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", methods)
-    ['Anonymous', 'Authenticated']
+    ['Authenticated', 'Manager', 'Member']
 
     >>> get_roles_for_permission("View", method)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", methods)
-    ['Anonymous', 'Authenticated']
+    ['Authenticated', 'Manager', 'Member']
 
     >>> get_roles_for_permission("Access contents information", method)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", methods)
-    ['Anonymous', 'Authenticated']
+    ['Authenticated', 'Member']
 
     >>> get_roles_for_permission("List folder contents", method)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
@@ -787,21 +766,16 @@ Ensure we are logged out::
 Anonymous should not be able to view the `methods` folder::
 
     >>> browser.open(methods.absolute_url() + "/base_view")
-    >>> "methods" in browser.contents
-    True
-
-Anonymous should not be able to deactivate a method, so there should be no
-**Deactivate** Button in the Listing table::
-
-    >>> browser.open(methods.absolute_url())
-    >>> "deactivate_transition" not in browser.contents
-    True
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
 
 Anonymous should not be able to view a `method`::
 
     >>> browser.open(method.absolute_url() + "/base_view")
-    >>> "method-1" in browser.contents
-    True
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
 
 Anonymous should not be able to edit the `methods` folder::
 
@@ -854,18 +828,18 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", analysisservices)
-    ['Anonymous', 'Authenticated']
+    ['Analyst', 'Authenticated', 'Client']
 
     >>> get_roles_for_permission("View", analysisservice)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Authenticated', 'Client', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", analysisservices)
-    ['Anonymous', 'Authenticated']
+    ['Analyst', 'Anonymous', 'Authenticated', 'Client']
 
     >>> get_roles_for_permission("Access contents information", analysisservice)
-    ['Analyst', 'Anonymous', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'Anonymous', 'Authenticated', 'Client', 'LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -905,11 +879,12 @@ Anonymous should not be able to view the `bika_analysisservices` folder::
     ...
     Unauthorized: ...
 
-Anonymous are **allowed** to view a `analysisservice`::
+Anonymous are **not** allowed to view an `analysisservice`::
 
     >>> browser.open(analysisservice.absolute_url() + "/base_view")
-    >>> "analysisservice-1" in browser.contents
-    True
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
 
 Anonymous should not be able to edit the `bika_analysisservices` folder::
 

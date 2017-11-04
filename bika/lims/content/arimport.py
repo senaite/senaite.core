@@ -4,12 +4,12 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import csv
+from copy import deepcopy
 
 import transaction
 from AccessControl import ClassSecurityInfo
 from DateTime.DateTime import DateTime
 from Products.Archetypes import atapi
-from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import addStatusMessage
 from Products.CMFCore.utils import getToolByName
@@ -32,14 +32,13 @@ from bika.lims.content.sample import schema as sample_schema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IARImport, IClient
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.vocabularies import CatalogVocabulary
-from bika.lims.workflow import doActionFor
 from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import ProgressState
 from collective.progressbar.events import UpdateProgressEvent
 from plone.app.blob.field import FileField as BlobFileField
-from zope import event
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
@@ -273,12 +272,10 @@ class ARImport(BaseFolder):
         if 'validate' in trans_ids:
             workflow.doActionFor(self, 'validate')
 
-    # TODO - Workflow. Revisit AR creation (should use utils.analysisrequest)
     def workflow_script_import(self):
         """Create objects from valid ARImport
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        workflow = getToolByName(self, 'portal_workflow')
         client = self.aq_parent
 
         title = _('Submitting AR Import')
@@ -291,26 +288,8 @@ class ARImport(BaseFolder):
         gridrows = self.schema['SampleData'].get(self)
         row_cnt = 0
         for therow in gridrows:
-            row = therow.copy()
+            row = deepcopy(therow)
             row_cnt += 1
-            # Create Sample
-            sample = _createObjectByType('Sample', client, tmpID())
-            sample.unmarkCreationFlag()
-            # First convert all row values into something the field can take
-            sample.edit(**row)
-            sample._renameAfterCreation()
-            event.notify(ObjectInitializedEvent(sample))
-            sample.at_post_create_script()
-            swe = self.bika_setup.getSamplingWorkflowEnabled()
-            part = _createObjectByType('SamplePartition', sample, 'part-1')
-            part.unmarkCreationFlag()
-            # Container is special... it could be a containertype.
-            container = self.get_row_container(row)
-            if container:
-                if container.portal_type == 'ContainerType':
-                    containers = container.getContainers()
-                # XXX And so we must calculate the best container for this partition
-                part.edit(Container=containers[0])
 
             # Profiles are titles, profile keys, or UIDS: convert them to UIDs.
             newprofiles = []
@@ -321,40 +300,43 @@ class ARImport(BaseFolder):
                     newprofiles.append(obj.UID())
             row['Profiles'] = newprofiles
 
-            # BBB in bika.lims < 3.1.9, only one profile is permitted
-            # on an AR.  The services are all added, but only first selected
-            # profile name is stored.
-            row['Profile'] = newprofiles[0] if newprofiles else None
-
             # Same for analyses
             newanalyses = set(self.get_row_services(row) +
                               self.get_row_profile_services(row))
-            row['Analyses'] = []
             # get batch
             batch = self.schema['Batch'].get(self)
             if batch:
-                row['Batch'] = batch
+                row['Batch'] = batch.UID()
             # Add AR fields from schema into this row's data
             row['ClientReference'] = self.getClientReference()
             row['ClientOrderNumber'] = self.getClientOrderNumber()
-            row['Contact'] = self.getContact()
-            # Create AR
-            ar = _createObjectByType("AnalysisRequest", client, tmpID())
-            ar.setSample(sample)
-            ar.unmarkCreationFlag()
-            ar.edit(**row)
-            ar._renameAfterCreation()
-            ar.setAnalyses(list(newanalyses))
-            for analysis in ar.getAnalyses(full_objects=True):
-                analysis.setSamplePartition(part)
-            ar.at_post_create_script()
-            if swe:
-                doActionFor(ar, 'sampling_workflow')
-            else:
-                doActionFor(ar, 'no_sampling_workflow')
+            contact_uid =\
+                self.getContact().UID() if self.getContact() else None
+            row['Contact'] = contact_uid
+            # Creating analysis request from gathered data
+            ar = create_analysisrequest(
+                client,
+                self.REQUEST,
+                row,
+                analyses=list(newanalyses),
+                partitions=None,)
+
+            # Container is special... it could be a containertype.
+            container = self.get_row_container(row)
+            if container:
+                if container.portal_type == 'ContainerType':
+                    containers = container.getContainers()
+                # TODO: Since containers don't work as is expected they
+                # should work, I am keeping the old logic for AR import...
+                part = ar.getPartitions()[0]
+                # XXX And so we must calculate the best container for this partition
+                part.edit(Container=containers[0])
+
+            # progress marker update
             progress_index = float(row_cnt) / len(gridrows) * 100
             progress = ProgressState(self.REQUEST, progress_index)
             notify(UpdateProgressEvent(progress))
+
         # document has been written to, and redirect() fails here
         self.REQUEST.response.write(
             '<script>document.location.href="%s"</script>' % (

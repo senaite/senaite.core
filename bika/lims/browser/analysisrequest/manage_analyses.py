@@ -3,30 +3,22 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import getSecurityManager
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
-from bika.lims.permissions import *
-from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
-from DateTime import DateTime
-from Products.Archetypes import PloneMessageFactory as PMF
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
+import json
+
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
-from bika.lims import logger
-from bika.lims.utils import t
-from bika.lims.utils import dicts_to_dict
-from bika.lims.utils import logged_in_client
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.sample import SamplePartitionsView
+from bika.lims.utils import dicts_to_dict, t
+from bika.lims.utils import logged_in_client
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.i18n.locales import locales
 from zope.interface import implements
 
-import json
-import plone
 
 class AnalysisRequestAnalysesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -39,7 +31,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'inactive_state': 'active', }
         self.context_actions = {}
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
+        self.icon = self.portal_url + \
+                    "/++resource++bika.lims.images/analysisrequest_big.png"
         self.title = self.context.Title()
         self.show_sort_column = False
         self.show_select_row = False
@@ -59,11 +52,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
             'Title': {'title': _('Service'),
                       'index': 'title',
                       'sortable': False,
-            },
+                      },
             'Unit': {
                 'title': _('Unit'),
                 'sortable': False,
-
             },
             'Hidden': {
                 'title': _('Hidden'),
@@ -104,14 +96,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
             columns.append('error')
 
         self.review_states = [
-            {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': columns,
-                'transitions': [{'id': 'empty'}, ],  # none
-                'custom_actions': [{'id': 'save_analyses_button',
-                                    'title': _('Save')}, ],
+            {'id': 'default',
+             'title': _('All'),
+             'contentFilter': {},
+             'columns': columns,
+             'transitions': [{'id': 'empty'}, ],  # none
+             'custom_transitions': [{'id': 'save_analyses_button',
+                                     'title': _('Save')}],
              },
         ]
 
@@ -124,7 +115,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         p.show_select_column = False
         p.show_table_footer = False
         p.review_states[0]['transitions'] = [{'id': 'empty'}, ]  # none
-        p.review_states[0]['custom_actions'] = []
+        p.review_states[0]['custom_transitions'] = []
         p.review_states[0]['columns'] = ['PartTitle',
                                          'getContainer',
                                          'getPreservation',
@@ -145,7 +136,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             return default
         elif len(results) > 1:
-            logger.exception("More than one Analysis Service found for Keyword '{}'. "
+            logger.exception("More than one Analysis Service found for '{}'."
                              .format(keyword))
 
             return default
@@ -200,7 +191,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             return result
         return result
 
-    def folderitems(self):
+    def folderitems(self, full_objects=False, classic=True):
         self.categories = []
 
         analyses = self.context.getAnalyses(full_objects=True)

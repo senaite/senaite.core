@@ -9,10 +9,19 @@
              i18n:domain="bika">
 
   <permission>Modify portal content</permission>
+  <permission>BIKA: Manage ARImport</permission>
 
   <state state_id="imported" title="Imported"  i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="Modify portal content" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Manage ARImport" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
   </state>
 
@@ -23,11 +32,21 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="BIKA: Manage ARImport" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="valid" title="Valid"  i18n:attributes="title">
     <exit-transition transition_id="import" />
     <permission-map name="Modify portal content" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Manage ARImport" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>

@@ -11,6 +11,7 @@ BASE_CATALOG_INDEXES = {
     # Return the object id
     'getId': 'FieldIndex',
     'portal_type': 'FieldIndex',
+    'object_provides': 'KeywordIndex',
     'UID': 'UUIDIndex',
     # created returns a DataTime object
     'created': 'DateIndex',
@@ -37,6 +38,7 @@ BASE_CATALOG_COLUMNS = [
     'Title',
     'review_state',
     'state_title',
+    'portal_type',
     # allowedRolesAndUsers is compulsory if we are going to run
     # advancedqueries in this catalog.
     'allowedRolesAndUsers',

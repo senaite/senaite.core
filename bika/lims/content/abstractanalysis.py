@@ -170,12 +170,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             self.setVerificators(username)
         else:
             self.setVerificators(verificators + "," + username)
+        self.reindexObject()
 
     @security.public
     def deleteLastVerificator(self):
         verificators = self.getVerificators().split(',')
         del verificators[-1]
         self.setVerificators(",".join(verificators))
+        self.reindexObject()
 
     @security.public
     def wasVerifiedByUser(self, username):
@@ -185,6 +187,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
+
+    @security.public
+    def setVerificator(self, value):
+        field = self.Schema().getField('Verificators')
+        field.set(self, value)
+        self.reindexObject()
 
     @deprecated('[1705] Use Title() instead.')
     @security.public
@@ -940,14 +948,27 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         - If neither Manual Uncertainty nor Calculate Precision from
           Uncertainty are set, returns the precision from the Analysis Service
 
+        - If you have a number with zero uncertainty: If you roll a pair of
+        dice and observe five spots, the number of spots is 5. This is a raw
+        data point, with no uncertainty whatsoever. So just write down the
+        number. Similarly, the number of centimeters per inch is 2.54,
+        by definition, with no uncertainty whatsoever. Again: just write
+        down the number.
+
         Further information at AbstractBaseAnalysis.getPrecision()
         """
         allow_manual = self.getAllowManualUncertainty()
         precision_unc = self.getPrecisionFromUncertainty()
         if allow_manual or precision_unc:
             uncertainty = self.getUncertainty(result)
+            if uncertainty is None:
+                return self.getField('Precision').get(self)
+            if uncertainty == 0 and result is None:
+                return self.getField('Precision').get(self)
             if uncertainty == 0:
-                return 1
+                strres = str(result)
+                numdecimals = strres[::-1].find('.')
+                return numdecimals
             return get_significant_digits(uncertainty)
         return self.getField('Precision').get(self)
 

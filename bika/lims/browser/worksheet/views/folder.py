@@ -328,7 +328,7 @@ class FolderView(BikaListingView):
         if self.can_reassign:
             for x in range(len(self.review_states)):
                 if self.review_states[x]['id'] in ['default', 'mine', 'open']:
-                    self.review_states[x]['custom_actions'] = [{'id': 'reassign',
+                    self.review_states[x]['custom_transitions'] = [{'id': 'reassign',
                                                                 'title': _('Reassign')}, ]
 
         self.show_select_column = self.can_reassign

@@ -8,11 +8,19 @@ import re
 import transaction
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
+from plone.app.testing import setRoles
+
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, setRoles
-from plone.app.testing import login
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getCurrentState
 
 try:
     import unittest2 as unittest
@@ -30,8 +38,8 @@ class TestARImports(BikaFunctionalTestCase):
 
     def setUp(self):
         super(TestARImports, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
         login(self.portal, TEST_USER_NAME)
-        setRoles(self.portal, TEST_USER_ID, ['LabManager'])
         client = self.addthing(
             self.portal.clients, 'Client', title='Happy Hills', ClientID='HH')
         self.addthing(
@@ -79,34 +87,18 @@ class TestARImports(BikaFunctionalTestCase):
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
-Header,      File name,  Client name,  Client ID, Contact,     CC Names - 
-Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, 
-No of Samples, Client Order Number, Client Reference,,
-Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                
-  ,                   ,                    ,                    , 10,         
-     HHPO-001,                            ,,
-Batch Header, id,       title,     description,    ClientBatchID, 
-ClientBatchComment, BatchLabels, ReturnSampleToClient,,,
-Batch Data,   B15-0123, New Batch, Optional descr, CC 201506,     Just a 
-batch,                  , TRUE                ,,,
-Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,
-SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number 
-of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
+Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
+Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
+Batch Header, id,       title,     description,    ClientBatchID, ClientBatchComment, BatchLabels, ReturnSampleToClient,,,
+Batch Data,   B15-0123, New Batch, Optional descr, CC 201506,     Just a batch,                  , TRUE                ,,,
+Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
 Analysis price,,,,,,,,,,,,,,
 "Total Analyses or Profiles",,,,,,,,,,,,,9,,,
 Total price excl Tax,,,,,,,,,,,,,,
-"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
-   Water,     Cup,          0,              Normal,  1,                       
-               0,             0,0,0,0,0,1
-"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
-   Water,     Cup,          0,              Normal,  2,                       
-               0,             0,0,0,0,1,1
-"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
-   Water,     Cup,          0,              Normal,  4,                       
-               0,             1,1,1,1,0,0
-"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
-   Water,     Cup,          0,              Normal,  2,                       
-               0,             1,0,0,0,1,0
+"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  1,                                   0,             0,0,0,0,0,1
+"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  2,                                   0,             0,0,0,0,1,1
+"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  4,                                   0,             1,1,1,1,0,0
+"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          0,              Normal,  2,                                   0,             1,0,0,0,1,0
         """)
 
         # check that values are saved without errors
@@ -142,23 +134,28 @@ Total price excl Tax,,,,,,,,,,,,,,
             self.fail(
                 'Importation failed!  %s.Errors: %s' % (arimport.id, errors))
 
-        bc = getToolByName(self.portal, 'bika_catalog')
-        ars = bc(portal_type='AnalysisRequest')
+        barc = getToolByName(self.portal, CATALOG_ANALYSIS_REQUEST_LISTING)
+        ars = barc(portal_type='AnalysisRequest')
         if not ars[0].getObject().getContact():
             self.fail('No Contact imported into ar.Contact field.')
         l = len(ars)
         if l != 4:
             self.fail('4 AnalysisRequests were not created!  We found %s' % l)
+        bc = getToolByName(self.portal, 'bika_catalog')
         l = len(bc(portal_type='Sample'))
         if l != 4:
             self.fail('4 Samples were not created!  We found %s' % l)
-        bac = getToolByName(self.portal, 'bika_analysis_catalog')
+        bac = getToolByName(self.portal, CATALOG_ANALYSIS_LISTING)
         analyses = bac(portal_type='Analysis')
         l = len(analyses)
         if l != 12:
             self.fail('12 Analysis not found! We found %s' % l)
         states = [workflow.getInfoFor(a.getObject(), 'review_state')
                   for a in analyses]
+        ars_states = [ar.review_state for ar in ars]
+        if ars_states != ['sample_due'] * 4:
+            self.fail('Analysis Requests states should all be sample_due, '
+                      'but are not!')
         if states != ['sample_due'] * 12:
             self.fail('Analysis states should all be sample_due, but are not!')
 
@@ -168,30 +165,16 @@ Total price excl Tax,,,,,,,,,,,,,,
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
-Header,      File name,  Client name,  Client ID, Contact,     CC Names - 
-Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, 
-No of Samples, Client Order Number, Client Reference,,
-Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                
-  ,                   ,                    ,                    , 10,         
-     HHPO-001,                            ,,
-Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,
-SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number 
-of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
+Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
+Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
+Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
 Analysis price,,,,,,,,,,,,,,
 "Total Analyses or Profiles",,,,,,,,,,,,,9,,,
 Total price excl Tax,,,,,,,,,,,,,,
-"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,    
- Cup,          0,              Normal,  1,                                   
- 0,             0,0,0,0,0,1
-"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   ,     ,     Water,    
- Cup,          0,              Normal,  2,                                   
- 0,             0,0,0,0,1,1
-"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
-   Water,     Cup,          1,              Normal,  4,                       
-               0,             1,1,1,1,0,0
-"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,  
-   Water,     Cup,          1,              Normal,  2,                       
-               0,             1,0,0,0,1,0
+"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,     Cup,          0,              Normal,  1,                                   0,             0,0,0,0,0,1
+"Sample 2", HHS14002,          3/9/2014,    3/9/2014,   ,     ,     Water,     Cup,          0,              Normal,  2,                                   0,             0,0,0,0,1,1
+"Sample 3", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          1,              Normal,  4,                                   0,             1,1,1,1,0,0
+"Sample 4", HHS14002,          3/9/2014,    3/9/2014,   Toilet,     Liquids,     Water,     Cup,          1,              Normal,  2,                                   0,             1,0,0,0,1,0
         """)
 
         # check that values are saved without errors
@@ -202,7 +185,17 @@ Total price excl Tax,,,,,,,,,,,,,,
         if errors:
             self.fail("Unexpected errors while saving data: " + str(errors))
         transaction.commit()
-        browser = self.getBrowser(loggedIn=True)
+        browser = self.getBrowser(
+            username=TEST_USER_NAME,
+            password=TEST_USER_PASSWORD,
+            loggedIn=True)
+
+        doActionFor(arimport, 'validate')
+        c_state = getCurrentState(arimport)
+        self.assertTrue(
+            c_state == 'valid',
+            "ARrimport in 'invalid' state after it has been transitioned to "
+            "'valid'.")
         browser.open(arimport.absolute_url() + "/edit")
         content = browser.contents
         re.match(
@@ -221,21 +214,13 @@ Total price excl Tax,,,,,,,,,,,,,,
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
-Header,      File name,  Client name,  Client ID, Contact,     CC Names - 
-Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, 
-No of Samples, Client Order Number, Client Reference,,
-Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                
-  ,                   ,                    ,                    , 10,         
-     HHPO-001,                            ,,
-Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,
-SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number 
-of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
+Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
+Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
+Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
 Analysis price,,,,,,,,,,,,,,
 "Total Analyses or Profiles",,,,,,,,,,,,,9,,,
 Total price excl Tax,,,,,,,,,,,,,,
-"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,    
- Cup,          0,              Normal,  1,                                   
- 0,             0,0,0,0,0,1
+"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,     Cup,          0,              Normal,  1,                                   0,             0,0,0,0,0,1
         """)
 
         # check that values are saved without errors

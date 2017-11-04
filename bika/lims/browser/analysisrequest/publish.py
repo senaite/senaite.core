@@ -500,7 +500,7 @@ class AnalysisRequestPublishView(BrowserView):
         for cc in ar.getCCContact():
             recips.append({'title': to_utf8(cc.Title()),
                            'email': cc.getEmailAddress(),
-                           'pubpref': contact.getPublicationPreference()})
+                           'pubpref': cc.getPublicationPreference()})
 
         return recips
 
