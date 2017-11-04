@@ -1,131 +1,121 @@
 
+/* Please use this command to compile this file into the parent `js` directory:
+    coffee --no-header -w -o ../ -c bika.lims.bikalisting.coffee
+ */
+
+
 /*
  * Controller class for Bika Listing Table view
  */
 
-	(function() {
-	window.BikaListingTableView = function () {
-
-		var autosave, build_typical_save_request, category_header_clicked,column_header_clicked, column_toggle_context_menu, column_toggle_context_menu_selection, filter_search_button_click, filter_search_keypress,
-		listing_string_input_keypress,
-		listing_string_select_changed, loadNewRemarksEventHandlers, load_export_buttons, load_transitions, loading_transitions,
-		pagesize_change, positionTooltip, render_transition_buttons, save_elements, select_all_clicked, select_one_clicked, show_more_clicked, that,
-		workflow_action_button_click;
-		that = this;
-		loading_transitions = false;
-		show_more_clicked=function () {
-
-		$('a.bika_listing_show_more').click(function(e){
-			var filter_options, filterbar, filters, filters1, filters2, formid, limit_from, pagesize, tbody, url;e.preventDefault();
-			 formid = $(this).attr('data-form-id');
-			 pagesize = parseInt($(this).attr('data-pagesize'));
-			 url = $(this).attr('data-ajax-url');
-			 limit_from = parseInt($(this).attr('data-limitfrom'));
-			url = url.replace('_limit_from=','_olf=');
-			url += '&'+formid+'_limit_from='+limit_from;
-			$('#'+formid+' a.bika_listing_show_more').fadeOut();
-			 tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody');
-			 filter_options = [];
-			filters1 = $('.bika_listing_filter_bar input[name][value!=""]');
-			filters2 = $('.bika_listing_filter_bar select option:selected[value!=""]');
-			filters = $.merge(filters1, filters2);
-			$(filters).each(function(e) {
-				var opt;
+(function() {
+  window.BikaListingTableView = function() {
+    var autosave, build_typical_save_request, category_header_clicked, column_header_clicked, column_toggle_context_menu, column_toggle_context_menu_selection, filter_search_button_click, filter_search_keypress, listing_string_input_keypress, listing_string_select_changed, loadNewRemarksEventHandlers, load_export_buttons, load_transitions, loading_transitions, pagesize_change, positionTooltip, render_transition_buttons, save_elements, select_all_clicked, select_one_clicked, show_more_clicked, that, workflow_action_button_click;
+    that = this;
+    loading_transitions = false;
+    show_more_clicked = function() {
+      $('a.bika_listing_show_more').click(function(e) {
+        var filter_options, filterbar, filters, filters1, filters2, formid, limit_from, pagesize, tbody, url;
+        e.preventDefault();
+        formid = $(this).attr('data-form-id');
+        pagesize = parseInt($(this).attr('data-pagesize'));
+        url = $(this).attr('data-ajax-url');
+        limit_from = parseInt($(this).attr('data-limitfrom'));
+        url = url.replace('_limit_from=', '_olf=');
+        url += '&' + formid + '_limit_from=' + limit_from;
+        $('#' + formid + ' a.bika_listing_show_more').fadeOut();
+        tbody = $('table.bika-listing-table[form_id="' + formid + '"] tbody.item-listing-tbody');
+        filter_options = [];
+        filters1 = $('.bika_listing_filter_bar input[name][value!=""]');
+        filters2 = $('.bika_listing_filter_bar select option:selected[value!=""]');
+        filters = $.merge(filters1, filters2);
+        $(filters).each(function(e) {
+          var opt;
           opt = [$(this).attr('name'), $(this).val()];
-				filter_options.push(opt);
-			});
-			 filterbar = {};
-			if (filter_options.length > 0) {
-				filterbar.bika_listing_filter_bar = $.toJSON(filter_options);
-			}
-			$.post(url, filterbar)
-				.done(function(data) {
-					var rows;try {
-						 rows = $('<html><table>'+data+'</table></html>').find('tr');
-
-						$(tbody).append(rows);
-
-						$('#'+formid+' a.bika_listing_show_more').attr('data-limitfrom', limit_from+pagesize);
-						loadNewRemarksEventHandlers();
-					}
-					catch (error) {e= error;
-						$('#' + formid + ' a.bika_listing_show_more').hide();
-						console.log(e);
-					}
-					load_transitions();
-				}).fail(function () {
-					$('#'+formid+' a.bika_listing_show_more').hide();
-					console.log('bika_listing_show_more failed');
-    		}).always(function() {
-					var numitems;
-          numitems = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody tr').length;
-					$('#'+formid+' span.number-items').html(numitems);
-					if (numitems % pagesize === 0) {
-						$('#'+formid+' a.bika_listing_show_more').fadeIn();
-					}
-				});
-		});
-	};
-
-	 loadNewRemarksEventHandlers= function() {
-			var pointer, txt1;
-			$('a.add-remark').remove();
-			 txt1 = '<a href="#" class="add-remark"><img src="'+window.portal_url+'/++resource++bika.lims.images/comment_ico.png" title="'+_('Add Remark')+'")"></a>';
-			 pointer = $('.listing_remarks:contains(\'\')').closest('tr').prev().find('td.service_title span.before');
-
-			$(pointer).append(txt1);
-
-			$('a.add-remark').click(function(e){
-					var rmks;e.preventDefault();
-					 rmks = $(this).closest('tr').next('tr').find('td.remarks');
-					if (rmks.length > 0) {
-							rmks.toggle();
-					}
-			});
-			$('td.remarks').hide();
-	};
-
-	 column_header_clicked= function() {
-		$('th.sortable').live('click', function () {
-			var column_id, column_index, form, form_id, options, sort_on, sort_on_selector, sort_order, sort_order_selector, stored_form_action;form = $(this).parents('form');
-			form_id = $(form).attr('id');
-			column_id = this.id.split('-')[1];
-			 column_index = $(this).parent().children('th').index(this);
-			sort_on_selector = '[name=' + form_id + '_sort_on]';
-			sort_on = $(sort_on_selector).val();
-			sort_order_selector = '[name=' + form_id + '_sort_order]';
-			sort_order = $(sort_order_selector).val();
-			 if  (sort_on === column_id) {
-
-				if (sort_order == = 'descending') {
-					sort_order = 'ascending';
-				}
-				else {
-					sort_order = 'descending';
-				}
-			}
-			else {
-				sort_on = column_id;
-				sort_order = 'ascending';
-			}
-
-			$(sort_on_selector).val(sort_on);
-			$(sort_order_selector).val(sort_order);
-
-
-			stored_form_action = $(form).attr('action');
-			$(form).attr('action', window.location.href);
-			$(form).append('<input type=\'hidden\' name=\'table_only\' value=\'' + form_id + '\'>');
-			 options = {
-				target: $(this).parents('table'),
-				replaceTarget: true,
-				data: form.formToArray(),
-			success: load_transitions};
-			form.ajaxSubmit(options);
-			$('[name=\'table_only\']').remove();
-			$(form).attr('action', stored_form_action);
-		});
-	};
+          filter_options.push(opt);
+        });
+        filterbar = {};
+        if (filter_options.length > 0) {
+          filterbar.bika_listing_filter_bar = $.toJSON(filter_options);
+        }
+        $.post(url, filterbar).done(function(data) {
+          var rows;
+          try {
+            rows = $('<html><table>' + data + '</table></html>').find('tr');
+            $(tbody).append(rows);
+            $('#' + formid + ' a.bika_listing_show_more').attr('data-limitfrom', limit_from + pagesize);
+            loadNewRemarksEventHandlers();
+          } catch (error) {
+            e = error;
+            $('#' + formid + ' a.bika_listing_show_more').hide();
+            console.log(e);
+          }
+          load_transitions();
+        }).fail(function() {
+          $('#' + formid + ' a.bika_listing_show_more').hide();
+          console.log('bika_listing_show_more failed');
+        }).always(function() {
+          var numitems;
+          numitems = $('table.bika-listing-table[form_id="' + formid + '"] tbody.item-listing-tbody tr').length;
+          $('#' + formid + ' span.number-items').html(numitems);
+          if (numitems % pagesize === 0) {
+            $('#' + formid + ' a.bika_listing_show_more').fadeIn();
+          }
+        });
+      });
+    };
+    loadNewRemarksEventHandlers = function() {
+      var pointer, txt1;
+      $('a.add-remark').remove();
+      txt1 = '<a href="#" class="add-remark"><img src="' + window.portal_url + '/++resource++bika.lims.images/comment_ico.png" title="' + _('Add Remark') + '")"></a>';
+      pointer = $('.listing_remarks:contains(\'\')').closest('tr').prev().find('td.service_title span.before');
+      $(pointer).append(txt1);
+      $('a.add-remark').click(function(e) {
+        var rmks;
+        e.preventDefault();
+        rmks = $(this).closest('tr').next('tr').find('td.remarks');
+        if (rmks.length > 0) {
+          rmks.toggle();
+        }
+      });
+      $('td.remarks').hide();
+    };
+    column_header_clicked = function() {
+      $('th.sortable').live('click', function() {
+        var column_id, column_index, form, form_id, options, sort_on, sort_on_selector, sort_order, sort_order_selector, stored_form_action;
+        form = $(this).parents('form');
+        form_id = $(form).attr('id');
+        column_id = this.id.split('-')[1];
+        column_index = $(this).parent().children('th').index(this);
+        sort_on_selector = '[name=' + form_id + '_sort_on]';
+        sort_on = $(sort_on_selector).val();
+        sort_order_selector = '[name=' + form_id + '_sort_order]';
+        sort_order = $(sort_order_selector).val();
+        if (sort_on === column_id) {
+          if (sort_order === 'descending') {
+            sort_order = 'ascending';
+          } else {
+            sort_order = 'descending';
+          }
+        } else {
+          sort_on = column_id;
+          sort_order = 'ascending';
+        }
+        $(sort_on_selector).val(sort_on);
+        $(sort_order_selector).val(sort_order);
+        stored_form_action = $(form).attr('action');
+        $(form).attr('action', window.location.href);
+        $(form).append('<input type=\'hidden\' name=\'table_only\' value=\'' + form_id + '\'>');
+        options = {
+          target: $(this).parents('table'),
+          replaceTarget: true,
+          data: form.formToArray()
+        };
+        form.ajaxSubmit(options);
+        $('[name=\'table_only\']').remove();
+        $(form).attr('action', stored_form_action);
+      });
+    };
 
     /*
     * Fetch allowed transitions for all the objects listed in bika_listing and
