@@ -1,3 +1,7 @@
+### Please use this command to compile this file into the parent `js` directory:
+    coffee --no-header -w -o ../ -c bika.lims.bikalisting.coffee
+###
+
 ###
 # Controller class for Bika Listing Table view
 ###
