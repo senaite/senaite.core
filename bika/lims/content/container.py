@@ -3,30 +3,24 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import json
+from operator import itemgetter
+
+import plone.protect
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.vocabularies import CatalogVocabulary
-from magnitude import mg, MagnitudeError
-from Missing import Value
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.utils import getToolByName
-from operator import itemgetter
-import json
-import plone.protect
-import sys
+from magnitude import mg
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('ContainerType',
+    UIDReferenceField('ContainerType',
         required = 0,
-        vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('ContainerType',),
         vocabulary = 'getContainerTypes',
-        relationship = 'ContainerContainerType',
-        referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label=_("Container Type"),
@@ -51,13 +45,10 @@ schema = BikaSchema.copy() + Schema((
                 "for sample partitions stored in this container."),
         ),
     ),
-    ReferenceField('Preservation',
+    UIDReferenceField('Preservation',
         required = 0,
-        vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Preservation',),
         vocabulary = 'getPreservations',
-        relationship = 'ContainerPreservation',
-        referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label=_("Preservation"),

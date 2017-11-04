@@ -15,7 +15,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.invoice import InvoiceLineItem
 from bika.lims.interfaces import IInvoiceBatch
 from bika.lims.utils import get_invoice_item_description
-from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
+from bika.lims.workflow import getTransitionDate, isBasicTransitionAllowed
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 

@@ -70,17 +70,18 @@ Schema((
         widget = AnalysisSpecificationWidget(
             checkbox_bound = 0,
             label = _("Specifications"),
-            description = _("Click on Analysis Categories (against shaded background" \
-                            "to see Analysis Services in each category. Enter minimum " \
-                            "and maximum values to indicate a valid results range. " \
-                            "Any result outside this range will raise an alert. " \
-                            "The % Error field allows for an % uncertainty to be " \
-                            "considered when evaluating results against minimum and " \
-                            "maximum values. A result out of range but still in range " \
-                            "if the % error is taken into consideration, will raise a " \
-                            "less severe alert. If the result is below '< Min' " \
-                            "the result will be shown as '< [min]'. The same " \
-                            "applies for results above '> Max'"),
+            description = _(
+                "Click on Analysis Categories (against shaded background"
+                "to see Analysis Services in each category. Enter minimum "
+                "and maximum values to indicate a valid results range. "
+                "Any result outside this range will raise an alert. "
+                "The % Error field allows for an % uncertainty to be "
+                "considered when evaluating results against minimum and "
+                "maximum values. A result out of range but still in range "
+                "if the % error is taken into consideration, will raise a "
+                "less severe alert. If the result is below '< Min' "
+                "the result will be shown as '< [min]'. The same "
+                "applies for results above '> Max'"),
         ),
     ),
     ComputedField('ClientUID',

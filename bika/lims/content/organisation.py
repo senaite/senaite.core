@@ -4,18 +4,15 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordWidget
 from Products.Archetypes.public import *
-from bika.lims.config import PROJECTNAME
 from Products.CMFCore import permissions as CMFCorePermissions
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
-from archetypes.referencebrowserwidget import ReferenceBrowserWidget
-from plone.app.folder.folder import ATFolder
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import AddressField
 from bika.lims.browser.widgets import AddressWidget
-from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema, BikaSchema
+from plone.app.folder.folder import ATFolder
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     StringField('Name',

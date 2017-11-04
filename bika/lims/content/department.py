@@ -5,25 +5,20 @@
 
 """Department - the department in the laboratory.
 """
+
+from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from AccessControl import ClassSecurityInfo
-import sys
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from zope.interface import implements
 from bika.lims.interfaces import IDepartment
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Manager',
+    UIDReferenceField('Manager',
         vocabulary = 'getContacts',
-        vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('LabContact',),
-        referenceClass = HoldingReference,
-        relationship = 'DepartmentLabContact',
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label=_("Manager"),

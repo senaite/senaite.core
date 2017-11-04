@@ -1,30 +1,27 @@
-from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import BaseContent
-from Products.Archetypes import atapi
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.public import SelectionWidget
-from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
-from zope.interface import implements
 from datetime import datetime
-from bika.lims.config import PROJECTNAME
+
+from AccessControl import ClassSecurityInfo
+from Products.Archetypes import atapi
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReflexRule
-from bika.lims.browser.fields import ReflexRuleField
-from bika.lims.utils import isnumber
-from bika.lims.utils import getUsers
-from bika.lims.utils import tmpID
-from bika.lims.utils.analysis import duplicateAnalysis
-from bika.lims.idserver import renameAfterCreation
 from bika.lims import logger
-from bika.lims.workflow import doActionFor
+from bika.lims.browser.fields import ReflexRuleField, UIDReferenceField
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-import sys
-from Products.CMFCore.interfaces import ISiteRoot
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IReflexRule
+from bika.lims.utils import getUsers
+from bika.lims.utils import isnumber
+from bika.lims.utils import tmpID
+from bika.lims.utils.analysis import duplicateAnalysis
+from bika.lims.workflow import doActionFor
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     # Methods associated to the Reflex rule
@@ -33,15 +30,12 @@ schema = BikaSchema.copy() + Schema((
     # selecting the method, the system will display another list in order to
     # choose the analysis service to add the rules when using the selected
     # method.
-    ReferenceField(
+    UIDReferenceField(
         'Method',
         required=1,
         multiValued=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getAvailableMethodsDisplayList',
         allowed_types=('Method',),
-        relationship='ReflexRuleMethod',
-        referenceClass=HoldingReference,
         widget=SelectionWidget(
             label=_("Methods"),
             format='select',

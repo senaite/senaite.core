@@ -7,44 +7,34 @@
 
 import math
 
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-
-from Products.CMFCore.utils import getToolByName
-
+from DateTime import DateTime
 from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import DisplayList
-from Products.Archetypes.atapi import registerType
-
-from zope.interface import implements
-
-# Schema and Fields
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import BooleanField
-from plone.app.blob.field import FileField as BlobFileField
-
-# Widgets
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import FileWidget
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ComboBoxWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import ComboBoxWidget
-
-# bika.lims imports
-from bika.lims import logger
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentCertification
-
+from plone.app.blob.field import FileField as BlobFileField
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -56,10 +46,9 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         allowed_types=('Instrument',),
-        relationship='InstrumentCertificationInstrument',
         widget=StringWidget(
             visible=False,
         )
@@ -138,11 +127,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Preparator',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCertificatePreparator',
         widget=ReferenceWidget(
             checkbox_bound=0,
             label=_("Prepared by"),
@@ -158,11 +146,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Validator',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCertificateValidator',
         widget=ReferenceWidget(
             checkbox_bound=0,
             label=_("Approved by"),

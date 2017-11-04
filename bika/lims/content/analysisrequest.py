@@ -5,13 +5,11 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import sys
-from AccessControl import ClassSecurityInfo
 from decimal import Decimal
 from operator import methodcaller
-from plone import api as ploneapi
+
+from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-# AT Fields and AT Widgets
 from Products.ATExtensions.field import RecordsField
 from Products.Archetypes.Widget import RichWidget
 from Products.Archetypes.atapi import BaseFolder
@@ -21,7 +19,6 @@ from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextAreaWidget
@@ -29,21 +26,16 @@ from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import Schema
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
-from zope.interface import implements
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-# Bika Fields
 from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import ProxyField
-# Bika Widgets
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
 from bika.lims.browser.widgets import ReferenceWidget
@@ -54,23 +46,20 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-# Bika Interfaces
 from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
-# Bika Permissions
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
-# Bika Utils
 from bika.lims.utils import dicts_to_dict, getUsers
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
-# Bika Workflow
 from bika.lims.workflow import getReviewHistoryActionsList
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
 from bika.lims.workflow import isActive
 from bika.lims.workflow.analysisrequest import events
 from bika.lims.workflow.analysisrequest import guards
-
+from plone import api as ploneapi
+from zope.interface import implements
 
 """The request for analysis by a client. It contains analysis instances.
 """
@@ -141,13 +130,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'CCContact',
         multiValued=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestCCContact',
         mode="rw",
         read_permission=permissions.View,
         write_permission=EditARContact,
@@ -222,11 +208,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Client',
         required=1,
         allowed_types=('Client',),
-        relationship='AnalysisRequestClient',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -265,12 +250,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Sample',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Sample',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestSample',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -306,10 +288,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Batch',
         allowed_types=('Batch',),
-        relationship='AnalysisRequestBatch',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -345,10 +326,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'SamplingRound',
         allowed_types=('SamplingRound',),
-        relationship='AnalysisRequestSamplingRound',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -383,12 +363,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'SubGroup',
         required=False,
         allowed_types=('SubGroup',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestSubGroup',
         widget=ReferenceWidget(
             label=_("Batch Sub-group"),
             description=_("The assigned batch sub group of this request"),
@@ -430,11 +408,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestARTemplate',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -470,34 +446,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    # TODO: Profile'll be delated
-    ReferenceField(
-        'Profile',
-        allowed_types=('AnalysisProfile',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestAnalysisProfile',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Analysis Profile"),
-            description=_("Analysis profiles apply a certain set of analyses"),
-            size=20,
-            render_own_label=True,
-            visible=False,
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-            showOn=False,
-        ),
-    ),
-
-    ReferenceField(
+    UIDReferenceField(
         'Profiles',
         multiValued=1,
         allowed_types=('AnalysisProfile',),
-        referenceClass=HoldingReference,
-        vocabulary_display_path_bound=sys.maxsize,
-        relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -683,7 +635,7 @@ schema = BikaSchema.copy() + Schema((
         proxy="context.getSample()",
         required=1,
         allowed_types='SampleType',
-        relationship='AnalysisRequestSampleType',
+        relationship='',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -747,11 +699,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Specification',
         required=0,
         allowed_types='AnalysisSpec',
-        relationship='AnalysisRequestAnalysisSpec',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -806,11 +757,10 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'PublicationSpecification',
         required=0,
         allowed_types='AnalysisSpec',
-        relationship='AnalysisRequestPublicationSpec',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.View,
@@ -850,7 +800,7 @@ schema = BikaSchema.copy() + Schema((
         'SamplePoint',
         proxy="context.getSample()",
         allowed_types='SamplePoint',
-        relationship='AnalysisRequestSamplePoint',
+        relationship='',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -892,7 +842,7 @@ schema = BikaSchema.copy() + Schema((
         'StorageLocation',
         proxy="context.getSample()",
         allowed_types='StorageLocation',
-        relationship='AnalysisRequestStorageLocation',
+        relationship='',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1040,8 +990,7 @@ schema = BikaSchema.copy() + Schema((
         'SamplingDeviation',
         proxy="context.getSample()",
         allowed_types=('SamplingDeviation',),
-        relationship='AnalysisRequestSamplingDeviation',
-        referenceClass=HoldingReference,
+        relationship='',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1082,8 +1031,7 @@ schema = BikaSchema.copy() + Schema((
         'SampleCondition',
         proxy="context.getSample()",
         allowed_types=('SampleCondition',),
-        relationship='AnalysisRequestSampleCondition',
-        referenceClass=HoldingReference,
+        relationship='',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1185,11 +1133,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'DefaultContainerType',
         allowed_types=('ContainerType',),
-        relationship='AnalysisRequestContainerType',
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1379,12 +1325,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Attachment',
         multiValued=1,
         allowed_types=('Attachment',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestAttachment',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1396,12 +1340,9 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Invoice',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Invoice',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestInvoice',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1738,11 +1679,9 @@ schema = BikaSchema.copy() + Schema((
         expression="here.getTemplate().Title() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
-    ReferenceField(
+    UIDReferenceField(
         'ChildAnalysisRequest',
         allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestChildAnalysisRequest',
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1751,11 +1690,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'ParentAnalysisRequest',
         allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestParentAnalysisRequest',
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,

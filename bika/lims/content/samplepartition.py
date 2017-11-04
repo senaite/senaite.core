@@ -3,35 +3,33 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from datetime import timedelta
+
 from AccessControl import ClassSecurityInfo
-from bika.lims import deprecated
-from bika.lims.browser.fields import UIDReferenceField
+from DateTime import DateTime
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATContentTypes.utils import DT2dt, dt2DT
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISamplePartition, ISamplePrepWorkflow
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
-from DateTime import DateTime
-from datetime import timedelta
-from Products.Archetypes.public import *
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATContentTypes.utils import DT2dt, dt2DT
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
+from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Container',
+    UIDReferenceField('Container',
         allowed_types=('Container',),
-        relationship='SamplePartitionContainer',
         required=1,
         multiValued=0,
     ),
-    ReferenceField('Preservation',
+    UIDReferenceField('Preservation',
         allowed_types=('Preservation',),
-        relationship='SamplePartitionPreservation',
         required=0,
         multiValued=0,
     ),

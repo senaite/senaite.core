@@ -4,28 +4,24 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IBatch, IClient
-from bika.lims.workflow import skip, BatchState, StateFlow, getCurrentState,\
-    CancellationState
-from bika.lims.browser.widgets import DateTimeWidget
-from plone import api
-from plone.app.folder.folder import ATFolder
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from zope.interface import implements
-from bika.lims.permissions import EditBatch
-from plone.indexer import indexer
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
-
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.interfaces import IBatch, IClient
+from bika.lims.workflow import BatchState, CancellationState, StateFlow, \
+    getCurrentState
+from plone.app.folder.folder import ATFolder
+from plone.indexer import indexer
+from zope.interface import implements
 
 
 class InheritedObjectsUIField(RecordsField):
@@ -76,11 +72,10 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Batch ID"),
         )
     ),
-    ReferenceField(
+    UIDReferenceField(
         'Client',
         required=0,
         allowed_types=('Client',),
-        relationship='BatchClient',
         widget=ReferenceWidget(
             label=_("Client"),
             size=30,
@@ -129,13 +124,11 @@ schema = BikaFolderSchema.copy() + Schema((
             append_only=True,
         )
     ),
-    ReferenceField(
+    UIDReferenceField(
         'InheritedObjects',
         required=0,
         multiValued=True,
         allowed_types=('AnalysisRequest'),  # batches are expanded on save
-        referenceClass = HoldingReference,
-        relationship = 'BatchInheritedObjects',
         widget=ReferenceWidget(
             visible=False,
         ),

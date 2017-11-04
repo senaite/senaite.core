@@ -7,17 +7,12 @@
     reference samples used in quality control
 """
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
 from Products.Archetypes.public import *
-from Products.CMFCore.permissions import View, ModifyPortalContent
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
-import sys
-import time
-from bika.lims import PMF, bikaMessageFactory as _
-from zope.interface import implements
+from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',

@@ -4,21 +4,17 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Acquisition import aq_base, aq_inner
 from Products.ATExtensions.field.records import RecordsField
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
 from bika.lims.config import ANALYSIS_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims import PMF, bikaMessageFactory as _
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from zope.interface import implements
-import sys
 
 schema = BikaSchema.copy() + Schema((
     RecordsField('Layout',
@@ -42,27 +38,22 @@ schema = BikaSchema.copy() + Schema((
                 "selected, indicate which sample position it should be a duplicate of"),
         )
     ),
-    ReferenceField('Service',
+    UIDReferenceField('Service',
         schemata = 'Analyses',
         required = 0,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
-        relationship = 'WorksheetTemplateAnalysisService',
-        referenceClass = HoldingReference,
         widget = ServicesWidget(
             label=_("Analysis Service"),
             description=_("Select which Analyses should be included on the Worksheet"),
         )
     ),
-    ReferenceField(
+    UIDReferenceField(
         'RestrictToMethod',
         schemata="Description",
         required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getMethodsVoc',
         allowed_types=('Method',),
-        relationship='WorksheetTemplateMethod',
-        referenceClass=HoldingReference,
         widget = SelectionWidget(
             format='select',
             label=_("Method"),
@@ -73,14 +64,11 @@ schema = BikaSchema.copy() + Schema((
                 "should save the change first."),
         ),
     ),
-    ReferenceField('Instrument',
+    UIDReferenceField('Instrument',
         schemata = "Description",
         required = 0,
-        vocabulary_display_path_bound = sys.maxint,
         vocabulary = 'getInstruments',
         allowed_types = ('Instrument',),
-        relationship = 'WorksheetTemplateInstrument',
-        referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label=_("Instrument"),

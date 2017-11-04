@@ -4,16 +4,13 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import re
-import sys
-from AccessControl import ClassSecurityInfo
-from operator import itemgetter
 
+from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -32,7 +29,6 @@ from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import skip
 from bika.lims.workflow.worksheet import events
 from bika.lims.workflow.worksheet import guards
@@ -50,23 +46,19 @@ schema = BikaSchema.copy() + Schema((
         subfield_types={'position': 'int'},
     ),
     # all layout info lives in Layout; Analyses is used for back references.
-    ReferenceField('Analyses',
+    UIDReferenceField('Analyses',
         required=1,
         multiValued=1,
         allowed_types=('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis', 'RejectAnalysis'),
-        relationship = 'WorksheetAnalysis',
     ),
     StringField('Analyst',
         searchable = True,
     ),
-    ReferenceField(
+    UIDReferenceField(
         'Method',
         required=0,
-        vocabulary_display_path_bound=sys.maxint,
         vocabulary='_getMethodsVoc',
         allowed_types=('Method',),
-        relationship='WorksheetMethod',
-        referenceClass=HoldingReference,
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
@@ -74,12 +66,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # TODO Remove. Instruments must be assigned directly to each analysis.
-    ReferenceField('Instrument',
+    UIDReferenceField('Instrument',
         required = 0,
         allowed_types = ('Instrument',),
         vocabulary = '_getInstrumentsVoc',
-        relationship = 'WorksheetInstrument',
-        referenceClass = HoldingReference,
     ),
     TextField('Remarks',
         searchable = True,

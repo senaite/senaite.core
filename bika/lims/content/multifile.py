@@ -3,15 +3,14 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from zope.interface import implements
 from Products.Archetypes import atapi
-from plone.app.blob.field import FileField
 from Products.Archetypes.public import BaseContent
-from bika.lims.interfaces import IMultifile
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims import bikaMessageFactory as _
 from bika.lims import config
-
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IMultifile
+from plone.app.blob.field import FileField
+from zope.interface import implements
 
 schema = BikaSchema.copy() + atapi.Schema((
 

@@ -3,18 +3,15 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from webdav.common import rfc1123_date
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.public import *
-from bika.lims.content.bikaschema import BikaSchema
-from Products.ATExtensions.ateapi import RecordWidget
-from bika.lims.browser.widgets import AddressWidget
-from archetypes.referencebrowserwidget import ReferenceBrowserWidget
-from bika.lims.config import GENDERS, PROJECTNAME
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import AddressField
-from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.widgets import AddressWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
     StringField('Salutation',

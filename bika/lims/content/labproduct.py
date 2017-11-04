@@ -3,15 +3,13 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from decimal import Decimal
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.CMFCore.permissions import View, ModifyPortalContent
+from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from decimal import Decimal
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     StringField('Volume',

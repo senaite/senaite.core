@@ -6,22 +6,17 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, getUsers
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import SRTemplateARTemplatesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field.records import RecordsField
 from bika.lims.interfaces import ISamplingRoundTemplate
-from Products.CMFCore.utils import getToolByName
+from bika.lims.utils import getUsers
 from zope.interface import implements
-
-import sys
-
 
 schema = BikaSchema.copy() + Schema((
 
@@ -37,13 +32,10 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The department responsible for the sampling round
-    ReferenceField('Department',
+    UIDReferenceField('Department',
         required=1,
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=('Department',),
         vocabulary='_getDepartmentsDisplayList',
-        relationship='SRTemplateDepartment',
-        referenceClass=HoldingReference,
         widget=ReferenceWidget(
             checkbox_bound=0,
             label = _("Department"),
@@ -75,12 +67,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField('ARTemplates',
+    UIDReferenceField('ARTemplates',
         schemata = 'AR Templates',
         required = 1,
         multiValued = 1,
         allowed_types = ('ARTemplate',),
-        relationship = 'SRTemplateARTemplate',
         widget = SRTemplateARTemplatesWidget(
             label=_("AR Templates"),
             description=_("Select AR Templates to include"),

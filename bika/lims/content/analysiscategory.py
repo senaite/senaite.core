@@ -9,10 +9,10 @@
 import transaction
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisCategory
@@ -29,13 +29,11 @@ schema = BikaSchema.copy() + Schema((
                 "results reports."),
             label=_("Comments")),
     ),
-    ReferenceField(
+    UIDReferenceField(
         'Department',
         required=1,
         vocabulary='getDepartments',
         allowed_types=('Department',),
-        relationship='AnalysisCategoryDepartment',
-        referenceClass=HoldingReference,
         widget=ReferenceWidget(
             checkbox_bound=0,
             label=_("Department"),

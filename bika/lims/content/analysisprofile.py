@@ -9,20 +9,16 @@
 """
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import PMF, bikaMessageFactory as _
+from Products.ATExtensions.field import RecordsField
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
-from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from Products.Archetypes.public import *
 from bika.lims.interfaces import IAnalysisProfile
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field import RecordsField
-from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
-from zope.interface import Interface, implements
-import sys
-from bika.lims.interfaces import IAnalysisProfile
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
@@ -33,12 +29,11 @@ schema = BikaSchema.copy() + Schema((
                           "not be the same as any Calculation Interim field ID."),
         ),
     ),
-    ReferenceField('Service',
+    UIDReferenceField('Service',
         schemata = 'Analyses',
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
-        relationship = 'AnalysisProfileAnalysisService',
         widget = AnalysisProfileAnalysesWidget(
             label = _("Profile Analyses"),
             description = _("The analyses included in this profile, grouped per category"),

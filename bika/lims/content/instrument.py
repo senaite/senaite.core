@@ -8,61 +8,54 @@
 from datetime import date
 
 from AccessControl import ClassSecurityInfo
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.atapi import DisplayList, PicklistWidget
-from Products.Archetypes.atapi import registerType
-
-from zope.interface import implements
-from plone.app.folder.folder import ATFolder
-
-# Schema and Fields
-from Products.Archetypes.atapi import Schema
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import ImageField
-from Products.Archetypes.atapi import BooleanField
 from Products.ATExtensions.ateapi import RecordsField
-from plone.app.blob.field import FileField as BlobFileField
-from bika.lims.browser.fields import UIDReferenceField
-
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import ComputedField
 # Widgets
 from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import DisplayList, PicklistWidget
+from Products.Archetypes.atapi import FileWidget
+from Products.Archetypes.atapi import ImageField
+from Products.Archetypes.atapi import ImageWidget
+from Products.Archetypes.atapi import ReferenceWidget
+# Schema and Fields
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import ImageWidget
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import ReferenceWidget
-from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import RecordsWidget
-
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 # bika.lims imports
 from bika.lims import api
-from bika.lims import logger
-from bika.lims.utils import t
-from bika.lims.utils import to_utf8
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IInstrument
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInstrument
+from bika.lims.utils import t
+from bika.lims.utils import to_utf8
+from plone.app.blob.field import FileField as BlobFileField
+from plone.app.folder.folder import ATFolder
+from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
-    ReferenceField(
+    UIDReferenceField(
         'InstrumentType',
         vocabulary='getInstrumentTypes',
         allowed_types=('InstrumentType',),
-        relationship='InstrumentInstrumentType',
         required=1,
         widget=SelectionWidget(
             format='select',
@@ -71,11 +64,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Manufacturer',
         vocabulary='getManufacturers',
         allowed_types=('Manufacturer',),
-        relationship='InstrumentManufacturer',
         required=1,
         widget=SelectionWidget(
             format='select',
@@ -84,11 +76,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Supplier',
         vocabulary='getSuppliers',
         allowed_types=('Supplier',),
-        relationship='InstrumentSupplier',
         required=1,
         widget=SelectionWidget(
             format='select',
@@ -125,11 +116,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Methods',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
-        relationship='InstrumentMethods',
         required=0,
         multiValued=1,
         widget=PicklistWidget(
@@ -217,12 +207,11 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
     # Private method. Use getLatestReferenceAnalyses() instead.
     # See getLatestReferenceAnalyses() method for further info.
-    ReferenceField(
+    UIDReferenceField(
         '_LatestReferenceAnalyses',
         required=0,
         multiValued=1,
         allowed_types=('ReferenceAnalysis'),
-        relationship='InstrumentLatestReferenceAnalyses',
         widget=ReferenceWidget(
             visible=False,
         ),
@@ -284,12 +273,11 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'InstrumentLocation',
         schemata='Additional info.',
         vocabulary='getInstrumentLocations',
         allowed_types=('InstrumentLocation', ),
-        relationship='InstrumentInstrumentLocation',
         required=0,
         widget=SelectionWidget(
             format='select',
@@ -588,7 +576,7 @@ class Instrument(ATFolder):
         cert = self.getLatestValidCertification()
         today = date.today()
         if cert and cert.getValidTo():
-            validto = cert.getValidTo().asdatetime().date();
+            validto = cert.getValidTo().asdatetime().date()
             if validto > today:
                 return False
         return True
@@ -628,7 +616,7 @@ class Instrument(ATFolder):
         cert = self.getLatestValidCertification()
         if cert == None:
             return ''
-        date = cert.getValidTo().asdatetime().date();
+        date = cert.getValidTo().asdatetime().date()
         return date - date.today()
 
     def getLatestValidCertification(self):

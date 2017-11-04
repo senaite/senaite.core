@@ -3,15 +3,13 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import CoordinateField
+from bika.lims.browser.fields import CoordinateField, UIDReferenceField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
@@ -43,18 +41,16 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DurationField('SamplingFrequency',
-        vocabulary_display_path_bound=sys.maxint,
         widget=DurationWidget(
             label=_("Sampling Frequency"),
             description=_("If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"),
         ),
     ),
-    ReferenceField('SampleTypes',
+    UIDReferenceField('SampleTypes',
         required = 0,
         multiValued = 1,
         allowed_types = ('SampleType',),
         vocabulary = 'SampleTypesVocabulary',
-        relationship = 'SamplePointSampleType',
         widget = brw(
             label=_("Sample Types"),
             description =_("The list of sample types that can be collected "

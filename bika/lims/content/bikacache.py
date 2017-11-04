@@ -3,13 +3,10 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from zope.interface import implements
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseContent
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims import bikaMessageFactory as _
 from bika.lims import config
-
+from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + atapi.Schema((
     #'Key' field is name of the Cache object, must be Unique
