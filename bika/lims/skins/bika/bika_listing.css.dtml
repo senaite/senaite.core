@@ -196,7 +196,7 @@ table.bika-listing-table {
 .bika-listing-table th.column,
 .bika-listing-table td.interim,
 .bika-listing-table td.Result,
-.bika-listing-table td.getRequestID,
+.bika-listing-table td.getId,
 .bika-listing-table td.Title,
 .bika-listing-table td.ID {
   white-space:nowrap !important;

@@ -4,7 +4,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+from bika.lims import logger
 from bika.lims.utils import t
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -67,11 +67,13 @@ class AttachAnalyses():
             if analysis.portal_type in ('Analysis', 'DuplicateAnalysis'):
                 if review_state not in attachable_states:
                     continue
-                parent = analysis.getRequestID()
+                parent = analysis.getRequest().getId()
             elif analysis.portal_type == 'ReferenceAnalysis':
                 if review_state not in attachable_states:
                     continue
                 parent = analysis.aq_parent.Title()
+            else:
+                raise RuntimeError("Requires Duplicate/Analysis/Reference")
             rows.append({'analysis_uid': analysis.UID(),
                          'slot': analysis_to_slot[analysis.UID()],
                          'service': analysis.Title(),

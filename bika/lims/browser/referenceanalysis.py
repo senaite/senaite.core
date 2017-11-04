@@ -184,9 +184,9 @@ class AnalysesRetractedListReport(BrowserView):
                         'an_title': an.Title()}
 
                 if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
-                    item['ar'] = an.aq_parent
-                    item['ar_url'] = an.aq_parent.absolute_url()
-                    item['ar_id'] = an.aq_parent.getRequestID()
+                    item['ar'] = an.getRequest()
+                    item['ar_url'] = an.getRequest().absolute_url()
+                    item['ar_id'] = an.getRequest().getId()
                     item['ar_html'] = "<a href='%s'>%s</a>" \
                                       % (item['ar_url'], item['ar_id'])
                 ws = an.getBackReferences("WorksheetAnalysis")

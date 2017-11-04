@@ -109,7 +109,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                 # consistent with the order of the ARs
                 catalog = get_tool(CATALOG_ANALYSIS_LISTING)
                 brains = catalog({'UID': analysis_uids,
-                                 'sort_on': 'getRequestID'})
+                                 'sort_on': 'sortable_title'})
                 for brain in brains:
                     analysis = brain.getObject()
                     self.context.addAnalysis(analysis)

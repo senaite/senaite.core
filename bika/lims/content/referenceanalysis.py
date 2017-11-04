@@ -175,7 +175,6 @@ class ReferenceAnalysis(AbstractAnalysis):
     def getCalculationUID(self):
         return None
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
     @security.public
     def workflow_script_submit(self):
         """Method triggered after a 'submit' transition for the current

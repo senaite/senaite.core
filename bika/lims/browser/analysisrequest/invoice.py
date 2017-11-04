@@ -73,7 +73,7 @@ class InvoiceView(BrowserView):
         self.clientSampleId = sample.getClientSampleID()
         self.sampleType = sample.getSampleType().Title()
         self.samplePoint = samplePoint and samplePoint.Title()
-        self.requestId = context.getRequestID()
+        self.requestId = context.getId()
         self.headers = [
             {'title': 'Invoice ID', 'value': self.invoiceId},
             {'title': 'Client Reference',

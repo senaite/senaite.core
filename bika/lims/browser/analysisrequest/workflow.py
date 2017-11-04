@@ -66,7 +66,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         lab_address = "<br/>".join(laboratory.getPrintAddress())
         mime_msg = MIMEMultipart('related')
         mime_msg['Subject'] = t(_("Erroneus result publication from ${request_id}",
-                                mapping={"request_id": ar.getRequestID()}))
+                                mapping={"request_id": ar.getId()}))
         mime_msg['From'] = formataddr(
             (encode_header(laboratory.getName()),
              laboratory.getEmailAddress()))
@@ -92,9 +92,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     to.append(formatted)
         mime_msg['To'] = ','.join(to)
         aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
-                                            ar.getRequestID())
+                                            ar.getId())
         naranchor = "<a href='%s'>%s</a>" % (newar.absolute_url(),
-                                             newar.getRequestID())
+                                             newar.getId())
         addremarks = ('addremarks' in self.request and ar.getRemarks()) and ("<br/><br/>" + _("Additional remarks:") +
                                                                              "<br/>" + ar.getRemarks().split("===")[1].strip() +
                                                                              "<br/><br/>") or ''
@@ -578,7 +578,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.notify_ar_retract(ar, newar)
 
         message = _('${items} invalidated.',
-                    mapping={'items': ar.getRequestID()})
+                    mapping={'items': ar.getId()})
         self.context.plone_utils.addPortalMessage(message, 'warning')
         self.request.response.redirect(newar.absolute_url())
 

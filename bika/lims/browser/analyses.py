@@ -243,25 +243,6 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
-    @deprecated('[1703] Orphan. No alternative')
-    def getAnalysisSpecsStr(self, spec):
-        """
-        Generates a string representation of the specifications passed in. If
-        neither min nor max values found, returns an empty string
-
-        :param spec: specifications dict, with 'min' and 'max' keys
-        :type spec: dict
-        :returns: a string representation of the passed in specs
-        :rtype: string
-        """
-        if spec['min'] and spec['max']:
-            return '%s - %s' % (spec['min'], spec['max'])
-        if spec['min']:
-            return '> %s' % spec['min']
-        if spec['max']:
-            return '< %s' % spec['max']
-        return ''
-
     def get_methods_vocabulary(self, analysis=None):
         """
         Returns a vocabulary with all the methods available for the passed in
