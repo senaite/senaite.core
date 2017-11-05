@@ -419,14 +419,6 @@ class Instrument(ATFolder):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
-    @deprecated('[1702] Orphan. No alternative')
-    def getMethodUID(self):
-        # TODO Avoid using this function. Returns first method's UID for now.
-        if self.getMethods():
-            return self.getMethods()[0].UID()
-        else:
-            return ''
-
     def getMethodUIDs(self):
         uids = []
         if self.getMethods():
