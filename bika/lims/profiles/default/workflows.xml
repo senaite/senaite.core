@@ -6,6 +6,7 @@
   <object name="bika_analysis_workflow" meta_type="Workflow"/>
   <object name="bika_ar_workflow" meta_type="Workflow"/>
   <object name="bika_arimport_workflow" meta_type="Workflow"/>
+  <object name="bika_arimports_workflow" meta_type="Workflow"/>
   <object name="bika_batch_workflow" meta_type="Workflow"/>
   <object name="bika_cancellation_workflow" meta_type="Workflow"/>
   <object name="bika_duplicateanalysis_workflow" meta_type="Workflow"/>
@@ -32,11 +33,6 @@
     <default>
       <bound-workflow workflow_id="plone_workflow"/>
     </default>
-
-    <!-- AR Imports -->
-    <type type_id="ARImports">
-      <bound-workflow workflow_id="bika_arimports_workflow"/>
-    </type>
 
     <!-- AR Import -->
     <type type_id="ARImport">
