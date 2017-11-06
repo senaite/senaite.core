@@ -1608,9 +1608,8 @@ class Analysis_Services(WorksheetImporter):
                 ManualEntryOfResults=allowmanualentry,
                 InstrumentEntryOfResults=allowinstrentry,
                 Instruments=instruments,
-                _Calculation=_calculation,
+                Calculation=_calculation,
                 UseDefaultCalculation=usedefaultcalculation,
-                DeferredCalculation=deferredcalculation,
                 DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(

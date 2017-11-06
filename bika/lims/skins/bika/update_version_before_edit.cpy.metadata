@@ -1,9 +1,0 @@
-[default]
-title = Update Version before Edit
-
-[validators]
-validators =
-
-[actions]
-action.success = traverse_to:string:content_edit
-

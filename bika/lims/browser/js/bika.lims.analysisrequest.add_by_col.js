@@ -1678,7 +1678,7 @@ function AnalysisRequestAddByCol() {
         // select_all
         $(tr).find("input[name='uids:list']").attr('value', uid)
         // alert containers
-        $(tr).find('.alert').attr('uid', uid)
+        $(tr).find('.bika-alert').attr('uid', uid)
         // Replace the text widget with a label, delete btn etc:
         var service_label = $(
           "<a href='#' class='deletebtn'><img src='" + portal_url +

@@ -84,11 +84,13 @@ class ReferenceWidget(StringWidget):
         fieldName = field.getName()
         if fieldName + "_uid" in form:
             uid = form.get(fieldName + "_uid", '')
-            if field.multiValued:
+            if field.multiValued and\
+                    (isinstance(uid, str) or isinstance(uid, unicode)):
                 uid = uid.split(",")
         elif fieldName in form:
             uid = form.get(fieldName, '')
-            if field.multiValued:
+            if field.multiValued and\
+                    (isinstance(uid, str) or isinstance(uid, unicode)):
                 uid = uid.split(",")
         else:
             uid = None

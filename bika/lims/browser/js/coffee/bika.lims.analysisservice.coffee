@@ -282,7 +282,7 @@ window.AnalysisServiceEditView = ->
                             $('#invalid-instruments-alert dd').first().append ', ' + title
                         else
                             errmsg = _('Some of the selected instruments are out-of-date or with failed calibration tests')
-                            html = '<div id=\'invalid-instruments-alert\' class=\'alert\'>' + '<dt>' + errmsg + ':</dt>' + '<dd> <a href=' + instrument_path + '>' + title + '</a></dd>' + '</div>'
+                            html = '<div id=\'invalid-instruments-alert\' class=\'bika-alert\'>' + '<dt>' + errmsg + ':</dt>' + '<dd> <a href=' + instrument_path + '>' + title + '</a></dd>' + '</div>'
                             $('#analysisservice-base-edit').before html
                     return
                 return
@@ -446,7 +446,7 @@ window.AnalysisServiceEditView = ->
             $(instr_chk).prop 'readonly', true
             errmsg = _('No instruments available')
             title = _('Instrument entry of results option not allowed')
-            html = '<div id=\'no-instruments-alert\' class=\'alert\'>' + '<dt>' + errmsg + '</dt>' + '<dd>' + title + '</dd>' + '</div>'
+            html = '<div id=\'no-instruments-alert\' class=\'bika-alert\'>' + '<dt>' + errmsg + '</dt>' + '<dd>' + title + '</dd>' + '</div>'
             $('#analysisservice-base-edit').before html
         # The 'Manual entry of results' value changes
         $(manual_chk).change ->
@@ -612,7 +612,7 @@ window.AnalysisServiceEditView = ->
                                 $('#invalid-instruments-alert dd').first().append ', ' + title
                             else
                                 errmsg = _('Some of the selected instruments are out-of-date or with failed calibration tests')
-                                html = '<div id=\'invalid-instruments-alert\' class=\'alert\'>' + '<dt>' + errmsg + ':</dt>' + '<dd> <a href=' + instrument_path + '>' + title + '</a></dd>' + '</div>'
+                                html = '<div id=\'invalid-instruments-alert\' class=\'bika-alert\'>' + '<dt>' + errmsg + ':</dt>' + '<dd> <a href=' + instrument_path + '>' + title + '</a></dd>' + '</div>'
                                 $('#analysisservice-base-edit').before html
                         return
                 return

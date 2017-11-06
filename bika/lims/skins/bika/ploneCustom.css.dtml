@@ -830,12 +830,14 @@ ul.errors {
     color:#720000;
 }
 
+/* bootstrap handles this now.
 div.alert {
     background-color: #FFDDCC;
     border-left: 4px solid red;
     margin: 10px 0;
     padding: 10px;
 }
+*/
 
 /* ARImport */
 .icons-on .section-arimports .contenttype-folder{

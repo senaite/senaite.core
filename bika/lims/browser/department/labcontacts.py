@@ -42,7 +42,7 @@ class LabContactsView(LabContactsView):
             'title': _('Active'),
             'contentFilter': {'inactive_state': 'active'},
             'transitions': [{'id': 'empty'}, ],  # No transitions here
-            # 'custom_actions': [{'id': 'assign_labcontacts_button',
+            # 'custom_transitions': [{'id': 'assign_labcontacts_button',
             #                     'title': _('Assign')}, ],
             'columns': ['Fullname',
                         'BusinessPhone',

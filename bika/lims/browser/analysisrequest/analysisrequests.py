@@ -227,7 +227,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'republish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -271,7 +271,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'submit'},
                              {'id': 'cancel'},
                             ],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -311,7 +311,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'preserve'},
                              {'id': 'cancel'},
                              ],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -349,7 +349,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'sample'},
                              {'id': 'cancel'},
                              ],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -393,7 +393,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'receive'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -433,7 +433,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'prepublish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -475,7 +475,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'prepublish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -515,7 +515,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'publish'},
                              {'id': 'cancel'},
                              ],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -553,7 +553,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_on': 'Created',
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'republish'}],
-             'custom_actions': [],
+             'custom_transitions': [],
              'columns': ['Priority',
                         'getRequestID',
                         'getSample',
@@ -600,7 +600,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_on': 'Created',
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'reinstate'}],
-             'custom_actions': [],
+             'custom_transitions': [],
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
@@ -636,7 +636,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_on': 'Created',
                                'sort_order': 'reverse'},
              'transitions': [],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -685,7 +685,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'republish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -736,7 +736,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id': 'republish'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -776,7 +776,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_on': 'Created',
                                'sort_order': 'reverse'},
              'transitions': [],
-             'custom_actions': [{
+             'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
@@ -1118,7 +1118,7 @@ class AnalysisRequestsView(BikaListingView):
             #Print button to choose multiple ARs and print them.
             review_states = []
             for review_state in self.review_states:
-                review_state.get('custom_actions', []).extend(
+                review_state.get('custom_transitions', []).extend(
                     [{'id': 'print',
                       'title': _('Print'),
                       'url': 'workflow_action?action=print'}, ])
@@ -1130,7 +1130,7 @@ class AnalysisRequestsView(BikaListingView):
         if self.copy_to_new_allowed:
             review_states = []
             for review_state in self.review_states:
-                review_state.get('custom_actions', []).extend(
+                review_state.get('custom_transitions', []).extend(
                     [{'id': 'copy_to_new',
                       'title': _('Copy to new'),
                       'url': 'workflow_action?action=copy_to_new'}, ])

@@ -151,24 +151,6 @@ def create_analysisrequest(client, request, values, analyses=None,
         for partition in partitions:
             part = partition['object']
             doActionsFor(part, sampleactions)
-    else:
-        # If Preservation is required for some partitions, and the SamplingWorkflow
-        # is disabled, we need to transition to to_be_preserved manually.
-        if not sampling_workflow_enabled:
-            to_be_preserved = []
-            sample_due = []
-            lowest_state = 'sample_due'
-            for p in sample.objectValues('SamplePartition'):
-                if p.getPreservation():
-                    lowest_state = 'to_be_preserved'
-                    to_be_preserved.append(p)
-                else:
-                    sample_due.append(p)
-            for p in to_be_preserved:
-                doActionFor(p, 'to_be_preserved')
-            for p in sample_due:
-                doActionFor(p, 'sample_due')
-            doActionFor(sample, lowest_state)
 
     # Transition pre-preserved partitions
     for p in partitions:
@@ -203,7 +185,7 @@ def get_sample_from_values(context, values):
     return sample
 
 
-def get_services_uids(context=None, analyses_serv=[], values={}):
+def get_services_uids(context=None, analyses_serv=None, values=None):
     """
     This function returns a list of UIDs from analyses services from its
     parameters.
@@ -214,6 +196,11 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     :type values: dict
     :returns: a list of analyses services UIDs
     """
+    if analyses_serv is None:
+        analyses_serv = []
+    if values is None:
+        values = {}
+
     if not context or (not analyses_serv and not values):
         raise RuntimeError(
             "get_services_uids: Missing or wrong parameters.")
@@ -236,7 +223,8 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
                 " profile provided")
     # Add analysis services UIDs from profiles to analyses_services variable.
     for profile_uid in analyses_profiles:
-        # When creating an AR, JS builds a query from selected fields. Although it doesn't set empty values to any
+        # When creating an AR, JS builds a query from selected fields.
+        # Although it doesn't set empty values to any
         # Field, somehow 'Profiles' field can have an empty value in the set.
         # Thus, we should avoid querying by empty UID through 'uid_catalog'.
         if profile_uid:
