@@ -1,12 +1,15 @@
-<tal:comment replace="nothing"> This template also renders an AJAX table-only
-version. use "tal:omit-tag='table_only'" on the elements which should not be
-displayed when ajax requests the table. </tal:comment>
+<tal:comment replace="nothing">
+    This template also renders an AJAX table-only version.
+
+    Use "tal:omit-tag='table_only'" on the elements which should not be
+    displayed when ajax requests the table.
+</tal:comment>
 
 <form name="bika_listing_form" method="post"
     i18n:domain="bika"
     tal:attributes="
         id form_id;
-        action python:view.bika_listing.getPOSTAction();"
+        action python:view.bika_listing.getPOSTAction() if hasattr(view.bika_listing, 'getPOSTAction') else 'workflow_action';"
     tal:omit-tag="table_only"
     tal:define="
         form_id view/bika_listing/form_id;
@@ -81,17 +84,11 @@ displayed when ajax requests the table. </tal:comment>
 <div class='bika-listing-table-container'
     tal:omit-tag="python:table_only">
 
-<tal:comment replace="nothing"> These two hidden fields must be located
+<tal:comment replace="nothing">These two hidden fields must be located
 directly above the table element Some of the javascript relies on this to
 distinguish between data for pages with multiple editable tables.
-XXX This should use form_id </tal:comment>
+</tal:comment>
 
-<!-- <input type="hidden"
-    name="specs"
-    tal:omit-tag="python:table_only"
-    tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
-                                view.bika_listing.json_specs or []"/>
--->
 <input type="hidden"
     id="item_data"
     tal:omit-tag="python:table_only"
@@ -111,11 +108,13 @@ XXX This should use form_id </tal:comment>
 
     <thead tal:condition="python:not rows_only">
 
-    <tr style="border:none !important;">
-<tal:comment replace="nothing">***************
-Workflow review state selector
-********************************</tal:comment>
-    <td tal:attributes="colspan python:nr_cols" class="listing-filter-row">
+        <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
+          <tal:comment replace="nothing">
+            ********************************
+            Workflow review state selector
+            ********************************
+          </tal:comment>
+        <td tal:attributes="colspan python:nr_cols" class="listing-filter-row">
         <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
         <!-- Filter bar -->
         <tal:filter-bar
@@ -151,9 +150,11 @@ Workflow review state selector
                     </li>
                 </ul>
             </td>
-<tal:comment replace="nothing">***************
-filter search
-********************************</tal:comment>
+            <tal:comment replace="nothing">
+              ********************************
+              Filter search
+              ********************************
+            </tal:comment>
             <td class="filter noborder" style="text-align:right;whitespace:nowrap;padding:0 0 0 5px;width: 160px;">
                 <tal:filters_enabled
                     tal:define="term python:request.get(form_id+'_filter', '');"
@@ -218,7 +219,11 @@ Colum Headers
         tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch);
                 restricted_cats python:view.bika_listing.restricted_cats(view.batch)">
 
-        <tal:comment replace="nothing">*************** TR - Table data rows start here ********************************</tal:comment>
+        <tal:comment replace="nothing">
+          *******************************
+          TR - Table data rows start here
+          *******************************
+        </tal:comment>
 
         <tal:cats tal:repeat="cat python: view.bika_listing.categories+['None', ] if view.bika_listing.categories else ['None', ]">
             <tal:show_this_category tal:condition="python: cat not in restricted_cats">
@@ -246,9 +251,9 @@ Colum Headers
     tal:condition="python:(view.batch.multiple_pages and not view.show_all) or (view.bika_listing.show_workflow_action_buttons) or view.bika_listing.show_more">
 <table style="margin:0" width="100%">
     <tr class="noborder" tal:condition="python:len(view.batch) > 0">
-<tal:comment replace="nothing">***************
-Workflow Actions
-********************************</tal:comment>
+        <tal:comment replace="nothing">***************
+        Workflow Actions
+        ********************************</tal:comment>
         <td class="workflow_actions">
             <input type="hidden" id="restricted_transitions"
                 tal:condition="view/bika_listing/show_workflow_action_buttons"
@@ -256,15 +261,15 @@ Workflow Actions
             <input type="hidden" id="hide_transitions"
                 tal:condition="view/bika_listing/show_workflow_action_buttons"
                 tal:attributes="value python:','.join(view.bika_listing.review_state.get('hide_transitions',[]))"/>
-            <tal:custom_actions condition="view/bika_listing/show_workflow_action_buttons">
-                <tal:customaction repeat="caction python: view.bika_listing.review_state.get('custom_actions',[])">
-                    <input type="hidden" class="custom_action"
+            <tal:custom_transitions condition="view/bika_listing/show_workflow_action_buttons">
+                <tal:customaction repeat="caction python: view.bika_listing.review_state.get('custom_transitions',[])">
+                    <input type="hidden" class="custom_transition"
                         tal:condition="python:caction.get('id', '')"
                         tal:attributes="value caction/id;
                                         title python:caction.get('title', caction.get('id'));
                                         url python:caction.get('url','')"/>
                 </tal:customaction>
-            </tal:custom_actions>
+            </tal:custom_transitions>
             <span class="workflow_action_buttons"
                 tal:condition="view/bika_listing/show_workflow_action_buttons">
             </span>

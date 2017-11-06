@@ -50,6 +50,7 @@
                     left: <input class='option-margin' id="margin-left" type="text"/>
                 </div>
                 <div class='options-line'>
+                    <input type="checkbox" name="landscape" id='landscape' value="0"><span i18n:translate="">Landscape</span><br/>
                     <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
                     <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
                 </div>
@@ -74,7 +75,9 @@
             html, body { margin: 0; }
             html { background-color:#cdcdcd; }
             body.A4 #ar_publish_container { width: 210mm; }
+            body.A4.landscape #ar_publish_container { width: 297mm; }
             body.letter #ar_publish_container { width: 216mm; }
+            body.letter.landscape #ar_publish_container { width: 279mm; }
             #report {
                 background-color:#ffffff;
             }

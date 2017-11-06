@@ -9,6 +9,10 @@
 """
 import types
 
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+
 from AccessControl import ClassSecurityInfo
 
 from Products.Archetypes import atapi
@@ -127,7 +131,7 @@ class Contact(Person):
         user = api.user.get(userid=username)
         return user
 
-    security.declareProtected(ManageClients, 'getUser')
+    security.declareProtected(ManageClients, 'setUser')
     def setUser(self, user_or_username):
         """Link the user to the Contact
 
@@ -201,6 +205,9 @@ class Contact(Person):
     def getParentUID(self):
         return self.aq_parent.UID()
 
+    def getParent(self):
+        return aq_parent(aq_inner(self))
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -223,7 +230,7 @@ class Contact(Person):
         # User is linked to multiple other contacts (fix in Data)
         if isinstance(contact, list):
             raise ValueError("User '{}' is linked to multiple Contacts: '{}'".format(
-                username, ",".join(map(lambda x: x.Title(), contact)))) 
+                username, ",".join(map(lambda x: x.Title(), contact))))
 
         # XXX: Does it make sense to "remember" the UID as a User property?
         tool = user.getTool()
@@ -237,15 +244,23 @@ class Contact(Person):
         uid = self.UID()
         user.setMemberProperties({KEY: uid})
         logger.info("Linked Contact UID {} to User {}".format(
-            user.getProperty(KEY), user.getId()))
+            user.getProperty(KEY), username))
 
         # Set the Username
         self.setUsername(user.getId())
+
         # Update the Email address from the user
         self.setEmailAddress(user.getProperty("email"))
 
+        # Grant local Owner role
+        self._addLocalOwnerRole(username)
+
+        # Add user to "Clients" group
+        self._addUserToGroup(username, group="Clients")
+
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
+
         return True
 
     security.declarePrivate('_unlinkUser')
@@ -260,18 +275,63 @@ class Contact(Person):
             return False
 
         user = self.getUser()
+        username = user.getId()
 
         # Unset the UID from the User Property
         user.setMemberProperties({KEY: ""})
         logger.info("Unlinked Contact UID from User {}".format(user.getProperty(KEY, "")))
+
         # Unset the Username
         self.setUsername(None)
+
         # Unset the Email
         self.setEmailAddress(None)
+
+        # Revoke local Owner role
+        self._delLocalOwnerRole(username)
+
+        # Remove user from "Clients" group
+        self._delUserFromGroup(username, group="Clients")
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
         return True
+
+    security.declarePrivate('_addUserToGroup')
+    def _addUserToGroup(self, username, group="Clients"):
+        """Add user to the goup
+        """
+        portal_groups = api.portal.get_tool("portal_groups")
+        group = portal_groups.getGroupById('Clients')
+        group.addMember(username)
+
+    security.declarePrivate('_delUserFromGroup')
+    def _delUserFromGroup(self, username, group="Clients"):
+        """Remove user from the group
+        """
+        portal_groups = api.portal.get_tool("portal_groups")
+        group = portal_groups.getGroupById(group)
+        group.removeMember(username)
+
+    security.declarePrivate('_addLocalOwnerRole')
+    def _addLocalOwnerRole(self, username):
+        """Add local owner role from parent object
+        """
+        parent = self.getParent()
+        if parent.portal_type == 'Client':
+            parent.manage_setLocalRoles(username, ['Owner', ])
+            if hasattr(parent, 'reindexObjectSecurity'):
+                parent.reindexObjectSecurity()
+
+    security.declarePrivate('_delLocalOwnerRole')
+    def _delLocalOwnerRole(self, username):
+        """Remove local owner role from parent object
+        """
+        parent = self.getParent()
+        if parent.portal_type == 'Client':
+            parent.manage_delLocalRoles([ username ])
+            if hasattr(parent, 'reindexObjectSecurity'):
+                parent.reindexObjectSecurity()
 
 atapi.registerType(Contact, PROJECTNAME)

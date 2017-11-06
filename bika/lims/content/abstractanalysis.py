@@ -49,15 +49,6 @@ AnalysisService = UIDReferenceField(
     'AnalysisService'
 )
 
-# Overrides the AbstractBaseAnalysis. Analyses have a versioned link to the
-# calculation as it was when created.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
-)
-
 # Attachments which are added manually in the UI, or automatically when
 # results are imported from a file supplied by an instrument.
 Attachment = UIDReferenceField(
@@ -142,8 +133,6 @@ schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
     Attachment,
-    # Calculation overrides AbstractBaseClass
-    Calculation,
     DateAnalysisPublished,
     DetectionLimitOperand,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
@@ -190,12 +179,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             self.setVerificators(username)
         else:
             self.setVerificators(verificators + "," + username)
+        self.reindexObject()
 
     @security.public
     def deleteLastVerificator(self):
         verificators = self.getVerificators().split(',')
         del verificators[-1]
         self.setVerificators(",".join(verificators))
+        self.reindexObject()
 
     @security.public
     def wasVerifiedByUser(self, username):
@@ -205,6 +196,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
+
+    @security.public
+    def setVerificator(self, value):
+        field = self.Schema().getField('Verificators')
+        field.set(self, value)
+        self.reindexObject()
 
     @deprecated('[1705] Use Title() instead.')
     @security.public
@@ -560,14 +557,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                             'math': math,
                             'context': self},
                            {'mapping': mapping})
-            result = eval(formula)
+            result = eval(formula, calc._getGlobals())
         except TypeError:
             self.setResult("NA")
             return True
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
-        except KeyError:
+        except KeyError as e:
+            self.setResult("NA")
+            return True
+        except ImportError as e:
             self.setResult("NA")
             return True
 
@@ -957,14 +957,27 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         - If neither Manual Uncertainty nor Calculate Precision from
           Uncertainty are set, returns the precision from the Analysis Service
 
+        - If you have a number with zero uncertainty: If you roll a pair of
+        dice and observe five spots, the number of spots is 5. This is a raw
+        data point, with no uncertainty whatsoever. So just write down the
+        number. Similarly, the number of centimeters per inch is 2.54,
+        by definition, with no uncertainty whatsoever. Again: just write
+        down the number.
+
         Further information at AbstractBaseAnalysis.getPrecision()
         """
         allow_manual = self.getAllowManualUncertainty()
         precision_unc = self.getPrecisionFromUncertainty()
         if allow_manual or precision_unc:
             uncertainty = self.getUncertainty(result)
+            if uncertainty is None:
+                return self.getField('Precision').get(self)
+            if uncertainty == 0 and result is None:
+                return self.getField('Precision').get(self)
             if uncertainty == 0:
-                return 1
+                strres = str(result)
+                numdecimals = strres[::-1].find('.')
+                return numdecimals
             return get_significant_digits(uncertainty)
         return self.getField('Precision').get(self)
 

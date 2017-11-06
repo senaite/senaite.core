@@ -3,16 +3,13 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims import logger
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
-from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-import unittest
+from plone.app.testing import login
+from plone.app.testing import setRoles
+from bika.lims.workflow import doActionFor
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from bika.lims.tests.base import BikaFunctionalTestCase
 
 try:
     import unittest2 as unittest
@@ -21,10 +18,12 @@ except ImportError: # Python 2.7
 
 
 class TestCalculations(BikaFunctionalTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(TestCalculations, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
         # Calculation: Total Hardness
@@ -35,8 +34,8 @@ class TestCalculations(BikaFunctionalTestCase):
         # Service with calculation: Tot. Hardness (THCaCO3)
         servs = self.portal.bika_setup.bika_analysisservices
         self.calcservice = [servs[k] for k in servs if servs[k].title=='Tot. Hardness (THCaCO3)'][0]
+        self.assertEqual(self.calcservice.getCalculation(), self.calculation)
         self.calcservice.setUseDefaultCalculation(False)
-        self.calcservice.setDeferredCalculation(self.calculation)
 
         # Analysis Services: Ca and Mg
         self.services = [servs[k] for k in servs if servs[k].getKeyword() in ('Ca', 'Mg')]
@@ -270,6 +269,23 @@ class TestCalculations(BikaFunctionalTestCase):
                     },
                 ],
             },
+            {'formula': '([Ca]/[Mg])+0.000001',
+             'analyses': {'Ca': '1', 'Mg': '20'},
+             'interims': {},
+             'test_fixed_precision': [
+                 {'fixed_precision': 6,
+                  'expected_result': '0.050001',
+                  },
+             ],
+             'test_uncertainties_precision': [
+                 {'uncertainties': [
+                     {'intercept_min': 0, 'intercept_max': 0.09,
+                      'errorvalue': 0},
+                 ],
+                     'expected_result': '0.050001'
+                 },
+             ],
+             },
 
         ]
 
@@ -292,7 +308,7 @@ class TestCalculations(BikaFunctionalTestCase):
         # SampleType:   Apple Pulp
         # Contact:      Rita Mohale
         # Analyses:     [Calcium, Mg, Total Hardness]
-
+        from bika.lims.utils.analysisrequest import create_analysisrequest
         for f in self.formulas:
             # Set custom calculation
             self.calculation.setFormula(f['formula'])
@@ -301,7 +317,7 @@ class TestCalculations(BikaFunctionalTestCase):
             for k,v in f['interims'].items():
                 interims.append({'keyword': k, 'title':k, 'value': v,
                                  'hidden': False, 'type': 'int',
-                                 'unit': ''});
+                                 'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
 
@@ -315,9 +331,7 @@ class TestCalculations(BikaFunctionalTestCase):
             request = {}
             services = [s.UID() for s in self.services] + [self.calcservice.UID()]
             ar = create_analysisrequest(client, request, values, services)
-            wf = getToolByName(ar, 'portal_workflow')
-            wf.doActionFor(ar, 'receive')
-
+            doActionFor(ar, 'receive')
             # Set results and interims
             calcanalysis = None
             for an in ar.getAnalyses():
@@ -329,7 +343,7 @@ class TestCalculations(BikaFunctionalTestCase):
                         or an.isUpperDetectionLimit():
                         operator = an.getDetectionLimitOperand()
                         strres = f['analyses'][key].replace(operator, '')
-                        self.assertEqual(an.getResult(), str(float(strres)))
+                        self.assertEqual(an.getResult(), strres)
                     else:
                         self.assertEqual(an.getResult(), f['analyses'][key])
                 elif key == self.calcservice.getKeyword():
@@ -353,7 +367,10 @@ class TestCalculations(BikaFunctionalTestCase):
                 self.assertEqual(an.getInterimFields(), intermap)
 
             # Let's go.. calculate and check result
-            calcanalysis.calculateResult(True, True)
+            success = calcanalysis.calculateResult(True, True)
+            self.assertTrue(success, True)
+            self.assertNotEqual(calcanalysis.getResult(), '',
+                'getResult returns an empty string')
             self.assertEqual(float(calcanalysis.getResult()), float(f['exresult']))
 
     def test_calculation_fixed_precision(self):
@@ -362,6 +379,7 @@ class TestCalculations(BikaFunctionalTestCase):
         # SampleType:   Apple Pulp
         # Contact:      Rita Mohale
         # Analyses:     [Calcium, Mg, Total Hardness]
+        from bika.lims.utils.analysisrequest import create_analysisrequest
         for f in self.formulas_precision:
             self.calculation.setFormula(f['formula'])
             self.assertEqual(self.calculation.getFormula(), f['formula'])
@@ -388,8 +406,7 @@ class TestCalculations(BikaFunctionalTestCase):
                 request = {}
                 services = [s.UID() for s in self.services] + [self.calcservice.UID()]
                 ar = create_analysisrequest(client, request, values, services)
-                wf = getToolByName(ar, 'portal_workflow')
-                wf.doActionFor(ar, 'receive')
+                doActionFor(ar, 'receive')
 
                 # Set results and interims
                 calcanalysis = None
@@ -436,6 +453,7 @@ class TestCalculations(BikaFunctionalTestCase):
         # SampleType:   Apple Pulp
         # Contact:      Rita Mohale
         # Analyses:     [Calcium, Mg, Total Hardness]
+        from bika.lims.utils.analysisrequest import create_analysisrequest
         for f in self.formulas_precision:
             self.calculation.setFormula(f['formula'])
             self.assertEqual(self.calculation.getFormula(), f['formula'])
@@ -464,8 +482,7 @@ class TestCalculations(BikaFunctionalTestCase):
                 request = {}
                 services = [s.UID() for s in self.services] + [self.calcservice.UID()]
                 ar = create_analysisrequest(client, request, values, services)
-                wf = getToolByName(ar, 'portal_workflow')
-                wf.doActionFor(ar, 'receive')
+                doActionFor(ar, 'receive')
 
                 # Set results and interims
                 calcanalysis = None
@@ -503,11 +520,15 @@ class TestCalculations(BikaFunctionalTestCase):
                     self.assertEqual(an.getInterimFields(), intermap)
 
                 # Let's go.. calculate and check result
-                calcanalysis.calculateResult(True, True)
-                self.assertEqual(calcanalysis.getFormattedResult(), case['expected_result'])
+                success = calcanalysis.calculateResult(True, True)
+                self.assertTrue(success, True)
+                self.assertEqual(
+                    calcanalysis.getFormattedResult(),
+                    case['expected_result'])
+
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestCalculations))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

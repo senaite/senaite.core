@@ -19,6 +19,7 @@ from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
 CATALOG_ANALYSIS_LISTING = 'bika_analysis_catalog'
 # Defining the indexes for this catalog
 _indexes_dict = {
+    'sortable_title': 'FieldIndex',
     'worksheetanalysis_review_state': 'FieldIndex',
     'cancellation_state': 'FieldIndex',
     'getParentUID': 'FieldIndex',
@@ -68,7 +69,7 @@ _columns_list = [
     'getClientURL',
     'getAnalysisRequestTitle',
     'getResult',
-    'getCalculation',
+    'getCalculationUID',
     'getUnit',
     'getKeyword',
     'getCategoryTitle',

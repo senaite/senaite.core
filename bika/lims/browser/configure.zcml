@@ -37,25 +37,25 @@
   <include file="supplier.zcml"/>
   <include file="supplyorder.zcml"/>
   <include file="supplyorderfolder.zcml"/>
-  <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
   <include file="worksheettemplate.zcml"/>
 
+  <include package=".aggregatedanalyses"/>
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
+  <include package=".dashboard"/>
   <include package=".department"/>
+  <include package=".resultsimport"/>
+  <include package=".sample"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
-  <include package=".sample"/>
+  <include package=".viewlets"/>
   <include package=".worksheet"/>
-  <include package=".dashboard"/>
-  <include package=".resultsimport"/>
-  <include package=".aggregatedanalyses"/>
 
   <include package=".fields"/>
-  <include package=".widgets"/>
   <include package=".reports"/>
+  <include package=".widgets"/>
 
   <browser:page
       for="*"

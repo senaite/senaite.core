@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="59cm" height="70cm" viewBox="39 58 1167 1397" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="496" y="310" width="138.05" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="496" y="310" width="138.05" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="565.025" y="331.9">
+      <tspan x="565.025" y="331.9">sample_registered</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="670.6" y="435" width="116.4" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="670.6" y="435" width="116.4" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="728.8" y="456.9">
+      <tspan x="728.8" y="456.9">to_be_sampled</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="654" y="565" width="150.4" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="654" y="565" width="150.4" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="729.2" y="586.9">
+      <tspan x="729.2" y="586.9">scheduled_sampling</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="358" y="649" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="358" y="649" width="80" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="398" y="670.9">
+      <tspan x="398" y="670.9">sampled</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="41" y="771" width="126.15" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="41" y="771" width="126.15" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="104.075" y="792.9">
+      <tspan x="104.075" y="792.9">to_be_preserved</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="335" y="886" width="127.95" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="335" y="886" width="127.95" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="398.975" y="907.9">
+      <tspan x="398.975" y="907.9">sample_received</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="350" y="772" width="97.1" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="350" y="772" width="97.1" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="398.55" y="793.9">
+      <tspan x="398.55" y="793.9">sample_due</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="186" y="1139" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="186" y="1139" width="80" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="226" y="1160.9">
+      <tspan x="226" y="1160.9">expired</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="186" y="1285" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="186" y="1285" width="80" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="226" y="1306.9">
+      <tspan x="226" y="1306.9">disposed</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="865" y="886" width="102.1" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="865" y="886" width="102.1" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="916.05" y="907.9">
+      <tspan x="916.05" y="907.9">sample_prep</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1082" y="1058" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1082" y="1058" width="80" height="36" rx="10" ry="10"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1122" y="1079.9">
+      <tspan x="1122" y="1079.9">rejected</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="226,1175 226,1244 226,1244 226,1279.57 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="221,1271.81 226,1281.81 231,1271.81 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="226" y="1233.25">dispose</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="335,904 335,904 226,904 226,1134.53 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="221,1126.76 226,1136.76 231,1126.76 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="269" y="890.75">expire</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="565.024,346 565.024,402 398,402 398,643.531 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="393,635.767 398,645.767 403,635.767 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="469" y="393.5">no_sampling_workflow</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="167.15,789 167.15,790 345.528,790 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="337.764,795 347.764,790 337.764,785 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="254" y="780">preserve</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="398.55,808.986 398.55,868 398.976,868 398.975,880.526 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="393.975,872.762 398.975,882.762 403.975,872.762 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="399" y="836">receive</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="670.6,453 670.6,456 398,456 398,644.528 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="393,636.764 398,646.764 403,636.764 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="541" y="445.5">sample</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="728.8,471 728.8,542 729.2,542 729.2,559.529 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="724.2,551.765 729.2,561.765 734.2,551.765 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="728" y="514.5">schedule_sampling</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="398,685 398,760 398.55,760 398.55,766.529 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="393.55,758.765 398.55,768.765 403.55,758.765 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="388.276" y="730">sample_due</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="565.025,346.97 565.025,402 728.8,402 728.8,429.54 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="723.8,421.776 728.8,431.776 733.8,421.776 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="663" y="393.5">sampling_workflow</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="358,667 358,667 104.075,667 104.075,766.528 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="99.075,758.764 104.075,768.764 109.075,758.764 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="235.462" y="651">to_be_preserved</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="398.976,922 398.976,985 916.05,985 916.05,927.466 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="921.05,935.23 916.05,925.23 911.05,935.23 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="661" y="969.25">sample_prep</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="865,904 865,904 467.422,904 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="475.186,899 465.186,904 475.186,909 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="666" y="890.75">sample_prep_complete</text>
+  </g>
+  <ellipse style="fill: #000000" cx="565.102" cy="250" rx="10" ry="10"/>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="565.102,260 565.102,284.495 565.025,284.495 565.025,304.519 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="560.025,296.755 565.025,306.755 570.025,296.755 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="654,583 654,584 398,584 398,644.528 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="393,636.764 398,646.764 403,636.764 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="542" y="570.5">sample</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="438,667 438,667 1122,667 1122,1053.53 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1117,1045.76 1122,1055.76 1127,1045.76 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="779" y="655.5">reject</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="804.4,583 804.4,583 1122,583 1122,1053.53 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1117,1045.76 1122,1055.76 1127,1045.76 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="956" y="569.5">reject</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="787,453 787,454 1122,454 1122,1052.53 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1117,1044.76 1122,1054.76 1127,1044.76 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="955" y="444.5">reject</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="104.075,807 104.075,1364 1122,1364 1122,1098.47 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1127,1106.24 1122,1096.24 1117,1106.24 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="616" y="1349.25">reject</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="398.976,922 398.976,1076 1077.53,1076 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1069.76,1081 1079.76,1076 1069.76,1071 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="780" y="1065.75">reject</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="447.1,790 447.1,790 1122,790 1122,1053.53 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1117,1045.76 1122,1055.76 1127,1045.76 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="781" y="779.5">reject</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="266,1157 266,1157 1122,1157 1122,1098.47 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1127,1106.24 1122,1096.24 1117,1106.24 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="700" y="1149.25">reject</text>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="186.5" y="1787.75">
+    <tspan x="186.5" y="1787.75"></tspan>
+  </text>
+  <text font-size="25.4" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:700" x="95.252" y="82.25">
+    <tspan x="95.252" y="82.25">bika_sample_workflow</tspan>
+  </text>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="99.252" y="125.25">
+    <tspan x="99.252" y="125.25">Applies to</tspan>
+    <tspan x="99.252" y="146.417">- bika.lims.content.Sample</tspan>
+    <tspan x="99.252" y="167.583">- bika.lims.content.SamplePartition</tspan>
+  </text>
+  <text font-size="13.5467" style="fill: #0000ff;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:700" x="967.1" y="886">
+    <tspan x="967.1" y="886">1</tspan>
+  </text>
+  <text font-size="13.5467" style="fill: #0000ff;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:700" x="103" y="1436.25">
+    <tspan x="103" y="1436.25">1</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="123" y="1436.25">
+    <tspan x="123" y="1436.25">When an object reaches the 'sample_prep' state, a custom user workflow for sample preparation is attached to the workflow chain. The transition</tspan>
+    <tspan x="123" y="1452.25">'sample_prep_complete' will only be available once the last state from the preparation workflow is reached.</tspan>
+  </text>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1162,1076 1192,1076 1192,1303 270.472,1303 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="278.236,1298 268.236,1303 278.236,1308 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1182" y="1159.5">dispose</text>
+  </g>
+</svg>

@@ -44,7 +44,7 @@ class AnalysesView(BikaListingView):
         self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'created'
+        self.contentFilter['sort_on'] = 'sortable_title'
         self.contentFilter['sort_order'] = 'ascending'
         self.sort_order = 'ascending'
         self.context_actions = {}
@@ -82,6 +82,7 @@ class AnalysesView(BikaListingView):
             'Service': {
                 'title': _('Analysis'),
                 'attr': 'Title',
+                'index': 'sortable_title',
                 'sortable': False},
             'Partition': {
                 'title': _("Partition"),
@@ -458,7 +459,7 @@ class AnalysesView(BikaListingView):
         item['class']['retested'] = 'center'
         item['result_captured'] = self.ulocalized_time(
             obj.getResultCaptureDate, long_format=0)
-        item['calculation'] = obj.getCalculation and True or False
+        item['calculation'] = obj.getCalculationUID and True or False
         if obj.meta_type == "ReferenceAnalysis":
             item['DueDate'] = self.ulocalized_time(
                 obj.getExpiryDate, long_format=0)

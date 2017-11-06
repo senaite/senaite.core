@@ -10,7 +10,7 @@ import json
 
 
 SKIP_VALIDATION_FIELDTYPES = (
-    'image', 'file', 'datetime', 'reference', 'uidreference')
+    'image', 'file', 'datetime', 'reference', 'uidreference', 'proxy')
 
 class InlineValidationView(_IVV):
 

@@ -7,7 +7,9 @@
 <div metal:define-macro="portlet"
      tal:define="portal_state context/@@plone_portal_state;
                  portal_url portal_state/portal_url;
-                 plone_view context/@@plone;">
+                 anonymous portal_state/anonymous;
+                 plone_view context/@@plone;"
+     tal:condition="python: not anonymous">
 
     <div class="portlet" id="portlet-accreditation"
         tal:condition="python:context.bika_setup.laboratory.LaboratoryAccredited"

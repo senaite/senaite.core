@@ -1,30 +1,29 @@
-import json
-import plone
 import datetime
+import json
+import traceback
 from datetime import date
+
+import plone
+from Products.Archetypes import PloneMessageFactory as PMF
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from collective.taskqueue.interfaces import ITaskQueue
+from plone.app.layout.globals.interfaces import IViewView
+from zope.component import getAdapter
+from zope.component import queryUtility
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.controlpanel.bika_analysisservices import \
     AnalysisServicesView as ASV
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.utils import t
-from bika.lims.utils.analysisrequest import create_analysisrequest as crar
-from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import PloneMessageFactory as PMF
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from zope.component import getAdapter
-from zope.interface import implements
-from collective.taskqueue.interfaces import ITaskQueue
-from zope.component import queryUtility
-import transaction
-import traceback
 
 
 class AnalysisServicesView(ASV):
@@ -524,6 +523,8 @@ class AnalysisRequestSubmit(AbstractAnalysisRequestSubmit):
         portal_catalog = getToolByName(self.context, 'portal_catalog')
         ARs = []
         new_ar_uids = []
+        from bika.lims.utils.analysisrequest import \
+            create_analysisrequest as crar
         for arnum, state in self.valid_states.items():
             # Create the Analysis Request
             ar = crar(
@@ -586,10 +587,3 @@ class AsyncAnalysisRequestSubmit(AnalysisRequestSubmit):
             msg = _('One job added to the Analysis Request creation queue')
             self.context.plone_utils.addPortalMessage(msg, 'info')
             return json.dumps({'success': 'With taskqueue'})
-
-
-@deprecated(comment="[160525] bika.lims.browser.analysisrequest.add."
-                    "create_analysisrequest is deprecated and will be removed "
-                    "in Bika LIMS 3.3", replacement=crar)
-def create_analysisrequest(context, request, values):
-    return crar(context, request, values)
