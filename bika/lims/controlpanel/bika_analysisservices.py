@@ -236,7 +236,7 @@ class AnalysisServicesView(BikaListingView):
                 'title': _('Sort Key'),
                 'attr': 'getSortKey',
                 'sortable': False,
-                'toggle': False
+                'toggle': True
             },
         }
 
