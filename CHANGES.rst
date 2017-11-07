@@ -25,6 +25,7 @@ Changelog
 
 **Fixed**
 
+- #358 Add "Methods" column and hide unused columns in AS sort list
 - #343 Fix publication preferences for CC Contacts
 - #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
 - #330 Show action buttons when sorting by column in listings
