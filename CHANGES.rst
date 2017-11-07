@@ -64,6 +64,7 @@ Changelog
 - #345 'SearchableText' field and adapter in Batches.
 - #348 Add Attachment objects to portal_catalog, to allow idserver to function correctly.
 - #352 Fix traceback on listings
+- #364 Error on Manage Results view while Adding new Analyses from different Category
 
 
 1.0.0 (2017-10-13)
