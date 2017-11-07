@@ -185,7 +185,7 @@ class AnalysisServicesView(BikaListingView):
                 'attr': 'getMethod.Title',
                 'replace_url': 'getMethod.absolute_url',
                 'sortable': not self.do_cats,
-                'toggle': False
+                'toggle': True
             },
             'Department': {
                 'title': _('Department'),
@@ -223,13 +223,13 @@ class AnalysisServicesView(BikaListingView):
             'CommercialID': {
                 'title': _('Commercial ID'),
                 'attr': 'getCommercialID',
-                'toggle': True,
+                'toggle': False,
                 'sortable': not self.do_cats,
             },
             'ProtocolID': {
                 'title': _('Protocol ID'),
                 'attr': 'getProtocolID',
-                'toggle': True,
+                'toggle': False,
                 'sortable': not self.do_cats,
             },
             'SortKey': {
