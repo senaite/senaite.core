@@ -502,6 +502,21 @@ class AnalysisRequestPublishView(BrowserView):
                            'email': cc.getEmailAddress(),
                            'pubpref': cc.getPublicationPreference()})
 
+        # CC Emails
+        # https://github.com/senaite/bika.lims/issues/361
+        plone_utils = getToolByName(self.context, "plone_utils")
+        ccemails = map(lambda x: x.strip(), ar.getCCEmails().split(","))
+        for ccemail in ccemails:
+            # Better do that with a field validator
+            if not plone_utils.validateSingleEmailAddress(ccemail):
+                logger.warn(
+                    "Skipping invalid email address '{}'".format(ccemail))
+                continue
+            recips.append({
+                'title': ccemail,
+                'email': ccemail,
+                'pubpref': ('email', 'pdf',), })
+
         return recips
 
     def get_mail_subject(self, ar):

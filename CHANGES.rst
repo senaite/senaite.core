@@ -25,6 +25,7 @@ Changelog
 
 **Fixed**
 
+- #363 Fix AR's CCEmails are nowhere to send Emails out of the LIMS
 - #343 Fix publication preferences for CC Contacts
 - #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
 - #330 Show action buttons when sorting by column in listings
