@@ -238,6 +238,9 @@
       $(checked).each(function(e) {
         var transitions;
         transitions = $.parseJSON($(this).attr('data-valid_transitions'));
+        if (!transitions.length) {
+          return;
+        }
         if (restricted_transitions.length > 0) {
           transitions = transitions.filter(function(el) {
             return restricted_transitions.indexOf(el.id) > -1;
