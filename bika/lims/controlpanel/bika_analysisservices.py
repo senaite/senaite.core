@@ -343,8 +343,6 @@ class AnalysisServicesView(BikaListingView):
         item['Price'] = "%s.%02d" % obj.Price
 
         # Fill Methods column
-        item['Methods'] = ''
-        # if IAnalysisService.providedBy(obj):
         methods = obj.getMethods()
         m_dict = {method.Title(): method.absolute_url() for method in methods}
         m_titles = sorted(m_dict.keys())
