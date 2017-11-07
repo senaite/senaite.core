@@ -65,6 +65,7 @@ Changelog
 - #345 'SearchableText' field and adapter in Batches.
 - #348 Add Attachment objects to portal_catalog, to allow idserver to function correctly.
 - #352 Fix traceback on listings
+- #358 Merged updates for AR Add2
 
 
 1.0.0 (2017-10-13)
