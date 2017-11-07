@@ -192,11 +192,6 @@ class AnalysisServicesView(BikaListingView):
                 'attr': 'getDepartment.Title',
                 'sortable': not self.do_cats,
             },
-            'Instrument': {
-                'title': _('Instrument'),
-                'toggle': False,
-                'sortable': not self.do_cats,
-            },
             'Unit': {
                 'title': _('Unit'),
                 'attr': 'getUnit',
@@ -251,7 +246,6 @@ class AnalysisServicesView(BikaListingView):
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -274,7 +268,6 @@ class AnalysisServicesView(BikaListingView):
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -296,7 +289,6 @@ class AnalysisServicesView(BikaListingView):
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -353,12 +345,6 @@ class AnalysisServicesView(BikaListingView):
             item['category'] = cat
             if (cat, cat_order) not in self.categories:
                 self.categories.append((cat, cat_order))
-
-        instrument = obj.getInstrument()
-        item['Instrument'] = instrument.Title() if instrument else ''
-        if instrument:
-            item['replace']['Instrument'] = "<a href='%s'>%s</a>" % (
-                instrument.absolute_url() + "/edit", instrument.Title())
 
         calculation = obj.getCalculation()
         item['Calculation'] = calculation.Title() if calculation else ''
