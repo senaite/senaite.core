@@ -52,6 +52,8 @@ class UIDReferenceField(StringField):
         :return: Returns a Content object.
         :rtype: BaseContent
         """
+        if not value:
+            return None
         obj = _get_object(context, value)
         if obj is None:
             logger.error(
