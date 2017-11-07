@@ -59,7 +59,7 @@ def set_client_permissions(instance, roles):
         portal_type='Client',
         sort_limit=1)
 
-    if client_permissions_changed(client_chk[0], roles):
+    if client_chk and client_permissions_changed(client_chk[0], roles):
         clients = catalog(portal_type='Client')
         total = len(clients)
         counter = 0
