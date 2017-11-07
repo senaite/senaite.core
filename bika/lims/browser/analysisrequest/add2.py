@@ -93,7 +93,6 @@ class AnalysisRequestAddView(BrowserView):
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
-
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
@@ -333,6 +332,25 @@ class AnalysisRequestAddView(BrowserView):
             return parent
         return None
 
+    def get_parent_ar(self, ar):
+        """Returns the parent AR
+        """
+        parent = ar.getParentAnalysisRequest()
+
+        # Return immediately if we have no parent
+        if parent is None:
+            return None
+
+        # Walk back the chain until we reach the source AR
+        while True:
+            pparent = parent.getParentAnalysisRequest()
+            if pparent is None:
+                break
+            # remember the new parent
+            parent = pparent
+
+        return parent
+
     def generate_fieldvalues(self, count=1):
         """Returns a mapping of '<fieldname>-<count>' to the default value
         of the field or the field value of the source AR
@@ -349,12 +367,16 @@ class AnalysisRequestAddView(BrowserView):
         # generate fields for all requested ARs
         for arnum in range(count):
             source = copy_from.get(arnum)
+            parent = None
+            if source is not None:
+                parent = self.get_parent_ar(source)
             for field in fields:
                 value = None
                 fieldname = field.getName()
                 if source and fieldname not in SKIP_FIELD_ON_COPY:
                     # get the field value stored on the source
-                    value = self.get_field_value(field, source)
+                    context = parent or source
+                    value = self.get_field_value(field, context)
                 else:
                     # get the default value of this field
                     value = self.get_default_value(field, ar_context)
@@ -1662,9 +1684,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             if record.get("Client", False):
                 required_fields.pop('Client', None)
 
+            # Contacts get pre-filled out if only one contact exists.
+            # We won't force those columns with only the Contact filled out to be required.
+            contact = required_fields.pop("Contact", None)
+
             # None of the required fields are filled, skip this record
             if not any(required_fields.values()):
                 continue
+
+            # Re-add the Contact
+            required_fields["Contact"] = contact
 
             # Missing required fields
             missing = [f for f in required_fields if not record.get(f, None)]
