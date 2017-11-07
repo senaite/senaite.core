@@ -185,7 +185,6 @@ class AnalysisServicesView(BikaListingView):
                 'attr': 'getMethod.Title',
                 'replace_url': 'getMethod.absolute_url',
                 'sortable': not self.do_cats,
-                'toggle': True
             },
             'Department': {
                 'title': _('Department'),
@@ -195,6 +194,7 @@ class AnalysisServicesView(BikaListingView):
             },
             'Instrument': {
                 'title': _('Instrument'),
+                'toggle': False,
                 'sortable': not self.do_cats,
             },
             'Unit': {
@@ -236,7 +236,6 @@ class AnalysisServicesView(BikaListingView):
                 'title': _('Sort Key'),
                 'attr': 'getSortKey',
                 'sortable': False,
-                'toggle': True
             },
         }
 
