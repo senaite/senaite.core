@@ -239,6 +239,8 @@ window.BikaListingTableView = ->
 
         $(checked).each (e) ->
             transitions = $.parseJSON($(this).attr('data-valid_transitions'))
+            if ! transitions.length
+                return
             # Do not want transitions other than those defined in bikalisting
             if restricted_transitions.length > 0
                 transitions = transitions.filter (el) ->
