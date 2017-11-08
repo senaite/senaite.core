@@ -26,6 +26,7 @@ Changelog
 **Fixed**
 
 - #358 Add "Methods" column and hide unused columns in AS sort list
+- #363 Fix AR's CCEmails are nowhere to send Emails out of the LIMS
 - #343 Fix publication preferences for CC Contacts
 - #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
 - #330 Show action buttons when sorting by column in listings
@@ -65,6 +66,8 @@ Changelog
 - #345 'SearchableText' field and adapter in Batches.
 - #348 Add Attachment objects to portal_catalog, to allow idserver to function correctly.
 - #352 Fix traceback on listings
+- #365 Lims Installation fails during setting client permissions in bika setup.
+- #358 Merged updates for AR Add2
 
 
 1.0.0 (2017-10-13)
