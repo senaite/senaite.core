@@ -2,25 +2,25 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+from transaction import savepoint
 
+from Products.ATContentTypes.content.schemata import finalizeATCTSchema
+from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
+from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content.schemata import finalizeATCTSchema
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from transaction import savepoint
 from zope.interface.declarations import implements
 
 
@@ -152,7 +152,7 @@ class AnalysisServicesView(BikaListingView):
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 25
-        self.sort_on = 'sortable_title'
+        self.sort_on = 'Title'
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
@@ -180,21 +180,14 @@ class AnalysisServicesView(BikaListingView):
                 'attr': 'getCategoryTitle',
                 'sortable': not self.do_cats,
             },
-            'Method': {
-                'title': _('Method'),
-                'attr': 'getMethod.Title',
-                'replace_url': 'getMethod.absolute_url',
+            'Methods': {
+                'title': _('Methods'),
                 'sortable': not self.do_cats,
-                'toggle': False
             },
             'Department': {
                 'title': _('Department'),
                 'toggle': False,
                 'attr': 'getDepartment.Title',
-                'sortable': not self.do_cats,
-            },
-            'Instrument': {
-                'title': _('Instrument'),
                 'sortable': not self.do_cats,
             },
             'Unit': {
@@ -223,20 +216,19 @@ class AnalysisServicesView(BikaListingView):
             'CommercialID': {
                 'title': _('Commercial ID'),
                 'attr': 'getCommercialID',
-                'toggle': True,
+                'toggle': False,
                 'sortable': not self.do_cats,
             },
             'ProtocolID': {
                 'title': _('Protocol ID'),
                 'attr': 'getProtocolID',
-                'toggle': True,
+                'toggle': False,
                 'sortable': not self.do_cats,
             },
             'SortKey': {
                 'title': _('Sort Key'),
                 'attr': 'getSortKey',
                 'sortable': False,
-                'toggle': False
             },
         }
 
@@ -248,11 +240,10 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Category',
                          'Keyword',
-                         'Method',
+                         'Methods',
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -271,11 +262,10 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Category',
                          'Keyword',
-                         'Method',
+                         'Methods',
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -293,11 +283,10 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Keyword',
                          'Category',
-                         'Method',
+                         'Methods',
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -337,16 +326,6 @@ class AnalysisServicesView(BikaListingView):
         return result
 
     def folderitem(self, obj, item, index):
-        if 'obj' in item:
-            obj = item['obj']
-            # Although these should be automatically inserted when bika_listing
-            # searches the schema for fields that match columns, it is still
-            # not harmful to be explicit:
-            item['Keyword'] = obj.getKeyword()
-            item['CommercialID'] = obj.getCommercialID()
-            item['ProtocolID'] = obj.getProtocolID()
-            item['SortKey'] = obj.getSortKey()
-
         cat = obj.getCategoryTitle()
         cat_order = self.an_cats_order.get(cat)
         if self.do_cats:
@@ -355,12 +334,6 @@ class AnalysisServicesView(BikaListingView):
             if (cat, cat_order) not in self.categories:
                 self.categories.append((cat, cat_order))
 
-        instrument = obj.getInstrument()
-        item['Instrument'] = instrument.Title() if instrument else ''
-        if instrument:
-            item['replace']['Instrument'] = "<a href='%s'>%s</a>" % (
-                instrument.absolute_url() + "/edit", instrument.Title())
-
         calculation = obj.getCalculation()
         item['Calculation'] = calculation.Title() if calculation else ''
         if calculation:
@@ -368,6 +341,18 @@ class AnalysisServicesView(BikaListingView):
                 calculation.absolute_url() + "/edit", calculation.Title())
 
         item['Price'] = "%s.%02d" % obj.Price
+
+        # Fill Methods column
+        methods = obj.getMethods()
+        m_dict = {method.Title(): method.absolute_url() for method in methods}
+        m_titles = sorted(m_dict.keys())
+        m_anchors = []
+        for title in m_titles:
+            url = m_dict[title]
+            anchor = '<a href="{}">{}</a>'.format(url, title)
+            m_anchors.append(anchor)
+        item['Methods'] = ', '.join(m_titles)
+        item['replace']['Methods'] = ', '.join(m_anchors)
 
         maxtime = obj.MaxTimeAllowed
         maxtime_string = ""
