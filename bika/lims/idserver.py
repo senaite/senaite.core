@@ -94,11 +94,13 @@ def generateUniqueId(context, parent=False, portal_type=''):
         variables_map = {
             'sampleId': context.getSample().getId(),
             'sample': context.getSample(),
+            'year': DateTime().strftime("%Y")[2:],
         }
     elif portal_type == "SamplePartition":
         variables_map = {
             'sampleId': context.aq_parent.getId(),
             'sample': context.aq_parent,
+            'year': DateTime().strftime("%Y")[2:],
         }
     elif portal_type == "Sample" and parent:
         config = getConfigByPortalType(
@@ -107,6 +109,7 @@ def generateUniqueId(context, parent=False, portal_type=''):
         variables_map = {
             'sampleId': context.getId(),
             'sample': context,
+            'year': DateTime().strftime("%Y")[2:],
         }
     elif portal_type == "Sample":
         sampleDate = None
@@ -128,7 +131,9 @@ def generateUniqueId(context, parent=False, portal_type=''):
                 'sequence_type': 'generated',
                 'prefix': '%s' % portal_type.lower(),
             }
-        variables_map = {}
+        variables_map = {
+            'year': DateTime().strftime("%Y")[2:],
+            }
 
     # Actual id construction starts here
     form = config['form']
@@ -137,15 +142,20 @@ def generateUniqueId(context, parent=False, portal_type=''):
             context=variables_map[config['context']],
             config=config)
     elif config['sequence_type'] == 'generated':
-        if config.get('split_length', None) == 0:
-            prefix_config = '-'.join(form.split('-')[:-1])
-            prefix = prefix_config.format(**variables_map)
-        elif config.get('split_length', 0) > 0:
-            prefix_config = '-'.join(form.split('-')[:config['split_length']])
-            prefix = prefix_config.format(**variables_map)
-        else:
-            prefix = config['prefix']
-        new_seq = number_generator(key=prefix)
+        try:
+            if config.get('split_length', None) == 0:
+                prefix_config = '-'.join(form.split('-')[:-1])
+                prefix = prefix_config.format(**variables_map)
+            elif config.get('split_length', 0) > 0:
+                prefix_config = '-'.join(form.split('-')[:config['split_length']])
+                prefix = prefix_config.format(**variables_map)
+            else:
+                prefix = config['prefix']
+            new_seq = number_generator(key=prefix)
+        except KeyError, e:
+            msg = "KeyError in GenerateUniqueId on %s: %s" % (
+                    str(config), e)
+            raise RuntimeError(msg)
     variables_map['seq'] = new_seq + 1
     result = form.format(**variables_map)
     return result
