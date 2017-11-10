@@ -96,7 +96,6 @@ It is also possible to find out if an `AnalysisService` depends on the calculati
 Or to find out which services have selected a particular calculation as their
 primary Calculation field's value:
 
-    >>> import pdb;pdb.set_trace()
     >>> get_backreferences(calc, 'AnalysisServiceCalculation')
 
 The `Formula` can be tested with dummy values in the `TestParameters` field::
