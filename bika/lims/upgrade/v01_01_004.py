@@ -1,12 +1,13 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
-version = '1.1.3'
+version = '1.1.4'
 profile = 'profile-{0}:default'.format(product)
 
 
@@ -26,10 +27,28 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
-    # Attachments must be present in a catalog, otherwise the idserver
-    # will fall apart.  https://github.com/senaite/bika.lims/issues/323
-    at = getToolByName(portal, 'archetype_tool')
-    at.setCatalogsByType('Attachment', ['portal_catalog'])
+    # Add inactive_state workflow for Reflex Rules
+    setup.runImportStepFromProfile(profile, 'workflow')
+    update_reflexrules_workflow_state(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def update_reflexrules_workflow_state(portal):
+    """
+    Updates Reflex Rules' inactive_state, otherwise they don't have it by
+    default.
+    :param portal: Portal object
+    :return: None
+    """
+    wf_tool = getToolByName(portal, 'portal_workflow')
+    logger.info("Updating Reflex Rules' 'inactive_state's...")
+    wf = wf_tool.getWorkflowById("bika_inactive_workflow")
+    uc = api.get_tool('portal_catalog')
+    r_rules = uc(portal_type='ReflexRule')
+    for rr in r_rules:
+        obj = rr.getObject()
+        wf.updateRoleMappingsFor(obj)
+        obj.reindexObject()
+    logger.info("Reflex Rules' 'inactive_state's were updated.")
