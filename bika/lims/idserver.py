@@ -136,6 +136,7 @@ def generateUniqueId(context, parent=False, portal_type=''):
             }
 
     # Actual id construction starts here
+    new_seq = 0
     form = config['form']
     if config['sequence_type'] == 'counter':
         new_seq = getLastCounter(
