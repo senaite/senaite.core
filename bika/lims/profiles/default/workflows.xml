@@ -33,6 +33,11 @@
       <bound-workflow workflow_id="plone_workflow"/>
     </default>
 
+    <!-- AR Imports -->
+    <type type_id="ARImports">
+      <bound-workflow workflow_id="bika_arimports_workflow"/>
+    </type>
+
     <!-- AR Import -->
     <type type_id="ARImport">
       <bound-workflow workflow_id="bika_arimport_workflow"/>
@@ -398,6 +403,11 @@
     </type>
     <type type_id="ReferenceSample">
       <bound-workflow workflow_id="bika_referencesample_workflow"/>
+      <bound-workflow workflow_id="bika_inactive_workflow"/>
+    </type>
+
+    <!-- Reflex Rules -->
+    <type type_id="ReflexRule">
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 

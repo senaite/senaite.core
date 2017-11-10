@@ -310,6 +310,10 @@ class IInstrumentValidation(Interface):
     """Instrument Validation
     """
 
+class IInstrumentCertification(Interface):
+    """Instrument Certification
+    """
+
 class IAnalysisSpecs(Interface):
     ""
 
@@ -487,6 +491,12 @@ class IIdServer(Interface):
     def generate_id(self, portal_type, batch_size=None):
         """ Generate a new id for 'portal_type' """
 
+class IBatchSearchableText(Interface):
+
+    """ Interface for BatchSearchableText """
+
+    def get_plain_text_fields(self):
+        """ Returns field names as a list of strings"""
 
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts

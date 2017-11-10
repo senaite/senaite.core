@@ -24,9 +24,9 @@ function WorksheetFolderView() {
 
         $('div.worksheet_add_controls select.instrument').change(function() {
             var val = $(this).val();
-            $('div.worksheet_add_controls div.alert').remove();
+            $('div.worksheet_add_controls div.bika-alert').remove();
             if (val != '' && val != null) {
-                $('div.worksheet_add_controls').append('<div class="alert">'+_("Only the analyses for which the selected instrument is allowed will be added automatically.")+'</div>');
+                $('div.worksheet_add_controls').append('<div class="bika-alert">'+_("Only the analyses for which the selected instrument is allowed will be added automatically.")+'</div>');
             }
         });
     }

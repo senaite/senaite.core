@@ -137,8 +137,6 @@ class BatchFolderContentsView(BikaListingView):
         return False
 
     def folderitems(self):
-        self.filter_indexes = None
-
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if 'obj' not in items[x]:
