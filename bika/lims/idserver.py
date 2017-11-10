@@ -3,32 +3,29 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import zLOG
 import urllib
+
 import transaction
-
-from zope.component import getUtility
-from zope.interface import implements
-from zope.container.interfaces import INameChooser
-
+import zLOG
 from DateTime import DateTime
 from Products.ATContentTypes.utils import DT2dt
-
 from bika.lims import api
-from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
-from bika.lims.numbergenerator import INumberGenerator
+from bika.lims import logger
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
-
-
-from zope.component import getAdapters
 from bika.lims.interfaces import IIdServer
+from bika.lims.numbergenerator import INumberGenerator
+from zope.component import getAdapters
+from zope.component import getUtility
+from zope.container.interfaces import INameChooser
+from zope.interface import implements
 
 
 class IDServerUnavailable(Exception):
     pass
 
-def idserver_generate_id(context, prefix, batch_size = None):
+
+def idserver_generate_id(context, prefix, batch_size=None):
     """ Generate a new id using external ID server.
     """
     plone = context.portal_url.getPortalObject()
@@ -44,13 +41,15 @@ def idserver_generate_id(context, prefix, batch_size = None):
                     urllib.urlencode({'batch_size': batch_size}))
                     )
         else:
-            f = urllib.urlopen('%s/%s/%s'%(url, plone.getId(), prefix))
+            f = urllib.urlopen('%s/%s/%s' % (url, plone.getId(), prefix))
         new_id = f.read()
         f.close()
     except:
         from sys import exc_info
         info = exc_info()
-        zLOG.LOG('INFO', 0, '', 'generate_id raised exception: %s, %s \n ID server URL: %s' % (info[0], info[1], url))
+        msg = 'generate_id raised exception: {}, {} \n ID server URL: {}'
+        msg = msg.format(info[0], info[1], url)
+        zLOG.LOG('INFO', 0, '', msg)
         raise IDServerUnavailable(_('ID Server unavailable'))
 
     return new_id
@@ -79,12 +78,12 @@ def generateUniqueId(context, parent=False, portal_type=''):
     #     print '%s : %s' % (keys[i], values[i])
 
     def getConfigByPortalType(config_map, portal_type):
-        config = {}
+        config_by_pt = {}
         for c in config_map:
             if c['portal_type'] == portal_type:
-                config = c
+                config_by_pt = c
                 break
-        return config
+        return config_by_pt
 
     config_map = api.get_bika_setup().getIDFormatting()
     config = getConfigByPortalType(
@@ -148,7 +147,8 @@ def generateUniqueId(context, parent=False, portal_type=''):
                 prefix_config = '-'.join(form.split('-')[:-1])
                 prefix = prefix_config.format(**variables_map)
             elif config.get('split_length', 0) > 0:
-                prefix_config = '-'.join(form.split('-')[:config['split_length']])
+                prefix_config = form.split('-')[:config['split_length']]
+                prefix_config = '-'.join(prefix_config)
                 prefix = prefix_config.format(**variables_map)
             else:
                 prefix = config['prefix']
@@ -182,7 +182,7 @@ def renameAfterCreation(obj):
     for name, adapter in getAdapters((obj, ), IIdServer):
         if new_id:
             logger.warn(('More than one ID Generator Adapter found for'
-                         'content type -> %s') % (obj.portal_type))
+                         'content type -> %s') % obj.portal_type)
         new_id = adapter.generate_id(obj.portal_type)
     if not new_id:
         new_id = generateUniqueId(obj)
