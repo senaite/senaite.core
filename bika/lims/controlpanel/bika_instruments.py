@@ -113,7 +113,6 @@ class InstrumentsView(BikaListingView):
             if not data:
                 items[x]['ExpiryDate'] = _("No date set")
             else:
-                import pdb;pdb.set_trace()
                 items[x]['ExpiryDate'] = data.asdatetime().strftime(self.date_format_short)
 
             if obj.isOutOfDate():

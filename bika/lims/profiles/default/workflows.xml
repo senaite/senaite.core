@@ -406,6 +406,11 @@
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
+    <!-- Reflex Rules -->
+    <type type_id="ReflexRule">
+      <bound-workflow workflow_id="bika_inactive_workflow"/>
+    </type>
+
     <!-- Reject Analysis -->
     <type type_id="RejectAnalysis">
       <bound-workflow workflow_id="bika_reject_analysis_workflow"/>
