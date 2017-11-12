@@ -116,6 +116,11 @@ def generateUniqueId(context, parent=False, portal_type=''):
         sampleType = context.getSampleType().getPrefix()
         if context.getDateSampled():
             sampleDate = DT2dt(context.getDateSampled())
+        else:
+            # No Sample Date?
+            logger.error("Sample {} has no sample date set".format(
+                context.getId()))
+            sampleDate = DT2dt(DateTime())
 
         variables_map = {
             'clientId': context.aq_parent.getClientID(),
@@ -156,7 +161,11 @@ def generateUniqueId(context, parent=False, portal_type=''):
             new_seq = number_generator(key=prefix)
         except KeyError, e:
             msg = "KeyError in GenerateUniqueId on %s: %s" % (
-                    str(config), e)
+                str(config), e)
+            raise RuntimeError(msg)
+        except ValueError, e:
+            msg = "ValueError in GenerateUniqueId on %s with %s: %s" % (
+                str(config), str(variables_map), e)
             raise RuntimeError(msg)
     variables_map['seq'] = new_seq + 1
     result = form.format(**variables_map)
