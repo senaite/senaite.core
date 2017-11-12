@@ -12,6 +12,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.api import is_at_content, is_brain, is_dexterity_content
 from bika.lims.interfaces.field import IUIDReferenceField
+from persistent.list import PersistentList
+from persistent.dict import PersistentDict
 from plone.api.portal import get_tool
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
@@ -143,7 +145,7 @@ class UIDReferenceField(StringField):
                 # the entire set of backrefs is returned by reference.
                 backrefs = get_backreferences(item, relationship=None)
                 if key not in backrefs:
-                    backrefs[key] = []
+                    backrefs[key] = PersistentList()
                 if uid not in backrefs[key]:
                     backrefs[key].append(uid)
 
@@ -227,7 +229,7 @@ def _get_object(context, value):
 def get_storage(context):
     annotation = IAnnotations(context)
     if annotation.get(BACKREFS_STORAGE) is None:
-        annotation[BACKREFS_STORAGE] = {}
+        annotation[BACKREFS_STORAGE] = PersistentDict()
     return annotation[BACKREFS_STORAGE]
 
 
