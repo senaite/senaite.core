@@ -192,9 +192,6 @@ Create a third `AnalysisRequest` with existing sample:
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
     <...water17-0002-R2>
 
@@ -240,4 +237,4 @@ Change ID formats and create new `AnalysisRequest`:
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <...RB-20170131-water-0001-R001>
+    <AnalysisRequest at /plone/clients/client-1/RB-...-water-0001-R001>
