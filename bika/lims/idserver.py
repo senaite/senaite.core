@@ -187,7 +187,15 @@ def renameAfterCreation(obj):
         new_id = adapter.generate_id(obj.portal_type)
     if not new_id:
         new_id = generateUniqueId(obj)
-    obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
+
+    parent = api.get_parent(obj)
+    if new_id in parent.objectIds():
+        # XXX We could do the check in a `while` loop and generate a new one.
+        raise KeyError("The ID {} is already taken in the path {}".format(
+            new_id, api.get_path(parent)))
+    # rename the object to the new id
+    parent.manage_renameObject(obj.id, new_id)
+
     return new_id
 
 
