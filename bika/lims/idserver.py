@@ -35,11 +35,11 @@ def idserver_generate_id(context, prefix, batch_size=None):
         if batch_size:
             # GET
             f = urllib.urlopen('%s/%s/%s?%s' % (
-                    url,
-                    plone.getId(),
-                    prefix,
-                    urllib.urlencode({'batch_size': batch_size}))
-                    )
+                url,
+                plone.getId(),
+                prefix,
+                urllib.urlencode({'batch_size': batch_size}))
+            )
         else:
             f = urllib.urlopen('%s/%s/%s' % (url, plone.getId(), prefix))
         new_id = f.read()
@@ -53,6 +53,7 @@ def idserver_generate_id(context, prefix, batch_size=None):
         raise IDServerUnavailable(_('ID Server unavailable'))
 
     return new_id
+
 
 def generateUniqueId(context, parent=False, portal_type=''):
     """ Generate pretty content IDs.
@@ -132,7 +133,7 @@ def generateUniqueId(context, parent=False, portal_type=''):
             }
         variables_map = {
             'year': DateTime().strftime("%Y")[2:],
-            }
+        }
 
     # Actual id construction starts here
     new_seq = 0
