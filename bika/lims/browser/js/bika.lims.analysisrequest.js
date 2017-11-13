@@ -545,7 +545,11 @@ function AnalysisRequestAnalysesView() {
     */
     function check_service(service_uid){
         var new_element, element;
-
+        // Check if allow_edit is enable
+        var row_data = $.parseJSON($("#"+service_uid+"_row_data").val());
+        if (row_data.disabled === true){
+            return
+        };
         // Add partition dropdown
         element = $("[name='Partition."+service_uid+":records']");
         new_element = "" +
