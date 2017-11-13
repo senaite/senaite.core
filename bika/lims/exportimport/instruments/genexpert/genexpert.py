@@ -127,9 +127,8 @@ class GeneXpertParser(InstrumentCSVResultsFileParser):
         return the code error -1
         """
         sline = line.split(SEPARATOR)
-        # If a line has only one column, then it is a Section or Subsection
-        # header.
-        if len(sline) == 1:
+
+        if is_header(sline):
             return self._handle_header(sline)
         # If it is not an header it contains some data. but we need data only
         # from the RESULT TABLE section.
@@ -281,3 +280,19 @@ class GeneXpertImporter(AnalysisResultsImporter):
                                          allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)
+
+
+def is_header(line):
+    """
+    If a line has only one column, then it is a Section or Subsection
+    header.
+    :param line: Line to check
+    :return: boolean -If line is header
+    """
+    if len(line) == 1:
+        return True
+    for idx, val in enumerate(line):
+        print(idx, val)
+        if idx > 1 and val:
+            return False
+    return True
