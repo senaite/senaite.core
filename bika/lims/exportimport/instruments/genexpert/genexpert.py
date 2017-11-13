@@ -248,6 +248,8 @@ class GeneXpertParser(InstrumentCSVResultsFileParser):
         result = ''
         if keyword:
             result = re.sub(r"\W", "", keyword)
+            # Remove underscores ('_') too.
+            result = re.sub(r"_", "", result)
         return result
 
     def _convert_result(self, value):
@@ -292,7 +294,6 @@ def is_header(line):
     if len(line) == 1:
         return True
     for idx, val in enumerate(line):
-        print(idx, val)
-        if idx > 1 and val:
+        if idx > 0 and val:
             return False
     return True
