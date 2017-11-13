@@ -227,14 +227,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             # js checks in row_data if an analysis may be removed.
             row_data = {}
-            # keyword = obj.getKeyword()
-            # if keyword in review_states.keys() \
-            #    and review_states[keyword] not in ['sample_due',
-            #                                       'to_be_sampled',
-            #                                       'to_be_preserved',
-            #                                       'sample_received',
-            #                                       ]:
-            #     row_data['disabled'] = True
             item['row_data'] = json.dumps(row_data)
 
             calculation = obj.getCalculation()
