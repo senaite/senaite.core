@@ -236,7 +236,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['before']['Price'] = symbol
             item['Price'] = obj.getPrice()
             item['class']['Price'] = 'nowrap'
-
+            item['allow_edit'] = list()
             if item['selected']:
                 item['allow_edit'] = ['Partition', 'min', 'max', 'error']
                 if not logged_in_client(self.context):
@@ -302,7 +302,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             # Display analyses for this Analysis Service in results?
             ser = self.context.getAnalysisServiceSettings(obj.UID())
-            item['allow_edit'] = ['Hidden', ]
+            item['allow_edit'].append('Hidden')
             item['Hidden'] = ser.get('hidden', obj.getHidden())
             item['Unit'] = obj.getUnit()
 
