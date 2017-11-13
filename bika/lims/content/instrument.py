@@ -40,6 +40,7 @@ from Products.Archetypes.atapi import ImageWidget
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import MultiSelectionWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 
@@ -185,6 +186,20 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             visible=True,
         ),
     ),
+
+    StringField('ImportDataInterface',
+                vocabulary="getImportDataInterfacesList",
+                multiValued=1,
+                widget=MultiSelectionWidget(
+                    checkbox_bound=0,
+                    label=_("Import Data Interface"),
+                    description=_(
+                        "Select an Import interface for this instrument."),
+                    format='select',
+                    default='',
+                    visible=True,
+                ),
+                ),
 
     RecordsField(
         'DataInterfaceOptions',
@@ -401,6 +416,9 @@ class Instrument(ATFolder):
 
     def getExportDataInterfacesList(self):
         return getDataInterfaces(self, export_only=True)
+
+    def getImportDataInterfacesList(self):
+        return getImportDataInterfaces(self, import_only=True)
 
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
