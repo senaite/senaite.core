@@ -7,6 +7,11 @@ import json
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
+from zope.i18n.locales import locales
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -14,10 +19,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.utils import dicts_to_dict, t
 from bika.lims.utils import logged_in_client
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from zope.i18n.locales import locales
-from zope.interface import implements
+from bika.lims.workflow import wasTransitionPerformed
 
 
 class AnalysisRequestAnalysesView(BikaListingView):
@@ -224,19 +226,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             item['selected'] = item['uid'] in self.selected
             item['class']['Title'] = 'service_title'
-
-            # js checks in row_data if an analysis may be removed.
-            row_data = {}
-            # keyword = obj.getKeyword()
-            # if keyword in review_states.keys() \
-            #    and review_states[keyword] not in ['sample_due',
-            #                                       'to_be_sampled',
-            #                                       'to_be_preserved',
-            #                                       'sample_received',
-            #                                       ]:
-            #     row_data['disabled'] = True
-            item['row_data'] = json.dumps(row_data)
-
+            row_data = dict()
             calculation = obj.getCalculation()
             item['Calculation'] = calculation and calculation.Title()
 
@@ -257,6 +247,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             if obj.UID() in self.analyses:
                 analysis = self.analyses[obj.UID()]
+
+                row_data['disabled'] = wasTransitionPerformed(
+                    analysis, 'submit')
+
                 part = analysis.getSamplePartition()
                 part = part and part or obj
                 item['Partition'] = part.Title()
@@ -272,6 +266,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 item["max"] = ''
                 item["error"] = ''
 
+            # js checks in row_data if an analysis may not be editable.
+            item['row_data'] = json.dumps(row_data)
             after_icons = ''
             if obj.getAccredited():
                 after_icons += "<img\
