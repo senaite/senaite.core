@@ -6,24 +6,17 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import PROJECTNAME
+from bika.lims.browser.fields import DurationField, UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
-from bika.lims.browser.fields import DurationField
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISampleType
-from magnitude import mg, MagnitudeError
+from magnitude import mg
 from zope.interface import implements
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
-import json
-import plone
-import sys
 
 schema = BikaSchema.copy() + Schema((
     DurationField('RetentionPeriod',
@@ -43,12 +36,10 @@ schema = BikaSchema.copy() + Schema((
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
-    ReferenceField('SampleMatrix',
+    UIDReferenceField('SampleMatrix',
         required = 0,
         allowed_types = ('SampleMatrix',),
         vocabulary = 'SampleMatricesVocabulary',
-        relationship = 'SampleTypeSampleMatrix',
-        referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label=_("Sample Matrix"),
@@ -69,11 +60,10 @@ schema = BikaSchema.copy() + Schema((
             description=_("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
         ),
     ),
-    ReferenceField('ContainerType',
+    UIDReferenceField('ContainerType',
         required = 0,
         allowed_types = ('ContainerType',),
         vocabulary = 'ContainerTypesVocabulary',
-        relationship = 'SampleTypeContainerType',
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label=_("Default Container Type"),
@@ -84,12 +74,11 @@ schema = BikaSchema.copy() + Schema((
                 "per analysis service"),
         ),
     ),
-    ReferenceField('SamplePoints',
+    UIDReferenceField('SamplePoints',
         required = 0,
         multiValued = 1,
         allowed_types = ('SamplePoint',),
         vocabulary = 'SamplePointsVocabulary',
-        relationship = 'SampleTypeSamplePoint',
         widget = brw(
             label=_("Sample Points"),
             description =_("The list of sample points from which this sample "

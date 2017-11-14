@@ -3,26 +3,19 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from zope.interface import implements
+from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseContent
-from bika.lims.content.bikaschema import BikaSchema
-from Products.Archetypes.references import HoldingReference
-from bika.lims import bikaMessageFactory as _
-from bika.lims import config
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-
+from bika.lims import config
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + atapi.Schema((
     # Results File that system wanted to import
     atapi.StringField('ImportedFile', default=''),
 
-    atapi.ReferenceField('Instrument',
-                         allowed_types=('Instrument',),
-                         referenceClass=HoldingReference,
-                         relationship='InstrumentImportLogs',
-                         ),
+    UIDReferenceField('Instrument', allowed_types=('Instrument',)),
 
     atapi.StringField('Interface', default=''),
 

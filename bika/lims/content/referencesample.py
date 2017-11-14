@@ -10,33 +10,25 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore import permissions
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import t
-from bika.lims.browser.fields import ReferenceResultsField
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import ReferenceResultsField, UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IReferenceSample
-from bika.lims.utils import sortable_title, tmpID
+from bika.lims.utils import t
+from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode as _u
-from bika.lims.utils import to_utf8
 from zope.interface import implements
-import sys, time
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('ReferenceDefinition',
+    UIDReferenceField('ReferenceDefinition',
         schemata = 'Description',
         allowed_types = ('ReferenceDefinition',),
-        relationship = 'ReferenceSampleReferenceDefinition',
-        referenceClass = HoldingReference,
         vocabulary = "getReferenceDefinitions",
         widget = ReferenceWidget(
             checkbox_bound = 0,
@@ -59,12 +51,10 @@ schema = BikaSchema.copy() + Schema((
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
-    ReferenceField('Manufacturer',
+    UIDReferenceField('Manufacturer',
         schemata = 'Description',
         allowed_types = ('Manufacturer',),
-        relationship = 'ReferenceSampleManufacturer',
         vocabulary = "getManufacturers",
-        referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label=_("Manufacturer"),

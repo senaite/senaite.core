@@ -7,7 +7,6 @@
 from AccessControl import ClassSecurityInfo
 
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from bika.lims import deprecated

@@ -9,27 +9,24 @@
 """
 import types
 
-from Acquisition import aq_base
+from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-
-from AccessControl import ClassSecurityInfo
-
 from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.utils import DisplayList
-
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.config import ManageClients
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.person import Person
+from bika.lims.interfaces import IContact
+from bika.lims.utils import isActive
 from plone import api
 from zope.interface import implements
-
-from bika.lims.utils import isActive
-from bika.lims.interfaces import IContact
-from bika.lims.content.person import Person
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ManageClients
-from bika.lims import logger
-from bika.lims import bikaMessageFactory as _
 
 ACTIVE_STATES = ["active"]
 
@@ -51,16 +48,15 @@ schema = Person.schema.copy() + atapi.Schema((
                                "photos, will be included in emails to recipients "
                                "if this option is enabled")
                        )),
-    atapi.ReferenceField('CCContact',
-                         schemata='Publication preference',
-                         vocabulary='getContacts',
-                         multiValued=1,
-                         allowed_types=('Contact',),
-                         relationship='ContactContact',
-                         widget=atapi.ReferenceWidget(
-                             checkbox_bound=0,
-                             label=_("Contacts to CC"),
-                         )),
+    UIDReferenceField('CCContact',
+                      schemata='Publication preference',
+                      vocabulary='getContacts',
+                      multiValued=1,
+                      allowed_types=('Contact',),
+                      widget=ReferenceWidget(
+                          checkbox_bound=0,
+                          label=_("Contacts to CC"),
+                      )),
 ))
 
 

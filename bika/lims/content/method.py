@@ -9,11 +9,11 @@ from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IMethod
 from bika.lims.utils import t
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from plone.app.blob.field import FileField as BlobFileField
 from zope.interface import implements
 

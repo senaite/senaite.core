@@ -9,36 +9,26 @@
 """
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.ATExtensions.field.records import RecordsField
+from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.interfaces import IARTemplate
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.browser.widgets import ARTemplatePartitionsWidget
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
-from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from zope.interface import Interface, implements
-import sys
+from bika.lims.interfaces import IARTemplate
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ## SamplePoint and SampleType references are managed with
     ## accessors and mutators below to get/set a string value
     ## (the Title of the object), but still store a normal Reference.
     ## Form autocomplete widgets can then work with the Titles.
-    ReferenceField('SamplePoint',
-        vocabulary_display_path_bound = sys.maxint,
+    UIDReferenceField('SamplePoint',
         allowed_types = ('SamplePoint',),
-        relationship = 'ARTemplateSamplePoint',
-        referenceClass = HoldingReference,
-        accessor = 'getSamplePoint',
-        edit_accessor = 'getSamplePoint',
-        mutator = 'setSamplePoint',
         widget=ReferenceWidget(
             label = _("Sample Point"),
             description = _("Location where sample was taken"),
@@ -56,14 +46,8 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    ReferenceField('SampleType',
-        vocabulary_display_path_bound = sys.maxint,
+    UIDReferenceField('SampleType',
         allowed_types = ('SampleType',),
-        relationship = 'ARTemplateSampleType',
-        referenceClass = HoldingReference,
-        accessor = 'getSampleType',
-        edit_accessor = 'getSampleType',
-        mutator = 'setSampleType',
         widget=ReferenceWidget(
             label = _("Sample Type"),
             description = _("Create a new sample of this type"),
@@ -155,12 +139,11 @@ schema = BikaSchema.copy() + Schema((
             },
          ),
     ),
-    ReferenceField('AnalysisProfile',
+    UIDReferenceField('AnalysisProfile',
         schemata = 'Analyses',
         required = 0,
         multiValued = 0,
         allowed_types = ('AnalysisProfile',),
-        relationship = 'ARTemplateAnalysisProfile',
         widget=ReferenceWidget(
             label = _("Analysis Profile"),
             description =_("The Analysis Profile selection for this template"),
@@ -234,7 +217,6 @@ class ARTemplate(BaseContent):
         then that folder's UID must be returned in this index.
         """
         return self.aq_parent.UID()
-        return ''
 
     def getAnalysisServiceSettings(self, uid):
         """ Returns a dictionary with the settings for the analysis

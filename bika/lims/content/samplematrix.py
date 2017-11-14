@@ -5,17 +5,9 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
-import sys
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from zope.interface import implements
+from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
 

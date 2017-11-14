@@ -9,7 +9,6 @@ import importlib
 import inspect
 import math
 import re
-import sys
 
 import transaction
 from AccessControl import ClassSecurityInfo
@@ -21,13 +20,11 @@ from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
-from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields.uidreferencefield import UIDReferenceField, \
     get_backreferences

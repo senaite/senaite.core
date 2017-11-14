@@ -7,45 +7,34 @@
 
 import math
 
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-
+from DateTime import DateTime
 from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import DisplayList
-from Products.Archetypes.atapi import registerType
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.utils import getToolByName
-
-from zope.interface import implements
-
-# Schema and Fields
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextField
-
-# Widgets
 from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextAreaWidget
-
-# bika.lims imports
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentCalibration
-
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         allowed_types=('Instrument',),
-        relationship='InstrumentCalibrationInstrument',
         widget=StringWidget(
             visible=False,
         )
@@ -119,11 +108,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Worker',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCalibration',
         widget=ReferenceWidget(
             checkbox_bound=0,
             label=_("Performed by"),

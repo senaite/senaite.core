@@ -5,46 +5,31 @@
 
 """Sample represents a physical sample submitted for testing
 """
+
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.WorkflowCore import WorkflowException
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.api import get_object_by_uid
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.utils import t, getUsers
 from Products.ATExtensions.field import RecordsField
-from bika.lims import deprecated
-from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from Products.Archetypes import atapi
+from Products.Archetypes.public import *
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import DateTimeField, UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
+from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
+from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample, ISamplePrepWorkflow
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ScheduleSampling
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import skip
-from bika.lims.workflow.sample import guards
-from bika.lims.workflow.sample import events
-from DateTime import DateTime
-from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
-from Products.Archetypes.public import DisplayList
-from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATContentTypes.utils import DT2dt, dt2DT
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from zope.interface import implements
-
-from bika.lims.browser.fields import DateTimeField
-from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-
-import sys
+from bika.lims.utils import getUsers
 from bika.lims.utils import to_unicode
+from bika.lims.workflow.sample import events
+from bika.lims.workflow.sample import guards
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',
@@ -107,12 +92,9 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    ReferenceField('LinkedSample',
-        vocabulary_display_path_bound=sys.maxsize,
+    UIDReferenceField('LinkedSample',
         multiValue=1,
         allowed_types=('Sample',),
-        relationship='SampleSample',
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -120,12 +102,9 @@ schema = BikaSchema.copy() + Schema((
             label=_("Linked Sample"),
         ),
     ),
-    ReferenceField('SampleType',
+    UIDReferenceField('SampleType',
         required=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('SampleType',),
-        relationship='SampleSampleType',
-        referenceClass=HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -157,11 +136,8 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    ReferenceField('SamplePoint',
-        vocabulary_display_path_bound=sys.maxsize,
+    UIDReferenceField('SamplePoint',
         allowed_types=('SamplePoint',),
-        relationship = 'SampleSamplePoint',
-        referenceClass = HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -193,10 +169,9 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    ReferenceField(
+    UIDReferenceField(
         'StorageLocation',
         allowed_types='StorageLocation',
-        relationship='AnalysisRequestStorageLocation',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -354,11 +329,8 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    ReferenceField('SamplingDeviation',
-        vocabulary_display_path_bound = sys.maxsize,
+    UIDReferenceField('SamplingDeviation',
         allowed_types = ('SamplingDeviation',),
-        relationship = 'SampleSamplingDeviation',
-        referenceClass = HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -384,11 +356,8 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    ReferenceField('SampleCondition',
-        vocabulary_display_path_bound = sys.maxsize,
+    UIDReferenceField('SampleCondition',
         allowed_types = ('SampleCondition',),
-        relationship = 'SampleSampleCondition',
-        referenceClass = HoldingReference,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,

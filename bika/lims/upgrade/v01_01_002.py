@@ -1,18 +1,16 @@
-from Acquisition import aq_inner
-from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
-version = '1.1.2'
+version = '1.1.2'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
 
 @upgradestep(product, version)
 def upgrade(tool):
-    portal = aq_parent(aq_inner(tool))
+    portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)

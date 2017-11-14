@@ -8,22 +8,15 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.Archetypes.utils import DisplayList
-from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims import interfaces
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import *
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient
-from bika.lims.utils import isActive
-from zope.component import getUtility
+from bika.lims.workflow import InactiveState, StateFlow, getCurrentState
 from zope.interface import implements
-from zope.interface.declarations import alsoProvides
-import json
-import sys
-from bika.lims.workflow import getCurrentState, StateFlow, InactiveState
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
@@ -71,29 +64,25 @@ schema = Organisation.schema.copy() + atapi.Schema((
             label=_("Email subject line"),
         ),
     ),
-    atapi.ReferenceField('DefaultCategories',
+    UIDReferenceField('DefaultCategories',
         schemata = 'Preferences',
         required = 0,
         multiValued = 1,
         vocabulary = 'getAnalysisCategories',
-        vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisCategory',),
-        relationship = 'ClientDefaultCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 0,
             label=_("Default categories"),
             description=_("Always expand the selected categories in client views"),
         ),
     ),
-    atapi.ReferenceField('RestrictedCategories',
+    UIDReferenceField('RestrictedCategories',
         schemata = 'Preferences',
         required = 0,
         multiValued = 1,
         vocabulary = 'getAnalysisCategories',
         validators = ('restrictedcategoriesvalidator',),
-        vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisCategory',),
-        relationship = 'ClientRestrictedCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 0,
             label=_("Restrict categories"),

@@ -3,38 +3,31 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import sys
-
-from Products.Archetypes.public import *
+from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.Archetypes import atapi
+from Products.Archetypes.public import *
+from Products.CMFCore.permissions import View
+from Products.CMFPlone.interfaces import IConstrainTypes
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISupplyOrder
-from bika.lims.utils import t
-from DateTime import DateTime
 from persistent.mapping import PersistentMapping
-from decimal import Decimal
-from Products.Archetypes import atapi
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View
-from Products.CMFPlone.interfaces import IConstrainTypes
-from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapter
 from zope.interface import implements
 
-
 schema = BikaSchema.copy() + Schema((
-    ReferenceField(
+    UIDReferenceField(
       'Contact',
       required=1,
-      vocabulary_display_path_bound=sys.maxsize,
       allowed_types=('Contact',),
-      referenceClass=HoldingReference,
-      relationship='SupplyOrderContact',
       widget=BikaReferenceWidget(
         render_own_label=True,
         showOn=True,
@@ -52,12 +45,9 @@ schema = BikaSchema.copy() + Schema((
                     label=_("Order Number"),
                     ),
                 ),
-    ReferenceField('Invoice',
-                   vocabulary_display_path_bound=sys.maxsize,
-                   allowed_types=('Invoice',),
-                   referenceClass=HoldingReference,
-                   relationship='OrderInvoice',
-                   ),
+
+    UIDReferenceField('Invoice', allowed_types=('Invoice',)),
+
     DateTimeField(
       'OrderDate',
       required=1,

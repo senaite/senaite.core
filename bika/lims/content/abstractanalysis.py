@@ -14,31 +14,22 @@ from DateTime import DateTime
 from Products.Archetypes.Field import BooleanField, DateTimeField, \
     FixedPointField, IntegerField, StringField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
-from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import ISamplePrepWorkflow, IDuplicateAnalysis
-from bika.lims.permissions import *
+from bika.lims.interfaces import IDuplicateAnalysis, ISamplePrepWorkflow
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
-from bika.lims.utils.analysis import create_analysis, format_numeric_result
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow import skip
 from bika.lims.workflow.analysis import events
 from bika.lims.workflow.analysis import guards
 from plone.api.user import has_permission

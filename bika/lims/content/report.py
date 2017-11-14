@@ -3,18 +3,16 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.Archetypes import atapi
 from Products.Archetypes.public import *
-from plone.app.blob.field import FileField as BlobFileField
-from Products.CMFCore.utils import getToolByName
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser import ulocalized_time
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import user_fullname
+from plone.app.blob.field import FileField as BlobFileField
 
 schema = BikaSchema.copy() + Schema((
     BlobFileField('ReportFile',
@@ -28,9 +26,8 @@ schema = BikaSchema.copy() + Schema((
             description=_("Report type"),
         ),
     ),
-    ReferenceField('Client',
+    UIDReferenceField('Client',
         allowed_types = ('Client',),
-        relationship = 'ReportClient',
         widget = ReferenceWidget(
             label=_("Client"),
         ),

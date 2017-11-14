@@ -69,6 +69,7 @@ Changelog
 - #339 Index not found warnings in bika listing.
 - #344 Integration of PR-2210. ID Server and bika setup updates along with migation step
 - #345 'SearchableText' field and adapter in Batches.
+- #346 Convert all ReferenceField to UIDReferenceField, with upgrade step.
 - #348 Add Attachment objects to portal_catalog, to allow idserver to function correctly.
 - #352 Fix traceback on listings
 - #353 Remove deprecation warnings

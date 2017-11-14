@@ -13,13 +13,10 @@ from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import ComputedField
-# Widgets
 from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import ReferenceField
-# Schema and Fields
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
@@ -28,8 +25,8 @@ from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-# bika.lims imports
 from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import ComboBoxWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
@@ -49,10 +46,9 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Instrument',
         allowed_types=('Instrument',),
-        relationship='InstrumentCertificationInstrument',
         widget=StringWidget(
             visible=False,
         )
@@ -60,7 +56,8 @@ schema = BikaSchema.copy() + Schema((
 
     ComputedField(
         'InstrumentUID',
-        expression='context.getInstrument() and context.getInstrument().UID() or None',
+        expression='context.getInstrument() and context.getInstrument().UID() '
+                   'or None',
         widget=ComputedWidget(
             visible=False,
         ),
@@ -81,7 +78,9 @@ schema = BikaSchema.copy() + Schema((
         'Agency',
         widget=StringWidget(
             label=_("Agency"),
-            description=_("Organization responsible of granting the calibration certificate")
+            description=_(
+                "Organization responsible of granting the calibration "
+                "certificate")
         ),
     ),
 
@@ -116,7 +115,8 @@ schema = BikaSchema.copy() + Schema((
         required=1,
         widget=DateTimeWidget(
             label=_("From"),
-            description=_("Date from which the calibration certificate is valid"),
+            description=_(
+                "Date from which the calibration certificate is valid"),
         ),
     ),
 
@@ -131,41 +131,43 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Preparator',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCertificatePreparator',
         widget=ReferenceWidget(
             checkbox_bound=0,
             label=_("Prepared by"),
-            description=_("The person at the supplier who prepared the certificate"),
+            description=_(
+                "The person at the supplier who prepared the certificate"),
             size=30,
             base_query={'inactive_state': 'active'},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
-                {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
+                {'columnName': 'JobTitle', 'width': '20',
+                 'label': _('Job Title')},
                 {'columnName': 'Title', 'width': '80', 'label': _('Name')}
             ],
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Validator',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
-        relationship='LabContactInstrumentCertificateValidator',
         widget=ReferenceWidget(
             checkbox_bound=0,
             label=_("Approved by"),
-            description=_("The person at the supplier who approved the certificate"),
+            description=_(
+                "The person at the supplier who approved the certificate"),
             size=30,
             base_query={'inactive_state': 'active'},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
-                {'columnName': 'JobTitle', 'width': '20', 'label': _('Job Title')},
+                {'columnName': 'JobTitle', 'width': '20',
+                 'label': _('Job Title')},
                 {'columnName': 'Title', 'width': '80', 'label': _('Name')}
             ],
         ),
@@ -183,7 +185,7 @@ schema = BikaSchema.copy() + Schema((
         'Remarks',
         searchable=True,
         default_content_type='text/x-web-intelligent',
-        allowable_content_types=('text/plain', ),
+        allowable_content_types=('text/plain',),
         default_output_type="text/plain",
         mode="rw",
         widget=TextAreaWidget(
@@ -212,6 +214,7 @@ class InstrumentCertification(BaseFolder):
         renameAfterCreation(self)
 
     security.declareProtected("Modify portal content", "setValidTo")
+
     def setValidTo(self, value):
         """Custom setter method to calculate a `ValidTo` date based on
         the `ValidFrom` and `ExpirationInterval` field values.

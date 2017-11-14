@@ -3,21 +3,17 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import UniqueObject
-from Products.CMFCore.permissions import ListFolderContents, \
-    ModifyPortalContent, View
-from plone.app import folder
 from Products.Archetypes.public import *
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import UniqueObject
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.content.organisation import Organisation
-from bika.lims.config import ManageBika, PROJECTNAME
-from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
-from bika.lims.utils import getUsers
-from bika.lims import api
+from bika.lims.config import ManageBika, PROJECTNAME
+from bika.lims.content.organisation import Organisation
 
 schema = Organisation.schema.copy() + Schema((
     StringField('LabURL',

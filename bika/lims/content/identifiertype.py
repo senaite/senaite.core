@@ -1,7 +1,3 @@
-from bika.lims import bikaMessageFactory as _, PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IHaveIdentifiers
-
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes import listTypes
 from Products.Archetypes.Field import LinesField
@@ -10,8 +6,9 @@ from Products.Archetypes.Widget import PicklistWidget
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
-
-from ZODB.POSException import ConflictError
+from bika.lims import PROJECTNAME, bikaMessageFactory as _
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IHaveIdentifiers
 
 # class IdentifierTypeAttributesField(RecordsField):
 #     """Keeps a list of possible attributes for an identifier of this type

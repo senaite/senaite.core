@@ -6,13 +6,13 @@
 """PricelistFolder is a container for Pricelist instances.
 """
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
+from bika.lims import PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import IPricelistFolder
 from plone.app.folder import folder
-from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims import PROJECTNAME
-from Products.Archetypes.public import *
 from zope.interface import implements
-from bika.lims.interfaces import IHaveNoBreadCrumbs
 
 schema = BikaFolderSchema.copy()
 IdField = schema['id']

@@ -7,31 +7,22 @@
 
 """The lab staff
 """
-import sys
 
 from AccessControl import ClassSecurityInfo
-
+from Products.Archetypes import atapi
+from Products.Archetypes.public import SelectionWidget
+from Products.Archetypes.public import StringField
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-
-from Products.Archetypes import atapi
-from Products.Archetypes.public import StringField
-from Products.Archetypes.public import StringWidget
-from Products.Archetypes.public import SelectionWidget
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.utils import DisplayList
-
-from plone import api
-from zope.interface import implements
-
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.person import Person
-from bika.lims.content.contact import Contact
-from bika.lims.interfaces import ILabContact
-from bika.lims import deprecated
-from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.contact import Contact
+from bika.lims.content.person import Person
+from bika.lims.interfaces import ILabContact
+from zope.interface import implements
 
 schema = Person.schema.copy() + atapi.Schema((
     atapi.LinesField('PublicationPreference',
@@ -48,23 +39,24 @@ schema = Person.schema.copy() + atapi.Schema((
                              "Upload a scanned signature to be used on printed analysis "
                              "results reports. Ideal size is 250 pixels wide by 150 high"),
                      )),
-    atapi.ReferenceField('Departments',
-        		required = 0,
-        		vocabulary_display_path_bound = sys.maxint,
-        		allowed_types = ('Department',),
-        		relationship = 'LabContactDepartment',
-        		vocabulary = '_departmentsVoc',
-        		referenceClass = HoldingReference,
-        		multiValued=1,
-        		widget = atapi.ReferenceWidget(
-            		checkbox_bound = 0,
-            		label=_("Departments"),
-            		description=_("The laboratory departments"),
+    atapi.ComputedField('DepartmentTitle',
+                        expression="context.getDepartment() and context.getDepartment().Title() or ''",
+                        widget=atapi.ComputedWidget(
+                            visible=False,
+                        )),s
+    UIDReferenceField('Departments',
+                      required = 0,
+                      allowed_types = ('Department',),
+                      vocabulary = '_departmentsVoc',
+                      multiValued=1,
+                      widget = atapi.ReferenceWidget(
+                          checkbox_bound = 0,
+                          label=_("Departments"),
+                          description=_("The laboratory departments"),
         ),
     ),
     StringField('DefaultDepartment',
         required = 0,
-        vocabulary_display_path_bound = sys.maxint,
         vocabulary = '_defaultDepsVoc',
         widget = SelectionWidget(
             visible=True,

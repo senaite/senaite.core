@@ -3,40 +3,34 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IInvoice
-from DateTime import DateTime
 from decimal import Decimal
-from persistent.mapping import PersistentMapping
+
+from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.ATExtensions.ateapi import DateTimeWidget
 from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.CMFCore.permissions import View
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInvoice
+from persistent.mapping import PersistentMapping
 from zope.interface import implements
-import sys
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Client',
+    UIDReferenceField('Client',
         required=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Client',),
-        relationship='ClientInvoice',
     ),
-    ReferenceField('AnalysisRequest',
+    UIDReferenceField('AnalysisRequest',
         required=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestInvoice',
     ),
-    ReferenceField('SupplyOrder',
+    UIDReferenceField('SupplyOrder',
         required=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('SupplyOrder',),
-        relationship='SupplyOrderInvoice',
     ),
     DateTimeField('InvoiceDate',
         required=1,

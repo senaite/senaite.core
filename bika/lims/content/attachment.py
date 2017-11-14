@@ -5,35 +5,28 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from DateTime import DateTime
-
 from AccessControl import ClassSecurityInfo
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-
-from Products.Archetypes.atapi import Schema
+from DateTime import DateTime
 from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import registerType
 from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import registerType
 from Products.Archetypes.config import REFERENCE_CATALOG
-
-from plone.app.blob.field import FileField
-
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
-
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from plone.app.blob.field import FileField
 
 schema = BikaSchema.copy() + Schema((
 
@@ -52,11 +45,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'AttachmentType',
         required=0,
         allowed_types=('AttachmentType',),
-        relationship='AttachmentAttachmentType',
         widget=ReferenceWidget(
             label=_("Attachment Type"),
         ),

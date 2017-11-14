@@ -3,32 +3,14 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import ClassSecurityInfo
 import csv
 from copy import deepcopy
+
+import transaction
+from AccessControl import ClassSecurityInfo
 from DateTime.DateTime import DateTime
-from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFCore.WorkflowCore import WorkflowException
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser import ulocalized_time
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.analysisrequest import schema as ar_schema
-from bika.lims.content.sample import schema as sample_schema
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IARImport, IClient
-from bika.lims.utils import tmpID
-from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.vocabularies import CatalogVocabulary
-from bika.lims.workflow import doActionFor
-from collective.progressbar.events import InitialiseProgressBar
-from collective.progressbar.events import ProgressBar
-from collective.progressbar.events import ProgressState
-from collective.progressbar.events import UpdateProgressEvent
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
-from plone.app.blob.field import FileField as BlobFileField
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import addStatusMessage
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -39,15 +21,27 @@ from Products.DataGridField import DataGridWidget
 from Products.DataGridField import DateColumn
 from Products.DataGridField import LinesColumn
 from Products.DataGridField import SelectColumn
-from zope import event
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import ulocalized_time
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget as bReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.analysisrequest import schema as ar_schema
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.sample import schema as sample_schema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IARImport, IClient
+from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import create_analysisrequest
+from bika.lims.vocabularies import CatalogVocabulary
+from collective.progressbar.events import InitialiseProgressBar
+from collective.progressbar.events import ProgressBar
+from collective.progressbar.events import ProgressState
+from collective.progressbar.events import UpdateProgressEvent
+from plone.app.blob.field import FileField as BlobFileField
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
-
-from bika.lims.browser.widgets import ReferenceWidget as bReferenceWidget
-
-import sys
-import transaction
 
 _p = MessageFactory(u"plone")
 
@@ -106,14 +100,12 @@ ClientReference = StringField(
     ),
 )
 
-Contact = ReferenceField(
+
+Contact = UIDReferenceField(
     'Contact',
     allowed_types=('Contact',),
-    relationship='ARImportContact',
     default_method='getContactUIDForUser',
-    referenceClass=HoldingReference,
-    vocabulary_display_path_bound=sys.maxint,
-    widget=ReferenceWidget(
+    widget=bReferenceWidget(
         label=_('Primary Contact'),
         size=20,
         visible=True,
@@ -126,10 +118,9 @@ Contact = ReferenceField(
     ),
 )
 
-Batch = ReferenceField(
+Batch = UIDReferenceField(
     'Batch',
     allowed_types=('Batch',),
-    relationship='ARImportBatch',
     widget=bReferenceWidget(
         label=_('Batch'),
         visible=True,
