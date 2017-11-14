@@ -1,18 +1,20 @@
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
+from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 
-version = '1.1.4'  # Remember version number in metadata.xml and setup.py
+version = '1.1.5'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
-
 
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 
@@ -27,7 +29,6 @@ def upgrade(tool):
 
     UpgradeReferenceFields()
 
-    logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
 

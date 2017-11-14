@@ -510,7 +510,7 @@ class PrintView(BrowserView):
 
         if ar.portal_type == "AnalysisRequest":
             return {'obj': ar,
-                    'id': ar.getRequestID(),
+                    'id': ar.getId(),
                     'date_received': self.ulocalized_time(
                         ar.getDateReceived(), long_format=0),
                     'date_sampled': self.ulocalized_time(

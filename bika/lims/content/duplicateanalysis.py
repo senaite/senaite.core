@@ -106,19 +106,13 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             self.getField(key).set(self, val)
         self.getField('Analysis').set(self, analysis)
 
-    @deprecated('[1705] Use events.after_attach from '
-                'bika.lims.workflow.duplicateanalysis.events')
     def workflow_script_attach(self):
         events.after_attach(self)
 
-    @deprecated('[1705] Use events.after_retract from '
-                'bika.lims.workflow.duplicateanalysis.events')
     @security.public
     def workflow_script_retract(self):
         events.after_retract(self)
 
-    @deprecated('[1705] Use events.after_verify from '
-                'bika.lims.workflow.duplicateanalysis.events')
     @security.public
     def workflow_script_verify(self):
         events.after_verify(self)

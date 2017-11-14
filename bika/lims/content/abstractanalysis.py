@@ -194,14 +194,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         field.set(self, value)
         self.reindexObject()
 
-    @deprecated('[1705] Use Title() instead.')
-    @security.public
-    def getServiceTitle(self):
-        """Returns the Title of the associated service. Analysis titles are
-        always the same as the title of the service from which they are derived.
-        """
-        return self.Title()
-
     @security.public
     def getDefaultUncertainty(self, result=None):
         """Return the uncertainty value, if the result falls within
@@ -1214,12 +1206,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         return self.isInstrumentValid()
 
-    @deprecated('[1705] Orphan. Use getAttachmentUIDs')
-    @security.public
-    def hasAttachment(self):
-        attachments = self.getAttachmentUIDs()
-        return len(attachments) > 0
-
     @security.public
     def getAttachmentUIDs(self):
         """Used to populate metadata, so that we don't need full objects of
@@ -1239,94 +1225,74 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     and analysis.getAnalysis().UID() == self.UID():
                 ws.removeAnalysis(analysis)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.sample')
     @security.public
     def guard_sample_transition(self):
         return guards.sample(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.retract')
     @security.public
     def guard_retract_transition(self):
         return guards.retract(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.sample_prep')
     @security.public
     def guard_sample_prep_transition(self):
         return guards.sample_prep(self)
 
-    @deprecated('[1705] Use guards.sample_prep_complete from '
-                'bika.lims.workflow.analysis.guards.sample_prep_complete')
     @security.public
     def guard_sample_prep_complete_transition(self):
         return guards.sample_prep_complete(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.receive')
     @security.public
     def guard_receive_transition(self):
         return guards.receive(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.publish')
     @security.public
     def guard_publish_transition(self):
         return guards.publish(self)
 
-    @deprecated('[1705] Use guards.import_transition from '
-                'bika.lims.workflow.analysis.guards.import_transition')
     @security.public
     def guard_import_transition(self):
         return guards.import_transition(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.attach')
     @security.public
     def guard_attach_transition(self):
         return guards.attach(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.verify')
     @security.public
     def guard_verify_transition(self):
         return guards.verify(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.assign')
     @security.public
     def guard_assign_transition(self):
         return guards.assign(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.unassign')
     @security.public
     def guard_unassign_transition(self):
         return guards.unassign(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
     @security.public
     def workflow_script_submit(self):
         events.after_submit(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_retract')
     @security.public
     def workflow_script_retract(self):
         events.after_retract(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_verify')
     @security.public
     def workflow_script_verify(self):
         events.after_verify(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_cancel')
     @security.public
     def workflow_script_cancel(self):
         events.after_cancel(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_reject')
     @security.public
     def workflow_script_reject(self):
         events.after_reject(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_attach')
     @security.public
     def workflow_script_attach(self):
         events.after_attach(self)
 
-    @deprecated('[1705] Orphan. No alternative')
     @security.public
     def workflow_script_assign(self):
         # TODO Workflow Assign Analysis - Seems there is no reason to add an
@@ -1334,7 +1300,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # assign and unassign from AR and Worksheet would eventually be removed
         pass
 
-    @deprecated('[1705] Orphan. No alternative')
     @security.public
     def workflow_script_unassign(self):
         # TODO Workflow UnAssign Analysis - Seems there is no reason to add an

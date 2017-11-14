@@ -66,7 +66,7 @@ class Report(BrowserView):
             anlcount = len(ar.getAnalyses())
 
             dataline = {
-                "AnalysisRequestID": ar.getRequestID(),
+                "AnalysisRequestID": ar.getId(),
                 "DateCreated": self.ulocalized_time(datecreated),
                 "DateReceived": self.ulocalized_time(datereceived),
                 "DatePublished": self.ulocalized_time(datepublished),
@@ -82,7 +82,7 @@ class Report(BrowserView):
                 "Remarks": ar.getRemarks()
             }
 
-            datalines[ar.getRequestID()] = dataline
+            datalines[ar.getId()] = dataline
 
             totalreceivedcount += ar.getDateReceived() and 1 or 0
             totalpublishedcount += 1 if datepublished else 0

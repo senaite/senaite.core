@@ -43,7 +43,7 @@ schema = Person.schema.copy() + atapi.Schema((
                         expression="context.getDepartment() and context.getDepartment().Title() or ''",
                         widget=atapi.ComputedWidget(
                             visible=False,
-                        )),
+                        )),s
     UIDReferenceField('Departments',
                       required = 0,
                       allowed_types = ('Department',),
@@ -94,14 +94,6 @@ class LabContact(Contact):
         """ check if contact has user """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
-
-    @deprecated('[1612] Use getDepartments instead')
-    def getDepartment(self):
-        """
-        This function is a mirror for getDepartments to maintain the
-        compability with the old version.
-        """
-        return self.getDepartments()[0] if self.getDepartments() else None
 
     def getDepartments_voc(self):
         """

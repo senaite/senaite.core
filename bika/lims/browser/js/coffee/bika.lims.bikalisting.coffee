@@ -1,3 +1,7 @@
+### Please use this command to compile this file into the parent `js` directory:
+    coffee --no-header -w -o ../ -c bika.lims.bikalisting.coffee
+###
+
 ###
 # Controller class for Bika Listing Table view
 ###
@@ -235,6 +239,8 @@ window.BikaListingTableView = ->
 
         $(checked).each (e) ->
             transitions = $.parseJSON($(this).attr('data-valid_transitions'))
+            if ! transitions.length
+                return
             # Do not want transitions other than those defined in bikalisting
             if restricted_transitions.length > 0
                 transitions = transitions.filter (el) ->

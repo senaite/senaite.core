@@ -1257,11 +1257,24 @@ class BikaListingView(BrowserView):
                 after={},
                 replace={},
             )
-            rs = self.workflow.getInfoFor(obj, 'review_state')
-            st_title = self.workflow.getTitleForStateOnType(rs, obj.portal_type)
-            st_title = t(PMF(st_title))
+
+            rs = None
+            wf_state_var = None
+
+            workflows = self.workflow.getWorkflowsFor(obj)
+            for wf in workflows:
+                if wf.state_var:
+                    wf_state_var = wf.state_var
+                    break
+
+            if wf_state_var is not None:
+                rs = self.workflow.getInfoFor(obj, wf_state_var)
+                st_title = self.workflow.getTitleForStateOnType(rs, obj.portal_type)
+                st_title = t(PMF(st_title))
+
             if rs:
                 results_dict['review_state'] = rs
+
             for state_var, state in states.items():
                 if not st_title:
                     st_title = self.workflow.getTitleForStateOnType(

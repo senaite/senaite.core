@@ -32,7 +32,7 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
             childar = hasattr(ar, 'getChildAnalysisRequest') \
                         and ar.getChildAnalysisRequest() or None
-            childid = childar and childar.getRequestID() or None
+            childid = childar and childar.getId() or None
             message = _('This Analysis Request has been withdrawn and is shown '
                         'for trace-ability purposes only. Retest: ${retest_child_id}.',
                         mapping={"retest_child_id":childid if childid else ''})
@@ -46,7 +46,7 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
             message = _(
                 'This Analysis Request has been generated automatically due to '
                 'the retraction of the Analysis Request ${retracted_request_id}.',
-                mapping={"retracted_request_id": par.getRequestID()})
+                mapping={"retracted_request_id": par.getId()})
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         can_do = getSecurityManager().checkPermission(ResultsNotRequested, ar)

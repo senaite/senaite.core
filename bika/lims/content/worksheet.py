@@ -469,7 +469,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 # instrument or method is not allowed
                 continue
 
-            ar_id = brain.getRequestID
+            ar_id = brain.id
             if ar_id in ar_analyses:
                 ar_analyses[ar_id].append(analysis)
             else:
@@ -897,7 +897,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
-    @deprecated('[1705] Use bika.lims.workflow.worksheet.guards.verify')
     @security.public
     def guard_verify_transition(self):
         return guards.verify(self)
@@ -917,17 +916,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             states[w.state_var] = state
         return states
 
-    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_submit')
     @security.public
     def workflow_script_submit(self):
         events.after_submit(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_retract')
     @security.public
     def workflow_script_retract(self):
         events.after_retract(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_verify')
     @security.public
     def workflow_script_verify(self):
         events.after_verify(self)

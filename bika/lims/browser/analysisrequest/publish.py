@@ -502,6 +502,21 @@ class AnalysisRequestPublishView(BrowserView):
                            'email': cc.getEmailAddress(),
                            'pubpref': cc.getPublicationPreference()})
 
+        # CC Emails
+        # https://github.com/senaite/bika.lims/issues/361
+        plone_utils = getToolByName(self.context, "plone_utils")
+        ccemails = map(lambda x: x.strip(), ar.getCCEmails().split(","))
+        for ccemail in ccemails:
+            # Better do that with a field validator
+            if not plone_utils.validateSingleEmailAddress(ccemail):
+                logger.warn(
+                    "Skipping invalid email address '{}'".format(ccemail))
+                continue
+            recips.append({
+                'title': ccemail,
+                'email': ccemail,
+                'pubpref': ('email', 'pdf',), })
+
         return recips
 
     def get_mail_subject(self, ar):
@@ -525,7 +540,7 @@ class AnalysisRequestPublishView(BrowserView):
         css = []
         blanks_found = False
         if ai:
-            ais.append(ar.getRequestID())
+            ais.append(ar.getId())
         if co:
             if ar.getClientOrderNumber():
                 if not ar.getClientOrderNumber() in cos:
@@ -1168,7 +1183,6 @@ class AnalysisRequestDigester:
                     'home_phone': contact.getHomePhone() if contact else '',
                     'mobile_phone': contact.getMobilePhone() if contact else '',
                     'job_title': to_utf8(contact.getJobTitle()) if contact else '',
-                    'department': to_utf8(contact.getDepartment()) if contact else '',
                     'physical_address': physical_address,
                     'postal_address': postal_address,
                     'home_page': to_utf8(mhomepage)}
@@ -1265,7 +1279,7 @@ class AnalysisRequestDigester:
         showhidden = self.isHiddenAnalysesVisible()
 
         catalog = get_tool(CATALOG_ANALYSIS_LISTING)
-        brains = catalog({'getAnalysisRequestUID': ar.UID(),
+        brains = catalog({'getRequestUID': ar.UID(),
                           'review_state': analysis_states,
                           'sort_on': 'sortable_title'})
         for brain in brains:
