@@ -14,6 +14,8 @@ import plone
 import plone.protect
 import json
 
+from bika.lims.workflow import getCurrentState
+
 
 class GetServices():
     """ When a Category is selected in the add_analyses search screen, this
@@ -63,17 +65,10 @@ class AttachAnalyses():
                 analyses.append(i)
         rows = []
         for analysis in analyses:
-            review_state = wf.getInfoFor(analysis, 'review_state', '')
-            if analysis.portal_type in ('Analysis', 'DuplicateAnalysis'):
-                if review_state not in attachable_states:
-                    continue
-                parent = analysis.getRequest().getId()
-            elif analysis.portal_type == 'ReferenceAnalysis':
-                if review_state not in attachable_states:
-                    continue
-                parent = analysis.aq_parent.Title()
-            else:
-                raise RuntimeError("Requires Duplicate/Analysis/Reference")
+            review_state = getCurrentState(analysis)
+            if review_state not in attachable_states:
+                continue
+            parent = analysis.getParentTitle()
             rows.append({'analysis_uid': analysis.UID(),
                          'slot': analysis_to_slot[analysis.UID()],
                          'service': analysis.Title(),

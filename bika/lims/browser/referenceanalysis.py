@@ -189,7 +189,7 @@ class AnalysesRetractedListReport(BrowserView):
 
                 ws = an.getBackReferences("WorksheetAnalysis")
                 if ws and len(ws) > 0:
-                    ws = ws[0]
+                    wss = ws[0]
                     item['ws'] = ws
                     item['ws_url'] = ws.absolute_url()
                     item['ws_id'] = ws.id
