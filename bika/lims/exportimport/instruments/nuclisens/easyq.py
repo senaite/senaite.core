@@ -19,6 +19,7 @@ from openpyxl import load_workbook
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
+from bika.lims.exportimport.instruments.instrument import format_keyword
 from bika.lims.utils import t
 
 title = "Nuclisens EasyQ"
@@ -103,31 +104,25 @@ class EasyQXMLParser(InstrumentResultsFileParser):
         for as_ref in root.find("Assays").findall("AssayRef"):
             self._assays[as_ref.get("KEY_AssayRef")] = as_ref.get("ID")
         for t_req in root.iter("TestRequest"):
+            t_res = t_req.find("TestResult")
+            if not t_res or t_res.get("Valid"):
+                continue
             res_id = t_req.get("SampleID")
             test_name = self._assays.get(t_req.get("KEY_AssayRef"))
-            test_name = self._format_keyword(test_name)
-            result = t_req.find("TestResult").get("Value")
+            test_name = format_keyword(test_name)
+            result = t_res.get("Value")
             if not result:
                 continue
-            result = result.split(" ")[0]
-            values = {}
-            values[test_name] = {
-                "DefaultResult": "Result",
-                "Result": result,
+            result = result.split(" cps/ml")[0]
+            # For now, using EasyQDirector as keyword, but this is not the
+            # right way. test_name must be used.
+            values = {
+                'EasyQDirector': {
+                    "DefaultResult": "Result",
+                    "Result": result,
+                }
             }
             self._addRawResult(res_id, values)
-
-    def _format_keyword(self, keyword):
-        """
-        Removing special character from a keyword. Analysis Services must have
-        this kind of keywords. E.g. if assay name from the Instrument is
-        'HIV-1 2.0', an AS must be created on Bika with the keyword 'HIV120'
-        """
-        import re
-        result = ''
-        if keyword:
-            result = re.sub(r"\W", "", keyword)
-        return result
 
 
 class EasyQImporter(AnalysisResultsImporter):
