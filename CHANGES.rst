@@ -75,6 +75,7 @@ Changelog
 - #364 Error on Manage Results view while Adding new Analyses from different Category
 - #365 Lims Installation fails during setting client permissions in bika setup.
 - #358 Merged updates for AR Add2
+- #369 Let 'DateTimeField' setter accept datetime.datetime objects and convert them.
 - #371 Reflex Rules don't have 'inactive_state' values set.
 
 1.0.0 (2017-10-13)
