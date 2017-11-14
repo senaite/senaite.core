@@ -1,18 +1,18 @@
 Changelog
 =========
 
-1.1.0 (Unreleased)
+1.1.5 (Unreleased)
 ------------------
 
 **Added**
-- BC-99: Added Print Stickers button to AR listings
 
+- #344 Integration of PR-2294. Allow year in any portal type's ID format string
+- BC-99: Added Print Stickers button to AR listings
 - #319 Integration of PR-2112. Laboratory has Supervisor which can appear in reports.
 - Issue-288: Worksheet: "Print" does not display/print partial results
              https://github.com/senaite/bika.lims/issues/288
 
 **Merged PRs from upstream**
-#282 Instrument Calibration Table fixes (pr #2266, Issues #2263 & #2264)
 
 **Changed**
 
@@ -25,6 +25,10 @@ Changelog
 
 **Fixed**
 
+- #344 Integration of PR-2273. Ensure no counters in the number generator before initialising id server
+- #282 Integration of PR-2266. Instrument Calibration Table fixes
+- #358 Add "Methods" column and hide unused columns in AS sort list
+- #363 Fix AR's CCEmails are nowhere to send Emails out of the LIMS
 - #343 Fix publication preferences for CC Contacts
 - #340 Fix TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
 - #330 Show action buttons when sorting by column in listings
@@ -44,8 +48,8 @@ Changelog
 - #284 Solved WF Translation issues and fixed WF Action Buttons in Bika Listings, PR-1917
 - #291 Landscape Layout for Reports, PR-1972
 - #294 Convert UDL and LDL values to string before copy, PR-2016
-- #297 Inline rendered attachments are not displayed in rendered PDF, PR-2102
-- #304 PR-2080, PR-2053
+- #297 Integration of PR-2102, Inline rendered attachments are not displayed in rendered PDF
+- #304 Integration of PR-2080, PR-2053
        Computed Sample Field "SampleTypeUID" does not check if a SampleType is set.
        Batch Book raises an Error if the Batch inherits from 2 ARs.
 - #306 Client Folder Listing Table decreases Bika LIMS performance and is unusable for many Clients, PR-2077
@@ -60,9 +64,18 @@ Changelog
 - #336 Accreditation Portlet renders an error message for anonymous users.
 - #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
 - #327 Keep Laboratory name when reinstalling
+- #334 Fix TypeError (setRequestID, unexpected keyword argument) on AR Creation
+- #336 Accreditation Portlet renders an error message for anonymous users-
 - #339 Index not found warnings in bika listing.
+- #344 Integration of PR-2210. ID Server and bika setup updates along with migation step
+- #345 'SearchableText' field and adapter in Batches.
 - #348 Add Attachment objects to portal_catalog, to allow idserver to function correctly.
+- #352 Fix traceback on listings
 - #353 Remove deprecation warnings
+- #364 Error on Manage Results view while Adding new Analyses from different Category
+- #365 Lims Installation fails during setting client permissions in bika setup.
+- #358 Merged updates for AR Add2
+- #371 Reflex Rules don't have 'inactive_state' values set.
 
 1.0.0 (2017-10-13)
 ------------------

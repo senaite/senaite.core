@@ -564,6 +564,9 @@ jQuery(function($){
      */
     function setup_svof(setupdata){
         var rules = setupdata.saved_actions.rules;
+        if(!rules || rules.length==0){
+            return;
+        }
         var rulescontainers = $('td.rulescontainer');
 
         $.each(rulescontainers,function(index1, element1){
@@ -591,6 +594,9 @@ jQuery(function($){
      */
     function setup_worksheettemplate(setupdata){
         var rules = setupdata.saved_actions.rules;
+        if(!rules || rules.length==0){
+            return;
+        }
         var rulescontainers = $('td.rulescontainer');
         $.each(rulescontainers,function(index1, element1){
             var wsts = $(element1).find('select[id^="ReflexRules-worksheettemplate-"]');

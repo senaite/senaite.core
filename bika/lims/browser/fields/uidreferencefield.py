@@ -12,6 +12,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.api import is_at_content, is_brain, is_dexterity_content
 from bika.lims.interfaces.field import IUIDReferenceField
+from persistent.list import PersistentList
+from persistent.dict import PersistentDict
 from plone.api.portal import get_tool
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
@@ -52,6 +54,8 @@ class UIDReferenceField(StringField):
         :return: Returns a Content object.
         :rtype: BaseContent
         """
+        if not value:
+            return None
         obj = _get_object(context, value)
         if obj is None:
             logger.error(
@@ -62,7 +66,7 @@ class UIDReferenceField(StringField):
     @security.public
     def get_uid(self, context, value):
         """Takes a brain or object (or UID), and returns a UID.
-        
+
         :param context: context is the object who's schema contains this field.
         :type context: BaseContent
         :param value: Brain, object, or UID.
@@ -88,7 +92,7 @@ class UIDReferenceField(StringField):
     @security.public
     def get(self, context, **kwargs):
         """Grab the stored value, and resolve object(s) from UID catalog.
-        
+
         :param context: context is the object who's schema contains this field.
         :type context: BaseContent
         :param kwargs: kwargs are passed directly to the underlying get.
@@ -141,7 +145,7 @@ class UIDReferenceField(StringField):
                 # the entire set of backrefs is returned by reference.
                 backrefs = get_backreferences(item, relationship=None)
                 if key not in backrefs:
-                    backrefs[key] = []
+                    backrefs[key] = PersistentList()
                 if uid not in backrefs[key]:
                     backrefs[key].append(uid)
 
@@ -149,7 +153,7 @@ class UIDReferenceField(StringField):
     def set(self, context, value, **kwargs):
         """Accepts a UID, brain, or an object (or a list of any of these),
         and stores a UID or list of UIDS.
-        
+
         :param context: context is the object who's schema contains this field.
         :type context: BaseContent
         :param value: A UID, brain or object (or a sequence of these).
@@ -225,7 +229,7 @@ def _get_object(context, value):
 def get_storage(context):
     annotation = IAnnotations(context)
     if annotation.get(BACKREFS_STORAGE) is None:
-        annotation[BACKREFS_STORAGE] = {}
+        annotation[BACKREFS_STORAGE] = PersistentDict()
     return annotation[BACKREFS_STORAGE]
 
 
@@ -273,11 +277,7 @@ def get_backreferences(context, relationship=None, as_brains=None):
     raw_backrefs = get_storage(instance)
 
     if relationship:
-        # get relation from storage
-        backrefs = raw_backrefs.get(relationship, None)
-        if not backrefs:
-            backrefs = []
-        # as_brains: return brains
+        backrefs = list(raw_backrefs.get(relationship, []))
         if as_brains:
             cat = _get_catalog_for_uid(backrefs[0])
             backrefs = cat(UID=backrefs)
