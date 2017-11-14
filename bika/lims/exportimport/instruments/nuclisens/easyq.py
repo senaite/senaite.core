@@ -105,7 +105,7 @@ class EasyQXMLParser(InstrumentResultsFileParser):
             self._assays[as_ref.get("KEY_AssayRef")] = as_ref.get("ID")
         for t_req in root.iter("TestRequest"):
             t_res = t_req.find("TestResult")
-            if not t_res or t_res.get("Valid"):
+            if len(t_res) == 0 or not t_res.get("Valid", "false") == "true":
                 continue
             res_id = t_req.get("SampleID")
             test_name = self._assays.get(t_req.get("KEY_AssayRef"))
