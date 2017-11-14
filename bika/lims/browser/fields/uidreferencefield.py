@@ -277,11 +277,7 @@ def get_backreferences(context, relationship=None, as_brains=None):
     raw_backrefs = get_storage(instance)
 
     if relationship:
-        # get relation from storage
-        backrefs = raw_backrefs.get(relationship, None)
-        if not backrefs:
-            backrefs = []
-        # as_brains: return brains
+        backrefs = list(raw_backrefs.get(relationship, []))
         if as_brains:
             cat = _get_catalog_for_uid(backrefs[0])
             backrefs = cat(UID=backrefs)

@@ -92,11 +92,12 @@ It is also possible to find out if an `AnalysisService` depends on the calculati
     >>> calc.getCalculationDependants()
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
 
-
 Or to find out which services have selected a particular calculation as their
 primary Calculation field's value:
 
+    >>> from bika.lims.browser.fields.uidreferencefield import get_backreferences
     >>> get_backreferences(calc, 'AnalysisServiceCalculation')
+    ['...']
 
 The `Formula` can be tested with dummy values in the `TestParameters` field::
 

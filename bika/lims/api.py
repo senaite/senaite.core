@@ -160,10 +160,13 @@ def create(container, portal_type, *args, **kwargs):
         # already by an event handler
         obj = container._getOb(obj.getId())
 
-    obj.edit(**kwargs)
     # handle AT Content
     if is_at_content(obj):
         obj.processForm()
+
+    # Edit after processForm; processForm does AT unmarkCreationFlag.
+    obj.edit(**kwargs)
+
     # explicit notification
     modified(obj)
     return obj
