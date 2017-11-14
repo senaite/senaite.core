@@ -215,22 +215,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
         return DisplayList(sampletypes)
 
-    @deprecated('[1703] Orphan. No alternative')
-    def getAnalysisSpecsStr(self, keyword):
-        specstr = ''
-        specs = self.getResultsRangeDict()
-        if keyword in specs.keys():
-            specs = specs[keyword]
-            smin = specs.get('min', '')
-            smax = specs.get('max', '')
-            if smin and smax:
-                specstr = '%s - %s' % (smin, smax)
-            elif smin:
-                specstr = '> %s' % specs['min']
-            elif smax:
-                specstr = '< %s' % specs['max']
-        return specstr
-
     def getClientUID(self):
         return self.aq_parent.UID()
 

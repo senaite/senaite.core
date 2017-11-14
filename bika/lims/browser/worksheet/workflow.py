@@ -7,8 +7,6 @@
 
 import json
 
-import plone
-from plone.protect import CheckAuthenticator
 from AccessControl import getSecurityManager
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
@@ -23,6 +21,7 @@ from bika.lims.permissions import EditResults, ManageWorksheets
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive
+from plone.protect import CheckAuthenticator
 
 
 class WorksheetFolderWorkflowAction(WorkflowAction):
@@ -92,7 +91,6 @@ class WorksheetWorkflowAction(WorkflowAction):
 
 
         if action == 'submit':
-
             # Submit the form. Saves the results, methods, etc.
             self.submit()
 
@@ -109,7 +107,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                 # consistent with the order of the ARs
                 catalog = get_tool(CATALOG_ANALYSIS_LISTING)
                 brains = catalog({'UID': analysis_uids,
-                                 'sort_on': 'getRequestID'})
+                                  'sort_on': 'getRequestID'})
                 for brain in brains:
                     analysis = brain.getObject()
                     self.context.addAnalysis(analysis)

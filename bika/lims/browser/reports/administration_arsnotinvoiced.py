@@ -90,7 +90,7 @@ class Report(BrowserView):
             dataitem = {'value': ar.aq_parent.Title()}
             dataline.append(dataitem)
 
-            dataitem = {'value': ar.getRequestID()}
+            dataitem = {'value': ar.getId()}
             dataline.append(dataitem)
 
             dataitem = {'value': ar.getSampleTypeTitle()}

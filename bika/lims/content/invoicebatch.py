@@ -83,7 +83,7 @@ class InvoiceBatch(BaseFolder):
             if item.portal_type == 'AnalysisRequest':
                 lineitem['ItemDate'] = plone_view.toLocalizedTime(
                     getTransitionDate(item, 'publish'), long_format=1)
-                lineitem['OrderNumber'] = item.getRequestID()
+                lineitem['OrderNumber'] = item.getId()
                 lineitem['AnalysisRequest'] = item
                 lineitem['SupplyOrder'] = ''
                 description = get_invoice_item_description(item)

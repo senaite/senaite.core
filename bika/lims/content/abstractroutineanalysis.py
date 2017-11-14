@@ -12,7 +12,6 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 from bika.lims.browser.fields import HistoryAwareReferenceField, \
     InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
@@ -320,27 +319,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return calculation.UID()
 
     @security.public
-    @deprecated("[1709] Use getRequestID instead")
-    def getAnalysisRequestTitle(self):
-        """This is a catalog metadata column
-        """
-        return self.getRequestID()
-
-    @security.public
-    @deprecated("[1709] Use getRequestUID instead")
-    def getAnalysisRequestUID(self):
-        """This method is used to populate catalog values
-        """
-        return self.getRequestUID()
-
-    @security.public
-    @deprecated("[1709] Use getRequestURL instead")
-    def getAnalysisRequestURL(self):
-        """This is a catalog metadata column
-        """
-        return self.getRequestURL()
-
-    @security.public
     def getSampleTypeUID(self):
         """Used to populate catalog values.
         """
@@ -422,7 +400,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         an = self
 
         if specification == 'ar' or specification is None:
-            request = self.getRequest()
             if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
                 rr = an.aq_parent.getResultsRange()
                 rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
@@ -437,7 +414,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             if rr:
                 rr['uid'] = self.UID()
         return rr
-
 
     @security.public
     def getSiblings(self):
@@ -464,7 +440,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     def getDependencies(self):
         """Return a list of siblings who we depend on to calculate our result.
         """
-        calc  = self.getCalculation()
+        calc = self.getCalculation()
         if not calc:
             return []
 
@@ -491,7 +467,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         if callable(title):
             title = title()
         return '{}.{}.{}'.format(ar_sort_key, ar_id, title)
-
 
     @security.public
     def getHidden(self):

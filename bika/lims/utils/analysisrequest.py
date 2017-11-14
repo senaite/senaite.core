@@ -311,7 +311,7 @@ def notify_rejection(analysisrequest):
     :param analysisrequest: Analysis Request to which the notification refers
     :returns: true if success
     """
-    arid = analysisrequest.getRequestID()
+    arid = analysisrequest.getId()
 
     # This is the template to render for the pdf that will be either attached
     # to the email and attached the the Analysis Request for further access

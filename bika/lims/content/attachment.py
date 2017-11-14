@@ -169,7 +169,7 @@ class Attachment(BaseFolder):
         """
         ar = self.getRequest()
         if ar:
-            return ar.getRequestID()
+            return ar.getId()
         else:
             return None
 
