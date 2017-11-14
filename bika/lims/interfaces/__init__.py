@@ -796,3 +796,11 @@ class IFrontPageAdapter(Interface):
 
     def get_front_page_url(self):
         """ Get url of necessary front-page """
+
+class INumberGenerator(Interface):
+    """A utility to generates unique numbers by key
+    """
+
+class IGenerateID(Interface):
+    """Marker Interface to generate an ID
+    """
