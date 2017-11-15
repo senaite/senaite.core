@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #377 XML importer in Instrument Interface of Nuclisense EasyQ.
 - #344 Integration of PR-2294. Allow year in any portal type's ID format string
 - BC-99: Added Print Stickers button to AR listings
 - #319 Integration of PR-2112. Laboratory has Supervisor which can appear in reports.
