@@ -95,14 +95,22 @@ class EasyQXMLParser(InstrumentResultsFileParser):
     def __init__(self, xml):
         InstrumentResultsFileParser.__init__(self, xml, 'XML')
         self._assays = {}
+        self._instruments = {}
 
     def parse(self):
         """ parse the data
         """
         tree = ET.parse(self.getInputFile())
         root = tree.getroot()
+        # Building Assay dictionary to query names by id from test results line
         for as_ref in root.find("Assays").findall("AssayRef"):
             self._assays[as_ref.get("KEY_AssayRef")] = as_ref.get("ID")
+
+        # Building Instruments dictionary to get Serial number by id
+        for ins in root.find("Instruments").findall("Instrument"):
+            self._instruments[ins.get("KEY_InstrumentData")] = \
+                ins.get("SerialNumber")
+
         for t_req in root.iter("TestRequest"):
             t_res = t_req.find("TestResult")
             if len(t_res) == 0 or not t_res.get("Valid", "false") == "true":
@@ -114,12 +122,24 @@ class EasyQXMLParser(InstrumentResultsFileParser):
             if not result:
                 continue
             result = result.split(" cps/ml")[0]
+            detected = t_res.get("Detected")
+
+            # SOME ADDITIONAL DATA
+            # Getting instrument serial number from 'Run' element which is
+            # parent of 'TestRequest' elements
+            ins_serial = t_req.getParent().get("KEY_InstrumentData")
+
+            # Matrix is important for calculation.
+            matrix = t_req.get("Matrix")
             # For now, using EasyQDirector as keyword, but this is not the
             # right way. test_name must be used.
             values = {
                 'EasyQDirector': {
                     "DefaultResult": "Result",
                     "Result": result,
+                    "Detected": detected,
+                    "Matrix": matrix,
+                    "Instrument": ins_serial
                 }
             }
             self._addRawResult(res_id, values)
