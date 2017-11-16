@@ -805,25 +805,49 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RecordsWidget(
             label=_("Formatting Configuration"),
             allowDelete=True,
-            description=_("""The ID Server in Bika LIMS provides IDs for content items base of the given format specification.
-The format string is constructed in the same way as a python format() method
-based predefined variables per content type. The only variable available to all
-type is 'seq'. Currently, 'seq' can be constructed either using number generator
-or a counter of existing items. For generated IDs, one can specify the point at
-which the format string will be split to create the generator key. For counter
-IDs, one must specify the context and the type of counter which is either the
-number of backreferences or the number of contained objects.
-Configuration Settings:
-* format:
-  - a python format string constructed from predefined variables like sampleId, client, sampleType.
-  - special variable 'seq' must be positioned last in the format string
-* sequence type: [generated|counter]
-* context: if type counter, provides context the counting function
-* counter type: [backreference|contained]
-* counter reference: a parameter to the counting function
-* prefix: default prefix if none provided in format string
-* split length: the number of parts to be included in the prefix
-""")
+            description=_(
+                " <p>The Bika LIMS ID Server provides unique sequential IDs " 
+                "for objects such as Samples and Worksheets etc, based on a " 
+                "format specified for each content type.</p>" 
+                "<p>The format is constructed similarly to the Python format" 
+                " syntax, using predefined variables per content type, and" 
+                " advancing the IDs through a sequence number, 'seq' and its" 
+                " padding as a number of digits, e.g. '03d' for a sequence of" 
+                " IDs from 001 to 999.</p>" 
+                "<p>Alphanumeric prefixes for IDs are included as is in the" 
+                " formats, e.g. WS for Worksheet in WS-{seq:03d} produces" 
+                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>" 
+                "<p>Variables that can be used include:" 
+                "<table>" 
+                "<tr>"
+                "<th style='width:150px'>Content Type</th><th>Variables</th>" 
+                "</tr>" 
+                "<tr><td>Client</td><td>{client}</td></tr>" 
+                "<tr><td>Year</td><td>{year}</td></tr>" 
+                "<tr><td>Sample ID</td><td>{sampleId}</td></tr>" 
+                "<tr><td>Sample Type</td><td>{sampleType}</td></tr>" 
+                "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>" 
+                "<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>" 
+                "</table>" 
+                "</p>" 
+                "<p>Configuration Settings:" 
+                "<ul>" 
+                "<li>format:" 
+                "<ul><li>a python format string constructed from predefined" 
+                " variables like sampleId, client, sampleType.</li>" 
+                "<li>special variable 'seq' must be positioned last in the"  
+                "format string</li></ul></li>" 
+                "<li>sequence type: [generated|counter]</li>" 
+                "<li>context: if type counter, provides context the counting" 
+                " function</li>" 
+                "<li>counter type: [backreference|contained]</li>" 
+                "<li>counter reference: a parameter to the counting" 
+                " function</li>" 
+                "<li>prefix: default prefix if none provided in format" 
+                " string</li>" 
+                "<li>split length: the number of parts to be included in the" 
+                " prefix</li>" 
+                "</ul></p>")
         )
     ),
     BooleanField(

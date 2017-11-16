@@ -91,6 +91,25 @@ class NumberGenerator(object):
         logger.debug("NUMBER after => %s" % storage.get(key, '-'))
         return storage[key]
 
+    def set_number(self, key, value):
+        """ set a key's value
+        """
+        storage = self.storage
+
+        if not isinstance(value, int):
+            logger.error("set_number: Value must be an integer")
+            return
+
+        try:
+            lock.acquire()
+            storage[key] = value
+        finally:
+            self.storage._p_changed = True
+            lock.release()
+
+        return storage[key]
+
+
     def generate_number(self, key="default"):
         """ get a number
         """
