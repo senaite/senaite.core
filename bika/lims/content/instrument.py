@@ -40,6 +40,7 @@ from Products.Archetypes.atapi import ImageWidget
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import MultiSelectionWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 
@@ -182,6 +183,41 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             description=_("Select an Export interface for this instrument."),
             format='select',
             default='',
+            visible=True,
+        ),
+    ),
+
+    StringField('ImportDataInterface',
+                vocabulary="getImportDataInterfacesList",
+                multiValued=1,
+                widget=MultiSelectionWidget(
+                    checkbox_bound=0,
+                    label=_("Import Data Interface"),
+                    description=_(
+                        "Select an Import interface for this instrument."),
+                    format='select',
+                    default='',
+                    visible=True,
+                ),
+                ),
+
+    RecordsField(
+        'ResultFilesFolder',
+        subfields=('InterfaceName', 'Folder'),
+        subfield_labels={'InterfaceName': _('Interface Code'),
+                         'Folder': _('Folder that results will be saved')},
+        subfield_readonly={'InterfaceName': True,
+                           'Folder': False},
+        widget=RecordsWidget(
+            label=_("Result files folders"),
+            description=_("For each interface of this instrument, \
+                      you can define a folder where \
+                      the system should look for the results files while \
+                      automatically importing results. Having a folder \
+                      for each Instrument and inside that folder creating \
+                      different folders for each of its Interfaces \
+                      can be a good approach. You can use Interface codes \
+                      to be sure that folder names are unique."),
             visible=True,
         ),
     ),
@@ -401,6 +437,9 @@ class Instrument(ATFolder):
 
     def getExportDataInterfacesList(self):
         return getDataInterfaces(self, export_only=True)
+
+    def getImportDataInterfacesList(self):
+        return getImportDataInterfaces(self, import_only=True)
 
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
