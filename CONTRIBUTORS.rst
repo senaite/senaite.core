@@ -4,33 +4,32 @@ Contributors
 - Campbell McKellar-Basset, campbell@bikalabs.com
 - Jordi Puiggené, jpuiggene@naralabs.com
 - Pau Soliva, psoliva@naralabs.com
-- Godfrey Leibbrandt, godfrey@bikalabs.com
-- Anneline Sweetnam, anneline@bikalabs.com
-- Jurie-Jan Botha, juriejanbotha@gmail.com
+- Ramon Bartl, rb@ridingbytes.com
+- Nihad Mammadli, 1992.nihad@gmail.com
+- Anneline Sweetname, anneline@bikalabs.com
 - Mike Metcalfe, mike@webtide.co.za
+- Godfrey Leibbrandt, godfrey@bikalabs.com
+- Jurie-Jan Botha, juriejanbotha@gmail.com
+- Alexander Karlsson, akzylinx@gmail.com
+- Jayadeep Karnati, karnatijayadeep@gmail.com
+- Juan Gallostra, jgallostra@naralabs.com
 - Inus Scheepers, inus@bikalabs.com
+- Aman Arora, aman2arora2@gmail.com
+- Hocine Bendou, hocinebendou@gmail.com
 - Anton Feun, anton@satides.co.za
 - Oliver Roch, oliver.roch@d9t.de
-- Alexander Karlsson, karlsson@mweb.co.za
-- Ramon Bartl, rb@ridingbytes.com
 - Lemoene, lemoene@bikalabs.com
-- Jayadeep Karnati, karnatijayadeep@gmail.com
 - Dhruv Khattar, dhruv@khattarindia.com
+- Alfonso de la Guarda Reyes, alfonsodg@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
-- Jean Jordaan, jean.jordaan@gmail.com
-- Krishan Chopra, krishanchopra61@yahoo.in
+- Luke Williams, luke@iquidus.co.nz
+- Pieter van der Merwe, pieter_vdm@debortoli.com.au
+- Lunga, lunga001@gmail.com
+- Jonas Daniel, jonas@ogaard.no
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Anderson Smith, andersonsmith183@gmail.com
+- Jean Jordaan, jean.jordaan@gmail.com
 - Henrique Chehad, hchehad@gmail.com
-- Pieter van der Merwe, pietercvdm@gmail.com
+- jpsinghgoud, jaipal.singh@research.iiit.ac.in
+- goelakash, goelakash93@gmail.com
 - Manav Batra, manavbatra@outlook.com
-- Hocine Bendou, hocinebendou@gmail.com
-- Jaipal Singh, jaipal.singh@research.iiit.ac.in
-- Christoph H. Larsen, christoph.larsen@synalinq.com
-- Jonas Daniel, jonas@ogaard.no
-- Luke Williams, luke@iquidus.co.nz
-- Manav Batra, manavbatra@outlook.com
-- Aman Arora, aman2arora2@gmail.com
-- Ramon Bartl, rb@ridingbytes.com
-- Nihad Mammadli, nmammadli@naralabs.com
-- Juan Gallostra, jgallostra@naralabs.com
