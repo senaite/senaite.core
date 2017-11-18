@@ -413,7 +413,7 @@
                     <span
                         autocomplete="off"
                         tal:condition="python:not allow_edit"
-                        tal:content="python:item[column]['value']"/>
+                        tal:content="python:item[column]"/>
                 </td>
             </tr>
         </tal:rangecomments>
