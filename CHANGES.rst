@@ -25,6 +25,7 @@ Changelog
 
 **Fixed**
 
+- #385 Integration of PR-2309 Folderitems methods of Instrument Calibrations, Certifications and Validations are missing some objects
 - #384 Integration of PR-2306. Do not use localized date for chart js
 - #382 Integration of PR-2305. Bika Listing for Analysis Specifications fails on category expansion
 - #380 Integration of PR-2302. UnicodeDecodeError if title field validator
