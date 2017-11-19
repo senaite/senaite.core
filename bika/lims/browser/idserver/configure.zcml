@@ -5,11 +5,20 @@
 
   <browser:page
       for="*"
-      name="seed"
+      name="ng_seed"
       class="bika.lims.browser.idserver.view.IDServerView"
       attribute="seed"
       permission="cmf.ManagePortal"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
+
+  <browser:page
+      for="*"
+      name="ng_flush"
+      class="bika.lims.browser.idserver.view.IDServerView"
+      attribute="flush"
+      permission="cmf.ManagePortal"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
 </configure>

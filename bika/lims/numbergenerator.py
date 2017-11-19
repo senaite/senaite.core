@@ -69,6 +69,15 @@ class NumberGenerator(object):
             out.append(value)
         return out
 
+    def __iter__(self):
+        return self.storage.__iter__()
+
+    def __getitem__(self, key):
+        return self.storage.__getitem__(key)
+
+    def get(self, key, default=None):
+        return self.storage.get(key, default)
+
     def get_number(self, key):
         """ get the next consecutive number
         """
@@ -82,7 +91,7 @@ class NumberGenerator(object):
                 counter = storage[key]
                 storage[key] = counter + 1
             except KeyError:
-                storage[key] = 0
+                storage[key] = 1
         finally:
             logger.debug("*** consecutive number lock release ***")
             self.storage._p_changed = True
@@ -117,4 +126,3 @@ class NumberGenerator(object):
 
     def __call__(self, key="default"):
         return self.generate_number(key)
-
