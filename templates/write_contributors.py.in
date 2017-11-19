@@ -4,9 +4,14 @@
 # Generates CONTRIBUTORS.rst file, with the name and email of the contributors
 # to the proejct, sorted from more to less commits.
 
+import optparse
+import os
+import re
 import subprocess
+import sys
 
-SRC = "${buildout:directory}/bika/lims"
+SRC = "${buildout:directory}"
+LOCALES = SRC + '/bika/lims/locales'
 OUTFILE = SRC + '/CONTRIBUTORS.rst'
 
 # User names or emails to be replaced. If the value is None, the committer will
@@ -39,6 +44,10 @@ REPLACEMENTS = {
     'ramonski':                  'Ramon Bartl',
     'root@lynn':                 None,
     'zylinx':                    'Alexander Karlsson',
+    'lemoene Smit':              'Lemoene Smit',
+    'campbell_bika':             'Campbell McKellar-Basset',
+    'jordi.puiggene@gmail.com':  'jpuiggene@naralabs.com'
+
 }
 
 
@@ -46,6 +55,8 @@ def resolve_contributor(contributor):
     if not contributor:
         return None, None
     tokens = contributor.split('|')
+    if len(tokens) < 2:
+        return None, None
     name = tokens[0]
     email = tokens[1]
     if (name in REPLACEMENTS and not REPLACEMENTS[name]) \
@@ -56,9 +67,7 @@ def resolve_contributor(contributor):
     email = REPLACEMENTS.get(email, email)
     return name, email
 
-
-if __name__ == "__main__":
-
+def get_git_contributors_section():
     # Commits sorted from more recent to oldest, with committer name and email
     # The sorting by number of commits reverse will be done later, but we need
     # this initial list sorted this way, cause if there is a duplicate, we want
@@ -75,7 +84,7 @@ if __name__ == "__main__":
         if not name:
             continue
         if name in contributors_dict:
-            contributors_dict[name]['commits']+=1
+            contributors_dict[name]['commits'] += 1
         else:
             contributors_dict[name] = {
                 'name': name,
@@ -96,6 +105,113 @@ if __name__ == "__main__":
         commits = contributor[1]['commits']
         line = "- {}, {}\n".format(name, email)
         lines.append(line)
+    return lines
 
+def get_translators_section():
+    parser = optparse.OptionParser()
+
+    parser.add_option('-d', '--directory',
+                      dest='directory',
+                      default=LOCALES,
+                      help='Locales directory to scan [default: %default]')
+
+    parser.add_option('-e', '--extensions',
+                      dest='extensions',
+                      default='.po',
+                      help='Comma separated list of file extensions [default: %default]')
+
+    options, args = parser.parse_args(sys.argv)
+    translators_dict = dict()
+    translators = ['\n\n', 'Translators\n', '===========\n\n']
+    directory = options.directory
+    extensions = map(lambda ext: ext.strip(), options.extensions.split(","))
+
+    def resolve_translators(path):
+        lines = open(path, "r").readlines()
+        translators_section = False
+        translators_list = list()
+        lang_name = ""
+        lang_iso  = ""
+
+        for line in lines:
+            if line.startswith('# Translators'):
+                translators_section = True
+                continue
+
+            if translators_section and line.startswith('#'):
+                pattern = r'\# (.*) \<(.*)\>'
+                search = re.match(pattern, line)
+                if not search:
+                    continue
+
+                groups = search.groups()
+                if len(groups) != 2:
+                    continue
+
+                translator = '|'.join(groups)
+                name, email = resolve_contributor(translator)
+                if not name or not email:
+                    continue
+                translator_line = '{}, {}'.format(name, email)
+                if translator_line not in translators_list:
+                    translators_list.append(translator_line)
+
+            if translators_section and line.startswith('"Language-Team'):
+                lang_name = line[16:line.rindex(' (http')]
+                continue
+
+            if translators_section and line.startswith('"Language:'):
+                lang_iso = line[11:len(line)-4]
+                continue
+
+            if line.startswith('#: ') or (lang_name and lang_iso):
+                break
+
+        trans = list()
+        if lang_name and lang_iso and translators_list:
+            translators_list = list(set(translators_list))
+            for translator in translators_list:
+                line = '- {}, {} ({})\n'.format(translator, lang_name, lang_iso)
+                trans.append(line)
+
+        return lang_iso, trans
+
+
+    def callback(arg, dirname, names):
+        # only read from files where the file extension match (.po per default)
+        file_names = filter(lambda x: os.path.splitext(x)[-1] in extensions, names)
+        # generate a list of full file paths
+        file_paths = map(lambda x: os.path.abspath(os.path.join(dirname, x)), file_names)
+        # make a mapping of path -> file data
+        for path in file_paths:
+            lang_iso, translators = resolve_translators(path)
+            if lang_iso in translators_dict:
+                translators_dict[lang_iso].extend(translators)
+            else:
+                translators_dict[lang_iso] = translators
+
+    # walk the directory
+    os.path.walk(directory, callback, None)
+
+    # Get translators sorted by lang_iso
+    langs = translators_dict.keys()
+    langs.sort()
+    for lang in langs:
+        translators.extend(translators_dict[lang])
+
+    # Remove duplicates, but preserve order
+    seen = set()
+    seen_add = seen.add
+    return [x for x in translators if not (x in seen or seen_add(x))]
+
+
+if __name__ == "__main__":
+
+    contributors = get_git_contributors_section()
+    translators = get_translators_section()
+
+    lines = list()
+    lines.extend(contributors)
+    lines.extend(translators)
     outfile = open(OUTFILE, "w")
     outfile.writelines(lines)
