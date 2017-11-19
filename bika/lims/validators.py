@@ -120,11 +120,11 @@ class UniqueFieldValidator:
         # likely very expensive if the parent object contains many objects
         if fieldname in catalog.indexes():
             # We use the fieldname as index to reduce the results list
-            catalog_query[fieldname] = safe_unicode(value)
+            catalog_query[fieldname] = to_utf8(safe_unicode(value))
             parent_objects = map(api.get_object, catalog(catalog_query))
         elif field_index and field_index in catalog.indexes():
             # We use the field index to reduce the results list
-            catalog_query[field_index] = safe_unicode(value)
+            catalog_query[field_index] = to_utf8(safe_unicode(value))
             parent_objects = map(api.get_object, catalog(catalog_query))
         else:
             # fall back to the objectValues :(

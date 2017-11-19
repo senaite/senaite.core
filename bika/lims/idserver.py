@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import urllib
@@ -17,8 +19,6 @@ from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
 from zope.component import getAdapters
 from zope.component import getUtility
-from zope.container.interfaces import INameChooser
-from zope.interface import implements
 
 
 class IDServerUnavailable(Exception):
@@ -55,131 +55,290 @@ def idserver_generate_id(context, prefix, batch_size=None):
     return new_id
 
 
-def generateUniqueId(context, parent=False, portal_type=''):
+def get_objects_in_sequence(brain_or_object, ctype, cref):
+    """Return a list of items
+    """
+    obj = api.get_object(brain_or_object)
+    if ctype == "backreference":
+        return get_backreferences(obj, cref)
+    if ctype == "contained":
+        return get_contained_items(obj, cref)
+    raise ValueError("Reference value is mandatory for sequence type counter")
+
+
+def get_contained_items(obj, spec):
+    """Returns a list of (id, subobject) tuples of the current context.
+    If 'spec' is specified, returns only objects whose meta_type match 'spec'
+    """
+    return obj.objectItems(spec)
+
+
+def get_config(context, **kw):
+    """Fetch the config dict from the Bika Setup for the given portal_type
+    """
+    # get the ID formatting config
+    config_map = api.get_bika_setup().getIDFormatting()
+
+    # allow portal_type override
+    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+
+    # check if we have a config for the given portal_type
+    for config in config_map:
+        if config['portal_type'] == portal_type:
+            return config
+
+    # return a default config
+    default_config = {
+        'form': '%s-{seq}' % portal_type.lower(),
+        'sequence_type': 'generated',
+        'prefix': '%s' % portal_type.lower(),
+    }
+    return default_config
+
+
+def get_variables(context, **kw):
+    """Prepares a dictionary of key->value pairs usable for ID formatting
+    """
+
+    # allow portal_type override
+    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+
+    # The variables map hold the values that might get into the constructed id
+    variables = {
+        'context': context,
+        'id': api.get_id(context),
+        'portal_type': portal_type,
+        'year': get_current_year(),
+        'parent': api.get_parent(context),
+        'seq': 0,
+    }
+
+    # Augment the variables map depending on the portal type
+    if portal_type == "AnalysisRequest":
+        variables.update({
+            'sampleId': context.getSample().getId(),
+            'sample': context.getSample(),
+        })
+
+    elif portal_type == "SamplePartition":
+        variables.update({
+            'sampleId': context.aq_parent.getId(),
+            'sample': context.aq_parent,
+        })
+
+    elif portal_type == "Sample":
+        # get the prefix of the assigned sample type
+        sample_id = context.getId()
+        sample_type = context.getSampleType()
+        sampletype_prefix = sample_type.getPrefix()
+
+        date_now = DateTime()
+        sampling_date = context.getSamplingDate()
+        date_sampled = context.getDateSampled()
+
+        # Try to get the date sampled and sampling date
+        if sampling_date:
+            samplingDate = DT2dt(sampling_date)
+        else:
+            # No Sample Date?
+            logger.error("Sample {} has no sample date set".format(sample_id))
+            # fall back to current date
+            samplingDate = DT2dt(date_now)
+
+        if date_sampled:
+            dateSampled = DT2dt(date_sampled)
+        else:
+            # No Sample Date?
+            logger.error("Sample {} has no sample date set".format(sample_id))
+            dateSampled = DT2dt(date_now)
+
+        variables.update({
+            'clientId': context.aq_parent.getClientID(),
+            'dateSampled': dateSampled,
+            'samplingDate': samplingDate,
+            'sampleType': sampletype_prefix,
+        })
+
+    return variables
+
+
+def split(string, separator="-"):
+    """ split a string on the given separator
+    """
+    if not isinstance(string, basestring):
+        return []
+    return string.split(separator)
+
+
+def to_int(thing, default=0):
+    """Convert a thing to an integer
+    """
+    try:
+        return int(thing)
+    except (TypeError, ValueError):
+        return default
+
+
+def slice(string, separator="-", start=None, end=None):
+    """Slice out a segment of a string, which is splitted on separator.
+    """
+
+    # split the given string at the given separator
+    segments = split(string, separator)
+
+    # get the start and endposition for slicing
+    length = len(segments)
+    start = to_int(start)
+    end = to_int(end, length)
+
+    # return the separator joined sliced segments
+    sliced_parts = segments[start:end]
+    return separator.join(sliced_parts)
+
+
+def get_current_year():
+    """Returns the current year as a two digit string
+    """
+    return DateTime().strftime("%Y")[2:]
+
+
+def search_by_prefix(portal_type, prefix):
+    """Returns brains which share the same portal_type and ID prefix
+    """
+    catalog = api.get_tool("portal_catalog")
+    brains = catalog({"portal_type": portal_type})
+    # Filter brains with the same ID prefix
+    return filter(lambda brain: api.get_id(brain).startswith(prefix), brains)
+
+
+def get_ids_with_prefix(portal_type, prefix):
+    """Return a list of ids sharing the same portal type and prefix
+    """
+    brains = search_by_prefix(portal_type, prefix)
+    ids = map(api.get_id, brains)
+    return ids
+
+
+def get_counted_number(context, config, variables, **kw):
+    """Compute the number for the sequence type "Counter"
+    """
+    # This "context" is defined by the user in Bika Setup and can be actually
+    # anything. However, we assume it is something like "sample" or similar
+    ctx = config.get("context")
+
+    # get object behind the context name (falls back to the current context)
+    obj = variables.get(ctx, context)
+
+    # get the counter type, which is either "backreference" or "contained"
+    counter_type = config.get("counter_type")
+
+    # the counter reference is either the "relationship" for
+    # "backreference" or the meta type for contained objects
+    counter_reference = config.get("counter_reference")
+
+    # This should be a list of existing items, including the current context
+    # object
+    seq_items = get_objects_in_sequence(obj, counter_type, counter_reference)
+
+    number = len(seq_items)
+    return number
+
+
+def get_generated_number(context, config, variables, **kw):
+    """Generate a new persistent number with the number generator for the
+    sequence type "Generated"
+    """
+    # allow portal_type override
+    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+
+    # The ID format for string interpolation, e.g. WS-{seq:03d}
+    id_template = config.get("form", "")
+
+    # The split length defines where the variable part of the ID template begins
+    split_length = config.get("split_length", 1)
+
+    # The prefix tempalte is the static part of the ID
+    prefix_template = slice(id_template, end=split_length)
+
+    # get the number generator
+    number_generator = getUtility(INumberGenerator)
+
+    # generate the key for the number generator storage
+    prefix = prefix_template.format(**variables)
+    key = portal_type.lower()
+    if prefix:
+        key = "{}-{}".format(key, prefix)
+
+    # XXX: Handle flushed storage - refactoring needed here!
+    if key not in number_generator:
+        # we need to figure out the current state of the DB.
+        existing = search_by_prefix(portal_type, prefix)
+        max_num = 0
+        for brain in existing:
+            num = to_int(slice(api.get_id(brain), start=split_length))
+            if num > max_num:
+                max_num = num
+        # set the number generator
+        number_generator.set_number(key, max_num)
+
+    # TODO: We need a way to figure out the max numbers allowed in this
+    # sequence to raise a KeyError when the current number exceeds the maximum
+    # number possible in the sequence
+
+    # TODO: This allows us to "preview" the next generated ID in the UI
+    if not kw.get("dry_run", False):
+        # generate a new number
+        number = number_generator.generate_number(key=key)
+    else:
+        # just fetch the next number
+        number = number_generator.get(key, 1)
+    return number
+
+
+def generateUniqueId(context, **kw):
     """ Generate pretty content IDs.
     """
 
-    if portal_type == '':
-        portal_type = context.portal_type
+    # get the config for this portal type from the system setup
+    config = get_config(context, **kw)
 
-    def getLastCounter(context, config):
-        if config.get('counter_type', '') == 'backreference':
-            relationship = config['counter_reference']
-            backrefs = get_backreferences(context, relationship)
-            return len(backrefs) - 1
-        elif config.get('counter_type', '') == 'contained':
-            return len(context.objectItems(config['counter_reference'])) - 1
-        else:
-            raise RuntimeError('ID Server: missing values in configuration')
+    # get the variables map for later string interpolation
+    variables = get_variables(context, **kw)
 
-    number_generator = getUtility(INumberGenerator)
-    # keys = number_generator.keys()
-    # values = number_generator.values()
-    # for i in range(len(keys)):
-    #     print '%s : %s' % (keys[i], values[i])
+    # The new generate sequence number
+    number = 0
 
-    def getConfigByPortalType(config_map, portal_type):
-        config_by_pt = {}
-        for c in config_map:
-            if c['portal_type'] == portal_type:
-                config_by_pt = c
-                break
-        return config_by_pt
+    # get the sequence type from the global config
+    sequence_type = config.get("sequence_type", "generated")
 
-    config_map = api.get_bika_setup().getIDFormatting()
-    config = getConfigByPortalType(
-        config_map=config_map,
-        portal_type=portal_type)
-    if portal_type == "AnalysisRequest":
-        variables_map = {
-            'sampleId': context.getSample().getId(),
-            'sample': context.getSample(),
-            'year': DateTime().strftime("%Y")[2:],
-        }
-    elif portal_type == "SamplePartition":
-        variables_map = {
-            'sampleId': context.aq_parent.getId(),
-            'sample': context.aq_parent,
-            'year': DateTime().strftime("%Y")[2:],
-        }
-    elif portal_type == "Sample" and parent:
-        config = getConfigByPortalType(
-            config_map=config_map,
-            portal_type='SamplePartition')  # Override
-        variables_map = {
-            'sampleId': context.getId(),
-            'sample': context,
-            'year': DateTime().strftime("%Y")[2:],
-        }
-    elif portal_type == "Sample":
-        sampleDate = None
-        sampleType = context.getSampleType().getPrefix()
-        if context.getDateSampled():
-            sampleDate = DT2dt(context.getDateSampled())
-        else:
-            # No Sample Date?
-            logger.error("Sample {} has no sample date set".format(
-                context.getId()))
-            sampleDate = DT2dt(DateTime())
+    # Sequence Type is "Counter", so we use the length of the backreferences or
+    # contained objects of the evaluated "context" defined in the config
+    if sequence_type == 'counter':
+        number = get_counted_number(context, config, variables, **kw)
 
-        variables_map = {
-            'clientId': context.aq_parent.getClientID(),
-            'sampleDate': sampleDate,
-            'sampleType': api.normalize_filename(sampleType),
-            'year': DateTime().strftime("%Y")[2:],
-        }
-    else:
-        if not config:
-            # Provide default if no format specified on bika_setup
-            config = {
-                'form': '%s-{seq}' % portal_type.lower(),
-                'sequence_type': 'generated',
-                'prefix': '%s' % portal_type.lower(),
-            }
-        variables_map = {
-            'year': DateTime().strftime("%Y")[2:],
-        }
+    # Sequence Type is "Generated", so the ID is constructed according to the
+    # configured split length
+    if sequence_type == 'generated':
+        number = get_generated_number(context, config, variables, **kw)
 
-    # Actual id construction starts here
-    new_seq = 0
-    form = config['form']
-    if config['sequence_type'] == 'counter':
-        new_seq = getLastCounter(
-            context=variables_map[config['context']],
-            config=config)
-    elif config['sequence_type'] == 'generated':
-        try:
-            if config.get('split_length', None) == 0:
-                prefix_config = '-'.join(form.split('-')[:-1])
-                prefix = prefix_config.format(**variables_map)
-            elif config.get('split_length', 0) > 0:
-                prefix_config = form.split('-')[:config['split_length']]
-                prefix_config = '-'.join(prefix_config)
-                prefix = prefix_config.format(**variables_map)
-            else:
-                prefix = config['prefix']
-            new_seq = number_generator(key=prefix)
-        except KeyError, e:
-            msg = "KeyError in GenerateUniqueId on %s: %s" % (
-                str(config), e)
-            raise RuntimeError(msg)
-        except ValueError, e:
-            msg = "ValueError in GenerateUniqueId on %s with %s: %s" % (
-                str(config), str(variables_map), e)
-            raise RuntimeError(msg)
-    variables_map['seq'] = new_seq + 1
-    result = form.format(**variables_map)
-    return result
+    # store the new sequence number to the variables map for str interpolation
+    variables["seq"] = number
+
+    # The ID formatting template from user config, e.g. {sampleId}-R{seq:02d}
+    id_template = config.get("form", "")
+
+    # Interpolate the ID template
+    new_id = id_template.format(**variables)
+    normalized_id = api.normalize_filename(new_id)
+    logger.info("generateUniqueId: {}".format(normalized_id))
+
+    return normalized_id
 
 
 def renameAfterCreation(obj):
+    """Rename the content after it was created/added
     """
-    Renaming object right after it is created...
-    In some cases we may want to override generate_id function. To do this,
-    an adapter must be added (providing bika.lims.interfaces.IIdServer) for
-    that content type.
-    """
-    # Check if the _bika_id was aready set
+    # Check if the _bika_id was already set
     bika_id = getattr(obj, "_bika_id", None)
     if bika_id is not None:
         return bika_id
@@ -197,6 +356,11 @@ def renameAfterCreation(obj):
     if not new_id:
         new_id = generateUniqueId(obj)
 
+    # TODO: This is a naive check just in current folder
+    # -> this should check globally for duplicate objects with same prefix
+    # N.B. a check like `search_by_prefix` each time would probably slow things
+    # down too much!
+    # -> A solution could be to store all IDs with a certain prefix in a storage
     parent = api.get_parent(obj)
     if new_id in parent.objectIds():
         # XXX We could do the check in a `while` loop and generate a new one.
@@ -206,18 +370,3 @@ def renameAfterCreation(obj):
     parent.manage_renameObject(obj.id, new_id)
 
     return new_id
-
-
-class AutoGenerateID(object):
-    implements(INameChooser)
-
-    def __init__(self, context):
-        self.context = context
-
-    def chooseName(self, name, object):
-        bika_id = getattr(object, "_bika_id", None)
-        if bika_id is None:
-            new_id = generateUniqueId(object)
-            object._bika_id = new_id
-            bika_id = new_id
-        return bika_id
