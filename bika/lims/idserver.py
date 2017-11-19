@@ -5,22 +5,20 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import zLOG
 import urllib
-import transaction
 
+import transaction
+import zLOG
 from DateTime import DateTime
 from Products.ATContentTypes.utils import DT2dt
-
-from zope.component import getAdapters
-from zope.component import getUtility
-
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.interfaces import IIdServer
-from bika.lims import bikaMessageFactory as _
 from bika.lims.numbergenerator import INumberGenerator
+from zope.component import getAdapters
+from zope.component import getUtility
 
 
 class IDServerUnavailable(Exception):
@@ -68,8 +66,6 @@ def get_objects_in_sequence(brain_or_object, ctype, cref):
     raise ValueError("Reference value is mandatory for sequence type counter")
 
 
-
-
 def get_contained_items(obj, spec):
     """Returns a list of (id, subobject) tuples of the current context.
     If 'spec' is specified, returns only objects whose meta_type match 'spec'
@@ -107,7 +103,7 @@ def get_variables(context, **kw):
     # allow portal_type override
     portal_type = kw.get("portal_type") or api.get_portal_type(context)
 
-    # The variables map hold the values that might get into the construced id
+    # The variables map hold the values that might get into the constructed id
     variables = {
         'context': context,
         'id': api.get_id(context),
@@ -226,8 +222,8 @@ def get_ids_with_prefix(portal_type, prefix):
 def get_counted_number(context, config, variables, **kw):
     """Compute the number for the sequence type "Counter"
     """
-    # This "context" is defined by the user in Bika Setup and can be actuall anything.
-    # However, we assume it is something like "sample" or similar
+    # This "context" is defined by the user in Bika Setup and can be actually
+    # anything. However, we assume it is something like "sample" or similar
     ctx = config.get("context")
 
     # get object behind the context name (falls back to the current context)
@@ -236,11 +232,12 @@ def get_counted_number(context, config, variables, **kw):
     # get the counter type, which is either "backreference" or "contained"
     counter_type = config.get("counter_type")
 
-    # the counter reference is either the "replationship" for
+    # the counter reference is either the "relationship" for
     # "backreference" or the meta type for contained objects
     counter_reference = config.get("counter_reference")
 
-    # This should be a list of existing items, including the current context object
+    # This should be a list of existing items, including the current context
+    # object
     seq_items = get_objects_in_sequence(obj, counter_type, counter_reference)
 
     number = len(seq_items)
@@ -308,7 +305,7 @@ def generateUniqueId(context, **kw):
     # get the variables map for later string interpolation
     variables = get_variables(context, **kw)
 
-    # The new generatef sequence number
+    # The new generate sequence number
     number = 0
 
     # get the sequence type from the global config
@@ -324,10 +321,10 @@ def generateUniqueId(context, **kw):
     if sequence_type == 'generated':
         number = get_generated_number(context, config, variables, **kw)
 
-    # store the new sequence number to the variables map for string interpolation
+    # store the new sequence number to the variables map for str interpolation
     variables["seq"] = number
 
-    # The ID formatting template from the user config, e.g. {sampleId}-R{seq:02d}
+    # The ID formatting template from user config, e.g. {sampleId}-R{seq:02d}
     id_template = config.get("form", "")
 
     # Interpolate the ID template
@@ -341,7 +338,7 @@ def generateUniqueId(context, **kw):
 def renameAfterCreation(obj):
     """Rename the content after it was created/added
     """
-    # Check if the _bika_id was aready set
+    # Check if the _bika_id was already set
     bika_id = getattr(obj, "_bika_id", None)
     if bika_id is not None:
         return bika_id
@@ -363,7 +360,7 @@ def renameAfterCreation(obj):
     # -> this should check globally for duplicate objects with same prefix
     # N.B. a check like `search_by_prefix` each time would probably slow things
     # down too much!
-    # -> A solution could be to store all IDs with a certain prefix in a storage.
+    # -> A solution could be to store all IDs with a certain prefix in a storage
     parent = api.get_parent(obj)
     if new_id in parent.objectIds():
         # XXX We could do the check in a `while` loop and generate a new one.
