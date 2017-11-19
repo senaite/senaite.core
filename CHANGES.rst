@@ -8,8 +8,8 @@ Changelog
 
 - #372 Added build system to project root
 - #345 'SearchableText' field and adapter in Batches
-- #344 PR-2294. Allow year in any portal type's ID format string
-- #344 PR-2210. ID Server and bika setup updates along with migation step
+- #344 PR-2294 Allow year in any portal type's ID format string
+- #344 PR-2210 ID Server and bika setup updates along with migation step
 - #321 PR-2158 Multiple stickers printing in lists
 - #319 PR-2112 Laboratory Supervisor
 - #317 Enable backreferences associated to UIDReference fields
@@ -17,6 +17,10 @@ Changelog
 - #292 PR-2125 Added descriptions for Analysis Requests
 - #291 PR-1972 Landscape Layout for Reports
 - #286 Added Github Issue/PR Template
+- #281 PR-2269 Show the Unit in Manage Analyses View
+- #279 Allow external Python library functions to be used in Calculation Formulas
+- #279 Calculation formula test widgets
+- #279 PR-2154 New ar add form
 
 **Changed**
 
@@ -79,11 +83,7 @@ Changelog
 - #284 PR-1917 Solved WF Translation issues and fixed WF Action Buttons in Bika Listings
 - #283 PR-2252 Traceback if the title contains braces on content creation
 - #282 PR-2266 Instrument Calibration Table fixes
-- #281 PR-2269 Show the Unit in Manage Analyses View
-- #280 Integration of PR-2271. Setting 2 or more CCContacts in AR view produces a Traceback on Save
-- #279 Allow external Python library functions to be used in Calculation Formulas
-- #279 Calculation formula test widgets
-- #279 PR-2154 New ar add form, PR-2154
+- #280 PR-2271 Setting 2 or more CCContacts in AR view produces a Traceback on Save
 
 
 1.0.0 (2017-10-13)
