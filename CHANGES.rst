@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #386 PR-2297 Added seeding function to IDServer
 - #372 Added build system to project root
 - #345 'SearchableText' field and adapter in Batches
 - #344 PR-2294 Allow year in any portal type's ID format string
@@ -39,6 +40,9 @@ Changelog
 
 **Fixed**
 
+- #386 PR-2313 UniqueFieldValidator: Encode value to utf-8 before passing it to the catalog
+- #386 PR-2312 IDServer: Fixed default split length value
+- #386 PR-2311 Fix ID Server to handle a flushed storage or existing IDs with the same prefix
 - #385 PR-2309 Some objects were missed in instrument listing views
 - #384 PR-2306 Do not use localized dates for control chart as it breaks the controlchart.js datetime parser
 - #382 PR-2305 TypeError in Analysis Specification category expansion
