@@ -258,7 +258,7 @@ def get_generated_number(context, config, variables, **kw):
     id_template = config.get("form", "")
 
     # The split length defines where the variable part of the ID template begins
-    split_length = config.get("split_length", 0)
+    split_length = config.get("split_length", 1)
 
     # The prefix tempalte is the static part of the ID
     prefix_template = slice(id_template, end=split_length)
