@@ -40,6 +40,7 @@ Changelog
 
 **Fixed**
 
+- #387 ClientWorkflowAction object has no attribute 'portal_url' when publishing multiple ARs
 - #386 PR-2313 UniqueFieldValidator: Encode value to utf-8 before passing it to the catalog
 - #386 PR-2312 IDServer: Fixed default split length value
 - #386 PR-2311 Fix ID Server to handle a flushed storage or existing IDs with the same prefix
