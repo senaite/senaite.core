@@ -44,7 +44,7 @@ class AnalysesView(BikaListingView):
         self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'created'
+        self.contentFilter['sort_on'] = 'sortable_title'
         self.contentFilter['sort_order'] = 'ascending'
         self.sort_order = 'ascending'
         self.context_actions = {}
@@ -82,6 +82,7 @@ class AnalysesView(BikaListingView):
             'Service': {
                 'title': _('Analysis'),
                 'attr': 'Title',
+                'index': 'sortable_title',
                 'sortable': False},
             'Partition': {
                 'title': _("Partition"),
@@ -241,25 +242,6 @@ class AnalysesView(BikaListingView):
                 return True
         # By default, not out of range
         return False
-
-    @deprecated('[1703] Orphan. No alternative')
-    def getAnalysisSpecsStr(self, spec):
-        """
-        Generates a string representation of the specifications passed in. If
-        neither min nor max values found, returns an empty string
-
-        :param spec: specifications dict, with 'min' and 'max' keys
-        :type spec: dict
-        :returns: a string representation of the passed in specs
-        :rtype: string
-        """
-        if spec['min'] and spec['max']:
-            return '%s - %s' % (spec['min'], spec['max'])
-        if spec['min']:
-            return '> %s' % spec['min']
-        if spec['max']:
-            return '< %s' % spec['max']
-        return ''
 
     def get_methods_vocabulary(self, analysis=None):
         """
@@ -458,7 +440,7 @@ class AnalysesView(BikaListingView):
         item['class']['retested'] = 'center'
         item['result_captured'] = self.ulocalized_time(
             obj.getResultCaptureDate, long_format=0)
-        item['calculation'] = obj.getCalculation and True or False
+        item['calculation'] = obj.getCalculationUID and True or False
         if obj.meta_type == "ReferenceAnalysis":
             item['DueDate'] = self.ulocalized_time(
                 obj.getExpiryDate, long_format=0)

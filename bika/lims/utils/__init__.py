@@ -1,39 +1,37 @@
 # -*- coding: utf-8 -*-
-from AccessControl import getSecurityManager
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 
-from AccessControl import ModuleSecurityInfo, allow_module
-
-import math
-
-from bika.lims import logger
-from bika.lims.browser import BrowserView
-from DateTime import DateTime
-from email import Encoders
-from email.MIMEBase import MIMEBase
-from plone.memoize import ram
-from plone.registry.interfaces import IRegistry
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from socket import timeout
-from time import time
-from weasyprint import HTML, CSS
-from zope.component import queryUtility
-from zope.i18n import translate
-from zope.i18n.locales import locales
-
-import App
-import Globals
 import os
 import re
 import tempfile
 import types
 import urllib2
+from email import Encoders
+from time import time
+
+from AccessControl import ModuleSecurityInfo
+from AccessControl import allow_module
+from AccessControl import getSecurityManager
+from DateTime import DateTime
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api as api
+from bika.lims import logger
+from bika.lims.browser import BrowserView
+from email.MIMEBase import MIMEBase
+from persistent.mapping import PersistentMapping
+from plone.memoize import ram
+from plone.registry.interfaces import IRegistry
+from weasyprint import CSS, HTML
+from weasyprint import default_url_fetcher
+from zope.component import queryUtility
+from zope.i18n import translate
+from zope.i18n.locales import locales
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -90,7 +88,7 @@ class js_err(BrowserView):
     def __call__(self, message):
         """Javascript sends a string for us to place into the error log
         """
-        self.logger.error(message);
+        self.logger.error(message)
 
 
 class js_warn(BrowserView):
@@ -117,6 +115,7 @@ def _cache_key_getUsers(method, context, roles=[], allow_empty=True):
     key = time() // (60 * 60), roles, allow_empty
     return key
 
+
 @ram.cache(_cache_key_getUsers)
 def getUsers(context, roles, allow_empty=True):
     """ Present a DisplayList containing users in the specified
@@ -133,6 +132,7 @@ def getUsers(context, roles, allow_empty=True):
         pairs.append((uid, fullname))
     pairs.sort(lambda x, y: cmp(x[1], y[1]))
     return DisplayList(pairs)
+
 
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
@@ -383,6 +383,33 @@ def isnumber(s):
         return False
 
 
+def bika_url_fetcher(url):
+    """Basically the same as the default_url_fetcher from WeasyPrint,
+    but injects the __ac cookie to make an authenticated request to the resource.
+    """
+    from weasyprint import VERSION_STRING
+    from weasyprint.compat import Request
+    from weasyprint.compat import urlopen_contenttype
+
+    request = api.get_request()
+    __ac = request.cookies.get("__ac", "")
+
+    if request.get_header("HOST") in url:
+        result, mime_type, charset = urlopen_contenttype(
+            Request(url,
+                    headers={
+                        'Cookie': "__ac={}".format(__ac),
+                        'User-Agent': VERSION_STRING,
+                        'Authorization': request._auth,
+                    }))
+        return dict(file_obj=result,
+                    redirected_url=result.geturl(),
+                    mime_type=mime_type,
+                    encoding=charset)
+
+    return default_url_fetcher(url)
+
+
 def createPdf(htmlreport, outfile=None, css=None, images={}):
     """create a PDF from some HTML.
     htmlreport: rendered html
@@ -420,7 +447,7 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
 
     # render
     htmlreport = to_utf8(htmlreport)
-    renderer = HTML(string=htmlreport, encoding='utf-8')
+    renderer = HTML(string=htmlreport, url_fetcher=bika_url_fetcher, encoding='utf-8')
     pdf_fn = outfile if outfile else tempfile.mktemp(suffix=".pdf")
     if css:
         renderer.write_pdf(pdf_fn, stylesheets=[CSS(string=css_def)])
@@ -527,7 +554,7 @@ def format_supsub(text):
     insubsup = True
     for c in text:
         if c == '(':
-            if insubsup == False:
+            if insubsup is False:
                 out.append(c)
                 clauses.append(')')
             else:
@@ -552,7 +579,7 @@ def format_supsub(text):
             continue
 
         elif c == ' ':
-            if insubsup == True:
+            if insubsup is True:
                 out.append(subsup.pop())
             else:
                 out.append(c)
@@ -567,7 +594,7 @@ def format_supsub(text):
 
     while True:
         if len(subsup) == 0:
-            break;
+            break
         out.append(subsup.pop())
 
     return ''.join(out)

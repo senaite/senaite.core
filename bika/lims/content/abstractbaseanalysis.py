@@ -16,15 +16,16 @@ from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
 from Products.Archetypes.utils import DisplayList, IntDisplayList
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField, InterimFieldsField, \
-    UIDReferenceField
+from bika.lims.browser.fields import DurationField, UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.utils import to_utf8 as _c
+from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
 # this value will be used instead.  It's set on the AnalysisService,
@@ -330,45 +331,6 @@ Method = UIDReferenceField(
             "If 'Allow instrument entry of results' is selected, the method "
             "from the default instrument will be used. Otherwise, only the "
             "methods selected above will be displayed.")
-    )
-)
-
-# Calculation to be used. This field is used in Analysis Service Edit view,
-# use getCalculation() to retrieve the Calculation to be used in this
-# Analysis Service.
-# The default calculation is the one linked to the default method Behavior
-# controlled by js depending on UseDefaultCalculation:
-# - If UseDefaultCalculation is set to False, show this field
-# - If UseDefaultCalculation is set to True, show this field
-# See browser/js/bika.lims.analysisservice.edit.js
-Calculation = UIDReferenceField(
-    'Calculation',
-    schemata="Method",
-    required=0,
-    vocabulary='_getAvailableCalculationsDisplayList',
-    allowed_types=('Calculation',),
-    widget=UIDSelectionWidget(
-        format='select',
-        label=_("Calculation"),
-        description=_("Calculation to be assigned to this content."),
-        catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
-    )
-)
-
-# InterimFields are defined in Calculations, Services, and Analyses.
-# In Analysis Services, the default values are taken from Calculation.
-# In Analyses, the default values are taken from the Analysis Service.
-# When instrument results are imported, the values in analysis are overridden
-# before the calculation is performed.
-InterimFields = InterimFieldsField(
-    'InterimFields',
-    schemata='Method',
-    widget=RecordsWidget(
-        label=_("Calculation Interim Fields"),
-        description=_(
-            "Values can be entered here which will override the defaults "
-            "specified in the Calculation Interim Fields."),
     )
 )
 
@@ -711,8 +673,6 @@ schema = BikaSchema.copy() + Schema((
     InstrumentEntryOfResults,
     Instrument,
     Method,
-    Calculation,
-    InterimFields,
     MaxTimeAllowed,
     DuplicateVariation,
     Accredited,
@@ -744,6 +704,7 @@ schema['title']._validationLayer()
 
 
 class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
+    implements(IBaseAnalysis)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -974,22 +935,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         instrument = self.getInstrument()
         if instrument:
             return instrument.absolute_url_path()
-
-    @security.public
-    def getCalculationTitle(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.Title()
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
 
     @security.public
     def getCategoryTitle(self):

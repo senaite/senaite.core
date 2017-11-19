@@ -88,7 +88,7 @@ class AnalysisRequestViewView(BrowserView):
                                  self.request,
                                  getPointOfCapture=poc,
                                  show_categories=self.context.bika_setup.getCategoriseAnalysisServices(),
-                                 getAnalysisRequestUID=self.context.UID())
+                                 getRequestUID=self.context.UID())
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id': 'submit'},
@@ -140,7 +140,7 @@ class AnalysisRequestViewView(BrowserView):
                         'listed here for trace-ability purposes. Please follow '
                         'the link to the retest')
             if childar:
-                message = (message + " %s.") % childar.getRequestID()
+                message = (message + " %s.") % childar.getId()
             else:
                 message = message + "."
             self.addMessage(message, 'warning')
@@ -153,7 +153,7 @@ class AnalysisRequestViewView(BrowserView):
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': par.getRequestID()})
+                        mapping={'retracted_request_id': par.getId()})
             self.addMessage(message, 'info')
         self.renderMessages()
         return self.template()
@@ -161,12 +161,12 @@ class AnalysisRequestViewView(BrowserView):
     def getAttachments(self):
         attachments = []
         ar_atts = self.context.getAttachment()
-        analyses = self.context.getAnalyses(full_objects = True)
+        analyses = self.context.getAnalyses(full_objects=True)
         for att in ar_atts:
-            file_obj = att.getAttachmentFile()
-            fsize = file_obj.get_size() if file_obj else 0
-            if isinstance(fsize, tuple):
-                fsize = 0
+            fsize = 0
+            file = att.getAttachmentFile()
+            if file:
+                fsize = file.get_size()
             if fsize < 1024:
                 fsize = '%s b' % fsize
             else:
@@ -175,18 +175,19 @@ class AnalysisRequestViewView(BrowserView):
                 'keywords': att.getAttachmentKeys(),
                 'analysis': '',
                 'size': fsize,
-                'name': file_obj.filename,
-                'Icon': file_obj.icon,
-                'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                'name': file.filename,
+                'Icon': file.icon,
+                'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                 'absolute_url': att.absolute_url(),
                 'UID': att.UID(),
+                'report_option': att.getReportOption(),
             })
 
         for analysis in analyses:
             an_atts = analysis.getAttachment()
             for att in an_atts:
-                file_obj = att.getAttachmentFile()
-                fsize = file_obj.get_size() if file_obj else 0
+                file = att.getAttachmentFile()
+                fsize = file.get_size() if file else 0
                 if fsize < 1024:
                     fsize = '%s b' % fsize
                 else:
@@ -195,11 +196,12 @@ class AnalysisRequestViewView(BrowserView):
                     'keywords': att.getAttachmentKeys(),
                     'analysis': analysis.Title(),
                     'size': fsize,
-                    'name': file_obj.filename,
-                    'Icon': file_obj.icon,
-                    'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                    'name': file.filename,
+                    'Icon': file.icon,
+                    'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                     'absolute_url': att.absolute_url(),
                     'UID': att.UID(),
+                    'report_option': att.getReportOption(),
                 })
         return attachments
 
@@ -312,7 +314,7 @@ class AnalysisRequestViewView(BrowserView):
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         res = []
         for analysis in bac(portal_type="Analysis",
-                           getRequestID=self.context.RequestID):
+                            getRequestID=self.context.getId()):
             analysis = analysis.getObject()
             res.append([analysis.getPointOfCapture(),
                         analysis.getCategoryUID(),
@@ -456,7 +458,7 @@ class AnalysisRequestViewView(BrowserView):
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
             childar = hasattr(ar, 'getChildAnalysisRequest') \
                         and ar.getChildAnalysisRequest() or None
-            anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getRequestID())) or None
+            anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getId())) or None
             if anchor:
                 custom['ChildAR'] = {
                     'title': t(_("AR for retested results")),
@@ -467,7 +469,7 @@ class AnalysisRequestViewView(BrowserView):
         if hasattr(ar, 'getParentAnalysisRequest') \
             and ar.getParentAnalysisRequest():
             par = ar.getParentAnalysisRequest()
-            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
+            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getId())
             custom['ParentAR'] = {
                 'title': t(_("Invalid AR retested")),
                 'value': anchor

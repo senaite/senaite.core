@@ -1,0 +1,145 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+  <head>
+
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:${portal/absolute_url}/++resource++bika.lims.css/bika.lims.analysisrequest.add.css"/>
+      <style>
+       #fieldlist {
+           list-style-type: none!important;
+           margin: 0!important;
+       }
+       #fieldlist li {
+           border: 1px solid #c5c5c5;
+           background: #f6f6f6;
+           font-weight: normal;
+           color: #454545;
+           cursor: ns-resize;
+           font-size: 1.4em;
+           height: 18px;
+           padding: 0.5em;
+       }
+       #fieldlist li input {
+           vertical-align: middle;
+       }
+      </style>
+      <script>
+       $(function() {
+         $("#fieldlist").sortable();
+         $("#fieldlist").disableSelection();
+       });
+      </script>
+    </metal:block>
+  </head>
+  <body>
+
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Manage Analysis Request Form Fields
+      </h1>
+    </metal:title>
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        Manage the order and visibility of the fields displayed in analysis
+        request add forms.
+      </p>
+      <p i18n:translate="" class="discreet">
+        Note: The settings apply to all AR Add forms; Required fields can not be deselected.
+      </p>
+    </metal:description>
+
+    <div metal:fill-slot="content-core"
+         tal:define="portal context/@@plone_portal_state/portal;">
+
+      <form id="analysisrequest_manage_add_form"
+            name="analysisrequest_manage_add_form"
+            method="POST">
+
+        <input type="hidden" name="submitted" value="1"/>
+        <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+        <ul id="fieldlist">
+          <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
+            <tal:def define="fieldName python:field.getName();
+                             required python:field.required;
+                             widget python:field.widget;">
+              <li class="edit_field"
+                  tal:define="fieldname python:field.getName()">
+
+                <!-- Field Order -->
+                <input type="hidden"
+                       tal:attributes="name string:order:list;
+                                       value string:${fieldName}"/>
+                <!-- Field Visibility -->
+                <input type="hidden"
+                       tal:attributes="name string:visibility.${fieldName}:record:boolean:default;
+                                       value python:False"/>
+                <input type="checkbox"
+                       tal:attributes="name string:visibility.${fieldName}:record:boolean;
+                                       value python:True;
+                                       checked python:view.is_field_visible(field);
+                                       disabled python:required and 'disabled' or ''"/>
+
+                <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                <span class="fieldRequired"
+                      tal:condition="required"
+                      title="Required"
+                      i18n:attributes="title title_required;">&nbsp;</span>
+              </li>
+            </tal:def>
+          </tal:field>
+
+          <tal:field tal:repeat="field python:view.get_fields_with_visibility('hidden')">
+            <tal:def define="fieldName python:field.getName();
+                             required python:field.required;
+                             widget python:field.widget;">
+              <li class="hidden_field"
+                  tal:define="fieldname python:field.getName()">
+
+                <!-- Field Order -->
+                <input type="hidden"
+                       tal:attributes="name string:order:list;
+                                       value string:${fieldName}"/>
+                <!-- Field Visibility -->
+                <input type="hidden"
+                       tal:attributes="name string:visibility.${fieldName}:record:boolean:default;
+                                       value python:False"/>
+                <input type="checkbox"
+                       tal:attributes="name string:visibility.${fieldName}:record:boolean;
+                                       value python:True;
+                                       checked python:view.is_field_visible(field);
+                                       disabled python:required and 'disabled' or ''"/>
+
+                <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                <span class="fieldRequired"
+                      tal:condition="required"
+                      title="Required"
+                      i18n:attributes="title title_required;">&nbsp;</span>
+              </li>
+            </tal:def>
+          </tal:field>
+        </ul>
+
+        <input class="btn btn-success btn-sm allowMultiSubmit"
+               type="submit"
+               name="save"
+               i18n:attributes="value"
+               value="Save"/>
+
+        <input class="btn btn-warning btn-sm allowMultiSubmit"
+               type="submit"
+               name="reset"
+               i18n:attributes="value"
+               value="Reset"/>
+
+      </form>
+
+    </div>
+
+  </body>
+</html>

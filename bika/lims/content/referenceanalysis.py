@@ -151,7 +151,30 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
+    @deprecated("[1710] Reference Analyses do not support Interims")
+    def setInterimFields(self, interims=None , **kwargs):
+        pass
+
+    @deprecated("[1710] Reference Analyses do not support Interims")
+    def getInterimFields(self):
+        return []
+
+    @deprecated("[1710] Reference Analyses do not support Calculations")
+    def setCalculation(self, calculation=None, **kwargs):
+        pass
+
+    @deprecated("[1710] Reference Analyses do not support Calculations")
+    def getCalculation(self):
+        return None
+
+    @deprecated("[1710] Reference Analyses do not support Calculations")
+    def getCalculationTitle(self):
+        return None
+
+    @deprecated("[1710] Reference Analyses do not support Calculations")
+    def getCalculationUID(self):
+        return None
+
     @security.public
     def workflow_script_submit(self):
         """Method triggered after a 'submit' transition for the current

@@ -35,7 +35,7 @@ function CalculationUtils() {
             item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 
             // clear out the alerts for this field
-            $(".alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();
+            $(".bika-alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();
 
             if ($(this).parents('td,div').first().hasClass('interim')){
                 // add value to form's item_data
@@ -172,7 +172,7 @@ function CalculationUtils() {
                     // clear out all row alerts for rows with fresh results
                     for(i=0;i<$(data['results']).length;i++){
                         result = $(data['results'])[i];
-                        $(".alert").filter("span[uid='"+result.uid+"']").empty();
+                        $(".bika-alert").filter("span[uid='"+result.uid+"']").empty();
                     }
                     // put new alerts
                     $.each( data['alerts'], function( auid, alerts ) {

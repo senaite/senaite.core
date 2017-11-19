@@ -4,54 +4,54 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <!-- Debug logging event handler for all transitions -->
-    <subscriber
+  <!-- Debug logging event handler for all transitions -->
+  <subscriber
       for="*
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
       handler="bika.lims.subscribers.after_transition_log.AfterTransitionEventHandler"
-    />
+      />
 
-    <!-- Newly created analyses -->
-    <subscriber
+  <!-- Newly created analyses -->
+  <subscriber
       for="*
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"
       handler="bika.lims.subscribers.objectmodified.ObjectModifiedEventHandler"
-    />
+      />
 
-    <!-- Newly created analyses (applies to routine analyses only) -->
-    <subscriber
+  <!-- Newly created analyses (applies to routine analyses only) -->
+  <subscriber
       for="bika.lims.interfaces.IRoutineAnalysis
            Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler="bika.lims.subscribers.analysis.ObjectInitializedEventHandler"
-    />
+      />
 
-    <!-- Deleted analyses (applies to routine analyses only) -->
-    <subscriber
+  <!-- Deleted analyses (applies to routine analyses only) -->
+  <subscriber
       for="bika.lims.interfaces.IRoutineAnalysis
            zope.lifecycleevent.interfaces.IObjectRemovedEvent"
       handler="bika.lims.subscribers.analysis.ObjectRemovedEventHandler"
-    />
+      />
 
-    <subscriber
-        for="bika.lims.interfaces.IBikaSetup
+  <subscriber
+      for="bika.lims.interfaces.IBikaSetup
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"
       handler="bika.lims.subscribers.bikasetup.BikaSetupModifiedEventHandler"
-    />
+      />
 
-    <subscriber
-        for="bika.lims.content.samplinground.ISamplingRound
+  <subscriber
+      for="bika.lims.content.samplinground.ISamplingRound
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
-    />
+      />
 
-    <subscriber
-        for="Products.PlonePAS.events.UserLoggedOutEvent"
+  <subscriber
+      for="Products.PlonePAS.events.UserLoggedOutEvent"
       handler="bika.lims.subscribers.dep_cookie.ClearDepartmentCookies"
-       />
+      />
 
-      <subscriber
-        for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
-        handler="bika.lims.subscribers.dep_cookie.SetDepartmentCookies"
-        />
+  <subscriber
+      for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
+      handler="bika.lims.subscribers.dep_cookie.SetDepartmentCookies"
+      />
 
-    </configure>
+</configure>

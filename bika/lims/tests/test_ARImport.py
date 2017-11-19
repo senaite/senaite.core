@@ -3,20 +3,24 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import re
+
+import transaction
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import logger
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_SIMPLE_FIXTURE
-from bika.lims.tests.base import BikaSimpleTestCase
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
+from plone.app.testing import setRoles
+
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
-from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-
-import re
-import transaction
-import unittest
+from bika.lims.workflow import getCurrentState
 
 try:
     import unittest2 as unittest
@@ -24,8 +28,7 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class TestARImports(BikaSimpleTestCase):
-
+class TestARImports(BikaFunctionalTestCase):
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
         thing.unmarkCreationFlag()
@@ -35,33 +38,42 @@ class TestARImports(BikaSimpleTestCase):
 
     def setUp(self):
         super(TestARImports, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
         login(self.portal, TEST_USER_NAME)
-        self.client = self.addthing(self.portal.clients, 'Client',
-                                    title='Happy Hills', ClientID='HH')
-        self.addthing(self.client, 'Contact', Firstname='Rita Mohale',
-                      Lastname='Mohale')
-        self.addthing(self.portal.bika_setup.bika_sampletypes, 'SampleType',
-                      title='Water', Prefix='H2O')
-        self.addthing(self.portal.bika_setup.bika_samplematrices,
-                      'SampleMatrix', title='Liquids')
-        self.addthing(self.portal.bika_setup.bika_samplepoints, 'SamplePoint',
-                      title='Toilet')
-        self.addthing(self.portal.bika_setup.bika_containertypes,
-                      'ContainerType', title='Cup')
-        a = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Ecoli', Keyword="ECO")
-        b = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Salmonella', Keyword="SAL")
-        c = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Color', Keyword="COL")
-        d = self.addthing(self.portal.bika_setup.bika_analysisservices,
-                          'AnalysisService', title='Taste', Keyword="TAS")
-        self.addthing(self.portal.bika_setup.bika_analysisprofiles,
-                      'AnalysisProfile', title='MicroBio',
-                      Service=[a.UID(), b.UID()])
-        self.addthing(self.portal.bika_setup.bika_analysisprofiles,
-                      'AnalysisProfile', title='Properties',
-                      Service=[c.UID(), d.UID()])
+        client = self.addthing(
+            self.portal.clients, 'Client', title='Happy Hills', ClientID='HH')
+        self.addthing(
+            client, 'Contact', Firstname='Rita Mohale', Lastname='Mohale')
+        self.addthing(
+            self.portal.bika_setup.bika_sampletypes, 'SampleType',
+            title='Water', Prefix='H2O')
+        self.addthing(
+            self.portal.bika_setup.bika_samplematrices, 'SampleMatrix',
+            title='Liquids')
+        self.addthing(
+            self.portal.bika_setup.bika_samplepoints, 'SamplePoint',
+            title='Toilet')
+        self.addthing(
+            self.portal.bika_setup.bika_containertypes, 'ContainerType',
+            title='Cup')
+        a = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Ecoli', Keyword="ECO")
+        b = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Salmonella', Keyword="SAL")
+        c = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Color', Keyword="COL")
+        d = self.addthing(
+            self.portal.bika_setup.bika_analysisservices, 'AnalysisService',
+            title='Taste', Keyword="TAS")
+        self.addthing(
+            self.portal.bika_setup.bika_analysisprofiles, 'AnalysisProfile',
+            title='MicroBio', Service=[a.UID(), b.UID()])
+        self.addthing(
+            self.portal.bika_setup.bika_analysisprofiles, 'AnalysisProfile',
+            title='Properties', Service=[c.UID(), d.UID()])
 
     def tearDown(self):
         super(TestARImports, self).setUp()
@@ -70,7 +82,8 @@ class TestARImports(BikaSimpleTestCase):
     def test_complete_valid_batch_import(self):
         pc = getToolByName(self.portal, 'portal_catalog')
         workflow = getToolByName(self.portal, 'portal_workflow')
-        arimport = self.addthing(self.client, 'ARImport')
+        client = self.portal.clients.objectValues()[0]
+        arimport = self.addthing(client, 'ARImport')
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
@@ -121,30 +134,34 @@ Total price excl Tax,,,,,,,,,,,,,,
             self.fail(
                 'Importation failed!  %s.Errors: %s' % (arimport.id, errors))
 
-        bc = getToolByName(self.portal, 'bika_catalog')
-        ars = bc(portal_type='AnalysisRequest')
+        barc = getToolByName(self.portal, CATALOG_ANALYSIS_REQUEST_LISTING)
+        ars = barc(portal_type='AnalysisRequest')
         if not ars[0].getObject().getContact():
             self.fail('No Contact imported into ar.Contact field.')
         l = len(ars)
         if l != 4:
             self.fail('4 AnalysisRequests were not created!  We found %s' % l)
+        bc = getToolByName(self.portal, 'bika_catalog')
         l = len(bc(portal_type='Sample'))
         if l != 4:
             self.fail('4 Samples were not created!  We found %s' % l)
-        bac = getToolByName(self.portal, 'bika_analysis_catalog')
+        bac = getToolByName(self.portal, CATALOG_ANALYSIS_LISTING)
         analyses = bac(portal_type='Analysis')
         l = len(analyses)
         if l != 12:
             self.fail('12 Analysis not found! We found %s' % l)
         states = [workflow.getInfoFor(a.getObject(), 'review_state')
                   for a in analyses]
+        ars_states = [ar.review_state for ar in ars]
+        if ars_states != ['sample_due'] * 4:
+            self.fail('Analysis Requests states should all be sample_due, '
+                      'but are not!')
         if states != ['sample_due'] * 12:
             self.fail('Analysis states should all be sample_due, but are not!')
 
     def test_LIMS_2080_correctly_interpret_false_and_blank_values(self):
-        pc = getToolByName(self.portal, 'portal_catalog')
-        workflow = getToolByName(self.portal, 'portal_workflow')
-        arimport = self.addthing(self.client, 'ARImport')
+        client = self.portal.clients.objectValues()[0]
+        arimport = self.addthing(client, 'ARImport')
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
@@ -168,25 +185,32 @@ Total price excl Tax,,,,,,,,,,,,,,
         if errors:
             self.fail("Unexpected errors while saving data: " + str(errors))
         transaction.commit()
-        browser = self.getBrowser(loggedIn=True)
+        browser = self.getBrowser(
+            username=TEST_USER_NAME,
+            password=TEST_USER_PASSWORD,
+            loggedIn=True)
+
+        doActionFor(arimport, 'validate')
+        c_state = getCurrentState(arimport)
+        self.assertTrue(
+            c_state == 'valid',
+            "ARrimport in 'invalid' state after it has been transitioned to "
+            "'valid'.")
         browser.open(arimport.absolute_url() + "/edit")
         content = browser.contents
-        re.match('\<option selected\=\"selected\" value\=\"\d+\"\>Toilet\<\/option\>', content)
-        #
-        if len(re.findall('\<.*selected.*Toilet', content)) != 2:
+        re.match(
+            '<option selected=\"selected\" value=\"\d+\">Toilet</option>',
+            content)
+        if len(re.findall('<.*selected.*Toilet', content)) != 2:
             self.fail("Should be two empty SamplePoints, and two with values")
-        #
-        if len(re.findall('\<.*selected.*Liquids', content)) != 2:
+        if len(re.findall('<.*selected.*Liquids', content)) != 2:
             self.fail("Should be two empty Matrix fields, and two with values")
-        #
-        if len(re.findall('\<.*checked.*ReportDry', content)) != 2:
+        if len(re.findall('<.*checked.*ReportDry', content)) != 2:
             self.fail("Should be two False DryMatters, and two True")
 
-
     def test_LIMS_2081_post_edit_fails_validation_gracefully(self):
-        pc = getToolByName(self.portal, 'portal_catalog')
-        workflow = getToolByName(self.portal, 'portal_workflow')
-        arimport = self.addthing(self.client, 'ARImport')
+        client = self.portal.clients.objectValues()[0]
+        arimport = self.addthing(client, 'ARImport')
         arimport.unmarkCreationFlag()
         arimport.setFilename("test1.csv")
         arimport.setOriginalFile("""
@@ -215,8 +239,9 @@ Total price excl Tax,,,,,,,,,,,,,,
         if 'test_reference' not in browser.contents:
             self.fail('Failed to modify ARImport object (Client Reference)')
 
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestARImports))
-    suite.layer = BIKA_SIMPLE_FIXTURE
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

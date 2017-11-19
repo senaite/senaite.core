@@ -3,36 +3,29 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
-from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
-from bika.lims.subscribers import doActionFor, skip
+import json
 from operator import itemgetter
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from plone.app.layout.viewlets import ViewletBase
-from zope.interface import implements
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.utils import to_utf8
-from bika.lims.permissions import *
-from operator import itemgetter
-from bika.lims.browser import BrowserView
-from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.multifile import MultifileView
-from bika.lims.browser.analyses import QCAnalysesView
+
+import plone
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.multifile import MultifileView
+from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.content.instrumentmaintenancetask import \
+    InstrumentMaintenanceTaskStatuses as mstatus
+from bika.lims.utils import t
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
+from plone.app.layout.viewlets import ViewletBase
 from zExceptions import Forbidden
-from operator import itemgetter
-from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
+from zope.interface import implements
 
-import plone
-import json
 
 class InstrumentMaintenanceView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -96,6 +89,9 @@ class InstrumentMaintenanceView(BikaListingView):
                          'getDownTo',
                          'getMaintainer']},
         ]
+
+    def contentsMethod(self, *args, **kw):
+        return self.context.getMaintenanceTasks()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -173,6 +169,9 @@ class InstrumentCalibrationsView(BikaListingView):
                          'getCalibrator']},
         ]
 
+    def contentsMethod(self, *args, **kw):
+        return self.context.getCalibrations()
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         outitems = []
@@ -229,6 +228,9 @@ class InstrumentValidationsView(BikaListingView):
                          'getDownTo',
                          'getValidator']},
         ]
+
+    def contentsMethod(self, *args, **kw):
+        return self.context.getValidations()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -310,6 +312,9 @@ class InstrumentScheduleView(BikaListingView):
                          'creator',
                          'created']},
         ]
+
+    def contentsMethod(self, *args, **kw):
+        return self.context.getSchedule()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -501,34 +506,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         return json.dumps(self.anjson)
 
 
-class InstrumentCertificationsViewView(BrowserView):
-    """ View of Instrument Certifications
-        Shows the list of Instrument Certifications, either Internal and
-        External Calibrations.
-    """
-
-    implements(IViewView)
-    template = ViewPageTemplateFile("templates/instrument_certifications.pt")
-    _certificationsview = None
-
-    def __call__(self):
-        return self.template()
-
-    def get_certifications_table(self):
-        """ Returns the table of Certifications
-        """
-        return self.get_certifications_view().contents_table()
-
-    def get_certifications_view(self):
-        """ Returns the Certifications Table view
-        """
-        if not self._certificationsview:
-            self._certificationsview = InstrumentCertificationsView(
-                                        self.context,
-                                        self.request)
-        return self._certificationsview
-
-
 class InstrumentCertificationsView(BikaListingView):
     """ View for the table of Certifications. Includes Internal and
         External Calibrations. Also a bar to filter the results
@@ -538,39 +515,38 @@ class InstrumentCertificationsView(BikaListingView):
         BikaListingView.__init__(self, context, request, **kwargs)
         self.form_id = "instrumentcertifications"
         self.columns = {
-            'Title': {'title': _('Cert. Num'),
-                      'index': 'sortable_title'},
-            'getAgency': {'title': _('Agency')},
-            'getDate': {'title': _('Date')},
-            'getValidFrom': {'title': _('Valid from')},
-            'getValidTo': {'title': _('Valid to')},
-            'getDocument': {'title': _('Document')},
+            'Title': {'title': _('Cert. Num'), 'index': 'sortable_title'},
+            'getAgency': {'title': _('Agency'), 'sortable': False},
+            'getDate': {'title': _('Date'), 'sortable': False},
+            'getValidFrom': {'title': _('Valid from'), 'sortable': False},
+            'getValidTo': {'title': _('Valid to'), 'sortable': False},
+            'getDocument': {'title': _('Document'), 'sortable': False},
         }
         self.review_states = [
             {'id':'default',
              'title':_('All'),
              'contentFilter':{},
-             'columns': [ 'Title',
+             'columns': ['Title',
                          'getAgency',
                          'getDate',
                          'getValidFrom',
                          'getValidTo',
                          'getDocument'],
-             'transitions': [{}]},
+             'transitions': []},
         ]
         self.allow_edit = False
         self.show_select_column = False
-        self.show_workflow_action_buttons = False
+        self.show_workflow_action_buttons = True
         uids = [c.UID() for c in self.context.getCertifications()]
         self.catalog = 'portal_catalog'
         self.contentFilter = {'UID': uids, 'sort_on': 'sortable_title'}
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        valid  = [c.UID() for c in self.context.getValidCertifications()]
+        valid = [c.UID() for c in self.context.getValidCertifications()]
         latest = self.context.getLatestValidCertification()
         latest = latest.UID() if latest else ''
-        for x in range (len(items)):
+        for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
            # items[x]['getAgency'] = obj.getAgency()

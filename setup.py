@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 
-version = '1.0.0'
+version = '1.1.5'
 
 setup(name='bika.lims',
       version=version,
@@ -50,7 +50,6 @@ setup(name='bika.lims',
           'magnitude',
           'gpw',
           'jarn.jsi18n==0.3',
-          'collective.wtf',
           'WeasyPrint==0.19.2',
           'collective.progressbar',
           'z3c.unconfigure==1.0.1',
@@ -65,14 +64,8 @@ setup(name='bika.lims',
       ],
       extras_require={
           'test': [
+              'unittest2',
               'plone.app.testing',
-              'robotsuite',
-              'robotframework-selenium2library',
-              'plone.app.robotframework',
-              'Products.PloneTestCase',
-              'robotframework-debuglibrary',
-              'plone.resource',
-              'plone.app.textfield',
           ]
       },
       entry_points="""

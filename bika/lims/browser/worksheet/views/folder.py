@@ -115,7 +115,8 @@ class FolderView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter': {'review_state':['open', 'to_be_verified',],
+             'contentFilter': {'review_state': ['open',
+                                                'to_be_verified', 'verified'],
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -133,7 +134,8 @@ class FolderView(BikaListingView):
             # so 'mine' is configured further in 'folderitems' below.
             {'id':'mine',
              'title': _('Mine'),
-             'contentFilter': {'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+             'contentFilter': {'review_state':['open', 'to_be_verified',
+                                               'verified', 'rejected'],
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -326,7 +328,7 @@ class FolderView(BikaListingView):
         if self.can_reassign:
             for x in range(len(self.review_states)):
                 if self.review_states[x]['id'] in ['default', 'mine', 'open']:
-                    self.review_states[x]['custom_actions'] = [{'id': 'reassign',
+                    self.review_states[x]['custom_transitions'] = [{'id': 'reassign',
                                                                 'title': _('Reassign')}, ]
 
         self.show_select_column = self.can_reassign

@@ -8,6 +8,8 @@
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _, logger
+from bika.lims.api import get_object_by_uid
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.utils import t, getUsers
 from Products.ATExtensions.field import RecordsField
 from bika.lims import deprecated
@@ -307,7 +309,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label=_("Sampling Date"),
+            label=_("Expected Sampling Date"),
             description=_("Define when the sampler has to take the samples"),
             show_time=True,
             visible={'edit': 'visible',
@@ -476,10 +478,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('SampleTypeUID',
-        expression = 'context.getSampleType().UID()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
+                  expression='context.getSampleType() and \
+                             context.getSampleType().UID() or None',
+                  widget=ComputedWidget(
+                    visible=False,
+                  ),
     ),
     ComputedField('SamplePointUID',
         expression = 'context.getSamplePoint() and context.getSamplePoint().UID() or None',
@@ -784,15 +787,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
     security.declarePublic('getAnalysisRequests')
 
     def getAnalysisRequests(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        ar = ''
-        ars = []
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'AnalysisRequestSample')]
-        for uid in uids:
-            reference = uid
-            ar = tool.lookupObject(reference.sourceUID)
-            ars.append(ar)
+        backrefs = get_backreferences(self, 'AnalysisRequestSample')
+        ars = map(get_object_by_uid, backrefs)
         return ars
 
     security.declarePublic('getAnalyses')
@@ -859,99 +855,74 @@ class Sample(BaseFolder, HistoryAwareMixin):
         partitions = self.objectValues('SamplePartition')
         return partitions
 
-    @deprecated('[1705] Use events.after_no_sampling_workflow from '
-                'bika.lims.workflow.sample')
     @security.public
     def workflow_script_no_sampling_workflow(self):
         events.after_no_sampling_workflow(self)
 
-    @deprecated('[1705] Use events.after_sampling_workflow from '
-                'bika.lims.workflow.sample')
     @security.public
     def workflow_script_sampling_workflow(self):
         events.after_sampling_workflow(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_sample')
     @security.public
     def workflow_script_sample(self):
         events.after_sample(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_sample_due')
     @security.public
     def workflow_script_sample_due(self):
         events.after_sample_due(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_receive')
     @security.public
     def workflow_script_receive(self):
         events.after_receive(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_preserve')
     @security.public
     def workflow_script_preserve(self):
         events.after_preserve(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_expire')
     @security.public
     def workflow_script_expire(self):
         events.after_expire(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_dispose')
     @security.public
     def workflow_script_dispose(self):
         events.after_dispose(self)
 
-    @deprecated('[1705] Use events.after_to_be_preserved from '
-                'bika.lims.workflow.sample')
     @security.public
     def workflow_script_to_be_preserved(self):
         events.after_to_be_preserved(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_reinstate')
     @security.public
     def workflow_script_reinstate(self):
         events.after_reinstate(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_cancel')
     @security.public
     def workflow_script_cancel(self):
         events.after_cancel(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_reject')
     @security.public
     def workflow_script_reject(self):
         events.after_reject(self)
 
-    @deprecated('[1705] Use events.after_schedule_sampling from '
-                'bika.lims.workflow.sample')
     @security.public
     def workflow_script_schedule_sampling(self):
         events.after_schedule_sampling(self)
 
-    @deprecated('[1705] Use guards.to_be_preserved from '
-                'bika.lims.workflow.sample')
     @security.public
     def guard_to_be_preserved(self):
         return guards.to_be_preserved(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.guards.receive')
     @security.public
     def guard_receive_transition(self):
         return guards.receive(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.sample.guards.sample_prep')
     @security.public
     def guard_sample_prep_transition(self):
         return guards.sample_prep(self)
 
-    @deprecated('[1705] Use guards.sample_prep_complete from '
-                'bika.lims.workflow.sample')
     @security.public
     def guard_sample_prep_complete_transition(self):
         return guards.sample_prep_complete(self)
 
-    @deprecated('[1705] Use guards.schedule_sampling from '
-                'bika.lims.workflow.sample')
     @security.public
     def guard_schedule_sampling_transition(self):
         return guards.schedule_sampling(self)

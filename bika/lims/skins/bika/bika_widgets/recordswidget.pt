@@ -272,7 +272,7 @@
 		type="button"
 		class="context"
 		value="More"
-		tal:condition="python: field.showMore(values)"
+		tal:condition="python: field.showMore(values) or not field.fixedSize"
 		tal:attributes="id string:${fieldName}_more;tabindex tabindex/next|nothing"
 		i18n:attributes="value" />
 	</fieldset>

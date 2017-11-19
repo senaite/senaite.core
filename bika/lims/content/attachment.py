@@ -1,78 +1,152 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from DateTime import DateTime
+
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import Schema, ReferenceWidget, DateTimeField
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DateTimeWidget
-from DateTime import DateTime
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import FileWidget
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.config import REFERENCE_CATALOG
+
 from plone.app.blob.field import FileField
 
+from bika.lims.config import PROJECTNAME
+from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
+from bika.lims import bikaMessageFactory as _
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.widgets import DateTimeWidget
+
+
 schema = BikaSchema.copy() + Schema((
-    # It comes from blob
-    FileField('AttachmentFile',
-        widget = atapi.FileWidget(
+
+    ComputedField(
+        'RequestID',
+        expression='here.getRequestID()',
+        widget=ComputedWidget(
+            visible=True,
+        ),
+    ),
+
+    FileField(
+        'AttachmentFile',
+        widget=FileWidget(
             label=_("Attachment"),
         ),
     ),
-    UIDReferenceField('AttachmentType',
-        required = 0,
-        allowed_types = ('AttachmentType',),
-        widget = ReferenceWidget(
+
+    ReferenceField(
+        'AttachmentType',
+        required=0,
+        allowed_types=('AttachmentType',),
+        relationship='AttachmentAttachmentType',
+        widget=ReferenceWidget(
             label=_("Attachment Type"),
         ),
     ),
-    atapi.StringField('AttachmentKeys',
-        searchable = True,
-        widget = atapi.StringWidget(
+
+    StringField(
+        'ReportOption',
+        searchable=True,
+        vocabulary="ATTACHMENT_REPORT_OPTIONS",
+        widget=SelectionWidget(
+            label=_("Report Options"),
+            checkbox_bound=0,
+            format='select',
+            visible=True,
+            default='a',
+        ),
+    ),
+
+    StringField(
+        'AttachmentKeys',
+        searchable=True,
+        widget=StringWidget(
             label=_("Attachment Keys"),
         ),
     ),
-    DateTimeField('DateLoaded',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
+
+    DateTimeField(
+        'DateLoaded',
+        required=1,
+        default_method='current_date',
+        widget=DateTimeWidget(
             label=_("Date Loaded"),
         ),
     ),
-),
-)
+
+    ComputedField(
+        'AttachmentTypeUID',
+        expression="context.getAttachmentType().UID() if context.getAttachmentType() else ''",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+
+    ComputedField(
+        'ClientUID',
+        expression='here.aq_parent.UID()',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+))
 
 schema['id'].required = False
 schema['title'].required = False
 
 
-class Attachment(atapi.BaseFolder):
+class Attachment(BaseFolder):
+    """Attachments live inside a client and can be linked to ARs or Analyses
+    """
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def Title(self):
-        """ Return the Id """
+        """Return the Id
+        """
         return safe_unicode(self.getId()).encode('utf-8')
 
-    def current_date(self):
-        """ return current date """
-        return DateTime()
+    def getTextTitle(self):
+        """Return the request and possibly analayis title as title
+        """
+        requestid = self.getRequestID()
+        if requestid:
+            analysis = self.getAnalysis()
+            if analysis:
+                return '%s - %s' % (requestid, analysis.Title())
+            else:
+                return requestid
+        else:
+            return None
 
     def getRequest(self):
-        """ Return the AR to which this is linked """
-        """ there is a short time between creation and linking """
-        """ when it is not linked """
+        """Return the AR to which this is linked there is a short time between
+        creation and linking when it is not linked
+        """
         tool = getToolByName(self, REFERENCE_CATALOG)
         uids = [uid for uid in
                 tool.getBackReferences(self, 'AnalysisRequestAttachment')]
@@ -91,26 +165,18 @@ class Attachment(atapi.BaseFolder):
         return None
 
     def getRequestID(self):
-        """ Return the ID of the request to which this is linked """
+        """Return the ID of the request to which this is linked
+        """
         ar = self.getRequest()
         if ar:
-            return ar.getRequestID()
+            return ar.getId()
         else:
             return None
 
-    def getAttachmentTypeUID(self):
-        attachment_type = self.getAttachmentType()
-        if attachment_type:
-            return attachment_type.UID()
-        else:
-            return ''
-
-    def getClientUID(self):
-        return self.aq_parent.UID()
-
     def getAnalysis(self):
-        """ Return the analysis to which this is linked """
-        """  it may not be linked to an analysis """
+        """Return the analysis to which this is linked it may not be linked to
+        an analysis
+        """
         tool = getToolByName(self, REFERENCE_CATALOG)
         uids = [uid for uid in
                 tool.getBackReferences(self, 'AnalysisAttachment')]
@@ -121,8 +187,9 @@ class Attachment(atapi.BaseFolder):
         return None
 
     def getParentState(self):
-        """ Return the review state of the object - analysis or AR """
-        """ to which this is linked """
+        """Return the review state of the object - analysis or AR to which
+        this is linked
+        """
         tool = getToolByName(self, REFERENCE_CATALOG)
         uids = [uid for uid in
                 tool.getBackReferences(self, 'AnalysisAttachment')]
@@ -138,5 +205,12 @@ class Attachment(atapi.BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(parent, 'review_state', '')
 
+    security.declarePublic('current_date')
 
-atapi.registerType(Attachment, PROJECTNAME)
+    def current_date(self):
+        """return current date
+        """
+        return DateTime()
+
+
+registerType(Attachment, PROJECTNAME)

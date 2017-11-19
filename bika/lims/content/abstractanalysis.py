@@ -49,15 +49,6 @@ AnalysisService = UIDReferenceField(
     'AnalysisService'
 )
 
-# Overrides the AbstractBaseAnalysis. Analyses have a versioned link to the
-# calculation as it was when created.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
-)
-
 # Attachments which are added manually in the UI, or automatically when
 # results are imported from a file supplied by an instrument.
 Attachment = UIDReferenceField(
@@ -142,8 +133,6 @@ schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
     Attachment,
-    # Calculation overrides AbstractBaseClass
-    Calculation,
     DateAnalysisPublished,
     DetectionLimitOperand,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
@@ -190,12 +179,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             self.setVerificators(username)
         else:
             self.setVerificators(verificators + "," + username)
+        self.reindexObject()
 
     @security.public
     def deleteLastVerificator(self):
         verificators = self.getVerificators().split(',')
         del verificators[-1]
         self.setVerificators(",".join(verificators))
+        self.reindexObject()
 
     @security.public
     def wasVerifiedByUser(self, username):
@@ -206,13 +197,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
-    @deprecated('[1705] Use Title() instead.')
     @security.public
-    def getServiceTitle(self):
-        """Returns the Title of the associated service. Analysis titles are
-        always the same as the title of the service from which they are derived.
-        """
-        return self.Title()
+    def setVerificator(self, value):
+        field = self.Schema().getField('Verificators')
+        field.set(self, value)
+        self.reindexObject()
 
     @security.public
     def getDefaultUncertainty(self, result=None):
@@ -560,14 +549,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                             'math': math,
                             'context': self},
                            {'mapping': mapping})
-            result = eval(formula)
+            result = eval(formula, calc._getGlobals())
         except TypeError:
             self.setResult("NA")
             return True
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
-        except KeyError:
+        except KeyError as e:
+            self.setResult("NA")
+            return True
+        except ImportError as e:
             self.setResult("NA")
             return True
 
@@ -957,14 +949,27 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         - If neither Manual Uncertainty nor Calculate Precision from
           Uncertainty are set, returns the precision from the Analysis Service
 
+        - If you have a number with zero uncertainty: If you roll a pair of
+        dice and observe five spots, the number of spots is 5. This is a raw
+        data point, with no uncertainty whatsoever. So just write down the
+        number. Similarly, the number of centimeters per inch is 2.54,
+        by definition, with no uncertainty whatsoever. Again: just write
+        down the number.
+
         Further information at AbstractBaseAnalysis.getPrecision()
         """
         allow_manual = self.getAllowManualUncertainty()
         precision_unc = self.getPrecisionFromUncertainty()
         if allow_manual or precision_unc:
             uncertainty = self.getUncertainty(result)
+            if uncertainty is None:
+                return self.getField('Precision').get(self)
+            if uncertainty == 0 and result is None:
+                return self.getField('Precision').get(self)
             if uncertainty == 0:
-                return 1
+                strres = str(result)
+                numdecimals = strres[::-1].find('.')
+                return numdecimals
             return get_significant_digits(uncertainty)
         return self.getField('Precision').get(self)
 
@@ -1210,12 +1215,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         return self.isInstrumentValid()
 
-    @deprecated('[1705] Orphan. Use getAttachmentUIDs')
-    @security.public
-    def hasAttachment(self):
-        attachments = self.getAttachmentUIDs()
-        return len(attachments) > 0
-
     @security.public
     def getAttachmentUIDs(self):
         """Used to populate metadata, so that we don't need full objects of
@@ -1235,94 +1234,74 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     and analysis.getAnalysis().UID() == self.UID():
                 ws.removeAnalysis(analysis)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.sample')
     @security.public
     def guard_sample_transition(self):
         return guards.sample(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.retract')
     @security.public
     def guard_retract_transition(self):
         return guards.retract(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.sample_prep')
     @security.public
     def guard_sample_prep_transition(self):
         return guards.sample_prep(self)
 
-    @deprecated('[1705] Use guards.sample_prep_complete from '
-                'bika.lims.workflow.analysis.guards.sample_prep_complete')
     @security.public
     def guard_sample_prep_complete_transition(self):
         return guards.sample_prep_complete(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.receive')
     @security.public
     def guard_receive_transition(self):
         return guards.receive(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.publish')
     @security.public
     def guard_publish_transition(self):
         return guards.publish(self)
 
-    @deprecated('[1705] Use guards.import_transition from '
-                'bika.lims.workflow.analysis.guards.import_transition')
     @security.public
     def guard_import_transition(self):
         return guards.import_transition(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.attach')
     @security.public
     def guard_attach_transition(self):
         return guards.attach(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.verify')
     @security.public
     def guard_verify_transition(self):
         return guards.verify(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.assign')
     @security.public
     def guard_assign_transition(self):
         return guards.assign(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.unassign')
     @security.public
     def guard_unassign_transition(self):
         return guards.unassign(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
     @security.public
     def workflow_script_submit(self):
         events.after_submit(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_retract')
     @security.public
     def workflow_script_retract(self):
         events.after_retract(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_verify')
     @security.public
     def workflow_script_verify(self):
         events.after_verify(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_cancel')
     @security.public
     def workflow_script_cancel(self):
         events.after_cancel(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_reject')
     @security.public
     def workflow_script_reject(self):
         events.after_reject(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_attach')
     @security.public
     def workflow_script_attach(self):
         events.after_attach(self)
 
-    @deprecated('[1705] Orphan. No alternative')
     @security.public
     def workflow_script_assign(self):
         # TODO Workflow Assign Analysis - Seems there is no reason to add an
@@ -1330,7 +1309,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # assign and unassign from AR and Worksheet would eventually be removed
         pass
 
-    @deprecated('[1705] Orphan. No alternative')
     @security.public
     def workflow_script_unassign(self):
         # TODO Workflow UnAssign Analysis - Seems there is no reason to add an

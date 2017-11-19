@@ -3,18 +3,17 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import plone, json
-
-from bika.lims.permissions import *
-
-from Acquisition import aq_parent, aq_inner
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
-from bika.lims.subscribers import doActionFor
-from bika.lims.utils import isActive
+import plone
+from Acquisition import aq_inner
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
+from bika.lims.permissions import *
+from bika.lims.subscribers import doActionFor
+from bika.lims.utils import isActive
+
 
 class ClientWorkflowAction(AnalysisRequestWorkflowAction):
     """ This function is called to do the worflow actions
@@ -203,11 +202,12 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             its = []
             for uid, obj in objects.items():
                 if isActive(obj):
-                    its.append(uid);
+                    its.append(uid)
             its = ",".join(its)
             q = "/publish?items=" + its
-            dest = self.portal_url+"/analysisrequests" + q
-            self.request.response.redirect(dest)
+            self.destination_url = self.request.get_header(
+                "referer", self.context.absolute_url()) + q
+            self.request.response.redirect(self.destination_url)
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)

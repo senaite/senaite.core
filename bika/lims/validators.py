@@ -3,18 +3,19 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Acquisition import aq_parent
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import to_utf8
+import re
+import string
+import types
+
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
+from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import to_utf8
 from zope.interface import implements
-from datetime import datetime
-import string
-import re
-import types
+from bika.lims import api
+from bika.lims.utils import safe_unicode
 
 
 class IdentifierTypeAttributesValidator:
@@ -84,20 +85,57 @@ class UniqueFieldValidator:
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
+        field = kwargs['field']
+        fieldname = field.getName()
         # request = kwargs.get('REQUEST', {})
         # form = request.get('form', {})
-
         translate = getToolByName(instance, 'translation_service').translate
 
-        if value == instance.get(fieldname):
+        # return directly if nothing changed
+        if value == field.get(instance):
             return True
 
-        for item in aq_parent(instance).objectValues():
+        # We want to use the catalog to speed things up, as using `objectValues`
+        # is very expensive if the parent object contains many items
+        parent_objects = []
+
+        # 1. Get the right catalog for this object
+        catalogs = api.get_catalogs_for(instance)
+        catalog = catalogs[0]
+
+        # 2. Check if the field accessor is indexed
+        field_index = None
+        accessor = field.getAccessor(instance)
+        if accessor:
+            field_index = accessor.__name__
+
+        # 3. Check if the field index is in the indexes
+        # Field is indexed, use the catalog instead of objectValues
+        parent_path = api.get_parent_path(instance)
+        portal_type = instance.portal_type
+        catalog_query = {"portal_type": portal_type,
+                         "path": {"query": parent_path, "depth": 1}}
+
+        # We try here to avoid waking up all the objects, because this can be
+        # likely very expensive if the parent object contains many objects
+        if fieldname in catalog.indexes():
+            # We use the fieldname as index to reduce the results list
+            catalog_query[fieldname] = to_utf8(safe_unicode(value))
+            parent_objects = map(api.get_object, catalog(catalog_query))
+        elif field_index and field_index in catalog.indexes():
+            # We use the field index to reduce the results list
+            catalog_query[field_index] = to_utf8(safe_unicode(value))
+            parent_objects = map(api.get_object, catalog(catalog_query))
+        else:
+            # fall back to the objectValues :(
+            parent_object = api.get_parent(instance)
+            parent_objects = parent_object.objectValues()
+
+        for item in parent_objects:
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
-                            fieldname in item.Schema() and \
-                            str(item.Schema()[fieldname].get(item)) == str(
-                        value):  # We have to compare them as strings because
+               fieldname in item.Schema() and \
+               str(item.Schema()[fieldname].get(item)) == str(value):
+                # We have to compare them as strings because
                 # even if a number (as an  id) is saved inside
                 # a string widget and string field, it will be
                 # returned as an int. I don't know if it is
@@ -1198,3 +1236,29 @@ class NoWhiteSpaceValidator:
         return True
 
 validation.register(NoWhiteSpaceValidator())
+
+
+class ImportValidator(object):
+    """Checks if a dotted name can be imported or not
+    """
+    implements(IValidator)
+    name = "importvalidator"
+
+    def __call__(self, mod, **kwargs):
+
+        # some needed tools
+        instance = kwargs['instance']
+        translate = getToolByName(instance, 'translation_service').translate
+
+        try:
+            # noinspection PyUnresolvedReferences
+            import importlib
+            importlib.import_module(mod)
+        except ImportError:
+            msg = _("Validation failed: Could not import module '%s'" % mod)
+            return to_utf8(translate(msg))
+
+        return True
+
+
+validation.register(ImportValidator())

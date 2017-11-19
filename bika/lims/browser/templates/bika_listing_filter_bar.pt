@@ -104,8 +104,9 @@ This filter shouldn’t override the filter by state functionality
         <input
             type="button"
             id="bika_listing_filter_bar_button"
-            tal:attributes="
-                value view/filter_bar_button_title;"/>
+            value="Filter"
+            i18n:attributes="value"
+        />
         <input
             type="hidden"
             id="bika_listing_filter_bar_submit"

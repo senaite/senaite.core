@@ -3,18 +3,14 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.utils import getToolByName
-from bika.lims.utils import tmpID
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
-from bika.lims.idserver import renameAfterCreation
-from plone.app.testing import login, logout
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-from datetime import date
-from bika.lims.utils.analysisrequest import create_analysisrequest
-import unittest
+from plone.app.testing import login, logout
+from plone.app.testing import setRoles
+
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from bika.lims.tests.base import BikaFunctionalTestCase
 
 try:
     import unittest2 as unittest
@@ -23,14 +19,17 @@ except ImportError: # Python 2.7
 
 
 class TestAnalysisRequestRetract(BikaFunctionalTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(TestAnalysisRequestRetract, self).setUp()
+        self.setup_data_load()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
         login(self.portal, TEST_USER_NAME)
 
     def test_retract_an_analysis_request(self):
-        #Test the retract process to avoid LIMS-1989
+        # Test the retract process to avoid LIMS-1989
+        from bika.lims.utils.analysisrequest import create_analysisrequest
         catalog = getToolByName(self.portal, 'portal_catalog')
         # Getting the first client
         client = self.portal.clients['client-1']
@@ -79,5 +78,5 @@ class TestAnalysisRequestRetract(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestAnalysisRequestRetract))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

@@ -2,25 +2,25 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+from transaction import savepoint
 
+from Products.ATContentTypes.content.schemata import finalizeATCTSchema
+from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
+from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from transaction import savepoint
 from zope.interface.declarations import implements
 
 
@@ -72,6 +72,9 @@ class AnalysisServiceCopy(BrowserView):
                     continue
                 value = field.get(src_service)
                 if value:
+                    # https://github.com/bikalabs/bika.lims/issues/2015
+                    if fieldname in ["UpperDetectionLimit", "LowerDetectionLimit"]:
+                        value = str(value)
                     mutator_name = dst_service.getField(fieldname).mutator
                     mutator = getattr(dst_service, mutator_name)
                     mutator(value)
@@ -127,15 +130,16 @@ class AnalysisServiceCopy(BrowserView):
 
 
 class AnalysisServicesView(BikaListingView):
+    """Listing table view for Analysis Services
+    """
     implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
-        """
-        """
-
         super(AnalysisServicesView, self).__init__(context, request)
+        self.an_cats = None
+        self.an_cats_order = None
         self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'AnalysisService', }
+        self.contentFilter = {'portal_type': 'AnalysisService'}
         self.context_actions = {
             _('Add'):
                 {'url': 'createObject?type_name=AnalysisService',
@@ -148,7 +152,7 @@ class AnalysisServicesView(BikaListingView):
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 25
-        self.sort_on = 'Title'
+        self.sort_on = 'sortable_title'
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
@@ -161,65 +165,70 @@ class AnalysisServicesView(BikaListingView):
         self.columns = {
             'Title': {
                 'title': _('Service'),
-                'index': 'title',
+                'index': 'sortable_title',
                 'replace_url': 'absolute_url',
+                'sortable': not self.do_cats,
             },
             'Keyword': {
                 'title': _('Keyword'),
                 'index': 'getKeyword',
-                'attr': 'getKeyword'
+                'attr': 'getKeyword',
+                'sortable': not self.do_cats,
             },
             'Category': {
                 'title': _('Category'),
-                'attr': 'getCategoryTitle'
+                'attr': 'getCategoryTitle',
+                'sortable': not self.do_cats,
             },
-            'Method': {
-                'title': _('Method'),
-                'attr': 'getMethod.Title',
-                'replace_url': 'getMethod.absolute_url',
-                'toggle': False
+            'Methods': {
+                'title': _('Methods'),
+                'sortable': not self.do_cats,
             },
             'Department': {
                 'title': _('Department'),
                 'toggle': False,
-                'attr': 'getDepartment.Title'
-            },
-            'Instrument': {
-                'title': _('Instrument')
+                'attr': 'getDepartment.Title',
+                'sortable': not self.do_cats,
             },
             'Unit': {
                 'title': _('Unit'),
-                'attr': 'getUnit'
+                'attr': 'getUnit',
+                'sortable': False,
             },
             'Price': {
-                'title': _('Price')
+                'title': _('Price'),
+                'sortable': not self.do_cats,
             },
             'MaxTimeAllowed': {
                 'title': _('Max Time'),
-                'toggle': False
+                'toggle': False,
+                'sortable': not self.do_cats,
             },
             'DuplicateVariation': {
                 'title': _('Dup Var'),
-                'toggle': False
+                'toggle': False,
+                'sortable': False,
              },
             'Calculation': {
-                'title': _('Calculation')
+                'title': _('Calculation'),
+                'sortable': False,
             },
             'CommercialID': {
                 'title': _('Commercial ID'),
                 'attr': 'getCommercialID',
-                'toggle': True
+                'toggle': False,
+                'sortable': not self.do_cats,
             },
             'ProtocolID': {
                 'title': _('Protocol ID'),
                 'attr': 'getProtocolID',
-                'toggle': True
+                'toggle': False,
+                'sortable': not self.do_cats,
             },
             'SortKey': {
                 'title': _('Sort Key'),
-                'index': 'sortKey',
                 'attr': 'getSortKey',
-                'toggle': False
+                'sortable': False,
             },
         }
 
@@ -231,11 +240,10 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Category',
                          'Keyword',
-                         'Method',
+                         'Methods',
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
@@ -243,7 +251,7 @@ class AnalysisServicesView(BikaListingView):
                          'Calculation',
                          'SortKey',
                          ],
-             'custom_actions': [{'id': 'duplicate',
+             'custom_transitions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
              },
@@ -254,18 +262,18 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Category',
                          'Keyword',
-                         'Method',
+                         'Methods',
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
+                         'SortKey',
                          ],
-             'custom_actions': [{'id': 'duplicate',
+             'custom_transitions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
              },
@@ -275,18 +283,18 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Keyword',
                          'Category',
-                         'Method',
+                         'Methods',
                          'Department',
                          'CommercialID',
                          'ProtocolID',
-                         'Instrument',
                          'Unit',
                          'Price',
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
+                         'SortKey',
                          ],
-             'custom_actions': [{'id': 'duplicate',
+             'custom_transitions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
              },
@@ -295,12 +303,6 @@ class AnalysisServicesView(BikaListingView):
         if not self.context.bika_setup.getShowPrices():
             for i in range(len(self.review_states)):
                 self.review_states[i]['columns'].remove('Price')
-
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.an_cats = bsc(portal_type="AnalysisCategory",
-                           sort_on="title")
-        self.an_cats_order = dict([(b.Title, "{:04}".format(a))
-                                  for a, b in enumerate(self.an_cats)])
 
     def isItemAllowed(self, obj):
         """
@@ -323,18 +325,7 @@ class AnalysisServicesView(BikaListingView):
             return result
         return result
 
-
     def folderitem(self, obj, item, index):
-    	if 'obj'  in item:
-            obj = item['obj']
-            # Although these should be automatically inserted when bika_listing
-            # searches the schema for fields that match columns, it is still
-            # not harmful to be explicit:
-            item['Keyword'] = obj.getKeyword()
-            item['CommercialID'] = obj.getCommercialID()
-            item['ProtocolID'] = obj.getProtocolID()
-            item['SortKey'] = obj.getSortKey()
-
         cat = obj.getCategoryTitle()
         cat_order = self.an_cats_order.get(cat)
         if self.do_cats:
@@ -343,12 +334,6 @@ class AnalysisServicesView(BikaListingView):
             if (cat, cat_order) not in self.categories:
                 self.categories.append((cat, cat_order))
 
-        instrument = obj.getInstrument()
-        item['Instrument'] = instrument.Title() if instrument else ''
-        if instrument:
-            item['replace']['Instrument'] = "<a href='%s'>%s</a>" % (
-                instrument.absolute_url() + "/edit", instrument.Title())
-
         calculation = obj.getCalculation()
         item['Calculation'] = calculation.Title() if calculation else ''
         if calculation:
@@ -356,6 +341,18 @@ class AnalysisServicesView(BikaListingView):
                 calculation.absolute_url() + "/edit", calculation.Title())
 
         item['Price'] = "%s.%02d" % obj.Price
+
+        # Fill Methods column
+        methods = obj.getMethods()
+        m_dict = {method.Title(): method.absolute_url() for method in methods}
+        m_titles = sorted(m_dict.keys())
+        m_anchors = []
+        for title in m_titles:
+            url = m_dict[title]
+            anchor = '<a href="{}">{}</a>'.format(url, title)
+            m_anchors.append(anchor)
+        item['Methods'] = ', '.join(m_titles)
+        item['replace']['Methods'] = ', '.join(m_anchors)
 
         maxtime = obj.MaxTimeAllowed
         maxtime_string = ""
@@ -392,8 +389,14 @@ class AnalysisServicesView(BikaListingView):
             item['after']['Title'] = after_icons
         return item
 
-    def folderitems(self):
-
+    def folderitems(self, full_objects=False, classic=True):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.an_cats = bsc(
+            portal_type="AnalysisCategory",
+            sort_on="sortable_title")
+        self.an_cats_order = dict([
+            (b.Title, "{:04}".format(a))
+            for a, b in enumerate(self.an_cats)])
         items = super(AnalysisServicesView, self).folderitems()
         if self.do_cats:
             self.categories = map(lambda x: x[0],
@@ -404,10 +407,13 @@ class AnalysisServicesView(BikaListingView):
 
 
 schema = ATFolderSchema.copy()
+finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
+
+
 class AnalysisServices(ATFolder):
     implements(IAnalysisServices)
     displayContentsTab = False
     schema = schema
 
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
+
 atapi.registerType(AnalysisServices, PROJECTNAME)

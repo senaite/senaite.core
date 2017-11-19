@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_worksheetanalysis_workflow"
+             title="Bika Worksheet Analysis Workflow"
+             description=""
+             state_variable="worksheetanalysis_review_state"
+             initial_state="unassigned"
+             manager_bypass="False"
+             i18n:domain="bika">
+
+  <state state_id="assigned" title="Assigned" i18n:attributes="title">
+    <exit-transition transition_id="unassign" />
+  </state>
+
+  <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
+    <exit-transition transition_id="assign" />
+  </state>
+
+  <transition transition_id="assign" title="Assign" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="workflow_action?workflow_action=assign" category="workflow" icon="">Assign</action>
+    <guard>
+      <guard-expression>python:here.guard_assign_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="unassign" title="Remove" new_state="unassigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="workflow_action?workflow_action=unassign" category="workflow" icon="">Remove</action>
+    <guard>
+      <guard-expression>python:here.guard_unassign_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+      <guard-permission>Request review</guard-permission>
+      <guard-permission>Review portal content</guard-permission>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

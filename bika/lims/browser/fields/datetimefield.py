@@ -13,8 +13,10 @@ from Products.Archetypes.Registry import registerField
 from Products.Archetypes.interfaces import IDateTimeField
 from Products.Archetypes.public import *
 from Products.Archetypes.public import DateTimeField as DTF
+from Products.ATContentTypes.utils import dt2DT
 from bika.lims import logger
 from zope.interface import implements
+import datetime
 
 
 class DateTimeField(DTF):
@@ -46,7 +48,7 @@ class DateTimeField(DTF):
         val = value
         if not value:
             val = None
-        elif not isinstance(value, DateTime):
+        elif isinstance(value, basestring):
             for fmt in ['date_format_long', 'date_format_short']:
                 fmtstr = instance.translate(fmt, domain='bika', mapping={})
                 fmtstr = fmtstr.replace(r"${", '%').replace('}', '')
@@ -73,6 +75,8 @@ class DateTimeField(DTF):
                 except:
                     logger.warning("DateTimeField failed to format date "
                                    "string '%s' with '%s'" % (value, fmtstr))
+        elif isinstance(value, datetime.datetime):
+            val = dt2DT(value)
 
         super(DateTimeField, self).set(instance, val, **kwargs)
 

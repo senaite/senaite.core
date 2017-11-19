@@ -30,6 +30,9 @@ def create_sample(client, request, values):
         # Specifically set the storage location
         if 'StorageLocation' in values:
             sample.setStorageLocation(values['StorageLocation'])
+        # Specifically set the DateSampled
+        if 'DateSampled' in values:
+            sample.setDateSampled(values['DateSampled'])
         # Update the created sample with indicated values
         sample.processForm(REQUEST=request, values=values)
         # Set the SampleID

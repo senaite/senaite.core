@@ -1,6 +1,97 @@
 Changelog
 =========
 
+1.1.5 (2017-11-20)
+------------------
+
+**Added**
+
+- #386 PR-2297 Added seeding function to IDServer
+- #372 Added build system to project root
+- #345 'SearchableText' field and adapter in Batches
+- #344 PR-2294 Allow year in any portal type's ID format string
+- #344 PR-2210 ID Server and bika setup updates along with migation step
+- #321 PR-2158 Multiple stickers printing in lists
+- #319 PR-2112 Laboratory Supervisor
+- #317 Enable backreferences associated to UIDReference fields
+- #315 PR-1942 Instrument Certification Interval
+- #292 PR-2125 Added descriptions for Analysis Requests
+- #291 PR-1972 Landscape Layout for Reports
+- #286 Added Github Issue/PR Template
+- #281 PR-2269 Show the Unit in Manage Analyses View
+- #279 Allow external Python library functions to be used in Calculation Formulas
+- #279 Calculation formula test widgets
+- #279 PR-2154 New ar add form
+
+**Changed**
+
+- #385 PR-2309 Unnecessary loops were done in instrument listing views
+- #369 Let DateTimeField setter accept datetime.datetime objects and convert them
+- #362 Add "Methods" column and hide unused columns in Analysis Services list
+- #353 Remove deprecation warnings
+- #338 Preserve Analysis Request order when adding into Worksheet
+- #338 Analyses sorted by priority in Add Analyses view
+- #333 Display analyses sorted by sortkey in results report
+- #331 Sort analyses lists by sortkey as default
+- #321 Sticker's autoprint generates PDF instead of browser's print dialog
+- #312 Worksheet: "Print" does not display/print partial results
+- #306 PR-2077 Better usability of Clients lists for sites with many users
+- #298 PR-2246 Implemented ProxyField to fix data duplication between ARs and Samples
+
+**Fixed**
+
+- #388 Unable to get the portal object when digesting/creating results report
+- #387 ClientWorkflowAction object has no attribute 'portal_url' when publishing multiple ARs
+- #386 PR-2313 UniqueFieldValidator: Encode value to utf-8 before passing it to the catalog
+- #386 PR-2312 IDServer: Fixed default split length value
+- #386 PR-2311 Fix ID Server to handle a flushed storage or existing IDs with the same prefix
+- #385 PR-2309 Some objects were missed in instrument listing views
+- #384 PR-2306 Do not use localized dates for control chart as it breaks the controlchart.js datetime parser
+- #382 PR-2305 TypeError in Analysis Specification category expansion
+- #380 PR-2303 UnicodeDecodeError if title field validator
+- #379 Missing "Instrument-Import-Interface" relationship
+- #375 Dependencies error in Manage Analyses view
+- #371 Reflex rules don't have 'inactive_state' values set
+- #365 LIMS installation fails during setting client permissions in bika_setup
+- #364 Error on Manage Results view while adding new Analyses from different Category
+- #363 PR-2293 Add CCEmails to recipients for Analysis Request publication reports
+- #352 Traceback on listings where objects follow the bika_inactive_workflow
+- #323 Allow IDServer to correctly allocate IDs for new attachments (add Attachment to portal_catalog)
+- #344 PR-2273. Ensure no counters in the number generator before initialising id server
+- #343 PR-2281 Fix publication preferences for CC Contacts
+- #340 TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
+- #339 Index not found warnings in bika listing
+- #337 Error when adding reference analysis in a Worksheet
+- #336 Accreditation Portlet renders an error message for anonymous users
+- #335 The Lab Name is always set to "Laboratory" after reinstallation
+- #334 TypeError (setRequestId, unexpected keyword argument) on AR Creation
+- #330 Show action buttons when sorting by column in listings
+- #318 PR-2205 Conditional Email Notification on Analysis Request retract
+- #316 Small fixes related with i18n domain in Worksheet's print fixtures
+- #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly
+- #313 The PDF generated for stickers doesn't have the right page dimensions
+- #311 PR-1931 Fixed Link User to Contact: LDAP Users not found
+- #309 PR-2233 Infinite Recursion on Report Publication.
+- #309 PR-2130 Copied ARs are created in random order.
+- #308 Analysis Service' interim fields not shown
+- #307 Fix sorting of Analysis Services list and disable manual sorting
+- #304 PR-2081 Fixed multiple partition creation from ARTemplate
+- #304 PR-2080 Batch Book raises an Error if the Batch inherits from 2 ARs
+- #304 PR-2053 Computed Sample Field "SampleTypeUID" does not check if a SampleType is set
+- #304 PR-2017 Fixed BatchID getter
+- #304 PR-1946 Showing Verified Worksheets under all
+- #299 PR-1931 Fixed Link User to Contact: LDAP Users not found
+- #298 PR-1932 AttributeError: 'bika_setup' on login on a new Plone site w/o bika.lims installed
+- #297 PR-2102 Inline rendered attachments are not displayed in rendered PDF
+- #296 PR-2093 Sort order in Bika Setup Listings
+- #294 PR-2016 Convert UDL and LDL values to string before copy
+- #293 Fix analysis_workflow permissions for Field Analysis Results
+- #284 PR-1917 Solved WF Translation issues and fixed WF Action Buttons in Bika Listings
+- #283 PR-2252 Traceback if the title contains braces on content creation
+- #282 PR-2266 Instrument Calibration Table fixes
+- #280 PR-2271 Setting 2 or more CCContacts in AR view produces a Traceback on Save
+
+
 1.0.0 (2017-10-13)
 ------------------
 

@@ -83,6 +83,7 @@
                  $('div#semioverlay .semioverlay-panel').fadeOut();
                  reject_ar_sample();
              });
+             $('div#semioverlay .semioverlay-panel').hide();
          }
      }
 

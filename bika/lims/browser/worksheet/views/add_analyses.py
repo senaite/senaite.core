@@ -38,9 +38,11 @@ class AddAnalysesView(BikaListingView):
         self.context_actions = {}
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
+        self.sort_on = 'Priority'
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned',
+                              'sort_on': 'getPrioritySortkey',
                               'cancellation_state':'active'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analyses"
@@ -62,11 +64,11 @@ class AddAnalysesView(BikaListingView):
             'getClientOrderNumber': {
                 'title': _('Order'),
                 'index': 'getClientOrderNumber'},
-            'getRequestID': {
+            'getId': {
                 'title': _('Request ID'),
-                'attr': 'getRequestID',
-                'replace_url': 'getAnalysisRequestURL',
-                'index': 'getRequestID'},
+                'attr': 'getId',
+                'replace_url': 'getRequestURL',
+                'index': 'getId'},
             'CategoryTitle': {
                 'title': _('Category'),
                 'attr': 'getCategoryTitle',
@@ -90,7 +92,7 @@ class AddAnalysesView(BikaListingView):
              'columns':['Priority',
                         'Client',
                         'getClientOrderNumber',
-                        'getRequestID',
+                        'getId',
                         'CategoryTitle',
                         'Title',
                         'getDateReceived',

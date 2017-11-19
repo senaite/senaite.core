@@ -4,19 +4,38 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="delete_analysis_attachment"
-      class="bika.lims.browser.attachment.ajaxDeleteAnalysisAttachment"
+      name="attachments_view"
+      class="bika.lims.browser.attachment.AttachmentsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
-    <browser:page
+      />
+
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="delete_analysis_attachment"
-      class="bika.lims.browser.attachment.ajaxDeleteAnalysisAttachment"
+      name="attachments_view"
+      class="bika.lims.browser.attachment.AttachmentsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
+
+  <!-- Ajax exposed Attachments Methods -->
+
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="ajax_attachments_view"
+      class="bika.lims.browser.attachment.ajaxAttachmentsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="ajax_attachments_view"
+      class="bika.lims.browser.attachment.ajaxAttachmentsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
 </configure>

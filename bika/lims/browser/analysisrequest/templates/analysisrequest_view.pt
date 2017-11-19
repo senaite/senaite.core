@@ -32,31 +32,17 @@
 <metal:content-description fill-slot="content-description">
 </metal:content-description>
 
-<metal:content-core fill-slot="content-core" tal:define="
-    portal context/@@plone_portal_state/portal;
-    specification python:request.get('specification', view.getDefaultSpec());
-    sample here/getSample;
-    colspan python:10;
-    ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
-    review_state python:context.portal_workflow.getInfoFor(context, 'review_state');
-    inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
-    analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
-    attachments_allowed here/bika_setup/getAttachmentsPermitted;
-    attachments python:view.getAttachments();
-    update_attachments python:context.portal_membership.checkPermission('EditResults', context) or
-                              context.portal_membership.checkPermission('EditFieldResults', context);
-    add_attachments python:context.portal_membership.checkPermission('BIKA: Add Attachment', context);
-    delete_attachments python:(add_attachments and not user.allowed(context, ['Client'])) or update_attachments;">
+  <metal:content-core
+      fill-slot="content-core"
+      tal:define="portal context/@@plone_portal_state/portal;
+                  specification python:request.get('specification', view.getDefaultSpec());
+                  sample here/getSample;
+                  colspan python:10;">
 
     <input type="hidden" id="bika_setup"
-            tal:attributes="bika_samplepoints python: context.bika_setup.bika_samplepoints.UID()">
+           tal:attributes="bika_samplepoints python: context.bika_setup.bika_samplepoints.UID()"/>
 
-    <div
-        tal:condition="python:update_attachments or add_attachments"
-        tal:define="ar_review_state review_state">
-        <metal:block use-macro="here/attachments/macros/attachments"/>
-    </div>
-
+    <!-- Header Table -->
     <span tal:replace="structure view/header_table"/>
 
     <div tal:define="cfields python:view.get_custom_fields()"

@@ -6,28 +6,27 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-
 from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims import deprecated
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DecimalWidget
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import HistoryAwareReferenceField, \
+    InterimFieldsField, UIDReferenceField
+from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
+from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import skip
+from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
-from bika.lims.content.reflexrule import doReflexRuleAction
 
 # The physical sample partition linked to the Analysis.
 SamplePartition = UIDReferenceField(
@@ -100,6 +99,30 @@ HiddenManually = BooleanField(
     default=False,
 )
 
+# Routine Analyses have a versioned link to the calculation at creation time.
+Calculation = HistoryAwareReferenceField(
+    'Calculation',
+    allowed_types=('Calculation',),
+    relationship='AnalysisCalculation',
+    referenceClass=HoldingReference
+)
+
+# InterimFields are defined in Calculations, Services, and Analyses.
+# In Analysis Services, the default values are taken from Calculation.
+# In Analyses, the default values are taken from the Analysis Service.
+# When instrument results are imported, the values in analysis are overridden
+# before the calculation is performed.
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Method',
+    widget=RecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Values can be entered here which will override the defaults "
+            "specified in the Calculation Interim Fields."),
+    )
+)
+
 schema = schema.copy() + Schema((
     IsReflexAnalysis,
     OriginalReflexedAnalysis,
@@ -110,6 +133,8 @@ schema = schema.copy() + Schema((
     SamplePartition,
     Uncertainty,
     HiddenManually,
+    Calculation,
+    InterimFields,
 ))
 
 
@@ -278,25 +303,20 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return duetime
 
     @security.public
-    @deprecated("[1709] Use getRequestID instead")
-    def getAnalysisRequestTitle(self):
-        """This is a catalog metadata column
+    def getCalculationTitle(self):
+        """Used to populate catalog values
         """
-        return self.getRequestID()
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.Title()
 
     @security.public
-    @deprecated("[1709] Use getRequestUID instead")
-    def getAnalysisRequestUID(self):
-        """This method is used to populate catalog values
+    def getCalculationUID(self):
+        """Used to populate catalog values
         """
-        return self.getRequestUID()
-
-    @security.public
-    @deprecated("[1709] Use getRequestURL instead")
-    def getAnalysisRequestURL(self):
-        """This is a catalog metadata column
-        """
-        return self.getRequestURL()
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
 
     @security.public
     def getSampleTypeUID(self):
@@ -380,7 +400,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         an = self
 
         if specification == 'ar' or specification is None:
-            request = self.getRequest()
             if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
                 rr = an.aq_parent.getResultsRange()
                 rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
@@ -395,7 +414,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             if rr:
                 rr['uid'] = self.UID()
         return rr
-
 
     @security.public
     def getSiblings(self):
@@ -422,7 +440,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     def getDependencies(self):
         """Return a list of siblings who we depend on to calculate our result.
         """
-        calc  = self.getCalculation()
+        calc = self.getCalculation()
         if not calc:
             return []
 
@@ -436,13 +454,19 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     @security.public
     def getPrioritySortkey(self):
         """
-        Returns the key that will be used to sort the current Analysis
-        Delegates to getPrioritySortKey function from the AnalysisRequest
+        Returns the key that will be used to sort the current Analysis, from
+        most prioritary to less prioritary.
         :return: string used for sorting
         """
         analysis_request = self.getRequest()
-        if analysis_request:
-            return analysis_request.getPrioritySortkey()
+        if analysis_request is None:
+            return None
+        ar_sort_key = analysis_request.getPrioritySortkey()
+        ar_id = analysis_request.getId().lower()
+        title = sortable_title(self)
+        if callable(title):
+            title = title()
+        return '{}.{}.{}'.format(ar_sort_key, ar_id, title)
 
     @security.public
     def getHidden(self):

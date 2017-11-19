@@ -1,145 +1,79 @@
+# -*- coding: utf-8 -*-
+
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import os
-from AccessControl.SecurityManagement import newSecurityManager
-from Acquisition import aq_base
-from bika.lims import logger
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING, BIKA_SIMPLE_TESTING
-from plone.app.robotframework.remote import RemoteLibrary
-from plone.app.testing import setRoles
+from re import match
+
+import transaction
+from plone.app.testing import DEFAULT_LANGUAGE
 from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import SITE_OWNER_PASSWORD
-from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
+from plone.app.testing import logout
 from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
-from Products.CMFPlone.tests.utils import MockMailHost as _MMH
-from Products.MailHost.interfaces import IMailHost
-from re import match
-from Testing.ZopeTestCase.functional import Functional
-from zope.component import getSiteManager
 
-import unittest
+from bika.lims import logger
+from bika.lims.exportimport.load_setup_data import LoadSetupData
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
+from plone.testing.z2 import Browser
 
-
-class MockMailHost(_MMH):
-
-    def send(self, *kwargs):
-        logger.log("***Message***")
-        logger.log("From: {0}".format(kwargs['mfrom']))
-        logger.log("To: {0}".format(kwargs['mto']))
-        logger.log("Subject: {0}".format(kwargs['subject']))
-        logger.log("Length: {0}".format(len(kwargs['messageText'])))
-        _MMH.send(self, *kwargs)
+try:
+    import unittest2 as unittest
+except ImportError:  # Python 2.7
+    import unittest
 
 
-class BikaTestCase(unittest.TestCase):
+class BikaFunctionalTestCase(unittest.TestCase):
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
-        super(BikaTestCase, self).setUp()
-        # Some browser paths like ""?analysisrequests_review_state=cancelled"
-        # do not work because plone.protect protect them.
-        # Disable the plone.protect on the testing layer
-        # self.CSRF_DISABLED_ORIGINAL = plone.protect.auto.CSRF_DISABLED
-        # plone.protect.auto.CSRF_DISABLED = True
-        # NB: plone.protect.auto is first available in p.p>=3.0.0, but plone still uses 2.0.3
-        # -> This should also do the trick, see:
-        # https://pypi.python.org/pypi/plone.protect (Disable All Automatic CSRF Protection)
+        super(BikaFunctionalTestCase, self).setUp()
+
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+        self.request = self.layer['request']
+        self.request['ACTUAL_URL'] = self.portal.absolute_url()
+
+        # During testing, CSRF protection causes failures.
         os.environ["PLONE_CSRF_DISABLED"] = "true"
 
-    def afterSetUp(self):
-        self.portal._original_MailHost = self.portal.MailHost
-        self.portal.MailHost = mailhost = MockMailHost('MailHost')
-        mailhost.smtp_host = 'localhost'
-        sm = getSiteManager(context=self.portal)
-        sm.unregisterUtility(provided=IMailHost)
-        sm.registerUtility(mailhost, provided=IMailHost)
-        self.portal.email_from_address = 'test@example.com'
-        ltool = self.portal.portal_languages
-        ltool.setLanguageBindings()
-
-    def tearDown(self):
-        # Reset the plone.protect on the testing layer
-        # plone.protect.auto.CSRF_DISABLED = self.CSRF_DISABLED_ORIGINAL
-        del os.environ["PLONE_CSRF_DISABLED"]
-
-    def beforeTearDown(self):
-        self.portal.MailHost = self.portal._original_MailHost
-        sm = getSiteManager(context=self.portal)
-        sm.unregisterUtility(provided=IMailHost)
-        sm.registerUtility(
-            aq_base(
-                self.portal._original_MailHost),
-            provided=IMailHost)
-
-    def setRequestMethod(self, method):
-        self.app.REQUEST.set('REQUEST_METHOD', method)
-        self.app.REQUEST.method = method
-
-    def getAuthenticator(self):
-        tag = AuthenticatorView('context', 'request').authenticator()
-        pattern = '<input .*name="(\w+)".*value="(\w+)"'
-        return match(pattern, tag).groups()[1]
-
-    def setupAuthenticator(self):
-        name, token = self.getAuthenticator()
-        self.app.REQUEST.form[name] = token
-
-    def loginAsPortalOwner(self):
-        '''Use if - AND ONLY IF - you need to manipulate
-           the portal object itself.
-        '''
-        uf = self.app.acl_users
-        user = uf.getUserById(SITE_OWNER_NAME)
-        if not hasattr(user, 'aq_base'):
-            user = user.__of__(uf)
-        newSecurityManager(None, user)
-
-    def getPermissionsOfRole(self, role):
-        perms = self.portal.permissionsOfRole(role)
-        return [p['name'] for p in perms if p['selected']]
-
-    def setPermissions(self, context, permissions, role="Member"):
-        '''Changes the user's permissions.'''
-        context.manage_role(role, permissions)
-
-    def getBrowser(self, loggedIn=True):
+    def getBrowser(self,
+            username=TEST_USER_NAME,
+            password=TEST_USER_PASSWORD,
+            loggedIn=True):
         """ instantiate and return a testbrowser for convenience """
         browser = Browser(self.portal)
         browser.addHeader('Accept-Language', 'en-US')
         browser.handleErrors = False
         if loggedIn:
             browser.open(self.portal.absolute_url())
-            browser.getControl('Login Name').value = TEST_USER_NAME
-            browser.getControl('Password').value = TEST_USER_PASSWORD
+            browser.getControl('Login Name').value = username
+            browser.getControl('Password').value = password
             browser.getControl('Log in').click()
             self.assertTrue('You are now logged in' in browser.contents)
         return browser
 
+    def setup_data_load(self):
+        transaction.commit()
+        login(self.portal.aq_parent, SITE_OWNER_NAME)  # again
 
-class BikaSimpleTestCase(Functional, BikaTestCase):
+        # load test data
+        self.request.form['setupexisting'] = 1
+        self.request.form['existing'] = "bika.lims:test"
+        lsd = LoadSetupData(self.portal, self.request)
+        logger.info('Loading datas...')
+        lsd()
+        logger.info('Loading data finished...')
+        logout()
 
-    layer = BIKA_SIMPLE_TESTING
-
-    def setUp(self):
-        super(BikaSimpleTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
-
-class BikaFunctionalTestCase(Functional, BikaTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
-
-    def setUp(self):
-        super(BikaFunctionalTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
+    def getAuthenticator(self):
+        tag = AuthenticatorView('context', 'request').authenticator()
+        pattern = '<input .*name="(\w+)".*value="(\w+)"'
+        return match(pattern, tag).groups()[1]

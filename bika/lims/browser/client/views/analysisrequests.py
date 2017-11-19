@@ -41,10 +41,8 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
                 addPortalMessage(msg)
             else:
                 if mtool.checkPermission(AddAnalysisRequest, self.context):
-                    self.context_actions[t(_('Add'))] = {
-                        'url': self.context.absolute_url() + \
-                               "/portal_factory/AnalysisRequest" + \
-                               "/Request new analyses/ar_add",
+                    self.context_actions[_('Add')] = {
+                        'url': self.context.absolute_url() + "/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
 
         return super(ClientAnalysisRequestsView, self).__call__()
