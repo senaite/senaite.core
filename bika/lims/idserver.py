@@ -65,7 +65,6 @@ def get_objects_in_sequence(brain_or_object, ctype, cref):
         return get_contained_items(obj, cref)
     raise ValueError("Reference value is mandatory for sequence type counter")
 
-
 def get_contained_items(obj, spec):
     """Returns a list of (id, subobject) tuples of the current context.
     If 'spec' is specified, returns only objects whose meta_type match 'spec'
@@ -218,6 +217,21 @@ def get_ids_with_prefix(portal_type, prefix):
     ids = map(api.get_id, brains)
     return ids
 
+def get_seq_index(id_template, separator='-'):
+    """ Find the index of the seq varriable in the id_template
+        e.g. id_template = '{year}-{client}-{seq}' returns 2
+    """
+    # split the given id_template at the given separator
+    segments = split(id_template, separator)
+    seq_index = 0
+    for idx in range(len(segments)):
+        segment = segments[idx]
+        segment = segment.replace('{', '')
+        segment = segment.replace('}', '')
+        if segment.split(':')[0] == 'seq':
+            seq_index = idx
+            break
+    return seq_index
 
 def get_counted_number(context, config, variables, **kw):
     """Compute the number for the sequence type "Counter"
@@ -243,11 +257,12 @@ def get_counted_number(context, config, variables, **kw):
     number = len(seq_items)
     return number
 
-
 def get_generated_number(context, config, variables, **kw):
     """Generate a new persistent number with the number generator for the
     sequence type "Generated"
     """
+    separator = '-'
+
     # allow portal_type override
     portal_type = kw.get("portal_type") or api.get_portal_type(context)
 
@@ -258,7 +273,7 @@ def get_generated_number(context, config, variables, **kw):
     split_length = config.get("split_length", 1)
 
     # The prefix tempalte is the static part of the ID
-    prefix_template = slice(id_template, end=split_length)
+    prefix_template = slice(id_template, separator=separator, end=split_length)
 
     # get the number generator
     number_generator = getUtility(INumberGenerator)
@@ -272,10 +287,12 @@ def get_generated_number(context, config, variables, **kw):
     # XXX: Handle flushed storage - refactoring needed here!
     if key not in number_generator:
         # we need to figure out the current state of the DB.
+        seq_index = get_seq_index(id_template, separator)
         existing = search_by_prefix(portal_type, prefix)
         max_num = 0
         for brain in existing:
-            num = to_int(slice(api.get_id(brain), start=split_length))
+            segments = split(api.get_id(brain), separator)
+            num = to_int(segments[seq_index])
             if num > max_num:
                 max_num = num
         # set the number generator
