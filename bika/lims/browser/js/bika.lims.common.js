@@ -123,6 +123,64 @@ function CommonUtils() {
             }
         };
 
+        /**
+         * Update or modify a query filter for a reference widget.
+         * This will set the options, then re-create the combogrid widget
+         * with the new filter key/value.
+         *
+         * @param {object} element - the input element as combogrid.
+         * @param {string} filterkey - the new filter key to filter by.
+         * @param {string} filtervalue - the value of the new filter.
+         * @param {string} querytype - it can be 'base_query' or 'search_query'
+         */
+        window.bika.lims.update_combogrid_query = function(
+                element, filterkey, filtervalue, querytype) {
+
+            if (!$(element).is(':visible')) {
+                return;
+            };
+            if (!querytype) {
+                querytype = 'base_query';
+            };
+            // Adding the new query filter
+            var query =  jQuery.parseJSON($(element).attr(querytype));
+            query[filterkey] = filtervalue;
+            $(element).attr(querytype, JSON.stringify(query));
+
+            var options = jQuery.parseJSON(
+                $(element).attr("combogrid_options"));
+
+            // Building new ajax request
+            options.url = window.portal_url + "/" + options.url;
+            options.url = options.url + "?_authenticator=" +
+                $("input[name='_authenticator']").val();
+            options.url = options.url + "&catalog_name=" +
+                $(element).attr("catalog_name");
+
+            options.url = options.url + "&base_query=" +
+                encodeURIComponent($(element).attr("base_query"));
+            options.url = options.url + "&search_query=" +
+                encodeURIComponent($.toJSON(query));
+
+            var col_model = options.colModel;
+            var search_fields = options.search_fields;
+            var discard_empty = options.discard_empty
+
+            options.url = options.url + "&colModel=" +
+                $.toJSON(col_model);
+
+            options.url = options.url + "&search_fields=" +
+                $.toJSON(search_fields)
+
+            options.url = options.url + "&discard_empty=" +
+                $.toJSON(discard_empty);
+
+            options.force_all = "false";
+
+            // Apply changes
+            $(element).combogrid(options);
+        };
+
         // Priority Selection Widget
         $('.ArchetypesPrioritySelectionWidget select').change(function(e){
             var val = $(this).find('option:selected').val();
