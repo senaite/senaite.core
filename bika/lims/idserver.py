@@ -261,7 +261,7 @@ def get_generated_number(context, config, variables, **kw):
     """Generate a new persistent number with the number generator for the
     sequence type "Generated"
     """
-    separator = '-'
+    separator=kw.get('separator', '-')
 
     # allow portal_type override
     portal_type = kw.get("portal_type") or api.get_portal_type(context)
