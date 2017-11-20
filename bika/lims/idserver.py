@@ -284,6 +284,9 @@ def get_generated_number(context, config, variables, **kw):
     if prefix:
         key = "{}-{}".format(key, prefix)
 
+    # normalize out any unicode characters like Ö, É, etc  
+    key = api.normalize_filename(key)
+
     # XXX: Handle flushed storage - refactoring needed here!
     if key not in number_generator:
         # we need to figure out the current state of the DB.
