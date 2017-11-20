@@ -183,6 +183,9 @@ def migrate_refs(portal_type, relation, fieldname, pgthreshold=100):
             touidref(obj, obj, relation, portal_type, fieldname)
             refs_to_remove.append(relation)
 
+    # remove at refs
+    for remove in refs_to_remove:
+        del_at_refs(remove)
 
 def touidref(src, dst, src_relation, src_portal_type, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference
