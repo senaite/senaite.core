@@ -178,6 +178,8 @@ def get_tool(name, context=None, default=_marker):
 
     :param name: The name of the tool, e.g. `portal_catalog`
     :type name: string
+    :param context: A portal object
+    :type context: ATContentType/DexterityContentType/CatalogBrain
     :returns: Portal Tool
     """
 
