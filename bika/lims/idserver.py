@@ -84,7 +84,7 @@ def get_config(context, **kw):
 
     # check if we have a config for the given portal_type
     for config in config_map:
-        if config['portal_type'] == portal_type:
+        if config['portal_type'].lower() == portal_type.lower():
             return config
 
     # return a default config
