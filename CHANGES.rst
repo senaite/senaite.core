@@ -14,6 +14,7 @@ Changelog
 
 **Fixed**
 
+- PR2315 AR add fails silently if e.g. the ID of the AR was already taken
 
 
 **Security**
