@@ -14,6 +14,7 @@ Changelog
 
 **Fixed**
 
+- #400 PR-2319 AR Add fails if an Analysis Category was disabled
 
 
 **Security**
