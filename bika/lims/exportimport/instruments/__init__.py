@@ -34,6 +34,7 @@ from nuclisens import easyq
 from genexpert import genexpert
 
 __all__ = ['abaxis.vetscan.vs2',
+           'abbott.m2000rt.m2000rt',
            'agilent.masshunter.quantitative',
            'alere.pima.beads',
            'alere.pima.cd4',
@@ -67,6 +68,7 @@ __all__ = ['abaxis.vetscan.vs2',
 # interface
 PARSERS = [
            ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
+           ['abbott.m2000rt.m2000rt', 'AbbottM2000rtTSVParser'],
            ['agilent.masshunter.quantitative', 'MasshunterQuantCSVParser'],
            ['alere.pima.beads', 'AlerePimaSLKParser'],
            ['alere.pima.cd4', 'AlerePimacd4SLKParser'],
