@@ -13,6 +13,7 @@ from plone import protect
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.idserver import get_config
+from bika.lims.idserver import get_current_year
 from bika.lims import bikaMessageFactory as _
 from bika.lims.numbergenerator import INumberGenerator
 
@@ -74,7 +75,14 @@ class IDServerView(BrowserView):
         config = get_config(None, portal_type=portal_type)
         id_template = config.get("form", "")
         number = self.storage.get(key) + 1
-        return id_template.format(seq=number)
+        spec = {
+            "seq": number,
+            "year": get_current_year(),
+            "sample": "Sample",
+            "sampleId": "SampleId",
+            "sampleType": key.replace(portal_type, "").strip("-"),
+        }
+        return id_template.format(**spec)
 
     @property
     def storage(self):
