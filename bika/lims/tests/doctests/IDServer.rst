@@ -265,6 +265,6 @@ Re-seed and create a new `Batch`::
     >>> #browser.open(portal_url + '/ng_flush')
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    '17-0131-water-0002-R001'
+    'RB-20170131-water-0002-R001'
 
 TODO: Test the case when numbers are exhausted in a sequence!
