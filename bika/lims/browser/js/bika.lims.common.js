@@ -127,6 +127,7 @@ function CommonUtils() {
          * Update or modify a query filter for a reference widget.
          * This will set the options, then re-create the combogrid widget
          * with the new filter key/value.
+         * If filtervalue is empty, the function will delete the query element.
          *
          * @param {object} element - the input element as combogrid.
          * @param {string} filterkey - the new filter key to filter by.
@@ -142,9 +143,15 @@ function CommonUtils() {
             if (!querytype) {
                 querytype = 'base_query';
             };
-            // Adding the new query filter
             var query =  jQuery.parseJSON($(element).attr(querytype));
-            query[filterkey] = filtervalue;
+            // Adding the new query filter
+            if (filtervalue) {
+                query[filterkey] = filtervalue;
+                };
+            // Deleting the query filter
+            if (filtervalue === '' && query[filterkey]){
+                delete query[filterkey];
+            };
             $(element).attr(querytype, JSON.stringify(query));
 
             var options = jQuery.parseJSON(
@@ -164,7 +171,7 @@ function CommonUtils() {
 
             var col_model = options.colModel;
             var search_fields = options.search_fields;
-            var discard_empty = options.discard_empty
+            var discard_empty = options.discard_empty;
 
             options.url = options.url + "&colModel=" +
                 $.toJSON(col_model);
