@@ -219,6 +219,15 @@ def get_ids_with_prefix(portal_type, prefix):
     return ids
 
 
+def make_storage_key(portal_type, prefix=None):
+    """Make a storage (dict-) key for the number generator
+    """
+    key = portal_type.lower()
+    if prefix:
+        key = "{}-{}".format(key, prefix)
+    return key
+
+
 def get_seq_number_from_id(id, prefix, **kw):
     """Return the sequence number of the given ID
     """
@@ -281,30 +290,31 @@ def get_generated_number(context, config, variables, **kw):
     # normalize out any unicode characters like Ö, É, etc. from the prefix
     prefix = api.normalize_filename(prefix)
 
-    # The key in the storage is prefixed by the portal type
-    key = portal_type.lower()
-    if prefix:
-        key = "{}-{}".format(key, prefix)
+    # The key used for the storage
+    key = make_storage_key(portal_type, prefix)
 
     # Handle flushed storage
     if key not in number_generator:
+        max_num = 0
         existing = get_ids_with_prefix(portal_type, prefix)
         numbers = map(lambda id: get_seq_number_from_id(id, prefix), existing)
-        max_num = max(numbers)
+        # figure out the highest number in the sequence
+        if numbers:
+            max_num = max(numbers)
         # set the number generator
         logger.info("*** SEEDING Prefix '{}' to {}".format(prefix, max_num))
         number_generator.set_number(key, max_num)
 
-    # TODO: We need a way to figure out the max numbers allowed in this
-    # sequence to raise a KeyError when the current number exceeds the maximum
-    # number possible in the sequence
-
-    # TODO: This allows us to "preview" the next generated ID in the UI
     if not kw.get("dry_run", False):
-        # generate a new number
+        # Generate a new number
+        # NOTE Even when the number exceeds the given ID sequence format,
+        #      it will overflow gracefully, e.g.
+        #      >>> {sampleId}-R{seq:03d}'.format(sampleId="Water", seq=999999)
+        #      'Water-R999999‘
         number = number_generator.generate_number(key=key)
     else:
-        # just fetch the next number
+        # => This allows us to "preview" the next generated ID in the UI
+        # TODO Show the user the next generated number somewhere in the UI
         number = number_generator.get(key, 1)
     return number
 
