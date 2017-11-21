@@ -65,6 +65,7 @@ def get_objects_in_sequence(brain_or_object, ctype, cref):
         return get_contained_items(obj, cref)
     raise ValueError("Reference value is mandatory for sequence type counter")
 
+
 def get_contained_items(obj, spec):
     """Returns a list of (id, subobject) tuples of the current context.
     If 'spec' is specified, returns only objects whose meta_type match 'spec'
@@ -217,6 +218,7 @@ def get_ids_with_prefix(portal_type, prefix):
     ids = map(api.get_id, brains)
     return ids
 
+
 def get_seq_index(id_template, separator='-'):
     """ Find the index of the seq varriable in the id_template
         e.g. id_template = '{year}-{client}-{seq}' returns 2
@@ -232,6 +234,7 @@ def get_seq_index(id_template, separator='-'):
             seq_index = idx
             break
     return seq_index
+
 
 def get_counted_number(context, config, variables, **kw):
     """Compute the number for the sequence type "Counter"
@@ -257,11 +260,14 @@ def get_counted_number(context, config, variables, **kw):
     number = len(seq_items)
     return number
 
+
 def get_generated_number(context, config, variables, **kw):
     """Generate a new persistent number with the number generator for the
     sequence type "Generated"
     """
-    separator=kw.get('separator', '-')
+
+    # separator where to split the ID
+    separator = kw.get('separator', '-')
 
     # allow portal_type override
     portal_type = kw.get("portal_type") or api.get_portal_type(context)
@@ -284,7 +290,7 @@ def get_generated_number(context, config, variables, **kw):
     if prefix:
         key = "{}-{}".format(key, prefix)
 
-    # normalize out any unicode characters like Ö, É, etc  
+    # normalize out any unicode characters like Ö, É, etc
     key = api.normalize_filename(key)
 
     # XXX: Handle flushed storage - refactoring needed here!
