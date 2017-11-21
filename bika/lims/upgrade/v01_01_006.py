@@ -3,6 +3,7 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -29,8 +30,22 @@ def upgrade(tool):
 
     UpgradeReferenceFields()
 
+    # Indexes and colums were changed as per
+    # https://github.com/senaite/bika.lims/pull/353
+    ut.delIndex(CATALOG_ANALYSIS_LISTING, 'getAnalysisRequestUID')
+    ut.addIndex(CATALOG_ANALYSIS_LISTING, 'getRequestUID', 'FieldIndex')
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAnalysisRequestURL')
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAnalysisRequestTitle')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getRequestURL')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getRequestTitle')
+    ut.reindexIndex(CATALOG_ANALYSIS_LISTING, 'getPrioritySortkey')
+    ut.refreshCatalogs()
+
     return True
 
+
+refs_to_remove = []
+objs_to_reindex = []
 
 def UpgradeReferenceFields():
     """Convert all ReferenceField's values into UIDReferenceFields.
@@ -153,6 +168,14 @@ def UpgradeReferenceFields():
             if is_UIDReferenceField(portal_type, fieldname):
                 migrate_refs(portal_type, relation, fieldname)
 
+        # remove at refs
+        for remove in refs_to_remove:
+            del_at_refs(remove)
+
+        # reindex objects
+        for obj in objs_to_reindex:
+            obj.reindexObject()
+
 
 def is_UIDReferenceField(portal_type, fieldname):
     uc = get_tool('uid_catalog')
@@ -171,9 +194,12 @@ def migrate_refs(portal_type, relation, fieldname, pgthreshold=100):
     rc = get_tool(REFERENCE_CATALOG)
     uc = get_tool('uid_catalog')
     refs = rc(relationship=relation)
-    if refs:
-        logger.info('Migrating %s references of %s' % (len(refs), relation))
-    refs_to_remove = []
+    # Be sure there are no Nones
+    refs = filter(None, refs)
+    if not refs:
+        return
+
+    logger.info('Migrating %s references of %s' % (len(refs), relation))
     for i, ref in enumerate(refs):
         obj = uc(UID=ref[1])
         if obj:
@@ -182,10 +208,7 @@ def migrate_refs(portal_type, relation, fieldname, pgthreshold=100):
                 logger.info("%s/%s %s/%s" % (i, len(refs), obj, relation))
             touidref(obj, obj, relation, portal_type, fieldname)
             refs_to_remove.append(relation)
-
-    # remove at refs
-    for remove in refs_to_remove:
-        del_at_refs(remove)
+            objs_to_reindex.append(obj)
 
 def touidref(src, dst, src_relation, src_portal_type, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference
@@ -193,11 +216,6 @@ def touidref(src, dst, src_relation, src_portal_type, fieldname):
     """
     field = dst.getField(fieldname)
     refs = src.getRefs(relationship=src_relation)
-
-    print("Well, is the src portal_type a match for migrate_refs first arg?")
-    print("reason I ask is, ReferenceAnalysis always subclassed Analysis,")
-    print("and so the relation names are the same! Simply asking the reference")
-    print("catalog for references of a certain relation name, won't work")
 
     if len(refs) == 1:
         value = get_uid(refs[0])
