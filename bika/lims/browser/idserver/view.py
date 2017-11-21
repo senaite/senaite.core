@@ -38,7 +38,6 @@ class IDServerView(BrowserView):
         protect.CheckAuthenticator(self.request.form)
 
         self.portal = api.get_portal()
-        self.number_generator = getUtility(INumberGenerator)
         self.request.set('disable_plone.rightcolumn', 1)
         self.request.set('disable_border', 1)
 
@@ -86,7 +85,8 @@ class IDServerView(BrowserView):
 
     @property
     def storage(self):
-        return self.number_generator.storage
+        number_generator = getUtility(INumberGenerator)
+        return number_generator.storage
 
     def to_int(self, number, default=0):
         """Returns an integer
@@ -104,7 +104,8 @@ class IDServerView(BrowserView):
     def set_seed(self, key, value):
         """Set a number of the number generator
         """
-        return self.number_generator.set_number(key, self.to_int(value))
+        number_generator = getUtility(INumberGenerator)
+        return number_generator.set_number(key, self.to_int(value))
 
     def seed(self):
         """ Reset the number from which the next generated sequence start.
@@ -123,7 +124,7 @@ class IDServerView(BrowserView):
         if seed < 0:
             return 'Seed cannot be negative'
 
-        new_seq = self.set_number(prefix, seed)
+        new_seq = self.set_seed(prefix, seed)
         return 'IDServerView: "%s" seeded to %s' % (prefix, new_seq)
 
     def flush(self):
