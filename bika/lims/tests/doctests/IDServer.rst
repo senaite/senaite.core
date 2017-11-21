@@ -262,5 +262,9 @@ Re-seed and create a new `Batch`::
     >>> batch = api.create(batches, "Batch", ClientID="RB")
     >>> batch.getId() == "BA-{}-0011".format(year)
     True
+    >>> #browser.open(portal_url + '/ng_flush')
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    '17-0131-water-0002-R001'
 
 TODO: Test the case when numbers are exhausted in a sequence!
