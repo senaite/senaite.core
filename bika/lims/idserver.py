@@ -228,11 +228,17 @@ def make_storage_key(portal_type, prefix=None):
     return key
 
 
-def get_seq_number_from_id(id, prefix, **kw):
+def get_seq_number_from_id(id, id_template, prefix, **kw):
     """Return the sequence number of the given ID
     """
     separator = kw.get("separator", "-")
-    seq_number = to_int(id.replace(prefix, "").strip(separator))
+    postfix = id.replace(prefix, "").strip(separator)
+    postfix_segments = postfix.split(separator)
+    seq_number = 0
+    possible_seq_nums = filter(lambda n: n.isalnum(), postfix_segments)
+    if possible_seq_nums:
+        seq_number = possible_seq_nums[-1]
+    seq_number = to_int(seq_number)
     return seq_number
 
 
@@ -297,7 +303,7 @@ def get_generated_number(context, config, variables, **kw):
     if key not in number_generator:
         max_num = 0
         existing = get_ids_with_prefix(portal_type, prefix)
-        numbers = map(lambda id: get_seq_number_from_id(id, prefix), existing)
+        numbers = map(lambda id: get_seq_number_from_id(id, id_template, prefix), existing)
         # figure out the highest number in the sequence
         if numbers:
             max_num = max(numbers)
