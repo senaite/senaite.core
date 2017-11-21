@@ -219,21 +219,12 @@ def get_ids_with_prefix(portal_type, prefix):
     return ids
 
 
-def get_seq_index(id_template, separator='-'):
-    """ Find the index of the seq varriable in the id_template
-        e.g. id_template = '{year}-{client}-{seq}' returns 2
+def get_seq_number_from_id(id, prefix, **kw):
+    """Return the sequence number of the given ID
     """
-    # split the given id_template at the given separator
-    segments = split(id_template, separator)
-    seq_index = 0
-    for idx in range(len(segments)):
-        segment = segments[idx]
-        segment = segment.replace('{', '')
-        segment = segment.replace('}', '')
-        if segment.split(':')[0] == 'seq':
-            seq_index = idx
-            break
-    return seq_index
+    separator = kw.get("separator", "-")
+    seq_number = to_int(id.replace(prefix, "").strip(separator))
+    return seq_number
 
 
 def get_counted_number(context, config, variables, **kw):
@@ -286,25 +277,22 @@ def get_generated_number(context, config, variables, **kw):
 
     # generate the key for the number generator storage
     prefix = prefix_template.format(**variables)
+
+    # normalize out any unicode characters like Ö, É, etc. from the prefix
+    prefix = api.normalize_filename(prefix)
+
+    # The key in the storage is prefixed by the portal type
     key = portal_type.lower()
     if prefix:
         key = "{}-{}".format(key, prefix)
 
-    # normalize out any unicode characters like Ö, É, etc
-    key = api.normalize_filename(key)
-
-    # XXX: Handle flushed storage - refactoring needed here!
+    # Handle flushed storage
     if key not in number_generator:
-        # we need to figure out the current state of the DB.
-        seq_index = get_seq_index(id_template, separator)
-        existing = search_by_prefix(portal_type, prefix)
-        max_num = 0
-        for brain in existing:
-            segments = split(api.get_id(brain), separator)
-            num = to_int(segments[seq_index])
-            if num > max_num:
-                max_num = num
+        existing = get_ids_with_prefix(portal_type, prefix)
+        numbers = map(lambda id: get_seq_number_from_id(id, prefix), existing)
+        max_num = max(numbers)
         # set the number generator
+        logger.info("*** SEEDING Prefix '{}' to {}".format(prefix, max_num))
         number_generator.set_number(key, max_num)
 
     # TODO: We need a way to figure out the max numbers allowed in this
