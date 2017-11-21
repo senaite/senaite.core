@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.6 (unreleased)
+------------------
+
+**Fixed**
+
+- #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
+
+
 1.1.5 (2017-11-20)
 ------------------
 
