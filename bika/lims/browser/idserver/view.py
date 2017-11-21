@@ -53,10 +53,15 @@ class IDServerView(BrowserView):
         if form.get("seed", False):
             seeds = form.get("seeds", {})
             for key, value in seeds.items():
-                message = _("Seeding key {} to {}".format(key, value))
+                value = self.to_int(value)
+                message = ""
+                if value == 0:
+                    del self.storage[key]
+                    message = _("Removed key {} from storage".format(key))
+                else:
+                    self.set_seed(key, value)
+                    message = _("Seeding key {} to {}".format(key, value))
                 self.add_status_message(message, "info")
-                logger.info(message)
-                self.set_seed(key, value)
 
         # Handle "Flush" action
         if form.get("flush", False):
