@@ -14,7 +14,8 @@ from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.fields.uidreferencefield \
+    import get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
 from zope.component import getAdapters
@@ -65,6 +66,20 @@ def get_objects_in_sequence(brain_or_object, ctype, cref):
         return get_contained_items(obj, cref)
     raise ValueError("Reference value is mandatory for sequence type counter")
 
+
+def get_backreferences(obj, relationship):
+    """Returns the backreferences
+    """
+    refs = get_backuidreferences(obj, relationship)
+
+    # TODO remove after all ReferenceField get ported to UIDReferenceField
+    # At this moment, there are still some content types that are using the
+    # ReferenceField, so we need to fallback to traditional getBackReferences
+    # for these cases.
+    if not refs:
+        refs = obj.getBackReferences(relationship)
+
+    return refs
 
 def get_contained_items(obj, spec):
     """Returns a list of (id, subobject) tuples of the current context.
