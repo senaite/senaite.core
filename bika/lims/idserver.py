@@ -220,7 +220,7 @@ def get_current_year():
 def search_by_prefix(portal_type, prefix):
     """Returns brains which share the same portal_type and ID prefix
     """
-    catalog = api.get_tool("portal_catalog")
+    catalog = api.get_tool("uid_catalog")
     brains = catalog({"portal_type": portal_type})
     # Filter brains with the same ID prefix
     return filter(lambda brain: api.get_id(brain).startswith(prefix), brains)
