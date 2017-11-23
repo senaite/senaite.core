@@ -14,6 +14,7 @@ Changelog
 
 **Fixed**
 
+- #399 PR-2318 AR Add fails silently if e.g. the ID of the AR was already taken
 
 
 **Security**
