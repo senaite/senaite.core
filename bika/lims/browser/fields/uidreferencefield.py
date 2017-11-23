@@ -8,13 +8,11 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.Field import Field, StringField
-from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
-from bika.lims.api import is_at_content, is_brain, is_dexterity_content
+from bika.lims import api
 from bika.lims.interfaces.field import IUIDReferenceField
 from persistent.list import PersistentList
 from persistent.dict import PersistentDict
-from plone.api.portal import get_tool
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 
@@ -78,9 +76,9 @@ class UIDReferenceField(StringField):
         # passed to us from form submissions
         if not value or value == ['']:
             ret = ''
-        elif is_brain(value):
+        elif api.is_brain(value):
             ret = value.UID
-        elif is_at_content(value) or is_dexterity_content(value):
+        elif api.is_at_content(value) or api.is_dexterity_content(value):
             ret = value.UID()
         elif is_uid(context, value):
             ret = value
@@ -205,7 +203,7 @@ def is_uid(context, value):
     :return: True if the value is a UID and exists as an entry in uid_catalog.
     :rtype: bool
     """
-    uc = getToolByName(context, 'uid_catalog')
+    uc = api.get_tool('uid_catalog', context=context)
     brains = uc(UID=value)
     return brains and True or False
 
@@ -221,10 +219,10 @@ def _get_object(context, value):
     :rtype: BaseContent
     """
 
-    if is_at_content(value) or is_dexterity_content(value):
+    if api.is_at_content(value) or api.is_dexterity_content(value):
         return value
     elif value and is_uid(context, value):
-        uc = getToolByName(context, 'uid_catalog')
+        uc = api.get_tool('uid_catalog', context=context)
         brains = uc(UID=value)
         assert len(brains) == 1
         return brains[0].getObject()
@@ -238,9 +236,9 @@ def get_storage(context):
 
 
 def _get_catalog_for_uid(uid):
-    at = get_tool('archetype_tool')
-    uc = get_tool('uid_catalog')
-    pc = get_tool('portal_catalog')
+    at = api.get_tool('archetype_tool')
+    uc = api.get_tool('uid_catalog')
+    pc = api.get_tool('portal_catalog')
     # get uid_catalog brain for uid
     ub = uc(UID=uid)[0]
     # get portal_type of brain

@@ -10,11 +10,13 @@ Changelog
 
 **Changed**
 
+- #390 Remove log verbosity of UIDReference.get when value is None or empty
 
 
 **Fixed**
 
-- #390 Remove log verbosity of UIDReference.get when value is None or empty
+- #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
+
 
 **Security**
 
