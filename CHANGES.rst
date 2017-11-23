@@ -14,7 +14,7 @@ Changelog
 
 **Fixed**
 
-
+- #390 Remove log verbosity of UIDReference.get when value is None or empty
 
 **Security**
 
