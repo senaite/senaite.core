@@ -14,7 +14,7 @@ from bika.lims.utils import t
 import json
 import traceback
 
-title = "Abbot - m2000 Real Time"
+title = "Abbott - m2000 Real Time"
 
 
 def Import(context, request):
