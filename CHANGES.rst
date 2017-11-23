@@ -13,6 +13,7 @@ Changelog
 
 **Fixed**
 
+- #403 Calculations not triggered in manage results view
 - #399 PR-2318 AR Add fails silently if e.g. the ID of the AR was already taken
 - #400 PR-2319 AR Add fails if an Analysis Category was disabled
 - #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
