@@ -99,6 +99,8 @@ class UIDReferenceField(StringField):
         :rtype: BaseContent | list[BaseContent]
         """
         value = StringField.get(self, context, **kwargs)
+        if not value:
+            return [] if self.multiValued else None
         if self.multiValued:
             # Only return objects which actually exist; this is necessary here
             # because there are no HoldingReferences. This opens the
@@ -123,6 +125,8 @@ class UIDReferenceField(StringField):
         :rtype: string | list[string]
         """
         value = StringField.get(self, context, **kwargs)
+        if not value:
+            return [] if self.multiValued else None
         if self.multiValued:
             ret = value
         else:

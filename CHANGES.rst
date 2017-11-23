@@ -4,9 +4,22 @@ Changelog
 1.1.6 (unreleased)
 ------------------
 
+**Added**
+
+
+
+**Changed**
+
+- #390 Remove log verbosity of UIDReference.get when value is None or empty
+
+
 **Fixed**
 
 - #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
+
+
+**Security**
+
 
 
 1.1.5 (2017-11-20)
