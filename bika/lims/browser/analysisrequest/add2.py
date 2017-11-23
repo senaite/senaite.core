@@ -1084,7 +1084,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # client
         client = self.get_client()
-        client_uid = api.get_uid(client) if client else ""
+        client_uid = client and api.get_uid(client) or ""
 
         # sample matrix
         sample_matrix = obj.getSampleMatrix()

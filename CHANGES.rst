@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
 - #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
 
 
