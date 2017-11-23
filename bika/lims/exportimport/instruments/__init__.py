@@ -6,7 +6,7 @@
 import sys
 import inspect
 
-#from generic import xml
+# from generic import xml
 from agilent.masshunter import quantitative
 from abbott.m2000rt import m2000rt
 from foss.fiastar import fiastar
@@ -45,7 +45,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120',
-           #'generic.xml',
+           # 'generic.xml',
            'horiba.jobinyvon.icp',
            'rigaku.supermini.wxrf',
            'rochecobas.taqman.model48',
@@ -99,12 +99,13 @@ PARSERS = [
            ['genexpert.genexpert', 'GeneXpertParser'],
            ]
 
+
 def getExim(exim_id):
     currmodule = sys.modules[__name__]
-    members = [obj for name, obj in inspect.getmembers(currmodule) \
-               if hasattr(obj, '__name__') \
+    members = [obj for name, obj in inspect.getmembers(currmodule)
+               if hasattr(obj, '__name__')
                and obj.__name__.endswith(exim_id)]
-    return members[0] if len(members)>0 else None
+    return members[0] if len(members) > 0 else None
 
 
 def getParserName(exim_id):
