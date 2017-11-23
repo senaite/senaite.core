@@ -314,7 +314,7 @@ class AnalysisRequestViewView(BrowserView):
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         res = []
         for analysis in bac(portal_type="Analysis",
-                            getRequestID=self.context.getId()):
+                            getRequestUID=self.context.UID()):
             analysis = analysis.getObject()
             res.append([analysis.getPointOfCapture(),
                         analysis.getCategoryUID(),
