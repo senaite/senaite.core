@@ -10,11 +10,13 @@ Changelog
 
 **Changed**
 
-- #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
+- #390 Remove log verbosity of UIDReference.get when value is None or empty
 
 
 **Fixed**
 
+- #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
+- #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
 
 
 **Security**
