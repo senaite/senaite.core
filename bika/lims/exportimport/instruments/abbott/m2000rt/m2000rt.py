@@ -27,8 +27,9 @@ def Import(context, request):
     the selected file and try to import the results.
     """
     # Read the values the user has specified for the parameters
-    # that appear in the instrument interface template
-    infile = request.form['file']
+    # that appear in the import view of the current instrument
+    # and that are defined in the instrument interface template
+    infile = request.form['filename']
     fileformat = request.form['format']
     artoapply = request.form['artoapply']
     override = request.form['override']
@@ -50,7 +51,8 @@ def Import(context, request):
                           mapping={"fileformat": fileformat})))
 
     if parser:
-        # Define parameters for the importer from the values just read
+        # Select parameters for the importer from the values
+        # just read from the import view
         status = ['sample_received', 'attachment_due', 'to_be_verified']
         if artoapply == 'received':
             status = ['sample_received']
@@ -75,7 +77,9 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        # Crate importer and try to import the results from the specified file
+        # Crate importer with the defined parser as well as the
+        # rest of defined parameters and try to import the
+        # results from the specified file
         importer = Abbottm2000rtImporter(parser=parser,
                                          context=context,
                                          idsearchcriteria=sam,
@@ -85,6 +89,7 @@ def Import(context, request):
                                          instrument_uid=instrument)
         tbex = ''
         try:
+            # run the parser and save results
             importer.process()
         except:
             tbex = traceback.format_exc()
@@ -100,9 +105,23 @@ def Import(context, request):
 
 
 class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
+
     def __init__(self, infile):
-        InstrumentCSVResultsFileParser.__init__(self, infile,
-                                                encoding='utf-16-le')
+        InstrumentCSVResultsFileParser.__init__(self, infile)
+        self._separator = '\t'
+
+    def _parseline(self, line):
+        """
+        Results log file line Parser. The parse method implemented in
+        InstrumentCSVResultsFileParser calls this method for each line
+        in the results file that is to be parsed.
+        :param line: a to parse
+        :returns: the number of rows to jump and parse the next data line or
+        return the code error -1
+        """
+        split_line = line.split(self._separator)
+        print split_line
+        return 0
 
 
 class Abbottm2000rtImporter(AnalysisResultsImporter):
