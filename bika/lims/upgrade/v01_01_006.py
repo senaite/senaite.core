@@ -28,7 +28,16 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
+    # Convert ReferenceField's values into UIDReferenceFields.
     UpgradeReferenceFields()
+
+    # Calculations not triggered in manage results view
+    # https://github.com/senaite/bika.lims/issues/355
+    # Since we've already migrated the ReferenceField DependentServices from
+    # Calculation (with relation name 'CalculationAnalysisService' above, this
+    # wouldn't be strictly necessary, but who knows... maybe we've lost the
+    # at_references too, so just do it.
+    fix_broken_calculations()
 
     # Indexes and colums were changed as per
     # https://github.com/senaite/bika.lims/pull/353
@@ -42,6 +51,48 @@ def upgrade(tool):
     ut.refreshCatalogs()
 
     return True
+
+
+def fix_broken_calculations():
+    """Walks-through calculations associated to undergoing analyses and
+    resets the value for DependentServices field"""
+
+    # Fetch only the subset of analyses that are undergoing.
+    # Analyses that have been verified or published cannot be updated, so there
+    # is no sense to check their calculations
+    review_states = [
+         'attachment_due',
+         'not_requested',
+         'rejected',
+         'retracted',
+         'sample_due',
+         'sample_prep',
+         'sample_received',
+         'sample_received',
+         'sample_registered',
+         'sampled',
+         'to_be_preserved',
+         'to_be_sampled',
+    ]
+    catalog = get_tool(CATALOG_ANALYSIS_LISTING)
+    brains = catalog(portal_type='Analysis', review_state=review_states)
+    for brain in brains:
+        analysis = brain.getObject()
+        calculation = analysis.getCalculation()
+        if not calculation:
+            continue
+
+        dependents = calculation.getDependentServices()
+        # We don't want eventualities such as [None,]
+        dependents = filter(None, dependents)
+        if not dependents:
+            # Assign the formula again to the calculation. Note the function
+            # setFormula inferes the dependent services (and stores them) by
+            # inspecting the keywords set in the formula itself.
+            # So, instead of doing this job here, we just let setFormula to work
+            # for us.
+            formula = calculation.getFormula()
+            calculation.setFormula(formula)
 
 
 refs_to_remove = []
@@ -142,7 +193,8 @@ def UpgradeReferenceFields():
         ]],
 
         ['Calculation', [
-            ('DependentServices', 'CalculationDependentServices')
+            ('DependentServices', 'CalculationDependentServices'),
+            ('DependentServices', 'CalculationAnalysisService')
         ]],
 
         ['Instrument', [
