@@ -18,7 +18,13 @@ title = "Abbot - m2000 Real Time"
 
 
 def Import(context, request):
-    """ Abbot m2000 Real Time analysis results
+    """
+    Abbot m2000 Real Time results import. This function handles
+    requests when the user uploads a file and submits. It gets
+    request parameters and creates a Parser object based on the
+    parameters' values. After that, and based on that parser object,
+    it creates an Importer object called importer that will process
+    the selected file and try to import the results.
     """
     # Read the values the user has specified for the parameters
     # that appear in the instrument interface template
@@ -44,8 +50,7 @@ def Import(context, request):
                           mapping={"fileformat": fileformat})))
 
     if parser:
-        # Define parameters for the importer from the values previously
-        # read
+        # Define parameters for the importer from the values just read
         status = ['sample_received', 'attachment_due', 'to_be_verified']
         if artoapply == 'received':
             status = ['sample_received']
@@ -70,6 +75,7 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
+        # Crate importer and try to import the results from the specified file
         importer = Abbottm2000rtImporter(parser=parser,
                                          context=context,
                                          idsearchcriteria=sam,
