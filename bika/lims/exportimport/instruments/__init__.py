@@ -8,6 +8,7 @@ import inspect
 
 #from generic import xml
 from agilent.masshunter import quantitative
+from abbott.m2000rt import m2000rt
 from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
