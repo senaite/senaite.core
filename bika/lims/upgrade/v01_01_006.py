@@ -1,7 +1,7 @@
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.ZCatalog.interfaces import ICatalogBrain
-from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
@@ -135,7 +135,7 @@ def fix_broken_calculations():
                 last_calc = uc(UID=uid)
                 if not last_calc:
                     # This should not happen
-                    logger.warn("No calculation found for %s " % calculation.UID())
+                    logger.warn("No calculation found for %s" % uid)
                     continue
                 last_calc = last_calc[0].getObject()
                 if last_calc.version_id != target_version:
@@ -464,7 +464,8 @@ def migrateFileFields(portal):
 
 def handle_AS_wo_category(portal):
     """
-    Apparently, some of Analysis Services remained without category after migration.
+    Apparently, some of Analysis Services remained without category after
+    migration.
     Creating a new Category ('unknown') and assigning those AS'es to it.
     """
     uc = getToolByName(portal, 'bika_setup_catalog')
