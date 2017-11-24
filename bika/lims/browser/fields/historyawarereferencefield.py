@@ -72,6 +72,7 @@ class HistoryAwareReferenceField(ReferenceField):
         add = [v for v in uids if v and v not in targetUIDs]
 
         newuids = [t for t in list(targetUIDs) + list(uids) if t not in sub]
+        newuids = list(set(newuids))
         for uid in newuids:
             # update version_id of all existing references that aren't
             # about to be removed anyway (contents of sub)

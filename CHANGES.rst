@@ -1,6 +1,24 @@
 Changelog
 =========
 
+1.1.6 (2017-11-24)
+------------------
+
+**Changed**
+
+- #390 Remove log verbosity of UIDReference.get when value is None or empty
+
+**Fixed**
+
+- #403 Calculations not triggered in manage results view
+- #402 Sort Analysis Services correctly based on their Sortkey + Title (Again)
+- #398 PR-2315 ID Server does not find the next correct sequence after flushing the number generator
+- #399 PR-2318 AR Add fails silently if e.g. the ID of the AR was already taken
+- #400 PR-2319 AR Add fails if an Analysis Category was disabled
+- #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
+- #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
+
+
 1.1.5 (2017-11-20)
 ------------------
 
