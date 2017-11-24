@@ -8,6 +8,7 @@ from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils, migrate_to_blob
+from bika.lims.utils import tmpID
 from plone.api.portal import get_tool
 
 version = '1.1.6'  # Remember version number in metadata.xml and setup.py
@@ -481,7 +482,9 @@ def handle_AS_wo_category(portal):
             category = acat.getObject()
             break
     else:
-        category = _createObjectByType("AnalysisCategory", portal.bika_setup.bika_analysiscategories, tmpID())
+        category = _createObjectByType("AnalysisCategory",
+                                       portal.bika_setup.bika_analysiscategories,
+                                       tmpID())
         category.setTitle("Unknown")
         category._renameAfterCreation()
         category.reindexObject()
