@@ -1,11 +1,8 @@
 Changelog
 =========
 
-1.1.6 (unreleased)
+1.1.6 (2017-11-24)
 ------------------
-
-**Added**
-
 
 **Changed**
 
@@ -20,8 +17,6 @@ Changelog
 - #400 PR-2319 AR Add fails if an Analysis Category was disabled
 - #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
 - #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
-
-**Security**
 
 
 1.1.5 (2017-11-20)
