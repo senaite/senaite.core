@@ -28,7 +28,16 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
+    # Convert ReferenceField's values into UIDReferenceFields.
     UpgradeReferenceFields()
+
+    # Calculations not triggered in manage results view
+    # https://github.com/senaite/bika.lims/issues/355
+    # Since we've already migrated the ReferenceField DependentServices from
+    # Calculation (with relation name 'CalculationAnalysisService' above, this
+    # wouldn't be strictly necessary, but who knows... maybe we've lost the
+    # at_references too, so just do it.
+    fix_broken_calculations()
 
     # Indexes and colums were changed as per
     # https://github.com/senaite/bika.lims/pull/353
@@ -42,6 +51,92 @@ def upgrade(tool):
     ut.refreshCatalogs()
 
     return True
+
+
+def fix_broken_calculations():
+    """Walks-through calculations associated to undergoing analyses and
+    resets the value for DependentServices field"""
+
+    logger.info("Fixing broken calculations (re-assignment of dependents)...")
+
+    # Fetch only the subset of analyses that are undergoing.
+    # Analyses that have been verified or published cannot be updated, so there
+    # is no sense to check their calculations
+    review_states = [
+         'attachment_due',
+         'not_requested',
+         'rejected',
+         'retracted',
+         'sample_due',
+         'sample_prep',
+         'sample_received',
+         'sample_received',
+         'sample_registered',
+         'sampled',
+         'to_be_preserved',
+         'to_be_sampled',
+    ]
+    uc = api.get_tool('uid_catalog')
+    catalog = get_tool(CATALOG_ANALYSIS_LISTING)
+    brains = catalog(portal_type='Analysis', review_state=review_states)
+    for brain in brains:
+        analysis = brain.getObject()
+        calculation = analysis.getCalculation()
+        if not calculation:
+            continue
+
+        dependents = calculation.getDependentServices()
+        # We don't want eventualities such as [None,]
+        dependents = filter(None, dependents)
+        if not dependents:
+            # Assign the formula again to the calculation. Note the function
+            # setFormula inferes the dependent services (and stores them) by
+            # inspecting the keywords set in the formula itself.
+            # So, instead of doing this job here, we just let setFormula to work
+            # for us.
+            formula = calculation.getFormula()
+            calculation.setFormula(formula)
+            deps = calculation.getDependentServices()
+            if not deps:
+                # Ok, this calculation does not depend on the result of other
+                # analyses, so we can omit this one, he is already ok
+                continue
+
+            deps = [dep.getKeyword() for dep in deps]
+            deps = ', '.join(deps)
+            arid = analysis.getRequestID()
+            logger.info("Dependents for {}.{}.{}: {}".format(arid,
+                                                          analysis.getKeyword(),
+                                                          calculation.Title(),
+                                                          deps))
+
+            # Set the calculation to the analysis again (field Calculation is an
+            # HistoryAwareReferenceField in Analyses that inherits from
+            # AbstractRoutineAnalysis
+            analysis.setCalculation(calculation)
+
+            # Check if all is ok
+            an_deps =  analysis.getCalculation().getDependentServices()
+            if not an_deps:
+                # Maybe the version of the calculation is an old one. If so, we
+                # need to use the last version, cause HistoryAwareReferenceField
+                # will always point to the version assigned to the calculation
+                # that was associated to the analysis.
+                uid = calculation.UID()
+                target_version = analysis.reference_versions[uid]
+                last_calc = uc(UID=uid)
+                if not last_calc:
+                    # This should not happen
+                    logger.warn("No calculation found for %s " % calculation.UID())
+                    continue
+                last_calc = last_calc[0].getObject()
+                if last_calc.version_id != target_version:
+                    # Ok, this is another version. We have no choice here... we
+                    # need to assign the latest version...
+                    analysis.reference_versions[uid]=last_calc.version_id
+
+            # Just in case
+            analysis.reindexObject()
 
 
 refs_to_remove = []
@@ -142,7 +237,8 @@ def UpgradeReferenceFields():
         ]],
 
         ['Calculation', [
-            ('DependentServices', 'CalculationDependentServices')
+            ('DependentServices', 'CalculationDependentServices'),
+            ('DependentServices', 'CalculationAnalysisService')
         ]],
 
         ['Instrument', [
