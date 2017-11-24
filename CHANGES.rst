@@ -13,6 +13,7 @@ Changelog
 
 **Fixed**
 
+- #402 Sort Analysis Services correctly based on their Sortkey + Title (Again)
 - #398 PR-2315 ID Server does not find the next correct sequence after flushing the number generator
 - #399 PR-2318 AR Add fails silently if e.g. the ID of the AR was already taken
 - #400 PR-2319 AR Add fails if an Analysis Category was disabled
