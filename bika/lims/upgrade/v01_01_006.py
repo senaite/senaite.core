@@ -1,4 +1,5 @@
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFPlone.utils import _createObjectByType
 from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.CMFCore.utils import getToolByName
 from bika.lims import api
@@ -6,7 +7,7 @@ from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.upgrade.utils import UpgradeUtils, migrate_to_blob
 from plone.api.portal import get_tool
 
 version = '1.1.6'  # Remember version number in metadata.xml and setup.py
@@ -38,6 +39,11 @@ def upgrade(tool):
     # wouldn't be strictly necessary, but who knows... maybe we've lost the
     # at_references too, so just do it.
     fix_broken_calculations()
+
+    # Backward compatibility with < 1.0.0
+    RemoveARPriorities(portal)
+    RemoveVersionableTypes()
+    handle_AS_wo_category(portal)
 
     # Indexes and colums were changed as per
     # https://github.com/senaite/bika.lims/pull/353
@@ -224,7 +230,18 @@ def UpgradeReferenceFields():
             ('Container', 'AnalysisServiceContainer'),
             ('Instruments', 'AnalysisServiceInstruments'),
             ('Methods', 'AnalysisServiceMethods'),
-            ('Preservation', 'AnalysisServicePreservation')
+            ('Preservation', 'AnalysisServicePreservation'),
+
+            # Backward compatibility with < 1.0.0
+            ('Calculation', 'AnalysisServiceCalculation'),
+            ('Category',    'AnalysisServiceAnalysisCategory'),
+            ('Department',  'AnalysisServiceDepartment'),
+            ('Instrument',  'AnalysisServiceInstrument'),
+            ('Instruments', 'AnalysisServiceInstruments'),
+            ('Method',      'AnalysisServiceMethod'),
+            ('Methods',     'AnalysisServiceMethods'),
+            ('Preservation','AnalysisServicePreservation'),
+            ('Container',   'AnalysisServiceContainer'),
         ]],
 
         ['AnalysisRequest', [
@@ -238,7 +255,7 @@ def UpgradeReferenceFields():
 
         ['Calculation', [
             ('DependentServices', 'CalculationDependentServices'),
-            ('DependentServices', 'CalculationAnalysisService')
+            ('DependentServices', 'CalculationAnalysisService'),
         ]],
 
         ['Instrument', [
@@ -247,7 +264,7 @@ def UpgradeReferenceFields():
         ]],
 
         ['Method', [
-            ('Calculation', 'MethodCalculation')
+            ('Calculation', 'MethodCalculation'),
         ]],
 
         ['SamplePartition', [
@@ -375,3 +392,108 @@ def del_at_refs(relation):
     if removed:
         logger.info("Performed %s deletions" % removed)
     return removed
+
+
+def RemoveVersionableTypes():
+    # Remove versionable typesa
+    logger.info("Removing versionable types...")
+    portal_repository = get_tool('portal_repository')
+    non_versionable = ['AnalysisSpec',
+                       'ARPriority',
+                       'Method',
+                       'SamplePoint',
+                       'SampleType',
+                       'StorageLocation',
+                       'WorksheetTemplate', ]
+    versionable = list(portal_repository.getVersionableContentTypes())
+    vers = [ver for ver in versionable if ver not in non_versionable]
+    portal_repository.setVersionableContentTypes(vers)
+    logger.info("Versionable types updated: {0}".format(', '.join(vers)))
+
+
+
+def RemoveARPriorities(portal):
+    # Throw out persistent broken bika_arpriorities.
+    logger.info('Removing bika_setup.bika_arpriorities')
+    bs = get_tool('bika_setup')
+    pc = get_tool('portal_catalog')
+    cpl = get_tool('portal_controlpanel')
+
+    # This lets ARPriorities load with BaseObject code since
+    # bika_arpriorities.py has been eradicated.
+    # stub('bika.lims.controlpanel.bika_arpriorities', 'ARPriorities',
+    #      BaseContent)
+
+    if 'bika_arpriorities' in portal.bika_setup:
+        brain = pc(portal_type='ARPriorities')[0]
+        # manually unindex object  --  pc.uncatalog_object(brain.UID())
+        indexes = pc.Indexes.keys()
+        rid = brain.getRID()
+        for name in indexes:
+            x = pc.Indexes[name]
+            if hasattr(x, 'unindex_object'):
+                x.unindex_object(rid)
+        # Then remove as normal
+        bs.manage_delObjects(['bika_arpriorities'])
+        cpl.unregisterConfiglet('bika_arpriorities')
+
+def migrateFileFields(portal):
+    """
+    This function walks over all attachment types and migrates their FileField
+    fields.
+    """
+    portal_types = [
+        "Attachment",
+        "ARImport",
+        "Instrument",
+        "InstrumentCertification",
+        "Method",
+        "Multifile",
+        "Report",
+        "ARReport",
+        "SamplePoint"]
+
+    for portal_type in portal_types:
+        # Do the migration
+        migrate_to_blob(
+            portal,
+            portal_type=portal_type,
+            remove_old_value=True)
+
+def handle_AS_wo_category(portal):
+    """
+    Apparently, some of Analysis Services remained without category after migration.
+    Creating a new Category ('unknown') and assigning those AS'es to it.
+    """
+    uc = getToolByName(portal, 'bika_setup_catalog')
+    services = uc(portal_type='AnalysisService', getCategoryUID=None)
+    if not services:
+        logger.info("SKIPPING. There is no Analysis Service without category.")
+        return
+
+    # First , create a new 'Uknown' Category, if doesn't exist
+    uc = getToolByName(portal, 'uid_catalog')
+    acats = uc(portal_type='AnalysisCategory')
+    for acat in acats:
+        if acat.Title == 'Unknown':
+            logger.info("Category 'Uknown' already exists...")
+            category = acat.getObject()
+            break
+    else:
+        category = _createObjectByType("AnalysisCategory", portal.bika_setup.bika_analysiscategories, tmpID())
+        category.setTitle("Unknown")
+        category._renameAfterCreation()
+        category.reindexObject()
+        logger.info("Category 'Uknown' was created...")
+
+    counter = 0
+    total = len(services)
+    for s in services:
+        obj = s.getObject()
+        obj.setCategory(category)
+        obj.reindexObject()
+        counter += 1
+        logger.info("Assigning Analysis Services to 'unknown' Category: %d of %d" % (counter, total))
+
+    logger.info("Done! %d AnalysisServices were assigned to the Category 'unknown'."
+                % counter)
