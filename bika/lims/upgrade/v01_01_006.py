@@ -488,7 +488,7 @@ def handle_AS_wo_category(portal):
         category.setTitle("Unknown")
         category._renameAfterCreation()
         category.reindexObject()
-        logger.info("Category 'Uknown' was created...")
+        logger.info("Category 'Unknown' was created...")
 
     counter = 0
     total = len(services)
