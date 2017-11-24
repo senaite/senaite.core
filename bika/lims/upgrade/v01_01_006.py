@@ -44,6 +44,7 @@ def upgrade(tool):
     RemoveARPriorities(portal)
     RemoveVersionableTypes()
     handle_AS_wo_category(portal)
+    migrateFileFields(portal)
 
     # Indexes and colums were changed as per
     # https://github.com/senaite/bika.lims/pull/353
