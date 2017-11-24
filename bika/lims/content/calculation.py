@@ -189,15 +189,11 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.setDependentServices(None)
             self.getField('Formula').set(self, Formula)
         else:
-            DependentServices = []
             keywords = re.compile(r"\[([^.^\]]+)\]").findall(Formula)
-            for keyword in keywords:
-                service = bsc(portal_type="AnalysisService",
-                              getKeyword=keyword)
-                if service:
-                    DependentServices.append(service[0].getObject())
-
-            self.getField('DependentServices').set(self, DependentServices)
+            brains = bsc(portal_type='AnalysisService',
+                         getKeyword=keywords)
+            services = [brain.getObject() for brain in brains]
+            self.getField('DependentServices').set(self, services)
             self.getField('Formula').set(self, Formula)
 
     def getMinifiedFormula(self):
