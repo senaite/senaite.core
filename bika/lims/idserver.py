@@ -14,7 +14,8 @@ from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.fields.uidreferencefield \
+    import get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
 from zope.component import getAdapters
@@ -66,6 +67,20 @@ def get_objects_in_sequence(brain_or_object, ctype, cref):
     raise ValueError("Reference value is mandatory for sequence type counter")
 
 
+def get_backreferences(obj, relationship):
+    """Returns the backreferences
+    """
+    refs = get_backuidreferences(obj, relationship)
+
+    # TODO remove after all ReferenceField get ported to UIDReferenceField
+    # At this moment, there are still some content types that are using the
+    # ReferenceField, so we need to fallback to traditional getBackReferences
+    # for these cases.
+    if not refs:
+        refs = obj.getBackReferences(relationship)
+
+    return refs
+
 def get_contained_items(obj, spec):
     """Returns a list of (id, subobject) tuples of the current context.
     If 'spec' is specified, returns only objects whose meta_type match 'spec'
@@ -84,7 +99,7 @@ def get_config(context, **kw):
 
     # check if we have a config for the given portal_type
     for config in config_map:
-        if config['portal_type'] == portal_type:
+        if config['portal_type'].lower() == portal_type.lower():
             return config
 
     # return a default config
@@ -205,7 +220,7 @@ def get_current_year():
 def search_by_prefix(portal_type, prefix):
     """Returns brains which share the same portal_type and ID prefix
     """
-    catalog = api.get_tool("portal_catalog")
+    catalog = api.get_tool("uid_catalog")
     brains = catalog({"portal_type": portal_type})
     # Filter brains with the same ID prefix
     return filter(lambda brain: api.get_id(brain).startswith(prefix), brains)
@@ -217,6 +232,29 @@ def get_ids_with_prefix(portal_type, prefix):
     brains = search_by_prefix(portal_type, prefix)
     ids = map(api.get_id, brains)
     return ids
+
+
+def make_storage_key(portal_type, prefix=None):
+    """Make a storage (dict-) key for the number generator
+    """
+    key = portal_type.lower()
+    if prefix:
+        key = "{}-{}".format(key, prefix)
+    return key
+
+
+def get_seq_number_from_id(id, id_template, prefix, **kw):
+    """Return the sequence number of the given ID
+    """
+    separator = kw.get("separator", "-")
+    postfix = id.replace(prefix, "").strip(separator)
+    postfix_segments = postfix.split(separator)
+    seq_number = 0
+    possible_seq_nums = filter(lambda n: n.isalnum(), postfix_segments)
+    if possible_seq_nums:
+        seq_number = possible_seq_nums[-1]
+    seq_number = to_int(seq_number)
+    return seq_number
 
 
 def get_counted_number(context, config, variables, **kw):
@@ -248,6 +286,10 @@ def get_generated_number(context, config, variables, **kw):
     """Generate a new persistent number with the number generator for the
     sequence type "Generated"
     """
+
+    # separator where to split the ID
+    separator = kw.get('separator', '-')
+
     # allow portal_type override
     portal_type = kw.get("portal_type") or api.get_portal_type(context)
 
@@ -258,39 +300,42 @@ def get_generated_number(context, config, variables, **kw):
     split_length = config.get("split_length", 1)
 
     # The prefix tempalte is the static part of the ID
-    prefix_template = slice(id_template, end=split_length)
+    prefix_template = slice(id_template, separator=separator, end=split_length)
 
     # get the number generator
     number_generator = getUtility(INumberGenerator)
 
     # generate the key for the number generator storage
     prefix = prefix_template.format(**variables)
-    key = portal_type.lower()
-    if prefix:
-        key = "{}-{}".format(key, prefix)
 
-    # XXX: Handle flushed storage - refactoring needed here!
+    # normalize out any unicode characters like Ö, É, etc. from the prefix
+    prefix = api.normalize_filename(prefix)
+
+    # The key used for the storage
+    key = make_storage_key(portal_type, prefix)
+
+    # Handle flushed storage
     if key not in number_generator:
-        # we need to figure out the current state of the DB.
-        existing = search_by_prefix(portal_type, prefix)
         max_num = 0
-        for brain in existing:
-            num = to_int(slice(api.get_id(brain), start=split_length))
-            if num > max_num:
-                max_num = num
+        existing = get_ids_with_prefix(portal_type, prefix)
+        numbers = map(lambda id: get_seq_number_from_id(id, id_template, prefix), existing)
+        # figure out the highest number in the sequence
+        if numbers:
+            max_num = max(numbers)
         # set the number generator
+        logger.info("*** SEEDING Prefix '{}' to {}".format(prefix, max_num))
         number_generator.set_number(key, max_num)
 
-    # TODO: We need a way to figure out the max numbers allowed in this
-    # sequence to raise a KeyError when the current number exceeds the maximum
-    # number possible in the sequence
-
-    # TODO: This allows us to "preview" the next generated ID in the UI
     if not kw.get("dry_run", False):
-        # generate a new number
+        # Generate a new number
+        # NOTE Even when the number exceeds the given ID sequence format,
+        #      it will overflow gracefully, e.g.
+        #      >>> {sampleId}-R{seq:03d}'.format(sampleId="Water", seq=999999)
+        #      'Water-R999999‘
         number = number_generator.generate_number(key=key)
     else:
-        # just fetch the next number
+        # => This allows us to "preview" the next generated ID in the UI
+        # TODO Show the user the next generated number somewhere in the UI
         number = number_generator.get(key, 1)
     return number
 
