@@ -57,6 +57,8 @@ def fix_broken_calculations():
     """Walks-through calculations associated to undergoing analyses and
     resets the value for DependentServices field"""
 
+    logger.info("Fixing broken calculations (re-assignment of dependents)...")
+
     # Fetch only the subset of analyses that are undergoing.
     # Analyses that have been verified or published cannot be updated, so there
     # is no sense to check their calculations
@@ -74,6 +76,7 @@ def fix_broken_calculations():
          'to_be_preserved',
          'to_be_sampled',
     ]
+    uc = api.get_tool('uid_catalog')
     catalog = get_tool(CATALOG_ANALYSIS_LISTING)
     brains = catalog(portal_type='Analysis', review_state=review_states)
     for brain in brains:
@@ -93,6 +96,47 @@ def fix_broken_calculations():
             # for us.
             formula = calculation.getFormula()
             calculation.setFormula(formula)
+            deps = calculation.getDependentServices()
+            if not deps:
+                # Ok, this calculation does not depend on the result of other
+                # analyses, so we can omit this one, he is already ok
+                continue
+
+            deps = [dep.getKeyword() for dep in deps]
+            deps = ', '.join(deps)
+            arid = analysis.getRequestID()
+            logger.info("Dependents for {}.{}.{}: {}".format(arid,
+                                                          analysis.getKeyword(),
+                                                          calculation.Title(),
+                                                          deps))
+
+            # Set the calculation to the analysis again (field Calculation is an
+            # HistoryAwareReferenceField in Analyses that inherits from
+            # AbstractRoutineAnalysis
+            analysis.setCalculation(calculation)
+
+            # Check if all is ok
+            an_deps =  analysis.getCalculation().getDependentServices()
+            if not an_deps:
+                # Maybe the version of the calculation is an old one. If so, we
+                # need to use the last version, cause HistoryAwareReferenceField
+                # will always point to the version assigned to the calculation
+                # that was associated to the analysis.
+                uid = calculation.UID()
+                target_version = analysis.reference_versions[uid]
+                last_calc = uc(UID=uid)
+                if not last_calc:
+                    # This should not happen
+                    logger.warn("No calculation found for %s " % calculation.UID())
+                    continue
+                last_calc = last_calc[0].getObject()
+                if last_calc.version_id != target_version:
+                    # Ok, this is another version. We have no choice here... we
+                    # need to assign the latest version...
+                    analysis.reference_versions[uid]=last_calc.version_id
+
+            # Just in case
+            analysis.reindexObject()
 
 
 refs_to_remove = []
