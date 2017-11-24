@@ -6,6 +6,7 @@
 """ Abbott m2000 Real Time
 """
 
+from datetime import datetime
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
@@ -77,9 +78,9 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        # Crate importer with the defined parser as well as the
-        # rest of defined parameters and try to import the
-        # results from the specified file
+        # Crate importer with the defined parser and the
+        # rest of defined parameters. Then try to import the
+        # results from the file
         importer = Abbottm2000rtImporter(parser=parser,
                                          context=context,
                                          idsearchcriteria=sam,
@@ -107,12 +108,17 @@ def Import(context, request):
 class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
 
     def __init__(self, infile):
-        InstrumentCSVResultsFileParser.__init__(self, infile)
-        self._separator = '\t'
+        InstrumentCSVResultsFileParser.__init__(self, infile,
+                                                encoding='utf-8-sig')
+        self._separator = '\t'  # values are separated by tabs
+        self._is_header = False
+        self._current_section = ''  # current section of the file
+        self._columns = None  # Column names of Analyte Result table
+        self._ar_keyword = None # Keyword of Analysis Service
 
     def _parseline(self, line):
         """
-        Results log file line Parser. The parse method implemented in
+        Results log file line Parser. The parse method in
         InstrumentCSVResultsFileParser calls this method for each line
         in the results file that is to be parsed.
         :param line: a to parse
@@ -120,8 +126,69 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         return the code error -1
         """
         split_line = line.split(self._separator)
-        print split_line
+        if self._is_header:
+            self._is_header = False
+            self._current_section = split_line[0]
+            return 1  # Skip the line of equal signs after a header
+
+        # If the line has only one column and it is made entirely of equal signs
+        # then it is the beginning or end of a section definition. Since equal sign
+        # lines corresponding to the end of section definitions are skipped this must
+        # be the beginning of a section definition.
+        elif len(split_line) == 1 and all(x == '=' for x in split_line[0]):
+            self._is_header = True
+        # From the assay calibration section the assay name is retrieved
+        elif 'assay calibration' in self._current_section.lower():
+            # if line inside assay calibration section starts with assay name,
+            # then its value is the analysis service keyword
+            if 'assay name' in split_line[0].lower():
+                self._ar_keyword = self._format_keyword(split_line[1])
+        # If current section is results information then process the results
+        elif 'result information' in self._current_section.lower():
+            if self._columns is None:
+                self._columns = split_line
+            else:
+                result_id, values = self._handle_result_line(split_line)
+                self._addRawResult(result_id, values)
+
         return 0
+
+    def _handle_result_line(self, split_line):
+        """
+        Parses the data line and adds the results to the dictionary.
+        :param split_line: a split data line to parse
+        :returns: the current result id and the dictionary of values obtained from the results
+        """
+        values = {}
+        result_id = ''
+        if self._ar_keyword:
+            values[self._ar_keyword] = {}
+            for idx, val in enumerate(split_line):
+                if self._columns[idx].lower() == 'sampleid':
+                    result_id = val
+                else:
+                    values[self._ar_keyword][self._columns[idx]] = val
+                values[self._ar_keyword]['DefaultResult'] = 'FinalResult'
+
+        return result_id, values
+
+    def _format_keyword(self, keyword):
+        """
+        Removing special character from a keyword. Analysis Services must have
+        this kind of keywords. E.g. if assay name from GeneXpert Instrument is
+        'Ebola RUO', an AS must be created on Bika with the keyword 'EbolaRUO'
+        """
+        import re
+        result = ''
+        if keyword:
+            result = re.sub(r"\W", "", keyword)
+        return result
+
+    def csvDate2BikaDate(self, DateTime):
+        # example: 11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
+        Date, Time, locale = DateTime.replace('.', '').split(' ')
+        dtobj = datetime.strptime(Date + ' ' + Time + ' ' + locale, "%d/%m/%Y %H:%M %p")
+        return dtobj.strftime("%Y%m%d %H:%M")
 
 
 class Abbottm2000rtImporter(AnalysisResultsImporter):
