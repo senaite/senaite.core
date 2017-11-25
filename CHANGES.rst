@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.7 (unreleased)
+------------------
+
+**Fixed**
+
+- #409 In Add Analyses view, analyses id are displayed instead of Analysis Request ID
+
+
 1.1.6 (2017-11-24)
 ------------------
 
