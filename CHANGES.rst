@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.7 (unreleased)
+------------------
+
+**Fixed**
+
+- #410 Unable to select or deselect columns to be displayed in lists
+
+
 1.1.6 (2017-11-24)
 ------------------
 
