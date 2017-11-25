@@ -64,11 +64,11 @@ class AddAnalysesView(BikaListingView):
             'getClientOrderNumber': {
                 'title': _('Order'),
                 'index': 'getClientOrderNumber'},
-            'getId': {
+            'getRequestID': {
                 'title': _('Request ID'),
-                'attr': 'getId',
+                'attr': 'getRequestID',
                 'replace_url': 'getRequestURL',
-                'index': 'getId'},
+                'index': 'getRequestID'},
             'CategoryTitle': {
                 'title': _('Category'),
                 'attr': 'getCategoryTitle',
@@ -92,7 +92,7 @@ class AddAnalysesView(BikaListingView):
              'columns':['Priority',
                         'Client',
                         'getClientOrderNumber',
-                        'getId',
+                        'getRequestID',
                         'CategoryTitle',
                         'Title',
                         'getDateReceived',
