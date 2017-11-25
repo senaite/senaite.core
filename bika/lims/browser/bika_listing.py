@@ -806,9 +806,9 @@ class BikaListingView(BrowserView):
         # in the cookie (or if there is no cookie for toggle config), use the
         # default configuration based on the initial column settings
         if not list_toggle:
-            columns = self.review_state['columns']
-            list_toggle = [col for col in columns if
-                           self.columns[col].get('toggle', True) is True]
+            columns_ids = self.review_state['columns']
+            list_toggle = [col_id for col_id in columns_ids if
+                           self.columns[col_id].get('toggle', True) is True]
 
         return list_toggle
 
