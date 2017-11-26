@@ -803,7 +803,7 @@ class BikaListingView(BrowserView):
         for sort_value in sort_on_values:
             if not sort_value:
                 continue
-            if sort_value in (list, tuple):
+            if type(sort_value) in (list, tuple):
                 sort_value = sort_value[0]
             sort_on = corrected_sort_value(sort_value)
             if sort_on:
