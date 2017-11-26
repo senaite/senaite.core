@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #418 LabClerks don't have access to AR view after received and before verified
 - #415 Referencefield JS UID check: Don't remove Profile UIDs
 - #411 Analyses don't get selected when copying an Analysis Request without profiles
 
