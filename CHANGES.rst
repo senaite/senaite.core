@@ -9,6 +9,7 @@ Changelog
 
 **Removed**
 
+- #417 Remove calls to deprecated function getService (from AbstractAnalysis)
 
 **Changed**
 
