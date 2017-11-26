@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #415 Referencefield JS UID check: Don't remove Profile UIDs
 - #411 Analyses don't get selected when copying an Analysis Request without profiles
 
 **Security**
