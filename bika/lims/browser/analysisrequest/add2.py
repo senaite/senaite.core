@@ -515,7 +515,7 @@ class AnalysisRequestAddView(BrowserView):
         """Return the service from the analysis
         """
         analysis = api.get_object(analysis)
-        return api.get_uid(analysis.getService())
+        return api.get_uid(analysis.getAnalysisService())
 
     def get_calculation_dependencies_for(self, service):
         """Calculation dependencies of this service and the calculation of each
