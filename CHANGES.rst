@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #416 Fix inconsistencies with sorting criterias in lists
 - #411 Analyses don't get selected when copying an Analysis Request without profiles
 
 **Security**
