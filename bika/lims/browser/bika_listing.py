@@ -522,6 +522,7 @@ class BikaListingView(BrowserView):
         self.limit_from = 0
         self.mtool = None
         self.sort_on = None
+        self.sort_order = 'ascending'
         self.member = None
         self.workflow = None
         self.items = []
@@ -617,73 +618,9 @@ class BikaListingView(BrowserView):
         for k, v in self.review_state.get('contentFilter', {}).items():
             self.contentFilter[k] = v
 
-        # SORTING
-        # Precedence is request, sort_on attribute, contentFilter sort_on value
-        self.sort_on = \
-            getattr(self, "sort_on", self.contentFilter.get("sort_on"))
-        self.sort_on = \
-            self.request.get(form_id + '_sort_on', self.sort_on)
-        self.sort_order = \
-            self.request.get(form_id + '_sort_order', 'ascending')
-        self.manual_sort_on = \
-            self.request.get(form_id + '_manual_sort_on', None)
-
-        # sort_column_name is used to remember the sort_on "Column" name (as
-        # opposed to the index name). Later, we must reset self.sort_on to this
-        # value, instead of "index" title.
-        sort_column_name = None
-        if self.sort_on:
-            if self.sort_on in self.columns.keys():
-                if self.columns[self.sort_on].get('index', None):
-                    self.request.set(form_id + '_sort_on', self.sort_on)
-                    # The column can be sorted directly using an index
-                    idx = self.columns[self.sort_on]['index']
-                    sort_column_name = self.sort_on
-                    self.sort_on = idx
-                    # Don't sort manually!
-                    self.manual_sort_on = None
-                else:
-                    # The column must be manually sorted using python
-                    self.manual_sort_on = self.sort_on
-            else:
-                # We cannot sort for a column that doesn't exist!
-                msg = "{}: sort_on is '{}', not a valid column".format(
-                    self.__class__.__name__, self.sort_on)
-                logger.warning(msg)
-                self.sort_on = None
-
-        if self.manual_sort_on:
-            if type(self.manual_sort_on) in (list, tuple):
-                self.manual_sort_on = self.manual_sort_on[0]
-            if self.manual_sort_on not in self.columns.keys():
-                # We cannot sort for a column that doesn't exist!
-                msg = "{}: manual_sort_on is '{}', not a valid column".format(
-                    self.__class__.__name__, self.manual_sort_on)
-                logger.error(msg)
-                self.manual_sort_on = None
-
-        if self.sort_on or self.manual_sort_on:
-            # By default, if sort_on is set, sort the items ASC
-            # Trick to allow 'descending' keyword instead of 'reverse'
-            if self.sort_order != "ascending":
-                self.sort_order = "descending"
-        else:
-            # By default, sort on created
-            self.sort_order = 'descending'
-            self.sort_on = 'created'
-
-        self.contentFilter['sort_order'] = self.sort_order
-        if self.sort_on:
-            # Ensure we have a valid sort_on index
-            if self.sort_on not in catalog.indexes():
-                logger.warn("{}: Sort index '{}' invalid".format(
-                    self.__class__.__name__, self.sort_on))
-            else:
-                self.contentFilter['sort_on'] = self.sort_on
-                # Reset the self.sort_on so that it is a Column name,
-                # not an Index name.
-                if sort_column_name:
-                    self.sort_on = sort_column_name
+        # Set the sort_on and sort_order criteria based on the params set in
+        # the request, the contentFilter and the sorting value set by default
+        self._set_sorting_criteria()
 
         # pagesize
         pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
@@ -790,6 +727,99 @@ class BikaListingView(BrowserView):
                 self.columns[col]['toggle'] = True
             else:
                 self.columns[col]['toggle'] = False
+
+    def _set_sorting_criteria(self):
+        """
+        Sets the sorting criteria by resetting the value of sort_on, sort_order
+        and/or manual_sort in accordance with the values set in the request,
+        contentFilter and by default for this list
+        """
+        self.sort_on = self.get_sort_on()
+        self.manual_sort_on = None
+        if 'sort_on' in self.contentFilter:
+            del self.contentFilter['sort_on']
+
+        allowed_indexes = self.get_columns_indexes()
+        allowed_indexes.append('created')
+        if self.sort_on not in allowed_indexes:
+            # The value for sort_on is not an index, we need to force manual
+            # sorting so items will be sorted programmatically with python
+            self.manual_sort_on = self.sort_on
+
+        else:
+            # sort_on is an index, add it into the contentFilter so it can be
+            # used in the advanced query later
+            self.contentFilter['sort_on'] = self.sort_on
+
+        # By default, if sort_on is set, sort the items ASC
+        # Trick to allow 'descending' keyword instead of 'reverse'
+        sort_order = self.request.get(self.form_id + "_sort_order", None)
+        if not sort_order:
+            sort_order = self.contentFilter.get('sort_order', self.sort_order)
+        if sort_order != "ascending":
+            sort_order = "descending"
+        self.contentFilter['sort_order'] = sort_order
+        self.sort_order = sort_order
+
+    def get_sort_on(self):
+        """
+        Returns the value by which this list must be sorted on.
+        Returns the name of the index to be used for sorting by using an
+        advancedQuery if defined in self.columns. Otherwise, returns the name
+        of the column the list must be sorted on.
+        :return: the sort_on index or column name
+        :rtype: str
+        """
+
+        def corrected_sort_value(value):
+            """
+            Checks the value passed in against the columns and indexes.
+            If the value passed is a column name, will return the index of the
+            column if defined in self.columns. Otherwise, will return the
+            column name, but only if a column is defined in self.columns for
+            the value passed in. If non of both cases, returns None
+            """
+            if value in self.columns:
+                # The sort_on value refers to a column name. We try to get the index
+                # associated to this column name, if any
+                return self.columns[value].get('index', value)
+
+            if value in self.get_columns_indexes():
+                # The sort_on value refers to an index.
+                return value
+
+            # The sort_on value is neither an index nor a column. This should
+            # never happen
+            msg = "{}: sort_on is '{}', not a valid column/index".format(
+                self.__class__.__name__, value)
+            logger.warning(msg)
+            return None
+
+        # Request sort_on value has priority over contentsFilter's sort value,
+        # as well as self.sort_on (default sort_on criteria set for this list).
+        request_sort_on = self.request.get(self.form_id + "_sort_on", None)
+        filter_sort_on = self.contentFilter.get("sort_on", None)
+        sort_on_values = [request_sort_on, filter_sort_on, self.sort_on]
+        for sort_value in sort_on_values:
+            if not sort_value:
+                continue
+            if sort_value in (list, tuple):
+                sort_value = sort_value[0]
+            sort_on = corrected_sort_value(sort_value)
+            if sort_on:
+                # There is a colunm or index for this sort_on value
+                return sort_on
+
+        # None of the sort_on values set either in the request or in the content
+        # filter are valid (no column or index defined), so we return the
+        # sort_on value 'created', an index all catalogs has in common
+        return 'created'
+
+
+    def get_columns_indexes(self):
+        indexes = [val['index'] for name, val in self.columns.items() \
+                   if 'index' in val]
+        return indexes
 
     def get_toggle_cols(self):
         _form = self.request.form
