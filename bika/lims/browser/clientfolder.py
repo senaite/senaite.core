@@ -29,19 +29,29 @@ class ClientFolderContentsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
-        self.contentFilter = {}
-        self.icon = self.portal_url + "/++resource++bika.lims.images/client_big.png"
+
         self.title = self.context.translate(_("Clients"))
         self.description = ""
+        self.form_id = "list_clientsfolder"
+        self.sort_on = "sortable_title"
+        self.contentFilter = {'portal_type': 'Client',
+                              'sort_on': 'sortable_title',
+                              'sort_order': 'ascending'}
+
+        self.filter_indexes = ['title', 'SearchableText']
+
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False
         self.pagesize = 25
+        self.icon = self.portal_url + "/++resource++bika.lims.images/client_big.png"
         request.set('disable_border', 1)
 
         self.columns = {
-            'title': {'title': _('Name')},
+            'title': {
+                'title': _('Name'),
+                'index': 'sortable_title'},
             'EmailAddress': {'title': _('Email Address')},
             'getCountry': {'title': _('Country')},
             'getProvince': {'title': _('Province')},
@@ -94,95 +104,32 @@ class ClientFolderContentsView(BikaListingView):
                          'Fax', ]
              },
         ]
+        self.landing_page = 'analysisrequests'
 
     def __call__(self):
-        self.context_actions = {}
         mtool = api.get_tool('portal_membership')
         if mtool.checkPermission(AddClient, self.context):
             self.context_actions[_('Add')] = \
                 {'url': 'createObject?type_name=Client',
                  'icon': '++resource++bika.lims.images/add.png'}
+
         if mtool.checkPermission(ManageClients, self.context):
             self.show_select_column = True
-        return super(ClientFolderContentsView, self).__call__()
 
-    def getClientList(self, contentFilter):
-        searchTerm = self.request.get(self.form_id + '_filter', '').lower()
-        mtool = api.get_tool('portal_membership')
-        state = self.request.get('%s_review_state' % self.form_id,
-                                 self.default_review_state)
-        # This is used to decide how much of the objects need to be waked up
-        # for further permission checks, which might get expensive on sites
-        # with many clients
-        list_pagesize = self.request.get("list_pagesize", self.pagesize)
-
-        states = {
-            'default': ['active', ],
-            'active': ['active', ],
-            'inactive': ['inactive', ],
-            'all': ['active', 'inactive']
-        }
-
-        # Use the catalog to speed things up and also limit the results
-        catalog = api.get_tool("portal_catalog")
-        catalog_query = {
-            "portal_type": "Client",
-            "inactive_state": states[state],
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
-        }
-        # Inject the searchTerm to narrow the results further
-        if searchTerm:
-            catalog_query["SearchableText"] = searchTerm
-        logger.debug("getClientList::catalog_query=%s" % catalog_query)
-        brains = catalog(catalog_query)
-
-        clients = []
-        for brain in brains:
-            # only wake up objects if they are shown on one page
-            if len(clients) > list_pagesize:
-                # otherwise append only the brain
-                clients.append(brain)
-                continue
-
-            # wake up the object
-            client = brain.getObject()
-            # skip clients where the search term does not match
-            if searchTerm and not client_match(client, searchTerm):
-                continue
-            # Only show clients to which we have Manage AR rights.
-            # (ritamo only sees Happy Hills).
-            if not mtool.checkPermission(ManageAnalysisRequests, client):
-                continue
-            clients.append(brain)
-
-        return clients
-
-    def folderitems(self):
-        self.contentsMethod = self.getClientList
-        items = BikaListingView.folderitems(self)
         registry = getUtility(IRegistry)
         if 'bika.lims.client.default_landing_page' in registry:
-            landing_page = registry['bika.lims.client.default_landing_page']
-        else:
-            landing_page = 'analysisrequests'
+            self.landing_page = registry['bika.lims.client.default_landing_page']
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
+        return super(ClientFolderContentsView, self).__call__()
 
-            item['replace']['title'] = "<a href='%s/%s'>%s</a>" % \
-                (item['url'], landing_page.encode('ascii'), item['title'])
-
-            item['EmailAddress'] = obj.getEmailAddress()
-            item['replace']['EmailAddress'] = "<a href='%s'>%s</a>" % \
-                ('mailto:%s' % obj.getEmailAddress(), obj.getEmailAddress())
-            item['Phone'] = obj.getPhone()
-            item['Fax'] = obj.getFax()
-            item['ClientID'] = obj.getClientID()
-
-        return items
+    def folderitem(self, obj, item, index):
+        item['replace']['title'] = "<a href='%s/%s'>%s</a>" % \
+                                   (item['url'], self.landing_page.encode('ascii'),
+                                    item['title'])
+        email = obj.getEmailAddress()
+        item['replace']['EmailAddress'] = "<a href='%s'>%s</a>" % \
+                                          ('mailto:%s' % email, email)
+        return item
 
 
 def client_match(client, search_term):
