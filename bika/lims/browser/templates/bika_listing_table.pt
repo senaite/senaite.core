@@ -5,6 +5,20 @@
     displayed when ajax requests the table.
 </tal:comment>
 
+<!-- Hooks for bika listing -->
+<!-- Over list, right -->
+<div id="listing-hook-top-right">
+    <span tal:replace="structure view/get_top_right_hooks"></span>
+</div>
+<!-- Over list, left -->
+<div id="listing-hook-top-left">
+    <span tal:replace="structure view/get_top_left_hooks"></span>
+</div>
+<!-- Over list with the same wide as the list -->
+<div id="listing-hook-top-wide">
+    <span tal:replace="structure view/get_top_wide_hooks"></span>
+</div>
+
 <form name="bika_listing_form" method="post"
     i18n:domain="bika"
     tal:attributes="
@@ -138,17 +152,6 @@ distinguish between data for pages with multiple editable tables.
                                     and 'selected' or ''"
                     tal:content="structure state/title"/>
                 </tal:review_states>
-            </td>
-            <td class="export-controls">
-                <span href="#" class='export-toggle' i18n:translate="">Export</span>
-                <ul>
-                    <li>
-                        <a href="" type='csv' tal:attributes="download python:form_id + '.csv'">CSV</a>
-                    </li>
-                    <li>
-                        <a href="" type='xml' tal:attributes="download python:form_id + '.xml'">XML</a>
-                    </li>
-                </ul>
             </td>
             <tal:comment replace="nothing">
               ********************************

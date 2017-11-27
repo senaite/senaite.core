@@ -10,7 +10,7 @@
 
 (function() {
   window.BikaListingTableView = function() {
-    var autosave, build_typical_save_request, category_header_clicked, column_header_clicked, column_toggle_context_menu, column_toggle_context_menu_selection, filter_search_button_click, filter_search_keypress, listing_string_input_keypress, listing_string_select_changed, loadNewRemarksEventHandlers, load_export_buttons, load_transitions, loading_transitions, pagesize_change, positionTooltip, render_transition_buttons, save_elements, select_all_clicked, select_one_clicked, show_more_clicked, that, workflow_action_button_click;
+    var autosave, build_typical_save_request, category_header_clicked, column_header_clicked, column_toggle_context_menu, column_toggle_context_menu_selection, filter_search_button_click, filter_search_keypress, listing_string_input_keypress, listing_string_select_changed, loadNewRemarksEventHandlers, load_transitions, loading_transitions, pagesize_change, positionTooltip, render_transition_buttons, save_elements, select_all_clicked, select_one_clicked, show_more_clicked, that, workflow_action_button_click;
     that = this;
     loading_transitions = false;
     show_more_clicked = function() {
@@ -588,110 +588,6 @@
         window.bika.lims.error(msg);
       });
     };
-
-    /*
-     * Load the events regardin to the export (to CSV and to XML) buttons. When
-     * an export button is clicked, the function walksthrough all the items
-     * within the bika listing table, builds a string with the desired format
-     * (CSV or XML) and prompts the user for its download.
-     */
-    load_export_buttons = function() {
-      var escapeTxt, qname, unquote;
-      unquote = function(val) {
-        return val.replace(/^\s*\"(.*)\"\s*$/, '$1');
-      };
-      escapeTxt = function(val) {
-        var vl;
-        vl = val.replace(/&/g, '&amp;');
-        vl = vl.replace(/</g, '&lt;');
-        vl = vl.replace(/>/g, '&gt;');
-        return unquote(vl);
-      };
-      qname = function(name) {
-        var nm;
-        nm = name.replace(/(\s)+/g, '_');
-        return unquote(nm);
-      };
-      $('.bika-listing-table td.export-controls span.export-toggle').click(function(e) {
-        var ul;
-        ul = $(this).closest('td').find('ul');
-        if ($(ul).is(':visible')) {
-          $(this).removeClass('expanded');
-        } else {
-          $(ul).css('min-width', $(this).width());
-          $(this).addClass('expanded');
-        }
-        $(ul).toggle();
-      });
-      $('.bika-listing-table a[download]').click(function(e) {
-        var b64, colname, data, headers, i, j, omitidx, output, row, type, uri, urischema;
-        $(this).closest('.bika-listing-table').find('td.export-controls span.export-toggle').click();
-        type = $(this).attr('type');
-        data = [];
-        headers = [];
-        omitidx = [];
-        $(this).closest('.bika-listing-table').find('th.column').each(function(i) {
-          var colname;
-          colname = $.trim($(this).text());
-          if (colname !== '') {
-            colname = colname.replace('"', '\'');
-            headers.push('"' + colname + '"');
-          } else {
-            omitidx.push(i);
-          }
-        });
-        data.push(headers.join(','));
-        $(this).closest('.bika-listing-table').find('tbody tr').each(function(r) {
-          var rowdata;
-          rowdata = [];
-          $(this).find('td').each(function(c) {
-            var text;
-            if ($.inArray(c, omitidx) > -1) {
-              return 'non-false';
-            }
-            text = $(this).find('span.before').nextUntil('span.after').text();
-            text = text.replace('"', '\'');
-            rowdata.push('"' + $.trim(text) + '"');
-          });
-          if (rowdata.length === headers.length) {
-            data.push(rowdata.join(','));
-          }
-        });
-        output = '';
-        urischema = '';
-        if (type === 'xml') {
-          output = '<items>\u000d\n';
-          i = 1;
-          while (i < data.length) {
-            row = data[i].substr(1, data[i].length - 2);
-            row = row.split('","');
-            if (row.length === headers.length) {
-              output += '<item>\u000d\n';
-              j = 0;
-              while (j < row.length) {
-                if (j < headers.length) {
-                  colname = qname(headers[j]);
-                  output += '<' + colname + '>';
-                  output += escapeTxt(row[j]);
-                  output += '</' + colname + '>\u000d\n';
-                }
-                j++;
-              }
-              output += '</item>\u000d\n';
-            }
-            i++;
-          }
-          output += '</items>';
-          urischema = 'data:application/xml;base64;charset-UTF-8,';
-        } else {
-          output = data.join('\u000d\n');
-          urischema = 'data:application/csv;base64;charset=UTF-8,';
-        }
-        b64 = window.btoa(unescape(encodeURIComponent(output)));
-        uri = urischema + b64;
-        $(this).attr('href', uri);
-      });
-    };
     that.load = function() {
       column_header_clicked();
       load_transitions();
@@ -708,7 +604,6 @@
       column_toggle_context_menu_selection();
       show_more_clicked();
       autosave();
-      load_export_buttons();
       $('*').click(function() {
         if ($('.tooltip').length > 0) {
           $('.tooltip').remove();

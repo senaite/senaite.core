@@ -24,6 +24,9 @@ from bika.lims.api import get_tool, get_object_by_uid, get_current_user, \
     get_object, get_transitions_for
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import ITopRightListingHook
+from bika.lims.interfaces import ITopLeftListingHook
+from bika.lims.interfaces import ITopWideListingHook
 from bika.lims.utils import getFromString
 from bika.lims.utils import getHiddenAttributesForClass, isActive
 from bika.lims.utils import t
@@ -495,6 +498,8 @@ class BikaListingView(BrowserView):
 
     def __init__(self, context, request, **kwargs):
         self.field_icons = {}
+        # Getting which module is implementing this class
+        self.implemented = self.__implemented__
         super(BikaListingView, self).__init__(context, request)
         path = hasattr(context, 'getPath') and context.getPath() \
                or "/".join(context.getPhysicalPath())
@@ -1561,6 +1566,48 @@ class BikaListingTable(tableview.Table):
                         state['columns'].remove(field)
                 new_states.append(state)
         self.bika_listing.review_states = new_states
+
+    def get_top_right_hooks(self):
+        """
+        Get adapters (hooks) that implements ITopRightListingHook.
+        The information got from those adapters will be placed right-over the
+        list.
+
+        :return: html code
+        """
+        adapters = getAdapters((self, ), ITopRightListingHook)
+        export_options = ''
+        for name, adapter in adapters:
+            export_options += adapter(self.request)
+        return export_options
+
+    def get_top_left_hooks(self):
+        """
+        Get adapters (hooks) that implements ITopLeftListingHook.
+        The information got from those adapters will be placed left-over the
+        list.
+
+        :return: html code
+        """
+        adapters = getAdapters((self, ), ITopLeftListingHook)
+        export_options = ''
+        for name, adapter in adapters:
+            export_options += adapter(self.request)
+        return export_options
+
+    def get_top_wide_hooks(self):
+        """
+        Get adapters (hooks) that implements ITopWideListingHook.
+        The information got from those adapters will be placed wide-over the
+        list.
+
+        :return: html code
+        """
+        adapters = getAdapters((self, ), ITopWideListingHook)
+        export_options = ''
+        for name, adapter in adapters:
+            export_options += adapter(self.request)
+        return export_options
 
     def tabindex(self):
         i = 0

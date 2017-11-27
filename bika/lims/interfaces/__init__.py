@@ -804,3 +804,18 @@ class INumberGenerator(Interface):
 class IGenerateID(Interface):
     """Marker Interface to generate an ID
     """
+
+class ITopRightListingHook(Interface):
+    """
+    Marker interface to hook list exporters in bikalisting
+    """
+
+class ITopLeftListingHook(Interface):
+    """
+    Marker interface to hook list exporters in bikalisting
+    """
+
+class ITopWideListingHook(Interface):
+    """
+    Marker interface to hook list exporters in bikalisting
+    """
