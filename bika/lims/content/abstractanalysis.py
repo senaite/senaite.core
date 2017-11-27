@@ -183,21 +183,28 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def deleteLastVerificator(self):
-        verificators = self.getVerificators().split(',')
+        verificators_str = self.getVerificators()
+        if not verificators_str:
+            return
+        verificators = verificators_str.split(',')
         del verificators[-1]
         self.setVerificators(",".join(verificators))
         self.reindexObject()
 
     @security.public
     def wasVerifiedByUser(self, username):
-        verificators = self.getVerificators().split(',')
+        verificators_str = self.getVerificators()
+        if not verificators_str:
+            return False
+        verificators = verificators_str.split(',')
         return username in verificators
 
     @security.public
     def getLastVerificator(self):
-        if not self.getVerificators():
+        verificators = self.getVerificators()
+        if not verificators:
             return None
-        return self.getVerificators().split(',')[-1]
+        return verificators.split(',')[-1]
 
     @security.public
     def setVerificator(self, value):
