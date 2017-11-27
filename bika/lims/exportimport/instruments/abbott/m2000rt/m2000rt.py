@@ -114,7 +114,7 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         self._is_header = False
         self._current_section = ''  # current section of the file
         self._columns = None  # Column names of Analyte Result table
-        self._ar_keyword = None # Keyword of Analysis Service
+        self._ar_keyword = None  # Keyword of Analysis Service
 
     def _parseline(self, line):
         """
@@ -132,11 +132,14 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
             return 1  # Skip the line of equal signs after a header
 
         # If the line has only one column and it is made entirely of equal signs
-        # then it is the beginning or end of a section definition. Since equal sign
+        # then it is the beginning or the end a section definition. Since equal sign
         # lines corresponding to the end of section definitions are skipped this must
         # be the beginning of a section definition.
         elif len(split_line) == 1 and all(x == '=' for x in split_line[0]):
             self._is_header = True
+            # if exiting result information section then reset column names and AR keyword
+            if self._current_section and 'result information' in self._current_section.lower():
+                self._reset()
         # From the assay calibration section the assay name is retrieved
         elif 'assay calibration' in self._current_section.lower():
             # if line inside assay calibration section starts with assay name,
@@ -183,6 +186,14 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         if keyword:
             result = re.sub(r"\W", "", keyword)
         return result
+
+    def _reset(self):
+        """
+        Reset column name's values and AR keyword
+        :return: None
+        """
+        self._columns = None  # Column names of Analyte Result table
+        self._ar_keyword = None  # Keyword of Analysis Service
 
     def csvDate2BikaDate(self, DateTime):
         # example: 11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
