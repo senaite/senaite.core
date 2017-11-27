@@ -106,7 +106,6 @@ def Import(context, request):
 
 
 class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
-
     def __init__(self, infile):
         InstrumentCSVResultsFileParser.__init__(self, infile,
                                                 encoding='utf-8-sig')
@@ -152,7 +151,8 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
                 self._columns = split_line
             else:
                 result_id, values = self._handle_result_line(split_line)
-                self._addRawResult(result_id, values)
+                if result_id and values:
+                    self._addRawResult(result_id, values)
 
         return 0
 
@@ -170,6 +170,9 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
                 if self._columns[idx].lower() == 'sampleid':
                     result_id = val
                 else:
+                    if val and ('date' in self._columns[idx].lower() \
+                            or 'time' in self._columns[idx].lower()):
+                        val = self.Date2BikaDate(val, 'date' in self._columns[idx].lower())
                     values[self._ar_keyword][self._columns[idx]] = val
                 values[self._ar_keyword]['DefaultResult'] = 'FinalResult'
 
@@ -195,11 +198,13 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         self._columns = None  # Column names of Analyte Result table
         self._ar_keyword = None  # Keyword of Analysis Service
 
-    def csvDate2BikaDate(self, DateTime):
-        # example: 11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
-        Date, Time, locale = DateTime.replace('.', '').split(' ')
-        dtobj = datetime.strptime(Date + ' ' + Time + ' ' + locale, "%d/%m/%Y %H:%M %p")
-        return dtobj.strftime("%Y%m%d %H:%M")
+    def Date2BikaDate(self, DateTime, only_date):
+        # if only date: 2017/01/26
+        # else: 2017/01/26 12:47:09 PM
+        if only_date:
+            return datetime.strptime(DateTime, '%Y/%m/%d').strftime('%Y%m%d')
+        else:
+            return datetime.strptime(DateTime, "%Y/%m/%d %I:%M:%S %p").strftime("%Y%m%d %H:%M")
 
 
 class Abbottm2000rtImporter(AnalysisResultsImporter):
