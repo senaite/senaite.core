@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #378 Fix GeneXpert interface does not import results for multiple analyses
 - #416 Fix inconsistencies with sorting criterias in lists
 - #418 LabClerks don't have access to AR view after received and before verified
 - #415 Referencefield JS UID check: Don't remove Profile UIDs
