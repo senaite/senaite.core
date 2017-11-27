@@ -216,6 +216,12 @@ function check_missing_UID(){
 	*/
 	$.each($(".ArchetypesReferenceWidget").children("input.referencewidget"),
 		function (index, field) {
+      // None of this stuff should take effect for multivalued widgets;
+      // Right now, these must take care of themselves.
+      var multiValued = $(this).attr("multiValued") == "1";
+      if(multiValued){
+        return;
+      }
 			var fieldName = $(this).attr("name");
 			// uid attr of text input
 			var uid = $(this).attr("uid");
