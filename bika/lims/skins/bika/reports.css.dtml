@@ -117,7 +117,7 @@ table.bika-report-table {
 .bika-report-table .column,
 .bika-report-table .interim,
 .bika-report-table .Result,
-.bika-report-table .getRequestID,
+.bika-report-table .getId,
 .bika-report-table .Title,
 .bika-report-table .ID {
     white-space:nowrap !important;

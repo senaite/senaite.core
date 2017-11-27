@@ -317,8 +317,7 @@ class AttachmentsView(BrowserView):
     def is_analysis_attachment_allowed(self, analysis):
         """Checks if the analysis
         """
-        service = analysis.getService()
-        if service.getAttachmentOption() not in ["p", "r"]:
+        if analysis.getAttachmentOption() not in ["p", "r"]:
             return False
         if api.get_workflow_status_of(analysis) in ["retracted"]:
             return False

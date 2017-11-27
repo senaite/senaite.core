@@ -202,6 +202,27 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
                 ),
 
     RecordsField(
+        'ResultFilesFolder',
+        subfields=('InterfaceName', 'Folder'),
+        subfield_labels={'InterfaceName': _('Interface Code'),
+                         'Folder': _('Folder that results will be saved')},
+        subfield_readonly={'InterfaceName': True,
+                           'Folder': False},
+        widget=RecordsWidget(
+            label=_("Result files folders"),
+            description=_("For each interface of this instrument, \
+                      you can define a folder where \
+                      the system should look for the results files while \
+                      automatically importing results. Having a folder \
+                      for each Instrument and inside that folder creating \
+                      different folders for each of its Interfaces \
+                      can be a good approach. You can use Interface codes \
+                      to be sure that folder names are unique."),
+            visible=True,
+        ),
+    ),
+
+    RecordsField(
         'DataInterfaceOptions',
         type='interfaceoptions',
         subfields=('Key', 'Value'),
@@ -436,14 +457,6 @@ class Instrument(ATFolder):
                               inactive_state='active')]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
-
-    @deprecated('[1702] Orphan. No alternative')
-    def getMethodUID(self):
-        # TODO Avoid using this function. Returns first method's UID for now.
-        if self.getMethods():
-            return self.getMethods()[0].UID()
-        else:
-            return ''
 
     def getMethodUIDs(self):
         uids = []

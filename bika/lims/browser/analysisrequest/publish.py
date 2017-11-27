@@ -26,7 +26,6 @@ from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
-from bika.lims.api import get_tool
 from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.idserver import renameAfterCreation
@@ -540,7 +539,7 @@ class AnalysisRequestPublishView(BrowserView):
         css = []
         blanks_found = False
         if ai:
-            ais.append(ar.getRequestID())
+            ais.append(ar.getId())
         if co:
             if ar.getClientOrderNumber():
                 if not ar.getClientOrderNumber() in cos:
@@ -1183,7 +1182,6 @@ class AnalysisRequestDigester:
                     'home_phone': contact.getHomePhone() if contact else '',
                     'mobile_phone': contact.getMobilePhone() if contact else '',
                     'job_title': to_utf8(contact.getJobTitle()) if contact else '',
-                    'department': to_utf8(contact.getDepartment()) if contact else '',
                     'physical_address': physical_address,
                     'postal_address': postal_address,
                     'home_page': to_utf8(mhomepage)}
@@ -1279,8 +1277,8 @@ class AnalysisRequestDigester:
         workflow = getToolByName(self.context, 'portal_workflow')
         showhidden = self.isHiddenAnalysesVisible()
 
-        catalog = get_tool(CATALOG_ANALYSIS_LISTING)
-        brains = catalog({'getAnalysisRequestUID': ar.UID(),
+        catalog = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
+        brains = catalog({'getRequestUID': ar.UID(),
                           'review_state': analysis_states,
                           'sort_on': 'sortable_title'})
         for brain in brains:

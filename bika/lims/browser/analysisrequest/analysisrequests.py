@@ -84,10 +84,10 @@ class AnalysisRequestsView(BikaListingView):
                 'title': 'Progress',
                 'sortable': False,
                 'toggle': True},
-            'getRequestID': {
+            'getId': {
                 'title': _('Request ID'),
                 'attr': 'getId',
-                'replace_url': 'absolute_url',
+                'replace_url': 'getURL',
                 'index': 'getId'},
             'getClientOrderNumber': {
                 'title': _('Client Order'),
@@ -233,7 +233,7 @@ class AnalysisRequestsView(BikaListingView):
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
                          'Progress',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -276,7 +276,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -316,7 +316,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -354,7 +354,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -398,7 +398,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -438,7 +438,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -480,7 +480,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -520,7 +520,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -555,7 +555,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id': 'republish'}],
              'custom_transitions': [],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -601,7 +601,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['getRequestID',
+             'columns': ['getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -640,7 +640,7 @@ class AnalysisRequestsView(BikaListingView):
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
-             'columns':['getRequestID',
+             'columns':['getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -690,7 +690,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -741,7 +741,7 @@ class AnalysisRequestsView(BikaListingView):
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
              'columns': ['Priority',
-                        'getRequestID',
+                        'getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -780,7 +780,7 @@ class AnalysisRequestsView(BikaListingView):
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
                  'url': 'workflow_action?action=print_stickers'}],
-             'columns': ['getRequestID',
+             'columns': ['getId',
                         'getSample',
                         'BatchID',
                         # 'SubGroup',
@@ -865,10 +865,6 @@ class AnalysisRequestsView(BikaListingView):
         priority_text = PRIORITIES.getValue(priority)
         priority_div = '<div class="priority-ico priority-%s"><span class="notext">%s</span><div>'
         item['replace']['Priority'] = priority_div % (priority, priority_text)
-        item['getRequestID'] = obj.getId
-        url = obj.getURL() + "?check_edit=1"
-        item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-            (url, item['getRequestID'])
         item['replace']['getProfilesTitle'] =\
             ", ".join(obj.getProfilesTitleStr)
 
@@ -962,7 +958,7 @@ class AnalysisRequestsView(BikaListingView):
             after_icons += "<img src='%s/++resource++bika.lims.images/hazardous.png' title='%s'>" % \
                 (self.portal_url, t(_("Hazardous")))
         if after_icons:
-            item['after']['getRequestID'] = after_icons
+            item['after']['getId'] = after_icons
 
         item['Created'] = self.ulocalized_time(obj.created)
         if obj.getContactUID:

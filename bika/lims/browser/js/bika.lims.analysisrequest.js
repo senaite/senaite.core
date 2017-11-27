@@ -145,7 +145,7 @@ function AnalysisRequestViewView() {
                         // Getting the url like that will return the query
                         // part of it:
                         // http://localhost:8080/Plone/clients/client17-14/..
-                        //    ..OA17-0030-R01?check_edit=1
+                        //    ..OA17-0030-R01
                         // In order to create a correct ajax call
                         // we only need until the pathname of that url:
                         // http://localhost:8080/Plone/clients/client17-14/..
@@ -333,9 +333,7 @@ function AnalysisRequestViewView() {
          * @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
          */
         var url = window.location.href
-            .replace('/base_view', '')
-            .replace('?check_edit=1', '')
-            .replace('?check_edit=0', '');
+            .replace('/base_view', '');
         var obj_path = url.replace(window.portal_url, '');
         // Staff for the notification
         var element,name = $.map(requestdata, function(element,index) {return element, index});
@@ -545,7 +543,18 @@ function AnalysisRequestAnalysesView() {
     */
     function check_service(service_uid){
         var new_element, element;
+        /* Check if this row is disabled. row_data has the attribute "disabled"
+        as true if the analysis service has been submitted. So, in this case
+        no further action will take place.
 
+        "allow_edit" attribute in bika_listing displays the editable fields.
+        Since the object keeps this attr even if the row is disabled; price,
+        partition, min,max and error will be displayed (but disabled).
+        */
+        var row_data = $.parseJSON($("#"+service_uid+"_row_data").val());
+        if (row_data.disabled === true){
+            return
+        };
         // Add partition dropdown
         element = $("[name='Partition."+service_uid+":records']");
         new_element = "" +

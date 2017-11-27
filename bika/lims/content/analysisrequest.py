@@ -78,20 +78,6 @@ from bika.lims.workflow.analysisrequest import guards
 # SCHEMA DEFINITION
 schema = BikaSchema.copy() + Schema((
 
-    StringField(
-        'RequestID',
-        searchable=True,
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=StringWidget(
-            label=_("Request ID"),
-            description=_("The ID assigned to the client's request by the lab"),
-            visible={'view': 'invisible',
-                     'edit': 'invisible'},
-        ),
-    ),
-
     UIDReferenceField(
         'Contact',
         required=1,
@@ -265,12 +251,9 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    UIDReferenceField(
         'Sample',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Sample',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestSample',
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1906,24 +1889,6 @@ class AnalysisRequest(BaseFolder):
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
-    @deprecated('[1703] Use getId() instead')
-    def getRequestID(self):
-        """
-        Another way to return the object ID. It is used as a column and index.
-        :returns: The object ID
-        :rtype: str
-        """
-        return self.getId()
-
-    @deprecated('[1703] Use setId(new_id) instad')
-    def setRequestID(self, new_id, **kwargs):
-        """
-        Delegates to setId() function
-        :param new_id: The new id to define
-        :type spec: str
-        """
-        self.setId(new_id)
-
     def getClient(self):
         if self.aq_parent.portal_type == 'Client':
             return self.aq_parent
@@ -2997,134 +2962,90 @@ class AnalysisRequest(BaseFolder):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
-    @deprecated('[1705] Use guards.to_be_preserved from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_to_be_preserved(self):
         return guards.to_be_preserved(self)
 
-    @deprecated('[1705] Use guards.verify from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_verify_transition(self):
         return guards.verify(self)
 
-    @deprecated('[1705] Use guards.unassign from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_unassign_transition(self):
         return guards.unassign(self)
 
-    @deprecated('[1705] Use guards.assign from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_assign_transition(self):
         return guards.assign(self)
 
-    @deprecated('[1705] Use guards.receive from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_receive_transition(self):
         return guards.receive(self)
 
-    @deprecated('[1705] Use guards.sample_prep from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_sample_prep_transition(self):
         return guards.sample_prep(self)
 
-    @deprecated('[1705] Use guards.sample_prep_complete from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_sample_prep_complete_transition(self):
         return guards.sample_prep_complete(self)
 
-    @deprecated('[1705] Use guards.schedule_sampling from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_schedule_sampling_transition(self):
         return guards.schedule_sampling(self)
 
-    @deprecated('[1705] Use guards.publish from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_publish_transition(self):
         return guards.publish(self)
 
-    @deprecated('[1705] Use guards.prepublish from '
-                'bika.lims.workflow.analysisrequest')
     @security.public
     def guard_prepublish_transition(self):
         return guards.prepublish(self)
 
-    @deprecated('[1705] Use events.after_no_sampling_workflow from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_no_sampling_workflow(self):
         events.after_no_sampling_workflow(self)
 
-    @deprecated('[1705] Use events.after_sampling_workflow from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_sampling_workflow(self):
         events.after_sampling_workflow(self)
 
-    @deprecated('[1705] Use events.after_sample from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_sample(self):
         events.after_sample(self)
 
-    @deprecated('[1705] Use events.after_receive from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_receive(self):
         events.after_receive(self)
 
-    @deprecated('[1705] Use events.after_preserve from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_preserve(self):
         events.after_preserve(self)
 
-    @deprecated('[1705] Use events.after_attach from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_attach(self):
         events.after_attach(self)
 
-    @deprecated('[1705] Use events.after_verify from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_verify(self):
         events.after_verify(self)
 
-    @deprecated('[1705] Use events.after_publish from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_publish(self):
         events.after_publish(self)
 
-    @deprecated('[1705] Use events.after_reinstate from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_reinstate(self):
         events.after_reinstate(self)
 
-    @deprecated('[1705] Use events.after_cancel from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_cancel(self):
         events.after_cancel(self)
 
-    @deprecated('[1705] Use events.after_schedule_sampling from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_schedule_sampling(self):
         events.after_schedule_sampling(self)
 
-    @deprecated('[1705] Use events.after_reject from '
-                'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_reject(self):
         events.after_reject(self)
@@ -3145,25 +3066,25 @@ class AnalysisRequest(BaseFolder):
         # a list of accessor methods of the class
         plain_text_fields = ("getId", )
 
-        def read(accessor):
+        def read(acc):
             """
             Call a class accessor method to give a value for certain Archetypes
             field.
             """
             try:
-                value = accessor()
-            except:
+                val = acc()
+            except Exception as e:
                 message = \
-                    "Error getting the accessor parameter"\
-                    " in SearchableText from the Analysis Request Object {}"\
-                    .format(self.getId())
+                    "Error getting the accessor parameter in SearchableText " \
+                    "from the Analysis Request Object {}: {}"\
+                        .format(self.getId(), e.message)
                 logger.error(message)
-                value = ""
+                val = ""
 
-            if value is None:
-                value = ""
+            if val is None:
+                val = ""
 
-            return value
+            return val
 
         # Concatenate plain text fields as they are
         for f in plain_text_fields:

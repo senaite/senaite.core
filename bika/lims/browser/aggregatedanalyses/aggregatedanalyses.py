@@ -48,8 +48,8 @@ class AggregatedAnalysesView(AnalysesView):
 
         self.columns['AnalysisRequest'] = {
             'title': _('Analysis Request'),
-            'attr': 'getAnalysisRequestTitle',
-            'replace_url': 'getAnalysisRequestURL',
+            'attr': 'getRequestTitle',
+            'replace_url': 'getRequestURL',
             'sortable': False
             }
         self.columns['Worksheet'] = {

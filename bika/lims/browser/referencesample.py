@@ -3,23 +3,22 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import getSecurityManager
-from bika.lims.browser import BrowserView
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import isActive
-from bika.lims.browser.analyses import AnalysesView
+import json
 from datetime import datetime
 from operator import itemgetter
-from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes.config import REFERENCE_CATALOG
+
 from Products.ATContentTypes.utils import DT2dt
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.component import getMultiAdapter
+from bika.lims import bikaMessageFactory as _, logger
+from bika.lims.browser import BrowserView
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import t
+from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json, plone
+
 
 class ViewView(BrowserView):
     """ Reference Sample View
@@ -190,6 +189,8 @@ class ReferenceAnalysesView(AnalysesView):
         anrows = trows.get(qcid, [])
         anid = '%s.%s' % (item['getReferenceAnalysesGroupID'], item['id'])
         rr = parent.getResultsRangeDict()
+        cap_date = item.get('CaptureDate', None)
+        cap_date = cap_date and cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
         if service_uid in rr:
             specs = rr.get(service_uid, None)
             try:
@@ -201,8 +202,7 @@ class ReferenceAnalysesView(AnalysesView):
                 error_amount = ((target / 100) * error) if target > 0 else 0
                 upper = smax + error_amount
                 lower = smin - error_amount
-
-                anrow = {'date': item['CaptureDate'],
+                anrow = {'date': cap_date,
                          'min': smin,
                          'max': smax,
                          'target': target,

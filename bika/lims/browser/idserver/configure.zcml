@@ -1,0 +1,32 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="bika">
+
+  <browser:page
+      for="*"
+      name="ng"
+      class="bika.lims.browser.idserver.view.IDServerView"
+      permission="cmf.ManagePortal"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="*"
+      name="ng_seed"
+      class="bika.lims.browser.idserver.view.IDServerView"
+      attribute="seed"
+      permission="cmf.ManagePortal"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="*"
+      name="ng_flush"
+      class="bika.lims.browser.idserver.view.IDServerView"
+      attribute="flush"
+      permission="cmf.ManagePortal"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+</configure>

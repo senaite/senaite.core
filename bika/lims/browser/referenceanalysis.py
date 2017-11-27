@@ -5,26 +5,22 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from email.utils import formataddr
 from smtplib import SMTPRecipientsRefused
 from smtplib import SMTPServerDisconnected
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import tempfile
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.interfaces import IResultOutOfRange
-from bika.lims.utils import to_utf8
-from bika.lims.browser import BrowserView
-from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.utils import encode_header, createPdf
-from os.path import join
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.utils import tmpID
-import Globals
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.utils import createPdf, encode_header
+from bika.lims.utils import t
 from zope.component import getAdapters
 
 
@@ -183,15 +179,17 @@ class AnalysesRetractedListReport(BrowserView):
                         'an_id': an.id,
                         'an_title': an.Title()}
 
-                if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
-                    item['ar'] = an.aq_parent
-                    item['ar_url'] = an.aq_parent.absolute_url()
-                    item['ar_id'] = an.aq_parent.getRequestID()
-                    item['ar_html'] = "<a href='%s'>%s</a>" \
-                                      % (item['ar_url'], item['ar_id'])
+                if IRequestAnalysis.providedBy(an):
+                    ar = an.getRequest()
+                    item['ar'] = ar
+                    item['ar_url'] = ar.absolute_url()
+                    item['ar_id'] = ar.getId()
+                    item['ar_html'] = \
+                        "<a href='%s'>%s</a>" % (item['ar_url'], item['ar_id'])
+
                 ws = an.getBackReferences("WorksheetAnalysis")
                 if ws and len(ws) > 0:
-                    ws = ws[0]
+                    wss = ws[0]
                     item['ws'] = ws
                     item['ws_url'] = ws.absolute_url()
                     item['ws_id'] = ws.id

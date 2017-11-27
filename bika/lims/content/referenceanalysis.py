@@ -110,10 +110,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        service = self.getService()
-        if not service:
-            return None
-        ins = service.getInstrument()
+        ins = self.getInstrument()
         if ins:
             return ins.UID()
         return ''
@@ -123,10 +120,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        service = self.getService()
-        if not service:
-            return None
-        ins = service.getInstrument()
+        ins = self.getInstrument()
         if ins:
             return ins.Title()
         return ''
@@ -136,10 +130,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        service = self.getService()
-        if not service:
-            return None
-        ins = service.getInstrument()
+        ins = self.getInstrument()
         if ins:
             return ins.absolute_url_path()
         return ''
@@ -175,7 +166,6 @@ class ReferenceAnalysis(AbstractAnalysis):
     def getCalculationUID(self):
         return None
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
     @security.public
     def workflow_script_submit(self):
         """Method triggered after a 'submit' transition for the current

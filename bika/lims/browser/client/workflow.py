@@ -202,11 +202,12 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             its = []
             for uid, obj in objects.items():
                 if isActive(obj):
-                    its.append(uid);
+                    its.append(uid)
             its = ",".join(its)
             q = "/publish?items=" + its
-            dest = self.portal_url+"/analysisrequests" + q
-            self.request.response.redirect(dest)
+            self.destination_url = self.request.get_header(
+                "referer", self.context.absolute_url()) + q
+            self.request.response.redirect(self.destination_url)
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)

@@ -4,7 +4,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+from bika.lims import logger
 from bika.lims.utils import t
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -13,6 +13,8 @@ from Products.CMFCore.utils import getToolByName
 import plone
 import plone.protect
 import json
+
+from bika.lims.workflow import getCurrentState
 
 
 class GetServices():
@@ -63,15 +65,10 @@ class AttachAnalyses():
                 analyses.append(i)
         rows = []
         for analysis in analyses:
-            review_state = wf.getInfoFor(analysis, 'review_state', '')
-            if analysis.portal_type in ('Analysis', 'DuplicateAnalysis'):
-                if review_state not in attachable_states:
-                    continue
-                parent = analysis.getRequestID()
-            elif analysis.portal_type == 'ReferenceAnalysis':
-                if review_state not in attachable_states:
-                    continue
-                parent = analysis.aq_parent.Title()
+            review_state = getCurrentState(analysis)
+            if review_state not in attachable_states:
+                continue
+            parent = analysis.getParentTitle()
             rows.append({'analysis_uid': analysis.UID(),
                          'slot': analysis_to_slot[analysis.UID()],
                          'service': analysis.Title(),
