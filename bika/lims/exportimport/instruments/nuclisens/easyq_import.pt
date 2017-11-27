@@ -4,6 +4,7 @@
 &nbsp;&nbsp;
 <label for="nuclisens_easyq_format">Format</label>&nbsp;
 <select name="nuclisens_easyq_format" id="nuclisens_easyq_format">
+    <option value='xml'>XML</option>
     <option value='xlsx'>XLSX</option>
 </select>
 <p></p>

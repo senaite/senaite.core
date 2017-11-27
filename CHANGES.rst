@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #377 XML importer in Instrument Interface of Nuclisense EasyQ
 
 **Removed**
 
