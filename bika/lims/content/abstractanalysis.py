@@ -195,6 +195,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getLastVerificator(self):
+        if not self.getVerificators():
+            return None
         return self.getVerificators().split(',')[-1]
 
     @security.public
