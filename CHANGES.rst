@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #420 Searches by term with custom indexes do not work in clients folder view
 - #416 Fix inconsistencies with sorting criterias in lists
 - #418 LabClerks don't have access to AR view after received and before verified
 - #415 Referencefield JS UID check: Don't remove Profile UIDs
