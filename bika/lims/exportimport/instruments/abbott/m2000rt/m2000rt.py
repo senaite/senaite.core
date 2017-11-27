@@ -170,7 +170,7 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
                 if self._columns[idx].lower() == 'sampleid':
                     result_id = val
                 else:
-                    if val and ('date' in self._columns[idx].lower() \
+                    if val and ('date' in self._columns[idx].lower()
                             or 'time' in self._columns[idx].lower()):
                         val = self.Date2BikaDate(val, 'date' in self._columns[idx].lower())
                     values[self._ar_keyword][self._columns[idx]] = val
@@ -204,7 +204,7 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         if only_date:
             return datetime.strptime(DateTime, '%Y/%m/%d').strftime('%Y%m%d')
         else:
-            return datetime.strptime(DateTime, "%Y/%m/%d %I:%M:%S %p").strftime("%Y%m%d %H:%M")
+            return datetime.strptime(DateTime, "%Y/%m/%d %I:%M:%S %p").strftime("%Y%m%d %H:%M:%S")
 
 
 class Abbottm2000rtImporter(AnalysisResultsImporter):
