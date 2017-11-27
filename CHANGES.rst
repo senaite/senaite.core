@@ -40,6 +40,7 @@ Changelog
 
 **Fixed**
 
+- #419 'getLastVerificator' function of Abstract Analyses fails when there is no Verificator.
 - #388 Unable to get the portal object when digesting/creating results report
 - #387 ClientWorkflowAction object has no attribute 'portal_url' when publishing multiple ARs
 - #386 PR-2313 UniqueFieldValidator: Encode value to utf-8 before passing it to the catalog
