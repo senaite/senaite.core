@@ -199,6 +199,13 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         self._ar_keyword = None  # Keyword of Analysis Service
 
     def Date2BikaDate(self, DateTime, only_date):
+        """
+        Convert a string containing a date from results file to bika format
+        :param DateTime: str with Date to convert
+        :param only_date: boolean value that specifies if there is only a date
+        to parse (true) or date plus time (false)
+        :return: datetime in bika format
+        """
         # if only date: 2017/01/26
         # else: 2017/01/26 12:47:09 PM
         if only_date:
