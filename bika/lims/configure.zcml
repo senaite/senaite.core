@@ -94,19 +94,11 @@
   />
 
 
-   <!-- Bika Auto generate ID for Dexterity types -->
+   <!-- Bika Auto generate ID behavior for Dexterity types -->
    <plone:behavior
-        title="Auto generate ID Beahvior for Dexterity contents"
+        title="Auto generate ID Behavior for Dexterity contents"
         description="Generates an ID with the IDServer"
         provides="bika.lims.interfaces.IGenerateID"
-        />
-
-   <!-- Name chooser for dexterity types.
-        N.B. This only works if no `id` is passed to the factory tool -->
-   <adapter
-        for="bika.lims.interfaces.IGenerateID"
-        factory=".idserver.AutoGenerateID"
-        provides="zope.container.interfaces.INameChooser"
         />
 
 </configure>

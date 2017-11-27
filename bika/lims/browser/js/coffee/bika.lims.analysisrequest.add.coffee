@@ -1447,14 +1447,17 @@ class window.AnalysisRequestAdd
       ###
 
       if data['errors']
-        msg = ''
-        for fieldname of data.errors
+        msg = data.errors.message
+        if msg isnt ""
+          msg = "#{msg}<br/>"
+
+        for fieldname of data.errors.fielderrors
           field = $("##{fieldname}")
           parent = field.parent "div.field"
           if field and parent
             parent.toggleClass "error"
             errorbox = parent.children("div.fieldErrorBox")
-            message = data.errors[fieldname]
+            message = data.errors.fielderrors[fieldname]
             errorbox.text message
             msg += "#{message}<br/>"
 

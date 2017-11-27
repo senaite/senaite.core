@@ -315,7 +315,7 @@ def setup_permissions(portal):
     mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
     mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
     mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-    mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
+    mp(AddAnalysisSpec, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
     portal.clients.reindexObject()
 
     # We have to manually set the permissions of Contacts according to

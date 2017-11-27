@@ -61,12 +61,16 @@ cause their DependentServices field (a UIDReferenceField) to be populated.
 
 c1 now depends on three services:
 
-    >>> [s.Title() for s in c1.getDependentServices()]
+    >>> deps = [s.Title() for s in c1.getDependentServices()]
+    >>> deps.sort()
+    >>> deps
     ['AS 1', 'AS 2', 'AS 3']
 
 c2 now depends on two services:
 
-    >>> [s.Title() for s in c2.getDependentServices()]
+    >>> deps = [s.Title() for s in c2.getDependentServices()]
+    >>> deps.sort()
+    >>> deps
     ['AS 1', 'AS 2']
 
 Backreferences are stored on each object which is a target of a

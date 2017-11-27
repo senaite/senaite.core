@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+  <head>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Manage Numbergenerator
+      </h1>
+    </metal:title>
+    <metal:description fill-slot="content-description">
+      <p i18n:translate=""></p>
+    </metal:description>
+
+    <div metal:fill-slot="content-core"
+         tal:define="portal context/@@plone_portal_state/portal;">
+
+      <form id="manage_form"
+            name="manage_form"
+            method="POST">
+
+        <input type="hidden" name="submitted" value="1"/>
+        <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+        <tal:numbers repeat="key view/storage">
+          <div class="field form-group field"
+               tal:define="value python:view.storage[key]">
+
+            <label class="form-control-label">
+              <span i18n:translate="">Key</span>:
+              <span tal:content="key"/>
+            </label>
+
+            <div class="form-group input-group">
+              <input type="hidden"
+                     tal:attributes="name string:seeds.${key}:record;
+                                     value key"/>
+              <input type="number"
+                     tal:attributes="name string:seeds.${key}:record;
+                                     value value"/>
+              <span class="label label-info">
+                Next ID is <span tal:content="python:view.get_next_id_for(key)"/>
+              </span>
+            </div>
+
+          </div>
+        </tal:numbers>
+
+
+        <input class="btn btn-warn btn-sm allowMultiSubmit"
+               type="submit"
+               name="seed"
+               i18n:attributes="value"
+               value="Seed"/>
+
+        <input class="btn btn-warning btn-sm allowMultiSubmit"
+               type="submit"
+               name="flush"
+               i18n:attributes="value"
+               value="Flush"/>
+      </form>
+
+    </div>
+
+  </body>
+</html>
