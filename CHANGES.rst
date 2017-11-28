@@ -6,9 +6,11 @@ Changelog
 
 **Added**
 
+- #377 XML importer in Instrument Interface of Nuclisense EasyQ
 
 **Removed**
 
+- #417 Remove calls to deprecated function getService (from AbstractAnalysis)
 
 **Changed**
 
@@ -16,6 +18,11 @@ Changelog
 **Fixed**
 
 - #409 In Add Analyses view, analyses id are displayed instead of Analysis Request IDs
+- #378 Fix GeneXpert interface does not import results for multiple analyses
+- #416 Fix inconsistencies with sorting criterias in lists
+- #418 LabClerks don't have access to AR view after received and before verified
+- #415 Referencefield JS UID check: Don't remove Profile UIDs
+- #411 Analyses don't get selected when copying an Analysis Request without profiles
 
 **Security**
 
@@ -78,6 +85,7 @@ Changelog
 
 **Fixed**
 
+- #419 'getLastVerificator' function of Abstract Analyses fails when there is no Verificator.
 - #388 Unable to get the portal object when digesting/creating results report
 - #387 ClientWorkflowAction object has no attribute 'portal_url' when publishing multiple ARs
 - #386 PR-2313 UniqueFieldValidator: Encode value to utf-8 before passing it to the catalog

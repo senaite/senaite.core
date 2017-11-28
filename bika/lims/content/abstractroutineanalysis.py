@@ -615,8 +615,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             # If the calculation associated to the dependent analysis requires
             # the manual introduction of interim fields, do not transition the
             # dependent automatically, force the user to do it manually.
-            service = dependent.getService()
-            calculation = service.getCalculation()
+            calculation = dependent.getCalculation()
             if calculation and calculation.getInterimFields():
                 continue
 
