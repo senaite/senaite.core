@@ -721,7 +721,7 @@ def get_link(href, value=None, **kwargs):
     anchor_value = value and value or href
     attr = list()
     if kwargs:
-        attr = ['{}="{}"'.format(key, value) for key, value in kwargs.items()]
+        attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
     attr = " ".join(attr)
     return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
