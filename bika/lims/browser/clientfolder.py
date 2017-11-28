@@ -5,20 +5,19 @@
 
 import json
 
-from zope.interface import implements
-from zope.component import getUtility
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser import BrowserView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import AddClient
+from bika.lims.permissions import ManageAnalysisRequests
+from bika.lims.permissions import ManageClients
 from plone import protect
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.registry.interfaces import IRegistry
-
-from bika.lims import api
-from bika.lims import logger
-from bika.lims.permissions import ManageAnalysisRequests
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims import bikaMessageFactory as _
-from bika.lims.permissions import AddClient
-from bika.lims.permissions import ManageClients
-from bika.lims.browser import BrowserView
+from zope.component import getUtility
+from zope.interface import implements
 
 
 class ClientFolderContentsView(BikaListingView):
@@ -26,6 +25,8 @@ class ClientFolderContentsView(BikaListingView):
     Listing view for all Clients
        """
     implements(IFolderContentsView)
+
+    _LANDING_PAGE_REGISTRY_KEY = "bika.lims.client.default_landing_page"
 
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
@@ -45,11 +46,13 @@ class ClientFolderContentsView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_select_column = False
         self.pagesize = 25
-        self.icon = self.portal_url + "/++resource++bika.lims.images/client_big.png"
+        self.icon = '{}/{}'.\
+            format(self.portal_url,
+            "++resource++bika.lims.images/client_big.png")
         request.set('disable_border', 1)
 
         self.columns = {
-            'title': {'title': _('Name')},
+            'title': {'title': _('Name'), 'index': 'sortable_title'},
             'EmailAddress': {'title': _('Email Address')},
             'getCountry': {'title': _('Country')},
             'getProvince': {'title': _('Province')},
@@ -102,7 +105,6 @@ class ClientFolderContentsView(BikaListingView):
                          'Fax', ]
              },
         ]
-        self.landing_page = 'analysisrequests'
 
     def __call__(self):
         mtool = api.get_tool('portal_membership')
@@ -115,23 +117,42 @@ class ClientFolderContentsView(BikaListingView):
             self.show_select_column = True
 
         registry = getUtility(IRegistry)
-        if 'bika.lims.client.default_landing_page' in registry:
-            self.landing_page = registry['bika.lims.client.default_landing_page']
+        self.landing_page = registry.get(self._LANDING_PAGE_REGISTRY_KEY,
+                                         'analysisrequests').encode('ascii')
 
         return super(ClientFolderContentsView, self).__call__()
 
     def isItemAllowed(self, obj):
-        # Only show clients to which we have Manage AR rights.
-        # (ritamo only sees Happy Hills).
+        """
+        Returns true if the current user has Manage AR rights for the current
+        Client (item) to be rendered.
+        :param obj: client to be rendered as a row in the list
+        :type obj: ATContentType/DexterityContentType
+        :return: True if the current user can see this Client. Otherwise, False.
+        :rtype: bool
+        """
         mtool = api.get_tool('portal_membership')
         client_object = api.get_object(obj)
         return mtool.checkPermission(ManageAnalysisRequests, client_object)
 
     def folderitem(self, obj, item, index):
+        """
+        Applies new properties to the item (Client) that is currently being
+        rendered as a row in the list
+        :param obj: client to be rendered as a row in the list
+        :param item: dict representation of the client, suitable for the list
+        :param index: current position of the item within the list
+        :type obj: ATContentType/DexterityContentType
+        :type item: dict
+        :type index: int
+        :return: the dict representation of the item
+        :rtype: dict
+        """
+        client_object = api.get_object(obj)
         item['replace']['title'] = "<a href='%s/%s'>%s</a>" % \
-                                   (item['url'], self.landing_page.encode('ascii'),
+                                   (item['url'], self.landing_page,
                                     item['title'])
-        email = obj.getEmailAddress()
+        email = client_object.getEmailAddress()
         item['replace']['EmailAddress'] = "<a href='%s'>%s</a>" % \
                                           ('mailto:%s' % email, email)
         return item
@@ -199,6 +220,7 @@ class ajaxGetClients(BrowserView):
         ret = {'page': page,
                'total': pages,
                'records': len(rows),
-               'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(nr_rows)]}
+               'rows': rows[(int(page) - 1) * int(nr_rows):
+                             int(page) * int(nr_rows)]}
 
         return json.dumps(ret)
