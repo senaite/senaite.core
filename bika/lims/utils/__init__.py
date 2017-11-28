@@ -30,7 +30,6 @@ from plone.registry.interfaces import IRegistry
 from weasyprint import CSS, HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
-from zope.component import getUtility
 from zope.i18n import translate
 from zope.i18n.locales import locales
 
@@ -747,3 +746,15 @@ def get_registry_value(key, default=None):
     registry = queryUtility(IRegistry)
     value = registry.get(key, default)
     return value
+
+def check_permission(permission, obj):
+    """
+    Returns if the current user has rights for the permission passed in against
+    the obj passed in
+    :param permission: name of the permission
+    :param obj: the object to check the permission against for the current user
+    :return: 1 if the user has rights for this permission for the passed in obj
+    """
+    mtool = api.get_tool('portal_membership')
+    object = api.get_object(obj)
+    return mtool.checkPermission(permission, object)
