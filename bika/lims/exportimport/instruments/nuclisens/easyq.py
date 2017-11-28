@@ -11,6 +11,7 @@ import csv
 import json
 import traceback
 from cStringIO import StringIO
+import xml.etree.ElementTree as ET
 
 import types
 from openpyxl import load_workbook
@@ -18,6 +19,7 @@ from openpyxl import load_workbook
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
+from bika.lims.exportimport.instruments.instrument import format_keyword
 from bika.lims.utils import t
 
 title = "Nuclisens EasyQ"
@@ -87,6 +89,62 @@ class EasyQParser(InstrumentResultsFileParser):
             self._addRawResult(key, {testname: rawdict}, False)
 
 
+class EasyQXMLParser(InstrumentResultsFileParser):
+    """ XML input Parser
+    """
+    def __init__(self, xml):
+        InstrumentResultsFileParser.__init__(self, xml, 'XML')
+        self._assays = {}
+        self._instruments = {}
+
+    def parse(self):
+        """ parse the data
+        """
+        tree = ET.parse(self.getInputFile())
+        root = tree.getroot()
+        # Building Assay dictionary to query names by id from test results line
+        for as_ref in root.find("Assays").findall("AssayRef"):
+            self._assays[as_ref.get("KEY_AssayRef")] = as_ref.get("ID")
+
+        # Building Instruments dictionary to get Serial number by id
+        for ins in root.find("Instruments").findall("Instrument"):
+            self._instruments[ins.get("KEY_InstrumentData")] = \
+                ins.get("SerialNumber")
+
+        for t_req in root.iter("TestRequest"):
+            t_res = t_req.find("TestResult")
+            if len(t_res) == 0 or not t_res.get("Valid", "false") == "true":
+                continue
+            res_id = t_req.get("SampleID")
+            test_name = self._assays.get(t_req.get("KEY_AssayRef"))
+            test_name = format_keyword(test_name)
+            result = t_res.get("Value")
+            if not result:
+                continue
+            result = result.split(" cps/ml")[0]
+            detected = t_res.get("Detected")
+
+            # SOME ADDITIONAL DATA
+            # Getting instrument serial number from 'Run' element which is
+            # parent of 'TestRequest' elements
+            ins_serial = t_req.getParent().get("KEY_InstrumentData")
+
+            # Matrix is important for calculation.
+            matrix = t_req.get("Matrix")
+            # For now, using EasyQDirector as keyword, but this is not the
+            # right way. test_name must be used.
+            values = {
+                'EasyQDirector': {
+                    "DefaultResult": "Result",
+                    "Result": result,
+                    "Detected": detected,
+                    "Matrix": matrix,
+                    "Instrument": ins_serial
+                }
+            }
+            self._addRawResult(res_id, values)
+
+
 class EasyQImporter(AnalysisResultsImporter):
     """ Importer
     """
@@ -95,7 +153,7 @@ class EasyQImporter(AnalysisResultsImporter):
         ret = AnalysisResultsImporter._process_analysis(self, objid, analysis,
                                                          values)
         # HEALTH-567
-        if values['Value'] and str(values['Value'])[0] in "<>":
+        if values.get('Value') and str(values['Value'])[0] in "<>":
             analysis.setDetectionLimitOperand('<')
         return ret
 
@@ -133,6 +191,8 @@ def Import(context, request):
         errors.append(_("No file selected"))
     if fileformat == 'xlsx':
         parser = EasyQParser(infile)
+    elif fileformat == 'xml':
+        parser = EasyQXMLParser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))

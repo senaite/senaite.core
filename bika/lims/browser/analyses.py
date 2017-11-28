@@ -381,7 +381,7 @@ class AnalysesView(BikaListingView):
         if ICatalogBrain.providedBy(obj):
             depuid = obj.getDepartmentUID
         else:
-            dep = obj.getService().getDepartment()
+            dep = obj.getDepartment()
             depuid = dep.UID() if dep else ''
         deps = self.request.get('filter_by_department_info', '')
         return not depuid or depuid in deps.split(',')

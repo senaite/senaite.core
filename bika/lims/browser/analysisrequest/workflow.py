@@ -371,7 +371,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 continue
             # Prevent saving data if the analysis is already transitioned
             if not (checkPermission(EditResults, analysis) or checkPermission(EditFieldResults, analysis)):
-                title = safe_unicode(analysis.getService().Title())
+                title = safe_unicode(analysis.Title())
                 msgid = _('Result for ${analysis} could not be saved because '
                           'it was already submitted by another user.',
                           mapping={'analysis': title})

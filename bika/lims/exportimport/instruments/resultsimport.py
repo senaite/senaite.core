@@ -823,7 +823,6 @@ class AnalysisResultsImporter(Logger):
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)
-            doActionFor(analysis, 'submit')
             resultsaved = True
 
         elif resultsaved == False:
@@ -832,6 +831,9 @@ class AnalysisResultsImporter(Logger):
                               "analysis_keyword": acode,
                               "result":""
                      })
+
+        if resultsaved or len(interimsout) > 0:
+            doActionFor(analysis, 'submit')
 
         if (resultsaved or len(interimsout) > 0) \
             and values.get('Remarks', '') \
