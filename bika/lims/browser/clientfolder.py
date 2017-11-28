@@ -13,7 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddClient
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.permissions import ManageClients
-from bika.lims.utils import get_email_link, get_link
+from bika.lims.utils import get_email_link, get_link, get_registry_value
 from plone import protect
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.registry.interfaces import IRegistry
@@ -28,6 +28,7 @@ class ClientFolderContentsView(BikaListingView):
     implements(IFolderContentsView)
 
     _LANDING_PAGE_REGISTRY_KEY = "bika.lims.client.default_landing_page"
+    _DEFAULT_LANDING_PAGE = "analysisrequests"
 
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
@@ -114,12 +115,11 @@ class ClientFolderContentsView(BikaListingView):
                 {'url': 'createObject?type_name=Client',
                  'icon': '++resource++bika.lims.images/add.png'}
 
-        if mtool.checkPermission(ManageClients, self.context):
-            self.show_select_column = True
+        self.show_select_column = mtool.checkPermission(ManageClients,
+                                                        self.context)
 
-        registry = getUtility(IRegistry)
-        self.landing_page = registry.get(self._LANDING_PAGE_REGISTRY_KEY,
-                                         'analysisrequests').encode('ascii')
+        self.landing_page = get_registry_value(self._LANDING_PAGE_REGISTRY_KEY,
+                                               self._DEFAULT_LANDING_PAGE)
 
         return super(ClientFolderContentsView, self).__call__()
 

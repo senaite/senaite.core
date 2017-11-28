@@ -30,6 +30,7 @@ from plone.registry.interfaces import IRegistry
 from weasyprint import CSS, HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
+from zope.component import getUtility
 from zope.i18n import translate
 from zope.i18n.locales import locales
 
@@ -734,3 +735,15 @@ def get_email_link(email, value=None):
     mailto = 'mailto:{}'.format(email)
     link_value = value and value or email
     return get_link(mailto, link_value)
+
+def get_registry_value(key, default=None):
+    """
+    Gets the utility for IRegistry and returns the value for the key passed in.
+    If there is no value for the key passed in, returns default value
+    :param key: the key in the registry to look for
+    :param default: default value if the key is not registered
+    :return: value in the registry for the key passed in
+    """
+    registry = queryUtility(IRegistry)
+    value = registry.get(key, default)
+    return value
