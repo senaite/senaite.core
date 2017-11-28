@@ -710,12 +710,14 @@ def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
 
 def get_link(href, value=None, **kwargs):
     """
-    Returns a well-formed link
+    Returns a well-formed link. If href is None/empty, returns an empty string
     :param href: value to be set for attribute href
     :param value: the text to be displayed. If None, the href itself is used
     :param kwargs: additional attributes and values
     :return: a well-formed html anchor
     """
+    if not href:
+        return ""
     anchor_value = value and value or href
     attr = list()
     if kwargs:
@@ -726,11 +728,14 @@ def get_link(href, value=None, **kwargs):
 
 def get_email_link(email, value=None):
     """
-    Returns a well-formed link to an email address
+    Returns a well-formed link to an email address. If email is None/empty,
+    returns an empty string
     :param email: email address
     :param link_text: text to be displayed. If None, the email itself is used
     :return: a well-formatted html anchor
     """
+    if not email:
+        return ""
     mailto = 'mailto:{}'.format(email)
     link_value = value and value or email
     return get_link(mailto, link_value)
