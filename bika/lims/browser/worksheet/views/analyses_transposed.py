@@ -150,8 +150,8 @@ class AnalysesTransposedTable(BikaListingTable):
         actions = new_actions
 
         # and these are removed
-        hidden_transitions = self.bika_listing.review_state['hide_transitions']
         if 'hide_transitions' in self.bika_listing.review_state:
+            hidden_transitions = self.bika_listing.review_state['hide_transitions']
             actions = [a for a in actions if a['id'] not in hidden_transitions]
 
         # cheat: until workflow_action is abolished, all URLs defined in
