@@ -55,7 +55,7 @@
         <!-- Workflow actions -->
         <tr>
             <td class="noborder"
-                tal:attributes="colspan python:len(view.positions)"
+                tal:attributes="colspan nr_cols"
                 tal:condition="python:view.bika_listing.show_workflow_action_buttons">
                 <tal:selected_uids repeat="item view/items">
                     <input type="hidden" name="uids:list"
