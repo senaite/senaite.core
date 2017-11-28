@@ -165,14 +165,17 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         values = {}
         result_id = ''
         if self._ar_keyword:
+            # Create a new entry in the values dictionary and store the results
             values[self._ar_keyword] = {}
             for idx, val in enumerate(split_line):
                 if self._columns[idx].lower() == 'sampleid':
                     result_id = val
                 else:
+                    # columns with date in its name store only the date and
+                    # columns with time in its name store date and time.
                     if val and ('date' in self._columns[idx].lower()
-                            or 'time' in self._columns[idx].lower()):
-                        val = self._date_to_Bika_date(val, 'date' in self._columns[idx].lower())
+                                or 'time' in self._columns[idx].lower()):
+                        val = self._date_to_bika_date(val, 'date' in self._columns[idx].lower())
                     values[self._ar_keyword][self._columns[idx]] = val
                 values[self._ar_keyword]['DefaultResult'] = 'FinalResult'
 
@@ -182,7 +185,7 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         """
         Removing special character from a keyword. Analysis Services must have
         this kind of keywords. E.g. if assay name from GeneXpert Instrument is
-        'Ebola RUO', an AS must be created on Bika with the keyword 'EbolaRUO'
+        HIV0.6ml, an AS must be created on Bika with the keyword 'HIV06ml'
         """
         import re
         result = ''
@@ -198,20 +201,20 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         self._columns = None  # Column names of Analyte Result table
         self._ar_keyword = None  # Keyword of Analysis Service
 
-    def _date_to_Bika_date(self, DateTime, only_date):
+    def _date_to_bika_date(self, date_time, only_date):
         """
         Convert a string containing a date from results file to bika format
-        :param DateTime: str with Date to convert
+        :param date_time: str with Date to convert
         :param only_date: boolean value that specifies if there is only a date
         to parse (true) or date plus time (false)
         :return: datetime in bika format
         """
-        # if only date: 2017/01/26
+        # if only date the input date format is: 2017/01/26
         # else: 2017/01/26 12:47:09 PM
         if only_date:
-            return datetime.strptime(DateTime, '%Y/%m/%d').strftime('%Y%m%d')
+            return datetime.strptime(date_time, '%Y/%m/%d').strftime('%Y%m%d')
         else:
-            return datetime.strptime(DateTime, "%Y/%m/%d %I:%M:%S %p").strftime("%Y%m%d %H:%M:%S")
+            return datetime.strptime(date_time, "%Y/%m/%d %I:%M:%S %p").strftime("%Y%m%d %H:%M:%S")
 
 
 class Abbottm2000rtImporter(AnalysisResultsImporter):
