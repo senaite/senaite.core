@@ -706,3 +706,59 @@ def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
         value = field.get(src)
         if value:
             dst_schema[fieldname].set(dst, value)
+
+
+def get_link(href, value=None, **kwargs):
+    """
+    Returns a well-formed link. If href is None/empty, returns an empty string
+    :param href: value to be set for attribute href
+    :param value: the text to be displayed. If None, the href itself is used
+    :param kwargs: additional attributes and values
+    :return: a well-formed html anchor
+    """
+    if not href:
+        return ""
+    anchor_value = value and value or href
+    attr = list()
+    if kwargs:
+        attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
+    attr = " ".join(attr)
+    return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
+
+
+def get_email_link(email, value=None):
+    """
+    Returns a well-formed link to an email address. If email is None/empty,
+    returns an empty string
+    :param email: email address
+    :param link_text: text to be displayed. If None, the email itself is used
+    :return: a well-formatted html anchor
+    """
+    if not email:
+        return ""
+    mailto = 'mailto:{}'.format(email)
+    link_value = value and value or email
+    return get_link(mailto, link_value)
+
+def get_registry_value(key, default=None):
+    """
+    Gets the utility for IRegistry and returns the value for the key passed in.
+    If there is no value for the key passed in, returns default value
+    :param key: the key in the registry to look for
+    :param default: default value if the key is not registered
+    :return: value in the registry for the key passed in
+    """
+    registry = queryUtility(IRegistry)
+    return registry.get(key, default)
+
+def check_permission(permission, obj):
+    """
+    Returns if the current user has rights for the permission passed in against
+    the obj passed in
+    :param permission: name of the permission
+    :param obj: the object to check the permission against for the current user
+    :return: 1 if the user has rights for this permission for the passed in obj
+    """
+    mtool = api.get_tool('portal_membership')
+    object = api.get_object(obj)
+    return mtool.checkPermission(permission, object)
