@@ -13,11 +13,10 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddClient
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.permissions import ManageClients
-from bika.lims.utils import get_email_link, get_link, get_registry_value
+from bika.lims.utils import get_email_link, get_link, get_registry_value, \
+    check_permission
 from plone import protect
 from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.registry.interfaces import IRegistry
-from zope.component import getUtility
 from zope.interface import implements
 
 
@@ -109,15 +108,16 @@ class ClientFolderContentsView(BikaListingView):
         ]
 
     def __call__(self):
-        mtool = api.get_tool('portal_membership')
-        if mtool.checkPermission(AddClient, self.context):
+        if check_permission(AddClient, self.context):
             self.context_actions[_('Add')] = \
                 {'url': 'createObject?type_name=Client',
                  'icon': '++resource++bika.lims.images/add.png'}
 
-        self.show_select_column = mtool.checkPermission(ManageClients,
-                                                        self.context)
+        # Display a checkbox next to each client in the list only if the user
+        # has rights for ManageClients
+        self.show_select_column = check_permission(ManageClients, self.context)
 
+        # Landing page to be added to the link of each client from the list
         self.landing_page = get_registry_value(self._LANDING_PAGE_REGISTRY_KEY,
                                                self._DEFAULT_LANDING_PAGE)
 
@@ -132,9 +132,7 @@ class ClientFolderContentsView(BikaListingView):
         :return: True if the current user can see this Client. Otherwise, False.
         :rtype: bool
         """
-        mtool = api.get_tool('portal_membership')
-        client_object = api.get_object(obj)
-        return mtool.checkPermission(ManageAnalysisRequests, client_object)
+        return check_permission(ManageAnalysisRequests, obj)
 
     def folderitem(self, obj, item, index):
         """
@@ -149,11 +147,9 @@ class ClientFolderContentsView(BikaListingView):
         :return: the dict representation of the item
         :rtype: dict
         """
-        client_object = api.get_object(obj)
         link_url = "{}/{}".format(item['url'], self.landing_page)
         item['replace']['title'] = get_link(link_url, item['title'])
-        email = client_object.getEmailAddress()
-        item['replace']['EmailAddress'] = get_email_link(email)
+        item['replace']['EmailAddress'] = get_email_link(item['EmailAddress'])
         return item
 
 
