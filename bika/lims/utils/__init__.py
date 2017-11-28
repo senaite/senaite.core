@@ -749,8 +749,7 @@ def get_registry_value(key, default=None):
     :return: value in the registry for the key passed in
     """
     registry = queryUtility(IRegistry)
-    value = registry.get(key, default)
-    return value
+    return registry.get(key, default)
 
 def check_permission(permission, obj):
     """
