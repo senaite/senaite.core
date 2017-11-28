@@ -1703,7 +1703,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ProfilesTitleStr',
-        expression="' '.join([p.Title() for p in here.getProfiles()]) if here.getProfiles() else []",
+        expression="', '.join([p.Title() for p in here.getProfiles()]) if here.getProfiles() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(

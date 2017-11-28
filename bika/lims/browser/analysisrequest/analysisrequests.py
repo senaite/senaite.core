@@ -865,8 +865,7 @@ class AnalysisRequestsView(BikaListingView):
         priority_text = PRIORITIES.getValue(priority)
         priority_div = '<div class="priority-ico priority-%s"><span class="notext">%s</span><div>'
         item['replace']['Priority'] = priority_div % (priority, priority_text)
-        item['replace']['getProfilesTitle'] =\
-            ", ".join(obj.getProfilesTitleStr)
+        item['replace']['getProfilesTitle'] = obj.getProfilesTitleStr
 
         analysesnum = obj.getAnalysesNum
         if analysesnum:
