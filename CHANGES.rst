@@ -7,6 +7,7 @@ Changelog
 **Added**
 
 - #377 XML importer in Instrument Interface of Nuclisense EasyQ
+- #423 Instrument import interface for Abbott's m2000 Real Time
 
 **Removed**
 
