@@ -49,9 +49,7 @@ class ClientFolderContentsView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'title': {
-                'title': _('Name'),
-                'index': 'sortable_title'},
+            'title': {'title': _('Name')},
             'EmailAddress': {'title': _('Email Address')},
             'getCountry': {'title': _('Country')},
             'getProvince': {'title': _('Province')},
@@ -121,6 +119,13 @@ class ClientFolderContentsView(BikaListingView):
             self.landing_page = registry['bika.lims.client.default_landing_page']
 
         return super(ClientFolderContentsView, self).__call__()
+
+    def isItemAllowed(self, obj):
+        # Only show clients to which we have Manage AR rights.
+        # (ritamo only sees Happy Hills).
+        mtool = api.get_tool('portal_membership')
+        client_object = api.get_object(obj)
+        return mtool.checkPermission(ManageAnalysisRequests, client_object)
 
     def folderitem(self, obj, item, index):
         item['replace']['title'] = "<a href='%s/%s'>%s</a>" % \
