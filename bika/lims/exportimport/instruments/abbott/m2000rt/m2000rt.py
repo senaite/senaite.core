@@ -137,7 +137,7 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         elif len(split_line) == 1 and all(x == '=' for x in split_line[0]):
             self._is_header = True
             # if exiting result information section then reset column names and AR keyword
-            if self._current_section and 'result information' in self._current_section.lower():
+            if 'result information' in self._current_section.lower():
                 self._reset()
         # From the assay calibration section the assay name is retrieved
         elif 'assay calibration' in self._current_section.lower():
@@ -172,7 +172,7 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
                 else:
                     if val and ('date' in self._columns[idx].lower()
                             or 'time' in self._columns[idx].lower()):
-                        val = self.Date2BikaDate(val, 'date' in self._columns[idx].lower())
+                        val = self._date_to_Bika_date(val, 'date' in self._columns[idx].lower())
                     values[self._ar_keyword][self._columns[idx]] = val
                 values[self._ar_keyword]['DefaultResult'] = 'FinalResult'
 
@@ -198,7 +198,7 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
         self._columns = None  # Column names of Analyte Result table
         self._ar_keyword = None  # Keyword of Analysis Service
 
-    def Date2BikaDate(self, DateTime, only_date):
+    def _date_to_Bika_date(self, DateTime, only_date):
         """
         Convert a string containing a date from results file to bika format
         :param DateTime: str with Date to convert
