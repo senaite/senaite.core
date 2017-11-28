@@ -723,10 +723,7 @@ class BikaListingView(BrowserView):
         # and modify self.columns[]['toggle'] to match.
         toggle_cols = self.get_toggle_cols()
         for col in self.columns.keys():
-            if col in toggle_cols:
-                self.columns[col]['toggle'] = True
-            else:
-                self.columns[col]['toggle'] = False
+            self.columns[col]['toggle'] = col in toggle_cols
 
     def _set_sorting_criteria(self):
         """
@@ -822,25 +819,28 @@ class BikaListingView(BrowserView):
         return indexes
 
     def get_toggle_cols(self):
-        _form = self.request.form
-        toggles = {}
-        try:
-            default_toggles = _form.get("toggle_cols", "{}")
-            _key = self.form_id + "_toggle_cols"
-            form_toggles = _form.get(_key, default_toggles)
-            toggles = json.loads(form_toggles)
-        except (ValueError, TypeError):
-            pass
-        finally:
-            if not toggles:
-                toggles = {}
-        cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
-        toggle_cols = toggles.get(
-            cookie_key, [col for col in self.columns.keys()
-                         if col in self.review_state['columns'] and
-                         ('toggle' not in self.columns[col] or
-                          self.columns[col]['toggle'] is True)])
-        return toggle_cols
+        """
+        Returns the list of column ids to be displayed for the current list.
+        :return: list of column ids to be displayed
+        :rtype: list of str
+        """
+        # Get the toggle configuration from the cookie
+        cookie_toggle = self.request.get('toggle_cols', '{}')
+        cookie_toggle = json.loads(cookie_toggle)
+
+        # Load the toggling configuration for the current list
+        list_toggle_key = "%s%s" % (self.context.portal_type, self.form_id)
+        list_toggle = cookie_toggle.get(list_toggle_key, [])
+
+        # If there is no stored configuration re toggle for the current list
+        # in the cookie (or if there is no cookie for toggle config), use the
+        # default configuration based on the initial column settings
+        if not list_toggle:
+            columns_ids = self.review_state['columns']
+            list_toggle = [col_id for col_id in columns_ids if
+                           self.columns[col_id].get('toggle', True) is True]
+
+        return list_toggle
 
     def GET_url(self, include_current=True, **kwargs):
         url = self.request['URL'].split("?")[0]
