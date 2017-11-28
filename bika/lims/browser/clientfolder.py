@@ -13,6 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddClient
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.permissions import ManageClients
+from bika.lims.utils import get_email_link, get_link
 from plone import protect
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.registry.interfaces import IRegistry
@@ -149,12 +150,10 @@ class ClientFolderContentsView(BikaListingView):
         :rtype: dict
         """
         client_object = api.get_object(obj)
-        item['replace']['title'] = "<a href='%s/%s'>%s</a>" % \
-                                   (item['url'], self.landing_page,
-                                    item['title'])
+        link_url = "{}/{}".format(item['url'], self.landing_page)
+        item['replace']['title'] = get_link(link_url, item['title'])
         email = client_object.getEmailAddress()
-        item['replace']['EmailAddress'] = "<a href='%s'>%s</a>" % \
-                                          ('mailto:%s' % email, email)
+        item['replace']['EmailAddress'] = get_email_link(email)
         return item
 
 

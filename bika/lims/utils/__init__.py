@@ -706,3 +706,31 @@ def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
         value = field.get(src)
         if value:
             dst_schema[fieldname].set(dst, value)
+
+
+def get_link(href, value=None, **kwargs):
+    """
+    Returns a well-formed link
+    :param href: value to be set for attribute href
+    :param value: the text to be displayed. If None, the href itself is used
+    :param kwargs: additional attributes and values
+    :return: a well-formed html anchor
+    """
+    anchor_value = value and value or href
+    attr = list()
+    if kwargs:
+        attr = ['{}="{}"'.format(key, value) for key, value in kwargs.items()]
+    attr = " ".join(attr)
+    return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
+
+
+def get_email_link(email, value=None):
+    """
+    Returns a well-formed link to an email address
+    :param email: email address
+    :param link_text: text to be displayed. If None, the email itself is used
+    :return: a well-formatted html anchor
+    """
+    mailto = 'mailto:{}'.format(email)
+    link_value = value and value or email
+    return get_link(mailto, link_value)
