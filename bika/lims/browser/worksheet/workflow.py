@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import json
+from operator import attrgetter
 
 from AccessControl import getSecurityManager
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -108,7 +109,29 @@ class WorksheetWorkflowAction(WorkflowAction):
                 catalog = get_tool(CATALOG_ANALYSIS_LISTING)
                 brains = catalog({'UID': analysis_uids,
                                   'sort_on': 'getRequestID'})
+
+                # Now, we need the analyses within a request ID to be sorted by
+                # sortkey (sortable_title index), so it will appear in the same
+                # order as they appear in Analyses list from AR view
+                curr_arid = None
+                curr_brains = []
+                sorted_brains = []
                 for brain in brains:
+                    arid = brain.getRequestID
+                    if curr_arid != arid:
+                        # Sort the brains we've collected until now, that belong to
+                        # the same Analysis Request
+                        curr_brains.sort(key=attrgetter('getPrioritySortkey'))
+                        sorted_brains.extend(curr_brains)
+                        curr_arid = arid
+                        curr_brains = []
+
+                    # Now we are inside the same AR
+                    curr_brains.append(brain)
+                    continue
+
+                # Add analyses in the worksheet
+                for brain in sorted_brains:
                     analysis = brain.getObject()
                     self.context.addAnalysis(analysis)
 
