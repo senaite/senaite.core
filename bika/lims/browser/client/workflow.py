@@ -205,8 +205,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     its.append(uid)
             its = ",".join(its)
             q = "/publish?items=" + its
-            self.destination_url = self.request.get_header(
-                "referer", self.context.absolute_url()) + q
+            self.destination_url = self.context.absolute_url() + q
             self.request.response.redirect(self.destination_url)
 
         else:
