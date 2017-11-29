@@ -7,6 +7,7 @@ Changelog
 **Added**
 
 - #377 XML importer in Instrument Interface of Nuclisense EasyQ
+- #431 ARAnalysesField setter doesn't accept Analysis objects.
 
 **Removed**
 
