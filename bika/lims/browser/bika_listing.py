@@ -498,8 +498,6 @@ class BikaListingView(BrowserView):
 
     def __init__(self, context, request, **kwargs):
         self.field_icons = {}
-        # Getting which module is implementing this class
-        self.implemented = self.__implemented__
         super(BikaListingView, self).__init__(context, request)
         path = hasattr(context, 'getPath') and context.getPath() \
                or "/".join(context.getPhysicalPath())
