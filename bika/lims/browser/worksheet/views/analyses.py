@@ -9,7 +9,6 @@ from operator import itemgetter
 
 from bika.lims import bikaMessageFactory as _, logger, api
 from bika.lims.browser.analyses import AnalysesView as BaseView
-from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.utils import to_int
 
 
@@ -72,6 +71,7 @@ class AnalysesView(BaseView):
                         'Attachments']
              },
         ]
+        self.bika_setup = api.get_bika_setup()
         self.uids_strpositions = self.get_uids_strpositions()
         self.items_rowspans = dict()
 
@@ -132,7 +132,7 @@ class AnalysesView(BaseView):
         rowspans = self.items_rowspans.get(slot, 0) + 1
         remarks = item.get('Remarks', None)
         remarks_edit = 'Remarks' in item.get('allow_edit', [])
-        remarks_enabled = self.context.bika_setup.getEnableAnalysisRemarks()
+        remarks_enabled = self.bika_setup.getEnableAnalysisRemarks()
         if remarks_enabled and (remarks or remarks_edit):
             # Increase in one unit the rowspan, cause the comment field for
             # this analysis will be rendered in a new row, below the row that
