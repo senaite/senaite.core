@@ -10,6 +10,7 @@ from operator import itemgetter
 from bika.lims import bikaMessageFactory as _, logger, api
 from bika.lims.browser.analyses import AnalysesView as BaseView
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.utils import to_int
 
 
 class AnalysesView(BaseView):
@@ -71,7 +72,7 @@ class AnalysesView(BaseView):
                         'Attachments']
              },
         ]
-        self.uids_positions = None
+        self.uids_strpositions = self.get_uids_strpositions()
         self.items_rowspans = dict()
 
     def isItemAllowed(self, obj):
@@ -83,8 +84,7 @@ class AnalysesView(BaseView):
         :return: True if the obj has an slot assigned. Otherwise, False.
         :rtype: bool
         """
-        item_obj = api.get_object(obj)
-        uid = item_obj.UID()
+        uid = api.get_uid(obj)
         if not self.get_item_slot(uid):
             logger.warning("Slot not assigned to item %s" % uid)
             return False
@@ -115,7 +115,7 @@ class AnalysesView(BaseView):
         # The position string contains both the slot + the position of the
         # analysis within the slot: "position_sortkey" will be used to sort all
         # the analyses to be displayed in the list
-        str_position = self.get_uids_strpositions()[uid]
+        str_position = self.uids_strpositions[uid]
         item['pos_sortkey'] = str_position
 
         item['colspan'] = {'Pos':1}
@@ -181,21 +181,20 @@ class AnalysesView(BaseView):
         :return: a dictionary with the full position within the worksheet of
             all analyses defined in the current layout.
         """
-        if not self.uids_positions:
-            self.uids_positions = dict()
-            layout = self.context.getLayout()
-            layout = layout and layout or []
-            # Map the analysis uids with their positions and exclude empties
-            next_positions = {}
-            for item in layout:
-                uid = item.get('analysis_uid', '')
-                slot = int(item['position'])
-                position = next_positions.get(slot, 1)
-                str_position = "{:010}:{:010}".format(slot, position)
-                next_positions[slot] = position + 1
-                self.uids_positions[uid] = str_position
+        uids_positions = dict()
+        layout = self.context.getLayout()
+        layout = layout and layout or []
+        # Map the analysis uids with their positions and exclude empties
+        next_positions = {}
+        for item in layout:
+            uid = item.get('analysis_uid', '')
+            slot = int(item['position'])
+            position = next_positions.get(slot, 1)
+            str_position = "{:010}:{:010}".format(slot, position)
+            next_positions[slot] = position + 1
+            uids_positions[uid] = str_position
 
-        return self.uids_positions
+        return uids_positions
 
     def get_item_position(self, analysis_uid):
         """
@@ -207,12 +206,11 @@ class AnalysesView(BaseView):
         :return: the position (slot + position within slot) of the analysis
         :rtype: list
         """
-        str_position = self.get_uids_strpositions()
-        str_position = str_position.get(analysis_uid, '')
+        str_position = self.uids_strpositions.get(analysis_uid, '')
         tokens = str_position.split(':')
         if len(tokens) != 2:
             return None
-        return [int(tokens[0]), int(tokens[1])]
+        return [to_int(tokens[0]), to_int(tokens[1])]
 
     def get_item_slot(self, analysis_uid):
         """
@@ -235,14 +233,13 @@ class AnalysesView(BaseView):
         :return: sorted list with slot numbers
         """
         slots = list()
-        positions = self.get_uids_strpositions()
-        for uid, position in positions.items():
+        for uid, position in self.uids_strpositions.items():
             if empty_uid and uid:
                 continue
             elif not empty_uid and not uid:
                 continue
             tokens = position.split(':')
-            slots.append(int(tokens[0]))
+            slots.append(to_int(tokens[0]))
         return list(set(slots))
 
     def get_occupied_slots(self):
@@ -338,7 +335,7 @@ class AnalysesView(BaseView):
         # fill the rowspan with a little table
         # parent is either an AR, a Worksheet, or a
         # ReferenceSample (analysis parent).
-        parent = obj.aq_parent
+        parent = api.get_parent(obj)
         if parent.aq_parent.portal_type == "WorksheetFolder":
             # we're a duplicate; get original object's client
             client = obj.getAnalysis().aq_parent.aq_parent
