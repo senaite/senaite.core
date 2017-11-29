@@ -18,6 +18,8 @@ Changelog
 **Fixed**
 
 - #432 Wrong indention of services in Worksheet
+- #428 AR Publication from Client Listing does not work
+- #425 AR Listing View: Analysis profiles rendering error
 - #429 Fix worksheet switch to transposed layout raises an Error
 - #420 Searches by term with custom indexes do not work in clients folder view
 - #410 Unable to select or deselect columns to be displayed in lists
