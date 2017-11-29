@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #429 Fix worksheet switch to transposed layout raises an Error
 - #420 Searches by term with custom indexes do not work in clients folder view
 - #410 Unable to select or deselect columns to be displayed in lists
 - #409 In Add Analyses view, analyses id are displayed instead of Analysis Request IDs
