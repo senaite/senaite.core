@@ -130,6 +130,10 @@ class WorksheetWorkflowAction(WorkflowAction):
                     curr_brains.append(brain)
                     continue
 
+                # Sort the last set of brains we've collected
+                curr_brains.sort(key=attrgetter('getPrioritySortkey'))
+                sorted_brains.extend(curr_brains)
+
                 # Add analyses in the worksheet
                 for brain in sorted_brains:
                     analysis = brain.getObject()
