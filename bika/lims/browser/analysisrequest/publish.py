@@ -86,7 +86,7 @@ class AnalysisRequestPublishView(BrowserView):
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':
             self._ars = [self.context]
-        elif self.context.portal_type == 'AnalysisRequestsFolder' \
+        elif self.context.portal_type in ('AnalysisRequestsFolder', 'Client') \
                 and self.request.get('items', ''):
             uids = self.request.get('items').split(',')
             uc = getToolByName(self.context, 'uid_catalog')

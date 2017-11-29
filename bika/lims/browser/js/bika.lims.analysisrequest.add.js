@@ -1328,14 +1328,17 @@
          */
         var ars, destination, errorbox, field, fieldname, message, msg, parent, q, stickertemplate;
         if (data['errors']) {
-          msg = '';
-          for (fieldname in data.errors) {
+          msg = data.errors.message;
+          if (msg !== "") {
+            msg = msg + "<br/>";
+          }
+          for (fieldname in data.errors.fielderrors) {
             field = $("#" + fieldname);
             parent = field.parent("div.field");
             if (field && parent) {
               parent.toggleClass("error");
               errorbox = parent.children("div.fieldErrorBox");
-              message = data.errors[fieldname];
+              message = data.errors.fielderrors[fieldname];
               errorbox.text(message);
               msg += message + "<br/>";
             }

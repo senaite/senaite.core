@@ -80,3 +80,17 @@ def GenericImport(context, request, parser, importer=None):
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
+
+
+def format_keyword(keyword):
+    """
+    Removing special character from a keyword. Analysis Services must have
+    this kind of keywords. E.g. if assay name from the Instrument is
+    'HIV-1 2.0', an AS must be created on Bika with the keyword 'HIV120'
+    """
+    import re
+    result = ''
+    if keyword:
+        result = re.sub(r"\W", "", keyword)
+        result = re.sub("_", "", result)
+    return result

@@ -1,6 +1,56 @@
 Changelog
 =========
 
+1.1.7 (unreleased)
+------------------
+
+**Added**
+
+- #377 XML importer in Instrument Interface of Nuclisense EasyQ
+
+**Removed**
+
+- #417 Remove calls to deprecated function getService (from AbstractAnalysis)
+
+**Changed**
+
+
+**Fixed**
+
+- #428 AR Publication from Client Listing does not work
+- #425 AR Listing View: Analysis profiles rendering error
+- #429 Fix worksheet switch to transposed layout raises an Error
+- #420 Searches by term with custom indexes do not work in clients folder view
+- #410 Unable to select or deselect columns to be displayed in lists
+- #409 In Add Analyses view, analyses id are displayed instead of Analysis Request IDs
+- #378 Fix GeneXpert interface does not import results for multiple analyses
+- #416 Fix inconsistencies with sorting criterias in lists
+- #418 LabClerks don't have access to AR view after received and before verified
+- #415 Referencefield JS UID check: Don't remove Profile UIDs
+- #411 Analyses don't get selected when copying an Analysis Request without profiles
+
+**Security**
+
+
+
+1.1.6 (2017-11-24)
+------------------
+
+**Changed**
+
+- #390 Remove log verbosity of UIDReference.get when value is None or empty
+
+**Fixed**
+
+- #403 Calculations not triggered in manage results view
+- #402 Sort Analysis Services correctly based on their Sortkey + Title (Again)
+- #398 PR-2315 ID Server does not find the next correct sequence after flushing the number generator
+- #399 PR-2318 AR Add fails silently if e.g. the ID of the AR was already taken
+- #400 PR-2319 AR Add fails if an Analysis Category was disabled
+- #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
+- #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
+
+
 1.1.5 (2017-11-20)
 ------------------
 
@@ -40,6 +90,7 @@ Changelog
 
 **Fixed**
 
+- #419 'getLastVerificator' function of Abstract Analyses fails when there is no Verificator.
 - #388 Unable to get the portal object when digesting/creating results report
 - #387 ClientWorkflowAction object has no attribute 'portal_url' when publishing multiple ARs
 - #386 PR-2313 UniqueFieldValidator: Encode value to utf-8 before passing it to the catalog

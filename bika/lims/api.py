@@ -15,6 +15,7 @@ from Products.Archetypes.BaseObject import BaseObject
 from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
 
 from zope import globalrequest
 from zope.event import notify
@@ -172,13 +173,29 @@ def create(container, portal_type, *args, **kwargs):
     return obj
 
 
-def get_tool(name, default=_marker):
+def get_tool(name, context=None, default=_marker):
     """Get a portal tool by name
 
     :param name: The name of the tool, e.g. `portal_catalog`
     :type name: string
+    :param context: A portal object
+    :type context: ATContentType/DexterityContentType/CatalogBrain
     :returns: Portal Tool
     """
+
+    # Try first with the context
+    if context is not None:
+        try:
+            context = get_object(context)
+            return getToolByName(context, name)
+        except (BikaLIMSError, AttributeError) as e:
+            # https://github.com/senaite/bika.lims/issues/396
+            logger.warn("get_tool::getToolByName({}, '{}') failed: {} "
+                        "-> falling back to plone.api.portal.get_tool('{}')"
+                        .format(repr(context), name, repr(e), name))
+            return get_tool(name, default=default)
+
+    # Try with the plone api
     try:
         return ploneapi.portal.get_tool(name)
     except InvalidParameterError:

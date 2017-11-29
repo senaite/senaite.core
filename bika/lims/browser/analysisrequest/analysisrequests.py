@@ -87,7 +87,7 @@ class AnalysisRequestsView(BikaListingView):
             'getId': {
                 'title': _('Request ID'),
                 'attr': 'getId',
-                'replace_url': 'absolute_url',
+                'replace_url': 'getURL',
                 'index': 'getId'},
             'getClientOrderNumber': {
                 'title': _('Client Order'),
@@ -865,12 +865,7 @@ class AnalysisRequestsView(BikaListingView):
         priority_text = PRIORITIES.getValue(priority)
         priority_div = '<div class="priority-ico priority-%s"><span class="notext">%s</span><div>'
         item['replace']['Priority'] = priority_div % (priority, priority_text)
-        item['getId'] = obj.getId
-        url = obj.getURL() + "?check_edit=1"
-        item['replace']['getId'] = "<a href='%s'>%s</a>" % \
-            (url, item['getId'])
-        item['replace']['getProfilesTitle'] =\
-            ", ".join(obj.getProfilesTitleStr)
+        item['replace']['getProfilesTitle'] = obj.getProfilesTitleStr
 
         analysesnum = obj.getAnalysesNum
         if analysesnum:
