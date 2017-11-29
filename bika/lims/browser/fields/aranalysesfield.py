@@ -100,7 +100,9 @@ class ARAnalysesField(ObjectField):
 
         service_uids is a list:
             The UIDs of all services which should exist in the AR.  If a service
-            is not included here, the corrosponding Analysis will be removed.
+            is not included here, the corresponding Analysis will be removed.
+            If that list contains Analysis objects, then service_uids will be
+            taken from them.
 
         prices is a dictionary:
             key = AnalysisService UID
@@ -115,6 +117,10 @@ class ARAnalysesField(ObjectField):
             return
 
         assert type(service_uids) in (list, tuple)
+
+        for i, item in enumerate(service_uids):
+            if hasattr(item, 'getServiceUID'):
+                service_uids[i] = item.getServiceUID()
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
         workflow = getToolByName(instance, 'portal_workflow')
