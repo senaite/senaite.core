@@ -5,18 +5,34 @@
     displayed when ajax requests the table.
 </tal:comment>
 
+<tal:bika-listing-table
+    define="
+    form_id view/bika_listing/form_id;
+
+    rows_only python:(hasattr(view, 'rows_only') and view.rows_only)
+        or (hasattr(view.bika_listing, 'rows_only') and view.bika_listing.rows_only)
+        or view.request.get('rows_only','') == form_id;
+
+    table_only python:rows_only
+        or (hasattr(view, 'table_only') and view.table_only)
+        or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
+        or view.request.get('table_only','') == form_id;">
+
 <!-- Hooks for bika listing -->
-<!-- Over list, right -->
-<div id="listing-hook-top-right">
-    <span tal:replace="structure view/get_top_right_hooks"></span>
-</div>
-<!-- Over list, left -->
-<div id="listing-hook-top-left">
-    <span tal:replace="structure view/get_top_left_hooks"></span>
-</div>
-<!-- Over list with the same wide as the list -->
-<div id="listing-hook-top-wide">
-    <span tal:replace="structure view/get_top_wide_hooks"></span>
+<div id="bika-listing-table-top-hooks"
+    tal:condition="python: not table_only">
+    <!-- Over list, right -->
+    <div id="listing-hook-top-right">
+        <span tal:replace="structure view/get_top_right_hooks"></span>
+    </div>
+    <!-- Over list, left -->
+    <div id="listing-hook-top-left">
+        <span tal:replace="structure view/get_top_left_hooks"></span>
+    </div>
+    <!-- Over list with the same wide as the list -->
+    <div id="listing-hook-top-wide">
+        <span tal:replace="structure view/get_top_wide_hooks"></span>
+    </div>
 </div>
 
 <form name="bika_listing_form" method="post"
@@ -26,14 +42,6 @@
         action python:view.bika_listing.getPOSTAction() if hasattr(view.bika_listing, 'getPOSTAction') else 'workflow_action';"
     tal:omit-tag="table_only"
     tal:define="
-        form_id view/bika_listing/form_id;
-        rows_only python:(hasattr(view, 'rows_only') and view.rows_only)
-                        or (hasattr(view.bika_listing, 'rows_only') and view.bika_listing.rows_only)
-                        or view.request.get('rows_only','') == form_id;
-        table_only python:rows_only
-                        or (hasattr(view, 'table_only') and view.table_only)
-                        or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
-                        or view.request.get('table_only','') == form_id;
         nosortclass view/get_nosort_class;
         portal context/@@plone_portal_state/portal;
         review_state_id python:request.get(form_id+'_review_state', 'default');
@@ -312,3 +320,4 @@ Colum Headers
 </table>
 </div>
 </form>
+</tal:bika-listing-table>
