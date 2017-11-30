@@ -8,8 +8,9 @@ from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IARAnalysesField
+from bika.lims.interfaces import IARAnalysesField, IAnalysisService, IAnalysis
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
 from plone.api.portal import get_tool
@@ -119,8 +120,12 @@ class ARAnalysesField(ObjectField):
         assert type(service_uids) in (list, tuple)
 
         for i, item in enumerate(service_uids):
-            if hasattr(item, 'getServiceUID'):
-                service_uids[i] = item.getServiceUID()
+            if api.is_object(item):
+                obj = api.get_object(item)
+                if IAnalysisService.providedBy(obj):
+                    service_uids[i] = api.get_uid(obj)
+                elif IAnalysis.providedBy(obj):
+                    service_uids[i] = obj.getServiceUID()
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
         workflow = getToolByName(instance, 'portal_workflow')
