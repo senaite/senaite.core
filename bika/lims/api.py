@@ -1113,3 +1113,25 @@ def normalize_filename(string):
     # get the file nomalizer utility
     normalizer = getUtility(IFileNameNormalizer).normalize
     return normalizer(string)
+
+def is_uid(uid, validate=False):
+    """Checks if the passed in uid is a valid UID
+
+    :param uid: The uid to check
+    :param validate: If False, checks if uid is a valid 23 alphanumeric uid. If
+    True, also verifies if a brain exists for the uid passed in
+    :type uid: string
+    :return: True if a valid uid
+    :rtype: bool
+    """
+    if not isinstance(uid, basestring):
+        return False
+    if len(uid) != 32:
+        return False
+    if not validate:
+        return True
+
+    # Check if a brain for this uid exists
+    uc =get_tool('uid_catalog')
+    brains = uc(UID=uid)
+    return len(brains) > 0
