@@ -567,6 +567,12 @@ class InstrumentCertificationsView(BikaListingView):
         BikaListingView.__init__(self, context, request, **kwargs)
         self.form_id = "instrumentcertifications"
 
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
+        self.title = self.context.translate(_("Calibration Certificates"))
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=InstrumentCertification',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
+
         self.columns = {
             'Title': {'title': _('Cert. Num'), 'index': 'sortable_title'},
             'getAgency': {'title': _('Agency'), 'sortable': False},
