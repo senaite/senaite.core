@@ -250,7 +250,7 @@ class AnalysesView(BaseView):
                 continue
             tokens = position.split(':')
             slots.append(to_int(tokens[0]))
-        return list(set(slots))
+        return sorted(list(set(slots)))
 
     def get_occupied_slots(self):
         """
