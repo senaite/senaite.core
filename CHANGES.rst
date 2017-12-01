@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.7 (unreleased)
+1.1.7 (2017-12-01)
 ------------------
 
 **Added**
@@ -11,9 +11,6 @@ Changelog
 **Removed**
 
 - #417 Remove calls to deprecated function getService (from AbstractAnalysis)
-
-**Changed**
-
 
 **Fixed**
 
@@ -33,9 +30,6 @@ Changelog
 - #418 LabClerks don't have access to AR view after received and before verified
 - #415 Referencefield JS UID check: Don't remove Profile UIDs
 - #411 Analyses don't get selected when copying an Analysis Request without profiles
-
-**Security**
-
 
 
 1.1.6 (2017-11-24)
