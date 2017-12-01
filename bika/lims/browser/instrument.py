@@ -668,8 +668,18 @@ class InstrumentAutoImportLogsView(AutoImportLogsView):
                               'getInstrumentUID': self.context.UID(),
                               'sort_on': 'Created',
                               'sort_order': 'reverse'}
+
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
         self.title = self.context.translate(
             _("Auto Import Logs of %s" % self.context.Title()))
+        self.context_actions = {}
+
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.show_select_all_checkbox = False
+        self.pagesize = 25
 
 
 class InstrumentMultifileView(MultifileView):
@@ -680,6 +690,13 @@ class InstrumentMultifileView(MultifileView):
         self.show_workflow_action_buttons = False
         self.title = self.context.translate(_("Instrument Files"))
         self.description = "Different interesting documents and files to be attached to the instrument"
+
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.show_select_all_checkbox = False
+        self.pagesize = 25
 
 
 class ajaxGetInstrumentMethods(BrowserView):
