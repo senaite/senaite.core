@@ -24,7 +24,6 @@ from bika.lims import api as api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
-from persistent.mapping import PersistentMapping
 from plone.memoize import ram
 from plone.registry.interfaces import IRegistry
 from weasyprint import CSS, HTML
@@ -762,3 +761,16 @@ def check_permission(permission, obj):
     mtool = api.get_tool('portal_membership')
     object = api.get_object(obj)
     return mtool.checkPermission(permission, object)
+
+def to_int(value, default=0):
+    """
+    Tries to convert the value passed in as an int. If no success, returns the
+    default value passed in
+    :param value: the string to convert to integer
+    :param default: the default fallback
+    :return: int representation of the value passed in
+    """
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return to_int(default, default=0)
