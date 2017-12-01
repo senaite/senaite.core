@@ -72,4 +72,11 @@
        destination="1.1.7"
        handler="bika.lims.upgrade.v01_01_007.upgrade"
        profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.8"
+       source="1.1.7"
+       destination="1.1.8"
+       handler="bika.lims.upgrade.v01_01_008.upgrade"
+       profile="bika.lims:default"/>
 </configure>
