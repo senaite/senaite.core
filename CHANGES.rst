@@ -17,7 +17,7 @@ Changelog
 
 **Fixed**
 
-- #437 Cannot verify calculated analyses when retracted dependencies
+- #439 Cannot verify calculated analyses when retracted dependencies
 - #436 Auto Import View has an Add Button displayed, but shouldn't
 - #436 Clicking on the Add Button of Instrument Certifications opens an arbitrary Add form
 - #433 Analyses not sorted by sortkey in Analysis Request' manage analyses view
