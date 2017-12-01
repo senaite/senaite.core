@@ -43,9 +43,6 @@ class Analysis(AbstractRoutineAnalysis):
         :return: list of siblings for this analysis
         :rtype: list of IAnalysis
         """
-        """Returns the list of analyses of the Analysis Request to which this
-        analysis belongs to, but with the current analysis excluded
-        """
         request = self.getRequest()
         if not request:
             return []
@@ -55,10 +52,15 @@ class Analysis(AbstractRoutineAnalysis):
         ans = request.getAnalyses(full_objects=True)
         for sibling in ans:
             if sibling.UID() == self.UID():
+                # Exclude me from the list
                 continue
+
             if retracted is False and in_state(sibling, retracted_states):
+                # Exclude retracted analyses
                 continue
+
             siblings.append(sibling)
+
         return siblings
 
 

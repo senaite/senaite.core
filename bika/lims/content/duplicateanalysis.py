@@ -82,10 +82,6 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         :return: list of siblings for this analysis
         :rtype: list of IAnalysis
         """
-        """Returns the list of duplicate analyses that share the same Request
-        and are included in the same Worksheet as the current. The current
-        duplicate is excluded from the list
-        """
         worksheet = self.getWorksheet()
         requestuid = self.getRequestUID()
         if not requestuid or not worksheet:
@@ -98,16 +94,23 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             if analysis.UID() == self.UID():
                 # Exclude me from the list
                 continue
-            if IRequestAnalysis.providedBy(analysis):
-                # We exclude here all analyses that do not have an analysis
-                # request associated (e.g. IReferenceAnalysis)
-                if analysis.getRequestUID() != requestuid:
-                    continue
 
-                if retracted is False and in_state(analysis, retracted_states):
-                    continue
+            if IRequestAnalysis.providedBy(analysis) is False:
+                # Exclude analyses that do not have an analysis request
+                # associated
+                continue
 
-                siblings.append(analysis)
+            if analysis.getRequestUID() != requestuid:
+                # Exclude those analyses that does not belong to the same
+                # analysis request I belong to
+                continue
+
+            if retracted is False and in_state(analysis, retracted_states):
+                # Exclude retracted analyses
+                continue
+
+            siblings.append(analysis)
+
         return siblings
 
     @security.public
