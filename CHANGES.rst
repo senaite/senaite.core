@@ -17,6 +17,8 @@ Changelog
 
 **Fixed**
 
+- #436 Auto Import View has an Add Button displayed, but shouldn't
+- #436 Clicking on the Add Button of Instrument Certifications opens an arbitrary Add form
 - #433 Analyses not sorted by sortkey in Analysis Request' manage analyses view
 - #428 AR Publication from Client Listing does not work
 - #425 AR Listing View: Analysis profiles rendering error
