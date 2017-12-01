@@ -376,6 +376,13 @@ def getCurrentState(obj, stateflowid='review_state'):
     wf = getToolByName(obj, 'portal_workflow')
     return wf.getInfoFor(obj, stateflowid, '')
 
+def in_state(obj, states, stateflowid='review_state'):
+    """ Returns if the object passed matches with the states passed in
+    """
+    if not states:
+        return False
+    obj_state = getCurrentState(obj, stateflowid=stateflowid)
+    return obj_state in states
 
 def getTransitionActor(obj, action_id):
     """Returns the actor that performed a given transition. If transition has

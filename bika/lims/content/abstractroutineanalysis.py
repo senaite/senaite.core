@@ -22,10 +22,11 @@ from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, getCurrentState
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import skip
 from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from zope.interface import implements
 
 # The physical sample partition linked to the Analysis.
@@ -416,17 +417,28 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return rr
 
     @security.public
-    def getSiblings(self):
-        """Return the siblings analyses, using the parent to which the current
-        analysis belongs to as the source"""
+    def getSiblings(self, retracted=False):
+        """
+        Return the siblings analyses, using the parent to which the current
+        analysis belongs to as the source
+        :param retracted: If false, retracted/rejected siblings are dismissed
+        :type retracted: bool
+        :return: list of siblings for this analysis
+        :rtype: list of IAnalysis
+        """
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
-    def getDependents(self):
-        """Return of siblings who depend on us to calculate their result
+    def getDependents(self, retracted=False):
+        """
+        Returns a list of siblings who depend on us to calculate their result.
+        :param retracted: If false, retracted/rejected dependents are dismissed
+        :type retracted: bool
+        :return: Analyses the current analysis depends on
+        :rtype: list of IAnalysis
         """
         dependents = []
-        for sibling in self.getSiblings():
+        for sibling in self.getSiblings(retracted=retracted):
             calculation = sibling.getCalculation()
             if not calculation:
                 continue
@@ -437,16 +449,24 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return dependents
 
     @security.public
-    def getDependencies(self):
-        """Return a list of siblings who we depend on to calculate our result.
+    def getDependencies(self, retracted=False):
+        """
+        Return a list of siblings who we depend on to calculate our result.
+        :param retracted: If false retracted/rejected dependencies are dismissed
+        :type retracted: bool
+        :return: Analyses the current analysis depends on
+        :rtype: list of IAnalysis
         """
         calc = self.getCalculation()
         if not calc:
             return []
 
         dependencies = []
-        for sibling in self.getSiblings():
-            deps = [dep.UID() for dep in sibling.getDependents()]
+        for sibling in self.getSiblings(retracted=retracted):
+            # We get all analyses that depend on me, also if retracted (maybe
+            # I am one of those that are retracted!)
+            deps = sibling.getDependents(retracted=True)
+            deps = [dep.UID() for dep in deps]
             if self.UID() in deps:
                 dependencies.append(sibling)
         return dependencies

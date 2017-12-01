@@ -11,6 +11,8 @@ from bika.lims import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IRoutineAnalysis, ISamplePrepWorkflow
+from bika.lims.workflow import getCurrentState, in_state
+from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from zope.interface import implements
 
 schema = schema.copy() + Schema((
@@ -32,15 +34,31 @@ class Analysis(AbstractRoutineAnalysis):
             return sample
 
     @security.public
-    def getSiblings(self):
+    def getSiblings(self, retracted=False):
+        """
+        Returns the list of analyses of the Analysis Request to which this
+        analysis belongs to, but with the current analysis excluded.
+        :param retracted: If false, retracted/rejected siblings are dismissed
+        :type retracted: bool
+        :return: list of siblings for this analysis
+        :rtype: list of IAnalysis
+        """
         """Returns the list of analyses of the Analysis Request to which this
         analysis belongs to, but with the current analysis excluded
         """
-        siblings = []
         request = self.getRequest()
-        if request:
-            ans = request.getAnalyses(full_objects=True)
-            siblings = [an for an in ans if an.UID() != self.UID()]
+        if not request:
+            return []
+
+        siblings = []
+        retracted_states = [STATE_RETRACTED, STATE_REJECTED]
+        ans = request.getAnalyses(full_objects=True)
+        for sibling in ans:
+            if sibling.UID() == self.UID():
+                continue
+            if retracted == False and in_state(sibling, retracted_states):
+                continue
+            siblings.append(sibling)
         return siblings
 
 

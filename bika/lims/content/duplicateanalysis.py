@@ -14,6 +14,8 @@ from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.subscribers import skip
+from bika.lims.workflow import in_state
+from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from bika.lims.workflow.duplicateanalysis import events
 from zope.interface import implements
 
@@ -70,7 +72,16 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         return self.aq_parent
 
     @security.public
-    def getSiblings(self):
+    def getSiblings(self, retracted=False):
+        """
+        Return the list of duplicate analyses that share the same Request and
+        are included in the same Worksheet as the current analysis. The current
+        duplicate is excluded from the list.
+        :param retracted: If false, retracted/rejected siblings are dismissed
+        :type retracted: bool
+        :return: list of siblings for this analysis
+        :rtype: list of IAnalysis
+        """
         """Returns the list of duplicate analyses that share the same Request
         and are included in the same Worksheet as the current. The current
         duplicate is excluded from the list
@@ -81,6 +92,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             return []
 
         siblings = []
+        retracted_states = [STATE_RETRACTED, STATE_REJECTED]
         analyses = worksheet.getAnalyses()
         for analysis in analyses:
             if analysis.UID() == self.UID():
@@ -89,8 +101,13 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             if IRequestAnalysis.providedBy(analysis):
                 # We exclude here all analyses that do not have an analysis
                 # request associated (e.g. IReferenceAnalysis)
-                if analysis.getRequestUID() == requestuid:
-                    siblings.append(analysis)
+                if analysis.getRequestUID() != requestuid:
+                    continue
+
+                if retracted == False and in_state(analysis, retracted_states):
+                    continue
+
+                siblings.append(analysis)
         return siblings
 
     @security.public
