@@ -56,7 +56,7 @@ class Analysis(AbstractRoutineAnalysis):
         for sibling in ans:
             if sibling.UID() == self.UID():
                 continue
-            if retracted == False and in_state(sibling, retracted_states):
+            if retracted is False and in_state(sibling, retracted_states):
                 continue
             siblings.append(sibling)
         return siblings

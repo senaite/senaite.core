@@ -104,7 +104,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
                 if analysis.getRequestUID() != requestuid:
                     continue
 
-                if retracted == False and in_state(analysis, retracted_states):
+                if retracted is False and in_state(analysis, retracted_states):
                     continue
 
                 siblings.append(analysis)
