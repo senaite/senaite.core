@@ -49,20 +49,6 @@ class AnalysisRequestViewView(BrowserView):
         if 'transition' in self.request.form:
             doActionFor(self.context, self.request.form['transition'])
 
-        # If the analysis request has been received and hasn't been yet
-        # verified yet, redirect the user to manage_results view, but only if
-        # the user has privileges to Edit(Field)Results, cause otherwise she/he
-        # will receive an InsufficientPrivileges error!
-        mtool = api.get_tool('portal_membership')
-        if (mtool.checkPermission(EditResults, self.context) and
-            mtool.checkPermission(EditFieldResults, self.context) and
-            wasTransitionPerformed(self.context, 'receive') and
-            not wasTransitionPerformed(self.context, 'verify')):
-            # Redirect to manage results view
-            manage_results_url = self.context.absolute_url() + '/manage_results'
-            self.request.response.redirect(manage_results_url)
-            return
-
         # Contacts get expanded for view
         contact = self.context.getContact()
         contacts = []
