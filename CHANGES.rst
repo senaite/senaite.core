@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #438 Disable automatic redirect to "Manage Results" in AR received state
 - #433 Analyses not sorted by sortkey in Analysis Request' manage analyses view
 - #428 AR Publication from Client Listing does not work
 - #425 AR Listing View: Analysis profiles rendering error
