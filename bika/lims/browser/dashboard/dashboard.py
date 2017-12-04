@@ -3,19 +3,21 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import datetime
+import json
+from calendar import monthrange
+
+from DateTime import DateTime
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.browser import BrowserView
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from calendar import monthrange
-from DateTime import DateTime
-import plone
-import json
-import datetime
+from bika.lims.browser import BrowserView
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 
 
 class DashboardView(BrowserView):
@@ -129,6 +131,24 @@ class DashboardView(BrowserView):
                     self.get_analysisrequests_section(),
                     self.get_worksheets_section()]
         return sections
+
+    def is_filter_enable(self):
+        """
+        Returns whether the dashboard filter is enabled.
+        :return: Boolean
+        """
+        return self.portal.bika_setup.getDashboardAllMine()
+
+    def get_filter_options(self):
+        """
+        Returns whether the dashboard filter is enabled.
+        :return: Boolean
+        """
+        dash_opt = DisplayList((
+            ('all', _('All')),
+            ('mine', _('Mine')),
+        ))
+        return dash_opt
 
     def _getStatistics(self, name, description, url, catalog, criterias, total):
         out = {'type':        'simple-panel',

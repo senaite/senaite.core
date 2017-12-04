@@ -394,7 +394,23 @@
 
 <tal:section repeat="section python:view.get_sections()">
 <div class='dashboard-section'>
-    <h2 tal:content="section/title" class='dashboard-section-title'></h2>
+    <div>
+        <h2 tal:content="section/title" class='dashboard-section-title'></h2>
+        <tal:dashboard_filters condition="python: view.is_filter_enable()">
+            <select class="dashboard_filters">
+                <tal:dashboard_filter_opts
+                    define="options python: view.get_filter_options()"
+                    repeat="option options">
+                    <option
+                        tal:attributes="value python:option"
+                        tal:content="python:options.getValue(option)">
+                    </option>
+                </tal:dashboard_filter_opts>
+
+            </select>
+
+        </tal:dashboard_filters>
+    </div>
     <div class='dashboard-panels'>
 
         <!-- Bar-chart panels -->
