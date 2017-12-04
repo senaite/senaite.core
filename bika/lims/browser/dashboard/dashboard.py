@@ -20,8 +20,15 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 
 
+DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
+
+
 class DashboardView(BrowserView):
     template = ViewPageTemplateFile("templates/dashboard.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.dashboard_cookie = None
 
     def __call__(self):
         tofrontpage = True
@@ -37,8 +44,54 @@ class DashboardView(BrowserView):
         if tofrontpage == True:
             self.request.response.redirect(self.portal_url + "/bika-frontpage")
         else:
+            self.dashboard_cookie = self._parse_dashboard_cookie(
+                self.check_dashboard_cookie())
             self._init_date_range()
             return self.template()
+
+    def check_dashboard_cookie(self):
+        """
+        Check if the dashboard cookie should exist through bikasetup
+        configuration.
+
+        If it should exist but doesn't exist yet, the function creates it
+        with all values as default.
+        If it should exist and already exists, it returns the value
+        .
+        Otherwise, the function returns None.
+
+        :return: a string or None
+        """
+        # Check setup configuration
+        if not self.is_filter_enable():
+            self.request.RESPONSE.setCookie(
+                DASHBOARD_FILTER_COOKIE, None, path='/', max_age=0)
+            return None
+        # Getting cookie
+        cookie_raw = self.request.get(DASHBOARD_FILTER_COOKIE, None)
+        # If it doesn't exist, create it with default values
+        if cookie_raw is None:
+            cookie_raw = 'analyses:all,analysisrequest:all,worksheets:all'
+            self.request.response.setCookie(
+                DASHBOARD_FILTER_COOKIE, cookie_raw, path='/')
+            return cookie_raw
+        return cookie_raw
+
+    def _parse_dashboard_cookie(self, cookie_raw):
+        """
+        Returns the values from dashboard cookie as a dictionary.
+
+        :param cookie_raw: A string like:
+            'analyses:all,analysisrequest:all,worksheets:all'
+        :return: a dictionary or None
+        """
+        if cookie_raw is None:
+            return None
+        result = {}
+        for pair in cookie_raw.split(','):
+            pair = pair.split(':')
+            result[pair[0]] = pair[1]
+        return result
 
     def _init_date_range(self):
         """ Sets the date range from which the data must be retrieved.
