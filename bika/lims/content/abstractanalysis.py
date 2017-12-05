@@ -411,8 +411,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         raise NotImplementedError("getDependents is not implemented.")
 
     @security.public
-    def getDependencies(self):
-        """Return a list of analyses who we depend on to calculate our result.
+    def getDependencies(self, retracted=False):
+        """Return a list of siblings who we depend on to calculate our result.
+        :param retracted: If false retracted/rejected analyses are dismissed
+        :type retracted: bool
+        :return: Analyses the current analysis depends on
+        :rtype: list of IAnalysis
         """
         raise NotImplementedError("getDependencies is not implemented.")
 

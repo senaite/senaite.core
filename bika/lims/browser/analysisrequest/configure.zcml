@@ -234,6 +234,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="publish"
+      class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
   <!-- Verifying any Analysis will cause a digestion of the parent AR to
   be triggered at the end of the request -->
   <subscriber

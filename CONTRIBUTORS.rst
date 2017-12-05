@@ -1,34 +1,28 @@
 Contributors
 ============
 
-- Campbell McKellar-Basset, campbell@bikalabs.com
+- Campbell McKellar-Basset, rockfruit@users.noreply.github.com
 - Jordi Puiggené, jpuiggene@naralabs.com
 - Pau Soliva, psoliva@naralabs.com
-- Ramon Bartl, rb@ridingbytes.com
 - Nihad Mammadli, 1992.nihad@gmail.com
 - Anneline Sweetname, anneline@bikalabs.com
-- Mike Metcalfe, mike@webtide.co.za
+- Ramon Bartl, rb@ridingbytes.com
 - Godfrey Leibbrandt, godfrey@bikalabs.com
+- Mike Metcalfe, mike@webtide.co.za
 - Jurie-Jan Botha, juriejanbotha@gmail.com
-- Alexander Karlsson, akzylinx@gmail.com
-- Jayadeep Karnati, karnatijayadeep@gmail.com
-- Juan Gallostra, jgallostra@naralabs.com
 - Inus Scheepers, inus@bikalabs.com
-- Aman Arora, aman2arora2@gmail.com
-- Hocine Bendou, hocinebendou@gmail.com
-- Anton Feun, anton@satides.co.za
 - Oliver Roch, oliver.roch@d9t.de
+- Alexander Karlsson, ak.zylinx@gmail.com
+- Juan Gallostra, jgallostra@naralabs.com
+- Anton Feun, anton@satides.co.za
+- Jayadeep Karnati, karnatijayadeep@gmail.com
 - Lemoene, lemoene@bikalabs.com
 - Dhruv Khattar, dhruv@khattarindia.com
-- Alfonso de la Guarda Reyes, alfonsodg@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
-- Luke Williams, luke@iquidus.co.nz
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
-- Lunga, lunga001@gmail.com
-- Jonas Daniel, jonas@ogaard.no
-- Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Anderson Smith, andersonsmith183@gmail.com
 - Jean Jordaan, jean.jordaan@gmail.com
+- Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
 - jpsinghgoud, jaipal.singh@research.iiit.ac.in
 - goelakash, goelakash93@gmail.com

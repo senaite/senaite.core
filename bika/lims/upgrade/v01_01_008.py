@@ -4,7 +4,7 @@ from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
-version = '1.1.7'  # Remember version number in metadata.xml and setup.py
+version = '1.1.8'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
 @upgradestep(product, version)
@@ -21,7 +21,6 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
-    ut.cleanAndRebuildCatalog(CATALOG_ANALYSIS_REQUEST_LISTING)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 

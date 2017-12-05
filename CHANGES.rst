@@ -28,19 +28,24 @@ Changelog
 
 - #417 Remove calls to deprecated function getService (from AbstractAnalysis)
 
-**Changed**
-
-
 **Fixed**
 
+- #439 Cannot verify calculated analyses when retracted dependencies
+- #432 Wrong indentation of services in Worksheet
+- #436 Auto Import View has an Add Button displayed, but shouldn't
+- #436 Clicking on the Add Button of Instrument Certifications opens an arbitrary Add form
+- #433 Analyses not sorted by sortkey in Analysis Request' manage analyses view
+- #428 AR Publication from Client Listing does not work
+- #425 AR Listing View: Analysis profiles rendering error
+- #429 Fix worksheet switch to transposed layout raises an Error
+- #420 Searches by term with custom indexes do not work in clients folder view
+- #410 Unable to select or deselect columns to be displayed in lists
+- #409 In Add Analyses view, analyses id are displayed instead of Analysis Request IDs
 - #378 Fix GeneXpert interface does not import results for multiple analyses
 - #416 Fix inconsistencies with sorting criterias in lists
 - #418 LabClerks don't have access to AR view after received and before verified
 - #415 Referencefield JS UID check: Don't remove Profile UIDs
 - #411 Analyses don't get selected when copying an Analysis Request without profiles
-
-**Security**
-
 
 
 1.1.6 (2017-11-24)
