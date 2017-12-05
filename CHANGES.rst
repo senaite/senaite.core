@@ -1,13 +1,28 @@
 Changelog
 =========
 
-1.1.7 (unreleased)
+1.1.8 (unreleased)
+------------------
+
+**Added**
+
+- #423 Instrument import interface for Abbott's m2000 Real Time
+
+**Removed**
+
+
+**Changed**
+
+
+**Fixed**
+
+
+1.1.7 (2017-12-01)
 ------------------
 
 **Added**
 
 - #377 XML importer in Instrument Interface of Nuclisense EasyQ
-- #423 Instrument import interface for Abbott's m2000 Real Time
 
 **Removed**
 
