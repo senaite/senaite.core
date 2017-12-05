@@ -194,6 +194,7 @@
     $(document).ready(function(){
         loadPieCharts();
         loadBarCharts();
+        dashboard_cookie_controller();
     });
 
     function loadBarCharts() {
@@ -389,6 +390,23 @@
                 .attr("d", arc);
         });
       }
+      function dashboard_cookie_controller() {
+        var selector;
+        var selector_section_id;
+        var cookie;
+        var cookie_id = 'dashboard_filter_cookie'
+        var filter_selectors = $('select.dashboard_filters');
+        for(counter = 0; counter < filter_selectors.length; counter++){
+          selector = filter_selectors[counter];
+          $(selector).live('change', function(){
+            section_id = $(selector).attribute('section_id');
+            cookie_old = render_cookie_data(readCookie(cookie_id);)
+           }
+        }
+      }
+      function render_cookie_data(data){
+        var plit_data =
+      }
     }(jQuery));
 </script>
 
@@ -397,7 +415,8 @@
     <div>
         <h2 tal:content="section/title" class='dashboard-section-title'></h2>
         <tal:dashboard_filters condition="python: view.is_filter_enable()">
-            <select class="dashboard_filters">
+            <select class="dashboard_filters"
+                tal:attributes="section_id section/id">
                 <tal:dashboard_filter_opts
                     define="options python: view.get_filter_options()"
                     repeat="option options">

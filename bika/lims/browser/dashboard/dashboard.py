@@ -44,9 +44,9 @@ class DashboardView(BrowserView):
         if tofrontpage == True:
             self.request.response.redirect(self.portal_url + "/bika-frontpage")
         else:
+            self._init_date_range()
             self.dashboard_cookie = self._parse_dashboard_cookie(
                 self.check_dashboard_cookie())
-            self._init_date_range()
             return self.template()
 
     def check_dashboard_cookie(self):
@@ -71,11 +71,25 @@ class DashboardView(BrowserView):
         cookie_raw = self.request.get(DASHBOARD_FILTER_COOKIE, None)
         # If it doesn't exist, create it with default values
         if cookie_raw is None:
-            cookie_raw = 'analyses:all,analysisrequest:all,worksheets:all'
+            cookie_raw = self._create_raw_data()
             self.request.response.setCookie(
                 DASHBOARD_FILTER_COOKIE, cookie_raw, path='/')
             return cookie_raw
         return cookie_raw
+
+    def _create_raw_data(self):
+        """
+        Gathers the different sections ids and creates a string as first
+        cookie data.
+
+        :return: A string like:
+            'analyses:all,analysisrequest:all,worksheets:all'
+        """
+        result = []
+        for section in self.get_sections():
+            element = section.get('id') + ':all'
+            result.append(element)
+        return ','.join(result)
 
     def _parse_dashboard_cookie(self, cookie_raw):
         """
