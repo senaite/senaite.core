@@ -159,7 +159,7 @@ Import test
 Load results test file and import the results::
 
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
-    >>> temp_file = codecs.open(dir_path + '/Results.log',
+    >>> temp_file = codecs.open(dir_path + '/Results.log.123',
     ...                         encoding='utf-8-sig')
     >>> test_file = ConvertToUploadFile(temp_file)
     >>> abbott_parser = Abbottm2000rtTSVParser(test_file)
@@ -174,7 +174,7 @@ Load results test file and import the results::
 Check the importer logs to verify that the values were correctly imported::
 
     >>> importer.logs
-    ['Parsing file /home/juan/Dev/NMRL/zinstance/src/bika.lims/bika/lims/tests/files/Results.log',
+    ['Parsing file /home/juan/Dev/NMRL/zinstance/src/bika.lims/bika/lims/tests/files/Results.log.123',
      'End of file reached successfully: 24 objects, 1 analyses, 24 results',
      'Allowed Analysis Request states: sample_received, attachment_due, to_be_verified',
      'Allowed analysis states: sampled, sample_received, attachment_due, to_be_verified',
