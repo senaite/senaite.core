@@ -1,7 +1,6 @@
 Changelog
 =========
 
-
 1.1.8 (unreleased)
 ------------------
 
@@ -29,11 +28,12 @@ Changelog
 
 - #417 Remove calls to deprecated function getService (from AbstractAnalysis)
 
-**Changed**
-
-
 **Fixed**
 
+- #439 Cannot verify calculated analyses when retracted dependencies
+- #432 Wrong indentation of services in Worksheet
+- #436 Auto Import View has an Add Button displayed, but shouldn't
+- #436 Clicking on the Add Button of Instrument Certifications opens an arbitrary Add form
 - #433 Analyses not sorted by sortkey in Analysis Request' manage analyses view
 - #428 AR Publication from Client Listing does not work
 - #425 AR Listing View: Analysis profiles rendering error
@@ -46,9 +46,6 @@ Changelog
 - #418 LabClerks don't have access to AR view after received and before verified
 - #415 Referencefield JS UID check: Don't remove Profile UIDs
 - #411 Analyses don't get selected when copying an Analysis Request without profiles
-
-**Security**
-
 
 
 1.1.6 (2017-11-24)

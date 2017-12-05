@@ -135,7 +135,7 @@ class ReferenceAnalysis(AbstractAnalysis):
             return ins.absolute_url_path()
         return ''
 
-    def getDependencies(self):
+    def getDependencies(self, retracted=False):
         """It doesn't make sense for a ReferenceAnalysis to use
         dependencies, since them are only used in calculations for
         routine analyses
