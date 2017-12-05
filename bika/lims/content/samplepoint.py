@@ -87,14 +87,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ComputedField(
-        'SampleTypeTitle',
-        expression="[o.Title() for o in context.getSampleTypes()]",
-        widget=ComputedWidget(
-            visible=False,
-        )
-    ),
-
     BooleanField(
         'Composite',
         default=False,
@@ -133,6 +125,28 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
 
     def Title(self):
         return safe_unicode(self.getField('title').get(self)).encode('utf-8')
+
+    def getSampleTypeTitles(self):
+        """Returns a list of sample type titles
+        """
+        sample_types = self.getSampleTypes()
+        sample_type_titles = map(lambda obj: obj.Title(), sample_types)
+
+        # N.B. This is used only for search purpose, because the catalog does
+        #      not add an entry to the Keywordindex for an empty list.
+        #
+        # => This "empty" category allows to search for values with a certain
+        #    sample type set OR with no sample type set.
+        #    (see bika.lims.browser.analysisrequest.add2.get_sampletype_info)
+        if not sample_type_titles:
+            return [""]
+        return sample_type_titles
+
+    @deprecated("Please use getSampleTypeTitles instead")
+    def getSampleTypeTitle(self):
+        """Returns a comma separated list of sample type titles
+        """
+        return ",".join(self.getSampleTypeTitles())
 
     def SampleTypesVocabulary(self):
         from bika.lims.content.sampletype import SampleTypes
