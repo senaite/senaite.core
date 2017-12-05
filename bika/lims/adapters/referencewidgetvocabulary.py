@@ -3,14 +3,16 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims.permissions import *
+import json
+
+from zope.interface import implements
+
+from Products.AdvancedQuery import Or, MatchRegexp, Generic
+from Products.CMFCore.utils import getToolByName
+
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
 from bika.lims.interfaces import IReferenceWidgetVocabulary
-from Products.AdvancedQuery import And, Or, MatchRegexp, Generic
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
-import json
 
 
 class DefaultReferenceWidgetVocabulary(object):
