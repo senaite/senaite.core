@@ -1118,12 +1118,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # catalog queries for UI field filtering
         filter_queries = {
             "samplepoint": {
-                "getSampleTypeTitle": obj.Title(),
+                "getSampleTypeTitles": [obj.Title(), ''],
                 "getClientUID": [client_uid, bika_samplepoints_uid],
+                "sort_order": "descending",
             },
             "specification": {
-                "getSampleTypeTitle": obj.Title(),
+                "getSampleTypeTitles": [obj.Title(), ''],
                 "getClientUID": [client_uid, bika_analysisspecs_uid],
+                "sort_order": "descending",
             }
         }
         info["filter_queries"] = filter_queries
