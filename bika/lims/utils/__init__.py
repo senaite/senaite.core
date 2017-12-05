@@ -774,3 +774,10 @@ def to_int(value, default=0):
         return int(value)
     except (TypeError, ValueError):
         return to_int(default, default=0)
+
+
+def is_bika_installed():
+    """Check if Bika LIMS is installed in the Portal
+    """
+    qi = api.portal.get_tool("portal_quickinstaller")
+    return qi.isProductInstalled("bika.lims")
