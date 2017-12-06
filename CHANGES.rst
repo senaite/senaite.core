@@ -6,14 +6,15 @@ Changelog
 
 **Added**
 
-
 **Removed**
-
 
 **Changed**
 
-
 **Fixed**
+
+- #445 Fix AR Add Form: No sample points are found if a sample type was set
+
+**Security**
 
 
 1.1.7 (2017-12-01)
