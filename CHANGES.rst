@@ -12,6 +12,7 @@ Changelog
 
 **Fixed**
 
+- #451 Traceback in Instruments list after adding a calibration certificate
 - #445 Fix AR Add Form: No sample points are found if a sample type was set
 
 **Security**
