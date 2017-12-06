@@ -3,14 +3,17 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims.permissions import *
+import ast
+import json
+
+from zope.interface import implements
+
+from Products.AdvancedQuery import Or, MatchRegexp, Generic
+from Products.CMFCore.utils import getToolByName
+
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
 from bika.lims.interfaces import IReferenceWidgetVocabulary
-from Products.AdvancedQuery import And, Or, MatchRegexp, Generic
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
-import json
 
 
 class DefaultReferenceWidgetVocabulary(object):
@@ -29,8 +32,13 @@ class DefaultReferenceWidgetVocabulary(object):
         # lookup objects from ZODB
         catalog_name = _c(self.request.get('catalog_name', 'portal_catalog'))
         catalog = getToolByName(self.context, catalog_name)
-        base_query = json.loads(_c(self.request['base_query']))
-        search_query = json.loads(_c(self.request.get('search_query', "{}")))
+
+        # N.B. We don't use json.loads to avoid unicode conversion, which will
+        #      fail in the catalog search for some cases
+        # see: https://github.com/senaite/bika.lims/issues/443
+        base_query = ast.literal_eval(self.request['base_query'])
+        search_query = ast.literal_eval(self.request.get('search_query', "{}"))
+
         # first with all queries
         contentFilter = dict((k, v) for k, v in base_query.items())
         contentFilter.update(search_query)
