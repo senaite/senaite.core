@@ -197,7 +197,7 @@ class AnalysesView(BaseView):
             uids_positions[uid] = str_position
 
         # Fill empties
-        last_slot = max(occupied)
+        last_slot = max(occupied) if occupied else 1
         empties = [num for num in range(1, last_slot) if num not in occupied]
         for empty_slot in empties:
             str_position = "{:010}:{:010}".format(empty_slot, 1)

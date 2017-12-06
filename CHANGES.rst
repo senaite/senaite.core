@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
 
 1.1.7 (2017-12-01)
 ------------------
