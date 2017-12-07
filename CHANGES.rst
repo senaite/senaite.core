@@ -6,13 +6,18 @@ Changelog
 
 **Added**
 
+- #423 Instrument import interface for Abbott's m2000 Real Time
+
 **Removed**
 
 **Changed**
 
+- #431 Make ARAnalysesField setter to accept Analysis/Service objects
+
 **Fixed**
 
 - #454 Click on some analyses pops up a new page instead of object log
+- #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
 - #445 Fix AR Add Form: No sample points are found if a sample type was set
 
