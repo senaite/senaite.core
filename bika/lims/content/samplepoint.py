@@ -10,11 +10,10 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import ComputedField
-from Products.Archetypes.public import ComputedWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
@@ -30,7 +29,6 @@ from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
@@ -79,7 +77,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('SampleType',),
         vocabulary='SampleTypesVocabulary',
         relationship='SamplePointSampleType',
-        widget=brw(
+        widget=ReferenceWidget(
             label=_("Sample Types"),
             description=_("The list of sample types that can be collected "
                           "at this sample point.  If no sample types are "
