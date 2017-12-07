@@ -140,14 +140,13 @@ class Attachment(BaseFolder):
         """
         request_id = self.getRequestID()
         if not request_id:
-            return None
+            return ''
 
         analysis = self.getAnalysis()
         if not analysis:
             return request_id
 
         return '%s - %s' % (request_id, analysis.Title())
-
 
     def getRequest(self):
         """Return the AR to which this is linked there is a short time between
@@ -158,7 +157,13 @@ class Attachment(BaseFolder):
         tool = getToolByName(self, REFERENCE_CATALOG)
         uids = [uid for uid in
                 tool.getBackReferences(self, 'AnalysisRequestAttachment')]
-        if len(uids) == 1:
+
+        if len(uids) > 1:
+            logger.warn("Attachment assigned to more than one Analysis Request."
+                        "This should never happen!. The first Analysis Request"
+                        "will be returned.")
+
+        if len(uids) > 0:
             reference = uids[0]
             ar = tool.lookupObject(reference.sourceUID)
             return ar
@@ -195,20 +200,6 @@ class Attachment(BaseFolder):
 
         analysis = api.get_object(analysis[0])
         return analysis
-
-    def getParentState(self):
-        """Return the review state of the object - analysis or AR to which
-        this is linked
-        """
-        analysis = self.getAnalysis()
-        if analysis:
-            return getCurrentState(analysis)
-
-        analysis_request = self.getRequest()
-        if analysis_request:
-            return getCurrentState(analysis_request)
-
-        return ''
 
     security.declarePublic('current_date')
 
