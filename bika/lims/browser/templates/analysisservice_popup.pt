@@ -87,7 +87,7 @@
              tal:condition="filename"
              tal:define="file method/MethodDocument;
                          filename python:getattr(file, 'filename', '');
-                         filesize python:file.getObjSize();
+                         filesize python:file.get_size() or 0;
                          icon file/icon | nothing;">
           <h5>
             <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/attachment.png"/>
