@@ -619,7 +619,7 @@ class Instrument(ATFolder):
         cert = self.getLatestValidCertification()
         today = date.today()
         if cert and cert.getValidTo():
-            validto = cert.getValidTo().asdatetime().date();
+            validto = cert.getValidTo().asdatetime().date()
             if validto > today:
                 return False
         return True
@@ -654,13 +654,38 @@ class Instrument(ATFolder):
         return date
 
     def getWeeksToExpire(self):
-        """ Returns the amount of weeks untils it's certification expire
+        """
+        Returns the amount of weeks and days until the latest valid
+        certification for this instrument gets expired.
         """
         cert = self.getLatestValidCertification()
         if cert == None:
             return ''
-        date = cert.getValidTo().asdatetime().date();
-        return date - date.today()
+
+        date_to = cert.getValidTo()
+        if not date_to:
+            return 0, 0
+
+        expired = False
+        date_from = date.today()
+        date_to = date_to.asdatetime().date()
+        if date_from > date_to:
+            # Out of date, already expired
+            date_from = date_to
+            date_to = date.today()
+            expired = True
+
+        # Get the number of total days between the two dates
+        total_days = (date_to - date_from).days
+        days = total_days % 7
+        weeks = total_days / 7
+        if days > 0:
+            weeks = (total_days - days) / 7
+
+        days = -days if expired else days
+        weeks = -weeks if expired else weeks
+        return weeks, days
+
 
     def getLatestValidCertification(self):
         """ Returns the latest valid certification. If no latest valid
