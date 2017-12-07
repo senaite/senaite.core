@@ -12,6 +12,8 @@ Changelog
 
 **Changed**
 
+- #431 Make ARAnalysesField setter to accept Analysis/Service objects
+
 **Fixed**
 
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
@@ -26,7 +28,6 @@ Changelog
 **Added**
 
 - #377 XML importer in Instrument Interface of Nuclisense EasyQ
-- #431 ARAnalysesField setter doesn't accept Analysis objects.
 
 **Removed**
 
