@@ -1132,6 +1132,8 @@ def is_uid(uid, validate=False):
         return True
 
     # Check if a brain for this uid exists
-    uc =get_tool('uid_catalog')
+    uc = get_tool('uid_catalog')
     brains = uc(UID=uid)
+    if brains:
+        assert (len(brains) == 1)
     return len(brains) > 0

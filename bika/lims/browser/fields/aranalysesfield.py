@@ -116,10 +116,11 @@ class ARAnalysesField(ObjectField):
         if not items:
             return
 
-        assert type(items) in (list, tuple)
+        assert isinstance(items,
+                          (list, tuple)), "items must be a list or a tuple"
 
         # Convert the items list to a list of service uids and remove empties
-        service_uids = [self._get_service_uid(item) for item in items]
+        service_uids = map(self._get_service_uid, items)
         service_uids = filter(None, service_uids)
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
