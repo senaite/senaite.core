@@ -1,305 +1,273 @@
-<html
-    i18n:domain="bika"
-	tal:define="portal_state context/@@plone_portal_state;
-				portal_url portal_state/portal_url;
-				locale portal_state/locale;
-				currency python:context.bika_setup.getCurrency();
-		        ShowPrices python:context.bika_setup.getShowPrices();">
-<head>
+<html i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  locale portal_state/locale;
+                  currency python:context.bika_setup.getCurrency();
+                  ShowPrices python:context.bika_setup.getShowPrices();">
+  <head>
+    <style type="text/css">
+     .service_popup {
+         font-size:70%;
+         color:#222;
+     }
+     .service_popuph5,
+     .service_popupp {
+         margin-bottom:5px; }
+     .service_popup .documentDescription {
+         margin-bottom:5px; }
+     .service_popup #serviceDescription { }
+     .service_popup #methodDescription { }
+     .service_popup #file_list { margin-bottom:1em; }
+     .service_popup #file_list a { margin-left:1.5em; }
+     .service_popup #deps_list { margin-bottom:1em;padding-left:1.5em; }
+     .service_popup #parts_list { margin-bottom:1em;padding-left:1.5em; }
+     .service_popup th {
+         background-color:#eee;
+         border-bottom:1px solid #ccc;
+         padding:2px 5px;
+         font-weight:bold;
+     }
+     .service_popup td {
+         padding:1px 5px;
+         border-bottom:1px solid #eee;
+     }
+     .service_popup #analysis_log { margin-bottom:1em;padding-left:1.5em; }
+    </style>
 
-	<style>
-		.service_popup {
-		    font-size:70%;
-			color:#222;
-		}
-		.service_popuph5,
-		.service_popupp {
-			margin-bottom:5px; }
-		.service_popup .documentDescription {
-			margin-bottom:5px; }
-		.service_popup #serviceDescription { }
-		.service_popup #methodDescription { }
-		.service_popup #file_list { margin-bottom:1em; }
-		.service_popup #file_list a { margin-left:1.5em; }
-		.service_popup #deps_list { margin-bottom:1em;padding-left:1.5em; }
-		.service_popup #parts_list { margin-bottom:1em;padding-left:1.5em; }
-		.service_popup th {
-		    background-color:#eee;
-		    border-bottom:1px solid #ccc;
-			padding:2px 5px;
-			font-weight:bold;
-		}
-		.service_popup td {
-		    padding:1px 5px;
-			border-bottom:1px solid #eee;
-		}
-		.service_popup #analysis_log { margin-bottom:1em;padding-left:1.5em; }
-	</style>
+  </head>
 
-</head>
+  <body tal:define="currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;">
 
-<body
-  tal:define="currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;">
+    <div class="service_popup">
+      <div id="serviceDescription"
+           class="documentDescription"
+           tal:define="description view/service/Description"
+           tal:condition="description"
+           tal:content="description"/>
 
-<div class="service_popup">
+      <h5 tal:condition="python:context.bika_setup.laboratory.LaboratoryAccredited
+                         and view.service.getAccredited()">
+        <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/accredited.png"/>
+        <span i18n:translate="">
+          Service is included in the
+          <span i18n:name="accreditation_body_abbrev">
+            schedule of Accreditation for this Laboratory
+          </span>
+        </span>
+      </h5>
 
-    <div
-		id="serviceDescription"
-		class="documentDescription"
-		tal:define="description view/service/Description"
-		tal:condition="description"
-		tal:content="description"/>
+      <h5 tal:condition="view/service/getReportDryMatter">
+        <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dry.png"/>
+        <span i18n:translate="">
+          Can be reported as dry matter
+        </span>
+      </h5>
 
-	<h5
-		tal:condition="python:context.bika_setup.laboratory.LaboratoryAccredited
-		                      and view.service.getAccredited()">
-		<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/accredited.png"/>
-		<span i18n:translate="">
-			Service is included in the
-			<span i18n:name="accreditation_body_abbrev">
-			schedule of Accreditation for this Laboratory
-		</span>
-		</span>
-	</h5>
+      <tal:method define="method view/service/getMethod"
+                  condition="method">
+        <h5>
+          <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/method.png"/>
+          <span i18n:translate="">
+            Method:
+            <span i18n:name="method_name">
+              <a tal:attributes="href python:method.absolute_url()"
+                 target="_blank"
+                 tal:content="method/Title"/>
+            </span>
+          </span>
+        </h5>
 
-	<h5
-		tal:condition="view/service/getReportDryMatter">
-		<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dry.png"/>
-		<span i18n:translate="">
-			Can be reported as dry matter
-		</span>
-	</h5>
-
-    <tal:method
-		define="method view/service/getMethod"
-		condition="method">
-
-		<h5>
-			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/method.png"/>
-			<span i18n:translate="">
-				Method:
-				<span i18n:name="method_name">
-					<a
-						tal:attributes="href python:method.absolute_url()"
-						target="_blank"
-						tal:content="method/Title"/>
-				</span>
-			</span>
-		</h5>
-
-		<div
-			id="methodDescription"
-			class="documentDescription"
-			tal:define="description method/Description"
-			tal:condition="description"
-			tal:content="description"/>
+        <div id="methodDescription"
+             class="documentDescription"
+             tal:define="description method/Description"
+             tal:condition="description"
+             tal:content="description"/>
 
         <div id="file_list"
-			tal:condition="filename"
-			tal:define="
-				file method/MethodDocument;
-				filename python:getattr(file, 'filename', '');
-                filesize python:file.getObjSize();
-                icon file/icon | nothing;">
-			<h5>
-				<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/attachment.png"/>
-				<span i18n:translate="">
-					Method Document
-				</span>
-			</h5>
-			<a
-				title="Click to download"
-				i18n:attributes="title"
-				tal:condition="filename"
-                tal:attributes="href string:${method/absolute_url}/at_download/MethodDocument">
-				<img tal:condition="icon" src=""
-					tal:attributes="src string:portal_url/$icon"/>
-				<tal:filename replace="filename"/>
-				(<span class="discreet" tal:content="filesize">0Kb</span>)
-			</a>
-		</div>
+             tal:condition="filename"
+             tal:define="file method/MethodDocument;
+                         filename python:getattr(file, 'filename', '');
+                         filesize python:file.getObjSize();
+                         icon file/icon | nothing;">
+          <h5>
+            <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/attachment.png"/>
+            <span i18n:translate="">
+              Method Document
+            </span>
+          </h5>
+          <a title="Click to download"
+             i18n:attributes="title"
+             tal:condition="filename"
+             tal:attributes="href string:${method/absolute_url}/at_download/MethodDocument">
+            <img src=""
+                 tal:condition="icon"
+                 tal:attributes="src string:portal_url/$icon"/>
+            <tal:filename replace="filename"/>
+            (<span class="discreet" tal:content="filesize">0Kb</span>)
+          </a>
+        </div>
+      </tal:method>
 
-	</tal:method>
+      <tal:nomethod condition="not:view/service/getMethod">
+        <h5>
+          <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/method.png"/>
+          <span i18n:translate="">
+            Method: None
+          </span>
+        </h5>
+      </tal:nomethod>
 
-    <tal:nomethod
-		condition="not:view/service/getMethod">
-		<h5>
-			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/method.png"/>
-			<span i18n:translate="">
-				Method: None
-			</span>
-		</h5>
-	</tal:nomethod>
+      <tal:calc define="calc nocall:view/calc;
+                        deps python:calc and calc.getDependentServices() or []"
+                condition="calc">
 
-    <tal:calc
-		define="calc nocall:view/calc;
-				deps python:calc and calc.getDependentServices() or []"
-		condition="calc">
-
-		<h5>
-			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calculation.png"/>
-			<span i18n:translate="">
-				Calculation:
-				<span i18n:name="calc_name">
-					<a
-						tal:attributes="href python:calc.absolute_url()"
-						target="_blank"
-						tal:content="calc/Title"/>
-				</span>
-			</span>
-		</h5>
+        <h5>
+          <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calculation.png"/>
+          <span i18n:translate="">
+            Calculation:
+            <span i18n:name="calc_name">
+              <a
+                tal:attributes="href python:calc.absolute_url()"
+                                target="_blank"
+                                tal:content="calc/Title"/>
+            </span>
+          </span>
+        </h5>
 
         <div id="deps_list" tal:condition="deps">
-			<h5>
-				<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dependencies.png"/>
-				<span i18n:translate="">
-					Dependent Analyses
-				</span>
-			</h5>
+          <h5>
+            <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dependencies.png"/>
+            <span i18n:translate="">
+              Dependent Analyses
+            </span>
+          </h5>
 
-			<table>
-				<tr>
-					<th i18n:translate="">Service</th>
-					<th i18n:translate="">Category</th>
-					<th i18n:translate="">Keyword</th>
-					<th i18n:translate="">Method</th>
-					<th i18n:translate="" tal:condition="ShowPrices">Price</th>
-				</tr>
-				<tr tal:repeat="dep deps">
-					<td>
-						<a
-							target="_blank"
-							tal:attributes="href python:dep.absolute_url()"
-							tal:content="dep/Title"/>
-					</td>
-					<td tal:content="python:dep.getCategoryTitle()"/>
-					<td tal:content="python:dep.getKeyword()"/>
-					<td>
-						<a
-							tal:define="m python:dep.getMethod()"
-							tal:condition="m"
-							tal:attributes="href python:m.absolute_url()"
-							tal:content="m/Title"/>
-					</td>
-					<td tal:condition="ShowPrices">
-						<span tal:replace="python:currencies[currency].symbol"/>
-						<span tal:replace="python:'%.02f'%dep.getTotalPrice()"/>
-					</td>
-				</tr>
-			</table>
+          <table>
+            <tr>
+              <th i18n:translate="">Service</th>
+              <th i18n:translate="">Category</th>
+              <th i18n:translate="">Keyword</th>
+              <th i18n:translate="">Method</th>
+              <th i18n:translate="" tal:condition="ShowPrices">Price</th>
+            </tr>
+            <tr tal:repeat="dep deps">
+              <td>
+                <a target="_blank"
+                   tal:attributes="href python:dep.absolute_url()"
+                   tal:content="dep/Title"/>
+              </td>
+              <td tal:content="python:dep.getCategoryTitle()"/>
+              <td tal:content="python:dep.getKeyword()"/>
+              <td>
+                <a tal:define="m python:dep.getMethod()"
+                   tal:condition="m"
+                   tal:attributes="href python:m.absolute_url()"
+                   tal:content="m/Title"/>
+              </td>
+              <td tal:condition="ShowPrices">
+                <span tal:replace="python:currencies[currency].symbol"/>
+                <span tal:replace="python:'%.02f'%dep.getTotalPrice()"/>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </tal:calc>
 
-		</div>
+      <tal:nocalc condition="not:view/calc">
+        <h5>
+          <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calculation.png"/>
+          <span i18n:translate="">
+            Calculation: None
+          </span>
+        </h5>
+      </tal:nocalc>
 
-	</tal:calc>
+      <tal:parts define="partsetup view/partsetup;
+                         separate view/service/getSeparate;
+                         container view/service/getContainer;
+                         preservation view/service/getPreservation;"
+                 condition="python:(partsetup or separate or container or preservation)">
 
-    <tal:nocalc
-		condition="not:view/calc">
-		<h5>
-			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calculation.png"/>
-			<span i18n:translate="">
-				Calculation: None
-			</span>
-		</h5>
-	</tal:nocalc>
-
-    <tal:parts
-		define="partsetup view/partsetup;
-				separate view/service/getSeparate;
-				container view/service/getContainer;
-				preservation view/service/getPreservation;"
-		condition="python:(partsetup or separate or container or preservation)">
-
-		<h5>
-			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/samplepartition.png"/>
-			<span i18n:translate="">
-				Partition Setup
-			</span>
-		</h5>
+        <h5>
+          <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/samplepartition.png"/>
+          <span i18n:translate="">
+            Partition Setup
+          </span>
+        </h5>
 
         <div id="parts_list" tal:condition="partsetup">
-			<p>
-				<span
-					tal:condition="view/service/getSeparate"
-					i18n:translate="">This service requires a separate container.</span>
-				<span
-					tal:condition="not:view/service/getSeparate"
-					i18n:translate="">This service does not require a separate partition</span>
-			</p>
-			<p>
-				<span
-					tal:condition="container"
-					i18n:translate="">Default containers:
-					<span
-						i18n:name="container_list"
-						tal:replace="python:', '.join(c.Title() for c in container)"/>
-				</span>
-				<span
-					tal:condition="not:container"
-					i18n:translate="">No default containers specified for this service</span>
-			</p>
-			<p>
-				<span
-					tal:condition="preservation"
-					i18n:translate="">Default preservations:
-					<span
-						i18n:name="preservation_list"
-						tal:replace="python:', '.join(p.Title() for p in preservation)"/>
-				</span>
-				<span
-					tal:condition="not:preservation"
-					i18n:translate="">No default preservations specified for this service</span>
-			</p>
+          <p>
+            <span tal:condition="view/service/getSeparate"
+                  i18n:translate="">This service requires a separate container.</span>
+            <span tal:condition="not:view/service/getSeparate"
+                  i18n:translate="">This service does not require a separate partition</span>
+          </p>
+          <p>
+            <span tal:condition="container"
+                  i18n:translate="">Default containers:
+              <span i18n:name="container_list"
+                    tal:replace="python:', '.join(c.Title() for c in container)"/>
+            </span>
+            <span tal:condition="not:container"
+                  i18n:translate="">No default containers specified for this service</span>
+          </p>
+          <p>
+            <span tal:condition="preservation"
+                  i18n:translate="">Default preservations:
+              <span i18n:name="preservation_list"
+                    tal:replace="python:', '.join(p.Title() for p in preservation)"/>
+            </span>
+            <span tal:condition="not:preservation"
+                  i18n:translate="">No default preservations specified for this service</span>
+          </p>
 
-			<h5>
-				<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/sampletype.png"/>
-				<span i18n:translate="">
-					Sample Types
-				</span>
-			</h5>
+          <h5>
+            <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/sampletype.png"/>
+            <span i18n:translate="">
+					    Sample Types
+				    </span>
+			    </h5>
 
-			<table>
-				<tr>
-					<th i18n:translate="">Sample Type</th>
-					<th i18n:translate="">Separate</th>
-					<th i18n:translate="">Preservations</th>
-					<th i18n:translate="">Containers</th>
-					<th i18n:translate="">Volume</th>
-				</tr>
-				<tr tal:repeat="ps partsetup">
-					<td tal:content="ps/sampletype"/>
-					<td tal:content="ps/separate"/>
-					<td tal:content="ps/preservation"/>
-					<td tal:content="ps/container"/>
-					<td tal:content="ps/vol|nothing"/>
-				</tr>
-			</table>
+			    <table>
+				    <tr>
+					    <th i18n:translate="">Sample Type</th>
+					    <th i18n:translate="">Separate</th>
+					    <th i18n:translate="">Preservations</th>
+					    <th i18n:translate="">Containers</th>
+					    <th i18n:translate="">Volume</th>
+				    </tr>
+				    <tr tal:repeat="ps partsetup">
+					    <td tal:content="ps/sampletype"/>
+					    <td tal:content="ps/separate"/>
+					    <td tal:content="ps/preservation"/>
+					    <td tal:content="ps/container"/>
+					    <td tal:content="ps/vol|nothing"/>
+				    </tr>
+			    </table>
+		    </div>
+	    </tal:parts>
 
-		</div>
+      <div id="analysis_log">
+		    <h5>
+			    <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calendar.png"/>
+			    <span i18n:translate="">Log</span>
+		    </h5>
+		    <table>
+			    <tr>
+				    <th i18n:translate="">Date</th>
+				    <th i18n:translate="">User</th>
+				    <th i18n:translate="">Action</th>
+				    <th i18n:translate="">Description</th>
+			    </tr>
+			    <tr tal:repeat="line view/log">
+				    <td tal:content="line/Date"/>
+				    <td tal:content="line/User"/>
+				    <td tal:content="line/Action"/>
+				    <td tal:content="line/Description"/>
+			    </tr>
+		    </table>
+	    </div>
+    </div>
 
-	</tal:parts>
-
-    <div id="analysis_log">
-		<h5>
-			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calendar.png"/>
-			<span i18n:translate="">Log</span>
-		</h5>
-		<table>
-			<tr>
-				<th i18n:translate="">Date</th>
-				<th i18n:translate="">User</th>
-				<th i18n:translate="">Action</th>
-				<th i18n:translate="">Description</th>
-			</tr>
-			<tr tal:repeat="line view/log">
-				<td tal:content="line/Date"/>
-				<td tal:content="line/User"/>
-				<td tal:content="line/Action"/>
-				<td tal:content="line/Description"/>
-			</tr>
-		</table>
-	</div>
-
-</div>
-
-</body>
+  </body>
 </html>
