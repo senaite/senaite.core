@@ -25,9 +25,14 @@ from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.config import REFERENCE_CATALOG
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.workflow import getCurrentState
 
 from plone.app.blob.field import FileField
 
+from bika.lims import api
+from bika.lims import logger
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims import bikaMessageFactory as _
@@ -133,20 +138,23 @@ class Attachment(BaseFolder):
     def getTextTitle(self):
         """Return the request and possibly analayis title as title
         """
-        requestid = self.getRequestID()
-        if requestid:
-            analysis = self.getAnalysis()
-            if analysis:
-                return '%s - %s' % (requestid, analysis.Title())
-            else:
-                return requestid
-        else:
+        request_id = self.getRequestID()
+        if not request_id:
             return None
+
+        analysis = self.getAnalysis()
+        if not analysis:
+            return request_id
+
+        return '%s - %s' % (request_id, analysis.Title())
+
 
     def getRequest(self):
         """Return the AR to which this is linked there is a short time between
         creation and linking when it is not linked
         """
+        # Attachment field in AnalysisRequest is still a ReferenceField, not
+        # an UIDReferenceField yet.
         tool = getToolByName(self, REFERENCE_CATALOG)
         uids = [uid for uid in
                 tool.getBackReferences(self, 'AnalysisRequestAttachment')]
@@ -154,14 +162,14 @@ class Attachment(BaseFolder):
             reference = uids[0]
             ar = tool.lookupObject(reference.sourceUID)
             return ar
-        else:
-            uids = [uid for uid in
-                    tool.getBackReferences(self, 'AnalysisAttachment')]
-            if len(uids) == 1:
-                reference = uids[0]
-                analysis = tool.lookupObject(reference.sourceUID)
-                ar = analysis.aq_parent
-                return ar
+
+        # This Attachment is not linked directly to an Analysis Request, but
+        # probably linked to an Analysis, so try to get the Analysis Request
+        # from there.
+        analysis = self.getAnalysis()
+        if IRequestAnalysis.providedBy(analysis):
+            return analysis.getRequest()
+
         return None
 
     def getRequestID(self):
@@ -177,33 +185,30 @@ class Attachment(BaseFolder):
         """Return the analysis to which this is linked it may not be linked to
         an analysis
         """
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'AnalysisAttachment')]
-        if len(uids) == 1:
-            reference = uids[0]
-            analysis = tool.lookupObject(reference.sourceUID)
-            return analysis
-        return None
+        analysis = get_backreferences(self, 'AnalysisAttachment',
+                                      as_brains=True)
+        if not analysis:
+            return None
+
+        if len(analysis) > 1:
+            logger.warn("Single attachment assigned to more than one Analysis")
+
+        analysis = api.get_object(analysis[0])
+        return analysis
 
     def getParentState(self):
         """Return the review state of the object - analysis or AR to which
         this is linked
         """
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'AnalysisAttachment')]
-        if len(uids) == 1:
-            reference = uids[0]
-            parent = tool.lookupObject(reference.sourceUID)
-        else:
-            uids = [uid for uid in
-                    tool.getBackReferences(self, 'AnalysisRequestAttachment')]
-            if len(uids) == 1:
-                reference = uids[0]
-                parent = tool.lookupObject(reference.sourceUID)
-        workflow = getToolByName(self, 'portal_workflow')
-        return workflow.getInfoFor(parent, 'review_state', '')
+        analysis = self.getAnalysis()
+        if analysis:
+            return getCurrentState(analysis)
+
+        analysis_request = self.getRequest()
+        if analysis_request:
+            return getCurrentState(analysis_request)
+
+        return ''
 
     security.declarePublic('current_date')
 
