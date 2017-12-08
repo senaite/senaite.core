@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #457 Calculation referring to additional python module not triggered
 - #454 Click on some analyses pops up a new page instead of object log
 - #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
