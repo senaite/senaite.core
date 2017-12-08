@@ -1470,7 +1470,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("The date when the request was published"),
             visible={
                 'edit': 'visible',
-                'view': 'visible',
+                'view': 'invisible',
                 'add': 'invisible',
                 'secondary': 'invisible',
                 'header_table': 'visible',
