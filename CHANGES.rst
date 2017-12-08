@@ -12,6 +12,7 @@ Changelog
 
 **Changed**
 
+- #455 On the AR View Date Published should appear once
 - #431 Make ARAnalysesField setter to accept Analysis/Service objects
 
 **Fixed**
