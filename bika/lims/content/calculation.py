@@ -9,9 +9,11 @@ import importlib
 import inspect
 import math
 import re
-import sys
 
 import transaction
+
+from zope.interface import implements
+
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field import RecordsField
@@ -21,22 +23,21 @@ from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
-from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields.uidreferencefield import UIDReferenceField, \
-    get_backreferences
+from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces.calculation import ICalculation
-from zope.interface import implements
+
 
 schema = BikaSchema.copy() + Schema((
 
@@ -232,12 +233,12 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
     def getCalculationDependants(self):
         """Return a flat list of services who depend on this calculation.
-        
-        This refers only to services who's Calculation UIDReferenceField
-        have the value set to point to this calculation.
-        
-        It has nothing to do with the services referenced in the 
-        calculation's Formula.
+
+        This refers only to services who's Calculation UIDReferenceField have
+        the value set to point to this calculation.
+
+        It has nothing to do with the services referenced in the calculation's
+        Formula.
         """
         deps = []
         backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
