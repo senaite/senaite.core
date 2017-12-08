@@ -3,34 +3,33 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IAnalysis
-from bika.lims.interfaces import IFieldIcons
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, isnumber
-from bika.lims import logger
-from bika.lims.utils import to_utf8
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.PythonScripts.standard import html_quote
-from bika.lims.utils.analysis import format_numeric_result
-from zope.component import adapts
-from zope.component import getAdapters
-from zope.interface import implements
-
 import json
 import math
 import plone
 
+from zope.component import adapts
+from zope.component import getAdapters
+from zope.interface import implements
+
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.PythonScripts.standard import html_quote
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IFieldIcons
+from bika.lims.utils import t, isnumber
+from bika.lims.utils.analysis import format_numeric_result
+
 
 class CalculationResultAlerts(object):
-
     """This uses IAnalysis.ResultOutOfRange on values in request.
+
     To validate results at ajax calculation time, make more adapters like this
     one, from IFieldIcons.  Any existing IAnalysis/IFieldIcon adapters
     (AnalysisOutOfRange) have already been called.
     """
-
     adapts(IAnalysis)
     implements(IFieldIcons)
 
@@ -62,10 +61,9 @@ class CalculationResultAlerts(object):
 
 
 class ajaxCalculateAnalysisEntry(BrowserView):
-
-    """ This view is called by javascript when an analysis' result or interim
-        field value is entered. Returns a JSON dictionary, or None if no
-        action is required or possible.
+    """This view is called by javascript when an analysis' result or interim
+       field value is entered.
+       Returns a JSON dictionary, or None if no action is required or possible.
     """
 
     def __init__(self, context, request):
@@ -94,10 +92,9 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 Result['result'] = ""
 
         if calculation:
+            """We need first to create the map of available parameters
+               acording to the interims, analyses and wildcards:
 
-            '''
-             We need first to create the map of available parameters
-             acording to the interims, analyses and wildcards:
              params = {
                     <as-1-keyword>              : <analysis_result>,
                     <as-1-keyword>.<wildcard-1> : <wildcard_1_value>,
@@ -105,7 +102,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     <interim-1>                 : <interim_result>,
                     ...
                     }
-            '''
+            """
 
             # Get dependent analyses results and wildcard values to the
             # mapping. If dependent analysis without result found,
@@ -124,17 +121,17 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 else:
                     # Retrieve the result and DLs from the analysis
                     analysisvalues = {
-                        'keyword':  dependency.getKeyword(),
-                        'result':   dependency.getResult(),
-                        'ldl':      dependency.getLowerDetectionLimit(),
-                        'udl':      dependency.getUpperDetectionLimit(),
+                        'keyword': dependency.getKeyword(),
+                        'result': dependency.getResult(),
+                        'ldl': dependency.getLowerDetectionLimit(),
+                        'udl': dependency.getUpperDetectionLimit(),
                         'belowldl': dependency.isBelowLowerDetectionLimit(),
                         'aboveudl': dependency.isAboveUpperDetectionLimit(),
                     }
-                if analysisvalues['result']=='':
+                if analysisvalues['result'] == '':
                     unsatisfied = True
-                    break;
-                key = analysisvalues.get('keyword',dependency.getKeyword())
+                    break
+                key = analysisvalues.get('keyword', dependency.getKeyword())
 
                 # Analysis result
                 # All result mappings must be float, or they are ignored.
@@ -258,17 +255,18 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 else:
                     self.alerts[uid] = [alert, ]
 
-        if analysis.portal_type == 'ReferenceAnalysis':
-            # The analysis is a Control or Blank. We might use the
-            # reference results instead other specs
-            _uid = analysis.getServiceUID()
-            specs = analysis.aq_parent.getResultsRangeDict().get(_uid, {})
-
-        else:
-            # Get the specs directly from the analysis. The getResultsRange
-            # function already takes care about which are the specs to be used:
-            # AR, client or lab.
-            specs = analysis.getResultsRange()
+        # XXX ramonski-2017-12-08: 'specs' is nowhere used, so I'm disabling this block
+        #
+        # if analysis.portal_type == 'ReferenceAnalysis':
+        #     # The analysis is a Control or Blank. We might use the
+        #     # reference results instead other specs
+        #     _uid = analysis.getServiceUID()
+        #     specs = analysis.aq_parent.getResultsRangeDict().get(_uid, {})
+        # else:
+        #     # Get the specs directly from the analysis. The getResultsRange
+        #     # function already takes care about which are the specs to be used:
+        #     # AR, client or lab.
+        #     specs = analysis.getResultsRange()
 
         # format result
         try:
@@ -322,8 +320,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             anvals = self.current_results[uid]
             isldl = anvals.get('isldl', False)
             isudl = anvals.get('isudl', False)
-            ldl = anvals.get('ldl',0)
-            udl = anvals.get('udl',0)
+            ldl = anvals.get('ldl', 0)
+            udl = anvals.get('udl', 0)
             ldl = float(ldl) if isnumber(ldl) else 0
             udl = float(udl) if isnumber(udl) else 10000000
             belowldl = (isldl or flres < ldl)
