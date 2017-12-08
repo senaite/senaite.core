@@ -215,7 +215,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                                 'context': self.context},
                                {'mapping': mapping})
                 # calculate
-                result = eval(formula)
+                result = eval(formula, calculation._getGlobals())
                 Result['result'] = result
                 self.current_results[uid]['result'] = result
             except TypeError as e:
