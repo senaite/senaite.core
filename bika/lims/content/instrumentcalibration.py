@@ -14,7 +14,6 @@ from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.utils import getToolByName
 
 from zope.interface import implements
 
