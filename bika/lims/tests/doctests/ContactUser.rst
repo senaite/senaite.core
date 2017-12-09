@@ -10,6 +10,9 @@ linked user to the "Clients" group, which has the "Customer" role.
 
 Furthermore, the user gets  the local "Owner" role for the owning client object.
 
+Running this test from the buildout directory:
+
+    bin/test -t ContactUser
 
 Test Setup
 ==========
@@ -22,7 +25,7 @@ Test Setup
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
 
-    >>> portal = self.getPortal()
+    >>> portal = self.portal
     >>> portal_url = portal.absolute_url()
     >>> bika_setup = portal.bika_setup
     >>> bika_setup_url = portal_url + "/bika_setup"
@@ -216,12 +219,29 @@ The form expects a searchstring coming from the request. We fake it here::
 
     >>> login_details_view.searchstring = ""
 
-Search for linkable users::
+Search for linkable users:
 
     >>> linkable_users = login_details_view.linkable_users()
     >>> linkable_user_ids = map(lambda x: x.get("id"), linkable_users)
 
-Both users should be in the search results::
+None of the two users should be in the search results, cause any of the two
+has the role `Client` assigned:
+
+    >>> user1.id in linkable_user_ids
+    False
+
+    >>> user2.id in linkable_user_ids
+    False
+
+So, we apply the `Client` roles to both users:
+
+    >>> setRoles(portal, "user-1", ['Authenticated', 'Member', 'Client'])
+    >>> setRoles(portal, "user-2", ['Authenticated', 'Member', 'Client'])
+
+Both users should be now in the search results:
+
+    >>> linkable_users = login_details_view.linkable_users()
+    >>> linkable_user_ids = map(lambda x: x.get("id"), linkable_users)
 
     >>> user1.id in linkable_user_ids
     True
