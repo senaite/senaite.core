@@ -110,7 +110,7 @@ class InstrumentsView(BikaListingView):
             items[x]['Model'] = obj.getModel()
 
             data = obj.getCertificateExpireDate()
-            if not data:
+            if data is None:
                 items[x]['ExpiryDate'] = _("No date set")
             else:
                 items[x]['ExpiryDate'] = data.asdatetime().strftime(self.date_format_short)
@@ -123,7 +123,6 @@ class InstrumentsView(BikaListingView):
                 items[x]['WeeksToExpire'] = weeks_to_expire
 
             methods = obj.getMethods()
-            items[x]["Methods"] = methods
             urls = []
             titles = []
             for method in methods:
