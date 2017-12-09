@@ -6,13 +6,13 @@ Changelog
 
 **Added**
 
-- #459 PR-1942 Feature/instrument certification interval
 - #423 Instrument import interface for Abbott's m2000 Real Time
 
 **Removed**
 
 **Changed**
 
+- #459 PR-1942 Feature/instrument certification interval refactoring
 - #431 Make ARAnalysesField setter to accept Analysis/Service objects
 
 **Fixed**
