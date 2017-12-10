@@ -5,18 +5,16 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-import unittest
+from plone.app.testing import login
+from plone.app.testing import setRoles
 
 try:
     import unittest2 as unittest
@@ -24,20 +22,21 @@ except ImportError:
     import unittest
 
 
-class Test_LIMS2001(BikaFunctionalTestCase):
+class TestAddDuplicateAnalysis(BikaFunctionalTestCase):
     """
     When adding a duplicate for an AR in a worksheet, only the first analysis
     gets duplicated: https://jira.bikalabs.com/browse/LIMS-2001
     """
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
-        super(Test_LIMS2001, self).setUp()
+        super(TestAddDuplicateAnalysis, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
     def tearDown(self):
-        logout()
-        super(Test_LIMS2001, self).tearDown()
+        super(TestAddDuplicateAnalysis, self).tearDown()
 
     def test_LIMS2001(self):
         # ARs creation
@@ -169,6 +168,6 @@ class Test_LIMS2001(BikaFunctionalTestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Test_LIMS2001))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.addTest(unittest.makeSuite(TestAddDuplicateAnalysis))
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
