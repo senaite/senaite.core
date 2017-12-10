@@ -1,11 +1,13 @@
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login, logout
-
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
+from bika.lims.workflow import doActionFor
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
 
 try:
     import unittest2 as unittest
@@ -15,7 +17,7 @@ except ImportError:  # Python 2.7
 
 # Tests related with reflex testing
 class TestReflexRules(BikaFunctionalTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
     # A list with the created rules
     rules_list = []
     # A list with the created methods
@@ -187,10 +189,11 @@ class TestReflexRules(BikaFunctionalTestCase):
 
     def setUp(self):
         super(TestReflexRules, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
     def tearDown(self):
-        logout()
         super(TestReflexRules, self).tearDown()
 
     def test_reflex_rule_set_get(self):
@@ -276,8 +279,7 @@ class TestReflexRules(BikaFunctionalTestCase):
                   'SampleType': sampletype.UID()}
         request = {}
         ar = create_analysisrequest(client, request, values, [ans_list[-1]])
-        wf = getToolByName(ar, 'portal_workflow')
-        wf.doActionFor(ar, 'receive')
+        doActionFor(ar, 'receive')
         # Getting the analysis
         analysis = ar.getAnalyses(full_objects=True)[0]
         # Testing reflexrule content type public functions
@@ -894,5 +896,5 @@ class TestReflexRules(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestReflexRules))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
