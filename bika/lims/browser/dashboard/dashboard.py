@@ -75,7 +75,6 @@ class DashboardView(BrowserView):
                 json.dumps(cookie_raw),
                 quoted=False,
                 path='/')
-            print json.dumps(cookie_raw)
             return cookie_raw
         return cookie_raw
 
