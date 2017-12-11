@@ -171,11 +171,18 @@ Load results test file and import the results::
     ...                                  override=[True, True])
     >>> importer.process()
 
-Check the importer logs to verify that the values were correctly imported::
+Check from the importer logs that the file from where the results have been imported is indeed
+the specified file::
 
-    >>> importer.logs
-    ['Parsing file /home/juan/Dev/NMRL/zinstance/src/bika.lims/bika/lims/tests/files/Results.log.123',
-     'End of file reached successfully: 24 objects, 1 analyses, 24 results',
+    >>> import re
+    >>> matches = re.search('(/bika.lims.+)', importer.logs[0])
+    >>> matches.group(0)
+    '/bika.lims/bika/lims/tests/files/Results.log.123'
+
+Check the rest of the importer logs to verify that the values were correctly imported::
+
+    >>> importer.logs[1:]
+    ['End of file reached successfully: 24 objects, 1 analyses, 24 results',
      'Allowed Analysis Request states: sample_received, attachment_due, to_be_verified',
      'Allowed analysis states: sampled, sample_received, attachment_due, to_be_verified',
      "H2O-0001 result for 'HIV06ml:ASRExpDate': '20141211'",
