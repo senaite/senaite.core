@@ -776,6 +776,30 @@ def to_int(value, default=0):
         return to_int(default, default=0)
 
 
+def get_strings(data):
+    """
+    Convert unicode values to strings even if they belong to lists or dicts.
+    :param data: an object.
+    :return: The object with all unicode values converted to string.
+    """
+    # if this is a unicode string, return its string representation
+    if isinstance(data, unicode):
+        return data.encode('utf-8')
+
+    # if this is a list of values, return list of string values
+    if isinstance(data, list):
+        return [get_strings(item) for item in data]
+
+    # if this is a dictionary, return dictionary of string keys and values
+    if isinstance(data, dict):
+        return {
+            get_strings(key): get_strings(value)
+            for key, value in data.iteritems()
+        }
+    # if it's anything else, return it in its original form
+    return data
+
+
 def is_bika_installed():
     """Check if Bika LIMS is installed in the Portal
     """

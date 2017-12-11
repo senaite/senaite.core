@@ -18,7 +18,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-
+from bika.lims.utils import get_strings
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 
@@ -45,7 +45,8 @@ class DashboardView(BrowserView):
             self.request.response.redirect(self.portal_url + "/bika-frontpage")
         else:
             self._init_date_range()
-            self.dashboard_cookie = self.check_dashboard_cookie()
+            self.dashboard_cookie = get_strings(
+                json.loads(self.check_dashboard_cookie()))
             return self.template()
 
     def check_dashboard_cookie(self):
@@ -77,6 +78,17 @@ class DashboardView(BrowserView):
                 path='/')
             return cookie_raw
         return cookie_raw
+
+    def is_filter_selected(self, selection_id, value):
+        """
+
+        :param selection_id:
+        :param value:
+        :return:
+        """
+        selected = self.dashboard_cookie.get(selection_id)
+        return selected == value
+
 
     def _create_raw_data(self):
         """
