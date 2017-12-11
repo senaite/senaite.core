@@ -12,11 +12,13 @@ Changelog
 
 **Changed**
 
+- #459 PR-1942 Feature/instrument certification interval refactoring
 - #431 Make ARAnalysesField setter to accept Analysis/Service objects
 
 **Fixed**
 
 - #457 Calculation referring to additional python module not triggered
+- #459 Traceback in Instruments list after adding a calibration certificate
 - #454 Click on some analyses pops up a new page instead of object log
 - #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned

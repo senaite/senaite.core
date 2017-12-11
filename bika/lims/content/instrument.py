@@ -55,7 +55,6 @@ from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -514,7 +513,7 @@ class Instrument(ATFolder):
         """ Returns the certifications of the instrument. Both internal
             and external certifitions
         """
-        return [c for c in self.objectValues('InstrumentCertification') if c]
+        return self.objectValues('InstrumentCertification')
 
     def getValidCertifications(self):
         """ Returns the certifications fully valid
@@ -616,128 +615,111 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is out-of-date regards to
             its certifications
         """
-        cert = self.getLatestValidCertification()
-        today = date.today()
-        if cert and cert.getValidTo():
-            validto = cert.getValidTo().asdatetime().date();
-            if validto > today:
-                return False
+        certification = self.getLatestValidCertification()
+        if certification:
+            return not certification.isValid()
         return True
 
     def isValidationInProgress(self):
         """ Returns if the current instrument is under validation progress
         """
         validation = self.getLatestValidValidation()
-        today = date.today()
-        if validation and validation.getDownTo():
-            validfrom = validation.getDownFrom().asdatetime().date()
-            validto = validation.getDownTo().asdatetime().date()
-            if validfrom <= today <= validto:
-                return True
+        if validation:
+            return validation.isValidationInProgress()
         return False
 
     def isCalibrationInProgress(self):
         """ Returns if the current instrument is under calibration progress
         """
-        for calibration in self.getCalibrations():
-            if calibration.isCalibrationInProgress():
-                return True
+        calibration = self.getLatestValidCalibration()
+        if calibration is not None:
+            return calibration.isCalibrationInProgress()
         return False
 
     def getCertificateExpireDate(self):
         """ Returns the current instrument's data expiration certificate
         """
-        cert = self.getLatestValidCertification()
-        if cert == None:
-            return ''
-        date = cert.getValidTo()
-        return date
+        certification = self.getLatestValidCertification()
+        if certification:
+            return certification.getValidTo()
+        return None
 
     def getWeeksToExpire(self):
-        """ Returns the amount of weeks untils it's certification expire
+        """ Returns the amount of weeks and days untils it's certification expire
         """
-        cert = self.getLatestValidCertification()
-        if cert == None:
-            return ''
-        date = cert.getValidTo().asdatetime().date();
-        return date - date.today()
+        certification = self.getLatestValidCertification()
+        if certification:
+            return certification.getWeeksAndDaysToExpire()
+        return 0, 0
 
     def getLatestValidCertification(self):
-        """ Returns the latest valid certification. If no latest valid
-            certification found, returns None
+        """Returns the certification with the most remaining days until expiration.
+           If no certification was found, it returns None.
         """
-        saved_cert = None
-        lastfrom = None
-        lastto = None
-        for cert in self.getCertifications():
-            if not cert.isValid():
-                continue
-            validfrom = cert.getValidFrom() if cert else None
-            validto = cert.getValidTo() if validfrom else None
-            if not validfrom or not validto:
-                continue
-            validfrom = validfrom.asdatetime().date()
-            validto = validto.asdatetime().date()
-            if not saved_cert \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
-                saved_cert = cert
-                lastfrom = validfrom
-                lastto = validto
-        return saved_cert
+
+        # 1. get all certifications
+        certifications = self.getCertifications()
+
+        # 2. filter out certifications, which are invalid
+        valid_certifications = filter(lambda x: x.isValid(), certifications)
+
+        # 3. sort by the remaining days to expire, e.g. [10, 7, 6, 1]
+        def sort_func(x, y):
+            return cmp(x.getDaysToExpire(), y.getDaysToExpire())
+        sorted_certifications = sorted(valid_certifications, cmp=sort_func, reverse=True)
+
+        # 4. return the certification with the most remaining days
+        if len(sorted_certifications) > 0:
+            return sorted_certifications[0]
+        return None
 
     def getLatestValidValidation(self):
-        """ Returns the latest *done* validation. If no latest *done*
-            validation found, returns None
+        """Returns the validation with the most remaining days in validation.
+           If no validation was found, it returns None.
         """
-        validation = None
-        lastfrom = None
-        lastto = None
-        for v in self.getValidations():
-            if v.isValidationInProgress() or v.isFutureValidation():
-                continue
-            validfrom = v.getDownFrom() if v else None
-            validto = v.getDownTo() if validfrom else None
-            if not validfrom or not validto:
-                continue
-            validfrom = validfrom.asdatetime().date()
-            validto = validto.asdatetime().date()
-            if not validation \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
-                validation = v
-                lastfrom = validfrom
-                lastto = validto
-        return validation
+        # 1. get all validations
+        validations = self.getValidations()
+
+        # 2. filter out validations, which are not in progress
+        active_validations = filter(lambda x: x.isValidationInProgress(), validations)
+
+        # 3. sort by the remaining days in validation, e.g. [10, 7, 6, 1]
+        def sort_func(x, y):
+            return cmp(x.getRemainingDaysInValidation(), y.getRemainingDaysInValidation())
+        sorted_validations = sorted(active_validations, cmp=sort_func, reverse=True)
+
+        # 4. return the validation with the most remaining days
+        if len(sorted_validations) > 0:
+            return sorted_validations[0]
+        return None
 
     def getLatestValidCalibration(self):
-        """ Returns the latest *done* calibration. If no latest *done*
-            calibration found, returns None
+        """Returns the calibration with the most remaining days in calibration.
+           If no calibration was found, it returns None.
         """
-        calibration = None
-        lastto = None
-        for cal in self.getCalibrations():
-            if cal.isCalibrationInProgress() or cal.isFutureCalibration():
-                continue
-            validfrom = cal.getDownFrom() if cal else None
-            validto = cal.getDownTo() if validfrom else None
-            if not validfrom or not validto:
-                continue
-            validto = validto.asdatetime().date()
-            if calibration is None or validto > lastto:
-                calibration = cal
-                lastto = validto
-        return calibration
+        # 1. get all calibrations
+        calibrations = self.getCalibrations()
+
+        # 2. filter out calibrations, which are not in progress
+        active_calibrations = filter(lambda x: x.isCalibrationInProgress(), calibrations)
+
+        # 3. sort by the remaining days in calibration, e.g. [10, 7, 6, 1]
+        def sort_func(x, y):
+            return cmp(x.getRemainingDaysInCalibration(), y.getRemainingDaysInCalibration())
+        sorted_calibrations = sorted(active_calibrations, cmp=sort_func, reverse=True)
+
+        # 4. return the calibration with the most remaining days
+        if len(sorted_calibrations) > 0:
+            return sorted_calibrations[0]
+        return None
 
     def getValidations(self):
-        """
-        Return all the validations objects related with the instrument
+        """ Return all the validations objects related with the instrument
         """
         return self.objectValues('InstrumentValidation')
 
     def getDocuments(self):
-        """
-        Return all the multifile objects related with the instrument
+        """ Return all the multifile objects related with the instrument
         """
         return self.objectValues('Multifile')
 
@@ -838,6 +820,8 @@ class Instrument(ATFolder):
                 # Instrument, we apply the assign state
                 wf.doActionFor(ref_analysis, 'assign')
             addedanalyses.append(ref_analysis)
+
+        self.setAnalyses(self.getAnalyses() + addedanalyses)
 
         # Initialize LatestReferenceAnalyses cache
         self.cleanReferenceAnalysesCache()
