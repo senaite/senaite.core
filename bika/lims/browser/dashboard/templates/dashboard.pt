@@ -391,22 +391,42 @@
         });
       }
       function dashboard_cookie_controller() {
+        /* Links a linker controller to each dashboard filter selector.
+        This controller reads the cookie data once the selector has been
+        modified and updates its data.
+        */
         var selector;
         var selector_section_id;
         var cookie;
+        var counter;
         var cookie_id = 'dashboard_filter_cookie'
         var filter_selectors = $('select.dashboard_filters');
         for(counter = 0; counter < filter_selectors.length; counter++){
           selector = filter_selectors[counter];
           $(selector).live('change', function(){
-            section_id = $(selector).attribute('section_id');
-            cookie_old = render_cookie_data(readCookie(cookie_id);)
-           }
+            section_id = $(this).attr('section_id');
+            selected = $(this).find(':selected').val();
+            cookie_data = render_cookie_data(readCookie(cookie_id));
+            cookie_data[section_id] = selected;
+            cookie_data = build_cookie_data(cookie_data);
+            setCookie('dashboard_filter_cookie', cookie_data);
+            window.location.reload(true);
+          });
         }
-      }
+      };
+      /*TODO: I can't call the function defined in bika.lims.site.setCookie*/
+      function setCookie(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      };
       function render_cookie_data(data){
-        var plit_data =
-      }
+        return JSON.parse(data);
+      };
+      function build_cookie_data(data){
+        return JSON.stringify(data);
+      };
     }(jQuery));
 </script>
 

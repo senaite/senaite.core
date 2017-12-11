@@ -41,12 +41,11 @@ class DashboardView(BrowserView):
             roles = member.getRoles()
             tofrontpage = 'Manager' not in roles and 'LabManager' not in roles
 
-        if tofrontpage == True:
+        if tofrontpage:
             self.request.response.redirect(self.portal_url + "/bika-frontpage")
         else:
             self._init_date_range()
-            self.dashboard_cookie = self._parse_dashboard_cookie(
-                self.check_dashboard_cookie())
+            self.dashboard_cookie = self.check_dashboard_cookie()
             return self.template()
 
     def check_dashboard_cookie(self):
@@ -56,11 +55,10 @@ class DashboardView(BrowserView):
 
         If it should exist but doesn't exist yet, the function creates it
         with all values as default.
-        If it should exist and already exists, it returns the value
-        .
+        If it should exist and already exists, it returns the value.
         Otherwise, the function returns None.
 
-        :return: a string or None
+        :return: a dictionary or None
         """
         # Check setup configuration
         if not self.is_filter_enable():
@@ -73,7 +71,11 @@ class DashboardView(BrowserView):
         if cookie_raw is None:
             cookie_raw = self._create_raw_data()
             self.request.response.setCookie(
-                DASHBOARD_FILTER_COOKIE, cookie_raw, path='/')
+                DASHBOARD_FILTER_COOKIE,
+                json.dumps(cookie_raw),
+                quoted=False,
+                path='/')
+            print json.dumps(cookie_raw)
             return cookie_raw
         return cookie_raw
 
@@ -82,29 +84,12 @@ class DashboardView(BrowserView):
         Gathers the different sections ids and creates a string as first
         cookie data.
 
-        :return: A string like:
-            'analyses:all,analysisrequest:all,worksheets:all'
+        :return: A dictionary like:
+            {'analyses':'all','analysisrequest':'all','worksheets':'all'}
         """
-        result = []
-        for section in self.get_sections():
-            element = section.get('id') + ':all'
-            result.append(element)
-        return ','.join(result)
-
-    def _parse_dashboard_cookie(self, cookie_raw):
-        """
-        Returns the values from dashboard cookie as a dictionary.
-
-        :param cookie_raw: A string like:
-            'analyses:all,analysisrequest:all,worksheets:all'
-        :return: a dictionary or None
-        """
-        if cookie_raw is None:
-            return None
         result = {}
-        for pair in cookie_raw.split(','):
-            pair = pair.split(':')
-            result[pair[0]] = pair[1]
+        for section in self.get_sections():
+            result[section.get('id')] = 'all'
         return result
 
     def _init_date_range(self):
