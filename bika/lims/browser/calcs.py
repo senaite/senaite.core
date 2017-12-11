@@ -255,19 +255,6 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 else:
                     self.alerts[uid] = [alert, ]
 
-        # XXX ramonski-2017-12-08: 'specs' is nowhere used, so I'm disabling this block
-        #
-        # if analysis.portal_type == 'ReferenceAnalysis':
-        #     # The analysis is a Control or Blank. We might use the
-        #     # reference results instead other specs
-        #     _uid = analysis.getServiceUID()
-        #     specs = analysis.aq_parent.getResultsRangeDict().get(_uid, {})
-        # else:
-        #     # Get the specs directly from the analysis. The getResultsRange
-        #     # function already takes care about which are the specs to be used:
-        #     # AR, client or lab.
-        #     specs = analysis.getResultsRange()
-
         # format result
         try:
             Result['formatted_result'] = format_numeric_result(analysis,
