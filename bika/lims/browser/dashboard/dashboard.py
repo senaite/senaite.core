@@ -81,10 +81,13 @@ class DashboardView(BrowserView):
 
     def is_filter_selected(self, selection_id, value):
         """
+        Compares whether the 'selection_id' parameter value saved in the
+        cookie is the same value as the "value" parameter.
 
-        :param selection_id:
-        :param value:
-        :return:
+        :param selection_id: a string as a dashboard_cookie key.
+        :param value: The value to compare against the value from
+        dashboard_cookie key.
+        :return: Boolean.
         """
         selected = self.dashboard_cookie.get(selection_id)
         return selected == value
