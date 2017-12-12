@@ -8,20 +8,39 @@
 
     <!-- Reference Widget -->
     <metal:view_macro define-macro="view"
-            tal:define="kssClassesView context/@@kss_field_decorator_view;
-                        getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+                      tal:define="kssClassesView context/@@kss_field_decorator_view;
+                                    getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+
+      <!-- Single Valued Field -->
+      <tal:singlevalued tal:condition="not:field/multiValued">
         <span metal:define-macro="string-field-view"
-            tal:define="kss_class python:getKssClasses(fieldName,
-                        templateId='widgets/string', macro='string-field-view');
-                        uid context/UID|nothing"
-            tal:attributes="class kss_class;
-                            id string:parent-fieldname-$fieldName-$uid">
-            <span metal:define-slot="inside"
-                  tal:define="value accessor;
-                              value python: (value and hasattr(value, 'Title')) and value.Title() or '';"
-                  tal:attributes="value python: value.strip();"
-                  tal:content="value">reference</span>
+              tal:define="kss_class python:getKssClasses(fieldName,
+                                  templateId='widgets/string', macro='string-field-view');
+                                  uid context/UID|nothing"
+              tal:attributes="class kss_class;
+                                  id string:parent-fieldname-$fieldName-$uid">
+          <span metal:define-slot="inside"
+                tal:define="value accessor;
+                            value python: (value and hasattr(value, 'Title')) and value.Title() or '';"
+                tal:attributes="value python: value.strip();"
+                tal:content="value">reference</span>
         </span>
+      </tal:singlevalued>
+
+      <!-- Multi Valued Field -->
+      <tal:multivalued tal:condition="field/multiValued">
+        <ul tal:define="value accessor">
+          <li tal:repeat="obj value">
+            <a href="#"
+               tal:attributes="href obj/absolute_url;
+                     class python:obj.portal_type.replace(' ', '_')"
+               tal:content="python:obj.Title() or obj.absolute_url(relative=1)">
+              Target Title
+            </a>
+          </li>
+        </ul>
+      </tal:multivalued>
+
     </metal:view_macro>
 
     <metal:define define-macro="edit">
