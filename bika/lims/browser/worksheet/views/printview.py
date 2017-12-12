@@ -241,12 +241,18 @@ class PrintView(BrowserView):
         data['createdby'] = self._createdby_data(ws)
         data['analyst'] = self._analyst_data(ws)
         data['printedby'] = self._printedby_data(ws)
+
+        # Unify the analyses titles for the template
+        # N.B. The Analyses come in sorted, so don't use a set() to unify them,
+        #      because it sorts the Analyses alphabetically
         ans = []
-
         for ar in data['ars']:
-            ans.extend([an['title'] for an in ar['analyses']])
-
-        data['analyses_titles'] = list(set(ans))
+            for an in ar['analyses']:
+                title = an["title"]
+                if title in ans:
+                    continue
+                ans.append(title)
+        data['analyses_titles'] = ans
 
         portal = self.context.portal_url.getPortalObject()
         data['portal'] = {'obj': portal,
