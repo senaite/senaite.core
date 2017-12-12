@@ -192,8 +192,10 @@ schema = BikaFolderSchema.copy() + Schema((
 )
 )
 
-schema['BatchID'].widget.description = _("If no value is entered, the Batch ID"
-                                         " will be auto-generated.")
+# Remove implicit `uniquefieldvalidator` coming from `BikaFolderSchema`
+schema['title'].validators = ()
+schema['title'].widget.description = _("If no value is entered, the Batch ID"
+                                       " will be auto-generated.")
 schema['title'].required = False
 schema['title'].widget.visible = True
 schema['title'].widget.description = _("If no Title value is entered,"
