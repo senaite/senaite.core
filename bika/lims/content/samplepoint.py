@@ -13,7 +13,6 @@ from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import ReferenceField
-from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
@@ -31,6 +30,7 @@ from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as BikaReferenceWidget
 
 
 schema = BikaSchema.copy() + Schema((
@@ -77,7 +77,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('SampleType',),
         vocabulary='SampleTypesVocabulary',
         relationship='SamplePointSampleType',
-        widget=ReferenceWidget(
+        widget=BikaReferenceWidget(
             label=_("Sample Types"),
             description=_("The list of sample types that can be collected "
                           "at this sample point.  If no sample types are "
