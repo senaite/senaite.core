@@ -241,12 +241,18 @@ class PrintView(BrowserView):
         data['createdby'] = self._createdby_data(ws)
         data['analyst'] = self._analyst_data(ws)
         data['printedby'] = self._printedby_data(ws)
+
+        # Unify the analyses titles for the template
+        # N.B. The Analyses come in sorted, so don't use a set() to unify them,
+        #      because it sorts the Analyses alphabetically
         ans = []
-
         for ar in data['ars']:
-            ans.extend([an['title'] for an in ar['analyses']])
-
-        data['analyses_titles'] = list(set(ans))
+            for an in ar['analyses']:
+                title = an["title"]
+                if title in ans:
+                    continue
+                ans.append(title)
+        data['analyses_titles'] = ans
 
         portal = self.context.portal_url.getPortalObject()
         data['portal'] = {'obj': portal,
@@ -305,6 +311,10 @@ class PrintView(BrowserView):
         prev_pos = 0
         ars = {}
 
+        # mapping of analysis UID -> position in layout
+        uid_to_pos_mapping = dict(
+            map(lambda row: (row["analysis_uid"], row["position"]), layout))
+
         for an in ans:
             # Build the analysis-specific dict
             if an.portal_type == "DuplicateAnalysis":
@@ -317,12 +327,12 @@ class PrintView(BrowserView):
                 andict = self._analysis_data(an)
 
             # Analysis position
-            pos = [slot['position'] for slot in layout
-                   if slot['analysis_uid'] == an.UID()][0]
+            pos = uid_to_pos_mapping.get(an.UID(), 0)
 
             # compensate for possible bad data (dbw#104)
-            if type(pos) in (list, tuple) and pos[0] == 'new':
+            if isinstance(pos, (list, tuple)) and pos[0] == 'new':
                 pos = prev_pos
+
             pos = int(pos)
             prev_pos = pos
 
