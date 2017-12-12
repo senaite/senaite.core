@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #463 UnicodeDecodeError if unicode characters are entered into the title field
 - #457 Calculation referring to additional python module not triggered
 - #459 Traceback in Instruments list after adding a calibration certificate
 - #454 Click on some analyses pops up a new page instead of object log

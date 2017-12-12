@@ -9,13 +9,14 @@ import types
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from Products.ZCTextIndex.ParseTree import ParseError
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8
 from zope.interface import implements
 from bika.lims import api
-from bika.lims.utils import safe_unicode
+from bika.lims import logger
 
 
 class IdentifierTypeAttributesValidator:
@@ -77,64 +78,99 @@ validation.register(IdentifierValidator())
 
 
 class UniqueFieldValidator:
-    """ Verifies that a field value is unique for items
-    if the same type in this location """
-
+    """Verifies if a field value is unique within the same container
+    """
     implements(IValidator)
     name = "uniquefieldvalidator"
 
-    def __call__(self, value, *args, **kwargs):
-        instance = kwargs['instance']
-        field = kwargs['field']
-        fieldname = field.getName()
-        # request = kwargs.get('REQUEST', {})
-        # form = request.get('form', {})
-        translate = getToolByName(instance, 'translation_service').translate
+    def get_parent_objects(self, context):
+        """Return all objects of the same type from the parent object
+        """
+        parent_object = api.get_parent(context)
+        portal_type = api.get_portal_type(context)
+        return parent_object.objectValues(portal_type)
 
-        # return directly if nothing changed
-        if value == field.get(instance):
-            return True
+    def query_parent_objects(self, context, query=None):
+        """Return the objects of the same type from the parent object
 
-        # We want to use the catalog to speed things up, as using `objectValues`
-        # is very expensive if the parent object contains many items
-        parent_objects = []
+        :param query: Catalog query to narrow down the objects
+        :type query: dict
+        :returns: Content objects of the same portal type in the parent
+        """
 
-        # 1. Get the right catalog for this object
-        catalogs = api.get_catalogs_for(instance)
+        # return the object values if we have no catalog query
+        if query is None:
+            return self.get_parent_objects(context)
+        try:
+            catalogs = api.get_catalogs_for(context)
+            catalog = catalogs[0]
+            return map(api.get_object, catalog(query))
+        except (IndexError, UnicodeDecodeError, ParseError) as e:
+            # fall back to the object values of the parent
+            logger.warn("UniqueFieldValidator: Catalog query {} failed "
+                        "for catalog {} ({}) -> returning object values of {}"
+                        .format(query, repr(catalog), str(e), repr(api.get_parent(context))))
+            return self.get_parent_objects(context)
+
+    def make_catalog_query(self, context, field, value):
+        """Create a catalog query for the field
+        """
+
+        # get the catalogs for the context
+        catalogs = api.get_catalogs_for(context)
+        # context not in any catalog?
+        if not catalogs:
+            logger.warn("UniqueFieldValidator: Context '{}' is not assigned"
+                        "to any catalog!".format(repr(context)))
+            return None
+
+        # take the first catalog
         catalog = catalogs[0]
 
-        # 2. Check if the field accessor is indexed
-        field_index = None
-        accessor = field.getAccessor(instance)
+        # Check if the field accessor is indexed
+        field_index = field.getName()
+        accessor = field.getAccessor(context)
         if accessor:
             field_index = accessor.__name__
 
-        # 3. Check if the field index is in the indexes
-        # Field is indexed, use the catalog instead of objectValues
-        parent_path = api.get_parent_path(instance)
-        portal_type = instance.portal_type
-        catalog_query = {"portal_type": portal_type,
-                         "path": {"query": parent_path, "depth": 1}}
+        # return if the field is not indexed
+        if field_index not in catalog.indexes():
+            return None
 
-        # We try here to avoid waking up all the objects, because this can be
-        # likely very expensive if the parent object contains many objects
-        if fieldname in catalog.indexes():
-            # We use the fieldname as index to reduce the results list
-            catalog_query[fieldname] = to_utf8(safe_unicode(value))
-            parent_objects = map(api.get_object, catalog(catalog_query))
-        elif field_index and field_index in catalog.indexes():
-            # We use the field index to reduce the results list
-            catalog_query[field_index] = to_utf8(safe_unicode(value))
-            parent_objects = map(api.get_object, catalog(catalog_query))
-        else:
-            # fall back to the objectValues :(
-            parent_object = api.get_parent(instance)
-            parent_objects = parent_object.objectValues()
+        # build a catalog query
+        query = {
+            "portal_type": api.get_portal_type(context),
+            "path": {
+                "query": api.get_parent_path(context),
+                "depth": 1,
+            }
+        }
+        query[field_index] = value
+        logger.info("UniqueFieldValidator:Query={}".format(query))
+        return query
+
+    def __call__(self, value, *args, **kwargs):
+        context = kwargs['instance']
+        field = kwargs['field']
+        fieldname = field.getName()
+        translate = getToolByName(context, 'translation_service').translate
+
+        # return directly if nothing changed
+        if value == field.get(context):
+            return True
+
+        # Fetch the parent object candidates by catalog or by objectValues
+        #
+        # N.B. We want to use the catalog to speed things up, because using
+        # `parent.objectValues` is very expensive if the parent object contains
+        # many items and causes the UI to block too long
+        catalog_query = self.make_catalog_query(context, field, value)
+        parent_objects = self.query_parent_objects(context, query=catalog_query)
 
         for item in parent_objects:
-            if hasattr(item, 'UID') and item.UID() != instance.UID() and \
+            if hasattr(item, 'UID') and item.UID() != context.UID() and \
                fieldname in item.Schema() and \
-               str(item.Schema()[fieldname].get(item)) == str(value):
+               str(item.Schema()[fieldname].get(item)) == str(value).strip():
                 # We have to compare them as strings because
                 # even if a number (as an  id) is saved inside
                 # a string widget and string field, it will be
