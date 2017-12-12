@@ -12,6 +12,11 @@ Test Setup
 
     >>> from Acquisition import aq_base
     >>> from plone import api as ploneapi
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+
+    >>> portal = self.portal
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager', 'Manager', 'Owner'])
 
     >>> def is_versionable(obj):
     ...     pr = ploneapi.portal.get_tool("portal_repository")
@@ -28,7 +33,7 @@ Versionable Types
 
 The following types support versioning::
 
-    >>> versionable_types = ["AnalysisService", "Calculation", "Method", "ARPriority"]
+    >>> versionable_types = ["AnalysisService", "Calculation"]
 
 
 Analysis Services
@@ -120,9 +125,14 @@ And the latest version should be 1::
     >>> folderitems[0]["Version"]
     1
 
+Non Versionable Types
+---------------------
+
+The following types used to be versionable in Bika LIMS in the past.
+
 
 Methods
--------
+.......
 
 Create a method for testing::
 
@@ -134,87 +144,10 @@ Process Form to notify Bika about the new content type::
 
     >>> method.processForm()
 
-Calcuations should be versionable::
+Methods shouldn't be versionable::
 
     >>> is_versionable(method)
-    True
-
-    >>> get_version(method)
-    0
-
-Create a new version – for testing, it is sufficient to call the `process_form`
-method, as this is also called after the content has been edited::
-
-    >>> method.processForm()
-
-    >>> get_version(method)
-    1
-
-The `log` view should reflect this version::
-
-    >>> log_view = method.restrictedTraverse("@@log")
-    >>> folderitems = log_view.folderitems()
-
-There should be two versions::
-
-    >>> len(folderitems)
-    2
-
-And the latest version should be 1::
-
-    >>> folderitems[0]["Version"]
-    1
-
-
-AR Priorities
--------------
-
-Create a arpriority for testing::
-
-    >>> arpriorities = self.portal.bika_setup.bika_arpriorities
-    >>> _ = arpriorities.invokeFactory("ARPriority", id="tempId", title="Test AR Priority 1")
-    >>> arpriority = arpriorities.get(_)
-
-Process Form to notify Bika about the new content type::
-
-    >>> arpriority.processForm()
-
-Calcuations should be versionable::
-
-    >>> is_versionable(arpriority)
-    True
-
-    >>> get_version(arpriority)
-    0
-
-Create a new version – for testing, it is sufficient to call the `process_form`
-arpriority, as this is also called after the content has been edited::
-
-    >>> arpriority.processForm()
-
-    >>> get_version(arpriority)
-    1
-
-The `log` view should reflect this version::
-
-    >>> log_view = arpriority.restrictedTraverse("@@log")
-    >>> folderitems = log_view.folderitems()
-
-There should be two versions::
-
-    >>> len(folderitems)
-    2
-
-And the latest version should be 1::
-
-    >>> folderitems[0]["Version"]
-    1
-
-
-Non Versionable Types
----------------------
-
-The following types used to be versionable in Bika LIMS in the past.
+    False
 
 
 Sample Points
