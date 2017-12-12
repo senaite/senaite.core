@@ -97,11 +97,16 @@ class UniqueFieldValidator:
         # return the object values if we have no catalog query
         if query is None:
             return self.get_parent_objects(context)
+
+        # avoid undefined reference of catalog in except...
+        catalog = None
+
+        # try to fetch the results via the catalog
         try:
             catalogs = api.get_catalogs_for(context)
             catalog = catalogs[0]
             return map(api.get_object, catalog(query))
-        except (IndexError, UnicodeDecodeError, ParseError) as e:
+        except (IndexError, UnicodeDecodeError, ParseError, api.BikaLIMSError) as e:
             # fall back to the object values of the parent
             logger.warn("UniqueFieldValidator: Catalog query {} failed "
                         "for catalog {} ({}) -> returning object values of {}"
