@@ -151,6 +151,7 @@ class UniqueFieldValidator:
 
     def __call__(self, value, *args, **kwargs):
         context = kwargs['instance']
+        uid = api.get_uid(context)
         field = kwargs['field']
         fieldname = field.getName()
         translate = getToolByName(context, 'translation_service').translate
@@ -168,7 +169,7 @@ class UniqueFieldValidator:
         parent_objects = self.query_parent_objects(context, query=catalog_query)
 
         for item in parent_objects:
-            if hasattr(item, 'UID') and item.UID() != context.UID() and \
+            if hasattr(item, 'UID') and item.UID() != uid and \
                fieldname in item.Schema() and \
                str(item.Schema()[fieldname].get(item)) == str(value).strip():
                 # We have to compare them as strings because
