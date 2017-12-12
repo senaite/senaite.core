@@ -56,7 +56,7 @@ class UIDReferenceField(StringField):
             return None
         obj = _get_object(context, value)
         if obj is None:
-            logger.error(
+            logger.warning(
                 "{}.{}: Resolving UIDReference failed for {}.  No object will "
                 "be returned.".format(context, self.getName(), value))
         return obj
@@ -278,13 +278,16 @@ def get_backreferences(context, relationship=None, as_brains=None):
     instance = context.aq_base
     raw_backrefs = get_storage(instance)
 
-    if relationship:
-        backrefs = list(raw_backrefs.get(relationship, []))
-        if as_brains:
-            cat = _get_catalog_for_uid(backrefs[0])
-            backrefs = cat(UID=backrefs)
-    else:
+    if not relationship:
         assert not as_brains, "You cannot use as_brains with no relationship"
-        backrefs = raw_backrefs
+        return raw_backrefs
 
-    return backrefs
+    backrefs = list(raw_backrefs.get(relationship, []))
+    if not backrefs:
+        return []
+
+    if not as_brains:
+        return backrefs
+
+    cat = _get_catalog_for_uid(backrefs[0])
+    return cat(UID=backrefs)

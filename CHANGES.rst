@@ -6,13 +6,24 @@ Changelog
 
 **Added**
 
+- #423 Instrument import interface for Abbott's m2000 Real Time
+
 **Removed**
 
 **Changed**
 
+- #469 Remove unique field validator for Batch titles
+- #459 PR-1942 Feature/instrument certification interval refactoring
+- #431 Make ARAnalysesField setter to accept Analysis/Service objects
+
 **Fixed**
 
 - #453 Sample points do not show the referenced sample types in view
+- #470 Sort order of Analyses in WS print view wrong
+- #457 Calculation referring to additional python module not triggered
+- #459 Traceback in Instruments list after adding a calibration certificate
+- #454 Click on some analyses pops up a new page instead of object log
+- #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
 - #445 Fix AR Add Form: No sample points are found if a sample type was set
 

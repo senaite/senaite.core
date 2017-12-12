@@ -16,7 +16,7 @@ available in the system and can be used to fetch results for analysis.
 
 Running this test from the buildout directory::
 
-    bin/test test_textual_doctests -t InstrumentCalibrationCertificationAndValidation
+    bin/test -t InstrumentCalibrationCertificationAndValidation
 
 Test Setup
 ==========
@@ -143,36 +143,29 @@ The instrument knows if a calibration is in progress::
     False
 
 Since multiple calibrations might be in place, the instrument needs to know
-about the latest calibration which has been done::
+about the calibration which takes the longest time::
 
     >>> calibration3 = create(instrument1, "InstrumentCalibration", title="Calibration-3")
-    >>> calibration3.setDownFrom(DateTime() - 3)
-    >>> calibration3.setDownTo(DateTime() - 1)
+    >>> calibration3.setDownFrom(DateTime())
+    >>> calibration3.setDownTo(DateTime() + 365)
 
     >>> instrument1.getLatestValidCalibration()
     <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-3>
 
-Only calibrations which are done are returned.
+Only calibrations which are currently in progress are returned.
 So if it would start tomorrow, it should not be returned::
 
     >>> calibration3.setDownFrom(DateTime() + 1)
-    >>> calibration3.setDownTo(DateTime() + 3)
     >>> calibration3.isCalibrationInProgress()
     False
-    >>> calibration3.isFutureCalibration()
-    True
     >>> instrument1.getLatestValidCalibration()
-
-    >>> calibration4 = create(instrument1, "InstrumentCalibration",title="Calibration-4")
-    >>> calibration4.setDownFrom(DateTime() - 3)
-    >>> calibration4.setDownTo(DateTime() - 1)
-    >>> instrument1.getLatestValidCalibration()
-    <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-4>
+    <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-1>
 
 If all calibrations are dated in the future, it should return none::
 
-    >>> calibration4.setDownFrom(DateTime() + 1)
-    >>> calibration4.setDownTo(DateTime() + 2)
+    >>> calibration1.setDownFrom(DateTime() + 1)
+    >>> calibration1.isCalibrationInProgress()
+    False
     >>> instrument1.getLatestValidCalibration()
 
 Instruments w/o any calibration should return no valid calibrations::
@@ -363,37 +356,28 @@ The instrument will be available after 7 days::
     7
 
 Since multiple validations might be in place, the instrument needs to know
-about the latest validation which has been done::
+about the validation which takes the longest time::
 
     >>> validation3 = create(instrument1, "InstrumentValidation", title="Validation-3")
-    >>> validation3.setDownFrom(DateTime() - 3)
-    >>> validation3.setDownTo(DateTime() - 1)
+    >>> validation3.setDownFrom(DateTime())
+    >>> validation3.setDownTo(DateTime() + 365)
 
     >>> instrument1.getLatestValidValidation()
     <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-3>
 
-Only validations which are done are returned.
+Only validations which are currently in progress are returned.
 So if it would start tomorrow, it should not be returned::
 
     >>> validation3.setDownFrom(DateTime() + 1)
-    >>> validation3.setDownTo(DateTime() + 3)
     >>> validation3.isValidationInProgress()
     False
-    >>> validation3.isFutureValidation()
-    True
     >>> instrument1.getLatestValidValidation()
-
-    >>> validation4 = create(instrument1, "InstrumentValidation", title="Validation-4")
-    >>> validation4.setDownFrom(DateTime() - 3)
-    >>> validation4.setDownTo(DateTime() - 1)
-    >>> instrument1.getLatestValidValidation()
-    <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-4>
+    <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-1>
 
 If all validations are dated in the future, it should return none::
 
-    >>> validation4.setDownFrom(DateTime() + 1)
-    >>> validation4.setDownTo(DateTime() + 2)
-    >>> validation4.isValidationInProgress()
+    >>> validation1.setDownFrom(DateTime() + 1)
+    >>> validation1.isValidationInProgress()
     False
     >>> instrument1.getLatestValidValidation()
 

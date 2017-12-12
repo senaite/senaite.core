@@ -29,10 +29,10 @@ from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 # bika.lims imports
-from bika.lims import logger
 from bika.lims.browser.widgets import ComboBoxWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims import logger
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentCertification
