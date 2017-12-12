@@ -314,6 +314,10 @@ class IInstrumentCertification(Interface):
     """Instrument Certification
     """
 
+class IInstrumentValidation(Interface):
+    """Instrument Validation
+    """
+
 class IAnalysisSpecs(Interface):
     ""
 

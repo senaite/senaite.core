@@ -1097,3 +1097,48 @@ Normalizes a string to be usable as a file name:
     Traceback (most recent call last):
     [...]
     BikaLIMSError: Type of argument must be string, found '<type 'NoneType'>'
+
+
+Check if an UID is valid
+------------------------
+
+Checks if an UID is a valid 23 alphanumeric uid:
+
+    >>> api.is_uid("ajw2uw9")
+    False
+
+    >>> api.is_uid(None)
+    False
+
+    >>> api.is_uid("")
+    False
+
+    >>> api.is_uid("0")
+    False
+
+    >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e')
+    True
+
+Checks if an UID is a valid 23 alphanumeric uid and with a brain:
+
+    >>> api.is_uid("ajw2uw9", validate=True)
+    False
+
+    >>> api.is_uid(None, validate=True)
+    False
+
+    >>> api.is_uid("", validate=True)
+    False
+
+    >>> api.is_uid("0", validate=True)
+    False
+
+    >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e', validate=True)
+    False
+
+    >>> asfolder = self.portal.bika_setup.bika_analysisservices
+    >>> serv = api.create(asfolder, "AnalysisService", title="AS test")
+    >>> serv.setKeyword("as_test")
+    >>> uid = serv.UID()
+    >>> api.is_uid(uid, validate=True)
+    True
