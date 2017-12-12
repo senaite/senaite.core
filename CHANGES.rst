@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #470 Sort order of Analyses in WS print view wrong
 - #457 Calculation referring to additional python module not triggered
 - #459 Traceback in Instruments list after adding a calibration certificate
 - #454 Click on some analyses pops up a new page instead of object log
