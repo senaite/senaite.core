@@ -29,6 +29,7 @@ class DashboardView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.dashboard_cookie = None
+        self.member = None
 
     def __call__(self):
         tofrontpage = True
@@ -37,8 +38,8 @@ class DashboardView(BrowserView):
             # If authenticated user with labman role,
             # display the Main Dashboard view
             pm = getToolByName(self.context, "portal_membership")
-            member = pm.getAuthenticatedMember()
-            roles = member.getRoles()
+            self.member = pm.getAuthenticatedMember()
+            roles = self.member.getRoles()
             tofrontpage = 'Manager' not in roles and 'LabManager' not in roles
 
         if tofrontpage:
@@ -91,7 +92,6 @@ class DashboardView(BrowserView):
         """
         selected = self.dashboard_cookie.get(selection_id)
         return selected == value
-
 
     def _create_raw_data(self):
         """
@@ -249,6 +249,10 @@ class DashboardView(BrowserView):
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
+        # Check if dashboard_cookie contains any values to query
+        # elements by
+        query = self._update_criteria_with_filters(query, 'analysisrequests')
+
         # Active Analysis Requests (All)
         total = len(catalog(query))
 
@@ -342,6 +346,10 @@ class DashboardView(BrowserView):
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
+        # Check if dashboard_cookie contains any values to query
+        # elements by
+        query = self._update_criteria_with_filters(query, 'worksheets')
+
         # Active Worksheets (all)
         total = len(bc(query))
 
@@ -401,6 +409,9 @@ class DashboardView(BrowserView):
         if filtering_allowed:
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
             query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
+
+        # Check if dashboard_cookie contains any values to query elements by
+        query = self._update_criteria_with_filters(query, 'analyses')
 
         # Active Analyses (All)
         total = len(bc(query))
@@ -608,3 +619,20 @@ class DashboardView(BrowserView):
                     del o[r]
 
         return outevo
+
+    def _update_criteria_with_filters(self, query, section_name):
+        """
+        This method updates the 'query' dictionary with the criteria stored in
+        dashboard cookie.
+
+        :param query: A dictionary with search criteria.
+        :param section_name: The dashboard section name
+        :return: The 'query' dictionary
+        """
+        if self.dashboard_cookie is None:
+            return query
+        cookie_criteria = self.dashboard_cookie.get(section_name)
+        if cookie_criteria == 'mine':
+            query['Creator'] = self.member.getId()
+            return query
+        return query
