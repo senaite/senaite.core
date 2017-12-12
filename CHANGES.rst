@@ -12,6 +12,7 @@ Changelog
 
 **Changed**
 
+- #469 Remove unique field validator for Batch titles
 - #459 PR-1942 Feature/instrument certification interval refactoring
 - #431 Make ARAnalysesField setter to accept Analysis/Service objects
 
