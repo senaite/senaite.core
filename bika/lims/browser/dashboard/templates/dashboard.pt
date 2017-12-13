@@ -431,13 +431,12 @@
 </script>
 
 <tal:section repeat="section python:view.get_sections()">
-<div class='dashboard-section'>
+<div class='dashboard-section' tal:define="section_id section/id">
     <div>
         <h2 tal:content="section/title" class='dashboard-section-title'></h2>
         <tal:dashboard_filters condition="python: view.is_filter_enable()">
             <select class="dashboard_filters"
-                tal:attributes="section_id section/id"
-                tal:define="section_id section/id">
+                tal:attributes="section_id section/id">
                 <tal:dashboard_filter_opts
                     define="options python: view.get_filter_options()"
                     repeat="option options">
@@ -511,6 +510,24 @@
         </div>
         </tal:simple_panels>
         <div class='clearfix'></div>
+    </div>
+
+     <!-- View permissions section -->
+    <div class="view-permissions-section"
+         condition="python: view.is_filter_enable() and view.is_admin_user()">
+        <h3 class='dashboard-view-permissions-section'>
+            View permissions configuration
+        </h3>
+        <tal:role-permission-block
+                repeat="role_value_pair python:view.get_dashboard_panels_visibility(section_id)">
+            <div class="role-permission-bloc">
+                <h3 class='role-permission-bloc-name'
+                tal:content="python: role_value_pair[0]"></h3>
+                <input class='role-permission-bloc-value'
+                       type="checkbox"
+                    tal:attributes="checked python: role_value_pair[1] == 'yes'">
+            </div>
+        </tal:role-permission-block>
     </div>
 </div>
 </tal:section>

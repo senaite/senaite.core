@@ -41,7 +41,7 @@
         </field>
         <value>
             <element key="analyses">null</element>
-            <element key="analysisrequest">null</element>
+            <element key="analysisrequests">null</element>
             <element key="worksheets">null</element>
         </value>
     </record>
