@@ -370,7 +370,7 @@ class TestLimitDetections(BikaFunctionalTestCase):
                   'Fe': 2} # analysisservice-7
         ans = ar.getAnalyses()
         # Sort them by getKeyword, so we get them in the same order as the ASs
-        ans = sorted(ans, key=lambda x: x.getId)
+        ans = sorted(ans, key=lambda x: x.getKeyword)
         for a in ans:
             an = a.getObject()
             idx = asidxs[an.id]
