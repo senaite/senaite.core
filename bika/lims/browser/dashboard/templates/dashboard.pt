@@ -195,6 +195,7 @@
         loadPieCharts();
         loadBarCharts();
         dashboard_cookie_controller();
+        role_permission_input_controller();
     });
 
     function loadBarCharts() {
@@ -427,6 +428,32 @@
       function build_cookie_data(data){
         return JSON.stringify(data);
       };
+      function role_permission_input_controller() {
+        /* Ajax post to update registry values */
+        var section_id, role, chk_val;
+        var role_checks = $('input.role-permission-bloc-value');
+        for(counter = 0; counter < role_checks.length; counter++){
+          selector = role_checks[counter];
+          $(selector).live('change', function(){
+            section_id = $(this).attr('section_id');
+            role = $(this).attr('role_id');
+            chk_val = $(this).is(':checked');
+            // AJAX post
+            $.ajax({
+              dataType: 'json',
+              async: false,
+              type: 'POST',
+              url: 'dashboard_view_permissions_update',
+              data: {
+                'section_name': section_id,
+                'role_id': role,
+                'check_state': chk_val,
+                '_authenticator': $('input[name=\'_authenticator\']').val()
+              }
+            });
+          });
+        }
+      }
     }(jQuery));
 </script>
 
@@ -525,7 +552,10 @@
                 tal:content="python: role_value_pair[0]"></h3>
                 <input class='role-permission-bloc-value'
                        type="checkbox"
-                    tal:attributes="checked python: role_value_pair[1] == 'yes'">
+                    tal:attributes="
+                        checked python: role_value_pair[1] == 'yes';
+                        role_id python: role_value_pair[0];
+                        section_id section_id;">
             </div>
         </tal:role-permission-block>
     </div>

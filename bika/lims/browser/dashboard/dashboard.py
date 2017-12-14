@@ -12,6 +12,7 @@ from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone import api
+from plone import protect
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -23,6 +24,63 @@ from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
+
+
+def get_dashboard_registry_record():
+    """
+    Return the 'bika.lims.dashboard_panels_visibility' values.
+    :return: A dictionary or None
+    """
+    registry = api.portal.get_registry_record(
+        'bika.lims.dashboard_panels_visibility')
+    if registry is None:
+        logger.warn('Registry bika.lims.dashboard_panels_visibility not '
+                    'found.')
+        return None
+    return registry
+
+
+def set_dashboard_registry_record(registry_info):
+    """
+    Sets the 'bika.lims.dashboard_panels_visibility' values.
+
+    :param registry_info: A dictionary type object with all its values as
+    *unicode* objects.
+    :return: A dictionary or None
+    """
+    api.portal.set_registry_record(
+        'bika.lims.dashboard_panels_visibility', registry_info)
+
+
+def setup_dashboard_panels_visibility_registry(section_name):
+    """
+    It gives 'yes' values to all roles inside 'section_name' key values in
+    'bika.lims.dashboard_panels_visibility' registry.
+    :param section_name:
+    :return: An string like: "role1,yes,role2,no,rol3,no"
+    """
+    registry_info = get_dashboard_registry_record()
+    if registry_info is None:
+        return None
+    role_permissions_list = []
+    # Getting roles defined in the system
+    roles = []
+    acl_users = api.get_tool("acl_users")
+    roles_tree = acl_users.portal_role_manager.listRoleIds()
+    for role in roles_tree:
+        roles.append(role)
+    # Set view permissions to each role as 'yes':
+    # "role1,yes,role2,no,rol3,no"
+    for role in roles:
+        role_permissions_list.append(role)
+        role_permissions_list.append('yes')
+    role_permissions = ','.join(role_permissions_list)
+
+    # Set permissions string into dict
+    registry_info[section_name] = get_unicode(role_permissions)
+    # Set new values to registry record
+    set_dashboard_registry_record(registry_info)
+    return registry_info
 
 
 class DashboardView(BrowserView):
@@ -656,7 +714,7 @@ class DashboardView(BrowserView):
         :return: a list of tuples.
         """
         result = []
-        registry_info = self._get_dashboard_registry_record()
+        registry_info = get_dashboard_registry_record()
         if registry_info is None:
             return result
         pairs = registry_info.get(section_name)
@@ -665,53 +723,52 @@ class DashboardView(BrowserView):
             return result
         if pairs == 'null':
             # Registry hasn't been set yet
-            self._setup_dashboard_panels_visibility_registry(
-                section_name)
+            setup_dashboard_panels_visibility_registry(section_name)
             return self.get_dashboard_panels_visibility(section_name)
         pairs = pairs.split(',')
         result = [
             (pairs[i], pairs[i+1]) for i in range(len(pairs)) if i % 2 == 0]
         return result
 
-    def _setup_dashboard_panels_visibility_registry(self, section_name):
-        """
-        It gives 'yes' values to all roles inside 'section_name' key values in
-        'bika.lims.dashboard_panels_visibility' registry.
-        :param section_name:
-        :return: An string like: "role1,yes,role2,no,rol3,no"
-        """
-        registry_info = self._get_dashboard_registry_record()
-        if registry_info is None:
-            return None
-        role_permissions_list = []
-        # Getting roles defined in the system
-        roles = []
-        roles_tree = self.portal.acl_users.portal_role_manager.listRoleIds()
-        for role in roles_tree:
-            roles.append(role)
-        # Set view permissions to each role as 'yes':
-        # "role1,yes,role2,no,rol3,no"
-        for role in roles:
-            role_permissions_list.append(role)
-            role_permissions_list.append('yes')
-        role_permissions = ','.join(role_permissions_list)
 
+class DashboardViewPermissionUpdate(BrowserView):
+    """
+    Updates the values in 'bika.lims.dashboard_panels_visibility' registry.
+    """
+
+    def __call__(self):
+        protect.CheckAuthenticator(self.request)
+        # Getting values from post
+        section_name = self.request.get('section_name', None)
+        if section_name is None:
+            return None
+        role_id = self.request.get('role_id', None)
+        if role_id is None:
+            return None
+        check_state = self.request.get('check_state', None)
+        if check_state is None:
+            return None
+        elif check_state == 'false':
+            check_state = 'no'
+        else:
+            check_state = 'yes'
+        # Update registry
+        registry_info = get_dashboard_registry_record()
+        pairs = registry_info.get(section_name)
+        pairs = get_strings(pairs)
+        if pairs is None:
+            return None
+        if pairs == 'null':
+            # Registry hasn't been set yet
+            return None
+        pairs = pairs.split(',')
+
+        for i in range(len(pairs)):
+            if i % 2 == 0 and pairs[i] == role_id:
+                # update record
+                pairs[i + 1] = check_state
+        role_permissions = ','.join(pairs)
         # Set permissions string into dict
         registry_info[section_name] = get_unicode(role_permissions)
-        # Set new values to registry record
-        api.portal.set_registry_record(
-            'bika.lims.dashboard_panels_visibility', registry_info)
-        return registry_info
-
-    def _get_dashboard_registry_record(self):
-        """
-        Return the 'bika.lims.dashboard_panels_visibility' values.
-        :return: A dictionary or None
-        """
-        registry = api.portal.get_registry_record(
-            'bika.lims.dashboard_panels_visibility')
-        if registry is None:
-            logger.warn('Registry bika.lims.dashboard_panels_visibility not '
-                        'found.')
-            return None
-        return registry
+        set_dashboard_registry_record(registry_info)
+        return True
