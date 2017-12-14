@@ -83,6 +83,23 @@ def setup_dashboard_panels_visibility_registry(section_name):
     return registry_info
 
 
+def is_panel_visible_for_user(panel, user):
+    """
+    Checks if the user is allowed to see the panel
+    :param panel: panel ID as tring
+    :param user: a MemberData object
+    :return: Boolean
+    """
+    roles = user.getRoles()
+    panels_visibility = get_strings(get_dashboard_registry_record())
+    pairs = panels_visibility.get(panel).split(',')
+    for i in range(len(pairs)):
+        if i % 2 == 0 and pairs[i] in roles:
+            if pairs[i+1] == 'yes':
+                return True
+    return False
+
+
 class DashboardView(BrowserView):
     template = ViewPageTemplateFile("templates/dashboard.pt")
 
@@ -92,15 +109,11 @@ class DashboardView(BrowserView):
         self.member = None
 
     def __call__(self):
-        tofrontpage = True
+        tofrontpage = False
         mtool=getToolByName(self.context, 'portal_membership')
-        if not mtool.isAnonymousUser() and self.context.bika_setup.getDashboardByDefault():
-            # If authenticated user with labman role,
-            # display the Main Dashboard view
-            pm = getToolByName(self.context, "portal_membership")
-            self.member = pm.getAuthenticatedMember()
-            roles = self.member.getRoles()
-            tofrontpage = 'Manager' not in roles and 'LabManager' not in roles
+        if mtool.isAnonymousUser() or \
+                not self.context.bika_setup.getDashboardByDefault():
+            tofrontpage = True
 
         if tofrontpage:
             self.request.response.redirect(self.portal_url + "/bika-frontpage")
@@ -155,12 +168,17 @@ class DashboardView(BrowserView):
 
     def is_admin_user(self):
         """
-        Checks if the user is the admin user.
+        Checks if the user is the admin or a SiteAdmin user.
         :return: Boolean
         """
         user = api.user.get_current()
         username = user and user.getUserName() or None
-        return username == 'admin'
+        if username == 'admin':
+            return True
+        roles = user.getRoles()
+        if 'Site Administrator' in roles:
+            return True
+        return False
 
     def _create_raw_data(self):
         """
@@ -262,9 +280,14 @@ class DashboardView(BrowserView):
                  'title': <section_title>,
                 'panels': <array of panels>}
         """
-        sections = [self.get_analyses_section(),
-                    self.get_analysisrequests_section(),
-                    self.get_worksheets_section()]
+        sections = []
+        user = api.user.get_current()
+        if is_panel_visible_for_user('analyses', user):
+            sections.append(self.get_analyses_section())
+        if is_panel_visible_for_user('analysisrequests', user):
+            sections.append(self.get_analysisrequests_section())
+        if is_panel_visible_for_user('worksheets', user):
+            sections.append(self.get_worksheets_section())
         return sections
 
     def is_filter_enable(self):

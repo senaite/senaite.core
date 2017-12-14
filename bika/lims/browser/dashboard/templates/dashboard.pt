@@ -541,7 +541,7 @@
 
      <!-- View permissions section -->
     <div class="view-permissions-section"
-         condition="python: view.is_filter_enable() and view.is_admin_user()">
+         tal:condition="python: view.is_filter_enable() and view.is_admin_user()">
         <h3 class='dashboard-view-permissions-section'>
             View permissions configuration
         </h3>
