@@ -140,7 +140,6 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
             return [""]
         return sample_type_titles
 
-    @deprecated("Please use getSampleTypeTitles instead")
     def getSampleTypeTitle(self):
         """Returns a comma separated list of sample type titles
         """

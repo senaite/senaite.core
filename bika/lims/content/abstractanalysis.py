@@ -303,8 +303,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         doesn't allow manual input of detection limits, returns the value set
         by default in the Analysis Service
         """
-        operand = self.getDetectionLimitOperand()
-        if operand and operand == '<':
+        if self.isLowerDetectionLimit():
             result = self.getResult()
             try:
                 # in this case, the result itself is the LDL.
@@ -324,8 +323,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         doesn't allow manual input of detection limits, returns the value set
         by default in the Analysis Service
         """
-        operand = self.getDetectionLimitOperand()
-        if operand and operand == '>':
+        if self.isUpperDetectionLimit():
             result = self.getResult()
             try:
                 # in this case, the result itself is the LDL.
@@ -342,9 +340,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns True if the result is below the Lower Detection Limit or
         if Lower Detection Limit has been manually set
         """
-        dl = self.getDetectionLimitOperand()
-        if dl and dl == '<':
+        if self.isLowerDetectionLimit():
             return True
+
         result = self.getResult()
         if result and str(result).strip().startswith('<'):
             return True
@@ -362,9 +360,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns True if the result is above the Upper Detection Limit or
         if Upper Detection Limit has been manually set
         """
-        dl = self.getDetectionLimitOperand()
-        if dl and dl == '>':
+        if self.isUpperDetectionLimit():
             return True
+
         result = self.getResult()
         if result and str(result).strip().startswith('>'):
             return True
@@ -391,18 +389,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns True if the result for this analysis represents a Lower
         Detection Limit. Otherwise, returns False
         """
-        if self.isBelowLowerDetectionLimit():
-            if self.getDetectionLimitOperand() == '<':
-                return True
+        return self.getDetectionLimitOperand() == '<'
 
     @security.public
     def isUpperDetectionLimit(self):
         """Returns True if the result for this analysis represents an Upper
         Detection Limit. Otherwise, returns False
         """
-        if self.isAboveUpperDetectionLimit():
-            if self.getDetectionLimitOperand() == '>':
-                return True
+        return self.getDetectionLimitOperand() == '>'
 
     @security.public
     def getDependents(self):
@@ -998,7 +992,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Is assigned to a worksheet?
             wss = self.getBackReferences('WorksheetAnalysis')
             if len(wss) > 0:
-                analyst = wss[0].getAnalyst()
+                analyst = wss[0].getAnalyst().getUsername()
                 field.set(self, analyst)
         return analyst if analyst else ''
 
