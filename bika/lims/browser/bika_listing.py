@@ -1603,11 +1603,7 @@ class BikaListingTable(tableview.Table):
 
         :return: html code
         """
-        adapters = getAdapters((self, ), ITopRightListingHook)
-        export_options = ''
-        for name, adapter in adapters:
-            export_options += adapter(self.request)
-        return export_options
+        return self.get_adapters_html(ITopRightListingHook)
 
     def get_top_left_hooks(self):
         """
@@ -1617,11 +1613,7 @@ class BikaListingTable(tableview.Table):
 
         :return: html code
         """
-        adapters = getAdapters((self, ), ITopLeftListingHook)
-        export_options = ''
-        for name, adapter in adapters:
-            export_options += adapter(self.request)
-        return export_options
+        return self.get_adapters_html(ITopLeftListingHook)
 
     def get_top_wide_hooks(self):
         """
@@ -1631,7 +1623,12 @@ class BikaListingTable(tableview.Table):
 
         :return: html code
         """
-        adapters = getAdapters((self, ), ITopWideListingHook)
+        return self.get_adapters_html(ITopWideListingHook)
+
+    def get_adapters_html(self, adapter_provider=None):
+        if not adapter_provider:
+            return ''
+        adapters = getAdapters((self, ), adapter_provider)
         export_options = ''
         for name, adapter in adapters:
             export_options += adapter(self.request)
