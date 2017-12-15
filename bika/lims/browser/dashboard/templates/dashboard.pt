@@ -461,23 +461,20 @@
 <div class='dashboard-section' tal:define="section_id section/id">
     <div>
         <h2 tal:content="section/title" class='dashboard-section-title'></h2>
-        <tal:dashboard_filters condition="python: view.is_filter_enable()">
-            <select class="dashboard_filters"
-                tal:attributes="section_id section/id">
-                <tal:dashboard_filter_opts
-                    define="options python: view.get_filter_options()"
-                    repeat="option options">
-                    <option
-                        tal:attributes="
-                            value python:option;
-                            selected python: 'selected' if view.is_filter_selected(section_id, option) else '';"
-                        tal:content="python:options.getValue(option)">
-                    </option>
-                </tal:dashboard_filter_opts>
-
-            </select>
-
-        </tal:dashboard_filters>
+        <select class="dashboard_filters"
+            tal:attributes="section_id section/id"
+            tal:define="section_id section/id">
+            <tal:dashboard_filter_opts
+                define="options python: view.get_filter_options()"
+                repeat="option options">
+                <option
+                    tal:attributes="
+                        value python:option;
+                        selected python: 'selected' if view.is_filter_selected(section_id, option) else '';"
+                    tal:content="python:options.getValue(option)">
+                </option>
+            </tal:dashboard_filter_opts>
+        </select>
     </div>
     <div class='dashboard-panels'>
 

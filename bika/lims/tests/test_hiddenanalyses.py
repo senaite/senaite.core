@@ -3,14 +3,13 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-import unittest
+from plone.app.testing import login
+from plone.app.testing import setRoles
 
 try:
     import unittest2 as unittest
@@ -19,11 +18,14 @@ except ImportError: # Python 2.7
 
 
 class TestHiddenAnalyses(BikaFunctionalTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(TestHiddenAnalyses, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
+
         servs = self.portal.bika_setup.bika_analysisservices
 
         # analysis-service-3: Calcium (Ca)
@@ -55,7 +57,6 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         self.analysisprofile.setAnalysisServicesSettings([])
         self.artemplate.setAnalysisServicesSettings([])
 
-        logout()
         super(TestHiddenAnalyses, self).tearDown()
 
     def test_service_hidden_service(self):
@@ -253,7 +254,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
 
         # Modify visibility for Calcium in AR
-        uid = self.services[0].UID();
+        uid = self.services[0].UID()
         sets = [{'uid': uid}]
         ar.setAnalysisServicesSettings(sets)
         self.assertFalse(ar.isAnalysisServiceHidden(uid))
@@ -288,7 +289,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
 
         # AR with template with no changes
-        values['Template'] = self.artemplate
+        values['Template'] = self.artemplate.UID()
         del values['Profiles']
         ar = create_analysisrequest(client, request, values, services)
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[0]))
@@ -373,5 +374,5 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestHiddenAnalyses))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
