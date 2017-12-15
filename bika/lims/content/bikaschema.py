@@ -46,8 +46,3 @@ BikaFolderSchema['constrainTypesMode'].schemata = 'settings'
 BikaFolderSchema['locallyAllowedTypes'].widget.visible = False
 BikaFolderSchema['immediatelyAddableTypes'].widget.visible = False
 BikaFolderSchema['constrainTypesMode'].widget.visible = False
-
-
-BikaFolderSchema['title'].validators = ('uniquefieldvalidator',)
-# Update the validation layer after change the validator in runtime
-BikaFolderSchema['title']._validationLayer()

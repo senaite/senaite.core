@@ -1,7 +1,37 @@
 Changelog
 =========
 
-1.1.7 (unreleased)
+1.1.8 (unreleased)
+------------------
+
+**Added**
+
+- #423 Instrument import interface for Abbott's m2000 Real Time
+
+**Removed**
+
+**Changed**
+
+- #469 Remove unique field validator for Batch titles
+- #459 PR-1942 Feature/instrument certification interval refactoring
+- #431 Make ARAnalysesField setter to accept Analysis/Service objects
+
+**Fixed**
+
+- #466 UnicodeDecodeError if unicode characters are entered into the title field
+- #453 Sample points do not show the referenced sample types in view
+- #470 Sort order of Analyses in WS print view wrong
+- #457 Calculation referring to additional python module not triggered
+- #459 Traceback in Instruments list after adding a calibration certificate
+- #454 Click on some analyses pops up a new page instead of object log
+- #452 Traceback error when deleting attachment from Analysis Request
+- #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
+- #445 Fix AR Add Form: No sample points are found if a sample type was set
+
+**Security**
+
+
+1.1.7 (2017-12-01)
 ------------------
 
 **Added**
@@ -11,9 +41,6 @@ Changelog
 **Removed**
 
 - #417 Remove calls to deprecated function getService (from AbstractAnalysis)
-
-**Changed**
-
 
 **Fixed**
 
@@ -33,9 +60,6 @@ Changelog
 - #418 LabClerks don't have access to AR view after received and before verified
 - #415 Referencefield JS UID check: Don't remove Profile UIDs
 - #411 Analyses don't get selected when copying an Analysis Request without profiles
-
-**Security**
-
 
 
 1.1.6 (2017-11-24)

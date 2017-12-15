@@ -7,8 +7,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.analysisrequest.reject import \
-    AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis
 from bika.lims.utils import tmpID
@@ -311,6 +309,12 @@ def notify_rejection(analysisrequest):
     :param analysisrequest: Analysis Request to which the notification refers
     :returns: true if success
     """
+
+    # We do this imports here to avoid circular dependencies until we deal
+    # better with this notify_rejection thing.
+    from bika.lims.browser.analysisrequest.reject import \
+        AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
+
     arid = analysisrequest.getId()
 
     # This is the template to render for the pdf that will be either attached

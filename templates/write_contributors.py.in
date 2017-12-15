@@ -27,6 +27,11 @@ REPLACEMENTS = {
     'GitHub':                    None, # Ommit GitHub commits
     'Hocine':                    'Hocine Bendou',
     'Jordi Puiggené Valls':      'Jordi Puiggené',
+    'Jordi':                     'Jordi Puiggené',
+    'jordi.puiggene@gmail.com':  'jpuiggene@naralabs.com',
+    'Juan Gallostra Acín':       'Juan Gallostra',
+    'Lunga':                     'Lunga Baliwe',
+    'Nihad M':                   'Nihad Mammadli',
     'Nihadness':                 'Nihad Mammadli',
     'Pau Soliva Dueso':          'Pau Soliva',
     'Pieter':                    'Pieter van der Merwe',
@@ -34,20 +39,19 @@ REPLACEMENTS = {
     'admin@bikalabs.com':        None,
     'aleksandrmelnikov':         'Aleksandr Melnikov',
     'anneline':                  'Anneline Sweetname',
+    'campbell_bika':             'Campbell McKellar-Basset',
     'campbellbasset':            'Campbell McKellar-Basset',
     'hocine':                    'Hocine Bendou',
     'hocinebendou':              'Hocine Bendou',
     'jordi@zeus':                None,
     'karnatijayadeep':           'Jayadeep Karnati',
+    'lemoene Smit':              'Lemoene Smit',
     'lemoene':                   'Lemoene',
     'pietercvdm':                'Pieter van der Merwe',
     'ramonski':                  'Ramon Bartl',
     'root@lynn':                 None,
+    'veroc':                     'Oliver Roch',
     'zylinx':                    'Alexander Karlsson',
-    'lemoene Smit':              'Lemoene Smit',
-    'campbell_bika':             'Campbell McKellar-Basset',
-    'jordi.puiggene@gmail.com':  'jpuiggene@naralabs.com'
-
 }
 
 
@@ -72,7 +76,7 @@ def get_git_contributors_section():
     # The sorting by number of commits reverse will be done later, but we need
     # this initial list sorted this way, cause if there is a duplicate, we want
     # the last email used by that contributor.
-    command = "git log --all --format=%cn|%ce"
+    command = "git log --no-merges --format=%cn|%ce"
 
     # Resolve contributors and build a contributors dictionary, with the number
     # of commits for each contributor
