@@ -24,9 +24,9 @@ from bika.lims.api import get_tool, get_object_by_uid, get_current_user, \
     get_object, get_transitions_for
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import ITopRightListingHook
-from bika.lims.interfaces import ITopLeftListingHook
-from bika.lims.interfaces import ITopWideListingHook
+from bika.lims.interfaces import ITopRightHTMLComponentsHook
+from bika.lims.interfaces import ITopLeftHTMLComponentsHook
+from bika.lims.interfaces import ITopWideHTMLComponentsHook
 from bika.lims.utils import getFromString
 from bika.lims.utils import getHiddenAttributesForClass, isActive
 from bika.lims.utils import t
@@ -1603,7 +1603,7 @@ class BikaListingTable(tableview.Table):
 
         :return: html code
         """
-        return self.get_adapters_html(ITopRightListingHook)
+        return self.get_adapters_html(ITopRightHTMLComponentsHook)
 
     def get_top_left_hooks(self):
         """
@@ -1613,7 +1613,7 @@ class BikaListingTable(tableview.Table):
 
         :return: html code
         """
-        return self.get_adapters_html(ITopLeftListingHook)
+        return self.get_adapters_html(ITopLeftHTMLComponentsHook)
 
     def get_top_wide_hooks(self):
         """
@@ -1623,7 +1623,7 @@ class BikaListingTable(tableview.Table):
 
         :return: html code
         """
-        return self.get_adapters_html(ITopWideListingHook)
+        return self.get_adapters_html(ITopWideHTMLComponentsHook)
 
     def get_adapters_html(self, adapter_provider=None):
         if not adapter_provider:

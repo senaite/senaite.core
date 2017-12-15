@@ -809,17 +809,17 @@ class IGenerateID(Interface):
     """Marker Interface to generate an ID
     """
 
-class ITopRightListingHook(Interface):
+class ITopRightHTMLComponentsHook(Interface):
     """
-    Marker interface to hook list exporters in bikalisting
-    """
-
-class ITopLeftListingHook(Interface):
-    """
-    Marker interface to hook list exporters in bikalisting
+    Marker interface to hook html components in bikalisting
     """
 
-class ITopWideListingHook(Interface):
+class ITopLeftHTMLComponentsHook(Interface):
     """
-    Marker interface to hook list exporters in bikalisting
+    Marker interface to hook html components in bikalisting
+    """
+
+class ITopWideHTMLComponentsHook(Interface):
+    """
+    Marker interface to hook html components in bikalisting
     """
