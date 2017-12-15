@@ -46,8 +46,7 @@ class DashboardView(BrowserView):
             self.request.response.redirect(self.portal_url + "/bika-frontpage")
         else:
             self._init_date_range()
-            self.dashboard_cookie = get_strings(
-                json.loads(self.check_dashboard_cookie()))
+            self.dashboard_cookie = self.check_dashboard_cookie()
             return self.template()
 
     def check_dashboard_cookie(self):
@@ -60,13 +59,8 @@ class DashboardView(BrowserView):
         If it should exist and already exists, it returns the value.
         Otherwise, the function returns None.
 
-        :return: a dictionary or None
+        :return: a dictionary of strings
         """
-        # Check setup configuration
-        if not self.is_filter_enable():
-            self.request.RESPONSE.setCookie(
-                DASHBOARD_FILTER_COOKIE, None, path='/', max_age=0)
-            return None
         # Getting cookie
         cookie_raw = self.request.get(DASHBOARD_FILTER_COOKIE, None)
         # If it doesn't exist, create it with default values
@@ -78,7 +72,7 @@ class DashboardView(BrowserView):
                 quoted=False,
                 path='/')
             return cookie_raw
-        return cookie_raw
+        return get_strings(json.loads(cookie_raw))
 
     def is_filter_selected(self, selection_id, value):
         """
@@ -198,16 +192,9 @@ class DashboardView(BrowserView):
                     self.get_worksheets_section()]
         return sections
 
-    def is_filter_enable(self):
-        """
-        Returns whether the dashboard filter is enabled.
-        :return: Boolean
-        """
-        return self.portal.bika_setup.getDashboardAllMine()
-
     def get_filter_options(self):
         """
-        Returns whether the dashboard filter is enabled.
+        Returns dasboard filter options.
         :return: Boolean
         """
         dash_opt = DisplayList((
@@ -634,5 +621,4 @@ class DashboardView(BrowserView):
         cookie_criteria = self.dashboard_cookie.get(section_name)
         if cookie_criteria == 'mine':
             query['Creator'] = self.member.getId()
-            return query
         return query

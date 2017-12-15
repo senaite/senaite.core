@@ -54,9 +54,4 @@
       handler="bika.lims.subscribers.dep_cookie.SetDepartmentCookies"
       />
 
-  <!-- Delete dashboard cookies -->
-  <subscriber
-      for="Products.PlonePAS.events.UserLoggedOutEvent"
-      handler="bika.lims.subscribers.dashboard_cookies.ClearDashboardCookies"
-      />
 </configure>
