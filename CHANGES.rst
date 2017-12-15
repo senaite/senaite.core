@@ -12,11 +12,15 @@ Changelog
 
 **Changed**
 
+- #469 Remove unique field validator for Batch titles
 - #459 PR-1942 Feature/instrument certification interval refactoring
 - #431 Make ARAnalysesField setter to accept Analysis/Service objects
 
 **Fixed**
 
+- #466 UnicodeDecodeError if unicode characters are entered into the title field
+- #453 Sample points do not show the referenced sample types in view
+- #470 Sort order of Analyses in WS print view wrong
 - #457 Calculation referring to additional python module not triggered
 - #459 Traceback in Instruments list after adding a calibration certificate
 - #454 Click on some analyses pops up a new page instead of object log

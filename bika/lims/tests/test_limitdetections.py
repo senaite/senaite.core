@@ -3,16 +3,14 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims import logger
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from Products.CMFCore.utils import getToolByName
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-import unittest
+from plone.app.testing import login
+from plone.app.testing import setRoles
 
 try:
     import unittest2 as unittest
@@ -21,10 +19,12 @@ except ImportError: # Python 2.7
 
 
 class TestLimitDetections(BikaFunctionalTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(TestLimitDetections, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
         servs = self.portal.bika_setup.bika_analysisservices
         # analysis-service-3: Calcium (Ca)
@@ -50,7 +50,6 @@ class TestLimitDetections(BikaFunctionalTestCase):
             s.setAllowManualDetectionLimit(False)
             s.setLowerDetectionLimit(str(0))
             s.setUpperDetectionLimit(str(1000))
-        logout()
         super(TestLimitDetections, self).tearDown()
 
     def test_ar_manage_results_detectionlimit_selector_manual(self):
@@ -366,10 +365,13 @@ class TestLimitDetections(BikaFunctionalTestCase):
         ar = create_analysisrequest(client, request, values, services)
 
         # Basic detection limits
-        asidxs = {'analysisservice-3': 0,
-                  'analysisservice-6': 1,
-                  'analysisservice-7': 2}
-        for a in ar.getAnalyses():
+        asidxs = {'Ca': 0, # analysisservice-3
+                  'Cu': 1, # analysisservice-6
+                  'Fe': 2} # analysisservice-7
+        ans = ar.getAnalyses()
+        # Sort them by getKeyword, so we get them in the same order as the ASs
+        ans = sorted(ans, key=lambda x: x.getKeyword)
+        for a in ans:
             an = a.getObject()
             idx = asidxs[an.id]
             self.assertEqual(an.getLowerDetectionLimit(), float(self.lds[idx]['min']))
@@ -483,5 +485,5 @@ class TestLimitDetections(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestLimitDetections))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
