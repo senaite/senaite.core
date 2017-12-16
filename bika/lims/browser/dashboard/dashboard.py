@@ -36,7 +36,6 @@ def get_dashboard_registry_record():
     if registry is None:
         logger.warn('Registry bika.lims.dashboard_panels_visibility not '
                     'found.')
-        return None
     return registry
 
 
@@ -109,18 +108,21 @@ class DashboardView(BrowserView):
         self.member = None
 
     def __call__(self):
-        tofrontpage = False
-        mtool=getToolByName(self.context, 'portal_membership')
-        if mtool.isAnonymousUser() or \
-                not self.context.bika_setup.getDashboardByDefault():
-            tofrontpage = True
+        frontpage_url = self.portal_url + "/bika-frontpage"
+        if not self.context.bika_setup.getDashboardByDefault():
+            # Do not render dashboard, render frontpage instead
+            self.request.response.redirect(frontpage_url)
+            return
 
-        if tofrontpage:
-            self.request.response.redirect(self.portal_url + "/bika-frontpage")
-        else:
-            self._init_date_range()
-            self.dashboard_cookie = self.check_dashboard_cookie()
-            return self.template()
+        mtool = getToolByName(self.context, 'portal_membership')
+        if mtool.isAnonymousUser():
+            # Anonymous user, redirect to frontpage
+            self.request.response.redirect(frontpage_url)
+            return
+
+        self._init_date_range()
+        self.dashboard_cookie = self.check_dashboard_cookie()
+        return self.template()
 
     def check_dashboard_cookie(self):
         """
