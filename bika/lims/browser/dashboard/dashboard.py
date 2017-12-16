@@ -3,23 +3,33 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import datetime
+import json
+from calendar import monthrange
+
+from DateTime import DateTime
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.browser import BrowserView
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from calendar import monthrange
-from DateTime import DateTime
-import plone
-import json
-import datetime
+from bika.lims.browser import BrowserView
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.utils import get_strings
+
+DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 
 
 class DashboardView(BrowserView):
     template = ViewPageTemplateFile("templates/dashboard.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.dashboard_cookie = None
+        self.member = None
 
     def __call__(self):
         tofrontpage = True
@@ -28,15 +38,67 @@ class DashboardView(BrowserView):
             # If authenticated user with labman role,
             # display the Main Dashboard view
             pm = getToolByName(self.context, "portal_membership")
-            member = pm.getAuthenticatedMember()
-            roles = member.getRoles()
+            self.member = pm.getAuthenticatedMember()
+            roles = self.member.getRoles()
             tofrontpage = 'Manager' not in roles and 'LabManager' not in roles
 
-        if tofrontpage == True:
+        if tofrontpage:
             self.request.response.redirect(self.portal_url + "/bika-frontpage")
         else:
             self._init_date_range()
+            self.dashboard_cookie = self.check_dashboard_cookie()
             return self.template()
+
+    def check_dashboard_cookie(self):
+        """
+        Check if the dashboard cookie should exist through bikasetup
+        configuration.
+
+        If it should exist but doesn't exist yet, the function creates it
+        with all values as default.
+        If it should exist and already exists, it returns the value.
+        Otherwise, the function returns None.
+
+        :return: a dictionary of strings
+        """
+        # Getting cookie
+        cookie_raw = self.request.get(DASHBOARD_FILTER_COOKIE, None)
+        # If it doesn't exist, create it with default values
+        if cookie_raw is None:
+            cookie_raw = self._create_raw_data()
+            self.request.response.setCookie(
+                DASHBOARD_FILTER_COOKIE,
+                json.dumps(cookie_raw),
+                quoted=False,
+                path='/')
+            return cookie_raw
+        return get_strings(json.loads(cookie_raw))
+
+    def is_filter_selected(self, selection_id, value):
+        """
+        Compares whether the 'selection_id' parameter value saved in the
+        cookie is the same value as the "value" parameter.
+
+        :param selection_id: a string as a dashboard_cookie key.
+        :param value: The value to compare against the value from
+        dashboard_cookie key.
+        :return: Boolean.
+        """
+        selected = self.dashboard_cookie.get(selection_id)
+        return selected == value
+
+    def _create_raw_data(self):
+        """
+        Gathers the different sections ids and creates a string as first
+        cookie data.
+
+        :return: A dictionary like:
+            {'analyses':'all','analysisrequest':'all','worksheets':'all'}
+        """
+        result = {}
+        for section in self.get_sections():
+            result[section.get('id')] = 'all'
+        return result
 
     def _init_date_range(self):
         """ Sets the date range from which the data must be retrieved.
@@ -130,6 +192,17 @@ class DashboardView(BrowserView):
                     self.get_worksheets_section()]
         return sections
 
+    def get_filter_options(self):
+        """
+        Returns dasboard filter options.
+        :return: Boolean
+        """
+        dash_opt = DisplayList((
+            ('all', _('All')),
+            ('mine', _('Mine')),
+        ))
+        return dash_opt
+
     def _getStatistics(self, name, description, url, catalog, criterias, total):
         out = {'type':        'simple-panel',
                'name':        name,
@@ -162,6 +235,10 @@ class DashboardView(BrowserView):
         if filtering_allowed:
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
+
+        # Check if dashboard_cookie contains any values to query
+        # elements by
+        query = self._update_criteria_with_filters(query, 'analysisrequests')
 
         # Active Analysis Requests (All)
         total = len(catalog(query))
@@ -256,6 +333,10 @@ class DashboardView(BrowserView):
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
+        # Check if dashboard_cookie contains any values to query
+        # elements by
+        query = self._update_criteria_with_filters(query, 'worksheets')
+
         # Active Worksheets (all)
         total = len(bc(query))
 
@@ -315,6 +396,9 @@ class DashboardView(BrowserView):
         if filtering_allowed:
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
             query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
+
+        # Check if dashboard_cookie contains any values to query elements by
+        query = self._update_criteria_with_filters(query, 'analyses')
 
         # Active Analyses (All)
         total = len(bc(query))
@@ -522,3 +606,19 @@ class DashboardView(BrowserView):
                     del o[r]
 
         return outevo
+
+    def _update_criteria_with_filters(self, query, section_name):
+        """
+        This method updates the 'query' dictionary with the criteria stored in
+        dashboard cookie.
+
+        :param query: A dictionary with search criteria.
+        :param section_name: The dashboard section name
+        :return: The 'query' dictionary
+        """
+        if self.dashboard_cookie is None:
+            return query
+        cookie_criteria = self.dashboard_cookie.get(section_name)
+        if cookie_criteria == 'mine':
+            query['Creator'] = self.member.getId()
+        return query

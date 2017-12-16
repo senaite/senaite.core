@@ -25,13 +25,33 @@
     .dashboard-section {
         padding: 20px 0 0;
     }
-
-    .dashboard-section h2 {
+    .dashboard-section-head {
         background-color: #ccc;
         border-radius: 5px 5px 0 0;
+        padding: 3px 15px;
+    }
+    .dashboard-section-head div.actions {
+        float:right;
+        text-align:right;
+        width:30%;
+    }
+    .dashboard-section-head div.actions select {
+        padding: 0 5px;
+        vertical-align: top;
+    }
+    .dashboard-section-head:after {
+        clear: both;
+        content: " ";
+        display: block;
+        font-size: 0;
+        height: 0;
+        visibility: hidden;
+    }
+    .dashboard-section h2 {
+        float:left;
         font-size: 1.4em;
         font-weight: bold;
-        padding: 3px 15px;
+        width:70%;
     }
     .dashboard-section .h2-legend {
         font-size: 0.9em;
@@ -194,6 +214,7 @@
     $(document).ready(function(){
         loadPieCharts();
         loadBarCharts();
+        dashboard_cookie_controller();
     });
 
     function loadBarCharts() {
@@ -389,12 +410,67 @@
                 .attr("d", arc);
         });
       }
+      function dashboard_cookie_controller() {
+        /* Links a linker controller to each dashboard filter selector.
+        This controller reads the cookie data once the selector has been
+        modified and updates its data.
+        */
+        var selector;
+        var selector_section_id;
+        var cookie;
+        var counter;
+        var cookie_id = 'dashboard_filter_cookie'
+        var filter_selectors = $('select.dashboard_filters');
+        for(counter = 0; counter < filter_selectors.length; counter++){
+          selector = filter_selectors[counter];
+          $(selector).live('change', function(){
+            section_id = $(this).attr('section_id');
+            selected = $(this).find(':selected').val();
+            cookie_data = render_cookie_data(readCookie(cookie_id));
+            cookie_data[section_id] = selected;
+            cookie_data = build_cookie_data(cookie_data);
+            setCookie('dashboard_filter_cookie', cookie_data);
+            window.location.reload(true);
+          });
+        }
+      };
+      /*TODO: I can't call the function defined in bika.lims.site.setCookie*/
+      function setCookie(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      };
+      function render_cookie_data(data){
+        return JSON.parse(data);
+      };
+      function build_cookie_data(data){
+        return JSON.stringify(data);
+      };
     }(jQuery));
 </script>
 
 <tal:section repeat="section python:view.get_sections()">
 <div class='dashboard-section'>
-    <h2 tal:content="section/title" class='dashboard-section-title'></h2>
+    <div class='dashboard-section-head'>
+        <h2 tal:content="section/title" class='dashboard-section-title'></h2>
+        <div class="actions">
+            <select class="dashboard_filters"
+                tal:attributes="section_id section/id"
+                tal:define="section_id section/id">
+                <tal:dashboard_filter_opts
+                    define="options python: view.get_filter_options()"
+                    repeat="option options">
+                    <option
+                        tal:attributes="
+                            value python:option;
+                            selected python: 'selected' if view.is_filter_selected(section_id, option) else '';"
+                        tal:content="python:options.getValue(option)">
+                    </option>
+                </tal:dashboard_filter_opts>
+            </select>
+        </div>
+    </div>
     <div class='dashboard-panels'>
 
         <!-- Bar-chart panels -->
