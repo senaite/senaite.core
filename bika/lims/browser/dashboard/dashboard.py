@@ -42,8 +42,8 @@ def get_dashboard_registry_record():
         # Maybe upgradestep 1.1.8 was not run?
         logger.warn("Cannot find a record with name "
                     "'bika.lims.dashboard_panels_visibility' in "
-                    "registry_record.")
-    return None
+                    "registry_record. Missed upgrade 1.1.8?")
+    return dict()
 
 
 def set_dashboard_registry_record(registry_info):
@@ -62,7 +62,7 @@ def set_dashboard_registry_record(registry_info):
         # Maybe upgradestep 1.1.8 was not run?
         logger.warn("Cannot find a record with name "
                     "'bika.lims.dashboard_panels_visibility' in "
-                    "registry_record.")
+                    "registry_record. Missed upgrade 1.1.8?")
 
 
 def setup_dashboard_panels_visibility_registry(section_name):
@@ -73,9 +73,6 @@ def setup_dashboard_panels_visibility_registry(section_name):
     :return: An string like: "role1,yes,role2,no,rol3,no"
     """
     registry_info = get_dashboard_registry_record()
-    if registry_info is None:
-        # No record found in the registry
-        registry_info = {}
     role_permissions_list = []
     # Getting roles defined in the system
     roles = []
@@ -88,7 +85,7 @@ def setup_dashboard_panels_visibility_registry(section_name):
     for role in roles:
         role_permissions_list.append(role)
         visible = 'no'
-        if role in 'LabManager' or 'Manager':
+        if role in ['LabManager', 'Manager']:
             visible = 'yes'
         role_permissions_list.append(visible)
     role_permissions = ','.join(role_permissions_list)
@@ -100,26 +97,50 @@ def setup_dashboard_panels_visibility_registry(section_name):
     return registry_info
 
 
+def get_dashboard_panels_visibility_by_section(section_name):
+    """
+    Return a list of pairs as values that represents the role-permission
+    view relation for the panel section passed in.
+    :param section_name: the panels section id.
+    :return: a list of tuples.
+    """
+    result = []
+    registry_info = get_dashboard_registry_record()
+    if section_name not in registry_info:
+        # Registry hasn't been set, do it at least for this section
+        registry_info = \
+            setup_dashboard_panels_visibility_registry(section_name)
+
+    pairs = registry_info.get(section_name)
+    pairs = get_strings(pairs)
+    if pairs is None:
+        # In the registry, but with None value?
+        setup_dashboard_panels_visibility_registry(section_name)
+        return get_dashboard_panels_visibility_by_section(section_name)
+
+    pairs = pairs.split(',')
+    if len(pairs) == 0 or len(pairs) % 2 != 0:
+        # Non-valid or malformed value
+        setup_dashboard_panels_visibility_registry(section_name)
+        return get_dashboard_panels_visibility_by_section(section_name)
+
+    result = [
+        (pairs[i], pairs[i + 1]) for i in range(len(pairs)) if i % 2 == 0]
+    return result
+
+
 def is_panel_visible_for_user(panel, user):
     """
     Checks if the user is allowed to see the panel
-    :param panel: panel ID as tring
+    :param panel: panel ID as string
     :param user: a MemberData object
     :return: Boolean
     """
     roles = user.getRoles()
-    settings = get_dashboard_registry_record()
-    if settings is None:
-        # No configuration set in the registry_record. Assume that only Labman
-        # can see dashboard-panels
-        return "LabManager" in roles or "Manager" in roles
-
-    panels_visibility = get_strings(settings)
-    pairs = panels_visibility.get(panel).split(',')
-    for i in range(len(pairs)):
-        if i % 2 == 0 and pairs[i] in roles:
-            if pairs[i+1] == 'yes':
-                return True
+    visibility = get_dashboard_panels_visibility_by_section(panel)
+    for pair in visibility:
+        if pair[0] in roles and pair[1] == 'yes':
+            return True
     return False
 
 
@@ -744,28 +765,7 @@ class DashboardView(BrowserView):
         :param section_name: the panels section id.
         :return: a list of tuples.
         """
-        # By default, only LabManager and Manager can see dashboard panels
-        result = []
-        registry_info = get_dashboard_registry_record()
-        if registry_info is None:
-            # Registry hasn't been set, do it at least for this section
-            registry_info = \
-                setup_dashboard_panels_visibility_registry(section_name)
-
-        pairs = registry_info.get(section_name)
-        pairs = get_strings(pairs)
-        if pairs is None:
-            # In the registry, but with None value?
-            return result
-
-        pairs = pairs.split(',')
-        if len(pairs) == 0:
-            # An empty string?
-            return result
-
-        result = [
-            (pairs[i], pairs[i + 1]) for i in range(len(pairs)) if i % 2 == 0]
-        return result
+        return get_dashboard_panels_visibility_by_section(section_name)
 
 
 class DashboardViewPermissionUpdate(BrowserView):
@@ -791,20 +791,12 @@ class DashboardViewPermissionUpdate(BrowserView):
             check_state = 'yes'
         # Update registry
         registry_info = get_dashboard_registry_record()
-        pairs = registry_info.get(section_name)
-        pairs = get_strings(pairs)
-        if pairs is None:
-            return None
-        if pairs == 'null':
-            # Registry hasn't been set yet
-            return None
-        pairs = pairs.split(',')
-
-        for i in range(len(pairs)):
-            if i % 2 == 0 and pairs[i] == role_id:
-                # update record
-                pairs[i + 1] = check_state
-        role_permissions = ','.join(pairs)
+        pairs = get_dashboard_panels_visibility_by_section(section_name)
+        role_permissions = list()
+        for pair in pairs:
+            value = '{0},{1}'.format(pair[0], pair[1])
+            role_permissions.append(value)
+        role_permissions = ','.join(role_permissions)
         # Set permissions string into dict
         registry_info[section_name] = get_unicode(role_permissions)
         set_dashboard_registry_record(registry_info)
