@@ -25,13 +25,33 @@
     .dashboard-section {
         padding: 20px 0 0;
     }
-
-    .dashboard-section h2 {
+    .dashboard-section-head {
         background-color: #ccc;
         border-radius: 5px 5px 0 0;
+        padding: 3px 15px;
+    }
+    .dashboard-section-head div.actions {
+        float:right;
+        text-align:right;
+        width:30%;
+    }
+    .dashboard-section-head div.actions select {
+        padding: 0 5px;
+        vertical-align: top;
+    }
+    .dashboard-section-head:after {
+        clear: both;
+        content: " ";
+        display: block;
+        font-size: 0;
+        height: 0;
+        visibility: hidden;
+    }
+    .dashboard-section h2 {
+        float:left;
         font-size: 1.4em;
         font-weight: bold;
-        padding: 3px 15px;
+        width:70%;
     }
     .dashboard-section .h2-legend {
         font-size: 0.9em;
@@ -459,22 +479,24 @@
 
 <tal:section repeat="section python:view.get_sections()">
 <div class='dashboard-section' tal:define="section_id section/id">
-    <div>
+    <div class='dashboard-section-head'>
         <h2 tal:content="section/title" class='dashboard-section-title'></h2>
-        <select class="dashboard_filters"
-            tal:attributes="section_id section/id"
-            tal:define="section_id section/id">
-            <tal:dashboard_filter_opts
-                define="options python: view.get_filter_options()"
-                repeat="option options">
-                <option
-                    tal:attributes="
-                        value python:option;
-                        selected python: 'selected' if view.is_filter_selected(section_id, option) else '';"
-                    tal:content="python:options.getValue(option)">
-                </option>
-            </tal:dashboard_filter_opts>
-        </select>
+        <div class="actions">
+            <select class="dashboard_filters"
+                tal:attributes="section_id section/id"
+                tal:define="section_id section/id">
+                <tal:dashboard_filter_opts
+                    define="options python: view.get_filter_options()"
+                    repeat="option options">
+                    <option
+                        tal:attributes="
+                            value python:option;
+                            selected python: 'selected' if view.is_filter_selected(section_id, option) else '';"
+                        tal:content="python:options.getValue(option)">
+                    </option>
+                </tal:dashboard_filter_opts>
+            </select>
+        </div>
     </div>
     <div class='dashboard-panels'>
 
