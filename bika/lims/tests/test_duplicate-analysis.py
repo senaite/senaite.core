@@ -72,7 +72,7 @@ class TestAddDuplicateAnalysis(BikaFunctionalTestCase):
         lab_contact = [o for o in lab_contacts if o.getUsername() == 'analyst1']
         self.assertEquals(len(lab_contact), 1)
         lab_contact = lab_contact[0]
-        ws.setAnalyst(lab_contact)
+        ws.setAnalyst(lab_contact.getUsername())
         ws.setResultsLayout(self.portal.bika_setup.getWorksheetLayout())
         # Add analyses into the worksheet
         self.request['context_uid'] = ws.UID()

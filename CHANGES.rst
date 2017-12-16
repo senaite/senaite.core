@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #475 Assigning Analyses to a WS raises AttributeError
 - #466 UnicodeDecodeError if unicode characters are entered into the title field
 - #453 Sample points do not show the referenced sample types in view
 - #470 Sort order of Analyses in WS print view wrong
