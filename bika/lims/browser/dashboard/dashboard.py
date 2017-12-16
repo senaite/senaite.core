@@ -16,6 +16,7 @@ from plone import protect
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api import get_tool
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
@@ -53,24 +54,32 @@ def set_dashboard_registry_record(registry_info):
     *unicode* objects.
     :return: A dictionary or None
     """
-    api.portal.set_registry_record(
-        'bika.lims.dashboard_panels_visibility', registry_info)
+    try:
+        api.portal.set_registry_record(
+            'bika.lims.dashboard_panels_visibility', registry_info)
+    except InvalidParameterError:
+        # No entry in the registry for dashboard panels roles.
+        # Maybe upgradestep 1.1.8 was not run?
+        logger.warn("Cannot find a record with name "
+                    "'bika.lims.dashboard_panels_visibility' in "
+                    "registry_record.")
 
 
 def setup_dashboard_panels_visibility_registry(section_name):
     """
-    It gives 'yes' values to all roles inside 'section_name' key values in
-    'bika.lims.dashboard_panels_visibility' registry.
+    Initializes the values for panels visibility in registry_records. By
+    default, only users with LabManager or Manager roles can see the panels.
     :param section_name:
     :return: An string like: "role1,yes,role2,no,rol3,no"
     """
     registry_info = get_dashboard_registry_record()
     if registry_info is None:
-        return None
+        # No record found in the registry
+        registry_info = {}
     role_permissions_list = []
     # Getting roles defined in the system
     roles = []
-    acl_users = api.get_tool("acl_users")
+    acl_users = get_tool("acl_users")
     roles_tree = acl_users.portal_role_manager.listRoleIds()
     for role in roles_tree:
         roles.append(role)
@@ -78,7 +87,10 @@ def setup_dashboard_panels_visibility_registry(section_name):
     # "role1,yes,role2,no,rol3,no"
     for role in roles:
         role_permissions_list.append(role)
-        role_permissions_list.append('yes')
+        visible = 'no'
+        if role in 'LabManager' or 'Manager':
+            visible = 'yes'
+        role_permissions_list.append(visible)
     role_permissions = ','.join(role_permissions_list)
 
     # Set permissions string into dict
@@ -97,7 +109,7 @@ def is_panel_visible_for_user(panel, user):
     """
     roles = user.getRoles()
     settings = get_dashboard_registry_record()
-    if not settings:
+    if settings is None:
         # No configuration set in the registry_record. Assume that only Labman
         # can see dashboard-panels
         return "LabManager" in roles or "Manager" in roles
@@ -732,21 +744,27 @@ class DashboardView(BrowserView):
         :param section_name: the panels section id.
         :return: a list of tuples.
         """
+        # By default, only LabManager and Manager can see dashboard panels
         result = []
         registry_info = get_dashboard_registry_record()
         if registry_info is None:
-            return result
+            # Registry hasn't been set, do it at least for this section
+            registry_info = \
+                setup_dashboard_panels_visibility_registry(section_name)
+
         pairs = registry_info.get(section_name)
         pairs = get_strings(pairs)
         if pairs is None:
+            # In the registry, but with None value?
             return result
-        if pairs == 'null':
-            # Registry hasn't been set yet
-            setup_dashboard_panels_visibility_registry(section_name)
-            return self.get_dashboard_panels_visibility(section_name)
+
         pairs = pairs.split(',')
+        if len(pairs) == 0:
+            # An empty string?
+            return result
+
         result = [
-            (pairs[i], pairs[i+1]) for i in range(len(pairs)) if i % 2 == 0]
+            (pairs[i], pairs[i + 1]) for i in range(len(pairs)) if i % 2 == 0]
         return result
 
 
