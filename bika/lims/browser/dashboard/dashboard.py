@@ -22,6 +22,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
+from plone.api.exc import InvalidParameterError
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 
@@ -31,12 +32,17 @@ def get_dashboard_registry_record():
     Return the 'bika.lims.dashboard_panels_visibility' values.
     :return: A dictionary or None
     """
-    registry = api.portal.get_registry_record(
-        'bika.lims.dashboard_panels_visibility')
-    if registry is None:
-        logger.warn('Registry bika.lims.dashboard_panels_visibility not '
-                    'found.')
-    return registry
+    try:
+        registry = api.portal.get_registry_record(
+            'bika.lims.dashboard_panels_visibility')
+        return registry
+    except InvalidParameterError:
+        # No entry in the registry for dashboard panels roles.
+        # Maybe upgradestep 1.1.8 was not run?
+        logger.warn("Cannot find a record with name "
+                    "'bika.lims.dashboard_panels_visibility' in "
+                    "registry_record.")
+    return None
 
 
 def set_dashboard_registry_record(registry_info):
@@ -90,7 +96,13 @@ def is_panel_visible_for_user(panel, user):
     :return: Boolean
     """
     roles = user.getRoles()
-    panels_visibility = get_strings(get_dashboard_registry_record())
+    settings = get_dashboard_registry_record()
+    if not settings:
+        # No configuration set in the registry_record. Assume that only Labman
+        # can see dashboard-panels
+        return "LabManager" in roles or "Manager" in roles
+
+    panels_visibility = get_strings(settings)
     pairs = panels_visibility.get(panel).split(',')
     for i in range(len(pairs)):
         if i % 2 == 0 and pairs[i] in roles:
@@ -120,6 +132,7 @@ class DashboardView(BrowserView):
             self.request.response.redirect(frontpage_url)
             return
 
+        self.member = mtool.getAuthenticatedMember()
         self._init_date_range()
         self.dashboard_cookie = self.check_dashboard_cookie()
         return self.template()
@@ -168,13 +181,8 @@ class DashboardView(BrowserView):
         :return: Boolean
         """
         user = api.user.get_current()
-        username = user and user.getUserName() or None
-        if username == 'admin':
-            return True
         roles = user.getRoles()
-        if 'Site Administrator' in roles:
-            return True
-        return False
+        return "LabManager" or "Manager" in roles
 
     def _create_raw_data(self):
         """
