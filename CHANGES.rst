@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #440 ITopLeft, ITopRight and ITopWide hooks (placeholders) in bikalisting
 - #472 Dashboard panels visibility by roles
 - #467 All/Mine filters in Dashboard panels
 - #423 Instrument import interface for Abbott's m2000 Real Time

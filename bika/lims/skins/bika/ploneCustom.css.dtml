@@ -1399,4 +1399,27 @@ table.analysisrequest.add {}
     padding: 4px 10px;
 }
 
+div.bika-listing-table-top-hooks:after {
+    clear: both;
+    content: " ";
+    display: block;
+    font-size: 0;
+    height: 0;
+    visibility: hidden;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-left,
+div.bika-listing-table-top-hooks div.listing-hook-top-right {
+    width:50%;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-right {
+    float:right;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-left {
+    float:left;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-wide {
+    clear:both;
+    display:block;
+}
+
 </dtml-with>
