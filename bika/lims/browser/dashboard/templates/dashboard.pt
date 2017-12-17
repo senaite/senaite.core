@@ -26,14 +26,13 @@
         padding: 20px 0 0;
     }
     .dashboard-section-head {
-        background-color: #ccc;
+        background-color: #e3e3e3;
         border-radius: 5px 5px 0 0;
         padding: 3px 15px;
     }
     .dashboard-section-head div.actions {
         float:right;
         text-align:right;
-        width:30%;
     }
     .dashboard-section-head div.actions select {
         padding: 0 5px;
@@ -58,7 +57,7 @@
         padding: 0 0 10px 2px;
     }
     .dashboard-panels {
-        border: 1px solid #ccc;
+        border: 1px solid #dcdcdc;
         border-radius: 0px 0px 5px 5px;
         padding: 5px 0;
     }
@@ -201,12 +200,31 @@
         float:right;
     }
     .toggle-barchart a {
-        padding: 10px;
+        padding: 0 10px 0;
     }
     .bar-chart-no-data {
         color: #b22222;
         font-size: 0.9em;
         padding: 20px;
+    }
+    div.roles-visibility {
+        align-self: right;
+        background-color: #e3e3e3;
+        border: 1px solid #cdcdcd;
+        border-radius: 0 0 5px 5px;
+        padding: 5px;
+        position: absolute;
+        text-align: left;
+        z-index: 10;
+    }
+    div.roles-visibility div.checkbox label {
+        font-weight:normal;
+    }
+    a.dashboard-visibility-link {
+        margin-right:10px;
+    }
+    a.dashboard-visibility-link:after {
+        content: " ▼";
     }
 </style>
 <script>
@@ -216,6 +234,7 @@
         loadBarCharts();
         dashboard_cookie_controller();
         role_permission_input_controller();
+        load_roles_visibility_links();
     });
 
     function loadBarCharts() {
@@ -411,6 +430,18 @@
                 .attr("d", arc);
         });
       }
+      function load_roles_visibility_links() {
+        $('a.dashboard-visibility-link').click(function(e){
+            e.preventDefault();
+            var parent = $(this).closest('div.dashboard-section');
+            var panel = $(parent).find('div.roles-visibility');
+            if ($(panel).is(':visible')) {
+                $(panel).hide();
+            } else {
+                $(panel).show();
+            }
+        });
+      }
       function dashboard_cookie_controller() {
         /* Links a linker controller to each dashboard filter selector.
         This controller reads the cookie data once the selector has been
@@ -482,6 +513,31 @@
     <div class='dashboard-section-head'>
         <h2 tal:content="section/title" class='dashboard-section-title'></h2>
         <div class="actions">
+
+            <!-- View permissions section -->
+            <tal:roles_visibility_settings condition="python:view.is_admin_user()">
+                <a class="dashboard-visibility-link" href="#"
+                    i18n:translate="">Visibility</a>
+                <div class="roles-visibility" style="display:none">
+                    <tal:role-permission-block
+                        repeat="role_value_pair python:view.get_dashboard_panels_visibility(section_id)">
+                    <div class="checkbox">
+                      <label>
+                          <input type="checkbox" value=""
+                            tal:attributes="
+                                checked python: role_value_pair[1] == 'yes';
+                                role_id python: role_value_pair[0];
+                                section_id section_id;
+                                disabled python: role_value_pair[0] in ['LabManager', 'Manager'];">
+                          <span tal:omit-tag=""
+                                tal:content="python: role_value_pair[0]"></span>
+                      </label>
+                    </div>
+                </tal:role-permission-block>
+                </div>
+            </tal:roles_visibility_settings>
+
+            <!-- Mine/All filter -->
             <select class="dashboard_filters"
                 tal:attributes="section_id section/id"
                 tal:define="section_id section/id">
@@ -556,27 +612,6 @@
         </div>
         </tal:simple_panels>
         <div class='clearfix'></div>
-    </div>
-
-     <!-- View permissions section -->
-    <div class="view-permissions-section"
-         tal:condition="python: view.is_admin_user()">
-        <h3 class='dashboard-view-permissions-section'>
-            View permissions configuration
-        </h3>
-        <tal:role-permission-block
-                repeat="role_value_pair python:view.get_dashboard_panels_visibility(section_id)">
-            <div class="role-permission-bloc">
-                <h3 class='role-permission-bloc-name'
-                tal:content="python: role_value_pair[0]"></h3>
-                <input class='role-permission-bloc-value'
-                       type="checkbox"
-                    tal:attributes="
-                        checked python: role_value_pair[1] == 'yes';
-                        role_id python: role_value_pair[0];
-                        section_id section_id;">
-            </div>
-        </tal:role-permission-block>
     </div>
 </div>
 </tal:section>
