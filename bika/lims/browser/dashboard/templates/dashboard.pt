@@ -482,7 +482,7 @@
       function role_permission_input_controller() {
         /* Ajax post to update registry values */
         var section_id, role, chk_val;
-        var role_checks = $('input.role-permission-bloc-value');
+        var role_checks = $('div.roles-visibility input[type="checkbox"]');
         for(counter = 0; counter < role_checks.length; counter++){
           selector = role_checks[counter];
           $(selector).live('change', function(){

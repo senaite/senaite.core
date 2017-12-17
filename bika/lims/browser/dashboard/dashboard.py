@@ -215,7 +215,7 @@ class DashboardView(BrowserView):
         """
         user = api.user.get_current()
         roles = user.getRoles()
-        return "LabManager" or "Manager" in roles
+        return "LabManager" in roles or "Manager" in roles
 
     def _create_raw_data(self):
         """
@@ -794,7 +794,10 @@ class DashboardViewPermissionUpdate(BrowserView):
         pairs = get_dashboard_panels_visibility_by_section(section_name)
         role_permissions = list()
         for pair in pairs:
-            value = '{0},{1}'.format(pair[0], pair[1])
+            visibility = pair[1]
+            if pair[0] == role_id:
+                visibility = check_state
+            value = '{0},{1}'.format(pair[0], visibility)
             role_permissions.append(value)
         role_permissions = ','.join(role_permissions)
         # Set permissions string into dict
