@@ -26,6 +26,26 @@
         </field>
     </record>
 
+    <!-- Dashboard panels visibility -->
+    <record name="bika.lims.dashboard_panels_visibility">
+        <field type="plone.registry.field.Dict">
+            <title>Dashboard panels visibility</title>
+            <description>
+                It is a dictionary with dashboard panel names as keys and
+                strings as values. Values are strings containing the role and
+                view permission for each role following this format:
+                "role1,yes,role2,no,rol3,no"
+            </description>
+            <key_type type="plone.registry.field.TextLine" />
+            <value_type type="plone.registry.field.TextLine" />
+        </field>
+        <value>
+            <element key="analyses">null</element>
+            <element key="analysisrequests">null</element>
+            <element key="worksheets">null</element>
+        </value>
+    </record>
+
   <!-- Hidden Attributes-->
   <record name="bika.lims.hiddenattributes">
      <field type="plone.registry.field.Tuple">

@@ -800,6 +800,30 @@ def get_strings(data):
     return data
 
 
+def get_unicode(data):
+    """
+    Convert string values to unicode even if they belong to lists or dicts.
+    :param data: an object.
+    :return: The object with all string values converted to unicode.
+    """
+    # if this is a common string, return its unicode representation
+    if isinstance(data, str):
+        return safe_unicode(data)
+
+    # if this is a list of values, return list of unicode values
+    if isinstance(data, list):
+        return [get_unicode(item) for item in data]
+
+    # if this is a dictionary, return dictionary of unicode keys and values
+    if isinstance(data, dict):
+        return {
+            get_unicode(key): get_unicode(value)
+            for key, value in data.iteritems()
+        }
+    # if it's anything else, return it in its original form
+    return data
+
+
 def is_bika_installed():
     """Check if Bika LIMS is installed in the Portal
     """

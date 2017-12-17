@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #472 Dashboard panels visibility by roles
+- #467 All/Mine filters in Dashboard panels
 - #423 Instrument import interface for Abbott's m2000 Real Time
 
 **Removed**

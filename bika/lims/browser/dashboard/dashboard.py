@@ -11,16 +11,137 @@ from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone import api
+from plone import protect
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api import get_tool
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
+from bika.lims.utils import get_unicode
+from plone.api.exc import InvalidParameterError
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
+
+
+def get_dashboard_registry_record():
+    """
+    Return the 'bika.lims.dashboard_panels_visibility' values.
+    :return: A dictionary or None
+    """
+    try:
+        registry = api.portal.get_registry_record(
+            'bika.lims.dashboard_panels_visibility')
+        return registry
+    except InvalidParameterError:
+        # No entry in the registry for dashboard panels roles.
+        # Maybe upgradestep 1.1.8 was not run?
+        logger.warn("Cannot find a record with name "
+                    "'bika.lims.dashboard_panels_visibility' in "
+                    "registry_record. Missed upgrade 1.1.8?")
+    return dict()
+
+
+def set_dashboard_registry_record(registry_info):
+    """
+    Sets the 'bika.lims.dashboard_panels_visibility' values.
+
+    :param registry_info: A dictionary type object with all its values as
+    *unicode* objects.
+    :return: A dictionary or None
+    """
+    try:
+        api.portal.set_registry_record(
+            'bika.lims.dashboard_panels_visibility', registry_info)
+    except InvalidParameterError:
+        # No entry in the registry for dashboard panels roles.
+        # Maybe upgradestep 1.1.8 was not run?
+        logger.warn("Cannot find a record with name "
+                    "'bika.lims.dashboard_panels_visibility' in "
+                    "registry_record. Missed upgrade 1.1.8?")
+
+
+def setup_dashboard_panels_visibility_registry(section_name):
+    """
+    Initializes the values for panels visibility in registry_records. By
+    default, only users with LabManager or Manager roles can see the panels.
+    :param section_name:
+    :return: An string like: "role1,yes,role2,no,rol3,no"
+    """
+    registry_info = get_dashboard_registry_record()
+    role_permissions_list = []
+    # Getting roles defined in the system
+    roles = []
+    acl_users = get_tool("acl_users")
+    roles_tree = acl_users.portal_role_manager.listRoleIds()
+    for role in roles_tree:
+        roles.append(role)
+    # Set view permissions to each role as 'yes':
+    # "role1,yes,role2,no,rol3,no"
+    for role in roles:
+        role_permissions_list.append(role)
+        visible = 'no'
+        if role in ['LabManager', 'Manager']:
+            visible = 'yes'
+        role_permissions_list.append(visible)
+    role_permissions = ','.join(role_permissions_list)
+
+    # Set permissions string into dict
+    registry_info[section_name] = get_unicode(role_permissions)
+    # Set new values to registry record
+    set_dashboard_registry_record(registry_info)
+    return registry_info
+
+
+def get_dashboard_panels_visibility_by_section(section_name):
+    """
+    Return a list of pairs as values that represents the role-permission
+    view relation for the panel section passed in.
+    :param section_name: the panels section id.
+    :return: a list of tuples.
+    """
+    result = []
+    registry_info = get_dashboard_registry_record()
+    if section_name not in registry_info:
+        # Registry hasn't been set, do it at least for this section
+        registry_info = \
+            setup_dashboard_panels_visibility_registry(section_name)
+
+    pairs = registry_info.get(section_name)
+    pairs = get_strings(pairs)
+    if pairs is None:
+        # In the registry, but with None value?
+        setup_dashboard_panels_visibility_registry(section_name)
+        return get_dashboard_panels_visibility_by_section(section_name)
+
+    pairs = pairs.split(',')
+    if len(pairs) == 0 or len(pairs) % 2 != 0:
+        # Non-valid or malformed value
+        setup_dashboard_panels_visibility_registry(section_name)
+        return get_dashboard_panels_visibility_by_section(section_name)
+
+    result = [
+        (pairs[i], pairs[i + 1]) for i in range(len(pairs)) if i % 2 == 0]
+    return result
+
+
+def is_panel_visible_for_user(panel, user):
+    """
+    Checks if the user is allowed to see the panel
+    :param panel: panel ID as string
+    :param user: a MemberData object
+    :return: Boolean
+    """
+    roles = user.getRoles()
+    visibility = get_dashboard_panels_visibility_by_section(panel)
+    for pair in visibility:
+        if pair[0] in roles and pair[1] == 'yes':
+            return True
+    return False
 
 
 class DashboardView(BrowserView):
@@ -32,22 +153,22 @@ class DashboardView(BrowserView):
         self.member = None
 
     def __call__(self):
-        tofrontpage = True
-        mtool=getToolByName(self.context, 'portal_membership')
-        if not mtool.isAnonymousUser() and self.context.bika_setup.getDashboardByDefault():
-            # If authenticated user with labman role,
-            # display the Main Dashboard view
-            pm = getToolByName(self.context, "portal_membership")
-            self.member = pm.getAuthenticatedMember()
-            roles = self.member.getRoles()
-            tofrontpage = 'Manager' not in roles and 'LabManager' not in roles
+        frontpage_url = self.portal_url + "/bika-frontpage"
+        if not self.context.bika_setup.getDashboardByDefault():
+            # Do not render dashboard, render frontpage instead
+            self.request.response.redirect(frontpage_url)
+            return
 
-        if tofrontpage:
-            self.request.response.redirect(self.portal_url + "/bika-frontpage")
-        else:
-            self._init_date_range()
-            self.dashboard_cookie = self.check_dashboard_cookie()
-            return self.template()
+        mtool = getToolByName(self.context, 'portal_membership')
+        if mtool.isAnonymousUser():
+            # Anonymous user, redirect to frontpage
+            self.request.response.redirect(frontpage_url)
+            return
+
+        self.member = mtool.getAuthenticatedMember()
+        self._init_date_range()
+        self.dashboard_cookie = self.check_dashboard_cookie()
+        return self.template()
 
     def check_dashboard_cookie(self):
         """
@@ -86,6 +207,15 @@ class DashboardView(BrowserView):
         """
         selected = self.dashboard_cookie.get(selection_id)
         return selected == value
+
+    def is_admin_user(self):
+        """
+        Checks if the user is the admin or a SiteAdmin user.
+        :return: Boolean
+        """
+        user = api.user.get_current()
+        roles = user.getRoles()
+        return "LabManager" in roles or "Manager" in roles
 
     def _create_raw_data(self):
         """
@@ -187,9 +317,14 @@ class DashboardView(BrowserView):
                  'title': <section_title>,
                 'panels': <array of panels>}
         """
-        sections = [self.get_analyses_section(),
-                    self.get_analysisrequests_section(),
-                    self.get_worksheets_section()]
+        sections = []
+        user = api.user.get_current()
+        if is_panel_visible_for_user('analyses', user):
+            sections.append(self.get_analyses_section())
+        if is_panel_visible_for_user('analysisrequests', user):
+            sections.append(self.get_analysisrequests_section())
+        if is_panel_visible_for_user('worksheets', user):
+            sections.append(self.get_worksheets_section())
         return sections
 
     def get_filter_options(self):
@@ -622,3 +757,50 @@ class DashboardView(BrowserView):
         if cookie_criteria == 'mine':
             query['Creator'] = self.member.getId()
         return query
+
+    def get_dashboard_panels_visibility(self, section_name):
+        """
+        Return a list of pairs as values that represents the role-permission
+        view relation for the panel section.
+        :param section_name: the panels section id.
+        :return: a list of tuples.
+        """
+        return get_dashboard_panels_visibility_by_section(section_name)
+
+
+class DashboardViewPermissionUpdate(BrowserView):
+    """
+    Updates the values in 'bika.lims.dashboard_panels_visibility' registry.
+    """
+
+    def __call__(self):
+        protect.CheckAuthenticator(self.request)
+        # Getting values from post
+        section_name = self.request.get('section_name', None)
+        if section_name is None:
+            return None
+        role_id = self.request.get('role_id', None)
+        if role_id is None:
+            return None
+        check_state = self.request.get('check_state', None)
+        if check_state is None:
+            return None
+        elif check_state == 'false':
+            check_state = 'no'
+        else:
+            check_state = 'yes'
+        # Update registry
+        registry_info = get_dashboard_registry_record()
+        pairs = get_dashboard_panels_visibility_by_section(section_name)
+        role_permissions = list()
+        for pair in pairs:
+            visibility = pair[1]
+            if pair[0] == role_id:
+                visibility = check_state
+            value = '{0},{1}'.format(pair[0], visibility)
+            role_permissions.append(value)
+        role_permissions = ','.join(role_permissions)
+        # Set permissions string into dict
+        registry_info[section_name] = get_unicode(role_permissions)
+        set_dashboard_registry_record(registry_info)
+        return True
