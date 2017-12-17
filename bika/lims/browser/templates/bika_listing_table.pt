@@ -19,18 +19,18 @@
         or view.request.get('table_only','') == form_id;">
 
 <!-- Hooks for bika listing -->
-<div id="bika-listing-table-top-hooks"
+<div class="bika-listing-table-top-hooks"
     tal:condition="python: not table_only">
     <!-- Over list, right -->
-    <div id="listing-hook-top-right">
+    <div class="listing-hook-top-right">
         <span tal:replace="structure view/get_top_right_hooks"></span>
     </div>
     <!-- Over list, left -->
-    <div id="listing-hook-top-left">
+    <div class="listing-hook-top-left">
         <span tal:replace="structure view/get_top_left_hooks"></span>
     </div>
     <!-- Over list with the same wide as the list -->
-    <div id="listing-hook-top-wide">
+    <div class="listing-hook-top-wide">
         <span tal:replace="structure view/get_top_wide_hooks"></span>
     </div>
 </div>
