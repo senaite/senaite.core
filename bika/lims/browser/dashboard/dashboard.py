@@ -438,9 +438,21 @@ class DashboardView(BrowserView):
         query['review_state'] = ['published', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
+        # Analysis Requests to be printed
+        if self.context.bika_setup.getPrintingWorkflowEnabled():
+            name = _('Analysis Requests to be printed')
+            desc = _("To be printed")
+            purl = 'analysisrequests?analysisrequests_getPrinted=0'
+            query['getPrinted'] = '0'
+            if 'review_state' in query:
+                del query['review_state']
+            out.append(
+                self._getStatistics(name, desc, purl, catalog, query, total))
+
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
-        del query['review_state']
+        if 'review_state' in query:
+            del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
         outevo = self._fill_dates_evo(catalog, query)

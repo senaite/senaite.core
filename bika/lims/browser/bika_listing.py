@@ -661,7 +661,7 @@ class BikaListingView(BrowserView):
                 continue
             request_key = "%s_%s" % (form_id, index)
             value = self.request.get(request_key, '')
-            if len(value) > 1:
+            if len(value) > 0:
                 if idx.meta_type in ('ZCTextIndex', 'FieldIndex'):
                     self.And.append(MatchRegexp(index, value))
                 elif idx.meta_type == 'DateIndex':
