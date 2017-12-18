@@ -35,12 +35,18 @@ class AnalysisRequestViewView(BrowserView):
     messages = []
 
     def __init__(self, context, request):
-        self.init__ = super(AnalysisRequestViewView, self).__init__(context,
-                                                                    request)
+        super(AnalysisRequestViewView, self).__init__(context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
         self.messages = []
 
+    def before_call(self):
+        return True
+
+    def after_call(self):
+        return True
+
     def __call__(self):
+        self.before_call()
         ar = self.context
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'transition' in self.request.form:
@@ -161,6 +167,7 @@ class AnalysisRequestViewView(BrowserView):
                         'Request ${retracted_request_id}.',
                         mapping={'retracted_request_id': par.getId()})
             self.addMessage(message, 'info')
+        self.after_call()
         self.renderMessages()
         return self.template()
 
