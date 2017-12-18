@@ -600,107 +600,6 @@ window.BikaListingTableView = ->
             return
         return
 
-    ###
-    # Load the events regardin to the export (to CSV and to XML) buttons. When
-    # an export button is clicked, the function walksthrough all the items
-    # within the bika listing table, builds a string with the desired format
-    # (CSV or XML) and prompts the user for its download.
-    ###
-
-    load_export_buttons = ->
-
-        unquote = (val) ->
-            val.replace /^\s*\"(.*)\"\s*$/, '$1'
-
-        escapeTxt = (val) ->
-            vl = val.replace(/&/g, '&amp;')
-            vl = vl.replace(/</g, '&lt;')
-            vl = vl.replace(/>/g, '&gt;')
-            unquote vl
-
-        qname = (name) ->
-            nm = name.replace(/(\s)+/g, '_')
-            unquote nm
-
-        $('.bika-listing-table td.export-controls span.export-toggle').click (e) ->
-            ul = $(this).closest('td').find('ul')
-            if $(ul).is(':visible')
-                $(this).removeClass 'expanded'
-            else
-                $(ul).css 'min-width', $(this).width()
-                $(this).addClass 'expanded'
-            $(ul).toggle()
-            return
-        $('.bika-listing-table a[download]').click (e) ->
-            $(this).closest('.bika-listing-table').find('td.export-controls span.export-toggle').click()
-            type = $(this).attr('type')
-            data = []
-            headers = []
-            omitidx = []
-            # Get the headers, but only if not empty. Store the position index
-            # of those columns that must be omitted later on rows walkthrouugh
-            $(this).closest('.bika-listing-table').find('th.column').each (i) ->
-                colname = $.trim($(this).text())
-                if colname != ''
-                    colname = colname.replace('"', '\'')
-                    headers.push '"' + colname + '"'
-                else
-                    omitidx.push i
-                return
-            data.push headers.join(',')
-            # Iterate through all rows an append all data in an array
-            # that later will be transformed into the desired format
-            $(this).closest('.bika-listing-table').find('tbody tr').each (r) ->
-                # Iterate through all cells from within the current row
-                rowdata = []
-                $(this).find('td').each (c) ->
-                    # Should the current cell be omitted?
-                    if $.inArray(c, omitidx) > -1
-                        return 'non-false'
-                    # Each cell's content is structured as follows:
-                    # <span class='before'></span>
-                    # <element>content</element>
-                    # <span class='after'>
-                    text = $(this).find('span.before').nextUntil('span.after').text()
-                    # If no format specified, always fallback to csv
-                    text = text.replace('"', '\'')
-                    rowdata.push '"' + $.trim(text) + '"'
-                    return
-                if rowdata.length == headers.length
-                    data.push rowdata.join(',')
-                return
-            output = ''
-            urischema = ''
-            if type == 'xml'
-                output = '<items>\u000d\n'
-                i = 1
-                while i < data.length
-                    row = data[i].substr(1, data[i].length - 2)
-                    row = row.split('","')
-                    if row.length == headers.length
-                        output += '<item>\u000d\n'
-                        j = 0
-                        while j < row.length
-                            if j < headers.length
-                                colname = qname(headers[j])
-                                output += '<' + colname + '>'
-                                output += escapeTxt(row[j])
-                                output += '</' + colname + '>\u000d\n'
-                            j++
-                        output += '</item>\u000d\n'
-                    i++
-                output += '</items>'
-                urischema = 'data:application/xml;base64;charset-UTF-8,'
-            else
-                # Fallback CSV
-                output = data.join('\u000d\n')
-                urischema = 'data:application/csv;base64;charset=UTF-8,'
-            b64 = window.btoa(unescape(encodeURIComponent(output)))
-            uri = urischema + b64
-            $(this).attr 'href', uri
-            return
-        return
-
     that.load = ->
         column_header_clicked()
         load_transitions()
@@ -717,7 +616,6 @@ window.BikaListingTableView = ->
         column_toggle_context_menu_selection()
         show_more_clicked()
         autosave()
-        load_export_buttons()
         $('*').click ->
             if $('.tooltip').length > 0
                 $('.tooltip').remove()

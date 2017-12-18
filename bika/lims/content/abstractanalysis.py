@@ -992,7 +992,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Is assigned to a worksheet?
             wss = self.getBackReferences('WorksheetAnalysis')
             if len(wss) > 0:
-                analyst = wss[0].getAnalyst().getUsername()
+                analyst = wss[0].getAnalyst()
                 field.set(self, analyst)
         return analyst if analyst else ''
 

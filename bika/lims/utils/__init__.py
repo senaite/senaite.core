@@ -774,3 +774,58 @@ def to_int(value, default=0):
         return int(value)
     except (TypeError, ValueError):
         return to_int(default, default=0)
+
+
+def get_strings(data):
+    """
+    Convert unicode values to strings even if they belong to lists or dicts.
+    :param data: an object.
+    :return: The object with all unicode values converted to string.
+    """
+    # if this is a unicode string, return its string representation
+    if isinstance(data, unicode):
+        return data.encode('utf-8')
+
+    # if this is a list of values, return list of string values
+    if isinstance(data, list):
+        return [get_strings(item) for item in data]
+
+    # if this is a dictionary, return dictionary of string keys and values
+    if isinstance(data, dict):
+        return {
+            get_strings(key): get_strings(value)
+            for key, value in data.iteritems()
+        }
+    # if it's anything else, return it in its original form
+    return data
+
+
+def get_unicode(data):
+    """
+    Convert string values to unicode even if they belong to lists or dicts.
+    :param data: an object.
+    :return: The object with all string values converted to unicode.
+    """
+    # if this is a common string, return its unicode representation
+    if isinstance(data, str):
+        return safe_unicode(data)
+
+    # if this is a list of values, return list of unicode values
+    if isinstance(data, list):
+        return [get_unicode(item) for item in data]
+
+    # if this is a dictionary, return dictionary of unicode keys and values
+    if isinstance(data, dict):
+        return {
+            get_unicode(key): get_unicode(value)
+            for key, value in data.iteritems()
+        }
+    # if it's anything else, return it in its original form
+    return data
+
+
+def is_bika_installed():
+    """Check if Bika LIMS is installed in the Portal
+    """
+    qi = api.portal.get_tool("portal_quickinstaller")
+    return qi.isProductInstalled("bika.lims")

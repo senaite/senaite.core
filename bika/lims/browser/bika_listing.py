@@ -24,6 +24,9 @@ from bika.lims.api import get_tool, get_object_by_uid, get_current_user, \
     get_object, get_transitions_for
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import ITopRightHTMLComponentsHook
+from bika.lims.interfaces import ITopLeftHTMLComponentsHook
+from bika.lims.interfaces import ITopWideHTMLComponentsHook
 from bika.lims.utils import getFromString
 from bika.lims.utils import getHiddenAttributesForClass, isActive
 from bika.lims.utils import t
@@ -1591,6 +1594,45 @@ class BikaListingTable(tableview.Table):
                         state['columns'].remove(field)
                 new_states.append(state)
         self.bika_listing.review_states = new_states
+
+    def get_top_right_hooks(self):
+        """
+        Get adapters (hooks) that implements ITopRightListingHook.
+        The information got from those adapters will be placed right-over the
+        list.
+
+        :return: html code
+        """
+        return self.get_adapters_html(ITopRightHTMLComponentsHook)
+
+    def get_top_left_hooks(self):
+        """
+        Get adapters (hooks) that implements ITopLeftListingHook.
+        The information got from those adapters will be placed left-over the
+        list.
+
+        :return: html code
+        """
+        return self.get_adapters_html(ITopLeftHTMLComponentsHook)
+
+    def get_top_wide_hooks(self):
+        """
+        Get adapters (hooks) that implements ITopWideListingHook.
+        The information got from those adapters will be placed wide-over the
+        list.
+
+        :return: html code
+        """
+        return self.get_adapters_html(ITopWideHTMLComponentsHook)
+
+    def get_adapters_html(self, adapter_provider=None):
+        if not adapter_provider:
+            return ''
+        adapters = getAdapters((self, ), adapter_provider)
+        export_options = ''
+        for name, adapter in adapters:
+            export_options += adapter(self.request)
+        return export_options
 
     def tabindex(self):
         i = 0

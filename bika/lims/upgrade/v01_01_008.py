@@ -30,6 +30,8 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'plone.app.registry')
     upgrade_indexes()
 
     logger.info("{0} upgraded to version {1}".format(product, version))

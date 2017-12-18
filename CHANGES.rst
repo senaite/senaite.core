@@ -6,6 +6,9 @@ Changelog
 
 **Added**
 
+- #440 ITopLeft, ITopRight and ITopWide hooks (placeholders) in bikalisting
+- #472 Dashboard panels visibility by roles
+- #467 All/Mine filters in Dashboard panels
 - #423 Instrument import interface for Abbott's m2000 Real Time
 
 **Removed**
@@ -18,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #475 Assigning Analyses to a WS raises AttributeError
 - #466 UnicodeDecodeError if unicode characters are entered into the title field
 - #453 Sample points do not show the referenced sample types in view
 - #470 Sort order of Analyses in WS print view wrong
