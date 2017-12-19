@@ -120,7 +120,7 @@
             <span i18n:translate="label_plone_org_description">
               For documentation, add-ons, support, community, visit
             </span>
-            <a href="http://www.senaite.org"
+            <a href="https://github.com/senaite"
                title="SENAITE"
                target="_new"
                i18n:attributes="title">https://github.com/senaite</a>.
