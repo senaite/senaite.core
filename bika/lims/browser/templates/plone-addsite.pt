@@ -17,12 +17,15 @@
         href="/++resource++plone-admin-ui.css" />
 
   <script type="text/javascript">
-    function siteid_focus() {
-      siteid = document.getElementById('site_id')
-      siteid.value = "senaite"
-      siteid.focus()
-    }
-    window.onload = siteid_focus;
+   function install_focus() {
+     var siteid = document.getElementById('site_id');
+     siteid.value = "senaite";
+     var extension = document.getElementById('bika.lims:default');
+     extension.checked = true;
+     var submit = document.getElementsByName('submit')[0];
+     submit.focus();
+   }
+   window.onload = install_focus;
   </script>
 
 </head>
@@ -57,8 +60,7 @@
           Please use <em>senaite</em> or <em>senaitelims</em> as your site name.
         </div>
 
-        <input type="text" name="site_id" size="20" id="site_id"
-               tal:attributes="value request/site_id|nothing" />
+        <input type="text" name="site_id" size="20" id="site_id"/>
       </div>
 
       <div class="field">
