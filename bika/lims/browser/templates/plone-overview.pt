@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
@@ -7,137 +7,126 @@
       lang="en"
       i18n:domain="plone">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-  <title>Bika LIMS - Professional Open Source LIMS</title>
+    <title>SENAITE Core - Professional Open Source LIMS Core</title>
 
-  <link rel="stylesheet" type="text/css"
-        href="/++resource++plone-admin-ui.css"
-        tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/++resource++plone-admin-ui.css"
+          tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css" />
+  </head>
 
-</head>
-
-
-<body tal:define="sites view/sites">
-<div id="box">
-    <img src="/++resource++plone-logo.png"
-         tal:attributes="src string:${context/absolute_url}/++resource++bikaonly-logo.png"
-         alt="Bika LIMS Logo"/>
-    <div id="text">
+  <body tal:define="sites view/sites">
+    <div id="box">
+      <img src="/++resource++plone-logo.png"
+           width="400"
+           tal:attributes="src string:${context/absolute_url}/++resource++senaite-core-logo.png"
+           alt="SENAITE Core"/>
+      <div id="text">
         <h1 i18n:translate="" i18n:domain="bika">
-            Professional Open Source LIMS/LIS
+          Open Source LIMS Core
         </h1>
         <ul>
-            <tal:block tal:condition="sites">
-                <tal:one tal:condition="python:len(sites) == 1">
-                    <li tal:repeat="site sites">
-                        <span class="prominent">
-                            <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
-                                 height="16" width="16"/>
-                            <a href="#"
-                               tal:attributes="href site/absolute_url"
-                               title="Go to your installation"
-                               i18n:attributes="title;"
-                               i18n:translate="">View your Bika installation</a>
-                        </span>
-                        <div class="upgrade-warning"
-                             tal:condition="python:view.outdated(site)">
-                            <span i18n:translate="">
-                            This site configuration is outdated and needs to be
-                            upgraded:</span>
-                            <form action=""
-                                  style="display: inline;"
-                                  method="get"
-                                  tal:attributes="action python:view.upgrade_url(site)">
-                            <input tal:condition="not:view/can_manage"
-                                   type="hidden" name="came_from"
-                                   tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
-                            <input type="submit"
-                                   value="Upgrade&hellip;"
-                                   i18n:attributes="value label_upgrade_hellip" />
-                            </form>
-                            </div>
-                    </li>
-                </tal:one>
-                <tal:many tal:condition="python:len(sites) &gt; 1">
-                <li>
-                    <span id="multiple-sites" i18n:translate="">
-                        You have multiple installations of Bika LIMS:
-                    </span>
-                    <ul>
-                        <li tal:repeat="site sites">
-                            <span class="prominent">
-                                <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
-                                     height="16" width="16"/>
-                                <a href="#"
-                                   tal:attributes="href site/absolute_url;
-                                                   title site/Title;"
-                                   tal:content="site/Title">
-                                    Site title
-                                </a>
-                                <span class="discreet"
-                                      tal:content="string:(${site/getId})"/>
-                            </span>
-                            <div class="upgrade-warning"
-                                 tal:condition="python:view.outdated(site)">
-                                <span i18n:translate="">
-                                    This site configuration is outdated and
-                                    needs to be upgraded:
-                                </span>
-                                 <form action=""
-                                       style="display: inline;"
-                                       method="get"
-                                       tal:attributes="action python:view.upgrade_url(site)">
-                                 <input tal:condition="not:view/can_manage"
-                                        type="hidden" name="came_from"
-                                        tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
-                                 <input type="submit"
-                                        value="Upgrade&hellip;"
-                                        i18n:attributes="value label_upgrade_hellip" />
-                                 </form>
-
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                </tal:many>
-            </tal:block>
-            <li tal:condition="not:sites">
-                <span i18n:translate="">
-                    No Bika distribution has been installed yet:
+          <tal:block tal:condition="sites">
+            <tal:one tal:condition="python:len(sites) == 1">
+              <li tal:repeat="site sites">
+                <span class="prominent">
+                  <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
+                       height="16" width="16"/>
+                  <a href="#"
+                     tal:attributes="href site/absolute_url"
+                     title="Go to your installation"
+                     i18n:attributes="title;"
+                     i18n:translate="">View your SENAITE installation</a>
                 </span>
-                <form id="add-plone-site"
-                      method="get"
-                      action="#"
-                      tal:attributes="action string:${context/absolute_url}/@@plone-addsite">
-                    <input type="hidden" name="site_id" value="Plone" />
+                <div class="upgrade-warning"
+                     tal:condition="python:view.outdated(site)">
+                  <span i18n:translate="">
+                    This site configuration is outdated and needs to be
+                    upgraded:</span>
+                  <form action=""
+                        style="display: inline;"
+                        method="get"
+                        tal:attributes="action python:view.upgrade_url(site)">
+                    <input tal:condition="not:view/can_manage"
+                           type="hidden" name="came_from"
+                           tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
                     <input type="submit"
-                           i18n:attributes="value;"
-                           value="Install a Bika distribution" />
-                </form>
-            </li>
-            <li>
-                <a href="#"
-                   tal:attributes="href string:${context/absolute_url}/manage_main"
-                   title="Go to the ZMI"
-                   i18n:attributes="title;"
-                   i18n:translate="label_zmi_link">Zope Management Interface</a>
-                <span i18n:translate="label_zmi_link_description">
-                    &#151; low-level technical configuration.
+                           value="Upgrade&hellip;"
+                           i18n:attributes="value label_upgrade_hellip" />
+                  </form>
+                </div>
+              </li>
+            </tal:one>
+            <tal:many tal:condition="python:len(sites) &gt; 1">
+              <li>
+                <span id="multiple-sites" i18n:translate="">
+                  You have multiple installations of SENAITE Core:
                 </span>
-            </li>
-            <li>
-                <span i18n:translate="label_plone_org_description">
-                    For documentation, add-ons, support, community, visit
-                </span>
-                <a href="http://www.bikalims.org"
-                   title="Bika Open Source LIMS"
-                   target="_new"
-                   i18n:attributes="title label_plone_org_title;">http://www.bikalims.org</a>.
-            </li>
+                <ul>
+                  <li tal:repeat="site sites">
+                    <span class="prominent">
+                      <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
+                           height="16" width="16"/>
+                      <a href="#"
+                         tal:attributes="href site/absolute_url;
+                               title site/Title;"
+                         tal:content="site/Title">
+                        Site title
+                      </a>
+                      <span class="discreet"
+                            tal:content="string:(${site/getId})"/>
+                    </span>
+                    <div class="upgrade-warning"
+                         tal:condition="python:view.outdated(site)">
+                      <span i18n:translate="">
+                        This site configuration is outdated and
+                        needs to be upgraded:
+                      </span>
+                      <form action=""
+                            style="display: inline;"
+                            method="get"
+                            tal:attributes="action python:view.upgrade_url(site)">
+                        <input tal:condition="not:view/can_manage"
+                               type="hidden" name="came_from"
+                               tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
+                        <input type="submit"
+                               value="Upgrade&hellip;"
+                               i18n:attributes="value label_upgrade_hellip" />
+                      </form>
+
+                    </div>
+                  </li>
+                </ul>
+              </li>
+            </tal:many>
+          </tal:block>
+          <li tal:condition="not:sites">
+            <span i18n:translate="">
+              SENAITE Core not installed yet:
+            </span>
+            <form id="add-plone-site"
+                  method="get"
+                  action="#"
+                  tal:attributes="action string:${context/absolute_url}/@@plone-addsite">
+              <input type="hidden" name="site_id" value="Plone" />
+              <input type="submit"
+                     i18n:attributes=""
+                     value="Install SENAITE Core" />
+            </form>
+          </li>
+          <li>
+            <span i18n:translate="label_plone_org_description">
+              For documentation, add-ons, support, community, visit
+            </span>
+            <a href="http://www.senaite.org"
+               title="SENAITE"
+               target="_new"
+               i18n:attributes="title">https://github.com/senaite</a>.
+          </li>
         </ul>
+      </div>
     </div>
-</div>
-</body>
+  </body>
 </html>
