@@ -10,7 +10,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-  <title i18n:translate="" i18n:domain="bika">Install a Bika Distribution</title>
+  <title i18n:translate="" i18n:domain="bika">Install SENAITE</title>
 
   <link rel="stylesheet" type="text/css"
         tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css"
@@ -19,6 +19,7 @@
   <script type="text/javascript">
     function siteid_focus() {
       siteid = document.getElementById('site_id')
+      siteid.value = "senaite"
       siteid.focus()
     }
     window.onload = siteid_focus;
@@ -27,10 +28,11 @@
 </head>
 <body>
 
-  <img src="/++resource++plone-logo.png"
-    tal:attributes="src string:${context/absolute_url}/++resource++bikaonly-logo.png" />
+  <img src="/++resource++senaite-core-logo.png"
+       width="400"
+       tal:attributes="src string:${context/absolute_url}/++resource++senaite-core-logo.png" />
 
-  <h1 i18n:translate="" i18n:domain="bika">Install a Bika Distribution</h1>
+  <h1 i18n:translate="" i18n:domain="bika">Install SENAITE</h1>
 
   <form action="#"
         method="post"
@@ -52,9 +54,7 @@
         </div>
 
         <div class="formHelp" i18n:translate="" i18n:domain="bika">
-          IMPORTANT: Don't use "Bika" or "BIKA" as the instance name, this is a
-          reserved namespace. If you get "Site Error" citing "AttributeError: adapters",
-          this is the most likely cause.
+          Please use <em>senaite</em> or <em>senaitelims</em> as your site name.
         </div>
 
         <input type="text" name="site_id" size="20" id="site_id"
@@ -69,8 +69,7 @@
           browser window on each page.
         </div>
 
-        <input type="text" name="title" size="30" value="Bika"
-               i18n:attributes="value text_default_site_title;" i18n:domain="bika" />
+        <input type="text" name="title" size="30" value="SENAITE" />
       </div>
 
       <div class="field">
