@@ -445,8 +445,7 @@ class DashboardView(BrowserView):
             desc = _("To be printed")
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
             query['getPrinted'] = '0'
-            if 'review_state' in query:
-                del query['review_state']
+            query['review_state'] = ['published', ]
             out.append(
                 self._getStatistics(name, desc, purl, catalog, query, total))
 
