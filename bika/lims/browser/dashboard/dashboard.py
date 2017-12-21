@@ -25,7 +25,9 @@ from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
 from plone.api.exc import InvalidParameterError
 
+
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
+FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
 
 
 def get_dashboard_registry_record():
@@ -369,7 +371,7 @@ class DashboardView(BrowserView):
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query
@@ -477,7 +479,7 @@ class DashboardView(BrowserView):
         query = {'portal_type':"Worksheet",}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query
@@ -541,7 +543,7 @@ class DashboardView(BrowserView):
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
             query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query elements by
@@ -602,9 +604,9 @@ class DashboardView(BrowserView):
         filtering_allowed = \
             self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            cookie_dep_uid = self.request.get('filter_by_department_info',
-                                              '').split(
-                ',') if filtering_allowed else ''
+            cookie_dep_uid = self.request\
+                .get(FILTER_BY_DEPT_COOKIE_ID, '')\
+                .split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = {"query": cookie_dep_uid,
                                           "operator": "or"}
 
