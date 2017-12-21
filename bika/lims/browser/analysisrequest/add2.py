@@ -13,7 +13,6 @@ from DateTime import DateTime
 from BTrees.OOBTree import OOBTree
 
 from plone import protect
-from plone.memoize import view
 
 from plone.memoize.volatile import cache
 from plone.memoize.volatile import DontCache
@@ -1123,7 +1122,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "sort_order": "descending",
             },
             "specification": {
-                "getSampleTypeTitles": [obj.Title(), ''],
+                "getSampleTypeTitle": obj.Title(),
                 "getClientUID": [client_uid, bika_analysisspecs_uid],
                 "sort_order": "descending",
             }
