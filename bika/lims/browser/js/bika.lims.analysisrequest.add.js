@@ -494,11 +494,10 @@
       var field, me;
       me = this;
       field = $("#CCContact-" + arnum);
-      return $.each(contact.cccontacts, function(index, cccontact) {
-        var title, uid;
-        uid = cccontact.uid;
-        title = cccontact.title;
-        return me.set_reference_field(field, uid, title);
+      return $.each(contact.cccontacts, function(uid, cccontact) {
+        var fullname;
+        fullname = cccontact.fullname;
+        return me.set_reference_field(field, uid, fullname);
       });
     };
 

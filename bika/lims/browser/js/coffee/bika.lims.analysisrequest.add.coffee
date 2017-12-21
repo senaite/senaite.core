@@ -531,10 +531,9 @@ class window.AnalysisRequestAdd
 
     field = $("#CCContact-#{arnum}")
 
-    $.each contact.cccontacts, (index, cccontact) ->
-      uid = cccontact.uid
-      title = cccontact.title
-      me.set_reference_field field, uid, title
+    $.each contact.cccontacts, (uid, cccontact) ->
+      fullname = cccontact.fullname
+      me.set_reference_field field, uid, fullname
 
 
   set_sample: (arnum, sample) =>

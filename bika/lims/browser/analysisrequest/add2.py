@@ -972,10 +972,22 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def get_contact_info(self, obj):
         """Returns the client info of an object
         """
+
         info = self.get_base_info(obj)
         fullname = obj.getFullname()
         email = obj.getEmailAddress()
-        cccontacts = map(self.get_base_info, obj.getCCContact())
+
+        # Note: It might get a circular dependency when calling:
+        #       map(self.get_contact_info, obj.getCCContact())
+        cccontacts = {}
+        for contact in obj.getCCContact():
+            uid = api.get_uid(contact)
+            fullname = contact.getFullname()
+            email = contact.getEmailAddress()
+            cccontacts[uid] = {
+                "fullname": fullname,
+                "email": email
+            }
 
         info.update({
             "fullname": fullname,
