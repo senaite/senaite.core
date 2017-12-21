@@ -13,7 +13,6 @@ from DateTime import DateTime
 from BTrees.OOBTree import OOBTree
 
 from plone import protect
-from plone.memoize import view
 
 from plone.memoize.volatile import cache
 from plone.memoize.volatile import DontCache
