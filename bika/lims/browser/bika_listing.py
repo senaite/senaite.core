@@ -677,7 +677,7 @@ class BikaListingView(BrowserView):
         value = self.request.get(request_key, '')
         if type(value) in (list, tuple):
             value = value[0]
-        if len(value) > 1:
+        if len(value) > 0:
             for index in self.filter_indexes:
                 idx = catalog.Indexes.get(index, None)
                 if idx is None:
