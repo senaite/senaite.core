@@ -1193,14 +1193,15 @@
           _field = _el.find("input[type=text]");
           me.flush_reference_field(_field);
           if (mvl.length > 0) {
-            return $.each(mvl.children(), function(idx, item) {
+            $.each(mvl.children(), function(idx, item) {
               uid = $(item).attr("uid");
               value = $(item).text();
               return me.set_reference_field(_field, uid, value);
             });
           } else {
-            return me.set_reference_field(_field, uid, value);
+            me.set_reference_field(_field, uid, value);
           }
+          return $(_field).trigger("change");
         });
         $(me).trigger("form:changed");
         return;

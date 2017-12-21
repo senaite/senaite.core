@@ -1341,6 +1341,9 @@ class window.AnalysisRequestAdd
           # single reference field
           me.set_reference_field _field, uid, value
 
+        # notify that the field changed
+        $(_field).trigger "change"
+
       # trigger form:changed event
       $(me).trigger "form:changed"
       return
