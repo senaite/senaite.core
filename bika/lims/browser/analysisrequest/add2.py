@@ -1122,7 +1122,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "sort_order": "descending",
             },
             "specification": {
-                "getSampleTypeTitles": [obj.Title(), ''],
+                "getSampleTypeTitle": obj.Title(),
                 "getClientUID": [client_uid, bika_analysisspecs_uid],
                 "sort_order": "descending",
             }
