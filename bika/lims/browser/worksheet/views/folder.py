@@ -15,7 +15,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-from bika.lims.utils import user_fullname
+from bika.lims.utils import user_fullname, get_display_list
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF, logger
 from bika.lims.browser import BrowserView
@@ -67,27 +68,9 @@ class FolderView(BikaListingView):
         # this is a property of self, because self.getAnalysts returns it
         self.analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
         self.analysts = self.analysts.sortedByKey()
-        # TODO: To worksheet catalog
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        templates = [t for t in bsc(portal_type = 'WorksheetTemplate',
-                                    inactive_state = 'active')]
 
-        self.templates = [(t.UID, t.Title) for t in templates]
-        self.templates.sort(lambda x, y: cmp(x[1], y[1]))
-
-        self.instruments = [(i.UID, i.Title) for i in
-                            bsc(portal_type = 'Instrument',
-                                inactive_state = 'active')]
-        self.instruments.sort(lambda x, y: cmp(x[1], y[1]))
         self.allowed_department_filtering = \
             self.context.bika_setup.getAllowDepartmentFiltering()
-        self.templateinstruments = {}
-        for t in templates:
-            i = t.getObject().getInstrument()
-            if i:
-                self.templateinstruments[t.UID] = i.UID()
-            else:
-                self.templateinstruments[t.UID] = ''
 
         self.columns = {
             'Title': {'title': _('Worksheet'),
@@ -194,6 +177,28 @@ class FolderView(BikaListingView):
                         'CreationDate',
                         'state_title']},
         ]
+
+    def _get_worksheet_templates_brains(self):
+        """
+        Returns available Worksheet Templates as brains. Only active Worksheet
+        Templates are considered
+        :return: list of brains
+        """
+        catalog = api.get_tool('bika_setup_catalog')
+        brains = catalog(portal_type='WorksheetTemplate',
+                         inactive_state='active')
+        return brains
+
+    def _get_instruments_brains(self):
+        """
+        Returns available Instruments as brains. Only active Instruments
+        are considered
+        :return: list of brains
+        """
+        catalog = api.get_tool('bika_setup_catalog')
+        brains = catalog(portal_type='Instrument',
+                         inactive_state='active')
+        return brains
 
     def before_render(self):
         """
@@ -343,19 +348,38 @@ class FolderView(BikaListingView):
         return self.analysts
 
     def getWorksheetTemplates(self):
-        """ List of templates
-            Used in bika_listing.pt
         """
-        return DisplayList(self.templates)
+        Returns a DisplayList with available Worksheet Templates, sorted by
+        title ascending. Only active Worksheet Templates are considered
+        :return: DisplayList of worksheet templates (uid, title)
+        :rtype: DisplayList
+        """
+        brains = self._get_worksheet_templates_brains()
+        return get_display_list(brains)
 
     def getInstruments(self):
-        """ List of instruments
-            Used in bika_listing.pt
         """
-        return DisplayList(self.instruments)
+        Returns a DisplayList with available Instruments, sorted by title
+        ascending. Only active Instruments are considered
+        :return: DisplayList of worksheet templates (uid, title)
+        :rtype: DisplayList
+        """
+        brains = self._get_instruments_brains()
+        return get_display_list(brains)
 
     def getTemplateInstruments(self):
         """ Distionary of instruments per template
             Used in bika_listing.pt
         """
-        return json.dumps(self.templateinstruments)
+        items = dict()
+        templates = self._get_worksheet_templates_brains()
+        for template in templates:
+            template_obj = api.get_object(template)
+            uid_template = api.get_uid(template_obj)
+            instrument = template_obj.getInstrument()
+            uid_instrument = ''
+            if instrument:
+                uid_instrument = api.get_uid(instrument)
+            items[uid_template] = uid_instrument
+
+        return json.dumps(items)
