@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #491 Fix AR Add Form: CC Contacts not set on Contact Change
 - #475 Assigning Analyses to a WS raises AttributeError
 - #466 UnicodeDecodeError if unicode characters are entered into the title field
 - #453 Sample points do not show the referenced sample types in view

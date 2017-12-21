@@ -29,6 +29,7 @@
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_analysis_specification_changed = bind(this.on_analysis_specification_changed, this);
+      this.on_contact_changed = bind(this.on_contact_changed, this);
       this.on_client_changed = bind(this.on_client_changed, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
       this.get_service = bind(this.get_service, this);
@@ -37,6 +38,7 @@
       this.set_template = bind(this.set_template, this);
       this.set_sampletype = bind(this.set_sampletype, this);
       this.set_sample = bind(this.set_sample, this);
+      this.set_contact = bind(this.set_contact, this);
       this.set_client = bind(this.set_client, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
@@ -88,6 +90,7 @@
       $("tr[fieldname=InvoiceExclude] input[type='checkbox']").on("click", this.recalculate_records);
       $("tr[fieldname=Analyses] input[type='checkbox']").on("click", this.on_analysis_checkbox_click);
       $("tr[fieldname=Client] input[type='text']").on("selected change", this.on_client_changed);
+      $("tr[fieldname=Contact] input[type='text']").on("selected change", this.on_contact_changed);
       $("tr[fieldname=ReportDryMatter] input[type='checkbox']").on("click", this.on_reportdrymatter_click);
       $("input.min").on("change", this.on_analysis_specification_changed);
       $("input.max").on("change", this.on_analysis_specification_changed);
@@ -217,6 +220,9 @@
       return $.each(records, function(arnum, record) {
         $.each(record.client_metadata, function(uid, client) {
           return me.set_client(arnum, client);
+        });
+        $.each(record.contact_metadata, function(uid, contact) {
+          return me.set_contact(arnum, contact);
         });
         $.each(record.service_metadata, function(uid, metadata) {
           var lock;
@@ -480,6 +486,22 @@
       return this.set_reference_field_query(field, query);
     };
 
+    AnalysisRequestAdd.prototype.set_contact = function(arnum, contact) {
+
+      /*
+       * Set CC Contacts
+       */
+      var field, me;
+      me = this;
+      field = $("#CCContact-" + arnum);
+      return $.each(contact.cccontacts, function(index, cccontact) {
+        var title, uid;
+        uid = cccontact.uid;
+        title = cccontact.title;
+        return me.set_reference_field(field, uid, title);
+      });
+    };
+
     AnalysisRequestAdd.prototype.set_sample = function(arnum, sample) {
 
       /*
@@ -731,6 +753,27 @@
       arnum = $el.closest("[arnum]").attr("arnum");
       console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
       field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "Specification"];
+      $.each(field_ids, function(index, id) {
+        var field;
+        field = me.get_field_by_id(id, arnum);
+        return me.flush_reference_field(field);
+      });
+      return $(me).trigger("form:changed");
+    };
+
+    AnalysisRequestAdd.prototype.on_contact_changed = function(event) {
+
+      /*
+       * Eventhandler when the contact changed
+       */
+      var $el, arnum, el, field_ids, me, uid;
+      me = this;
+      el = event.currentTarget;
+      $el = $(el);
+      uid = $el.attr("uid");
+      arnum = $el.closest("[arnum]").attr("arnum");
+      console.debug("°°° on_contact_changed: arnum=" + arnum + " °°°");
+      field_ids = ["CCContact"];
       $.each(field_ids, function(index, id) {
         var field;
         field = me.get_field_by_id(id, arnum);

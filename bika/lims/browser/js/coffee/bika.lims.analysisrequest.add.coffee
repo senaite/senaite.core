@@ -67,6 +67,8 @@ class window.AnalysisRequestAdd
     $("tr[fieldname=Analyses] input[type='checkbox']").on "click", @on_analysis_checkbox_click
     # Client changed
     $("tr[fieldname=Client] input[type='text']").on "selected change", @on_client_changed
+    # Contact changed
+    $("tr[fieldname=Contact] input[type='text']").on "selected change", @on_contact_changed
     # ReportDryMatter Checkbox clicked
     $("tr[fieldname=ReportDryMatter] input[type='checkbox']").on "click", @on_reportdrymatter_click
     # Analysis Specification changed
@@ -216,6 +218,10 @@ class window.AnalysisRequestAdd
       # set client
       $.each record.client_metadata, (uid, client) ->
         me.set_client arnum, client
+
+      # set contact
+      $.each record.contact_metadata, (uid, contact) ->
+        me.set_contact arnum, contact
 
       # set services
       $.each record.service_metadata, (uid, metadata) ->
@@ -515,6 +521,20 @@ class window.AnalysisRequestAdd
     field = $("#Sample-#{arnum}")
     query = client.filter_queries.sample
     @set_reference_field_query field, query
+
+
+  set_contact: (arnum, contact) =>
+    ###
+     * Set CC Contacts
+    ###
+    me = this
+
+    field = $("#CCContact-#{arnum}")
+
+    $.each contact.cccontacts, (index, cccontact) ->
+      uid = cccontact.uid
+      title = cccontact.title
+      me.set_reference_field field, uid, title
 
 
   set_sample: (arnum, sample) =>
@@ -823,6 +843,31 @@ class window.AnalysisRequestAdd
       "Template"
       "Profiles"
       "Specification"
+    ]
+    $.each field_ids, (index, id) ->
+      field = me.get_field_by_id id, arnum
+      me.flush_reference_field field
+
+    # trigger form:changed event
+    $(me).trigger "form:changed"
+
+
+  on_contact_changed: (event) =>
+    ###
+     * Eventhandler when the contact changed
+    ###
+
+    me = this
+    el = event.currentTarget
+    $el = $(el)
+    uid = $el.attr "uid"
+    arnum = $el.closest("[arnum]").attr "arnum"
+
+    console.debug "°°° on_contact_changed: arnum=#{arnum} °°°"
+
+    # Flush client depending fields
+    field_ids = [
+      "CCContact"
     ]
     $.each field_ids, (index, id) ->
       field = me.get_field_by_id id, arnum
