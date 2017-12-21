@@ -5,32 +5,25 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from DateTime import DateTime
-from DocumentTemplate import sequence
+import json
+
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import PMF
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import ManageWorksheets
+from bika.lims.utils import getUsers
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils import user_fullname, get_display_list
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-from bika.lims.utils import user_fullname, get_display_list
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims import PMF, logger
-from bika.lims.browser import BrowserView
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.permissions import EditWorksheet
-from bika.lims.permissions import ManageWorksheets
-from bika.lims.utils import getUsers, tmpID, t
-from bika.lims.utils import to_utf8 as _c
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-import logging
-import plone
-import json
-import zope
 
 
 class FolderView(BikaListingView):
