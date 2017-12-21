@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #489 Worksheet Templates selection list is empty in Worksheets view
 - #475 Assigning Analyses to a WS raises AttributeError
 - #466 UnicodeDecodeError if unicode characters are entered into the title field
 - #453 Sample points do not show the referenced sample types in view
