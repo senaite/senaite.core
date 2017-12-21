@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #488 JS Errors in bika.lims.analysisrequest.js
 - #475 Assigning Analyses to a WS raises AttributeError
 - #466 UnicodeDecodeError if unicode characters are entered into the title field
 - #453 Sample points do not show the referenced sample types in view
