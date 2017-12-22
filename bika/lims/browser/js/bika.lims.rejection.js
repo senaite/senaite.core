@@ -49,7 +49,16 @@
              var td = $('#archetypes-fieldname-RejectionWidget').parent('td');
              var label = "<div class='semioverlay-head'>"+$(td).prev('td').html().trim()+"</div>";
              // Creating the div element
-             $('#content').prepend("<div id='semioverlay'><div class='semioverlay-back'></div><div class='semioverlay-panel'><div class='semioverlay-content'></div><div class='semioverlay-buttons'><input type='button' name='semioverlay.reject' value='reject'/><input type='button' name='semioverlay.cancel' value='cancel'/></div></div></div>");
+             $('#content').prepend(
+                "<div id='semioverlay' style='display:none'>" +
+                " <div class='semioverlay-back'> </div>" +
+                " <div class='semioverlay-panel'>" +
+                " <div class='semioverlay-content'></div>" +
+                " <div class='semioverlay-buttons'>" +
+                " <input type='button'" +
+                " name='semioverlay.reject' value='reject'/>" +
+                " <input type='button' name='semioverlay.cancel'" +
+                " value='cancel'/></div></div></div>");
              // Moving the widget there
              $('#archetypes-fieldname-RejectionWidget').detach().prependTo('#semioverlay .semioverlay-content');
              // hidding the widget's td and moving the label
@@ -73,7 +82,6 @@
                  $('div#semioverlay .semioverlay-panel').fadeOut();
                  reject_ar_sample();
              });
-             $('div#semioverlay .semioverlay-panel').hide();
          }
      }
 
