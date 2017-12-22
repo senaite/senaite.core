@@ -5,16 +5,6 @@
 
      var that = this;
      that.load = function() {
-         // I don't know why samples don't have the reject state button, so I'll
-         // have to insert a handmade one.
-         if ($('body').hasClass('portaltype-sample') &&
-            $('#plone-contentmenu-workflow .state-reject').length < 1) {
-                var url = window.location.href.replace('/base_view','');
-                var autentification = $('input[name="_authenticator"]').val();
-                // we have to insert the state button
-                var dom_e = '<li><a id="workflow-transition-reject" class="" title="" href="' + url + '/doActionForSample?workflow_action=reject&_authenticator=' + autentification + '">Reject</li>"';
-                $(dom_e).prependTo($('#plone-contentmenu-workflow dd.actionMenuContent ul')[0]);
-         }
         // If rejection workflow is disabled, hide the state link
         var request_data = {
             catalog_name: "portal_catalog",
