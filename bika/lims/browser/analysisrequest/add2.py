@@ -968,6 +968,35 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return info
 
     @cache(cache_key)
+    def get_contact_info(self, obj):
+        """Returns the client info of an object
+        """
+
+        info = self.get_base_info(obj)
+        fullname = obj.getFullname()
+        email = obj.getEmailAddress()
+
+        # Note: It might get a circular dependency when calling:
+        #       map(self.get_contact_info, obj.getCCContact())
+        cccontacts = {}
+        for contact in obj.getCCContact():
+            uid = api.get_uid(contact)
+            fullname = contact.getFullname()
+            email = contact.getEmailAddress()
+            cccontacts[uid] = {
+                "fullname": fullname,
+                "email": email
+            }
+
+        info.update({
+            "fullname": fullname,
+            "email": email,
+            "cccontacts": cccontacts,
+        })
+
+        return info
+
+    @cache(cache_key)
     def get_service_info(self, obj):
         """Returns the info for a Service
         """
@@ -1332,6 +1361,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Mapping of client UID -> client object info
             client_metadata = {}
+            # Mapping of contact UID -> contact object info
+            contact_metadata = {}
             # Mapping of sample UID -> sample object info
             sample_metadata = {}
             # Mapping of sampletype UID -> sampletype object info
@@ -1367,6 +1398,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Internal mappings of UID -> object of selected items in this record
             _clients = self.get_objs_from_record(record, "Client_uid")
+            _contacts = self.get_objs_from_record(record, "Contact_uid")
             _specifications = self.get_objs_from_record(record, "Specification_uid")
             _templates = self.get_objs_from_record(record, "Template_uid")
             _samples = self.get_objs_from_record(record, "Sample_uid")
@@ -1380,6 +1412,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 metadata = self.get_client_info(obj)
                 # remember the sampletype metadata
                 client_metadata[uid] = metadata
+
+            # CONTACTS
+            for uid, obj in _contacts.iteritems():
+                # get the client metadata
+                metadata = self.get_contact_info(obj)
+                # remember the sampletype metadata
+                contact_metadata[uid] = metadata
 
             # SPECIFICATIONS
             for uid, obj in _specifications.iteritems():
@@ -1536,6 +1575,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # All relevant form data will be set accoriding to this data.
             out[n] = {
                 "client_metadata": client_metadata,
+                "contact_metadata": contact_metadata,
                 "sample_metadata": sample_metadata,
                 "sampletype_metadata": sampletype_metadata,
                 "dms_metadata": dms_metadata,
