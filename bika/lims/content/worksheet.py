@@ -5,8 +5,10 @@
 
 import re
 import sys
+import collections
+
 from AccessControl import ClassSecurityInfo
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
@@ -36,7 +38,8 @@ from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import skip
 from bika.lims.workflow.worksheet import events
 from bika.lims.workflow.worksheet import guards
-from plone import api
+from bika.lims import api
+from plone.api.user import has_permission
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -439,6 +442,50 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
             doActionFor(duplicate, 'assign')
 
+    def get_slot_positions(self, type='a'):
+        """
+        Returns a list with the slots occupied for the type passed in.
+        Allowed type of analyses are 'a' (routine analysis), 'b' (blank
+        analysis), 'c' (control), 'd' (duplicate) or 'all' (all analyses)
+        :param type: type of the analysis
+        :return: list of slot positions
+        """
+        if type not in ['a', 'b', 'c', 'd', 'all']:
+            return list()
+        layout = self.getLayout()
+        slots = list()
+        for slot in layout:
+            if type != 'all' and slot['type'] != type:
+                continue
+            slots.append(int(slot['position']))
+        return slots
+
+    def get_slot_position(self, container, type='a'):
+        """
+        Returns the slot where the analyses from the type and container passed
+        in are located within the worksheet.
+        :param container: the container in which the analyses are grouped
+        :param type: type of the analysis
+        :return: the slot position
+        :rtype: int
+        """
+        if not container:
+            return None
+        uid = api.get_uid(container)
+        layout = self.getLayout()
+        for position in layout:
+            if 'position' not in position:
+                continue
+            if position.get('type', None) != type or \
+               position.get('container_uid', None) != uid:
+                continue
+            slot = position.get('position')
+            try:
+                return int(slot)
+            except (TypeError, ValueError):
+                logger.warn("Cannot convert slot '{}' to int".format(slot))
+                return None
+        return None
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
@@ -447,56 +494,142 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
         """
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        bac = getToolByName(self, "bika_analysis_catalog")
-        bc = getToolByName(self, 'bika_catalog')
 
-        layout = self.getLayout()
-        wstlayout = wst.getLayout()
+        bac = api.get_tool("bika_analysis_catalog")
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
-        wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
-        ws_slots = [row['position'] for row in layout if row['type'] == 'a']
-        nr_slots = len(wst_slots) - len(ws_slots)
-        positions = [pos for pos in wst_slots if pos not in ws_slots]
-
         analyses = bac(portal_type='Analysis',
                        getServiceUID=wst_service_uids,
                        review_state='sample_received',
                        worksheetanalysis_review_state='unassigned',
                        cancellation_state = 'active',
-                       sort_on='getDueDate')
+                       sort_on='getPrioritySortkey')
 
-        # ar_analyses is used to group analyses by AR.
-        ar_analyses = {}
-        instr = self.getInstrument() if self.getInstrument() else wst.getInstrument()
+        # No analyses, nothing to do
+        if not analyses:
+            return
+
+        layout = self.getLayout()
+        wst_layout = wst.getLayout()
+
+        # Available slots for routine analyses
+        ws_slots = self.get_slot_positions('a')
+        wst_slots = [int(row['pos']) for row in wst_layout if row['type'] == 'a']
+        available_slots = [pos for pos in wst_slots if pos not in ws_slots]
+        # We wont a stack, the first in-first out, so we sort reverse
+        available_slots.sort(reverse=True)
+
+        # If there is an instrument assigned to this Worksheet Template, take
+        # only the analyses that allow this instrument into consideration.
+        instrument = wst.getInstrument()
+
+        # If there is method assigned to the Worksheet Template, take only the
+        # analyses that allow this method into consideration.
         method = wst.getRestrictToMethod()
+
+        # This worksheet is empty?
+        num_routine_analyses = len(self.getRegularAnalyses())
+
+        # Group Analyses by Analysis Requests
+        ar_analyses = dict()
+        ar_slots = dict()
+        ar_fixed_slots = dict()
         for brain in analyses:
-            analysis = brain.getObject()
-            if (instr and analysis.isInstrumentAllowed(instr) is False) or\
-                    (method and analysis.isMethodAllowed(method) is False):
-                # Exclude those analyses for which the ws selected
-                # instrument or method is not allowed
+            arid = brain.getRequestID
+            obj = api.get_object(brain)
+            if instrument and not obj.isInstrumentAllowed(instrument):
+                # Exclude those analyses for which the worksheet's template
+                # instrument is not allowed
                 continue
 
-            ar_id = brain.id
-            if ar_id in ar_analyses:
-                ar_analyses[ar_id].append(analysis)
-            else:
-                if len(ar_analyses.keys()) < nr_slots:
-                    ar_analyses[ar_id] = [analysis, ]
+            if method and not obj.isMethodAllowed(method):
+                # Exclude those analyses for which the worksheet's template
+                # method is not allowed
+                continue
 
-        # Add analyses, sorted by AR ID
-        ars = sorted(ar_analyses.keys())
-        for ar in ars:
-            for analysis in ar_analyses[ar]:
-                self.addAnalysis(analysis, position=positions[ars.index(ar)])
+            slot = ar_slots.get(arid, None)
+            if not slot:
+                # We haven't processed other analyses that belong to the same
+                # Analysis Request as the current one.
+                if len(available_slots) == 0 and num_routine_analyses == 0:
+                    # No more slots available for this worksheet/template, so
+                    # we cannot add more analyses to this WS. Also, there is no
+                    # chance to process a new analysis with an available slot.
+                    break
+
+                if num_routine_analyses == 0:
+                    # This worksheet is empty, but there are slots still
+                    # available, assign the next available slot to this analysis
+                    slot = available_slots.pop()
+                else:
+                    # This worksheet is not empty and there are slots still
+                    # available.
+                    slot = self.get_slot_position(obj.getRequest())
+                    if slot:
+                        # Prefixed slot position
+                        ar_fixed_slots[arid] = slot
+                        if arid not in ar_analyses:
+                            ar_analyses[arid] = list()
+                        ar_analyses[arid].append(obj)
+                        continue
+
+                    # This worksheet does not contain any other analysis
+                    # belonging to the same Analysis Request as the current
+                    if len(available_slots) == 0:
+                        # There is the chance to process a new analysis that
+                        # belongs to an Analysis Request that is already
+                        # in this worksheet.
+                        continue
+
+                    # Assign the next available slot
+                    slot = available_slots.pop()
+
+            ar_slots[arid] = slot
+            if arid not in ar_analyses:
+                ar_analyses[arid] = list()
+            ar_analyses[arid].append(obj)
+
+        # Sort the analysis requests by sortable_title, so the ARs will appear
+        # sorted in natural order. Since we will add the analysis with the
+        # exact slot where they have to be displayed, we need to sort the slots
+        # too and assign them to each group of analyses in natural order
+        sorted_ar_ids = sorted(ar_analyses.keys())
+        slots = sorted(ar_slots.values(), reverse=True)
+
+        # Add regular analyses
+        for ar_id in sorted_ar_ids:
+            slot = ar_fixed_slots.get(ar_id, None)
+            if not slot:
+                slot = slots.pop()
+            ar_ans = ar_analyses[ar_id]
+            for ar_an in ar_ans:
+                logger.warn('{}: {}.{}'.format(str(slot), ar_an.getRequestID(), ar_an.getKeyword()))
+                self.addAnalysis(ar_an, slot)
+
+        # Available slots for duplicate analyses
+        ws_slots = self.get_slot_positions()
+        ws_dup_slots = self.get_slot_positions('d')
+        for row in wst_layout:
+            if row['type'] != 'd':
+                continue
+            dest_pos = int(row['pos'])
+            if dest_pos in ws_dup_slots:
+                continue
+            src_pos = int(row['dup'])
+            if src_pos not in ws_slots:
+                continue
+            logger.warn('(D) {}: dup of {}'.format(str(dest_pos), str(src_pos)))
+            self.addDuplicateAnalyses(src_pos, dest_pos)
+
+        # Add Blanks and Controls
+        bc = api.get_tool("bika_catalog")
+        rc = api.get_tool("reference_catalog")
 
         # find best maching reference samples for Blanks and Controls
         for t in ('b', 'c'):
             form_key = t == 'b' and 'blank_ref' or 'control_ref'
             ws_slots = [row['position'] for row in layout if row['type'] == t]
-            for row in [r for r in wstlayout if
+            for row in [r for r in wst_layout if
                         r['type'] == t and r['pos'] not in ws_slots]:
                 reference_definition_uid = row.get(form_key, None)
                 if (not reference_definition_uid):
@@ -549,19 +682,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                          reference,
                                          supported_uids)
 
-        # fill duplicate positions
-        layout = self.getLayout()
-        ws_slots = [row['position'] for row in layout if row['type'] == 'd']
-        for row in [r for r in wstlayout if
-                    r['type'] == 'd' and r['pos'] not in ws_slots]:
-            dest_pos = int(row['pos'])
-            src_pos = int(row['dup'])
-            if src_pos in [int(slot['position']) for slot in layout]:
-                self.addDuplicateAnalyses(src_pos, dest_pos)
 
         # Apply the wst instrument to all analyses and ws
-        if instr:
-            self.setInstrument(instr, True)
+        if instrument:
+            self.setInstrument(instrument, True)
         # Apply the wst method to all analyses and ws
         if method:
             self.setMethod(method, True)
@@ -899,7 +1023,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
-        allowed = api.user.has_permission(VerifyPermission, username=username)
+        allowed = has_permission(VerifyPermission, username=username)
         if not allowed:
             return False
         # Check if the user is allowed to verify all the contained analyses
