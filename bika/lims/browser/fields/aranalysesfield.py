@@ -237,7 +237,7 @@ class ARAnalysesField(ObjectField):
         if IAnalysisService.providedBy(obj):
             return api.get_uid(obj)
 
-        if IAnalysis.providedBy(obj) and IRequestAnalysis.providedBy(obj):
+        if IAnalysis.providedBy(obj) or IRequestAnalysis.providedBy(obj):
             return obj.getServiceUID()
 
         # An object, but neither an Analysis nor AnalysisService?
