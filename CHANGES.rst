@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.8 (unreleased)
+1.1.8 (2017-12-23)
 ------------------
 
 **Added**
@@ -10,8 +10,6 @@ Changelog
 - #472 Dashboard panels visibility by roles
 - #467 All/Mine filters in Dashboard panels
 - #423 Instrument import interface for Abbott's m2000 Real Time
-
-**Removed**
 
 **Changed**
 
@@ -35,8 +33,6 @@ Changelog
 - #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
 - #445 Fix AR Add Form: No sample points are found if a sample type was set
-
-**Security**
 
 
 1.1.7 (2017-12-01)
