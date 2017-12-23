@@ -502,8 +502,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return list()
 
         ws_slots = self.get_slot_positions(type)
-        wst_lay = worksheet_template.getLayout()
-        wst_slots = [int(row['pos']) for row in wst_lay if row['type'] == type]
+        wst_l = worksheet_template.getLayout()
+        wst_ty = type
+        if type in ['b', 'c']:
+            wst_ty = type == 'b' and 'blank_ref' or 'control_ref'
+        wst_slots = [int(row['pos']) for row in wst_l if row['type'] == wst_ty]
         return [pos for pos in wst_slots if pos not in ws_slots]
 
     def _apply_worksheet_template_routine_analyses(self, wst):
@@ -630,10 +633,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         be generated for that given slot.
         :param wst: worksheet template used as the layout
         """
-        layout = self.getLayout()
-        wst_layout = wst.getLayout()
-        ws_slots = self.get_slot_positions()
+        ws_slots = self.get_slot_positions('a')
         ws_dup_slots = self.get_slot_positions('d')
+        wst_layout = wst.getLayout()
         for row in wst_layout:
             if row['type'] != 'd':
                 continue
@@ -643,8 +645,128 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             src_pos = int(row['dup'])
             if src_pos not in ws_slots:
                 continue
-            logger.warn('(D) {}: dup of {}'.format(str(dest_pos), str(src_pos)))
             self.addDuplicateAnalyses(src_pos, dest_pos)
+
+    def _resolve_reference_sample(self, reference_samples=None,
+                                  service_uids=None):
+        """
+        Returns the reference sample from reference_samples passed in that fits
+        better with the service uid requirements. This is, the reference sample
+        that covers most (or all) of the service uids passed in and has less
+        number of remaining service_uids.
+        If no reference_samples are set, returns None
+        If no service_uids are set, returns the first reference_sample
+        :param reference_samples: list of reference samples
+        :param service_uids: list of service uids
+        :return: the reference sample that fits better with the service uids
+        """
+        if not reference_samples:
+            return None
+
+        if not service_uids:
+            # Since no service filtering has been defined, there is no need to
+            # look for the best choice. Return the first one
+            return reference_samples[0]
+
+        best_score = [0, 0]
+        best_sample = None
+        best_supported = None
+        for sample in reference_samples:
+            specs = sample.getResultsRangeDict()
+            specs_uids = specs.keys()
+            supported = [uid for uid in specs_uids if uid in service_uids]
+            matches = len(supported)
+            overlays = len(service_uids) - matches
+            overlays = 0 if overlays < 0 else overlays
+
+            if overlays == 0 and matches == len(service_uids):
+                # Perfect match.. no need to go further
+                return sample, supported
+
+            if not best_sample \
+                    or matches > best_score[0] \
+                    or (matches == best_score[0] and overlays < best_score[1]):
+                best_sample = sample
+                best_score = [matches, overlays]
+                best_supported = supported
+
+        return best_sample, best_supported
+
+    def _resolve_reference_samples(self, wst, type):
+        """
+        Resolves the slots and reference samples in accordance with the
+        Worksheet Template passed in and the type passed in.
+        Returns a list of dictionaries
+        :param wst: Worksheet Template that defines the layout
+        :param type: type of analyses ('b' for blanks, 'c' for controls)
+        :return: list of dictionaries
+        """
+        if not type or type not in ['b', 'c']:
+            return []
+
+        bc = api.get_tool("bika_catalog")
+        wst_type = type == 'b' and 'blank_ref' or 'control_ref'
+
+        slots_sample = list()
+        available_slots = self.resolve_available_slots(wst, type)
+        wst_layout = wst.getLayout()
+        for row in wst_layout:
+            slot = int(row['pos'])
+            if slot not in available_slots:
+                continue
+
+            ref_definition_uid = row.get(wst_type, None)
+            if not ref_definition_uid:
+                # Only reference analyses with reference definition can be used
+                # in worksheet templates
+                continue
+
+            samples = bc(portal_type='ReferenceSample',
+                         review_state='current',
+                         inactive_state='active',
+                         getReferenceDefinitionUID=ref_definition_uid)
+
+            # We only want the reference samples that fit better with the type
+            # and with the analyses defined in the Template
+            services = wst.getService()
+            services = [s.UID() for s in services]
+            candidates = list()
+            for sample in samples:
+                obj = api.get_object(sample)
+                if (type == 'b' and obj.getBlank()) or \
+                        (type == 'c' and not obj.getBlank()):
+                    candidates.append(sample)
+
+            sample, uids = self._resolve_reference_sample(candidates, services)
+            if not sample:
+                continue
+
+            slots_sample.append({'slot': slot,
+                                 'sample': sample,
+                                 'supported_services': uids})
+
+        return slots_sample
+
+    def _apply_worksheet_template_reference_analyses(self, wst, type='all'):
+        """
+        Add reference analyses to worksheet according to the worksheet template
+        layout passed in. Does not overwrite slots that are already filled.
+        :param wst: worksheet template used as the layout
+        """
+        if type == 'all':
+            self._apply_worksheet_template_reference_analyses(wst, 'b')
+            self._apply_worksheet_template_reference_analyses(wst, 'c')
+            return
+
+        if type not in ['b', 'c']:
+            return
+
+        references = self._resolve_reference_samples(wst, type)
+        for reference in references:
+            slot = reference['slot']
+            sample = reference['sample']
+            services = reference['supported_services']
+            self.addReference(slot, sample, services)
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
@@ -653,78 +775,25 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
         """
+        if not wst:
+            return
+
         # Apply the template for routine analyses
         self._apply_worksheet_template_routine_analyses(wst)
 
         # Apply the template for duplicate analyses
         self._apply_worksheet_template_duplicate_analyses(wst)
 
-        # Add Blanks and Controls
-        bc = api.get_tool("bika_catalog")
-        rc = api.get_tool("reference_catalog")
+        # Apply the template for reference analyses (blanks and controls)
+        self._apply_worksheet_template_reference_analyses(wst)
 
-        # find best maching reference samples for Blanks and Controls
-        for t in ('b', 'c'):
-            form_key = t == 'b' and 'blank_ref' or 'control_ref'
-            ws_slots = [row['position'] for row in layout if row['type'] == t]
-            for row in [r for r in wst_layout if
-                        r['type'] == t and r['pos'] not in ws_slots]:
-                reference_definition_uid = row.get(form_key, None)
-                if (not reference_definition_uid):
-                    continue
-                samples = bc(portal_type='ReferenceSample',
-                             review_state='current',
-                             inactive_state='active',
-                             getReferenceDefinitionUID=reference_definition_uid)
-                if not samples:
-                    break
-                samples = [s.getObject() for s in samples]
-                if t == 'b':
-                    samples = [s for s in samples if s.getBlank()]
-                else:
-                    samples = [s for s in samples if not s.getBlank()]
-                complete_reference_found = False
-                references = {}
-                for reference in samples:
-                    reference_uid = reference.UID()
-                    references[reference_uid] = {}
-                    references[reference_uid]['services'] = []
-                    references[reference_uid]['count'] = 0
-                    specs = reference.getResultsRangeDict()
-                    for service_uid in wst_service_uids:
-                        if service_uid in specs:
-                            references[reference_uid]['services'].append(service_uid)
-                            references[reference_uid]['count'] += 1
-                    if references[reference_uid]['count'] == len(wst_service_uids):
-                        complete_reference_found = True
-                        break
-                if complete_reference_found:
-                    supported_uids = wst_service_uids
-                    self.addReferences(int(row['pos']),
-                                     reference,
-                                     supported_uids)
-                else:
-                    # find the most complete reference sample instead
-                    reference_keys = references.keys()
-                    no_of_services = 0
-                    reference = None
-                    for key in reference_keys:
-                        if references[key]['count'] > no_of_services:
-                            no_of_services = references[key]['count']
-                            reference = key
-                    if reference:
-                        reference = rc.lookupObject(reference)
-                        supported_uids = [s.UID() for s in reference.getServices()
-                                          if s.UID() in wst_service_uids]
-                        self.addReferences(int(row['pos']),
-                                         reference,
-                                         supported_uids)
-
-
-        # Apply the wst instrument to all analyses and ws
+        # Assign the instrument
+        instrument = wst.getInstrument()
         if instrument:
             self.setInstrument(instrument, True)
-        # Apply the wst method to all analyses and ws
+
+        # Assign the method
+        method = wst.getRestrictToMethod()
         if method:
             self.setMethod(method, True)
 
