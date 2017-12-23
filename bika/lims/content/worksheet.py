@@ -487,14 +487,35 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 return None
         return None
 
-    def applyWorksheetTemplate(self, wst):
-        """ Add analyses to worksheet according to wst's layout.
-            Will not overwrite slots which are filled already.
-            If the selected template has an instrument assigned, it will
-            only be applied to those analyses for which the instrument
-            is allowed, the same happens with methods.
+    def resolve_available_slots(self, worksheet_template, type='a'):
         """
+        Returns the available slots from the current worksheet that fits with
+        the layout defined in the worksheet_template and type of analysis passed
+        in.
+        Allowed type of analyses are 'a' (routine analysis), 'b' (blank
+        analysis), 'c' (control), 'd' (duplicate)
+        :param worksheet_template: the worksheet template to match against
+        :param type: type of analyses to restrict that suit with the slots
+        :return: a list of slots positions
+        """
+        if type not in ['a', 'b', 'c', 'd']:
+            return list()
 
+        ws_slots = self.get_slot_positions(type)
+        wst_lay = worksheet_template.getLayout()
+        wst_slots = [int(row['pos']) for row in wst_lay if row['type'] == type]
+        return [pos for pos in wst_slots if pos not in ws_slots]
+
+    def _apply_worksheet_template_routine_analyses(self, wst):
+        """
+        Add routine analyses to worksheet according to the worksheet template
+        layout passed in. Does not overwrite slots that are already filled.
+        If the template passed in has an instrument assigned, only those routine
+        analyses that allows the instrument will be added.
+        If the template passed in has a method assigned, only those routine
+        analyses that allows the method will be added
+        :param wst: worksheet template used as the layout
+        """
         bac = api.get_tool("bika_analysis_catalog")
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
@@ -502,21 +523,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                        getServiceUID=wst_service_uids,
                        review_state='sample_received',
                        worksheetanalysis_review_state='unassigned',
-                       cancellation_state = 'active',
+                       cancellation_state='active',
                        sort_on='getPrioritySortkey')
 
         # No analyses, nothing to do
         if not analyses:
             return
 
-        layout = self.getLayout()
-        wst_layout = wst.getLayout()
-
-        # Available slots for routine analyses
-        ws_slots = self.get_slot_positions('a')
-        wst_slots = [int(row['pos']) for row in wst_layout if row['type'] == 'a']
-        available_slots = [pos for pos in wst_slots if pos not in ws_slots]
-        # We wont a stack, the first in-first out, so we sort reverse
+        # Available slots for routine analyses. Sort reverse, cause we need a
+        # stack for sequential assignment of slots
+        available_slots = self.resolve_available_slots(wst, 'a')
         available_slots.sort(reverse=True)
 
         # If there is an instrument assigned to this Worksheet Template, take
@@ -603,10 +619,19 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 slot = slots.pop()
             ar_ans = ar_analyses[ar_id]
             for ar_an in ar_ans:
-                logger.warn('{}: {}.{}'.format(str(slot), ar_an.getRequestID(), ar_an.getKeyword()))
                 self.addAnalysis(ar_an, slot)
 
-        # Available slots for duplicate analyses
+    def _apply_worksheet_template_duplicate_analyses(self, wst):
+        """
+        Add duplicate analyses to worksheet according to the worksheet template
+        layout passed in. Does not overwrite slots that are already filled. If
+        the slot where the duplicate must be located is available, but the slot
+        where the routine analysis should be found is empty, no duplicate will
+        be generated for that given slot.
+        :param wst: worksheet template used as the layout
+        """
+        layout = self.getLayout()
+        wst_layout = wst.getLayout()
         ws_slots = self.get_slot_positions()
         ws_dup_slots = self.get_slot_positions('d')
         for row in wst_layout:
@@ -620,6 +645,19 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 continue
             logger.warn('(D) {}: dup of {}'.format(str(dest_pos), str(src_pos)))
             self.addDuplicateAnalyses(src_pos, dest_pos)
+
+    def applyWorksheetTemplate(self, wst):
+        """ Add analyses to worksheet according to wst's layout.
+            Will not overwrite slots which are filled already.
+            If the selected template has an instrument assigned, it will
+            only be applied to those analyses for which the instrument
+            is allowed, the same happens with methods.
+        """
+        # Apply the template for routine analyses
+        self._apply_worksheet_template_routine_analyses(wst)
+
+        # Apply the template for duplicate analyses
+        self._apply_worksheet_template_duplicate_analyses(wst)
 
         # Add Blanks and Controls
         bc = api.get_tool("bika_catalog")
