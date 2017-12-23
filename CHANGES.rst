@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #492 Fix AR Add Form: CC Contacts not set on Contact Change
 - #489 Worksheet Templates selection list is empty in Worksheets view
 - #490 Fix AR Add Form: No specifications found if a sample type was set
 - #475 Assigning Analyses to a WS raises AttributeError
