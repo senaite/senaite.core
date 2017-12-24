@@ -33,19 +33,10 @@ def upgrade(tool):
     setup = portal.portal_setup
     setup.runImportStepFromProfile('profile-bika.lims:default', 'plone.app.registry')
     upgrade_indexes()
-    rename_bika_setup()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
-
-
-def rename_bika_setup():
-    logger.info("Renaming Bika Setup...")
-    bika_setup = api.get_bika_setup()
-    bika_setup.setTitle("Setup")
-    bika_setup.reindexObject()
-
 
 def upgrade_indexes():
     logger.info("Fixing broken calculations (re-assignment of dependents)...")
