@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsenaite%2Fbika.lims.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsenaite%2Fbika.lims?ref=badge_shield)
+
 Bika LIMS Evo
 =============
 
@@ -49,3 +51,7 @@ Feedback and support
 * Issue Tracker: `http://jira.bikalabs.com/ <http://jira.bikalabs.com>`_
 * IRC: `irc://freenode.net/#bika <irc://freenode.net/#bika>`_
 * Slack: `bikalims.slack.com <http://slackin.bikalims.org>`_
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsenaite%2Fbika.lims.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsenaite%2Fbika.lims?ref=badge_large)
