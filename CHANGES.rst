@@ -1,28 +1,58 @@
 Changelog
 =========
 
-1.1.8 (unreleased)
+1.1.9 (unreleased)
 ------------------
 
 **Added**
 
-- #423 Instrument import interface for Abbott's m2000 Real Time
 
 **Removed**
+
+
+**Changed**
+
+
+**Fixed**
+
+
+**Security**
+
+
+
+1.1.8 (2017-12-23)
+------------------
+
+**Added**
+
+- #440 ITopLeft, ITopRight and ITopWide hooks (placeholders) in bikalisting
+- #472 Dashboard panels visibility by roles
+- #467 All/Mine filters in Dashboard panels
+- #423 Instrument import interface for Abbott's m2000 Real Time
 
 **Changed**
 
 - #455 On the AR View Date Published should appear once
+- #469 Remove unique field validator for Batch titles
+- #459 PR-1942 Feature/instrument certification interval refactoring
 - #431 Make ARAnalysesField setter to accept Analysis/Service objects
 
 **Fixed**
 
+- #494 Rejection reasons widget does not appear on rejection
+- #492 Fix AR Add Form: CC Contacts not set on Contact Change
+- #489 Worksheet Templates selection list is empty in Worksheets view
+- #490 Fix AR Add Form: No specifications found if a sample type was set
+- #475 Assigning Analyses to a WS raises AttributeError
+- #466 UnicodeDecodeError if unicode characters are entered into the title field
+- #453 Sample points do not show the referenced sample types in view
+- #470 Sort order of Analyses in WS print view wrong
+- #457 Calculation referring to additional python module not triggered
+- #459 Traceback in Instruments list after adding a calibration certificate
 - #454 Click on some analyses pops up a new page instead of object log
 - #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
 - #445 Fix AR Add Form: No sample points are found if a sample type was set
-
-**Security**
 
 
 1.1.7 (2017-12-01)

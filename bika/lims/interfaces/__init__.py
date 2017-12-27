@@ -314,6 +314,10 @@ class IInstrumentCertification(Interface):
     """Instrument Certification
     """
 
+class IInstrumentValidation(Interface):
+    """Instrument Validation
+    """
+
 class IAnalysisSpecs(Interface):
     ""
 
@@ -803,4 +807,19 @@ class INumberGenerator(Interface):
 
 class IGenerateID(Interface):
     """Marker Interface to generate an ID
+    """
+
+class ITopRightHTMLComponentsHook(Interface):
+    """
+    Marker interface to hook html components in bikalisting
+    """
+
+class ITopLeftHTMLComponentsHook(Interface):
+    """
+    Marker interface to hook html components in bikalisting
+    """
+
+class ITopWideHTMLComponentsHook(Interface):
+    """
+    Marker interface to hook html components in bikalisting
     """

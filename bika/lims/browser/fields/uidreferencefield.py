@@ -56,7 +56,7 @@ class UIDReferenceField(StringField):
             return None
         obj = _get_object(context, value)
         if obj is None:
-            logger.error(
+            logger.warning(
                 "{}.{}: Resolving UIDReference failed for {}.  No object will "
                 "be returned.".format(context, self.getName(), value))
         return obj
