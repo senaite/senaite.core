@@ -134,17 +134,6 @@ For further details about Buildout and how to install add-ons for Plone, please 
 `Installing add-on packages using Buildout from Plone documentation <https://docs.plone.org/4/en/manage/installing/installing_addons.html>`_.
 
 
-License
-=======
-
-This software, henceforth "SENAITE.CORE", is a derivative work of
-`Bika LIMS <https://github.com/bikalims/bika.lims>`_ software, a web-based
-Laboratory Information Management System (LIMS). As such, SENAITE.CORE is
-licensed under the
-`GNU Affero General Public License v3.0 <https://www.gnu.org/licenses/agpl-3.0.txt>`_.
-See LICENSE.rst file for more details.
-
-
 Contribute
 ==========
 

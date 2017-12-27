@@ -26,7 +26,7 @@ setup(
     author='SENAITE Foundation',
     author_email='support@senaite.com',
     url='https://github.com/senaite/senaite.core',
-    license='GPLv3',
+    license='GPLv2',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['bika'],
     include_package_data=True,
