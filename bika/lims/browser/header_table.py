@@ -119,11 +119,6 @@ class HeaderTableView(BrowserView):
                            'html': ''}
             elif field.getType().lower().find('datetime') > -1:
                 value = field.get(self.context)
-                if value is None:
-                    attr = "get{}".format(fieldname)
-                    if hasattr(self.context, attr):
-                        attr = getattr(self.context, attr)
-                        value = attr()
                 ret = {'fieldName': fieldname,
                        'mode': 'structure',
                        'html': self.ulocalized_time(value, long_format=True)
