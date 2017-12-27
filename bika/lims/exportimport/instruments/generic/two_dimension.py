@@ -39,9 +39,9 @@ def Import(context, request):
     """
     form = request.form
     #TODO form['file'] sometimes returns a list
-    infile = form['file'][0] if isinstance(form['file'],list) else form['file']
+    infile = form['instrument_results_file'][0] if isinstance(form['instrument_results_file'],list) else form['instrument_results_file']
     artoapply = form['artoapply']
-    override = form['override']
+    override = form['results_override']
     sample = form.get('sample', 'requestid')
     instrument = form.get('instrument', None)
     errors = []
@@ -230,4 +230,4 @@ class GenericThreeColumnsImporter(AnalysisResultsImporter):
         AnalysisResultsImporter.__init__(self, parser, context, idsearchcriteria,
                                          override, allowed_ar_states,
                                          allowed_analysis_states,
-                                         instrument_uid, form)
+                                         instrument_uid)
