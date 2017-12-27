@@ -2,7 +2,7 @@
 
 Third-party contributions are essential for keeping senaite.core
 continuously improving. We simply cannot access the huge number of
-platforms and myriad configurations for running senaite.lims. We want to
+platforms and myriad configurations for running senaite.core. We want to
 keep it as easy as possible to contribute changes that get things
 working in your environment. There are a few guidelines that we need
 contributors to follow so that we can have a chance of keeping on top of
@@ -36,7 +36,7 @@ problem.
 
  * **Describe the exact steps which reproduce the problem** in as many
 details as possible. For example, start by describing your computing
-platform (Operating System and version, how did you installed senaite.lims
+platform (Operating System and version, how did you installed senaite.core
 and its dependencies, what file or front-end are you using as a signal
 source, etc.). You can also include the configuration file(s) you are
 using, or a dump of the terminal output you are getting. The more
@@ -73,7 +73,7 @@ the actual username of your GitHub account):
 
    4. Your forked repository https://github.com/YOUR_USERNAME/senaite.core
 will receive the default name of `origin`. You can also add the original
-senaite.lims repository, which is usually called `upstream`:
+senaite.core repository, which is usually called `upstream`:
 
           $ cd senaite.core
           $ git remote add upstream https://github.com/senaite/senaite.core.git
