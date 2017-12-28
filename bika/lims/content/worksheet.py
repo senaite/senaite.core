@@ -535,7 +535,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not worksheet_template or type not in ['a', 'b', 'c', 'd']:
             return list()
 
-        # Get the list of slots occupied by the type in this worksheet
         ws_slots = self.get_slot_positions(type)
         layout = worksheet_template.getLayout()
         slots = list()
@@ -819,7 +818,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
         """
-        import pdb;pdb.set_trace()
         if not wst:
             return
 
