@@ -79,7 +79,7 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = GCMSTQ8030GCMSMSImporter(parser=parser,
+        importer = GCMSQP2010SEImporter(parser=parser,
                                            context=context,
                                            idsearchcriteria=sam,
                                            allowed_ar_states=status,
@@ -308,7 +308,7 @@ class GCMSTQ8030GCMSMSCSVParser(InstrumentCSVResultsFileParser):
             return
         return result
 
-class GCMSTQ8030GCMSMSImporter(AnalysisResultsImporter):
+class GCMSQP2010SEImporter(AnalysisResultsImporter):
 
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
