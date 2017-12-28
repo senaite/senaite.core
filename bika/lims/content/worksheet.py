@@ -450,7 +450,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :type slot: int
         :return: a list of analyses
         """
-        analyses = []
+        if not slot or slot < 1:
+            return list()
+        analyses = list()
         uc = api.get_tool('uid_catalog')
         layout = self.getLayout()
         for pos in layout:
@@ -469,6 +471,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :type slot: int
         :return: the container (analysis request, reference sample, etc.)
         """
+        if not slot or slot < 1:
+            return None
         uc = api.get_tool('uid_catalog')
         layout = self.getLayout()
         for pos in layout:
@@ -492,10 +496,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return list()
         layout = self.getLayout()
         slots = list()
-        for slot in layout:
-            if type != 'all' and slot['type'] != type:
+        for pos in layout:
+            if type != 'all' and pos['type'] != type:
                 continue
-            slots.append(int(slot['position']))
+            slots.append(int(pos['position']))
         return sorted(set(slots))
 
     def get_slot_position(self, container, type='a'):
@@ -507,22 +511,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :return: the slot position
         :rtype: int
         """
-        if not container:
+        if not container or type not in ['a', 'b', 'c', 'd']:
             return None
         uid = api.get_uid(container)
         layout = self.getLayout()
-        for position in layout:
-            if 'position' not in position:
+        for pos in layout:
+            if pos['type'] != type or pos['container_uid'] != uid:
                 continue
-            if position.get('type', None) != type or \
-               position.get('container_uid', None) != uid:
-                continue
-            slot = position.get('position')
-            try:
-                return int(slot)
-            except (TypeError, ValueError):
-                logger.warn("Cannot convert slot '{}' to int".format(slot))
-                return None
+            return int(pos['position'])
         return None
 
     def resolve_available_slots(self, worksheet_template, type='a'):
@@ -536,16 +532,22 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :param type: type of analyses to restrict that suit with the slots
         :return: a list of slots positions
         """
-        if type not in ['a', 'b', 'c', 'd']:
+        if not worksheet_template or type not in ['a', 'b', 'c', 'd']:
             return list()
 
+        # Get the list of slots occupied by the type in this worksheet
         ws_slots = self.get_slot_positions(type)
-        wst_l = worksheet_template.getLayout()
-        wst_ty = type
-        if type in ['b', 'c']:
-            wst_ty = type == 'b' and 'blank_ref' or 'control_ref'
-        wst_slots = [int(row['pos']) for row in wst_l if row['type'] == wst_ty]
-        return [pos for pos in wst_slots if pos not in ws_slots]
+        layout = worksheet_template.getLayout()
+        slots = list()
+        for row in layout:
+            if row['type'] != type:
+                continue
+            slot = int(row['pos'])
+            if slot in ws_slots:
+                # We only want those that are empty
+                continue
+            slots.append(slot)
+        return slots
 
     def _apply_worksheet_template_routine_analyses(self, wst):
         """
@@ -817,6 +819,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
         """
+        import pdb;pdb.set_trace()
         if not wst:
             return
 
