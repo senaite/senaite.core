@@ -51,7 +51,7 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    parser = ICPEMultitypeCSVParser(infile)
+    parser = TwoDimensionCSVParser(infile)
 
     if parser:
         # Load the importer
@@ -79,7 +79,7 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = GenericThreeColumnsImporter(parser=parser,
+        importer = TwoDimensionImporter(parser=parser,
                                            context=context,
                                            idsearchcriteria=sam,
                                            allowed_ar_states=status,
@@ -124,7 +124,7 @@ def find_kw(ar, kw):
     return keyword
 
 
-class ICPEMultitypeCSVParser(InstrumentCSVResultsFileParser):
+class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
 
     QUANTITATIONRESULTS_NUMERICHEADERS = ('Title8', 'Title9','Title31',
             'Title32','Title41', 'Title42','Title43', 
@@ -222,7 +222,7 @@ class ICPEMultitypeCSVParser(InstrumentCSVResultsFileParser):
             return
         return result
 
-class GenericThreeColumnsImporter(AnalysisResultsImporter):
+class TwoDimensionImporter(AnalysisResultsImporter):
 
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
