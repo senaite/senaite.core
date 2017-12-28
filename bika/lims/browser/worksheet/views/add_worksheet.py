@@ -59,7 +59,6 @@ class AddWorksheetView(BrowserView):
             return
 
         wst = rc.lookupObject(template)
-        ws.setWorksheetTemplate(wst)
         ws.applyWorksheetTemplate(wst)
 
         if ws.getLayout():

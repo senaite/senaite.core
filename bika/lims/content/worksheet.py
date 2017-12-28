@@ -125,29 +125,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def Title(self):
         return safe_unicode(self.getId()).encode('utf-8')
 
-    def setWorksheetTemplate(self, worksheettemplate, **kw):
-        """
-        Once a worksheettemplate has been set, the function looks for the
-        method of the template, if there is one, the function sets the
-        method field of the worksheet.
-        """
-        self.getField('WorksheetTemplate').set(self, worksheettemplate)
-        if worksheettemplate and isinstance(worksheettemplate, str):
-            # worksheettemplate is a UID, so we need to get the object first
-            uc = getToolByName(self, 'uid_catalog')
-            wst = uc(UID=worksheettemplate)
-            if wst and len(wst) == 1:
-                self.setMethod(wst[0].getObject().getRestrictToMethod())
-            else:
-                logger.warning(
-                    'The given Worksheet Template UID "%s" to be set ' +
-                    'in the Worksheet Object "%s" with uid "%s" is not valid' %
-                    (worksheettemplate, self.Title(), self.UID()))
-        elif worksheettemplate and worksheettemplate.getRestrictToMethod():
-            self.setMethod(worksheettemplate.getRestrictToMethod())
-
     security.declareProtected(EditWorksheet, 'addAnalysis')
-
     def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
@@ -351,7 +329,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return '%s%s' % (prefix, suffix)
 
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
-    def addDuplicateAnalyses(self, src_slot, dest_slot):
+    def addDuplicateAnalyses(self, src_slot, dest_slot=None):
         """
         Creates and add duplicate analyes from the src_slot to the dest_slot
         If no destination slot is defined, the most suitable slot will be used,
@@ -482,7 +460,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Are the analyses from src_slot suitable for duplicates creation?
         container = self.get_container_at(slot_from)
-        if not container or  not IAnalysisRequest.providedBy(container):
+        if not container or not IAnalysisRequest.providedBy(container):
             # We cannot create duplicates from analyses other than routine ones,
             # those that belong to an Analysis Request.
             return 0
@@ -502,7 +480,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for pos in layout:
             if pos['type'] != 'd' or to_int(pos['dup']) != slot_from:
                 continue
-            slot_to = int(pos['position'])
+            slot_to = int(pos['pos'])
             if slot_to in occupied:
                 # Not an empty slot, add a new slot at the end
                 break
@@ -768,22 +746,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         be generated for that given slot.
         :param wst: worksheet template used as the layout
         """
-        occupied_slots = self.get_slot_positions(type='all')
         wst_layout = wst.getLayout()
         for row in wst_layout:
             if row['type'] != 'd':
                 continue
 
             src_pos = int(row['dup'])
-            if src_pos not in occupied_slots:
-                # There is no source analysis available
-                continue
-
             dest_pos = int(row['pos'])
-            if dest_pos in occupied_slots:
-                # This slot is already occupied
-                continue
-
             self.addDuplicateAnalyses(src_pos, dest_pos)
 
     def _resolve_reference_sample(self, reference_samples=None,
@@ -916,6 +885,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
         """
+        # Store the Worksheet Template field
+        self.getField('WorksheetTemplate').set(self, wst)
+
         if not wst:
             return
 

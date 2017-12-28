@@ -202,6 +202,10 @@ slots reserved for blank and controls are not occupied:
     >>> worksheet.get_slot_positions(type='b')
     []
 
+
+Remove analyses and Apply Worksheet Template again
+==================================================
+
 Remove analyses located at position 2:
     >>> to_del = worksheet.get_analyses_at(2)
     >>> worksheet.removeAnalysis(to_del[0])
@@ -232,3 +236,75 @@ And each slot contains the additional analysis Au:
 
     >>> [an.getKeyword() for an in slot1_analyses]
     ['Cu', 'Fe', 'Au']
+
+As well as in duplicate analyses:
+    >>> dup1 = worksheet.get_analyses_at(3)
+    >>> len(dup1) == 3
+    True
+
+    >>> slot3_analyses = worksheet.get_analyses_at(3)
+    >>> [an.getKeyword() for an in slot3_analyses]
+    ['Cu', 'Fe', 'Au']
+
+
+Remove a duplicate and add it manually
+======================================
+
+Remove all duplicate analyses from slot 5:
+    >>> dup5 = worksheet.get_analyses_at(5)
+    >>> len(dup5) == 3
+    True
+
+    >>> worksheet.removeAnalysis(dup5[0])
+    >>> worksheet.removeAnalysis(dup5[1])
+    >>> worksheet.removeAnalysis(dup5[2])
+    >>> dup5 = worksheet.get_analyses_at(5)
+    >>> len(dup5) == 0
+    True
+
+Add duplicates using the same source routine analysis, located at slot 4, but
+manually instead of applying the Worksheet Template:
+    >>> dups = worksheet.addDuplicateAnalyses(4)
+
+Three duplicate has been added to the worksheet:
+    >>> [dup.getKeyword() for dup in dups]
+    ['Cu', 'Fe', 'Au']
+
+And these duplicates have been added in the slot number 5, cause this slot is
+where this duplicate fits better in accordance with the layout defined in the
+worksheet template associated to this worksheet template:
+    >>> dup5 = worksheet.get_analyses_at(5)
+    >>> [dup.getKeyword() for dup in dup5]
+    ['Cu', 'Fe', 'Au']
+
+    >>> dups_uids = [dup.UID() for dup in dups]
+    >>> dup5_uids = [dup.UID() for dup in dup5]
+    >>> [dup for dup in dup5_uids if dup not in dups_uids]
+    []
+
+But if we remove only one duplicate analysis from slot number 5:
+
+    >>> worksheet.removeAnalysis(dup5[0])
+    >>> dup5 = worksheet.get_analyses_at(5)
+    >>> [dup.getKeyword() for dup in dup5]
+    ['Fe', 'Au']
+
+And we manually add duplicates for analysis in position 4, a new slot will be
+added at the end of the worksheet (slot number 8), cause the slot number 5 is
+already occupied and slots 6 and 7, altough empty, are reserved for blank and
+control:
+    >>> worksheet.get_analyses_at(8)
+    []
+
+    >>> dups = worksheet.addDuplicateAnalyses(4)
+    >>> [dup.getKeyword() for dup in dups]
+    ['Cu', 'Fe', 'Au']
+
+    >>> dup8 = worksheet.get_analyses_at(8)
+    >>> [dup.getKeyword() for dup in dup8]
+    ['Cu', 'Fe', 'Au']
+
+    >>> dups_uids = [dup.UID() for dup in dups]
+    >>> dup8_uids = [dup.UID() for dup in dup8]
+    >>> [dup for dup in dup8_uids if dup not in dups_uids]
+    []
