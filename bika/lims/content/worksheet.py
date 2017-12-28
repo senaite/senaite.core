@@ -442,6 +442,44 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
             doActionFor(duplicate, 'assign')
 
+    def get_analyses_at(self, slot):
+        """
+        Returns the list of analyses assigned to the slot passed in, sorted by
+        the positions they have within the slot.
+        :param slot: the slot where the analyses are located
+        :type slot: int
+        :return: a list of analyses
+        """
+        analyses = []
+        uc = api.get_tool('uid_catalog')
+        layout = self.getLayout()
+        for pos in layout:
+            layout_slot = int(pos['position'])
+            uid = pos['analysis_uid']
+            if layout_slot != slot or not uid:
+                continue
+            brain = uc(UID=uid)
+            analyses.append(api.get_object(brain[0]))
+        return analyses
+
+    def get_container_at(self, slot):
+        """
+        Returns the container object assigned to the slot passed in
+        :param slot: the slot where the analyses are located
+        :type slot: int
+        :return: the container (analysis request, reference sample, etc.)
+        """
+        uc = api.get_tool('uid_catalog')
+        layout = self.getLayout()
+        for pos in layout:
+            layout_slot = int(pos['position'])
+            uid = pos['container_uid']
+            if layout_slot != slot or not uid:
+                continue
+            brain = uc(UID=uid)
+            return api.get_object(brain[0])
+        return None
+
     def get_slot_positions(self, type='a'):
         """
         Returns a list with the slots occupied for the type passed in.
@@ -458,7 +496,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if type != 'all' and slot['type'] != type:
                 continue
             slots.append(int(slot['position']))
-        return slots
+        return sorted(set(slots))
 
     def get_slot_position(self, container, type='a'):
         """
