@@ -22,16 +22,18 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import *
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IDuplicateAnalysis, IAnalysisRequest, \
+    IRoutineAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IWorksheet
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.utils import changeWorkflowState, tmpID, to_int
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
@@ -350,97 +352,191 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
     def addDuplicateAnalyses(self, src_slot, dest_slot):
-        """ add duplicate analyses to worksheet
         """
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        workflow = getToolByName(self, 'portal_workflow')
+        Creates and add duplicate analyes from the src_slot to the dest_slot
+        If no destination slot is defined, the most suitable slot will be used,
+        typically a new slot at the end of the worksheet will be added.
+        :param src_slot: slot that contains the analyses to duplicate
+        :param dest_slot: slot where the duplicate analysis must be stored
+        :return: the list of duplicate analyses added
+        """
+        slot_from = to_int(src_slot, 0)
+        if slot_from < 1:
+            return
 
-        layout = self.getLayout()
-        wst = self.getWorksheetTemplate()
-        wstlayout = wst and wst.getLayout() or []
+        slot_to = to_int(dest_slot, 0)
+        if slot_to < 0:
+            return
 
-        src_ar = [slot['container_uid'] for slot in layout if
-                  slot['position'] == src_slot]
-        if src_ar:
-            src_ar = src_ar[0]
+        if not slot_to:
+            # Just find the suitable slot to add these duplicates
+            slot_to = self._get_suitable_slot_for_duplicate(slot_from)
+            if slot_to < 1:
+                return
 
-        if not dest_slot or dest_slot == 'new':
-            highest_existing_position = len(wstlayout)
-            for pos in [int(slot['position']) for slot in layout]:
-                if pos > highest_existing_position:
-                    highest_existing_position = pos
-            dest_slot = highest_existing_position + 1
-
-        src_analyses = [rc.lookupObject(slot['analysis_uid'])
-                        for slot in layout if
-                        int(slot['position']) == int(src_slot)]
-        dest_analyses = [rc.lookupObject(slot['analysis_uid']).getAnalysis().UID()
-                        for slot in layout if
-                        int(slot['position']) == int(dest_slot)]
-
-        refgid = None
-        processed = []
+        src_analyses = self.get_analyses_at(slot_from)
+        dest_analyses = self.get_analyses_at(slot_to)
+        processed = [api.get_uid(an.getAnalysis()) for an in dest_analyses]
+        duplicates = list()
         for analysis in src_analyses:
-            if analysis.UID() in dest_analyses:
-                continue
-            if analysis.portal_type == 'ReferenceAnalysis':
-                logger.warning('Cannot create duplicate analysis from '
-                               'ReferenceAnalysis at {}'.format(analysis))
+            analysis_uid = api.get_uid(analysis)
+            if analysis_uid in processed:
                 continue
 
-            # If retracted analyses, for some reason, the getLayout() returns
-            # two times the regular analysis generated automatically after a
-            # a retraction.
-            if analysis.UID() in processed:
+            processed.append(analysis_uid)
+            duplicate = self._add_duplicate(analysis, slot_to)
+            if duplicate:
+                duplicates.append(duplicate)
+        return duplicates
+
+    def _add_duplicate(self, src_analysis, destination_slot):
+        """
+        Creates a duplicate of the src_analysis passed in. If the analysis
+        passed in is not an IRoutineAnalysis, is retracted or has dependent
+        services, returns None..
+        :param analysis: analysis to create a duplicate from
+        :param dest_slot: slot where the duplicate analysis must be stored
+        :return: the duplicate analysis or None
+        """
+        if not src_analysis:
+            return None
+
+        if not IRoutineAnalysis.providedBy(src_analysis):
+            logger.warning('Cannot create duplicate analysis from a non '
+                           'routine analysis: {}'.format(src_analysis.getId()))
+            return None
+
+        if getCurrentState(src_analysis) == 'retracted':
+            logger.warning('Cannot create duplicate analysis from a retracted'
+                           'analysis: {}'.format(src_analysis.getId()))
+            return None
+
+        calc = src_analysis.getCalculation()
+        if calc and calc.getDependentServices():
+            logger.warning('Cannot create duplicate analysis from an'
+                           'analysis with dependent services: {}'
+                           .format(src_analysis.getId()))
+            return None
+
+        # Create the duplicate
+        duplicate = _createObjectByType("DuplicateAnalysis", self, tmpID())
+        duplicate.setAnalysis(src_analysis)
+
+        # Set ReferenceAnalysesGroupID (same id for the analyses from
+        # the same Reference Sample and same Worksheet)
+        self._set_referenceanalysis_groupid(duplicate)
+
+        # Set the layout
+        layout = self.getLayout()
+        dup_pos = {'position': destination_slot,
+                   'type': 'd',
+                   'container_uid': duplicate.getRequestID(),
+                   'analysis_uid': api.get_uid(duplicate)}
+        layout.append(dup_pos)
+        self.setLayout(layout)
+
+        # Add the duplicate in the worksheet
+        self.setAnalyses(self.getAnalyses() + [duplicate, ])
+        doActionFor(duplicate, 'assign')
+
+        return duplicate
+
+    def _set_referenceanalysis_groupid(self, analysis):
+        """
+        Inferes and store the reference analysis group id to the analysis passed
+        in. If the analysis passed in is neither a reference analysis nor a
+        duplicate, does nothing.
+        Reference analysis group id is used to differentiate multiple reference
+        analyses for the same sample/analysis within a worksheet.
+        :param analysis: analysis to set the reference analysis group id
+        """
+        if not analysis:
+            return
+
+        is_duplicate = IDuplicateAnalysis.providedBy(analysis)
+        is_reference = IReferenceAnalysis.providedBy(analysis)
+        if not is_duplicate or not is_reference:
+            logger.warning('Cannot set a reference analysis group id to an '
+                           'analysis that is neither a reference analysis nor '
+                           'a duplicate: {}'.format(analysis.getId()))
+            return
+
+        sample = analysis.getSample()
+        refgid = self.nextReferenceAnalysesGroupID(sample)
+        analysis.setReferenceAnalysisGroupID(refgid)
+        analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
+
+    def _get_suitable_slot_for_duplicate(self, src_slot):
+        """
+        Returns the suitable position for a duplicate analysis, taking into
+        account if there is a WorksheetTemplate assigned to this worksheet.
+        By default, returns a new slot at the end of the worksheet unless there
+        is a slot defined for a duplicate of the src_slot in the worksheet
+        template layout not yet used.
+        :param src_slot:
+        :return: suitable slot position for a duplicate of src_slot
+        """
+        slot_from = to_int(src_slot, 0)
+        if slot_from < 1:
+            return 0
+
+        # Are the analyses from src_slot suitable for duplicates creation?
+        container = self.get_container_at(slot_from)
+        if not container or  not IAnalysisRequest.providedBy(container):
+            # We cannot create duplicates from analyses other than routine ones,
+            # those that belong to an Analysis Request.
+            return 0
+
+        occupied = self.get_slot_positions(type='all')
+        wst = self.getWorksheetTemplate()
+        if not wst:
+            # No worksheet template assigned, add a new slot at the end of
+            # the worksheet with the duplicate there
+            slot_to = max(occupied) + 1
+            return slot_to
+
+        # If there is a match with the layout defined in the Worksheet
+        # Template, use that slot instead of adding a new one at the end of
+        # the worksheet
+        layout = wst.getLayout()
+        for pos in layout:
+            if pos['type'] != 'd' or to_int(pos['dup']) != slot_from:
                 continue
+            slot_to = int(pos['position'])
+            if slot_to in occupied:
+                # Not an empty slot, add a new slot at the end
+                break
 
-            # Omit retracted analyses
-            # https://jira.bikalabs.com/browse/LIMS-1745
-            # https://jira.bikalabs.com/browse/LIMS-2001
-            if workflow.getInfoFor(analysis, "review_state") == 'retracted':
+            # This slot is empty, use it instead of adding a new
+            # slot at the end of the worksheet
+            return slot_to
+
+        # Add a new slot at the end of the worksheet, but take into account
+        # that a worksheet template is assigned, so we need to take care to
+        # not override slots defined by its layout
+        occupied.append(len(layout))
+        slot_to = max(occupied) + 1
+        return slot_to
+
+    def get_duplicates_for(self, analysis):
+        """
+        Returns the duplicates from the current worksheet that were created by
+        using the analysis passed in as the source
+        :param analysis: routine analyses used as the source for the duplicates
+        :return: a list of duplicates generated from the analysis passed in
+        """
+        if not analysis:
+            return list()
+        analysis_uid = api.get_uid(analysis)
+        matches = list()
+        duplicates = self.getDuplicates()
+        for duplicate in duplicates:
+            dup_analysis = duplicate.getAnalysis()
+            dup_analysis_uid = api.get_uid(dup_analysis)
+            if dup_analysis_uid != analysis_uid:
                 continue
-
-            processed.append(analysis.UID())
-
-            # services with dependents don't belong in duplicates
-            calc = analysis.getCalculation()
-            if calc and calc.getDependentServices():
-                continue
-            duplicate = _createObjectByType("DuplicateAnalysis", self, tmpID())
-            duplicate.setAnalysis(analysis)
-
-            # Set the required number of verifications
-            reqvers = analysis.getNumberOfRequiredVerifications()
-            duplicate.setNumberOfRequiredVerifications(reqvers)
-
-            # Set ReferenceAnalysesGroupID (same id for the analyses from
-            # the same Reference Sample and same Worksheet)
-            if not refgid:
-                prefix = analysis.aq_parent.getSample().id
-                dups = []
-                for an in self.getAnalyses():
-                    if an.portal_type == 'DuplicateAnalysis' \
-                            and hasattr(an.aq_parent, 'getSample') \
-                            and an.aq_parent.getSample().id == prefix:
-                        dups.append(an.getReferenceAnalysesGroupID())
-                dups = list(set(dups))
-                postfix = dups and len(dups) + 1 or 1
-                postfix = str(postfix).zfill(int(2))
-                refgid = '%s-D%s' % (prefix, postfix)
-            duplicate.setReferenceAnalysesGroupID(refgid)
-            duplicate.reindexObject(idxs=["getReferenceAnalysesGroupID"])
-
-            duplicate.processForm()
-            if calc:
-                duplicate.setInterimFields(calc.getInterimFields())
-            self.setLayout(
-                self.getLayout() + [{'position': dest_slot,
-                                     'type': 'd',
-                                     'container_uid': analysis.aq_parent.UID(),
-                                     'analysis_uid': duplicate.UID()}, ]
-            )
-            self.setAnalyses(self.getAnalyses() + [duplicate, ])
-            doActionFor(duplicate, 'assign')
+            matches.append(dup_analysis)
+        return matches
 
     def get_analyses_at(self, slot):
         """
@@ -704,12 +800,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :return: the reference sample that fits better with the service uids
         """
         if not reference_samples:
-            return None
+            return None, list()
 
         if not service_uids:
             # Since no service filtering has been defined, there is no need to
             # look for the best choice. Return the first one
-            return reference_samples[0]
+            sample = reference_samples[0]
+            spec_uids = sample.getResultsRangeDict().keys()
+            return sample, spec_uids
 
         best_score = [0, 0]
         best_sample = None
