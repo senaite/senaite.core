@@ -671,18 +671,22 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         be generated for that given slot.
         :param wst: worksheet template used as the layout
         """
-        ws_slots = self.get_slot_positions('a')
-        ws_dup_slots = self.get_slot_positions('d')
+        occupied_slots = self.get_slot_positions(type='all')
         wst_layout = wst.getLayout()
         for row in wst_layout:
             if row['type'] != 'd':
                 continue
-            dest_pos = int(row['pos'])
-            if dest_pos in ws_dup_slots:
-                continue
+
             src_pos = int(row['dup'])
-            if src_pos not in ws_slots:
+            if src_pos not in occupied_slots:
+                # There is no source analysis available
                 continue
+
+            dest_pos = int(row['pos'])
+            if dest_pos in occupied_slots:
+                # This slot is already occupied
+                continue
+
             self.addDuplicateAnalyses(src_pos, dest_pos)
 
     def _resolve_reference_sample(self, reference_samples=None,
