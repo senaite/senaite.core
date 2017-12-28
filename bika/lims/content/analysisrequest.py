@@ -3117,5 +3117,14 @@ class AnalysisRequest(BaseFolder):
         # Concatenate all strings to one text blob
         return " ".join(entries)
 
+    def getPriorityText(self):
+        """
+        This function looks up the priority text from priorities vocab
+        :returns: the priority text or ''
+        """
+        if self.getPriority():
+            return PRIORITIES.getValue(self.getPriority())
+        return ''
+
 
 registerType(AnalysisRequest, PROJECTNAME)
