@@ -1,0 +1,234 @@
+====================================
+Worksheet - Apply Worksheet Template
+====================================
+
+Worksheets are the main artifact for planning tests in the laboratory. They are
+also used to add reference samples (controls and blancs), duplicates and
+aggregate related tests from different Analysis Requests to be processed in a
+single run.
+
+Although worksheets can be created manually by the labmanager each time is
+required, a better approach is to create them by using Worksheet Templates. In
+a Worksheet Template, the labman defines the layout, the number of slots and
+the type of analyses (reference or routine) to be placed in each slot, as well
+as the Method and Instrument to be assigned. Thus, Worksheet Templates are used
+for the semi-automated creation of Worksheets.
+
+This doctest will validate the consistency between the Worksheet and the
+Worksheet Template used for its creation. It will also test the correctness of
+the worksheet when applying a Worksheet Template in a manually created
+Worksheet.
+
+Test Setup
+==========
+
+Running this test from the buildout directory:
+
+    bin/test -t WorksheetApplyTemplate
+
+Needed Imports:
+
+    >>> import re
+    >>> from AccessControl.PermissionRole import rolesForPermissionOn
+    >>> from bika.lims import api
+    >>> from bika.lims.content.analysisrequest import AnalysisRequest
+    >>> from bika.lims.content.sample import Sample
+    >>> from bika.lims.content.samplepartition import SamplePartition
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.utils.sample import create_sample
+    >>> from bika.lims.utils import tmpID
+    >>> from bika.lims.workflow import doActionFor
+    >>> from bika.lims.workflow import getCurrentState
+    >>> from bika.lims.workflow import getAllowedTransitions
+    >>> from DateTime import DateTime
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from plone.app.testing import setRoles
+
+Functional Helpers:
+
+    >>> def start_server():
+    ...     from Testing.ZopeTestCase.utils import startZServer
+    ...     ip, port = startZServer()
+    ...     return "http://{}:{}/{}".format(ip, port, portal.id)
+
+Variables:
+
+    >>> portal = self.portal
+    >>> request = self.request
+    >>> bikasetup = portal.bika_setup
+    >>> date_now = DateTime().strftime("%Y-%m-%d")
+
+We need to create some basic objects for the test:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+    >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
+    >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
+    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
+    >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
+
+Create some Analysis Requests so we can use them as sources for Worksheet cration
+    >>> values = {
+    ...     'Client': client.UID(),
+    ...     'Contact': contact.UID(),
+    ...     'DateSampled': date_now,
+    ...     'SampleType': sampletype.UID()}
+    >>> service_uids = [Cu.UID(), Fe.UID(), Au.UID()]
+    >>> ar0 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar1 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar2 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar3 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar4 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar5 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar6 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar7 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar8 = create_analysisrequest(client, request, values, service_uids)
+    >>> ar9 = create_analysisrequest(client, request, values, service_uids)
+
+
+Worksheet Template creation
+---------------------------
+
+Create a Worksheet Template, but will only accept Cu and Fe analyses, with the
+following layout, made of 5 slots:
+
+* Routine analyses in slots 1, 2, 4
+* Duplicate analysis from slot 1 in slot 3
+* Duplicate analysis from slot 4 in slot 5
+* Control analysis in slot 6
+* Blank analysis in slot 7
+    >>> service_uids = [Cu.UID(), Fe.UID()]
+    >>> layout = [{'pos': '1', 'type': 'a',
+    ...            'blank_ref': '',
+    ...            'control_ref': '',
+    ...            'dup': ''},
+    ...           {'pos': '2', 'type': 'a',
+    ...            'blank_ref': '',
+    ...            'control_ref': '',
+    ...            'dup': ''},
+    ...           {'pos': '3', 'type': 'd',
+    ...            'blank_ref': '',
+    ...            'control_ref': '',
+    ...            'dup': '1'},
+    ...           {'pos': '4', 'type': 'a',
+    ...            'blank_ref': '',
+    ...            'control_ref': '',
+    ...            'dup': ''},
+    ...           {'pos': '5', 'type': 'd',
+    ...            'blank_ref': '',
+    ...            'control_ref': '',
+    ...            'dup': '4'},
+    ...           {'pos': '6', 'type': 'c',
+    ...            'blank_ref': '',
+    ...            'control_ref': 'jajsjas',
+    ...            'dup': ''},
+    ...           {'pos': '7', 'type': 'b',
+    ...            'blank_ref': 'asasasa',
+    ...            'control_ref': '',
+    ...            'dup': ''},]
+    >>> template = api.create(bikasetup.bika_worksheettemplates, "WorksheetTemplate", title="WS Template Test", Layout=layout, Service=service_uids)
+
+
+Apply Worksheet Template to a Worksheet
+=======================================
+
+Create a new Worksheet by using this worksheet template:
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.applyWorksheetTemplate(template)
+
+Since we haven't received any analysis requests, this worksheet remains empty:
+    >>> worksheet.getAnalyses()
+    []
+    >>> worksheet.getLayout()
+    []
+
+Receive the Analysis Requests and apply again the Worksheet Template:
+    >>> performed = doActionFor(ar0, 'receive')
+    >>> performed = doActionFor(ar1, 'receive')
+    >>> performed = doActionFor(ar2, 'receive')
+    >>> performed = doActionFor(ar3, 'receive')
+    >>> performed = doActionFor(ar4, 'receive')
+    >>> performed = doActionFor(ar5, 'receive')
+    >>> performed = doActionFor(ar6, 'receive')
+    >>> performed = doActionFor(ar7, 'receive')
+    >>> performed = doActionFor(ar8, 'receive')
+    >>> performed = doActionFor(ar9, 'receive')
+    >>> worksheet.applyWorksheetTemplate(template)
+
+Slots 1, 2 and 4 are filled with routine analyses:
+    >>> worksheet.get_slot_positions(type='a')
+    [1, 2, 4]
+
+Each slot occupied by routine analyses is assigned to an Analysis Request, so
+each time we add an analysis, it will be added into it's corresponding slot:
+    >>> container = worksheet.get_container_at(1)
+    >>> container.UID() == ar0.UID()
+    True
+
+    >>> slot1_analyses = worksheet.get_analyses_at(1)
+    >>> an_ar = list(set([an.getRequestUID() for an in slot1_analyses]))
+    >>> an_ar[0] == ar0.UID()
+    True
+
+    >>> [an.getKeyword() for an in slot1_analyses]
+    ['Cu', 'Fe']
+
+Slots 3 and 5 are filled with duplicate analyses:
+    >>> worksheet.get_slot_positions(type='d')
+    [3, 5]
+
+    >>> dup1 = worksheet.get_analyses_at(3)
+    >>> len(dup1) == 2
+    True
+
+    >>> list(set([dup.portal_type for dup in dup1]))
+    ['DuplicateAnalysis']
+
+The first duplicate analysis located at slot 3 is a duplicate of the first
+analysis from slot 1:
+    >>> dup_an = dup1[0].getAnalysis()
+    >>> slot1_analyses[0].UID() == dup_an.UID()
+    True
+
+But since we haven't created any reference analysis (neither blank or control),
+slots reserved for blank and controls are not occupied:
+    >>> worksheet.get_slot_positions(type='c')
+    []
+    >>> worksheet.get_slot_positions(type='b')
+    []
+
+Remove analyses located at position 2:
+    >>> to_del = worksheet.get_analyses_at(2)
+    >>> worksheet.removeAnalysis(to_del[0])
+    >>> worksheet.removeAnalysis(to_del[1])
+
+Only slots 1, 4 are filled with routine analyses now:
+    >>> worksheet.get_slot_positions(type='a')
+    [1, 4]
+
+Modify the Worksheet Template to allow Au analysis and apply the template to
+the same Worksheet again:
+    >>> service_uids = [Cu.UID(), Fe.UID(), Au.UID()]
+    >>> template.setService(service_uids)
+    >>> worksheet.applyWorksheetTemplate(template)
+
+Now, slot 2 is filled again:
+    >>> worksheet.get_slot_positions(type='a')
+    [1, 2, 4]
+
+And each slot contains the additional analysis Au:
+    >>> slot1_analyses = worksheet.get_analyses_at(1)
+    >>> len(slot1_analyses) == 3
+    True
+
+    >>> an_ar = list(set([an.getRequestUID() for an in slot1_analyses]))
+    >>> an_ar[0] == ar0.UID()
+    True
+
+    >>> [an.getKeyword() for an in slot1_analyses]
+    ['Cu', 'Fe', 'Au']
