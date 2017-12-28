@@ -26,6 +26,7 @@ from beckmancoulter.access import model2
 from rochecobas.taqman import model48
 from rochecobas.taqman import model96
 from sealanalytical.aq2 import aq2
+from shimadzu.gcms import qp2010se, tq8030
 from horiba.jobinyvon import icp
 from abaxis.vetscan import vs2
 from scilvet.abc import plus
@@ -58,6 +59,8 @@ __all__ = ['abaxis.vetscan.vs2',
            'lifetechnologies.qubit.qubit',
            'sysmex.xs.i500',
            'sysmex.xs.i1000',
+           'shimadzu.gcms.qp2010se',
+           'shimadzu.gcms.tq8030',
            'scilvet.abc.plus',
            'sealanalytical.aq2.aq2',
            'tescan.tima.tima',
@@ -93,6 +96,8 @@ PARSERS = [
            ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
            ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
            ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],
+           ['shimadzu.gcms.qp2010se', 'Shimadzu - GCMS-QP2010 SE'],
+           ['shimadzu.gcms.tq8030', 'Shimadzu GCMS-TQ8030 GC/MS/MS'],
            ['scilvet.abc.plus', 'AbaxisVetScanCSVVS2Parser'],
            ['sealanalytical.aq2.aq2', 'SealAnalyticsAQ2CSVParser'],
            ['tescan.tima.tima', 'TimaCSVParser'],
