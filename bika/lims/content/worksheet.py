@@ -312,10 +312,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                                         slot_to,
                                                         refgid)
 
-            # All ref analyses from the same slot must have the same group id
-            refgid = ref_analysis.getReferenceAnalysesGroupID()
-
             if ref_analysis:
+                # All ref analyses from the same slot must have the same group id
+                refgid = ref_analysis.getReferenceAnalysesGroupID()
                 ref_analyses.append(ref_analysis)
         return ref_analyses
 
@@ -436,10 +435,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             processed.append(analysis_uid)
             duplicate = self._add_duplicate(analysis, slot_to, refgid)
 
-            # All duplicates from the same slot must have the same group id
-            refgid = duplicate.getReferenceAnalysesGroupID()
-
             if duplicate:
+                # All duplicates from the same slot must have the same group id
+                refgid = duplicate.getReferenceAnalysesGroupID()
                 duplicates.append(duplicate)
         return duplicates
 
