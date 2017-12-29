@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #516 List of Analyses Services is not properly filtered by state
+- #516 Activate and Deactivate buttons do not appear in Analysis Services list
 
 **Security**
 
