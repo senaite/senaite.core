@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #514 Site Error when listing Dormant Worksheet Templates
 
 **Security**
 
