@@ -3,25 +3,18 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.Archetypes.public import *
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, get_link
-from bika.lims.content.bikaschema import BikaFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
-from ZODB.POSException import ConflictError
+from bika.lims.interfaces import IWorksheetTemplates
+from bika.lims.utils import get_link
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IWorksheetTemplates
+from plone.app.layout.globals.interfaces import IViewView
 from zope.interface.declarations import implements
-import plone, json
+
 
 class WorksheetTemplatesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
