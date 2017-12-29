@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #517 Expired Reference Samples are displayed in Add Blank/Add Control views
+- #517 Inactive services displayed for selection in Add Blank/Add Control views
 
 **Security**
 
