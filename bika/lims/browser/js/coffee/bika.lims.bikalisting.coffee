@@ -657,7 +657,7 @@ window.BikaListingTableView = ->
                 $('[form_id=\'' + form_id + '\'] tr[data-ajax_category=\'' + cat_title + '\']').replaceWith rows
                 $(element).removeClass('collapsed').addClass 'expanded'
                 def.resolve()
-                load_transitions();
+                load_transitions()
                 return
         else
             # When ajax_categories are disabled, all cat items exist as TR elements:
