@@ -7,7 +7,7 @@ import sys
 import inspect
 
 # from generic import xml
-from agilent.masshunter import quantitative
+from agilent.masshunter import quantitative, masshunter
 from abbott.m2000rt import m2000rt
 from foss.fiastar import fiastar
 from foss.winescan import auto
@@ -40,6 +40,7 @@ from genexpert import genexpert
 
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
+           'agilent.masshunter.masshunter',
            'agilent.masshunter.quantitative',
            'alere.pima.beads',
            'alere.pima.cd4',
@@ -80,6 +81,7 @@ __all__ = ['abaxis.vetscan.vs2',
 PARSERS = [
            ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
            ['abbott.m2000rt.m2000rt', 'Abbottm2000rtTSVParser'],
+           ['agilent.masshunter.masshunter', 'Agilent - Masshunter'],
            ['agilent.masshunter.quantitative', 'MasshunterQuantCSVParser'],
            ['alere.pima.beads', 'AlerePimaSLKParser'],
            ['alere.pima.cd4', 'AlerePimacd4SLKParser'],
