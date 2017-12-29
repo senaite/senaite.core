@@ -294,6 +294,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         services = bsc(portal_type='AnalysisService',
                        UID=service_uids,
                        sort_on='sortable_title')
+        refgid = None
         for service in services:
             service_uid = service.UID
             if service_uid in processed:
@@ -302,20 +303,28 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             processed.append(service_uid)
             ref_analysis = self._add_reference_analysis(reference,
                                                         service_uid,
-                                                        slot_to)
+                                                        slot_to,
+                                                        refgid)
+
+            # All ref analyses from the same slot must have the same group id
+            refgid = ref_analysis.getReferenceAnalysesGroupID()
+
             if ref_analysis:
                 ref_analyses.append(ref_analysis)
         return ref_analyses
 
-    def _add_reference_analysis(self, reference, service_uid, dest_slot):
+    def _add_reference_analysis(self, reference, service_uid, dest_slot,
+                                refgid=None):
         """
         Creates a reference analysis in the destination slot (dest_slot) passed
         in, by using the reference and service_uid. If the analysis
         passed in is not an IReferenceSample or has dependent services, returns
-        None.
+        None. If no reference analyses group id (refgid) is set, the value will
+        be generated automatically.
         :param reference: reference sample to create an analysis from
         :param service_uid: the uid of the service to create an analysis from
         :param dest_slot: slot where the reference analysis must be stored
+        :param refgid: the reference analyses group id to be set
         :return: the reference analysis or None
         """
         if not reference or not service_uid:
@@ -346,7 +355,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Set ReferenceAnalysesGroupID (same id for the analyses from
         # the same Reference Sample and same Worksheet)
-        self._set_referenceanalysis_groupid(ref_analysis)
+        self._set_referenceanalysis_groupid(ref_analysis, refgid)
 
         # Set the layout
         layout = self.getLayout()
@@ -412,24 +421,31 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         dest_analyses = self.get_analyses_at(slot_to)
         processed = [api.get_uid(an.getAnalysis()) for an in dest_analyses]
         duplicates = list()
+        refgid = None
         for analysis in src_analyses:
             analysis_uid = api.get_uid(analysis)
             if analysis_uid in processed:
                 continue
 
             processed.append(analysis_uid)
-            duplicate = self._add_duplicate(analysis, slot_to)
+            duplicate = self._add_duplicate(analysis, slot_to, refgid)
+
+            # All duplicates from the same slot must have the same group id
+            refgid = duplicate.getReferenceAnalysesGroupID()
+
             if duplicate:
                 duplicates.append(duplicate)
         return duplicates
 
-    def _add_duplicate(self, src_analysis, destination_slot):
+    def _add_duplicate(self, src_analysis, destination_slot, refgid=None):
         """
         Creates a duplicate of the src_analysis passed in. If the analysis
         passed in is not an IRoutineAnalysis, is retracted or has dependent
-        services, returns None..
+        services, returns None.If no reference analyses group id (refgid) is
+        set, the value will be generated automatically.
         :param analysis: analysis to create a duplicate from
         :param dest_slot: slot where the duplicate analysis must be stored
+        :param refgid: the reference analysis group id to be set
         :return: the duplicate analysis or None
         """
         if not src_analysis:
@@ -458,7 +474,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Set ReferenceAnalysesGroupID (same id for the analyses from
         # the same Reference Sample and same Worksheet)
-        self._set_referenceanalysis_groupid(duplicate)
+        self._set_referenceanalysis_groupid(duplicate, refgid)
 
         # Set the layout
         layout = self.getLayout()
@@ -475,14 +491,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         return duplicate
 
-    def _set_referenceanalysis_groupid(self, analysis):
+    def _set_referenceanalysis_groupid(self, analysis, refgid=None):
         """
         Inferes and store the reference analysis group id to the analysis passed
         in. If the analysis passed in is neither a reference analysis nor a
-        duplicate, does nothing.
+        duplicate, does nothing. If no reference analyses group id (refgid) is
+        set, the value will be generated automatically.
         Reference analysis group id is used to differentiate multiple reference
         analyses for the same sample/analysis within a worksheet.
         :param analysis: analysis to set the reference analysis group id
+        :param refgid: the reference analyses group id to be used
         """
         if not analysis:
             return
@@ -496,7 +514,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return
 
         sample = analysis.getSample()
-        refgid = self.nextReferenceAnalysesGroupID(sample)
+        if not refgid:
+            refgid = self.nextReferenceAnalysesGroupID(sample)
         analysis.setReferenceAnalysesGroupID(refgid)
         analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
