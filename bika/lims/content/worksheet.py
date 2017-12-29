@@ -28,7 +28,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IDuplicateAnalysis, IAnalysisRequest, \
-    IRoutineAnalysis
+    IRoutineAnalysis, IReferenceSample
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IWorksheet
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
@@ -258,59 +258,108 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+    @deprecated("[1712] Use addReferenceAnalyses instead")
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        layout = self.getLayout()
-        wst = self.getWorksheetTemplate()
-        wstlayout = wst and wst.getLayout() or []
-        ref_type = reference.getBlank() and 'b' or 'c'
-        ref_uid = reference.UID()
+        self._add_reference_analysis(reference, service_uids, position)
 
-        if position == 'new':
-            highest_existing_position = len(wstlayout)
-            for pos in [int(slot['position']) for slot in layout]:
-                if pos > highest_existing_position:
-                    highest_existing_position = pos
-            position = highest_existing_position + 1
+    def addReferenceAnalyses(self, reference, service_uids, dest_slot=None):
+        """
+        Creates and add reference analyses to the dest_slot by using the
+        reference sample and service uids passed in.
+        If no destination slot is defined, the most suitable slot will be used,
+        typically a new slot at the end of the worksheet will be added.
+        :param reference: reference sample to which ref analyses belong
+        :param service_uids: he uid of the services to create analyses from
+        :param dest_slot: slot where reference aanalyses must be stored
+        :return: the list of reference analyses added
+        """
+        slot_to = to_int(dest_slot)
+        if slot_to < 0:
+            return
 
-        # LIMS-2132 Reference Analyses got the same ID
-        refgid = self.nextReferenceAnalysesGroupID(reference)
+        if not slot_to:
+            # Find the suitable slot to add these references
+            slot_to = self._get_suitable_slot_for_references(reference)
+            if slot_to < 1:
+                return
 
-        for service_uid in service_uids:
-            # services with dependents don't belong in references
-            service = rc.lookupObject(service_uid)
-            calc = service.getCalculation()
-            if calc and calc.getDependentServices():
+        dest = self.get_analyses_at(slot_to)
+        processed = [api.get_uid(an.getAnalysisService()) for an in dest]
+        ref_analyses = list()
+
+        # We want the analyses to appear sorted within the slot
+        bsc = api.get_tool('bika_setup_catalog')
+        services = bsc(portal_type='AnalysisService',
+                       UID=service_uids,
+                       sort_on='sortable_title')
+        for service in services:
+            service_uid = service.UID
+            if service_uid in processed:
                 continue
-            ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-            ref_analysis = rc.lookupObject(ref_uid)
 
-            # Set the required number of verifications
-            reqvers = service.getNumberOfRequiredVerifications()
-            ref_analysis.setNumberOfRequiredVerifications(reqvers)
+            processed.append(service_uid)
+            ref_analysis = self._add_reference_analysis(reference,
+                                                        service_uid,
+                                                        slot_to)
+            if ref_analysis:
+                ref_analyses.append(ref_analysis)
+        return ref_analyses
 
-            # Set ReferenceAnalysesGroupID (same id for the analyses from
-            # the same Reference Sample and same Worksheet)
-            ref_analysis.setReferenceAnalysesGroupID(refgid)
-            ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
+    def _add_reference_analysis(self, reference, service_uid, dest_slot):
+        """
+        Creates a reference analysis in the destination slot (dest_slot) passed
+        in, by using the reference and service_uid. If the analysis
+        passed in is not an IReferenceSample or has dependent services, returns
+        None.
+        :param reference: reference sample to create an analysis from
+        :param service_uid: the uid of the service to create an analysis from
+        :param dest_slot: slot where the reference analysis must be stored
+        :return: the reference analysis or None
+        """
+        if not reference or not service_uid:
+            return None
 
-            # copy the interimfields
-            if calc:
-                ref_analysis.setInterimFields(calc.getInterimFields())
+        if not IReferenceSample.providedBy(reference):
+            logger.warning('Cannot create reference analysis from a non '
+                           'reference sample: {}'.format(reference.getId()))
+            return None
 
-            self.setLayout(
-                self.getLayout() + [{'position': position,
-                                     'type': ref_type,
-                                     'container_uid': reference.UID(),
-                                     'analysis_uid': ref_analysis.UID()}])
-            self.setAnalyses(
-                self.getAnalyses() + [ref_analysis, ])
-            doActionFor(ref_analysis, 'assign')
-            # Reindex the worksheet in order to update its columns
-            self.reindexObject()
+        uc = api.get_tool('uid_catalog')
+        brains = uc(portal_type='AnalysisService', UID=service_uid)
+        if not brains:
+            logger.warning('No Service found for UID {}'.format(service_uid))
+            return None
+
+        service = api.get_object(brains[0])
+        calc = service.getCalculation()
+        if calc and calc.getDependentServices():
+            logger.warning('Cannot create reference analyses with dependent'
+                           'services: {}'.format(service.getId()))
+            return None
+
+        ref_type = reference.getBlank() and 'b' or 'c'
+        ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
+        ref_analysis = uc(UID=ref_uid)[0]
+        ref_analysis = api.get_object(ref_analysis)
+
+        # Set ReferenceAnalysesGroupID (same id for the analyses from
+        # the same Reference Sample and same Worksheet)
+        self._set_referenceanalysis_groupid(ref_analysis)
+
+        # Set the layout
+        layout = self.getLayout()
+        ref_pos = {'position': dest_slot,
+                   'type': ref_type,
+                   'container_uid': api.get_uid(reference),
+                   'analysis_uid': ref_uid}
+        layout.append(ref_pos)
+        self.setLayout(layout)
+
+        # Add the duplicate in the worksheet
+        self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
+        doActionFor(ref_analysis, 'assign')
 
     def nextReferenceAnalysesGroupID(self, reference):
         """ Returns the next ReferenceAnalysesGroupID for the given reference
@@ -482,11 +531,56 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 continue
             slot_to = int(pos['pos'])
             if slot_to in occupied:
-                # Not an empty slot, add a new slot at the end
-                break
+                # Not an empty slot
+                continue
 
             # This slot is empty, use it instead of adding a new
             # slot at the end of the worksheet
+            return slot_to
+
+        # Add a new slot at the end of the worksheet, but take into account
+        # that a worksheet template is assigned, so we need to take care to
+        # not override slots defined by its layout
+        occupied.append(len(layout))
+        slot_to = max(occupied) + 1
+        return slot_to
+
+    def _get_suitable_slot_for_references(self, reference):
+        """
+        Returns the suitable position for reference analyses, taking into
+        account if there is a WorksheetTemplate assigned to this worksheet.
+        By default, returns a new slot at the end of the worksheet unless there
+        is a slot defined for a reference of the same type (blank or control) in
+        the worksheet template's layout that hasn't been used yet
+        template layout not yet used.
+        :param reference: ReferenceSample the analyses will be created from
+        :return: suitable slot position for reference analyses
+        """
+        if not IReferenceSample.providedBy(reference):
+            return 0
+
+        occupied = self.get_slot_positions(type='all')
+        wst = self.getWorksheetTemplate()
+        if not wst:
+            # No worksheet template assigned, add a new slot at the end of the
+            # worksheet with the reference analyses there
+            slot_to = max(occupied) + 1
+            return slot_to
+
+        # If there is a match with the layout defined in the Worksheet Template,
+        # use that slot instead of adding a new one at the end of the worksheet
+        slot_type = reference.getBlank() and 'b' or 'c'
+        layout = wst.getLayout()
+        for pos in layout:
+            if pos['type'] != slot_type:
+                continue
+            slot_to = int(pos['pos'])
+            if slot_to in occupied:
+                # Not an empty slot
+                continue
+
+            # This slot is empty, use it instead of adding a new slot at the end
+            # of the worksheet
             return slot_to
 
         # Add a new slot at the end of the worksheet, but take into account
@@ -875,7 +969,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             slot = reference['slot']
             sample = reference['sample']
             services = reference['supported_services']
-            self.addReferences(slot, sample, services)
+            self.addReferenceAnalyses(sample, services, slot)
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
