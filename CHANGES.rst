@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+#512 Duplicates transition to "Attachment due" after submit
 
 **Security**
 
