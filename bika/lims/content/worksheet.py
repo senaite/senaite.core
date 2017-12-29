@@ -4,6 +4,9 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import re
+import sys
+import collections
+from operator import itemgetter, attrgetter
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
