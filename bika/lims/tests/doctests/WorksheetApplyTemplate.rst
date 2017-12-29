@@ -58,6 +58,7 @@ Variables:
     >>> request = self.request
     >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
+    >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
 
 We need to create some basic objects for the test:
 
@@ -68,6 +69,7 @@ We need to create some basic objects for the test:
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
@@ -307,4 +309,74 @@ control:
     >>> dups_uids = [dup.UID() for dup in dups]
     >>> dup8_uids = [dup.UID() for dup in dup8]
     >>> [dup for dup in dup8_uids if dup not in dups_uids]
+    []
+
+
+Control and blanks with Worksheet Template
+==========================================
+
+First, create a Reference Definition for blank:
+    >>> blankdef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
+    >>> blank_refs = [{'uid': Cu.UID(), 'result': '0', 'min': '0', 'max': '0', 'error': '0'},
+    ...               {'uid': Fe.UID(), 'result': '0', 'min': '0', 'max': '0', 'error': '0'},]
+    >>> blankdef.setReferenceResults(blank_refs)
+
+And for control:
+    >>> controldef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Control definition")
+    >>> control_refs = [{'uid': Cu.UID(), 'result': '10', 'min': '0.9', 'max': '10.1', 'error': '0.1'},
+    ...                 {'uid': Fe.UID(), 'result': '10', 'min': '0.9', 'max': '10.1', 'error': '0.1'},]
+    >>> controldef.setReferenceResults(control_refs)
+
+Then, we create the associated Reference Samples:
+    >>> blank = api.create(supplier, "ReferenceSample", title="Blank",
+    ...                    ReferenceDefinition=blankdef,
+    ...                    Blank=True, ExpiryDate=date_future,
+    ...                    ReferenceResults=blank_refs)
+    >>> control = api.create(supplier, "ReferenceSample", title="Control",
+    ...                      ReferenceDefinition=controldef,
+    ...                      Blank=False, ExpiryDate=date_future,
+    ...                      ReferenceResults=control_refs)
+
+Apply the blank and control to the Worksheet Template layout:
+    >>> layout = template.getLayout()
+    >>> layout[5] = {'pos': '6', 'type': 'c',
+    ...              'blank_ref': '',
+    ...              'control_ref': controldef.UID(),
+    ...              'dup': ''}
+    >>> layout[6] = {'pos': '7', 'type': 'b',
+    ...              'blank_ref': blankdef.UID(),
+    ...              'control_ref': '',
+    ...              'dup': ''}
+    >>> template.setLayout(layout)
+
+Apply the worksheet template again:
+    >>> worksheet.applyWorksheetTemplate(template)
+
+Blank analyses at slot number 7, but note the reference definition is only for
+analyses 'Cu' and 'Fe':
+    >>> ans = worksheet.get_analyses_at(7)
+    >>> [an.getKeyword() for an in ans]
+    ['Cu', 'Fe']
+    >>> list(set([an.getReferenceType() for an in ans]))
+    ['b']
+
+Control analyses at slot number 6:
+    >>> ans = worksheet.get_analyses_at(6)
+    >>> [an.getKeyword() for an in ans]
+    ['Cu', 'Fe']
+    >>> list(set([an.getReferenceType() for an in ans]))
+    ['c']
+
+
+Remove Reference Analyses and add them manually
+===============================================
+
+Remove all controls from slot 6:
+    >>> ans6 = worksheet.get_analyses_at(6)
+    >>> len(ans6)
+    2
+
+    >>> worksheet.removeAnalysis(ans6[0])
+    >>> worksheet.removeAnalysis(ans6[1])
+    >>> worksheet.get_analyses_at(6)
     []

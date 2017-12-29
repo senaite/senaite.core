@@ -782,8 +782,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         best_sample = None
         best_supported = None
         for sample in reference_samples:
-            specs = sample.getResultsRangeDict()
-            specs_uids = specs.keys()
+            specs_uids = sample.getResultsRangeDict().keys()
             supported = [uid for uid in specs_uids if uid in service_uids]
             matches = len(supported)
             overlays = len(service_uids) - matches
@@ -845,7 +844,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 obj = api.get_object(sample)
                 if (type == 'b' and obj.getBlank()) or \
                         (type == 'c' and not obj.getBlank()):
-                    candidates.append(sample)
+                    candidates.append(obj)
 
             sample, uids = self._resolve_reference_sample(candidates, services)
             if not sample:
@@ -876,7 +875,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             slot = reference['slot']
             sample = reference['sample']
             services = reference['supported_services']
-            self.addReference(slot, sample, services)
+            self.addReferences(slot, sample, services)
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
