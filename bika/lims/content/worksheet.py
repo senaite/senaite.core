@@ -125,6 +125,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def Title(self):
         return safe_unicode(self.getId()).encode('utf-8')
 
+    def setLayout(self, value):
+        """
+        Sets the worksheet layout, keeping it sorted by position
+        :param value: the layout to set
+        """
+        new_layout = sorted(value, key=lambda k: k['position'])
+        self.getField('Layout').set(self, new_layout)
+
     security.declareProtected(EditWorksheet, 'addAnalysis')
     def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
