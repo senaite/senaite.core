@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #513 ShowPrices doctest is failing
 
 **Security**
 
