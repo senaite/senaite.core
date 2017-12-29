@@ -268,13 +268,13 @@ Add duplicates using the same source routine analysis, located at slot 4, but
 manually instead of applying the Worksheet Template:
     >>> dups = worksheet.addDuplicateAnalyses(4)
 
-Three duplicate has been added to the worksheet:
+Three duplicate have been added to the worksheet:
     >>> [dup.getKeyword() for dup in dups]
     ['Cu', 'Fe', 'Au']
 
 And these duplicates have been added in the slot number 5, cause this slot is
 where this duplicate fits better in accordance with the layout defined in the
-worksheet template associated to this worksheet template:
+worksheet template associated to this worksheet:
     >>> dup5 = worksheet.get_analyses_at(5)
     >>> [dup.getKeyword() for dup in dup5]
     ['Cu', 'Fe', 'Au']
@@ -379,4 +379,47 @@ Remove all controls from slot 6:
     >>> worksheet.removeAnalysis(ans6[0])
     >>> worksheet.removeAnalysis(ans6[1])
     >>> worksheet.get_analyses_at(6)
+    []
+
+Add a reference analysis, but manually:
+    >>> ref_ans = worksheet.addReferenceAnalyses(control, [Fe.UID(), Cu.UID()])
+    >>> [ref.getKeyword() for ref in ref_ans]
+    ['Cu', 'Fe']
+
+These reference analyses have been added in the slot number 6, cause this slot
+is where these reference analyses fit better in accordance with the layout
+defined in the worksheet template associated to this worksheet:
+    >>> ref6 = worksheet.get_analyses_at(6)
+    >>> [ref.getKeyword() for ref in ref6]
+    ['Cu', 'Fe']
+
+    >>> refs_uids = [ref.UID() for ref in ref_ans]
+    >>> ref6_uids = [ref.UID() for ref in ref6]
+    >>> [ref for ref in ref6_uids if ref not in refs_uids]
+    []
+
+But if we remove only one reference analysis from slot number 6:
+
+    >>> worksheet.removeAnalysis(ref6[0])
+    >>> ref6 = worksheet.get_analyses_at(6)
+    >>> [ref.getKeyword() for ref in ref6]
+    ['Fe']
+
+And we manually add references, a new slot will be added at the end of the
+worksheet (slot number 8), cause the slot number 6 is already occupied, as well
+as the rest of the slots:
+    >>> worksheet.get_analyses_at(9)
+    []
+
+    >>> ref_ans = worksheet.addReferenceAnalyses(control, [Fe.UID(), Cu.UID()])
+    >>> [ref.getKeyword() for ref in ref_ans]
+    ['Cu', 'Fe']
+
+    >>> ref9 = worksheet.get_analyses_at(9)
+    >>> [ref.getKeyword() for ref in ref9]
+    ['Cu', 'Fe']
+
+    >>> refs_uids = [ref.UID() for ref in ref_ans]
+    >>> ref9_uids = [ref.UID() for ref in ref9]
+    >>> [ref for ref in ref9_uids if ref not in refs_uids]
     []
