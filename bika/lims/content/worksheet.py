@@ -368,14 +368,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for the specified reference sample and increments in one unit the
             suffix.
         """
+        prefix = reference.id+"-"
+        if not IReferenceSample.providedBy(reference):
+            # Not a ReferenceSample, so this is a duplicate
+            prefix = reference.id+"-D"
         bac = getToolByName(reference, 'bika_analysis_catalog')
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
-        prefix = reference.id+"-"
         rr = re.compile("^"+prefix+"[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
         ids.sort()
         _id = ids[-1] if ids else 0
         suffix = str(_id+1).zfill(int(3))
+        if not IReferenceSample.providedBy(reference):
+            # Not a ReferenceSample, so this is a duplicate
+            suffix = str(_id+1).zfill(2)
         return '%s%s' % (prefix, suffix)
 
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
