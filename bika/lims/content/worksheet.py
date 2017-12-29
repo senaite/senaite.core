@@ -262,7 +262,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout
         """
-        self._add_reference_analysis(reference, service_uids, position)
+        self.addReferenceAnalyses(reference, service_uids, position)
 
     def addReferenceAnalyses(self, reference, service_uids, dest_slot=None):
         """
@@ -360,6 +360,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Add the duplicate in the worksheet
         self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
         doActionFor(ref_analysis, 'assign')
+        return ref_analysis
 
     def nextReferenceAnalysesGroupID(self, reference):
         """ Returns the next ReferenceAnalysesGroupID for the given reference
@@ -482,15 +483,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         is_duplicate = IDuplicateAnalysis.providedBy(analysis)
         is_reference = IReferenceAnalysis.providedBy(analysis)
-        if not is_duplicate or not is_reference:
-            logger.warning('Cannot set a reference analysis group id to an '
-                           'analysis that is neither a reference analysis nor '
-                           'a duplicate: {}'.format(analysis.getId()))
+        if not is_duplicate and not is_reference:
+            logger.warn('Cannot set a reference analysis group id to an '
+                        'analysis that is neither a reference analysis nor '
+                        'a duplicate: {}'.format(analysis.getId()))
             return
 
         sample = analysis.getSample()
         refgid = self.nextReferenceAnalysesGroupID(sample)
-        analysis.setReferenceAnalysisGroupID(refgid)
+        analysis.setReferenceAnalysesGroupID(refgid)
         analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
     def _get_suitable_slot_for_duplicate(self, src_slot):
