@@ -4,12 +4,8 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import re
-import sys
-import collections
 
 from AccessControl import ClassSecurityInfo
-from operator import itemgetter, attrgetter
-
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import RecordsField
@@ -18,11 +14,11 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import *
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -40,7 +36,6 @@ from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import skip
 from bika.lims.workflow.worksheet import events
 from bika.lims.workflow.worksheet import guards
-from bika.lims import api
 from plone.api.user import has_permission
 from zope.interface import implements
 
@@ -451,8 +446,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         passed in is not an IRoutineAnalysis, is retracted or has dependent
         services, returns None.If no reference analyses group id (refgid) is
         set, the value will be generated automatically.
-        :param analysis: analysis to create a duplicate from
-        :param dest_slot: slot where the duplicate analysis must be stored
+        :param src_analysis: analysis to create a duplicate from
+        :param destination_slot: slot where duplicate analysis must be stored
         :param refgid: the reference analysis group id to be set
         :return: the duplicate analysis or None
         """
@@ -1489,9 +1484,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if review_state in ['published', 'verified', 'retracted']:
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
-                                   'type':'a',
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':analysis.aq_parent.UID()})
+                                   'type': 'a',
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': analysis.aq_parent.UID()})
                 continue
             # Normal analyses:
             # - Create matching RejectAnalysis inside old WS
@@ -1513,14 +1508,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(reject.UID())
                 old_layout.append({'position': position,
-                                   'type':'r',
-                                   'analysis_uid':reject.UID(),
-                                   'container_uid':self.UID()})
+                                   'type': 'r',
+                                   'analysis_uid': reject.UID(),
+                                   'container_uid': self.UID()})
                 new_ws_analyses.append(analysis.UID())
                 new_layout.append({'position': position,
                                    'type':'a',
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':analysis.aq_parent.UID()})
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': analysis.aq_parent.UID()})
             # Reference analyses
             # - Create a new reference analysis in the new worksheet
             # - Transition the original analysis to 'rejected' state
@@ -1533,14 +1528,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
-                                   'type':reference_type,
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':reference.UID()})
+                                   'type': reference_type,
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': reference.UID()})
                 new_ws_analyses.append(new_analysis_uid)
                 new_layout.append({'position': position,
-                                   'type':reference_type,
-                                   'analysis_uid':new_analysis_uid,
-                                   'container_uid':reference.UID()})
+                                   'type': reference_type,
+                                   'analysis_uid': new_analysis_uid,
+                                   'container_uid': reference.UID()})
                 workflow.doActionFor(analysis, 'reject')
                 new_reference = reference.uid_catalog(UID=new_analysis_uid)[0].getObject()
                 workflow.doActionFor(new_reference, 'assign')
@@ -1561,14 +1556,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
-                                   'type':'d',
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':self.UID()})
+                                   'type': 'd',
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': self.UID()})
                 new_ws_analyses.append(new_duplicate.UID())
                 new_layout.append({'position': position,
                                    'type':'d',
-                                   'analysis_uid':new_duplicate.UID(),
-                                   'container_uid':new_ws.UID()})
+                                   'analysis_uid': new_duplicate.UID(),
+                                   'container_uid': new_ws.UID()})
                 workflow.doActionFor(analysis, 'reject')
                 analysis.reindexObject()
 
