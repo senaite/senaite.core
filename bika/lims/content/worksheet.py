@@ -38,6 +38,10 @@ from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from zope.interface import implements
 
 
+ALL_ANALYSES_TYPES = "all"
+ALLOWED_ANALYSES_TYPES = ["a", "b", "c", "d"]
+
+
 schema = BikaSchema.copy() + Schema((
 
     UIDReferenceField(
@@ -410,10 +414,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
 
     def addDuplicateAnalyses(self, src_slot, dest_slot=None):
-        """
-        Creates and add duplicate analyes from the src_slot to the dest_slot
+        """Creates and add duplicate analyes from the src_slot to the dest_slot
+
         If no destination slot is defined, the most suitable slot will be used,
         typically a new slot at the end of the worksheet will be added.
+
         :param src_slot: slot that contains the analyses to duplicate
         :param dest_slot: slot where the duplicate analysis must be stored
         :return: the list of duplicate analyses added
@@ -534,12 +539,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
     def _get_suitable_slot_for_duplicate(self, src_slot):
-        """
-        Returns the suitable position for a duplicate analysis, taking into
+        """Returns the suitable position for a duplicate analysis, taking into
         account if there is a WorksheetTemplate assigned to this worksheet.
+
         By default, returns a new slot at the end of the worksheet unless there
         is a slot defined for a duplicate of the src_slot in the worksheet
         template layout not yet used.
+
         :param src_slot:
         :return: suitable slot position for a duplicate of src_slot
         """
@@ -586,13 +592,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return slot_to
 
     def _get_suitable_slot_for_references(self, reference):
-        """
-        Returns the suitable position for reference analyses, taking into
+        """Returns the suitable position for reference analyses, taking into
         account if there is a WorksheetTemplate assigned to this worksheet.
+
         By default, returns a new slot at the end of the worksheet unless there
-        is a slot defined for a reference of the same type (blank or control) in
-        the worksheet template's layout that hasn't been used yet
-        template layout not yet used.
+        is a slot defined for a reference of the same type (blank or control)
+        in the worksheet template's layout that hasn't been used yet template
+        layout not yet used.
+
         :param reference: ReferenceSample the analyses will be created from
         :return: suitable slot position for reference analyses
         """
@@ -611,6 +618,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # use that slot instead of adding a new one at the end of the worksheet
         slot_type = reference.getBlank() and 'b' or 'c'
         layout = wst.getLayout()
+
         for pos in layout:
             if pos['type'] != slot_type:
                 continue
@@ -631,9 +639,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return slot_to
 
     def get_duplicates_for(self, analysis):
-        """
-        Returns the duplicates from the current worksheet that were created by
-        using the analysis passed in as the source
+        """Returns the duplicates from the current worksheet that were created
+        by using the analysis passed in as the source
+
         :param analysis: routine analyses used as the source for the duplicates
         :return: a list of duplicates generated from the analysis passed in
         """
@@ -642,129 +650,165 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analysis_uid = api.get_uid(analysis)
         matches = list()
         duplicates = self.getDuplicates()
+
         for duplicate in duplicates:
             dup_analysis = duplicate.getAnalysis()
             dup_analysis_uid = api.get_uid(dup_analysis)
             if dup_analysis_uid != analysis_uid:
                 continue
             matches.append(dup_analysis)
+
         return matches
 
     def get_analyses_at(self, slot):
-        """
-        Returns the list of analyses assigned to the slot passed in, sorted by
+        """Returns the list of analyses assigned to the slot passed in, sorted by
         the positions they have within the slot.
+
         :param slot: the slot where the analyses are located
         :type slot: int
         :return: a list of analyses
         """
-        if not slot or slot < 1:
+
+        # ensure we have an integer
+        slot = to_int(slot)
+
+        if slot < 1:
             return list()
+
         analyses = list()
-        uc = api.get_tool('uid_catalog')
         layout = self.getLayout()
+
         for pos in layout:
-            layout_slot = int(pos['position'])
+            layout_slot = to_int(pos['position'])
             uid = pos['analysis_uid']
             if layout_slot != slot or not uid:
                 continue
-            brain = uc(UID=uid)
-            analyses.append(api.get_object(brain[0]))
+            analyses.append(api.get_object_by_uid(uid))
+
         return analyses
 
     def get_container_at(self, slot):
-        """
-        Returns the container object assigned to the slot passed in
+        """Returns the container object assigned to the slot passed in
+
         :param slot: the slot where the analyses are located
         :type slot: int
         :return: the container (analysis request, reference sample, etc.)
         """
-        if not slot or slot < 1:
+
+        # ensure we have an integer
+        slot = to_int(slot)
+
+        if slot < 1:
             return None
-        uc = api.get_tool('uid_catalog')
+
         layout = self.getLayout()
+
         for pos in layout:
-            layout_slot = int(pos['position'])
+            layout_slot = to_int(pos['position'])
             uid = pos['container_uid']
             if layout_slot != slot or not uid:
                 continue
-            brain = uc(UID=uid)
-            return api.get_object(brain[0])
+            return api.get_object_by_uid(uid)
+
         return None
 
     def get_slot_positions(self, type='a'):
-        """
-        Returns a list with the slots occupied for the type passed in.
-        Allowed type of analyses are 'a' (routine analysis), 'b' (blank
-        analysis), 'c' (control), 'd' (duplicate) or 'all' (all analyses)
+        """Returns a list with the slots occupied for the type passed in.
+
+        Allowed type of analyses are:
+
+            'a'   (routine analysis)
+            'b'   (blank analysis)
+            'c'   (control)
+            'd'   (duplicate)
+            'all' (all analyses)
+
         :param type: type of the analysis
         :return: list of slot positions
         """
-        if type not in ['a', 'b', 'c', 'd', 'all']:
+        if type not in ALLOWED_ANALYSES_TYPES and type != ALL_ANALYSES_TYPES:
             return list()
+
         layout = self.getLayout()
         slots = list()
+
         for pos in layout:
-            if type != 'all' and pos['type'] != type:
+            if type != ALL_ANALYSES_TYPES and pos['type'] != type:
                 continue
-            slots.append(int(pos['position']))
+            slots.append(to_int(pos['position']))
+
+        # return a unique list of sorted slot positions
         return sorted(set(slots))
 
     def get_slot_position(self, container, type='a'):
-        """
-        Returns the slot where the analyses from the type and container passed
+        """Returns the slot where the analyses from the type and container passed
         in are located within the worksheet.
+
         :param container: the container in which the analyses are grouped
         :param type: type of the analysis
         :return: the slot position
         :rtype: int
         """
-        if not container or type not in ['a', 'b', 'c', 'd']:
+        if not container or type not in ALLOWED_ANALYSES_TYPES:
             return None
         uid = api.get_uid(container)
         layout = self.getLayout()
+
         for pos in layout:
             if pos['type'] != type or pos['container_uid'] != uid:
                 continue
-            return int(pos['position'])
+            return to_int(pos['position'])
         return None
 
     def resolve_available_slots(self, worksheet_template, type='a'):
-        """
-        Returns the available slots from the current worksheet that fits with
-        the layout defined in the worksheet_template and type of analysis passed
-        in.
-        Allowed type of analyses are 'a' (routine analysis), 'b' (blank
-        analysis), 'c' (control), 'd' (duplicate)
+        """Returns the available slots from the current worksheet that fits
+        with the layout defined in the worksheet_template and type of analysis
+        passed in.
+
+        Allowed type of analyses are:
+
+            'a' (routine analysis)
+            'b' (blank analysis)
+            'c' (control)
+            'd' (duplicate)
+
         :param worksheet_template: the worksheet template to match against
         :param type: type of analyses to restrict that suit with the slots
         :return: a list of slots positions
         """
-        if not worksheet_template or type not in ['a', 'b', 'c', 'd']:
+        if not worksheet_template or type not in ALLOWED_ANALYSES_TYPES:
             return list()
 
         ws_slots = self.get_slot_positions(type)
         layout = worksheet_template.getLayout()
         slots = list()
+
         for row in layout:
+            # skip rows that do not match with the given type
             if row['type'] != type:
                 continue
-            slot = int(row['pos'])
+
+            slot = to_int(row['pos'])
+
             if slot in ws_slots:
                 # We only want those that are empty
                 continue
+
             slots.append(slot)
         return slots
 
     def _apply_worksheet_template_routine_analyses(self, wst):
-        """
-        Add routine analyses to worksheet according to the worksheet template
-        layout passed in. Does not overwrite slots that are already filled.
-        If the template passed in has an instrument assigned, only those routine
-        analyses that allows the instrument will be added.
+        """Add routine analyses to worksheet according to the worksheet template
+        layout passed in w/o overwriting slots that are already filled.
+
+        If the template passed in has an instrument assigned, only those
+        routine analyses that allows the instrument will be added.
+
         If the template passed in has a method assigned, only those routine
         analyses that allows the method will be added
+
         :param wst: worksheet template used as the layout
+        :returns: None
         """
         bac = api.get_tool("bika_analysis_catalog")
         services = wst.getService()
@@ -805,9 +849,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ar_analyses = dict()
         ar_slots = dict()
         ar_fixed_slots = dict()
+
         for brain in analyses:
             obj = api.get_object(brain)
             arid = obj.getRequestID()
+
             if instrument and not obj.isInstrumentAllowed(instrument):
                 # Exclude those analyses for which the worksheet's template
                 # instrument is not allowed
@@ -877,32 +923,38 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 self.addAnalysis(ar_an, slot)
 
     def _apply_worksheet_template_duplicate_analyses(self, wst):
-        """
-        Add duplicate analyses to worksheet according to the worksheet template
-        layout passed in. Does not overwrite slots that are already filled. If
-        the slot where the duplicate must be located is available, but the slot
-        where the routine analysis should be found is empty, no duplicate will
-        be generated for that given slot.
+        """Add duplicate analyses to worksheet according to the worksheet template
+        layout passed in w/o overwrite slots that are already filled.
+
+        If the slot where the duplicate must be located is available, but the
+        slot where the routine analysis should be found is empty, no duplicate
+        will be generated for that given slot.
+
         :param wst: worksheet template used as the layout
+        :returns: None
         """
         wst_layout = wst.getLayout()
+
         for row in wst_layout:
             if row['type'] != 'd':
                 continue
 
-            src_pos = int(row['dup'])
-            dest_pos = int(row['pos'])
+            src_pos = to_int(row['dup'])
+            dest_pos = to_int(row['pos'])
+
             self.addDuplicateAnalyses(src_pos, dest_pos)
 
     def _resolve_reference_sample(self, reference_samples=None,
                                   service_uids=None):
-        """
-        Returns the reference sample from reference_samples passed in that fits
+        """Returns the reference sample from reference_samples passed in that fits
         better with the service uid requirements. This is, the reference sample
         that covers most (or all) of the service uids passed in and has less
         number of remaining service_uids.
+
         If no reference_samples are set, returns None
+
         If no service_uids are set, returns the first reference_sample
+
         :param reference_samples: list of reference samples
         :param service_uids: list of service uids
         :return: the reference sample that fits better with the service uids
