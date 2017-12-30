@@ -232,7 +232,7 @@ Only slots 1, 4 are filled with routine analyses now:
     >>> worksheet.get_slot_positions(type='a')
     [1, 4]
 
-Modify the Worksheet Template to allow Au analysis and apply the template to the
+Modify the Worksheet Template to allow `Au` analysis and apply the template to the
 same Worksheet again:
 
     >>> service_uids = [Cu.UID(), Fe.UID(), Au.UID()]
@@ -244,7 +244,7 @@ Now, slot 2 is filled again:
     >>> worksheet.get_slot_positions(type='a')
     [1, 2, 4]
 
-And each slot contains the additional analysis Au:
+And each slot contains the additional analysis `Au`:
 
     >>> slot1_analyses = worksheet.get_analyses_at(1)
     >>> len(slot1_analyses) == 3
