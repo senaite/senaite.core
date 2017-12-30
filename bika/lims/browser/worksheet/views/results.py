@@ -41,8 +41,11 @@ class ManageResultsView(BrowserView):
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
 
-        # Worksheet Attachmemts
-        # the expandable form is handled here.
+        # TODO: Move this form handler into bika.lims.browser.attachment and
+        #       change the form action of
+        #       bika.lims.browser.viewlets.templates.worksheet_attachments.pt
+        #       accordingly!
+        #       Relevant issue: https://github.com/senaite/bika.lims/issues/521
         if "AttachmentFile_file" in self.request:
             this_file = self.request['AttachmentFile_file']
             if 'analysis_uid' in self.request:
@@ -72,6 +75,11 @@ class ManageResultsView(BrowserView):
                 attachments.append(attachment.UID())
                 analysis.setAttachment(attachments)
 
+                # The metadata for getAttachmentUIDs need to get updated,
+                # otherwise the attachments are not displayed
+                # https://github.com/senaite/bika.lims/issues/521
+                analysis.reindexObject()
+
             if service_uid:
                 workflow = getToolByName(self.context, 'portal_workflow')
                 for analysis in self._getAnalyses():
@@ -97,6 +105,7 @@ class ManageResultsView(BrowserView):
                         attachments.append(other.UID())
                     attachments.append(attachment.UID())
                     analysis.setAttachment(attachments)
+        # /TODO
 
         # Save the results layout
         rlayout = self.request.get('resultslayout', '')
