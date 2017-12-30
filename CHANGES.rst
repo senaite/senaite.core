@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #516 List of Analyses Services is not properly filtered by state
+- #516 Activate and Deactivate buttons do not appear in Analysis Services list
 - #512 Duplicates transition to "Attachment due" after submit
 - #499 Wrong slots when adding analyses manually in Worksheet with a WST assigned
 - #499 When a Worksheet Template is used, slot positions are not applied correctly
