@@ -116,6 +116,8 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
     @security.public
     def setAnalysis(self, analysis):
         # Copy all the values from the schema
+        if not analysis:
+            return
         discard = ['id', ]
         keys = analysis.Schema().keys()
         for key in keys:
