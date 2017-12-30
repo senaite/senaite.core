@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #512 Duplicates transition to "Attachment due" after submit
 - #499 Wrong slots when adding analyses manually in Worksheet with a WST assigned
 - #499 When a Worksheet Template is used, slot positions are not applied correctly
 - #499 Applying a WS template which references a Duplicate raises an Error
