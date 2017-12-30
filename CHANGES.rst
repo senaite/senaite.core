@@ -16,9 +16,9 @@ Changelog
 **Fixed**
 
 - #513 ShowPrices doctest is failing
+- #488 JS Errors in bika.lims.analysisrequest.js
 
 **Security**
-
 
 
 1.1.8 (2017-12-23)
