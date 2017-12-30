@@ -1388,6 +1388,24 @@ class BikaListingView(BrowserView):
         self.cat = self.request.get('ajax_category_expand')
         self.contentFilter[self.category_index] = self.request.get('cat')
 
+        # Filter items by state. First remove them from contentFilter
+        # and then, look for its value from the request
+        clear_states = ['inactive_state', 'review_state', 'cancellation_state']
+        for clear_state in clear_states:
+            if clear_state in self.contentFilter:
+                del self.contentFilter[clear_state]
+        req_revstate = self.request.get('review_state', None)
+        if req_revstate:
+            for revstate in self.review_states:
+                if revstate.get('id', None) != req_revstate:
+                    continue
+                rev_cfilter = revstate.get('contentFilter', {})
+                if not rev_cfilter:
+                    continue
+                for key, value in rev_cfilter.items():
+                    self.contentFilter[key] = value
+                break
+
         # These are required to allow the template to work with this class as
         # the view.  Normally these are attributes of class BikaListingTable.
         self.bika_listing = self

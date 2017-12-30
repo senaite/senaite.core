@@ -391,7 +391,7 @@ def _createWorksheet(base, worksheettemplate, analyst):
         Analyst=analyst,
         )
     if worksheettemplate:
-        ws.setWorksheetTemplate(worksheettemplate)
+        ws.applyWorksheetTemplate(worksheettemplate)
     return ws
 
 
