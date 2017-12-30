@@ -635,6 +635,8 @@ class AnalysesView(BikaListingView):
                 for attachment in attachments_objs:
                     af = attachment.getAttachmentFile()
                     icon = af.icon
+                    if callable(icon):
+                        icon = icon()
                     attachments += \
                         "<span class='attachment' attachment_uid='%s'>" % \
                         (attachment.UID())
