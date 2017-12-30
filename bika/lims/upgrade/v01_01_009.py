@@ -24,6 +24,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
     # Migration to senaite.core
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     rename_bika_setup()
 
     logger.info("{0} upgraded to version {1}".format(product, version))

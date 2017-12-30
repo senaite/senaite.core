@@ -153,7 +153,7 @@ class DashboardView(BrowserView):
         self.member = None
 
     def __call__(self):
-        frontpage_url = self.portal_url + "/bika-frontpage"
+        frontpage_url = self.portal_url + "/senaite-frontpage"
         if not self.context.bika_setup.getDashboardByDefault():
             # Do not render dashboard, render frontpage instead
             self.request.response.redirect(frontpage_url)
