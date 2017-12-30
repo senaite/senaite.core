@@ -99,7 +99,7 @@ Worksheet Template creation
 ---------------------------
 
 Create a Worksheet Template, but for `Cu` and `Fe` analyses, with the following
-layout with 5 slots:
+layout with 7 slots:
 
   * Routine analyses in slots 1, 2, 4
   * Duplicate analysis from slot 1 in slot 3
@@ -184,6 +184,10 @@ each time we add an analysis, it will be added into it's corresponding slot:
 
     >>> slot1_analyses = worksheet.get_analyses_at(1)
     >>> an_ar = list(set([an.getRequestUID() for an in slot1_analyses]))
+
+    >>> len(an_ar) == 1
+    True
+
     >>> an_ar[0] == ar0.UID()
     True
 
