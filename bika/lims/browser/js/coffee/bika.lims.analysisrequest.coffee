@@ -479,8 +479,9 @@ window.AnalysisRequestAnalysesView = ->
     ###
 
     row_data = $.parseJSON($('#' + service_uid + '_row_data').val())
-    if row_data.disabled == true
-      return
+    if row_data != '' and row_data != undefined and row_data != null
+        if 'disabled' of row_data and row_data.disabled == true
+          return
     # Add partition dropdown
     element = $('[name=\'Partition.' + service_uid + ':records\']')
     new_element = '' + '<select class=\'listing_select_entry\' ' + 'name=\'Partition.' + service_uid + ':records\' ' + 'field=\'Partition\' uid=\'' + service_uid + '\' ' + 'style=\'font-size: 100%\'>'

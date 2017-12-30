@@ -482,8 +482,10 @@
       partition, min,max and error will be displayed (but disabled).
        */
       row_data = $.parseJSON($('#' + service_uid + '_row_data').val());
-      if (row_data.disabled === true) {
-        return;
+      if (row_data !== '' && row_data !== void 0 && row_data !== null) {
+        if ("disabled" in row_data && row_data.disabled === true) {
+            return;
+        }
       }
       element = $('[name=\'Partition.' + service_uid + ':records\']');
       new_element = '' + '<select class=\'listing_select_entry\' ' + 'name=\'Partition.' + service_uid + ':records\' ' + 'field=\'Partition\' uid=\'' + service_uid + '\' ' + 'style=\'font-size: 100%\'>';
