@@ -1,67 +1,71 @@
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import re
 import sys
-import collections
-from operator import itemgetter, attrgetter
 
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
-from bika.lims import logger
+from bika.lims import api, deprecated, logger
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.config import *
-from bika.lims.config import PROJECTNAME
+from bika.lims.config import PROJECTNAME, WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IDuplicateAnalysis, IAnalysisRequest, \
-    IRoutineAnalysis, IReferenceSample
-from bika.lims.interfaces import IReferenceAnalysis
-from bika.lims.interfaces import IWorksheet
-from bika.lims.permissions import EditWorksheet, ManageWorksheets
+from bika.lims.interfaces import (IAnalysisRequest, IDuplicateAnalysis,
+                                  IReferenceAnalysis, IReferenceSample,
+                                  IRoutineAnalysis, IWorksheet)
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import changeWorkflowState, tmpID, to_int
+from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import skip
-from bika.lims.workflow.worksheet import events
-from bika.lims.workflow.worksheet import guards
+from bika.lims.utils import changeWorkflowState, tmpID, to_int
+from bika.lims.workflow import doActionFor, getCurrentState, skip
+from bika.lims.workflow.worksheet import events, guards
+from DateTime import DateTime
 from plone.api.user import has_permission
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import (BaseFolder, DisplayList,
+                                        ReferenceField, Schema,
+                                        SelectionWidget, StringField,
+                                        TextAreaWidget, TextField,
+                                        registerType)
+from Products.Archetypes.references import HoldingReference
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.ateapi import RecordsField
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from zope.interface import implements
 
+
 schema = BikaSchema.copy() + Schema((
+
     UIDReferenceField(
         'WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
     ),
-    RecordsField('Layout',
+
+    RecordsField(
+        'Layout',
         required=1,
         subfields=('position', 'type', 'container_uid', 'analysis_uid'),
         subfield_types={'position': 'int'},
     ),
+
     # all layout info lives in Layout; Analyses is used for back references.
-    ReferenceField('Analyses',
+    ReferenceField(
+        'Analyses',
         required=1,
         multiValued=1,
         allowed_types=('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis', 'RejectAnalysis'),
-        relationship = 'WorksheetAnalysis',
+        relationship='WorksheetAnalysis',
     ),
-    StringField('Analyst',
-        searchable = True,
+
+    StringField(
+        'Analyst',
+        searchable=True,
     ),
+
     ReferenceField(
         'Method',
         required=0,
@@ -76,28 +80,34 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+
     # TODO Remove. Instruments must be assigned directly to each analysis.
-    ReferenceField('Instrument',
-        required = 0,
-        allowed_types = ('Instrument',),
-        vocabulary = '_getInstrumentsVoc',
-        relationship = 'WorksheetInstrument',
-        referenceClass = HoldingReference,
+    ReferenceField(
+        'Instrument',
+        required=0,
+        allowed_types=('Instrument',),
+        vocabulary='_getInstrumentsVoc',
+        relationship='WorksheetInstrument',
+        referenceClass=HoldingReference,
     ),
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+
+    TextField(
+        'Remarks',
+        searchable=True,
+        default_content_type='text/plain',
+        allowed_content_types=('text/plain', ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
+        widget=TextAreaWidget(
             macro="bika_widgets/remarks",
             label=_("Remarks"),
             append_only=True,
         ),
     ),
-    StringField('ResultsLayout',
-        default = '1',
-        vocabulary = WORKSHEET_LAYOUT_OPTIONS,
+
+    StringField(
+        'ResultsLayout',
+        default='1',
+        vocabulary=WORKSHEET_LAYOUT_OPTIONS,
     ),
 ),
 )
@@ -109,6 +119,8 @@ schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
 class Worksheet(BaseFolder, HistoryAwareMixin):
+    """A worksheet is a logical group of Analyses accross ARs
+    """
     security = ClassSecurityInfo()
     implements(IWorksheet)
     displayContentsTab = False
@@ -132,13 +144,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.getField('Layout').set(self, new_layout)
 
     security.declareProtected(EditWorksheet, 'addAnalysis')
+
     def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
-        workflow = getToolByName(self, 'portal_workflow')
-
         analysis_uid = analysis.UID()
         parent_uid = analysis.aq_parent.UID()
         analyses = self.getAnalyses()
@@ -202,15 +213,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     self.addAnalysis(dma)
         # Reindex the worksheet in order to update its columns
         self.reindexObject()
-        analysis.reindexObject(idxs=['getWorksheetUID',])
+        analysis.reindexObject(idxs=['getWorksheetUID', ])
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 
     def removeAnalysis(self, analysis):
         """ delete an analyses from the worksheet and un-assign it
         """
-        workflow = getToolByName(self, 'portal_workflow')
-
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
         doActionFor(analysis, 'unassign')
@@ -382,23 +391,24 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for the specified reference sample and increments in one unit the
             suffix.
         """
-        prefix = reference.id+"-"
+        prefix = reference.id + "-"
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
-            prefix = reference.id+"-D"
+            prefix = reference.id + "-D"
         bac = getToolByName(reference, 'bika_analysis_catalog')
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
-        rr = re.compile("^"+prefix+"[\d+]+$")
+        rr = re.compile("^" + prefix + "[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
         ids.sort()
         _id = ids[-1] if ids else 0
-        suffix = str(_id+1).zfill(int(3))
+        suffix = str(_id + 1).zfill(int(3))
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
-            suffix = str(_id+1).zfill(2)
+            suffix = str(_id + 1).zfill(2)
         return '%s%s' % (prefix, suffix)
 
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
+
     def addDuplicateAnalyses(self, src_slot, dest_slot=None):
         """
         Creates and add duplicate analyes from the src_slot to the dest_slot
@@ -1244,8 +1254,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             Returns the number of analyses affected
         """
         analyses = [an for an in self.getAnalyses()
-                    if (not an.getInstrument() or override_analyses)
-                        and an.isInstrumentAllowed(instrument)]
+                    if (not an.getInstrument() or override_analyses) and
+                    an.isInstrumentAllowed(instrument)]
         total = 0
         for an in analyses:
             # An analysis can be done using differents Methods.
@@ -1304,7 +1314,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         mtool = getToolByName(self, 'portal_membership')
         analyst = self.getAnalyst().strip()
         analyst_member = mtool.getMemberById(analyst)
-        if analyst_member != None:
+        if analyst_member is not None:
             return analyst_member.getProperty('fullname')
         return analyst
 
@@ -1413,37 +1423,37 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         if skip(self, "reject"):
             return
-        utils = getToolByName(self, 'plone_utils')
         workflow = self.portal_workflow
 
         def copy_src_fields_to_dst(src, dst):
             # These will be ignored when copying field values between analyses
-            ignore_fields = ['UID',
-                             'id',
-                             'title',
-                             'allowDiscussion',
-                             'subject',
-                             'description',
-                             'location',
-                             'contributors',
-                             'creators',
-                             'effectiveDate',
-                             'expirationDate',
-                             'language',
-                             'rights',
-                             'creation_date',
-                             'modification_date',
-                             'Layout',    # ws
-                             'Analyses',  # ws
+            ignore_fields = [
+                'UID',
+                'id',
+                'title',
+                'allowDiscussion',
+                'subject',
+                'description',
+                'location',
+                'contributors',
+                'creators',
+                'effectiveDate',
+                'expirationDate',
+                'language',
+                'rights',
+                'creation_date',
+                'modification_date',
+                'Layout',    # ws
+                'Analyses',  # ws
             ]
             fields = src.Schema().fields()
             for field in fields:
                 fieldname = field.getName()
                 if fieldname in ignore_fields:
                     continue
-                getter = getattr(src, 'get'+fieldname,
+                getter = getattr(src, 'get' + fieldname,
                                  src.Schema().getField(fieldname).getAccessor(src))
-                setter = getattr(dst, 'set'+fieldname,
+                setter = getattr(dst, 'set' + fieldname,
                                  dst.Schema().getField(fieldname).getMutator(dst))
                 if getter is None or setter is None:
                     # ComputedField
@@ -1463,8 +1473,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         new_ws_id = renameAfterCreation(new_ws)
         copy_src_fields_to_dst(self, new_ws)
         new_ws.edit(
-            Number = new_ws_id,
-            Remarks = self.getRemarks()
+            Number=new_ws_id,
+            Remarks=self.getRemarks()
         )
 
         # Objects are being created inside other contexts, but we want their
@@ -1484,6 +1494,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state in ['published', 'verified', 'retracted']:
                 old_ws_analyses.append(analysis.UID())
+
+                # XXX where does position come from?
                 old_layout.append({'position': position,
                                    'type': 'a',
                                    'analysis_uid': analysis.UID(),
@@ -1497,13 +1509,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'Analysis':
                 reject = _createObjectByType('RejectAnalysis', self, tmpID())
                 reject.unmarkCreationFlag()
-                reject_id = renameAfterCreation(reject)
                 copy_src_fields_to_dst(analysis, reject)
                 reject.setAnalysis(analysis)
                 reject.reindexObject()
                 analysis.edit(
-                    Result = None,
-                    Retested = True,
+                    Result=None,
+                    Retested=True,
                 )
                 analysis.reindexObject()
                 position = analysis_positions[analysis.UID()]
@@ -1514,7 +1525,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                    'container_uid': self.UID()})
                 new_ws_analyses.append(analysis.UID())
                 new_layout.append({'position': position,
-                                   'type':'a',
+                                   'type': 'a',
                                    'analysis_uid': analysis.UID(),
                                    'container_uid': analysis.aq_parent.UID()})
             # Reference analyses
@@ -1545,8 +1556,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # - Create a new duplicate inside the new worksheet
             # - Transition the original analysis to 'rejected' state
             if analysis.portal_type == 'DuplicateAnalysis':
-                src_analysis = analysis.getAnalysis()
-                ar = src_analysis.aq_parent
                 duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
                 new_duplicate = _createObjectByType('DuplicateAnalysis',
                                                     new_ws, duplicate_id)
@@ -1562,7 +1571,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                    'container_uid': self.UID()})
                 new_ws_analyses.append(new_duplicate.UID())
                 new_layout.append({'position': position,
-                                   'type':'d',
+                                   'type': 'd',
                                    'analysis_uid': new_duplicate.UID(),
                                    'container_uid': new_ws.UID()})
                 workflow.doActionFor(analysis, 'reject')
@@ -1580,7 +1589,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.setAnalyses(old_ws_analyses)
         self.replaced_by = new_ws.UID()
 
-
     def checkUserManage(self):
         """ Checks if the current user has granted access to this worksheet
             and if has also privileges for managing it.
@@ -1588,7 +1596,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         granted = False
         can_access = self.checkUserAccess()
 
-        if can_access == True:
+        if can_access is True:
             pm = getToolByName(self, 'portal_membership')
             edit_allowed = pm.checkPermission(EditWorksheet, self)
             if edit_allowed:
@@ -1617,15 +1625,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if analyst != _c(member.getId()):
             roles = member.getRoles()
             restrict = 'Manager' not in roles \
-                    and 'LabManager' not in roles \
-                    and 'LabClerk' not in roles \
-                    and 'RegulatoryInspector' not in roles \
-                    and self.bika_setup.getRestrictWorksheetUsersAccess()
+                and 'LabManager' not in roles \
+                and 'LabClerk' not in roles \
+                and 'RegulatoryInspector' not in roles \
+                and self.bika_setup.getRestrictWorksheetUsersAccess()
             allowed = not restrict
 
         return allowed
 
-    def setAnalyst(self,analyst):
+    def setAnalyst(self, analyst):
         for analysis in self.getAnalyses():
             analysis.setAnalyst(analyst)
         self.Schema().getField('Analyst').set(self, analyst)
@@ -1650,5 +1658,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         analyses = self.getAnalyses()
         return list(set([an.getDepartmentUID() for an in analyses]))
+
 
 registerType(Worksheet, PROJECTNAME)
