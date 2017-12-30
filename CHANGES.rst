@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #514 Site Error when listing Dormant Worksheet Templates
 - #517 Expired Reference Samples are displayed in Add Blank/Add Control views
 - #517 Inactive services displayed for selection in Add Blank/Add Control views
 - #516 List of Analyses Services is not properly filtered by state
