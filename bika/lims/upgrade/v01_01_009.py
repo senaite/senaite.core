@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
@@ -22,7 +23,16 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
+    # Migration to senaite.core
+    rename_bika_setup()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
+
+
+def rename_bika_setup():
+    logger.info("Renaming Bika Setup...")
+    bika_setup = api.get_bika_setup()
+    bika_setup.setTitle("Setup")
+    bika_setup.reindexObject()

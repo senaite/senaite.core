@@ -38,7 +38,6 @@ def upgrade(tool):
 
     return True
 
-
 def upgrade_indexes():
     logger.info("Fixing broken calculations (re-assignment of dependents)...")
 

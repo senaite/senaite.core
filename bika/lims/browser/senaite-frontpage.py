@@ -4,6 +4,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -12,10 +13,11 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFrontPageAdapter
 from zope.component import getAdapters
 
+
 class FrontPageView(BrowserView):
-    """Bika default Front Page
+    """SENAITE default Front Page
     """
-    template = ViewPageTemplateFile("templates/bika-frontpage.pt")
+    template = ViewPageTemplateFile("templates/senaite-frontpage.pt")
 
     def __call__(self):
         self.set_versions()
@@ -91,7 +93,7 @@ class FrontPageView(BrowserView):
         self.upgrades = {}
         qi = getToolByName(self.context, "portal_quickinstaller")
         for key in qi.keys():
-            info = qi.upgradeInfo('bika.lims')
+            info = qi.upgradeInfo('senaite.core')
             self.versions[key] = qi.getProductVersion(key)
             info = qi.upgradeInfo(key)
             if info and 'installedVersion' in info:
