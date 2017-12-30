@@ -769,12 +769,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         bac = api.get_tool("bika_analysis_catalog")
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
-        analyses = bac(portal_type='Analysis',
-                       getServiceUID=wst_service_uids,
-                       review_state='sample_received',
-                       worksheetanalysis_review_state='unassigned',
-                       cancellation_state='active',
-                       sort_on='getPrioritySortkey')
+
+        query = {
+            "portal_type": "Analysis",
+            "getServiceUID": wst_service_uids,
+            "review_state": "sample_received",
+            "worksheetanalysis_review_state": "unassigned",
+            "cancellation_state": "active",
+            "sort_on": "getPrioritySortkey"
+        }
+
+        analyses = bac(query)
 
         # No analyses, nothing to do
         if not analyses:
@@ -801,8 +806,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ar_slots = dict()
         ar_fixed_slots = dict()
         for brain in analyses:
-            arid = brain.getRequestID
             obj = api.get_object(brain)
+            arid = obj.getRequestID()
             if instrument and not obj.isInstrumentAllowed(instrument):
                 # Exclude those analyses for which the worksheet's template
                 # instrument is not allowed
