@@ -5,15 +5,15 @@ Contributors
 - Jordi Puiggené, jpuiggene@naralabs.com
 - Pau Soliva, psoliva@naralabs.com
 - Nihad Mammadli, 1992.nihad@gmail.com
-- Anneline Sweetname, anneline@bikalabs.com
 - Ramon Bartl, rb@ridingbytes.com
+- Anneline Sweetname, anneline@bikalabs.com
 - Godfrey Leibbrandt, godfrey@bikalabs.com
 - Mike Metcalfe, mike@webtide.co.za
 - Jurie-Jan Botha, juriejanbotha@gmail.com
+- Juan Gallostra, jgallostra@naralabs.com
 - Inus Scheepers, inus@bikalabs.com
 - Oliver Roch, oliver.roch@d9t.de
 - Alexander Karlsson, ak.zylinx@gmail.com
-- Juan Gallostra, jgallostra@naralabs.com
 - Anton Feun, anton@satides.co.za
 - Jayadeep Karnati, karnatijayadeep@gmail.com
 - Lemoene, lemoene@bikalabs.com

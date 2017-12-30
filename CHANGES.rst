@@ -1,7 +1,27 @@
 Changelog
 =========
 
-1.1.8 (unreleased)
+1.1.9 (unreleased)
+------------------
+
+**Added**
+
+
+**Removed**
+
+
+**Changed**
+
+
+**Fixed**
+
+- #488 JS Errors in bika.lims.analysisrequest.js
+
+**Security**
+
+
+
+1.1.8 (2017-12-23)
 ------------------
 
 **Added**
@@ -11,8 +31,6 @@ Changelog
 - #467 All/Mine filters in Dashboard panels
 - #423 Instrument import interface for Abbott's m2000 Real Time
 
-**Removed**
-
 **Changed**
 
 - #469 Remove unique field validator for Batch titles
@@ -21,7 +39,10 @@ Changelog
 
 **Fixed**
 
-- #488 JS Errors in bika.lims.analysisrequest.js
+- #494 Rejection reasons widget does not appear on rejection
+- #492 Fix AR Add Form: CC Contacts not set on Contact Change
+- #489 Worksheet Templates selection list is empty in Worksheets view
+- #490 Fix AR Add Form: No specifications found if a sample type was set
 - #475 Assigning Analyses to a WS raises AttributeError
 - #466 UnicodeDecodeError if unicode characters are entered into the title field
 - #453 Sample points do not show the referenced sample types in view
@@ -32,8 +53,6 @@ Changelog
 - #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
 - #445 Fix AR Add Form: No sample points are found if a sample type was set
-
-**Security**
 
 
 1.1.7 (2017-12-01)
