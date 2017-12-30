@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #517 Expired Reference Samples are displayed in Add Blank/Add Control views
+- #517 Inactive services displayed for selection in Add Blank/Add Control views
 - #516 List of Analyses Services is not properly filtered by state
 - #516 Activate and Deactivate buttons do not appear in Analysis Services list
 - #512 Duplicates transition to "Attachment due" after submit
