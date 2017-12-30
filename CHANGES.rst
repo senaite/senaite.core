@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #488 JS Errors in bika.lims.analysisrequest.js
 
 **Security**
 
