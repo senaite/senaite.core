@@ -116,27 +116,32 @@ class AttachmentsView(BrowserView):
     def action_add_to_ws(self):
         """Form action to add a new attachment in a worksheet
         """
+
         ws = self.context
         form = self.request.form
-        this_file = form.get('AttachmentFile_file', None)
-        filename = getattr(this_file, "filename", "Attachment")
-
+        attachment_file = form.get('AttachmentFile_file', None)
         analysis_uid = self.request.get('analysis_uid', None)
         service_uid = self.request.get('Service', None)
+        AttachmentType = form.get('AttachmentType', '')
+        AttachmentKeys = form.get('AttachmentKeys', '')
+        ReportOption = form.get('ReportOption', 'a')
+
+        # nothing to do if the attachment file is missing
+        if attachment_file is None:
+            logger.warn("AttachmentView.action_add_attachment: Attachment file is missing")
+            return
 
         if analysis_uid:
             rc = api.get_tool("reference_catalog")
             analysis = rc.lookupObject(analysis_uid)
 
             # create attachment
-            attachment = api.create(ws, "Attachment", title=filename)
-
-            attachment.edit(
-                AttachmentFile=this_file,
-                AttachmentType=form.get('AttachmentType', ''),
-                AttachmentKeys=form.get('AttachmentKeys', ''),
-                ReportOption=form.get('ReportOption', 'a'),)
-            attachment.reindexObject()
+            attachment = self.create_attachment(
+                ws,
+                attachment_file,
+                AttachmentType=AttachmentType,
+                AttachmentKeys=AttachmentKeys,
+                ReportOption=ReportOption)
 
             others = analysis.getAttachment()
             attachments = []
@@ -153,8 +158,7 @@ class AttachmentsView(BrowserView):
         if service_uid:
             workflow = api.get_tool('portal_workflow')
 
-            # XXX: refactor dependency to this view.
-            #      The reason is the department filtering which is done in this private method
+            # XXX: refactor out dependency to this view.
             view = api.get_view("manage_results", context=self.context, request=self.request)
             analyses = view._getAnalyses()
 
@@ -168,15 +172,12 @@ class AttachmentsView(BrowserView):
                     continue
 
                 # create attachment
-                attachment = api.create(ws, "Attachment", title=filename)
-
-                attachment.edit(
-                    AttachmentFile=this_file,
-                    AttachmentType=form.get('AttachmentType', ''),
-                    AttachmentKeys=form.get('AttachmentKeys', ''),
-                    ReportOption=form.get('ReportOption', 'a'),)
-                attachment.processForm()
-                attachment.reindexObject()
+                attachment = self.create_attachment(
+                    ws,
+                    attachment_file,
+                    AttachmentType=AttachmentType,
+                    AttachmentKeys=AttachmentKeys,
+                    ReportOption=ReportOption)
 
                 others = analysis.getAttachment()
                 attachments = []
@@ -201,30 +202,26 @@ class AttachmentsView(BrowserView):
 
         Code taken from bika.lims.content.addARAttachment.
         """
+
         form = self.request.form
         parent = api.get_parent(self.context)
-        this_file = form.get('AttachmentFile_file', None)
+        attachment_file = form.get('AttachmentFile_file', None)
+        AttachmentType = form.get('AttachmentType', '')
+        AttachmentKeys = form.get('AttachmentKeys', '')
+        ReportOption = form.get('ReportOption', 'a')
 
         # nothing to do if the attachment file is missing
-        if this_file is None:
+        if attachment_file is None:
             logger.warn("AttachmentView.action_add_attachment: Attachment file is missing")
             return
 
         # create attachment
-        attachmentid = self.context.generateUniqueId('Attachment')
-        attachment = api.create(parent, "Attachment", id=attachmentid)
-
-        # update the attachment with the values from the form
-        attachment.edit(
-            AttachmentFile=this_file,
-            AttachmentType=form.get('AttachmentType', ''),
-            AttachmentKeys=form.get('AttachmentKeys', ''),
-            ReportOption=form.get('ReportOption', 'a'),
-        )
-
-        # process and reindex
-        attachment.processForm()
-        attachment.reindexObject()
+        attachment = self.create_attachment(
+            parent,
+            attachment_file,
+            AttachmentType=AttachmentType,
+            AttachmentKeys=AttachmentKeys,
+            ReportOption=ReportOption)
 
         # append the new UID to the end of the current order
         self.set_attachments_order(api.get_uid(attachment))
@@ -240,6 +237,10 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
+            # The metadata for getAttachmentUIDs need to get updated,
+            # otherwise the attachments are not displayed
+            # https://github.com/senaite/bika.lims/issues/521
+            analysis.reindexObject()
 
             if api.get_workflow_status_of(analysis) == 'attachment_due':
                 api.do_transition_for(analysis, 'attach')
@@ -257,6 +258,18 @@ class AttachmentsView(BrowserView):
                 self.context.absolute_url()))
         else:
             self.request.response.redirect(self.context.absolute_url())
+
+    def create_attachment(self, container, attachment_file, **kw):
+        """Create an Attachment object in the given container
+        """
+        filename = getattr(attachment_file, "filename", "Attachment")
+        attachment = api.create(container, "Attachment", title=filename)
+        attachment.edit(AttachmentFile=attachment_file, **kw)
+        attachment.processForm()
+        attachment.reindexObject()
+        logger.info("Created new Attachment {} in {}".format(
+            repr(attachment), repr(container)))
+        return attachment
 
     def delete_attachment(self, attachment):
         """Delete attachment
