@@ -47,15 +47,9 @@ class ManageResultsView(BrowserView):
         #       accordingly!
         #       Relevant issue: https://github.com/senaite/bika.lims/issues/521
         if "AttachmentFile_file" in self.request:
-            this_file = self.request['AttachmentFile_file']
-            if 'analysis_uid' in self.request:
-                analysis_uid = self.request['analysis_uid']
-            else:
-                analysis_uid = None
-            if 'Service' in self.request:
-                service_uid = self.request['Service']
-            else:
-                service_uid = None
+            this_file = self.request.get('AttachmentFile_file', None)
+            analysis_uid = self.request.get('analysis_uid', None)
+            service_uid = self.request.get('Service', None)
 
             ws = self.context
             tool = getToolByName(self.context, REFERENCE_CATALOG)
