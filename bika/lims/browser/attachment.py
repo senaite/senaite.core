@@ -113,6 +113,89 @@ class AttachmentsView(BrowserView):
         # redirect back to the default view
         return self.request.response.redirect(self.context.absolute_url())
 
+    def action_add_to_ws(self):
+        """Form action to add a new attachment in a worksheet
+        """
+        ws = self.context
+        form = self.request.form
+        this_file = form.get('AttachmentFile_file', None)
+        filename = getattr(this_file, "filename", "Attachment")
+
+        analysis_uid = self.request.get('analysis_uid', None)
+        service_uid = self.request.get('Service', None)
+
+        if analysis_uid:
+            rc = api.get_tool("reference_catalog")
+            analysis = rc.lookupObject(analysis_uid)
+
+            # create attachment
+            attachment = api.create(ws, "Attachment", title=filename)
+
+            attachment.edit(
+                AttachmentFile=this_file,
+                AttachmentType=form.get('AttachmentType', ''),
+                AttachmentKeys=form.get('AttachmentKeys', ''),
+                ReportOption=form.get('ReportOption', 'a'),)
+            attachment.reindexObject()
+
+            others = analysis.getAttachment()
+            attachments = []
+            for other in others:
+                attachments.append(other.UID())
+            attachments.append(attachment.UID())
+            analysis.setAttachment(attachments)
+
+            # The metadata for getAttachmentUIDs need to get updated,
+            # otherwise the attachments are not displayed
+            # https://github.com/senaite/bika.lims/issues/521
+            analysis.reindexObject()
+
+        if service_uid:
+            workflow = api.get_tool('portal_workflow')
+
+            # XXX: refactor dependency to this view.
+            #      The reason is the department filtering which is done in this private method
+            view = api.get_view("manage_results", context=self.context, request=self.request)
+            analyses = view._getAnalyses()
+
+            for analysis in analyses:
+                if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
+                    continue
+                if not analysis.getServiceUID() == service_uid:
+                    continue
+                review_state = workflow.getInfoFor(analysis, 'review_state', '')
+                if review_state not in ['assigned', 'sample_received', 'to_be_verified']:
+                    continue
+
+                # create attachment
+                attachment = api.create(ws, "Attachment", title=filename)
+
+                attachment.edit(
+                    AttachmentFile=this_file,
+                    AttachmentType=form.get('AttachmentType', ''),
+                    AttachmentKeys=form.get('AttachmentKeys', ''),
+                    ReportOption=form.get('ReportOption', 'a'),)
+                attachment.processForm()
+                attachment.reindexObject()
+
+                others = analysis.getAttachment()
+                attachments = []
+                for other in others:
+                    attachments.append(other.UID())
+                attachments.append(attachment.UID())
+                analysis.setAttachment(attachments)
+
+                # The metadata for getAttachmentUIDs need to get updated,
+                # otherwise the attachments are not displayed
+                # https://github.com/senaite/bika.lims/issues/521
+                analysis.reindexObject()
+
+        if self.request['HTTP_REFERER'].endswith('manage_results'):
+            self.request.response.redirect('{}/manage_results'.format(
+                self.context.absolute_url()))
+        else:
+            self.request.response.redirect(self.context.absolute_url())
+
     def action_add(self):
         """Form action to add a new attachment
 

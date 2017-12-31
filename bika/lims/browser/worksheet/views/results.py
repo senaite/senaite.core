@@ -12,12 +12,11 @@ from bika.lims.browser.worksheet.tools import (checkUserAccess,
 from bika.lims.browser.worksheet.views import (AnalysesTransposedView,
                                                AnalysesView)
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.utils import getUsers, tmpID
+from bika.lims.utils import getUsers
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
@@ -40,71 +39,6 @@ class ManageResultsView(BrowserView):
         showRejectionMessage(self.context)
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-
-        # TODO: Move this form handler into bika.lims.browser.attachment and
-        #       change the form action of
-        #       bika.lims.browser.viewlets.templates.worksheet_attachments.pt
-        #       accordingly!
-        #       Relevant issue: https://github.com/senaite/bika.lims/issues/521
-        if "AttachmentFile_file" in self.request:
-            this_file = self.request.get('AttachmentFile_file', None)
-            analysis_uid = self.request.get('analysis_uid', None)
-            service_uid = self.request.get('Service', None)
-
-            ws = self.context
-            tool = getToolByName(self.context, REFERENCE_CATALOG)
-            if analysis_uid:
-                analysis = tool.lookupObject(analysis_uid)
-                attachment = _createObjectByType("Attachment", ws, tmpID())
-                attachment.edit(
-                    AttachmentFile=this_file,
-                    AttachmentType=self.request.get('AttachmentType', ''),
-                    AttachmentKeys=self.request['AttachmentKeys'])
-                attachment.reindexObject()
-
-                others = analysis.getAttachment()
-                attachments = []
-                for other in others:
-                    attachments.append(other.UID())
-                attachments.append(attachment.UID())
-                analysis.setAttachment(attachments)
-
-                # The metadata for getAttachmentUIDs need to get updated,
-                # otherwise the attachments are not displayed
-                # https://github.com/senaite/bika.lims/issues/521
-                analysis.reindexObject()
-
-            if service_uid:
-                workflow = getToolByName(self.context, 'portal_workflow')
-                for analysis in self._getAnalyses():
-                    if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
-                        continue
-                    if not analysis.getServiceUID() == service_uid:
-                        continue
-                    review_state = workflow.getInfoFor(analysis, 'review_state', '')
-                    if review_state not in ['assigned', 'sample_received', 'to_be_verified']:
-                        continue
-
-                    attachment = _createObjectByType("Attachment", ws, tmpID())
-                    attachment.edit(
-                        AttachmentFile=this_file,
-                        AttachmentType=self.request.get('AttachmentType', ''),
-                        AttachmentKeys=self.request['AttachmentKeys'])
-                    attachment.processForm()
-                    attachment.reindexObject()
-
-                    others = analysis.getAttachment()
-                    attachments = []
-                    for other in others:
-                        attachments.append(other.UID())
-                    attachments.append(attachment.UID())
-                    analysis.setAttachment(attachments)
-
-                    # The metadata for getAttachmentUIDs need to get updated,
-                    # otherwise the attachments are not displayed
-                    # https://github.com/senaite/bika.lims/issues/521
-                    analysis.reindexObject()
-        # /TODO
 
         # Save the results layout
         rlayout = self.request.get('resultslayout', '')
