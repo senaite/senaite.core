@@ -99,6 +99,11 @@ class ManageResultsView(BrowserView):
                         attachments.append(other.UID())
                     attachments.append(attachment.UID())
                     analysis.setAttachment(attachments)
+
+                    # The metadata for getAttachmentUIDs need to get updated,
+                    # otherwise the attachments are not displayed
+                    # https://github.com/senaite/bika.lims/issues/521
+                    analysis.reindexObject()
         # /TODO
 
         # Save the results layout
