@@ -1,18 +1,16 @@
 # Contributing to senaite.core
 
-Third-party contributions are essential for keeping senaite.core
-continuously improving. We simply cannot access the huge number of
-platforms and myriad configurations for running senaite.core. We want to
-keep it as easy as possible to contribute changes that get things
-working in your environment. There are a few guidelines that we need
-contributors to follow so that we can have a chance of keeping on top of
-things.
+Third-party contributions are essential for keeping `senaite.core` continuously 
+improving. We simply cannot access the huge number of platforms and myriad 
+configurations for running `senaite.core`. We want to keep it as easy as 
+possible to contribute changes that get things working in your environment. 
+There are a few guidelines that we need contributors to follow so that we can 
+have a chance of keeping on top of things.
 
-The following is a set of guidelines for contributing to senaite.core, which
-is hosted in the [SENAITE Organization](https://github.com/senaite) on
-GitHub. These are just guidelines, not rules. Use your best judgment,
-and feel free to propose changes to this document in a [pull
-request](#how-to-submit-a-pull-request).
+The following is a set of guidelines for contributing to senaite.core, which is 
+hosted in the [SENAITE Organization](https://github.com/senaite) on GitHub. 
+These are just guidelines, not rules. Use your best judgment, and feel free to 
+propose changes to this document in a [pull request](#how-to-submit-a-pull-request).
 
 ## Code of Conduct
 
@@ -25,7 +23,7 @@ uphold this code. Please report unacceptable behavior.
 Have you found a bug in the code which is not in the [list of known
 bugs](https://github.com/senaite/senaite.core/issues)? Do you have a
 suggestion for improvement? Then by all means please [submit a new
-issue](https://github.com/senait/senaite.core/issues/new), and do not
+issue](https://github.com/senaite/senaite.core/issues/new), and do not
 hesitate to comment on existing [open
 issues](https://github.com/senaite/senaite.core/issues).
 
@@ -58,29 +56,29 @@ contribute to the source code.
 
 ### Preliminaries
 
-   1. If you still have not done so, [create your personal account on
-GitHub](https://github.com/join).
+   1. If you still have not done so, [create your personal account on GitHub](
+   https://github.com/join).
 
-   2. [Fork senaite.core from
-GitHub](https://github.com/senaite/senaite.core/fork). This will copy the
-whole senaite.core repository to your personal account.
+   2. [Fork senaite.core from GitHub](
+   https://github.com/senaite/senaite.core/fork). This will copy the whole
+   `senaite.core` repository to your personal account.
 
-   3. Then, go to your favourite working folder in your computer and
-clone your forked repository by typing (replacing ```YOUR_USERNAME``` by
-the actual username of your GitHub account):
+   3. Then, go to your favourite working folder in your computer and clone your 
+   forked repository by typing (replacing ```YOUR_USERNAME``` by
+   the actual username of your GitHub account):
 
           $ git clone https://github.com/YOUR_USERNAME/senaite.core
 
-   4. Your forked repository https://github.com/YOUR_USERNAME/senaite.core
-will receive the default name of `origin`. You can also add the original
-senaite.core repository, which is usually called `upstream`:
+   4. Your forked repository https://github.com/YOUR_USERNAME/senaite.core will 
+   receive the default name of `origin`. You can also add the original 
+   `senaite.core` repository, which is usually called `upstream`:
 
           $ cd senaite.core
           $ git remote add upstream https://github.com/senaite/senaite.core.git
 
-To verify the new upstream repository you have specified for your fork,
-type `git remote -v`. You should see the URL for your fork as `origin`,
-and the URL for the original repository as `upstream`:
+To verify the new upstream repository you have specified for your fork, type 
+`git remote -v`. You should see the URL for your fork as `origin`, and the URL 
+for the original repository as `upstream`:
 
 ```
 $ git remote -v
@@ -90,75 +88,72 @@ upstream  https://github.com/senaite/senaite.core.git (fetch)
 upstream  https://github.com/senaite/senaite.core.git (push)
 ```
 
-### Master and develop branches
-
-The `master` branch will always have the most stable version, and only
-bugfixes must be done against this branch. New features, non-trivial
-improvements, and refactoring must be done against the `develop` branch.
-
-
 ### Start working on your contribution
 
-Checkout the `develop` branch (or `master` branch if you plan to start
-working on a fix for a bug found in the latest stable release) of the
-git repository in order to get synchronized with the latest code:
+Checkout the `master` branch of the git repository in order to get synchronized
+with the latest code:
 
 ```
-$ git checkout develop
-$ git pull upstream develop
-```
-
-When start working in a new improvement, please **always** branch off
-from `develop`. Only branch off from `master` if you are working on a
-bugfix. Open a new branch and start working on it:
-
-```
-$ git checkout -b my_feature
+$ git checkout master
+$ git pull upstream master
 ```
 
 Now you can do changes, add files, do commits (please take a look at
-[how to write good commit
-messages](https://chris.beams.io/posts/git-commit/)!) and push them to
-your repository:
+[how to write good commit messages](https://chris.beams.io/posts/git-commit/)!) 
+and push them to your repository:
 
 ```
 $ git push origin my_feature
 ```
 
-If there have been new pushes to the `develop` branch of the `upstream`
-repository since the last time you pulled from it, you might want to put
-your commits on top of them (this is mandatory for pull requests):
+If there have been new pushes to the `master` branch of the `upstream`
+repository since the last time you pulled from it, you might want to put your 
+commits on top of them (this is mandatory for pull requests):
 
 ```
-$ git pull --rebase upstream develop
+$ git remote update
+$ git pull --rebase upstream master
 ```
+
+Alternatively, you can merge `senaite.core`'s `master` into your branch:
+
+```
+$ git remote update
+$ git merge --no-ff upstream master
+```
+
+Although a merge is safer than rebase, the latter eliminates the unnecessary
+merge commits required by `git merge` and makes the project history easier to
+navigate. We strongly encourage the developer to know in detail the differences,
+pros and cons between doing a `gir rebase` or `git merge`. Good documentation on
+this regard can be found in the [Atlassian's Merging vs. Rebasing tutorial](
+https://www.atlassian.com/git/tutorials/merging-vs-rebasing).
+
+Note this `git rebase` or `git merge` is required for keeping your branch 
+aligned with the latest code from the repos. The incorporation of your work into
+`master` through a Pull Request will always be done using `git merge`.
 
 ### How to submit a pull request
 
 When the contribution is ready, you can [submit a pull
 request](https://github.com/senaite/senaite.core/compare/). Head to your
 GitHub repository, switch to your `my_feature` branch, and click the
-_**Pull Request**_ button, which will do all the work for you. If your
-contribution is a fix for a bug encountered in latest stable version,
-thus you forked from `master`, comparison must be to `master` branch.
-Otherwise, code comparison must be always to `develop` branch.
+_**Pull Request**_ button, which will do all the work for you. Ensure the
+comparison is done with the `master` branch unless you forked from another one.
 
-Once a pull request is sent, the Developer Team can review the set of
-changes, discuss potential modifications, and even push follow-up
-commits if necessary.
+Once a pull request is sent, the Developer Team will review the set of changes, 
+discuss potential modifications, and even push follow-up commits if necessary.
 
-Some things that will increase the chance that your pull request is
-accepted:
+Some things that will increase the chance that your pull request is accepted:
 
  * Write tests.
  * Follow [Plone's Python styleguide](https://docs.plone.org/develop/styleguide/python.html).
- * Write a descriptive and detailed summary. Please consider that
-reviewing pull requests is hard, so include as much information as
-possible to make your pull request's intent clear.
-  * Do not address multiple bugfixes or features in the same Pull Request.
-  * Include whitespace and formatting changes in discrete commits.
-  * Add a changelog entry in [CHANGES.rst](https://github.com/senaite/senaite.core/CHANGES.rst)
-
+ * Write a descriptive and detailed summary. Please consider that reviewing pull
+   requests is hard, so include as much information as possible to make your 
+   pull request's intent clear.
+ * Do not address multiple bugfixes or features in the same Pull Request.
+ * Include whitespace and formatting changes in discrete commits.
+ * Add a changelog entry in [CHANGES.rst](https://github.com/senaite/senaite.core/CHANGES.rst)
 
 For more details about Git usage, please check out Chapters 1 and 2 from
 [Pro Git book](https://git-scm.com/book/en/v2).
