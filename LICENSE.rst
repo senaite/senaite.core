@@ -1,5 +1,5 @@
 SENAITE.CORE
-Copyright (C) 2017 Senaite Foundation
+Copyright (C) 2018 Senaite Foundation
 
 This software, henceforth "SENAITE.CORE", an add-on for
 `Plone software <https://plone.org/>`_, is a derivative work of
