@@ -1,9 +1,10 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-# Catalog IDs static constant
 from .analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from .analysis_catalog import CATALOG_ANALYSIS_LISTING
 from .autoimportlogs_catalog import CATALOG_AUTOIMPORTLOGS_LISTING

@@ -1,9 +1,10 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _

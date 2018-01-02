@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Bika LIMS
+# This file is part of SENAITE.CORE
 #
-# Copyright 2011-2017 by it's authors.
+# Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing_filter_bar import BikaListingFilterBar
 

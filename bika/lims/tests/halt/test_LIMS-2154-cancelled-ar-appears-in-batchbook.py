@@ -1,6 +1,8 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 """If ShowPrices is not true, then Invoices, prices, pricelists, should

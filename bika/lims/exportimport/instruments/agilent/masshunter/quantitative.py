@@ -1,6 +1,8 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 """ Agilent's 'Masshunter Quant'

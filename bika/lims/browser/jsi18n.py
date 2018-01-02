@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from plone.memoize import ram
 from zope.component import queryUtility
 from zope.i18n.interfaces import ITranslationDomain

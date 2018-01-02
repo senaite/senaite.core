@@ -1,4 +1,10 @@
-# Writting the description for the widget
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 description = """
 <p>
     When the results are introduced, some samples may need to be added to the next available worksheet in order to retest it and confirm the result or maybe the result of a previous analysis should be changed depending on the result of the reflexed analysis. These situations can be caused by the indetermination of the result or by a failed test.
