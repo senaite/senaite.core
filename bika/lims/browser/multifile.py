@@ -3,7 +3,7 @@
 # This file is part of SENAITE.CORE
 #
 # Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from zope.interface import implements
 from bika.lims.browser.bika_listing import BikaListingView

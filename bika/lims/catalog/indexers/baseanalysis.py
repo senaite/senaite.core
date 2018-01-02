@@ -3,7 +3,7 @@
 # This file is part of SENAITE.CORE
 #
 # Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFPlone.CatalogTool import sortable_title as _sortable_title
 from bika.lims.interfaces import IBaseAnalysis

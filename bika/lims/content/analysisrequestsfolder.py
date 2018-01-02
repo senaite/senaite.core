@@ -3,7 +3,7 @@
 # This file is part of SENAITE.CORE
 #
 # Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """AnalysisRequestsFolder is a fake folder to live in the nav bar.  It has
 view from browser/analysisrequest.py wired to it.

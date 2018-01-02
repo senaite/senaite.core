@@ -3,7 +3,7 @@
 # This file is part of SENAITE.CORE
 #
 # Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """ An AnalysisRequest report, containing the report itself in pdf and html
     format. Also, includes information about the date when was published, from

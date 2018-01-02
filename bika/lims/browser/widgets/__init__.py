@@ -3,7 +3,7 @@
 # This file is part of SENAITE.CORE
 #
 # Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from .datetimewidget import DateTimeWidget
 from .durationwidget import DurationWidget
