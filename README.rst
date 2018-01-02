@@ -1,4 +1,4 @@
-.. figure:: https://raw.githubusercontent.com/senaite/bika.lims/change-logos-and-names/bika/lims/skins/bika/senaite-core-logo.png
+.. figure:: https://raw.githubusercontent.com/senaite/senaite.core/master/bika/lims/skins/bika/senaite-core-logo.png
    :width: 500px
    :alt: senaite.core
    :align: center
@@ -53,7 +53,6 @@ Ready-to-go installation
 ------------------------
 With this installation modality, the sources from ``senaite.core`` will be
 downloaded automatically from `Python Package Index (Pypi) <https://pypi.python.org/pypi/senaite.core>`_
-, so the latest released version of ``senaite.core`` will be installed. If you
 want the latest code from the `source code repository <https://github.com/senaite/senaite.core>`_,
 follow the installation instructions for development.
 
