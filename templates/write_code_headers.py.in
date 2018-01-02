@@ -14,7 +14,7 @@ TEMPLATE = """# -*- coding: utf-8 -*-
 #
 # This file is part of SENAITE.CORE
 #
-# Copyright {copy-years} by it's authors.
+# Copyright {copy_years} by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """
