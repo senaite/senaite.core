@@ -21,7 +21,7 @@
     :target: https://github.com/senaite/senaite.core/issues
 
 .. image:: https://img.shields.io/github/contributors/senaite/senaite.core.svg?style=flat-square
-    :target: https://github.com/senaite/senaite.core
+    :target: https://github.com/senaite/senaite.core/blob/master/CONTRIBUTORS.rst
 
 
 Introduction
