@@ -15,10 +15,20 @@ Changelog
 
 **Fixed**
 
+- #522 Worksheets: Analyses listing does not show attached Analyses
+- #514 Site Error when listing Dormant Worksheet Templates
+- #517 Expired Reference Samples are displayed in Add Blank/Add Control views
+- #517 Inactive services displayed for selection in Add Blank/Add Control views
+- #516 List of Analyses Services is not properly filtered by state
+- #516 Activate and Deactivate buttons do not appear in Analysis Services list
+- #512 Duplicates transition to "Attachment due" after submit
+- #499 Wrong slots when adding analyses manually in Worksheet with a WST assigned
+- #499 When a Worksheet Template is used, slot positions are not applied correctly
+- #499 Applying a WS template which references a Duplicate raises an Error
+- #513 ShowPrices doctest is failing
 - #488 JS Errors in bika.lims.analysisrequest.js
 
 **Security**
-
 
 
 1.1.8 (2017-12-23)

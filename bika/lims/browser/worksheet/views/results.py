@@ -2,108 +2,48 @@
 
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.browser.worksheet.tools import (checkUserAccess,
+                                               showRejectionMessage)
+from bika.lims.browser.worksheet.views import (AnalysesTransposedView,
+                                               AnalysesView)
+from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.utils import getUsers
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
-from Products.CMFPlone.i18nl10n import ulocalized_time
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
-
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.utils import t
-from bika.lims.browser import BrowserView
-from bika.lims.browser.worksheet.tools import checkUserAccess
-from bika.lims.browser.worksheet.tools import showRejectionMessage
-from bika.lims.browser.worksheet.views import AnalysesTransposedView
-from bika.lims.browser.worksheet.views import AnalysesView
-from bika.lims.utils import getUsers, tmpID
 
 
 class ManageResultsView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("../templates/results.pt")
+
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
         self.layout_displaylist = WORKSHEET_LAYOUT_OPTIONS
 
     def __call__(self):
+
         # Deny access to foreign analysts
-        if checkUserAccess(self.context, self.request) == False:
+        if checkUserAccess(self.context, self.request) is False:
             return []
 
         showRejectionMessage(self.context)
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
 
-        # Worksheet Attachmemts
-        # the expandable form is handled here.
-        if "AttachmentFile_file" in self.request:
-            this_file =  self.request['AttachmentFile_file']
-            if 'analysis_uid' in self.request:
-                analysis_uid = self.request['analysis_uid']
-            else:
-                analysis_uid = None
-            if 'Service' in self.request:
-                service_uid = self.request['Service']
-            else:
-                service_uid = None
-
-            ws = self.context
-            tool = getToolByName(self.context, REFERENCE_CATALOG)
-            if analysis_uid:
-                analysis = tool.lookupObject(analysis_uid)
-                attachment = _createObjectByType("Attachment", ws, tmpID())
-                attachment.edit(
-                    AttachmentFile=this_file,
-                    AttachmentType=self.request.get('AttachmentType', ''),
-                    AttachmentKeys=self.request['AttachmentKeys'])
-                attachment.reindexObject()
-
-                others = analysis.getAttachment()
-                attachments = []
-                for other in others:
-                    attachments.append(other.UID())
-                attachments.append(attachment.UID())
-                analysis.setAttachment(attachments)
-
-            if service_uid:
-                workflow = getToolByName(self.context, 'portal_workflow')
-                for analysis in self._getAnalyses():
-                    if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
-                        continue
-                    if not analysis.getServiceUID() == service_uid:
-                        continue
-                    review_state = workflow.getInfoFor(analysis, 'review_state', '')
-                    if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
-                        continue
-
-                    attachment = _createObjectByType("Attachment", ws, tmpID())
-                    attachment.edit(
-                        AttachmentFile = this_file,
-                        AttachmentType = self.request.get('AttachmentType', ''),
-                        AttachmentKeys = self.request['AttachmentKeys'])
-                    attachment.processForm()
-                    attachment.reindexObject()
-
-                    others = analysis.getAttachment()
-                    attachments = []
-                    for other in others:
-                        attachments.append(other.UID())
-                    attachments.append(attachment.UID())
-                    analysis.setAttachment(attachments)
-
         # Save the results layout
         rlayout = self.request.get('resultslayout', '')
         if rlayout and rlayout in WORKSHEET_LAYOUT_OPTIONS.keys() \
-            and rlayout != self.context.getResultsLayout():
+           and rlayout != self.context.getResultsLayout():
             self.context.setResultsLayout(rlayout)
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -128,8 +68,8 @@ class ManageResultsView(BrowserView):
         # TODO: Return only the allowed instruments for at least one contained analysis
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type = 'Instrument',
-                                   inactive_state = 'active')]
+                              bsc(portal_type='Instrument',
+                                  inactive_state='active')]
         o = self.context.getInstrument()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
@@ -186,7 +126,7 @@ class ManageResultsView(BrowserView):
             # Interims from calculation
             for field in calculation.getInterimFields():
                 if field['keyword'] not in andict['interims'].keys() \
-                    and field.get('wide', False):
+                   and field.get('wide', False):
                     andict['interims'][field['keyword']] = field
 
             if andict['interims']:
