@@ -23,18 +23,20 @@ class FrontPageView(BrowserView):
         self.set_versions()
         self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
         bika_setup = getToolByName(self.context, "bika_setup")
+        login_url = '{}/{}'.format(self.portal_url, 'login')
         landingpage = bika_setup.getLandingPage()
 
         # Anonymous Users get either redirected to the std. bika-frontpage or
-        # to the custom landing page, which is set in bika_setup
+        # to the custom landing page, which is set in bika_setup. If no landing
+        # page setup, then redirect to login page.
         if self.is_anonymous_user():
             # Redirect to the selected Landing Page
             if landingpage:
                 return self.request.response.redirect(landingpage.absolute_url())
-            # Show the Bika Front Page
-            return self.template()
+            # Redirect to login page
+            return self.request.response.redirect(login_url)
 
-        # Authenticated Users get either the Dashboard, the std. Bika Frontpage
+        # Authenticated Users get either the Dashboard, the std. login page
         # or the custom landing page. Furthermore, they can switch between the
         # Dashboard and the landing page.
         # Add-ons can have an adapter for front-page-url as well.
@@ -64,7 +66,7 @@ class FrontPageView(BrowserView):
         if landingpage:
             return self.request.response.redirect(landingpage.absolute_url())
 
-        # Last precedence: Bika Front Page
+        # Last precedence: Front Page
         return self.template()
 
     def is_dashboard_enabled(self):
