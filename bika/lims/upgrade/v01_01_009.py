@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import logger, api
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
@@ -27,10 +32,22 @@ def upgrade(tool):
     # -------- ADD YOUR STUFF HERE --------
     fix_workflow_transitions(portal)
 
+    # Migration to senaite.core
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
+    rename_bika_setup()
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
 
+
+def rename_bika_setup():
+    logger.info("Renaming Bika Setup...")
+    bika_setup = api.get_bika_setup()
+    bika_setup.setTitle("Setup")
+    bika_setup.reindexObject()
 
 def fix_workflow_transitions(portal):
     """
