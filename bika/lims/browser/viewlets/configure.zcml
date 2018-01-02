@@ -94,6 +94,7 @@
   <browser:viewlet
       name="plone.footer"
       manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class="plone.app.layout.viewlets.common.FooterViewlet"
       template="templates/footer.pt"
       for="*"
       layer="bika.lims.interfaces.IBikaLIMS"

@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import datetime
 import json
@@ -153,7 +155,7 @@ class DashboardView(BrowserView):
         self.member = None
 
     def __call__(self):
-        frontpage_url = self.portal_url + "/bika-frontpage"
+        frontpage_url = self.portal_url + "/senaite-frontpage"
         if not self.context.bika_setup.getDashboardByDefault():
             # Do not render dashboard, render frontpage instead
             self.request.response.redirect(frontpage_url)

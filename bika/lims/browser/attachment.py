@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Bika LIMS
+# This file is part of SENAITE.CORE
 #
-# Copyright 2011-2017 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from zope.interface import implements
 from zope.annotation.interfaces import IAnnotations
@@ -113,35 +113,115 @@ class AttachmentsView(BrowserView):
         # redirect back to the default view
         return self.request.response.redirect(self.context.absolute_url())
 
+    def action_add_to_ws(self):
+        """Form action to add a new attachment in a worksheet
+        """
+
+        ws = self.context
+        form = self.request.form
+        attachment_file = form.get('AttachmentFile_file', None)
+        analysis_uid = self.request.get('analysis_uid', None)
+        service_uid = self.request.get('Service', None)
+        AttachmentType = form.get('AttachmentType', '')
+        AttachmentKeys = form.get('AttachmentKeys', '')
+        ReportOption = form.get('ReportOption', 'a')
+
+        # nothing to do if the attachment file is missing
+        if attachment_file is None:
+            logger.warn("AttachmentView.action_add_attachment: Attachment file is missing")
+            return
+
+        if analysis_uid:
+            rc = api.get_tool("reference_catalog")
+            analysis = rc.lookupObject(analysis_uid)
+
+            # create attachment
+            attachment = self.create_attachment(
+                ws,
+                attachment_file,
+                AttachmentType=AttachmentType,
+                AttachmentKeys=AttachmentKeys,
+                ReportOption=ReportOption)
+
+            others = analysis.getAttachment()
+            attachments = []
+            for other in others:
+                attachments.append(other.UID())
+            attachments.append(attachment.UID())
+            analysis.setAttachment(attachments)
+
+            # The metadata for getAttachmentUIDs need to get updated,
+            # otherwise the attachments are not displayed
+            # https://github.com/senaite/bika.lims/issues/521
+            analysis.reindexObject()
+
+        if service_uid:
+            workflow = api.get_tool('portal_workflow')
+
+            # XXX: refactor out dependency to this view.
+            view = api.get_view("manage_results", context=self.context, request=self.request)
+            analyses = view._getAnalyses()
+
+            for analysis in analyses:
+                if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
+                    continue
+                if not analysis.getServiceUID() == service_uid:
+                    continue
+                review_state = workflow.getInfoFor(analysis, 'review_state', '')
+                if review_state not in ['assigned', 'sample_received', 'to_be_verified']:
+                    continue
+
+                # create attachment
+                attachment = self.create_attachment(
+                    ws,
+                    attachment_file,
+                    AttachmentType=AttachmentType,
+                    AttachmentKeys=AttachmentKeys,
+                    ReportOption=ReportOption)
+
+                others = analysis.getAttachment()
+                attachments = []
+                for other in others:
+                    attachments.append(other.UID())
+                attachments.append(attachment.UID())
+                analysis.setAttachment(attachments)
+
+                # The metadata for getAttachmentUIDs need to get updated,
+                # otherwise the attachments are not displayed
+                # https://github.com/senaite/bika.lims/issues/521
+                analysis.reindexObject()
+
+        if self.request['HTTP_REFERER'].endswith('manage_results'):
+            self.request.response.redirect('{}/manage_results'.format(
+                self.context.absolute_url()))
+        else:
+            self.request.response.redirect(self.context.absolute_url())
+
     def action_add(self):
         """Form action to add a new attachment
 
         Code taken from bika.lims.content.addARAttachment.
         """
+
         form = self.request.form
         parent = api.get_parent(self.context)
-        this_file = form.get('AttachmentFile_file', None)
+        attachment_file = form.get('AttachmentFile_file', None)
+        AttachmentType = form.get('AttachmentType', '')
+        AttachmentKeys = form.get('AttachmentKeys', '')
+        ReportOption = form.get('ReportOption', 'a')
 
         # nothing to do if the attachment file is missing
-        if this_file is None:
+        if attachment_file is None:
             logger.warn("AttachmentView.action_add_attachment: Attachment file is missing")
             return
 
         # create attachment
-        attachmentid = self.context.generateUniqueId('Attachment')
-        attachment = api.create(parent, "Attachment", id=attachmentid)
-
-        # update the attachment with the values from the form
-        attachment.edit(
-            AttachmentFile=this_file,
-            AttachmentType=form.get('AttachmentType', ''),
-            AttachmentKeys=form.get('AttachmentKeys', ''),
-            ReportOption=form.get('ReportOption', 'a'),
-        )
-
-        # process and reindex
-        attachment.processForm()
-        attachment.reindexObject()
+        attachment = self.create_attachment(
+            parent,
+            attachment_file,
+            AttachmentType=AttachmentType,
+            AttachmentKeys=AttachmentKeys,
+            ReportOption=ReportOption)
 
         # append the new UID to the end of the current order
         self.set_attachments_order(api.get_uid(attachment))
@@ -157,6 +237,10 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
+            # The metadata for getAttachmentUIDs need to get updated,
+            # otherwise the attachments are not displayed
+            # https://github.com/senaite/bika.lims/issues/521
+            analysis.reindexObject()
 
             if api.get_workflow_status_of(analysis) == 'attachment_due':
                 api.do_transition_for(analysis, 'attach')
@@ -174,6 +258,18 @@ class AttachmentsView(BrowserView):
                 self.context.absolute_url()))
         else:
             self.request.response.redirect(self.context.absolute_url())
+
+    def create_attachment(self, container, attachment_file, **kw):
+        """Create an Attachment object in the given container
+        """
+        filename = getattr(attachment_file, "filename", "Attachment")
+        attachment = api.create(container, "Attachment", title=filename)
+        attachment.edit(AttachmentFile=attachment_file, **kw)
+        attachment.processForm()
+        attachment.reindexObject()
+        logger.info("Created new Attachment {} in {}".format(
+            repr(attachment), repr(container)))
+        return attachment
 
     def delete_attachment(self, attachment):
         """Delete attachment

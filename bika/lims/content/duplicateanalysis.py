@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema, registerType
@@ -116,6 +118,8 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
     @security.public
     def setAnalysis(self, analysis):
         # Copy all the values from the schema
+        if not analysis:
+            return
         discard = ['id', ]
         keys = analysis.Schema().keys()
         for key in keys:
