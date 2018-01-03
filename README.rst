@@ -29,7 +29,7 @@ Introduction
 
 SENAITE.CORE is an Open Source Laboratory Information Management System (LIMS)
 for enterprise environments, especially focused to behave with high speed,
-excellent performance and good stability. 
+excellent performance and good stability.
 
 This software is a derivative work of `Bika LIMS <https://github.com/bikalims/bika.lims>`_
 software and comes with the same user interface. Since SENAITE.CORE provides the
@@ -61,6 +61,7 @@ Create a new buildout file ``senaite.cfg`` which extends your existing
 your main buildout.cfg which you can also use on the production server::
 
   [buildout]
+  index = https://pypi.python.org/simple
   extends = buildout.cfg
 
   [instance]
@@ -85,7 +86,7 @@ Installation for development
 
 This is the recommended approach how to enable ``senaite.core`` for your
 development environment. With this approach, you'll be able to download the
-latest source code from `senaite.core's repository <https://github.com/senaite/senaite.core>`_ 
+latest source code from `senaite.core's repository <https://github.com/senaite/senaite.core>`_
 and contribute as well.
 
 Use git to fetch ``senaite.core`` source code to your buildout environment::
@@ -100,6 +101,7 @@ from your main buildout.cfg which you can also use on the production server.
 ``senaite.cfg``::
 
   [buildout]
+  index = https://pypi.python.org/simple
   extends = buildout.cfg
   develop +=
       src/senaite.core
@@ -122,7 +124,7 @@ Contribute
 ==========
 
 We want contributing to SENAITE.CORE to be fun, enjoyable, and educational for
-anyone, and everyone. This project adheres to the `Contributor Covenant <https://github.com/senaite/senaite.core/blob/master/CODE_OF_CONDUCT.md>`_. 
+anyone, and everyone. This project adheres to the `Contributor Covenant <https://github.com/senaite/senaite.core/blob/master/CODE_OF_CONDUCT.md>`_.
 By participating, you are expected to uphold this code. Please report
 unacceptable behavior.
 
@@ -135,5 +137,5 @@ document <https://github.com/senaite/senaite.core/blob/master/CONTRIBUTING.md>`_
 Feedback and support
 ====================
 
-* `Gitter channel <https://gitter.im/senaite/Lobby>`_ 
+* `Gitter channel <https://gitter.im/senaite/Lobby>`_
 * `Users list <https://sourceforge.net/projects/senaite/lists/senaite-users>`_
