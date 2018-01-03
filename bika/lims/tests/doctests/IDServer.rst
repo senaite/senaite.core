@@ -172,8 +172,8 @@ An `AnalysisRequest` can be created::
     >>> transaction.commit()
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar
-    <...water17-0001-R1>
+    >>> ar.getId() == "water{}-0001-R1".format(year)
+    True
 
 Create a second `AnalysisRequest`::
 
@@ -186,14 +186,14 @@ Create a second `AnalysisRequest`::
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar
-    <...water17-0002-R1>
+    >>> ar.getId() == "water{}-0002-R1".format(year)
+    True
 
 Create a third `AnalysisRequest` with existing sample::
 
     >>> sample = ar.getSample()
-    >>> sample
-    <Sample at /plone/clients/client-1/water17-0002>
+    >>> sample.getId() == "water{}-0002".format(year)
+    True
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
     ...           'SampleType': sampletype.UID(),
@@ -202,8 +202,8 @@ Create a third `AnalysisRequest` with existing sample::
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar
-    <...water17-0002-R2>
+    >>> ar.getId() == "water{}-0002-R2".format(year)
+    True
 
 Create a forth `Batch`::
     >>> batches = self.portal.batches
