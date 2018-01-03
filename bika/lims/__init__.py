@@ -11,7 +11,7 @@ import pkg_resources
 try:
     __version__ = pkg_resources.get_distribution("senaite.core").version
 except TypeError:
-    __version = pkg_resources.get_distribution("bika.lims").version
+    __version__ = pkg_resources.get_distribution("bika.lims").version
     print 'Using old distribution name: bika.lims'
 
 # import this to create messages in the bika domain.
