@@ -1,205 +1,392 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl import ModuleSecurityInfo, allow_module
-from DateTime import DateTime
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
-from bika.lims.browser import BrowserView
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims import interfaces
-from bika.lims import logger
-from plone.i18n.normalizer.interfaces import IFileNameNormalizer
-from plone.i18n.normalizer.interfaces import IIDNormalizer
-from zope.component import getUtility
-from zope.interface import providedBy
-import copy,re,urllib
-import plone.protect
+import urllib
+
 import transaction
-from zope.component import getAdapters
+import zLOG
+from DateTime import DateTime
+from Products.ATContentTypes.utils import DT2dt
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.fields.uidreferencefield \
+    import get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IIdServer
+from bika.lims.numbergenerator import INumberGenerator
+from zope.component import getAdapters
+from zope.component import getUtility
 
 
 class IDServerUnavailable(Exception):
     pass
 
-def idserver_generate_id(context, prefix, batch_size = None):
+
+def idserver_generate_id(context, prefix, batch_size=None):
     """ Generate a new id using external ID server.
     """
     plone = context.portal_url.getPortalObject()
-    url = context.bika_setup.getIDServerURL()
+    url = api.get_bika_setup().getIDServerURL()
 
     try:
         if batch_size:
             # GET
             f = urllib.urlopen('%s/%s/%s?%s' % (
-                    url,
-                    plone.getId(),
-                    prefix,
-                    urllib.urlencode({'batch_size': batch_size}))
-                    )
+                url,
+                plone.getId(),
+                prefix,
+                urllib.urlencode({'batch_size': batch_size}))
+            )
         else:
-            f = urllib.urlopen('%s/%s/%s'%(url, plone.getId(), prefix))
+            f = urllib.urlopen('%s/%s/%s' % (url, plone.getId(), prefix))
         new_id = f.read()
         f.close()
     except:
         from sys import exc_info
         info = exc_info()
-        import zLOG; zLOG.LOG('INFO', 0, '', 'generate_id raised exception: %s, %s \n ID server URL: %s' % (info[0], info[1], url))
+        msg = 'generate_id raised exception: {}, {} \n ID server URL: {}'
+        msg = msg.format(info[0], info[1], url)
+        zLOG.LOG('INFO', 0, '', msg)
         raise IDServerUnavailable(_('ID Server unavailable'))
 
     return new_id
 
-def generateUniqueId(context):
-    """ Generate pretty content IDs.
-        - context is used to find portal_type; in case there is no
-          prefix specified for the type, the normalized portal_type is
-          used as a prefix instead.
+
+def get_objects_in_sequence(brain_or_object, ctype, cref):
+    """Return a list of items
+    """
+    obj = api.get_object(brain_or_object)
+    if ctype == "backreference":
+        return get_backreferences(obj, cref)
+    if ctype == "contained":
+        return get_contained_items(obj, cref)
+    raise ValueError("Reference value is mandatory for sequence type counter")
+
+
+def get_backreferences(obj, relationship):
+    """Returns the backreferences
+    """
+    refs = get_backuidreferences(obj, relationship)
+
+    # TODO remove after all ReferenceField get ported to UIDReferenceField
+    # At this moment, there are still some content types that are using the
+    # ReferenceField, so we need to fallback to traditional getBackReferences
+    # for these cases.
+    if not refs:
+        refs = obj.getBackReferences(relationship)
+
+    return refs
+
+def get_contained_items(obj, spec):
+    """Returns a list of (id, subobject) tuples of the current context.
+    If 'spec' is specified, returns only objects whose meta_type match 'spec'
+    """
+    return obj.objectItems(spec)
+
+
+def get_config(context, **kw):
+    """Fetch the config dict from the Bika Setup for the given portal_type
+    """
+    # get the ID formatting config
+    config_map = api.get_bika_setup().getIDFormatting()
+
+    # allow portal_type override
+    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+
+    # check if we have a config for the given portal_type
+    for config in config_map:
+        if config['portal_type'].lower() == portal_type.lower():
+            return config
+
+    # return a default config
+    default_config = {
+        'form': '%s-{seq}' % portal_type.lower(),
+        'sequence_type': 'generated',
+        'prefix': '%s' % portal_type.lower(),
+    }
+    return default_config
+
+
+def get_variables(context, **kw):
+    """Prepares a dictionary of key->value pairs usable for ID formatting
     """
 
-    fn_normalize = getUtility(IFileNameNormalizer).normalize
-    id_normalize = getUtility(IIDNormalizer).normalize
-    prefixes = context.bika_setup.getPrefixes()
+    # allow portal_type override
+    portal_type = kw.get("portal_type") or api.get_portal_type(context)
 
-    year = context.bika_setup.getYearInPrefix() and \
-        DateTime().strftime("%Y")[2:] or ''
-    separator = '-'
-    for e in prefixes:
-        if 'separator' not in e:
-            e['separator'] = ''
-        if e['portal_type'] == context.portal_type:
-            separator = e['separator']
+    # The variables map hold the values that might get into the constructed id
+    variables = {
+        'context': context,
+        'id': api.get_id(context),
+        'portal_type': portal_type,
+        'year': get_current_year(),
+        'parent': api.get_parent(context),
+        'seq': 0,
+    }
 
-    # Analysis Request IDs
-    if context.portal_type == "AnalysisRequest":
-        sample = context.getSample()
-        s_prefix = fn_normalize(sample.getSampleType().getPrefix())
-        sample_padding = context.bika_setup.getSampleIDPadding()
-        ar_padding = context.bika_setup.getARIDPadding()
-        sample_id = sample.getId()
-        sample_number = sample_id.split(s_prefix)[1]
-        ar_number = sample.getLastARNumber()
-        ar_number = ar_number and ar_number + 1 or 1
-        return fn_normalize(
-            ("%s%s" + separator + "R%s") % (s_prefix,
-                          str(sample_number).zfill(sample_padding),
-                          str(ar_number).zfill(ar_padding))
-        )
+    # Augment the variables map depending on the portal type
+    if portal_type == "AnalysisRequest":
+        variables.update({
+            'sampleId': context.getSample().getId(),
+            'sample': context.getSample(),
+        })
 
-    # Sample Partition IDs
-    if context.portal_type == "SamplePartition":
-        # We do not use prefixes.  There are actually codes that require the 'P'.
-        # matches = [p for p in prefixes if p['portal_type'] == 'SamplePartition']
-        # prefix = matches and matches[0]['prefix'] or 'samplepartition'
-        # padding = int(matches and matches[0]['padding'] or '0')
+    elif portal_type == "SamplePartition":
+        variables.update({
+            'sampleId': context.aq_parent.getId(),
+            'sample': context.aq_parent,
+        })
 
-        # at this time the part exists, so +1 would be 1 too many
-        partnr = str(len(context.aq_parent.objectValues('SamplePartition')))
-        # parent id is normalized already
-        return ("%s" + separator + "P%s") % (context.aq_parent.id, partnr)
+    elif portal_type == "Sample":
+        # get the prefix of the assigned sample type
+        sample_id = context.getId()
+        sample_type = context.getSampleType()
+        sampletype_prefix = sample_type.getPrefix()
 
-    if context.bika_setup.getExternalIDServer():
+        date_now = DateTime()
+        sampling_date = context.getSamplingDate()
+        date_sampled = context.getDateSampled()
 
-        # if using external server
+        # Try to get the date sampled and sampling date
+        if sampling_date:
+            samplingDate = DT2dt(sampling_date)
+        else:
+            # No Sample Date?
+            logger.error("Sample {} has no sample date set".format(sample_id))
+            # fall back to current date
+            samplingDate = DT2dt(date_now)
 
-        for d in prefixes:
-            # Sample ID comes from SampleType
-            if context.portal_type == "Sample":
-                prefix = context.getSampleType().getPrefix()
-                padding = context.bika_setup.getSampleIDPadding()
-                new_id = str(idserver_generate_id(context, "%s%s-" % (prefix, year)))
-                if padding:
-                    new_id = new_id.zfill(int(padding))
-                return ('%s%s' + separator + '%s') % (prefix, year, new_id)
-            elif d['portal_type'] == context.portal_type:
-                prefix = d['prefix']
-                padding = d['padding']
-                new_id = str(idserver_generate_id(context, "%s%s-" % (prefix, year)))
-                if padding:
-                    new_id = new_id.zfill(int(padding))
-                return ('%s%s' + separator + '%s') % (prefix, year, new_id)
-        # no prefix; use portal_type
-        # year is not inserted here
-        # portal_type is be normalized to lowercase
-        npt = id_normalize(context.portal_type)
-        new_id = str(idserver_generate_id(context, npt + "-"))
-        return ('%s' + separator + '%s') % (npt, new_id)
+        if date_sampled:
+            dateSampled = DT2dt(date_sampled)
+        else:
+            # No Sample Date?
+            logger.error("Sample {} has no sample date set".format(sample_id))
+            dateSampled = DT2dt(date_now)
 
+        variables.update({
+            'clientId': context.aq_parent.getClientID(),
+            'dateSampled': dateSampled,
+            'samplingDate': samplingDate,
+            'sampleType': sampletype_prefix,
+        })
+
+    return variables
+
+
+def split(string, separator="-"):
+    """ split a string on the given separator
+    """
+    if not isinstance(string, basestring):
+        return []
+    return string.split(separator)
+
+
+def to_int(thing, default=0):
+    """Convert a thing to an integer
+    """
+    try:
+        return int(thing)
+    except (TypeError, ValueError):
+        return default
+
+
+def slice(string, separator="-", start=None, end=None):
+    """Slice out a segment of a string, which is splitted on separator.
+    """
+
+    # split the given string at the given separator
+    segments = split(string, separator)
+
+    # get the start and endposition for slicing
+    length = len(segments)
+    start = to_int(start)
+    end = to_int(end, length)
+
+    # return the separator joined sliced segments
+    sliced_parts = segments[start:end]
+    return separator.join(sliced_parts)
+
+
+def get_current_year():
+    """Returns the current year as a two digit string
+    """
+    return DateTime().strftime("%Y")[2:]
+
+
+def search_by_prefix(portal_type, prefix):
+    """Returns brains which share the same portal_type and ID prefix
+    """
+    catalog = api.get_tool("uid_catalog")
+    brains = catalog({"portal_type": portal_type})
+    # Filter brains with the same ID prefix
+    return filter(lambda brain: api.get_id(brain).startswith(prefix), brains)
+
+
+def get_ids_with_prefix(portal_type, prefix):
+    """Return a list of ids sharing the same portal type and prefix
+    """
+    brains = search_by_prefix(portal_type, prefix)
+    ids = map(api.get_id, brains)
+    return ids
+
+
+def make_storage_key(portal_type, prefix=None):
+    """Make a storage (dict-) key for the number generator
+    """
+    key = portal_type.lower()
+    if prefix:
+        key = "{}-{}".format(key, prefix)
+    return key
+
+
+def get_seq_number_from_id(id, id_template, prefix, **kw):
+    """Return the sequence number of the given ID
+    """
+    separator = kw.get("separator", "-")
+    postfix = id.replace(prefix, "").strip(separator)
+    postfix_segments = postfix.split(separator)
+    seq_number = 0
+    possible_seq_nums = filter(lambda n: n.isalnum(), postfix_segments)
+    if possible_seq_nums:
+        seq_number = possible_seq_nums[-1]
+    seq_number = to_int(seq_number)
+    return seq_number
+
+
+def get_counted_number(context, config, variables, **kw):
+    """Compute the number for the sequence type "Counter"
+    """
+    # This "context" is defined by the user in Bika Setup and can be actually
+    # anything. However, we assume it is something like "sample" or similar
+    ctx = config.get("context")
+
+    # get object behind the context name (falls back to the current context)
+    obj = variables.get(ctx, context)
+
+    # get the counter type, which is either "backreference" or "contained"
+    counter_type = config.get("counter_type")
+
+    # the counter reference is either the "relationship" for
+    # "backreference" or the meta type for contained objects
+    counter_reference = config.get("counter_reference")
+
+    # This should be a list of existing items, including the current context
+    # object
+    seq_items = get_objects_in_sequence(obj, counter_type, counter_reference)
+
+    number = len(seq_items)
+    return number
+
+
+def get_generated_number(context, config, variables, **kw):
+    """Generate a new persistent number with the number generator for the
+    sequence type "Generated"
+    """
+
+    # separator where to split the ID
+    separator = kw.get('separator', '-')
+
+    # allow portal_type override
+    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+
+    # The ID format for string interpolation, e.g. WS-{seq:03d}
+    id_template = config.get("form", "")
+
+    # The split length defines where the variable part of the ID template begins
+    split_length = config.get("split_length", 1)
+
+    # The prefix tempalte is the static part of the ID
+    prefix_template = slice(id_template, separator=separator, end=split_length)
+
+    # get the number generator
+    number_generator = getUtility(INumberGenerator)
+
+    # generate the key for the number generator storage
+    prefix = prefix_template.format(**variables)
+
+    # normalize out any unicode characters like Ö, É, etc. from the prefix
+    prefix = api.normalize_filename(prefix)
+
+    # The key used for the storage
+    key = make_storage_key(portal_type, prefix)
+
+    # Handle flushed storage
+    if key not in number_generator:
+        max_num = 0
+        existing = get_ids_with_prefix(portal_type, prefix)
+        numbers = map(lambda id: get_seq_number_from_id(id, id_template, prefix), existing)
+        # figure out the highest number in the sequence
+        if numbers:
+            max_num = max(numbers)
+        # set the number generator
+        logger.info("*** SEEDING Prefix '{}' to {}".format(prefix, max_num))
+        number_generator.set_number(key, max_num)
+
+    if not kw.get("dry_run", False):
+        # Generate a new number
+        # NOTE Even when the number exceeds the given ID sequence format,
+        #      it will overflow gracefully, e.g.
+        #      >>> {sampleId}-R{seq:03d}'.format(sampleId="Water", seq=999999)
+        #      'Water-R999999‘
+        number = number_generator.generate_number(key=key)
     else:
+        # => This allows us to "preview" the next generated ID in the UI
+        # TODO Show the user the next generated number somewhere in the UI
+        number = number_generator.get(key, 1)
+    return number
 
-        # No external id-server.
 
-        def next_id(prefix):
-            # normalize before anything
-            prefix = fn_normalize(prefix)
-            plone = context.portal_url.getPortalObject()
-            # grab the first catalog we are indexed in.
-            at = getToolByName(plone, 'archetype_tool')
-            if context.portal_type in at.catalog_map:
-                catalog_name = at.catalog_map[context.portal_type][0]
-            else:
-                catalog_name = 'portal_catalog'
-            catalog = getToolByName(plone, catalog_name)
+def generateUniqueId(context, **kw):
+    """ Generate pretty content IDs.
+    """
 
-            # get all IDS that start with prefix
-            # this must specifically exclude AR IDs (two -'s)
-            rr = re.compile("^"+prefix+separator+"[\d+]+$")
-            ids = [int(i.split(prefix+separator)[1]) \
-                   for i in catalog.Indexes['id'].uniqueValues() \
-                   if rr.match(i)]
+    # get the config for this portal type from the system setup
+    config = get_config(context, **kw)
 
-            #plone_tool = getToolByName(context, 'plone_utils')
-            #if not plone_tool.isIDAutoGenerated(l.id):
-            ids.sort()
-            _id = ids and ids[-1] or 0
-            new_id = _id + 1
-            return str(new_id)
+    # get the variables map for later string interpolation
+    variables = get_variables(context, **kw)
 
-        for d in prefixes:
-            if context.portal_type == "Sample":
-                # Special case for Sample IDs
-                prefix = fn_normalize(context.getSampleType().getPrefix())
-                padding = context.bika_setup.getSampleIDPadding()
-                sequence_start = context.bika_setup.getSampleIDSequenceStart()
-                new_id = next_id(prefix+year)
-                # If sequence_start is greater than new_id. Set
-                # sequence_start as new_id. (Jira LIMS-280)
-                if sequence_start > int(new_id):
-                    new_id = str(sequence_start)
-                if padding:
-                    new_id = new_id.zfill(int(padding))
-                return ('%s%s' + separator + '%s') % (prefix, year, new_id)
-            elif d['portal_type'] == context.portal_type:
-                prefix = d['prefix']
-                padding = d['padding']
-                sequence_start = d.get("sequence_start", None)
-                new_id = next_id(prefix+year)
-                # Jira-tracker LIMS-280
-                if sequence_start and int(sequence_start) > int(new_id):
-                    new_id = str(sequence_start)
-                if padding:
-                    new_id = new_id.zfill(int(padding))
-                return ('%s%s' + separator + '%s') % (prefix, year, new_id)
+    # The new generate sequence number
+    number = 0
 
-        # no prefix; use portal_type
-        # no year inserted here
-        # use "IID" normalizer, because we want portal_type to be lowercased.
-        prefix = id_normalize(context.portal_type);
-        new_id = next_id(prefix)
-        return ('%s' + separator + '%s') % (prefix, new_id)
+    # get the sequence type from the global config
+    sequence_type = config.get("sequence_type", "generated")
+
+    # Sequence Type is "Counter", so we use the length of the backreferences or
+    # contained objects of the evaluated "context" defined in the config
+    if sequence_type == 'counter':
+        number = get_counted_number(context, config, variables, **kw)
+
+    # Sequence Type is "Generated", so the ID is constructed according to the
+    # configured split length
+    if sequence_type == 'generated':
+        number = get_generated_number(context, config, variables, **kw)
+
+    # store the new sequence number to the variables map for str interpolation
+    variables["seq"] = number
+
+    # The ID formatting template from user config, e.g. {sampleId}-R{seq:02d}
+    id_template = config.get("form", "")
+
+    # Interpolate the ID template
+    new_id = id_template.format(**variables)
+    normalized_id = api.normalize_filename(new_id)
+    logger.info("generateUniqueId: {}".format(normalized_id))
+
+    return normalized_id
 
 
 def renameAfterCreation(obj):
+    """Rename the content after it was created/added
     """
-    Renaming object right after it is created...
-    In some cases we may want to override generate_id function. To do this,
-    an adapter must be added (providing bika.lims.interfaces.IIdServer) for
-    that content type.
-    """
+    # Check if the _bika_id was already set
+    bika_id = getattr(obj, "_bika_id", None)
+    if bika_id is not None:
+        return bika_id
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
     # The id returned should be normalized already
@@ -208,10 +395,23 @@ def renameAfterCreation(obj):
     # get new_id from adapter.
     for name, adapter in getAdapters((obj, ), IIdServer):
         if new_id:
-            logger.warn(('More than one ID Generator Adapter found for\
-                            content type -> %s') % (obj.portal_type))
+            logger.warn(('More than one ID Generator Adapter found for'
+                         'content type -> %s') % obj.portal_type)
         new_id = adapter.generate_id(obj.portal_type)
     if not new_id:
         new_id = generateUniqueId(obj)
-    obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
+
+    # TODO: This is a naive check just in current folder
+    # -> this should check globally for duplicate objects with same prefix
+    # N.B. a check like `search_by_prefix` each time would probably slow things
+    # down too much!
+    # -> A solution could be to store all IDs with a certain prefix in a storage
+    parent = api.get_parent(obj)
+    if new_id in parent.objectIds():
+        # XXX We could do the check in a `while` loop and generate a new one.
+        raise KeyError("The ID {} is already taken in the path {}".format(
+            new_id, api.get_path(parent)))
+    # rename the object to the new id
+    parent.manage_renameObject(obj.id, new_id)
+
     return new_id

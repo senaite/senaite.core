@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
-# This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """ GeneXpert
 """
@@ -127,9 +127,8 @@ class GeneXpertParser(InstrumentCSVResultsFileParser):
         return the code error -1
         """
         sline = line.split(SEPARATOR)
-        # If a line has only one column, then it is a Section or Subsection
-        # header.
-        if len(sline) == 1:
+
+        if is_header(sline):
             return self._handle_header(sline)
         # If it is not an header it contains some data. but we need data only
         # from the RESULT TABLE section.
@@ -249,6 +248,8 @@ class GeneXpertParser(InstrumentCSVResultsFileParser):
         result = ''
         if keyword:
             result = re.sub(r"\W", "", keyword)
+            # Remove underscores ('_') too.
+            result = re.sub(r"_", "", result)
         return result
 
     def _convert_result(self, value):
@@ -281,3 +282,18 @@ class GeneXpertImporter(AnalysisResultsImporter):
                                          allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)
+
+
+def is_header(line):
+    """
+    If a line has only one column, then it is a Section or Subsection
+    header.
+    :param line: Line to check
+    :return: boolean -If line is header
+    """
+    if len(line) == 1:
+        return True
+    for idx, val in enumerate(line):
+        if idx > 0 and val:
+            return False
+    return True

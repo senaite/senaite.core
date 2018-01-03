@@ -1,13 +1,16 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import sys
 import inspect
 
-#from generic import xml
+# from generic import xml
 from agilent.masshunter import quantitative
+from abbott.m2000rt import m2000rt
 from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
@@ -35,6 +38,7 @@ from nuclisens import easyq
 from genexpert import genexpert
 
 __all__ = ['abaxis.vetscan.vs2',
+           'abbott.m2000rt.m2000rt',
            'agilent.masshunter.quantitative',
            'alere.pima.beads',
            'alere.pima.cd4',
@@ -44,7 +48,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120',
-           #'generic.xml',
+           # 'generic.xml',
            'horiba.jobinyvon.icp',
            'rigaku.supermini.wxrf',
            'rochecobas.taqman.model48',
@@ -69,6 +73,7 @@ __all__ = ['abaxis.vetscan.vs2',
 # interface
 PARSERS = [
            ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
+           ['abbott.m2000rt.m2000rt', 'Abbottm2000rtTSVParser'],
            ['agilent.masshunter.quantitative', 'MasshunterQuantCSVParser'],
            ['alere.pima.beads', 'AlerePimaSLKParser'],
            ['alere.pima.cd4', 'AlerePimacd4SLKParser'],
@@ -95,16 +100,17 @@ PARSERS = [
            ['tescan.tima.tima', 'TimaCSVParser'],
            ['thermoscientific.multiskan.go', 'ThermoScientificMultiskanGOCSVParser'],
            ['myself.myinstrument', 'MyInstrumentCSVParser'],
-           ['nuclisens.easyq', 'EasyQParser'],
+           ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
            ]
 
+
 def getExim(exim_id):
     currmodule = sys.modules[__name__]
-    members = [obj for name, obj in inspect.getmembers(currmodule) \
-               if hasattr(obj, '__name__') \
+    members = [obj for name, obj in inspect.getmembers(currmodule)
+               if hasattr(obj, '__name__')
                and obj.__name__.endswith(exim_id)]
-    return members[0] if len(members)>0 else None
+    return members[0] if len(members) > 0 else None
 
 
 def getParserName(exim_id):

@@ -1,19 +1,31 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
+import unittest
 
 from Products.validation import validation as validationService
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
-from plone.app.testing import login
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-import unittest
+from plone.app.testing import login
+from plone.app.testing import setRoles
+
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from bika.lims.tests.base import BikaFunctionalTestCase
 
 
 class Tests(BikaFunctionalTestCase):
 
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        super(Tests, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
+        login(self.portal, TEST_USER_NAME)
 
     def test_UniqueFieldValidator(self):
         login(self.portal, TEST_USER_NAME)
@@ -447,5 +459,5 @@ class Tests(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Tests))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

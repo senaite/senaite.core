@@ -1,0 +1,8 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="bika">
+
+  <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
+  <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
+
+</configure>

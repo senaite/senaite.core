@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_labcontacts import LabContactsView
@@ -42,7 +44,7 @@ class LabContactsView(LabContactsView):
             'title': _('Active'),
             'contentFilter': {'inactive_state': 'active'},
             'transitions': [{'id': 'empty'}, ],  # No transitions here
-            # 'custom_actions': [{'id': 'assign_labcontacts_button',
+            # 'custom_transitions': [{'id': 'assign_labcontacts_button',
             #                     'title': _('Assign')}, ],
             'columns': ['Fullname',
                         'BusinessPhone',

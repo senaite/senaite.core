@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from .addressfield import AddressField
 from .datetimefield import DateTimeField
@@ -12,4 +14,5 @@ from .referenceresultsfield import ReferenceResultsField
 from .historyawarereferencefield import HistoryAwareReferenceField
 from .coordinatefield import CoordinateField
 from .reflexrulefield import ReflexRuleField
+from .proxyfield import ProxyField
 from .uidreferencefield import UIDReferenceField

@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
@@ -39,9 +41,8 @@ class AnalysisCategoriesView(BikaSetupItemsView):
             },
             'SortKey': {
                 'title': _('Sort Key'),
-                'index': 'sortKey',
                 'attr': 'getSortKey',
-                'toggle': False
+                'sortable': False
             },
         }
         for rs in self.review_states:

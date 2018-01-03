@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Bika LIMS
+# This file is part of SENAITE.CORE
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """The lab staff
 """
@@ -48,26 +48,6 @@ schema = Person.schema.copy() + atapi.Schema((
                              "Upload a scanned signature to be used on printed analysis "
                              "results reports. Ideal size is 250 pixels wide by 150 high"),
                      )),
-      # TODO: Department'll be delated
-    atapi.ReferenceField('Department',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Department',),
-        relationship = 'LabContactDepartment',
-        vocabulary = 'getDepartments',
-        referenceClass = HoldingReference,
-        widget = atapi.ReferenceWidget(
-            visible=False,
-            checkbox_bound = 0,
-            label=_("Department"),
-            description=_("The laboratory department"),
-        ),
-    ),
-    atapi.ComputedField('DepartmentTitle',
-                        expression="context.getDepartment() and context.getDepartment().Title() or ''",
-                        widget=atapi.ComputedWidget(
-                            visible=False,
-                        )),
     atapi.ReferenceField('Departments',
         		required = 0,
         		vocabulary_display_path_bound = sys.maxint,
@@ -122,14 +102,6 @@ class LabContact(Contact):
         """ check if contact has user """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
-
-    @deprecated('[1612] Use getDepartments instead')
-    def getDepartment(self):
-        """
-        This function is a mirror for getDepartments to maintain the
-        compability with the old version.
-        """
-        return self.getDepartments()[0] if self.getDepartments() else None
 
     def getDepartments_voc(self):
         """

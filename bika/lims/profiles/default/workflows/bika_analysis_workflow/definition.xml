@@ -1,0 +1,467 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_analysis_workflow"
+             title="Bika Analysis Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="sample_registered"
+             manager_bypass="False"
+             i18n:domain="bika">
+
+  <permission>BIKA: Cancel and reinstate</permission>
+  <permission>BIKA: Edit Field Results</permission>
+  <permission>BIKA: Edit Results</permission>
+  <permission>BIKA: Manage Invoices</permission>
+  <permission>BIKA: Preserve Sample</permission>
+  <permission>BIKA: Receive Sample</permission>
+  <permission>BIKA: Results not requested</permission>
+  <permission>BIKA: Retract</permission>
+  <permission>BIKA: View Results</permission>
+  <permission>Review portal content</permission>
+
+  <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
+    <exit-transition transition_id="attach" />
+    <exit-transition transition_id="retract" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Retract" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="not_requested" title="Not requested" i18n:attributes="title">
+    <exit-transition transition_id="verify" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="published" title="Published" i18n:attributes="title">
+    <exit-transition transition_id="publish" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="retracted" title="Retracted" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="sample_due" title="Sample due" i18n:attributes="title">
+    <exit-transition transition_id="import" />
+    <exit-transition transition_id="receive" />
+    <exit-transition transition_id="submit" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+   </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="True">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="True">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="sample_prep" title="Sample preparation" i18n:attributes="title">
+    <description>A sample preparation workflow is in progress</description>
+    <exit-transition transition_id="sample_prep_complete" />
+  </state>
+
+  <state state_id="sample_received" title="Received" i18n:attributes="title">
+    <exit-transition transition_id="submit" />
+    <exit-transition transition_id="sample_prep" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="sample_registered" title="Registered" i18n:attributes="title">
+    <exit-transition transition_id="sampling_workflow" />
+    <exit-transition transition_id="no_sampling_workflow" />
+    <exit-transition transition_id="reject" />
+  </state>
+
+  <state state_id="sampled" title="Sampled" i18n:attributes="title">
+    <exit-transition transition_id="to_be_preserved" />
+    <exit-transition transition_id="sample_due" />
+    <exit-transition transition_id="reject" />
+  </state>
+
+  <state state_id="to_be_preserved" title="To be preserved" i18n:attributes="title">
+    <exit-transition transition_id="preserve" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Manage Invoices" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Results not requested" acquired="False">
+    </permission-map>
+  </state>
+
+  <state state_id="to_be_sampled" title="To be sampled" i18n:attributes="title">
+    <exit-transition transition_id="sample" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+  </state>
+
+  <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+    <exit-transition transition_id="verify" />
+    <exit-transition transition_id="retract" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Verifier</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Review portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Retract" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="verified" title="Verified" i18n:attributes="title">
+    <exit-transition transition_id="publish" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="rejected" title="Rejected" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Review portal content" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Retract" acquired="False">
+    </permission-map>
+  </state>
+
+  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Add attachment</action>
+    <guard>
+      <guard-expression>python:here.guard_attach_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Import</action>
+    <guard>
+      <guard-permission>BIKA: Import analysis</guard-permission>
+      <guard-expression>python:here.guard_import_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="no_sampling_workflow" title="No sampling workflow" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">No sampling workflow</action>
+    <guard>
+      <guard-permission>BIKA: Add Analysis</guard-permission>
+    </guard>
+  </transition>
+
+  <transition transition_id="preserve" title="Preserve" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Preserve</action>
+    <guard>
+      <guard-permission>BIKA: Preserve Sample</guard-permission>
+    </guard>
+  </transition>
+
+  <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Publish</action>
+    <guard>
+      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-expression>python:here.guard_publish_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="receive" title="Receive sample" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Receive sample</action>
+    <guard>
+      <guard-permission>BIKA: Receive Sample</guard-permission>
+      <guard-expression>python:here.guard_receive_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="retract" title="Retract" new_state="retracted" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Retract</action>
+    <guard>
+      <guard-permission>BIKA: Retract</guard-permission>
+      <guard-expression>python:here.guard_retract_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="sample" title="Sample" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sample</action>
+    <guard>
+      <guard-permission>BIKA: Sample Sample</guard-permission>
+      <guard-expression>python:here.guard_sample_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="sample_due" title="Sample due" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sample due</action>
+    <guard>
+    </guard>
+  </transition>
+
+  <transition transition_id="sample_prep" title="Sample preparation" new_state="sample_prep" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sample preparation</action>
+    <guard>
+      <guard-expression>python:here.guard_sample_prep_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="sample_prep_complete" title="Sample preparation complete" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sample preparation complete</action>
+    <guard>
+      <guard-expression>python:here.guard_sample_prep_complete_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="sampling_workflow" title="Sampling workflow" new_state="to_be_sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <guard>
+      <guard-permission>BIKA: Add Analysis</guard-permission>
+    </guard>
+  </transition>
+
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Submit for verification</action>
+    <guard>
+      <guard-expression>python:here.guard_submit_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="to_be_preserved" title="To be preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">To be preserved</action>
+    <guard>
+    </guard>
+  </transition>
+
+  <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Verify</action>
+    <guard>
+      <guard-permission>BIKA: Verify</guard-permission>
+      <guard-expression>python:here.guard_verify_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reject</action>
+    <guard>
+      <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+      <guard-permission>Request review</guard-permission>
+      <guard-permission>Review portal content</guard-permission>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

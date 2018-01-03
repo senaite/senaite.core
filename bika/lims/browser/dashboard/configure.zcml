@@ -11,4 +11,12 @@
         layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="dashboard_view_permissions_update"
+      class="bika.lims.browser.dashboard.dashboard.DashboardViewPermissionUpdate"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

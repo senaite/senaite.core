@@ -1,17 +1,23 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api, logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.interfaces import IARAnalysesField, IAnalysisService, IAnalysis
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
 from plone.api.portal import get_tool
+from zope.interface import implements
 
 
 class ARAnalysesField(ObjectField):
@@ -20,6 +26,7 @@ class ARAnalysesField(ObjectField):
     get() returns the list of Analyses contained inside the AnalysesRequest
     set() converts a sequence of UIDS to Analysis instances in the AR
     """
+    implements(IARAnalysesField)
 
     _properties = Field._properties.copy()
     _properties.update({
@@ -91,13 +98,13 @@ class ARAnalysesField(ObjectField):
 
     security.declarePrivate('set')
 
-    def set(self, instance, service_uids, prices=None, specs=None, **kwargs):
+    def set(self, instance, items, prices=None, specs=None, **kwargs):
         """Set the 'Analyses' field value, by creating and removing Analysis
         objects from the AR.
 
-        service_uids is a list:
-            The UIDs of all services which should exist in the AR.  If a service
-            is not included here, the corrosponding Analysis will be removed.
+        items is a list that contains the items to be set:
+            The list can contain Analysis objects/brains, AnalysisService
+            objects/brains and/or Analysis Service uids.
 
         prices is a dictionary:
             key = AnalysisService UID
@@ -108,10 +115,15 @@ class ARAnalysesField(ObjectField):
             value = dictionary: defined in ResultsRange field definition
 
         """
-        if not service_uids:
+        if not items:
             return
 
-        assert type(service_uids) in (list, tuple)
+        assert isinstance(items,
+                          (list, tuple)), "items must be a list or a tuple"
+
+        # Convert the items list to a list of service uids and remove empties
+        service_uids = map(self._get_service_uid, items)
+        service_uids = filter(None, service_uids)
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
         workflow = getToolByName(instance, 'portal_workflow')
@@ -214,6 +226,28 @@ class ARAnalysesField(ObjectField):
         bsc = get_tool('bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService')
         return [proxy.getObject() for proxy in brains]
+
+    def _get_service_uid(self, item):
+        if api.is_uid(item):
+            return item
+
+        if not api.is_object(item):
+            logger.warn("Not an UID: {}".format(item))
+            return None
+
+        obj = api.get_object(item)
+        if IAnalysisService.providedBy(obj):
+            return api.get_uid(obj)
+
+        if IAnalysis.providedBy(obj) and IRequestAnalysis.providedBy(obj):
+            return obj.getServiceUID()
+
+        # An object, but neither an Analysis nor AnalysisService?
+        # This should never happen.
+        msg = "ARAnalysesField doesn't accept objects from {} type. " \
+              "The object will be dismissed."
+        logger.warn(msg.format(api.get_portal_type(obj)))
+        return None
 
 
 registerField(ARAnalysesField,

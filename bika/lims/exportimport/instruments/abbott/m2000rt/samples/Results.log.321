@@ -1,0 +1,228 @@
+﻿=================================================================
+                       Plate Information                         
+=================================================================
+Plate Name                	123456789	
+Run Name                  		
+Plate Type                	PCRPlate	
+Plate Status              	Completed	
+Archive Status              		
+Plate Comment             		
+Operator Id SE            		
+Operator Id RA            		
+Operator Id AD            		
+Operator Id Release       		
+Time Stamp SE End         		
+Time Stamp RA Start       		
+Time Stamp RA End         		
+Time Stamp AD Start       	2012/11/23 12:47:09 PM	
+Time Stamp AD End         	2012/11/23 03:49:09 PM	
+SE Serial Num             		
+RA Serial Num             		
+AD Serial Num             	123456789	
+SE SW Version             		
+RA SW Version             		
+AD SW Version             	0.0.0.0	
+SE App Id                 		
+SE App Version            		
+SE App Name               		
+SE App Type               		
+RA App Id                 		
+RA App Version            		
+RA App Name               		
+RA App Type               		
+AD App Id                 	0.6mL HIV	
+AD App Version            	3.00	
+AD App Name               	0.6ml HIV-1 RNA	
+AD App Type               	m2000	
+GPR Name                  		
+GPR Lot Number            	12345678	
+GPR Exp Date              	July 2015	
+Well Volume               	100	
+From Deep Well Plate Name 		
+=========================================================================
+        Assay [HIV0.6ml] / [3.00] Data Reduction Information
+=========================================================================
+Target Dye [FAM] parameters:
+DF3 = 1
+DF4 = 6
+DF5 = 1.25
+DF6 = 0.015
+DF7 = 3
+DF8 = 7
+DF9 = 0.3164
+DF10 = [1  -1  0.375  -0.0625  0.0039]
+DF11 = 6
+DF12 = 0.005
+DF13 = 0.50
+DF14 = 5
+DF15 = 0
+DF16 = 4
+DF17 = 6
+DR1 = True
+DR2 = 2.5
+DR3 = 0.1
+DR4 = 0.7
+DR5 = 0.1
+DR6 = 2
+DR7 = 5
+DR8 = 0
+DR9 = 20
+DR10 = Ct
+DR11 = 0.07
+DR12 = 6
+DR13 = 1
+DR14 = 0.005
+DR15 = 4
+DR16 = 0.6
+DR17 = Ref
+DR18 = (Undefined)
+DR19 = True
+DR20 = True
+DR21 = (Undefined)
+DR22 = (Undefined)
+DR23 = (Undefined)
+DR24 = (Undefined)
+Location	Well	CN	Ct	FCN	MR	FCNA	FCNB	MRB	Width	Start	End	Slope	Offset	Std	Final dRn	Tags	
+A1	1	-1.00	-1.00	29.02	0.005	-1.00	29.02	0.005	-1.00	1	37	0.004604	1.141	0.007935	0.016		
+A2	2	22.82	22.82	25.32	0.364	26.78	25.32	0.364	3.12	1	19	0.005494	1.056	0.002152	11.021		
+A3	3	15.84	15.84	18.39	0.394	19.73	18.39	0.394	3.02	1	12	0.005592	1.046	0.003773	13.480		
+A4	4	24.67	24.67	27.00	0.362	28.46	27.00	0.362	3.06	1	21	0.005060	1.076	0.001948	9.397		
+A5	5	-1.00	-1.00	10.80	0.002	-1.00	10.80	0.002	-1.00	1	37	0.005287	1.107	0.006071	0.003		
+A6	6	-1.00	-1.00	7.55	0.003	-1.00	7.55	0.003	-1.00	1	37	0.004474	1.098	0.007636	-0.006		
+A7	7	-1.00	-1.00	6.96	0.002	-1.00	6.96	0.002	-1.00	1	37	0.005112	1.055	0.005394	0.001		
+A8	8	-1.00	-1.00	10.46	0.003	-1.00	10.46	0.003	-1.00	1	37	0.005820	1.086	0.006572	-0.005		
+A9	9	-1.00	29.39	29.85	0.066	-1.00	29.85	0.066	-1.00	1	25	0.006314	1.028	0.003975	0.495		
+A10	10	-1.00	-1.00	5.94	0.002	-1.00	12.54	0.002	-1.00	1	37	0.005557	1.034	0.007055	-0.004		
+A11	11	15.42	15.42	17.93	0.387	19.30	17.93	0.387	3.05	1	12	0.006948	1.036	0.003131	13.589		
+A12	12	28.21	28.21	29.79	0.182	32.24	29.79	0.182	3.13	1	24	0.005966	1.046	0.002929	2.040		
+B1	13	-1.00	-1.00	3.04	0.012	-1.00	12.59	0.002	-1.00	1	37	0.005241	1.004	0.012995	-0.007		
+B2	14	-1.00	-1.00	33.22	0.002	-1.00	33.22	0.002	-1.00	1	37	0.005253	1.025	0.007286	0.002		
+B3	15	20.11	20.11	22.53	0.382	23.92	22.53	0.382	3.07	1	16	0.008389	1.011	0.005038	12.942		
+B4	16	-1.00	-1.00	7.64	0.002	-1.00	7.64	0.002	-1.00	1	37	0.005427	1.025	0.007901	0.001		
+B5	17	-1.00	-1.00	10.04	0.002	-1.00	10.04	0.002	-1.00	1	37	0.005304	0.999	0.005812	0.004		
+B6	18	26.34	26.34	28.35	0.289	30.14	28.35	0.289	3.03	1	23	0.006936	1.044	0.001565	5.085		
+B7	19	-1.00	-1.00	10.96	0.002	-1.00	10.96	0.002	-1.00	1	37	0.004680	1.038	0.005850	0.000		
+B8	20	26.29	26.29	28.21	0.291	29.99	28.21	0.291	2.99	1	23	0.006154	0.999	0.001693	5.082		
+B9	21	-1.00	-1.00	11.59	0.002	-1.00	11.59	0.002	-1.00	1	37	0.005007	0.989	0.005939	0.002		
+B10	22	-1.00	-1.00	10.72	0.003	-1.00	10.72	0.003	-1.00	1	37	0.004877	0.970	0.007847	-0.001		
+B11	23	23.94	23.94	26.37	0.315	28.03	26.37	0.315	3.16	1	20	0.006249	0.998	0.001287	7.728		
+B12	24	29.41	29.41	30.45	0.102	33.75	30.45	0.102	3.25	1	25	0.005556	1.022	0.004328	0.842		
+Control Dye [VIC] parameters:
+DF3 = 1
+DF4 = 6
+DF5 = 1.25
+DF6 = 0.015
+DF7 = 3
+DF8 = 7
+DF9 = 0.3164
+DF10 = [1  -1  0.375  -0.0625  0.0039]
+DF11 = 6
+DF12 = 0.005
+DF13 = 0.50
+DF14 = 5
+DF15 = 0
+DF16 = 4
+DF17 = 6
+DR1 = True
+DR2 = 2.5
+DR3 = 0.3
+DR4 = 0.3
+DR5 = 0.155
+DR6 = 2
+DR7 = 5
+DR8 = 0
+DR9 = 20
+DR10 = Ct
+DR11 = 0.155
+DR12 = 6
+DR13 = 1
+DR14 = 0.005
+DR15 = 4
+DR16 = 0.6
+DR17 = Ref
+DR18 = (Undefined)
+DR19 = True
+DR20 = True
+DR21 = (Undefined)
+DR22 = (Undefined)
+DR23 = (Undefined)
+DR24 = (Undefined)
+Location	Well	CN	Ct	FCN	MR	FCNA	FCNB	MRB	Width	Start	End	Slope	Offset	Std	Final dRn	Tags	
+A1	1	20.61	20.61	20.37	0.261	22.31	20.37	0.261	3.38	1	14	0.001845	0.778	0.000869	1.703		
+A2	2	20.74	20.74	20.50	0.256	22.47	20.50	0.256	3.42	1	14	0.001713	0.792	0.001740	1.654		
+A3	3	20.59	20.59	20.27	0.249	22.27	20.27	0.249	3.42	1	14	0.001973	0.779	0.001928	1.869		
+A4	4	20.81	20.81	20.56	0.256	22.52	20.56	0.256	3.41	1	14	0.001595	0.765	0.000844	1.621		
+A5	5	20.59	20.59	20.34	0.253	22.32	20.34	0.253	3.45	1	14	0.001703	0.757	0.001255	1.635		
+A6	6	20.73	20.73	20.45	0.250	22.45	20.45	0.250	3.43	1	14	0.001600	0.745	0.000605	1.840		
+A7	7	20.64	20.64	20.37	0.250	22.37	20.37	0.250	3.44	1	14	0.001685	0.741	0.000889	1.616		
+A8	8	20.65	20.65	20.36	0.253	22.34	20.36	0.253	3.40	1	14	0.001761	0.733	0.000893	1.619		
+A9	9	20.71	20.71	20.48	0.254	22.46	20.48	0.254	3.44	1	14	0.001792	0.728	0.000670	1.659		
+A10	10	20.81	20.81	20.59	0.255	22.56	20.59	0.255	3.46	1	14	0.001831	0.736	0.000912	1.689		
+A11	11	20.60	20.60	20.38	0.242	22.42	20.38	0.242	3.55	1	14	0.001724	0.714	0.000948	2.053		
+A12	12	20.88	20.88	20.75	0.257	22.71	20.75	0.257	3.53	1	14	0.001791	0.725	0.001268	1.814		
+B1	13	21.32	21.32	21.24	0.257	23.20	21.24	0.257	3.52	1	14	0.000750	0.753	0.003392	1.801		
+B2	14	21.24	21.24	21.09	0.258	23.04	21.09	0.258	3.51	1	14	0.001856	0.730	0.000830	1.762		
+B3	15	21.58	21.58	21.38	0.261	23.32	21.38	0.261	3.42	1	15	0.001902	0.740	0.001072	1.835		
+B4	16	22.13	22.13	21.91	0.254	23.89	21.91	0.254	3.45	1	15	0.001751	0.719	0.000715	1.636		
+B5	17	20.75	20.75	20.50	0.253	22.48	20.50	0.253	3.45	1	14	0.001899	0.720	0.000732	1.649		
+B6	18	20.91	20.91	20.67	0.251	22.66	20.67	0.251	3.45	1	14	0.001791	0.718	0.000642	1.592		
+B7	19	20.76	20.76	20.51	0.252	22.50	20.51	0.252	3.43	1	14	0.001520	0.725	0.001127	1.635		
+B8	20	20.94	20.94	20.71	0.254	22.69	20.71	0.254	3.46	1	14	0.001548	0.726	0.001511	1.635		
+B9	21	20.92	20.92	20.73	0.256	22.69	20.73	0.256	3.46	1	14	0.001656	0.694	0.001044	1.714		
+B10	22	21.16	21.16	20.99	0.259	22.94	20.99	0.259	3.47	1	14	0.001889	0.706	0.001068	1.778		
+B11	23	21.01	21.01	20.91	0.259	22.86	20.91	0.259	3.54	1	14	0.001931	0.699	0.001778	1.861		
+B12	24	20.97	20.97	20.90	0.259	22.85	20.90	0.259	3.57	1	14	0.001929	0.703	0.001371	1.884		
+=======================================================================
+                 Assay Calibration Information (Stored Curve)
+=======================================================================
+Assay Name                        	HIV0.6ml
+Assay Lot Number                  	123456
+Assay Exp. Date                   	2013/11/15
+Calibration Status                	ACTIVE
+Calibration Time                  	2013/01/21 04:37:05 PM
+Calibrator Material Name          	0123456
+Calibrator Material Exp. Date     	2014/01/21
+Error Description                 	
+Calibration Type                  	Quantitative
+Units                             	log(base unit)
+Calibration Curve Parameters:     
+     Model 	Linear Regression
+     Slope [-2.64,-3.84] 	-3.32659932659933
+     Offset [29.32,37.32] 	32.416734006734
+     Median Calibrator IC Cycle Number 	20.725
+Calibrator Information:           
+     Level	ID	NominalConc	MedianResp	Rep_Resp	Rep_Result	
+     Cal-1	HIV_CALA	2.96	22.57	22.28	1115	
+     Cal-1	HIV_CALA	2.96	22.57	22.61	887	
+     Cal-1	HIV_CALA	2.96	22.57	22.57	912	
+     Cal-2	HIV_CALB	5.93	12.69	12.69	851138	
+     Cal-2	HIV_CALB	5.93	12.69	12.75	816514	
+     Cal-2	HIV_CALB	5.93	12.69	12.55	937746	
+=================================================================
+                      Result Information                         
+=================================================================
+Location	Well	Status	SampleId	SampleType	ASRId	ASRLotNumber	ASRExpDate	SampleRackPosition	SampleRackBarcode	SampleTubeLocation	FromDeepWellLocation	AssayName	AssayId	AssayVersion	AssayCalibrationTime	SampleStatus	ResultStatus	Flags	Comment	ErrorCode	ErrorDescription	ICResponse	InstrumentResponse	FinalResult	ReportedResult	InvariantReportedResult	Interpretation	CalName	CalLotNumber	CalExpDate	CalConcentration	ControlName	ControlLotNumber	ControlExpDate	ControlConcentration	ControlRangeMin	ControlRangeMax	
+A1	1	Valid	HIV_NEG	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.61	-1.00		Not detected	Not detected						Neg-1	0123	2015/01/11				
+A2	2	Valid	HIV_LOPOS	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.74	22.82	767	767 Copies / mL	767 Copies / mL						Pos-1	0123	2015/01/11	2.94	155	4,898	
+A3	3	Valid	HIV_HIPOS	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.59	15.84	96181	96,181 Copies / mL	96181 Copies / mL						Pos-2	0123	2015/01/11	4.89	13,804	436,516	
+A4	4	Valid	AAAAAAAA	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.81	24.67	213	213 Copies / mL	213 Copies / mL												
+A5	5	Valid	BBBBBBBB	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.59	-1.00		Not detected	Not detected	Target not detected											
+A6	6	Valid	CCCCCCCC	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.73	-1.00		Not detected	Not detected	Target not detected											
+A7	7	Valid	DDDDDDDD	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.64	-1.00		Not detected	Not detected	Target not detected											
+A8	8	Valid	EEEEEEEE	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.65	-1.00		Not detected	Not detected	Target not detected											
+A9	9	Valid	FFFFFFFF	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.71	-1.00		Not detected	Not detected	Target not detected											
+A10	10	Valid	GGGGGGGG	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.81	-1.00		Not detected	Not detected	Target not detected											
+A11	11	Valid	HHHHHHHH	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.60	15.42	128630	128,630 Copies / mL	128630 Copies / mL												
+A12	12	Valid	IIIIIIII	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.88	28.21	18	< 40 Copies / mL	< 40 Copies / mL	Detected											
+B1	13	Valid	JJJJJJJJ	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.32	-1.00		Not detected	Not detected	Target not detected											
+B2	14	Valid	KKKKKKKK	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.24	-1.00		Not detected	Not detected	Target not detected											
+B3	15	Valid	LLLLLLLL	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.58	20.11	5006	5,006 Copies / mL	5006 Copies / mL												
+B4	16	Valid	MMMMMMMM	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					22.13	-1.00		Not detected	Not detected	Target not detected											
+B5	17	Valid	NNNNNNNN	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.75	-1.00		Not detected	Not detected	Target not detected											
+B6	18	Valid	OOOOOOOO	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.91	26.34	67	67 Copies / mL	67 Copies / mL												
+B7	19	Valid	PPPPPPPP	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.76	-1.00		Not detected	Not detected	Target not detected											
+B8	20	Valid	QQQQQQQQ	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.94	26.29	69	69 Copies / mL	69 Copies / mL												
+B9	21	Valid	RRRRRRRR	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.92	-1.00		Not detected	Not detected	Target not detected											
+B10	22	Valid	SSSSSSSS	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.16	-1.00		Not detected	Not detected	Target not detected											
+B11	23	Valid	TTTTTTTT	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.01	23.94	353	353 Copies / mL	353 Copies / mL												
+B12	24	Valid	UUUUUUUU	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.97	29.41	8	< 40 Copies / mL	< 40 Copies / mL	Detected											

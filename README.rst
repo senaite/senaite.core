@@ -1,51 +1,141 @@
-Bika LIMS Evo
-=============
+.. figure:: https://raw.githubusercontent.com/senaite/senaite.core/master/bika/lims/skins/bika/senaite-core-logo.png
+   :width: 500px
+   :alt: senaite.core
+   :align: center
 
-Bika LIMS Evo is an Open Source Laboratory Information Management System (LIMS)
+— **SENAITE.CORE**: *the heart of SENAITE.LIMS, the evolution of Bika LIMS*
+
+.. image:: https://img.shields.io/pypi/v/senaite.core.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/senaite.core
+
+.. image:: https://img.shields.io/travis/senaite/senaite.core/master.svg?style=flat-square
+    :target: https://travis-ci.org/senaite/senaite.core
+
+.. image:: https://img.shields.io/scrutinizer/g/senaite/senaite.core/master.svg?style=flat-square
+    :target: https://scrutinizer-ci.com/g/senaite/senaite.core/
+
+.. image:: https://img.shields.io/github/issues-pr/senaite/senaite.core.svg?style=flat-square
+    :target: https://github.com/seniate/senaite.core/pulls
+
+.. image:: https://img.shields.io/github/issues/senaite/senaite.core.svg?style=flat-square
+    :target: https://github.com/senaite/senaite.core/issues
+
+.. image:: https://img.shields.io/github/contributors/senaite/senaite.core.svg?style=flat-square
+    :target: https://github.com/senaite/senaite.core/blob/master/CONTRIBUTORS.rst
+
+
+Introduction
+============
+
+SENAITE.CORE is an Open Source Laboratory Information Management System (LIMS)
 for enterprise environments, especially focused to behave with high speed,
 excellent performance and good stability.
 
-
-License
--------
-
-This software, henceforth "Bika LIMS Evo", is a derivative work of
-`Bika LIMS <https://github.com/bikalims/bika.lims>`_ software, a web-based
-Laboratory Information Management System (LIMS). As such, Bika LIMS Evo is
-licensed under the
-`GNU Affero General Public License v3.0 <https://www.gnu.org/licenses/agpl-3.0.txt>`_.
-See LICENSE.rst file for more details.
+This software is a derivative work of `Bika LIMS <https://github.com/bikalims/bika.lims>`_
+software and comes with the same user interface. Since SENAITE.CORE provides the
+core functionalities and entities used by `SENAITE.LIMS <https://github.com/senaite/senaite.lims>`_,
+the installation of the latter is strongly recommended for an optimal user
+experience.
 
 
-Features
---------
+Installation
+============
 
-Bika LIMS Evo provides same functionalities Bika LIMS was providing on
-Jan 17, 2017 (
-`v3.2.0a-26f2c4 <https://github.com/bikalims/bika.lims/tree/26f2c4bf7fdfe33939b37dcfde29e869f95d38c5>`_)
-plus additional features and performance improvements such as:
+SENAITE.CORE is built on top of `Plone CMS <https://plone.org>`_, so it must be
+installed first.
+Please, follow the `installation instructions for Plone 4.x <https://docs.plone.org/4/en/manage/installing/installation.html>`_
+first.
 
-- Asynchronous creation of Analysis Requests
-- Flexible and full-fledged Reflex Testing machinery
-- Fine-grained visibility of analyses in results reports and client views
-- Performance optimizations in lists and database accessing
-- Predigest of data its generation requires high-resources consuming processes
-- Light-weight objects to minimize database size
-- Reduction of nested loops in workflow transitions
-- Instrument results import without user intervention
-- Advanced filters in lists
-- Additional Instrument interfaces
-- ... And many more
+Once Plone 4.x is installed successfully, you can choose any of the two options
+below:
 
-See CHANGES.rst file for the full list of additions, changes and fixes.
+Ready-to-go installation
+------------------------
+With this installation modality, the sources from ``senaite.core`` will be
+downloaded automatically from `Python Package Index (Pypi) <https://pypi.python.org/pypi/senaite.core>`_.
+If you want the latest code from the `source code repository <https://github.com/senaite/senaite.core>`_,
+follow the `installation instructions for development <https://github.com/senaite/senaite.core/blob/master/README.rst#installation-for-development>`_.
+
+Create a new buildout file ``senaite.cfg`` which extends your existing
+``buildout.cfg`` – this way you can easily keep development stuff separate from
+your main buildout.cfg which you can also use on the production server::
+
+  [buildout]
+  index = https://pypi.python.org/simple
+  extends = buildout.cfg
+
+  [instance]
+  eggs +=
+      senaite.core
+
+Note that with this approach you do not need to modify the existing buildout.cfg
+file.
+
+Then build it out with this special config file::
+
+  bin/buildout -c senaite.cfg
+
+and buildout will automatically download and install all required dependencies.
+
+For further details about Buildout and how to install add-ons for Plone, please check
+`Installing add-on packages using Buildout from Plone documentation <https://docs.plone.org/4/en/manage/installing/installing_addons.html>`_.
+
+
+Installation for development
+----------------------------
+
+This is the recommended approach how to enable ``senaite.core`` for your
+development environment. With this approach, you'll be able to download the
+latest source code from `senaite.core's repository <https://github.com/senaite/senaite.core>`_
+and contribute as well.
+
+Use git to fetch ``senaite.core`` source code to your buildout environment::
+
+  cd src
+  git clone git://github.com/senaite/senaite.core.git senaite.core
+
+Create a new buildout file ``senaite.cfg`` which extends your existing
+``buildout.cfg`` – this way you can easily keep development stuff separate
+from your main buildout.cfg which you can also use on the production server.
+
+``senaite.cfg``::
+
+  [buildout]
+  index = https://pypi.python.org/simple
+  extends = buildout.cfg
+  develop +=
+      src/senaite.core
+
+  [instance]
+  eggs +=
+      senaite.core
+
+Note that with this approach you do not need to modify the existing buildout.cfg
+file.
+
+Then build it out with this special config file::
+
+  bin/buildout -c senaite.cfg
+
+and buildout will automatically download and install all required dependencies.
+
+
+Contribute
+==========
+
+We want contributing to SENAITE.CORE to be fun, enjoyable, and educational for
+anyone, and everyone. This project adheres to the `Contributor Covenant <https://github.com/senaite/senaite.core/blob/master/CODE_OF_CONDUCT.md>`_.
+By participating, you are expected to uphold this code. Please report
+unacceptable behavior.
+
+Contributions go far beyond pull requests and commits. Although we love giving
+you the opportunity to put your stamp on SENAITE.CORE, we also are thrilled to
+receive a variety of other contributions. Please, read `Contributing to senaite.core
+document <https://github.com/senaite/senaite.core/blob/master/CONTRIBUTING.md>`_.
 
 
 Feedback and support
---------------------
+====================
 
-* Bika Users List: `bika-users <http://lists.sourceforge.net/lists/listinfo/bika-users>`_
-* Bika Developers List: `bika-developers <http://lists.sourceforge.net/lists/listinfo/bika-developers>`_
-* LIMS design List: `lims-design <https://groups.google.com/forum/?hl=en#%21forum/bika-design>`_
-* Issue Tracker: `http://jira.bikalabs.com/ <http://jira.bikalabs.com>`_
-* IRC: `irc://freenode.net/#bika <irc://freenode.net/#bika>`_
-* Slack: `bikalims.slack.com <http://slackin.bikalims.org>`_
+* `Gitter channel <https://gitter.im/senaite/Lobby>`_
+* `Users list <https://sourceforge.net/projects/senaite/lists/senaite-users>`_

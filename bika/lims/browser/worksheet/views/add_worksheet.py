@@ -1,9 +1,9 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -59,7 +59,6 @@ class AddWorksheetView(BrowserView):
             return
 
         wst = rc.lookupObject(template)
-        ws.setWorksheetTemplate(wst)
         ws.applyWorksheetTemplate(wst)
 
         if ws.getLayout():

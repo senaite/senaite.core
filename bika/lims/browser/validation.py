@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Archetypes.browser.validation import InlineValidationView as _IVV
 from Acquisition import aq_inner
@@ -10,7 +12,7 @@ import json
 
 
 SKIP_VALIDATION_FIELDTYPES = (
-    'image', 'file', 'datetime', 'reference', 'uidreference')
+    'image', 'file', 'datetime', 'reference', 'uidreference', 'proxy')
 
 class InlineValidationView(_IVV):
 

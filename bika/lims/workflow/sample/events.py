@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from Products.CMFCore.utils import getToolByName
 from DateTime import DateTime
 
@@ -36,6 +43,24 @@ def after_no_sampling_workflow(obj):
     :type obj: Sample
     """
     _cascade_transition(obj, 'no_sampling_workflow')
+
+    if obj.getSamplingWorkflowEnabled():
+        to_be_preserved = []
+        sample_due = []
+        lowest_state = 'sample_due'
+        for p in obj.objectValues('SamplePartition'):
+            if p.getPreservation():
+                lowest_state = 'to_be_preserved'
+                to_be_preserved.append(p)
+            else:
+                sample_due.append(p)
+        for p in to_be_preserved:
+            doActionFor(p, 'to_be_preserved')
+        for p in sample_due:
+            doActionFor(p, 'sample_due')
+        doActionFor(obj, lowest_state)
+    else:
+        doActionFor(obj, 'sample_due')
 
 
 def after_sampling_workflow(obj):
@@ -112,6 +137,8 @@ def after_sample(obj):
         for p in sample_due:
             doActionFor(p, 'sample_due')
         doActionFor(obj, lowest_state)
+    else:
+        doActionFor(obj, 'sample_due')
 
 
 def after_sample_due(obj):

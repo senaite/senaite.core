@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import tempfile
 from bika.lims import bikaMessageFactory as _
@@ -110,7 +112,7 @@ class PublishView(BrowserView):
                                   _("Analyst"): self.user_fullname(analysis.getAnalyst()),
                                   _("Remarks"): analysis.getRemarks()})
             self.ars.append({
-                        _("Request ID"): ar.getRequestID(),
+                        _("Request ID"): ar.getId(),
                                 _("Date Requested"): self.ulocalized_time(datecreated),  # requested->created
                         _("Sample Type"): sample.getSampleType() and sample.getSampleType().Title() or '',
                                 _("Sample Point"): sample.getSamplePoint() and sample.getSamplePoint().Title() or '',

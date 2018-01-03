@@ -1,9 +1,9 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import getSecurityManager
 from DateTime import DateTime
@@ -38,9 +38,11 @@ class AddAnalysesView(BikaListingView):
         self.context_actions = {}
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
+        self.sort_on = 'Priority'
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned',
+                              'sort_on': 'getPrioritySortkey',
                               'cancellation_state':'active'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analyses"
@@ -65,7 +67,7 @@ class AddAnalysesView(BikaListingView):
             'getRequestID': {
                 'title': _('Request ID'),
                 'attr': 'getRequestID',
-                'replace_url': 'getAnalysisRequestURL',
+                'replace_url': 'getRequestURL',
                 'index': 'getRequestID'},
             'CategoryTitle': {
                 'title': _('Category'),

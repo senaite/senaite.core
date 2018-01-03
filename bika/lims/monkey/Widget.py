@@ -1,7 +1,10 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from Products.CMFCore.utils import getToolByName
 from bika.lims.interfaces import IATWidgetVisibility
 from types import DictType
@@ -48,8 +51,8 @@ def isVisible(self, instance, mode='view', default=None, field=None):
 
     # call any IATWidgetVisibility adapters
     adapters = {}
-    for adapter in getAdapters((instance, ), IATWidgetVisibility):
-        sort_val = getattr(adapter[1], 'sort', 1000)
+    for name, adapter in getAdapters((instance, ), IATWidgetVisibility):
+        sort_val = getattr(adapter, 'sort', 1000)
         if sort_val not in adapters:
             adapters[sort_val] = []
         adapters[sort_val].append(adapter)
@@ -58,7 +61,7 @@ def isVisible(self, instance, mode='view', default=None, field=None):
     for key in keys:
         for adapter in adapters[key]:
             oldstate = state
-            state = adapter[1](instance, mode, field, state)
+            state = adapter(instance, mode, field, state)
             # if state != oldstate:
             #     adapter_name = adapter[1].__repr__().split(" ")[0].split(".")[-1]
             #     print "%-25s %-25s adapter:%s"%(field.getName(), "%s->%s"%(oldstate, state), adapter_name)

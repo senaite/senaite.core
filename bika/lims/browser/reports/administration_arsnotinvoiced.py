@@ -1,7 +1,10 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from bika.lims.workflow import getTransitionDate
 
 from Products.CMFCore.utils import getToolByName
@@ -90,7 +93,7 @@ class Report(BrowserView):
             dataitem = {'value': ar.aq_parent.Title()}
             dataline.append(dataitem)
 
-            dataitem = {'value': ar.getRequestID()}
+            dataitem = {'value': ar.getId()}
             dataline.append(dataitem)
 
             dataitem = {'value': ar.getSampleTypeTitle()}

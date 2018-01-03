@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import getSecurityManager
 from DateTime import DateTime
@@ -43,8 +45,8 @@ class LateAnalysesView(BikaListingView):
 
         self.columns = {'Analysis': {'title': _('Analysis'),
                                      'index': 'sortable_title'},
-                        'RequestID': {'title': _('Request ID'),
-                                      'index': 'getRequestID'},
+                        'getRequestID': {'title': _('Request ID'),
+                                         'index': 'getRequestID'},
                         'Client': {'title': _('Client')},
                         'Contact': {'title': _('Contact')},
                         'DateReceived': {'title': _('Date Received'),
@@ -59,7 +61,7 @@ class LateAnalysesView(BikaListingView):
              'title': _('All'),
              'contentFilter':{},
              'columns':['Analysis',
-                        'RequestID',
+                        'getRequestID',
                         'Client',
                         'Contact',
                         'DateReceived',
@@ -87,8 +89,8 @@ class LateAnalysesView(BikaListingView):
             client = ar.aq_parent
             contact = ar.getContact()
             items[x]['Analysis'] = obj.Title()
-            items[x]['RequestID'] = ''
-            items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
+            items[x]['getRequestID'] = ''
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (ar.absolute_url(), ar.Title())
             items[x]['Client'] = ''
             if hideclientlink == False:

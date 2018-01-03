@@ -1,19 +1,24 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
-from operator import itemgetter
-from AccessControl import getSecurityManager
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFPlone import PloneMessageFactory
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditResults, AddAnalysisRequest, \
-    ManageAnalysisRequests
-from Products.CMFCore.utils import getToolByName
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import re
+from operator import itemgetter
+
+from AccessControl import getSecurityManager
+
+from Products.CMFPlone import PloneMessageFactory
+from Products.CMFCore.permissions import ModifyPortalContent
+
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import ManageAnalysisRequests
 
 
 class BatchBookView(BikaListingView):
@@ -23,7 +28,7 @@ class BatchBookView(BikaListingView):
         self.icon = self.portal_url + \
             "/++resource++bika.lims.images/batchbook_big.png"
         self.context_actions = {}
-        self.contentFilter = {"sort_on":"created"}
+        self.contentFilter = {"sort_on": "created"}
         self.title = context.Title()
         self.Description = context.Description()
         self.show_select_all_checkbox = True
@@ -86,7 +91,7 @@ class BatchBookView(BikaListingView):
 
     @property
     def copy_to_new_allowed(self):
-        mtool = getToolByName(self.context, 'portal_membership')
+        mtool = api.get_tool('portal_membership')
         if mtool.checkPermission(ManageAnalysisRequests, self.context) \
                 or mtool.checkPermission(ModifyPortalContent, self.context) \
                 or mtool.checkPermission(AddAnalysisRequest, self.portal):
@@ -95,19 +100,19 @@ class BatchBookView(BikaListingView):
 
     def __call__(self):
         # Allow "Modify portal content" to see edit widgets
-        mtool = getToolByName(self.context, 'portal_membership')
+        mtool = api.get_tool('portal_membership')
         self.allow_edit = mtool.checkPermission("Modify portal content", self.context)
         # Allow certain users to duplicate ARs (Copy to new).
         if self.copy_to_new_allowed:
             review_states = []
             for review_state in self.review_states:
-                custom_actions = review_state.get('custom_actions', [])
-                custom_actions.extend(
+                custom_transitions = review_state.get('custom_transitions', [])
+                custom_transitions.extend(
                     [{'id': 'copy_to_new',
                       'title': _('Copy to new'),
                       'url': 'workflow_action?action=copy_to_new'},
                      ])
-                review_state['custom_actions'] = custom_actions
+                review_state['custom_transitions'] = custom_transitions
                 review_states.append(review_state)
             self.review_states = review_states
         return super(BatchBookView, self).__call__()
@@ -116,7 +121,7 @@ class BatchBookView(BikaListingView):
         """Accumulate a list of all AnalysisRequest objects contained in
         this Batch, as well as those which are inherited.
         """
-        wf = getToolByName(self.context, 'portal_workflow')
+        wf = api.get_tool('portal_workflow')
         schema = self.context.Schema()
 
         ars = []
@@ -240,9 +245,12 @@ class BatchBookView(BikaListingView):
                 if keyword not in items[i]['class']:
                     items[i]['class'][keyword] = 'empty'
         if self.insert_submit_button:
-            custom_actions = self.review_states[0].get('custom_actions', [])
-            custom_actions.append({'id': 'submit'})
-            self.review_states[0]['custom_actions'] = custom_actions
+            transitions = self.review_states[0].get('custom_transitions', [])
+            transitions.append({
+                'id': 'submit',
+                'title': _('Submit')
+            })
+            self.review_states[0]['custom_transitions'] = transitions
 
         self.categories.sort()
         self.categories = [x[1] for x in self.categories]

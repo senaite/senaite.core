@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """ARs and Samples use HeaderTable to display object fields in their custom
 view and edit screens.
@@ -34,9 +36,14 @@ class HeaderTableView(BrowserView):
             for field in fields:
                 fieldname = field.getName()
                 if fieldname in form:
-                    if fieldname + "_uid" in form:
-                        # references (process_form would normally do *_uid trick)
-                        field.getMutator(self.context)(form[fieldname + "_uid"])
+                    # Handle (multiValued) reference fields
+                    # https://github.com/bikalims/bika.lims/issues/2270
+                    uid_fieldname = "{}_uid".format(fieldname)
+                    if uid_fieldname in form:
+                        value = form[uid_fieldname]
+                        if field.multiValued:
+                            value = value.split(",")
+                        field.getMutator(self.context)(value)
                     else:
                         # other fields
                         field.getMutator(self.context)(form[fieldname])

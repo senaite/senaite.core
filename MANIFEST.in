@@ -1,0 +1,6 @@
+include LICENSE
+include *.rst
+include *.md
+recursive-exclude docs *
+recursive-include bika *
+recursive-exclude bika *.pyc

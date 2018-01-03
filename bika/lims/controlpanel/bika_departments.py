@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
@@ -114,8 +116,6 @@ class Departments(ATFolder):
     schema = schema
 
     def getContacts(self):
-        pc = getToolByName(self, 'portal_catalog')
-        bc = getToolByName(self, 'bika_catalog')
         bsc = getToolByName(self, 'bika_setup_catalog')
         # fallback - all Lab Contacts
         pairs = []

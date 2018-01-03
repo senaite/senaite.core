@@ -1,9 +1,9 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
@@ -887,7 +887,6 @@ class AnalysisResultsImporter(Logger):
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)
-            doActionFor(analysis, 'submit')
             resultsaved = True
 
         elif resultsaved == False:
@@ -896,6 +895,9 @@ class AnalysisResultsImporter(Logger):
                               "analysis_keyword": acode,
                               "result":""
                      })
+
+        if resultsaved or len(interimsout) > 0:
+            doActionFor(analysis, 'submit')
 
         if (resultsaved or len(interimsout) > 0) \
             and values.get('Remarks', '') \

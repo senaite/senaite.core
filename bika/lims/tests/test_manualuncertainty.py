@@ -1,16 +1,17 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-import unittest
+from plone.app.testing import login
+from plone.app.testing import setRoles
 
 try:
     import unittest2 as unittest
@@ -19,11 +20,14 @@ except ImportError: # Python 2.7
 
 
 class TestManualUncertainty(BikaFunctionalTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(TestManualUncertainty, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
+
         servs = self.portal.bika_setup.bika_analysisservices
         # analysis-service-3: Calcium (Ca)
         # analysis-service-6: Cooper (Cu)
@@ -45,7 +49,7 @@ class TestManualUncertainty(BikaFunctionalTestCase):
             s.setAllowManualUncertainty(False)
             s.setUncertainties([])
             s.setPrecisionFromUncertainty(False)
-        logout()
+
         super(TestManualUncertainty, self).tearDown()
 
     def test_set_manualuncertainty_field(self):
@@ -168,19 +172,19 @@ class TestManualUncertainty(BikaFunctionalTestCase):
         self.assertFalse(fe.getUncertainty())
         self.assertEqual(fe.getResult(), '25.523345')
         self.assertEqual(fe.getPrecision(), 2)
-        self.assertEqual(fe.getService().getPrecision(), 2)
+        self.assertEqual(fe.getAnalysisService().getPrecision(), 2)
         self.assertEqual(fe.getFormattedResult(), '25.52')
         fe.setUncertainty('0.9')
         self.assertEqual(fe.getUncertainty(), 0.9)
         self.assertEqual(fe.getResult(), '25.523345')
         self.assertEqual(fe.getPrecision(), 1)
-        self.assertEqual(fe.getService().getPrecision(), 2)
+        self.assertEqual(fe.getAnalysisService().getPrecision(), 2)
         self.assertEqual(fe.getFormattedResult(), '25.5')
         fe.setUncertainty(None)
         self.assertFalse(fe.getUncertainty())
         self.assertEqual(fe.getResult(), '25.523345')
         self.assertEqual(fe.getPrecision(), 2)
-        self.assertEqual(fe.getService().getPrecision(), 2)
+        self.assertEqual(fe.getAnalysisService().getPrecision(), 2)
         self.assertEqual(fe.getFormattedResult(), '25.52')
 
     def test_get_significant_digits(self):
@@ -207,5 +211,5 @@ class TestManualUncertainty(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestManualUncertainty))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

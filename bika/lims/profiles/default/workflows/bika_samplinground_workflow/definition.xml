@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_samplinground_workflow"
+             title="Bika SamplingRound Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="open"
+             manager_bypass="False"
+             i18n:domain="bika">
+
+  <permission>Add portal content</permission>
+  <permission>BIKA: Add Analysis Request</permission>
+  <permission>BIKA: Close SamplingRound</permission>
+  <permission>BIKA: Reopen SamplingRound</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <state state_id="closed" title="Closed" i18n:attributes="title">
+    <description>The SamplingRound can't be edited and Analysis Requests cannot be attached</description>
+    <exit-transition transition_id="open" />
+    <permission-map name="Add portal content" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Add Analysis Request" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Close SamplingRound" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Reopen SamplingRound" acquired="False">
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="open" title="Open" i18n:attributes="title">
+    <description>The Sampling Round can be edited and Analysis Requests can be attached</description>
+    <exit-transition transition_id="close" />
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Client</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Add Analysis Request" acquired="False">
+      <permission-role>Client</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Close SamplingRound" acquired="False">
+      <permission-role>Client</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Reopen SamplingRound" acquired="False">
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Client</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <transition transition_id="close" title="Close" new_state="closed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Close</action>
+    <guard>
+      <guard-permission>BIKA: Close SamplingRound</guard-permission>
+      <guard-expression>python:here.workflow_guard_close() if hasattr(here, 'workflow_guard_close') else True</guard-expression>
+    </guard>
+
+  </transition>
+  <transition transition_id="open" title="Open" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Open</action>
+    <guard>
+      <guard-permission>BIKA: Reopen SamplingRound</guard-permission>
+      <guard-expression>python:here.workflow_guard_open() if hasattr(here, 'workflow_guard_open') else True</guard-expression>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+      <guard-permission>Request review</guard-permission>
+      <guard-permission>Review portal content</guard-permission>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

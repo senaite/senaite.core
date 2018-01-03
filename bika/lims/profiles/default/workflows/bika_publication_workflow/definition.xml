@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_publication_workflow"
+             title="Bika Publication Workflow"
+             description=""
+             state_variable="publish_state"
+             initial_state="unpublished"
+             manager_bypass="False"
+             i18n:domain="bika">
+
+  <state state_id="published" title="Published" i18n:attributes="title">
+    <exit-transition transition_id="republish" />
+  </state>
+
+  <state state_id="unpublished" title="Unpublished" i18n:attributes="title">
+    <exit-transition transition_id="publish" />
+  </state>
+
+  <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="bika.lims.workflow.default" i18n:attributes="title">
+    <action url="%(content_url)s/publish" category="workflow" icon="">Publish</action>
+    <guard>
+      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-expression>python:here.workflow_guard_publish() if hasattr(here, 'workflow_guard_publish') else True</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="bika.lims.workflow.default" i18n:attributes="title">
+    <action url="%(content_url)s/publish" category="workflow" icon="">Republish</action>
+    <guard>
+      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-expression>python:here.workflow_guard_republish() if hasattr(here, 'workflow_guard_republish') else True</guard-expression>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+      <guard-permission>Request review</guard-permission>
+      <guard-permission>Review portal content</guard-permission>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
@@ -73,7 +75,7 @@ class InvoiceView(BrowserView):
         self.clientSampleId = sample.getClientSampleID()
         self.sampleType = sample.getSampleType().Title()
         self.samplePoint = samplePoint and samplePoint.Title()
-        self.requestId = context.getRequestID()
+        self.requestId = context.getId()
         self.headers = [
             {'title': 'Invoice ID', 'value': self.invoiceId},
             {'title': 'Client Reference',

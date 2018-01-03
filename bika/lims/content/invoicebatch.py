@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """InvoiceBatch is a container for Invoice instances.
 """
@@ -83,7 +85,7 @@ class InvoiceBatch(BaseFolder):
             if item.portal_type == 'AnalysisRequest':
                 lineitem['ItemDate'] = plone_view.toLocalizedTime(
                     getTransitionDate(item, 'publish'), long_format=1)
-                lineitem['OrderNumber'] = item.getRequestID()
+                lineitem['OrderNumber'] = item.getId()
                 lineitem['AnalysisRequest'] = item
                 lineitem['SupplyOrder'] = ''
                 description = get_invoice_item_description(item)

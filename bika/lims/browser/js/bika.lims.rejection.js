@@ -5,16 +5,6 @@
 
      var that = this;
      that.load = function() {
-         // I don't know why samples don't have the reject state button, so I'll
-         // have to insert a handmade one.
-         if ($('body').hasClass('portaltype-sample') &&
-            $('#plone-contentmenu-workflow .state-reject').length < 1) {
-                var url = window.location.href.replace('/base_view','');
-                var autentification = $('input[name="_authenticator"]').val();
-                // we have to insert the state button
-                var dom_e = '<li><a id="workflow-transition-reject" class="" title="" href="' + url + '/doActionForSample?workflow_action=reject&_authenticator=' + autentification + '">Reject</li>"';
-                $(dom_e).prependTo($('#plone-contentmenu-workflow dd.actionMenuContent ul')[0]);
-         }
         // If rejection workflow is disabled, hide the state link
         var request_data = {
             catalog_name: "portal_catalog",
@@ -59,7 +49,16 @@
              var td = $('#archetypes-fieldname-RejectionWidget').parent('td');
              var label = "<div class='semioverlay-head'>"+$(td).prev('td').html().trim()+"</div>";
              // Creating the div element
-             $('#content').prepend("<div id='semioverlay'><div class='semioverlay-back'></div><div class='semioverlay-panel'><div class='semioverlay-content'></div><div class='semioverlay-buttons'><input type='button' name='semioverlay.reject' value='reject'/><input type='button' name='semioverlay.cancel' value='cancel'/></div></div></div>");
+             $('#content').prepend(
+                "<div id='semioverlay' style='display:none'>" +
+                " <div class='semioverlay-back'> </div>" +
+                " <div class='semioverlay-panel'>" +
+                " <div class='semioverlay-content'></div>" +
+                " <div class='semioverlay-buttons'>" +
+                " <input type='button'" +
+                " name='semioverlay.reject' value='reject'/>" +
+                " <input type='button' name='semioverlay.cancel'" +
+                " value='cancel'/></div></div></div>");
              // Moving the widget there
              $('#archetypes-fieldname-RejectionWidget').detach().prependTo('#semioverlay .semioverlay-content');
              // hidding the widget's td and moving the label
@@ -131,8 +130,6 @@
             .replace('/analyses', '')
             .replace('/manage_results', '')
             .replace('/not_requested', '')
-            .replace('?check_edit=1', '')
-            .replace('?check_edit=0', '')
             .replace('/log', '');
          var obj_path = url.replace(window.portal_url, '');
          var redirect_state = $("a#workflow-transition-reject").attr('href');

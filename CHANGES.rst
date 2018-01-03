@@ -1,10 +1,13 @@
 Changelog
 =========
 
-1.1.0 (Unreleased)
+1.2.1 (unreleased)
 ------------------
 
 **Added**
+
+
+**Removed**
 
 
 **Changed**
@@ -15,6 +18,208 @@ Changelog
 
 **Security**
 
+
+
+1.2.0 (2018-01-03)
+------------------
+
+**Added**
+
+- #498 Added getPriorityText method to Analysis Request
+
+**Changed**
+
+- #519 #527 #528 bika.lims to senaite.core distribution
+
+**Fixed**
+
+- #522 Worksheets: Analyses listing does not show attached Analyses
+- #514 Site Error when listing Dormant Worksheet Templates
+- #517 Expired Reference Samples are displayed in Add Blank/Add Control views
+- #517 Inactive services displayed for selection in Add Blank/Add Control views
+- #516 List of Analyses Services is not properly filtered by state
+- #516 Activate and Deactivate buttons do not appear in Analysis Services list
+- #512 Duplicates transition to "Attachment due" after submit
+- #499 Wrong slots when adding analyses manually in Worksheet with a WST assigned
+- #499 When a Worksheet Template is used, slot positions are not applied correctly
+- #499 Applying a WS template which references a Duplicate raises an Error
+- #513 ShowPrices doctest is failing
+- #488 JS Errors in bika.lims.analysisrequest.js
+
+
+1.1.8 (2017-12-23)
+------------------
+
+**Added**
+
+- #440 ITopLeft, ITopRight and ITopWide hooks (placeholders) in bikalisting
+- #472 Dashboard panels visibility by roles
+- #467 All/Mine filters in Dashboard panels
+- #423 Instrument import interface for Abbott's m2000 Real Time
+
+**Changed**
+
+- #469 Remove unique field validator for Batch titles
+- #459 PR-1942 Feature/instrument certification interval refactoring
+- #431 Make ARAnalysesField setter to accept Analysis/Service objects
+
+**Fixed**
+
+- #494 Rejection reasons widget does not appear on rejection
+- #492 Fix AR Add Form: CC Contacts not set on Contact Change
+- #489 Worksheet Templates selection list is empty in Worksheets view
+- #490 Fix AR Add Form: No specifications found if a sample type was set
+- #475 Assigning Analyses to a WS raises AttributeError
+- #466 UnicodeDecodeError if unicode characters are entered into the title field
+- #453 Sample points do not show the referenced sample types in view
+- #470 Sort order of Analyses in WS print view wrong
+- #457 Calculation referring to additional python module not triggered
+- #459 Traceback in Instruments list after adding a calibration certificate
+- #454 Click on some analyses pops up a new page instead of object log
+- #452 Traceback error when deleting attachment from Analysis Request
+- #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
+- #445 Fix AR Add Form: No sample points are found if a sample type was set
+
+
+1.1.7 (2017-12-01)
+------------------
+
+**Added**
+
+- #377 XML importer in Instrument Interface of Nuclisense EasyQ
+
+**Removed**
+
+- #417 Remove calls to deprecated function getService (from AbstractAnalysis)
+
+**Fixed**
+
+- #439 Cannot verify calculated analyses when retracted dependencies
+- #432 Wrong indentation of services in Worksheet
+- #436 Auto Import View has an Add Button displayed, but shouldn't
+- #436 Clicking on the Add Button of Instrument Certifications opens an arbitrary Add form
+- #433 Analyses not sorted by sortkey in Analysis Request' manage analyses view
+- #428 AR Publication from Client Listing does not work
+- #425 AR Listing View: Analysis profiles rendering error
+- #429 Fix worksheet switch to transposed layout raises an Error
+- #420 Searches by term with custom indexes do not work in clients folder view
+- #410 Unable to select or deselect columns to be displayed in lists
+- #409 In Add Analyses view, analyses id are displayed instead of Analysis Request IDs
+- #378 Fix GeneXpert interface does not import results for multiple analyses
+- #416 Fix inconsistencies with sorting criterias in lists
+- #418 LabClerks don't have access to AR view after received and before verified
+- #415 Referencefield JS UID check: Don't remove Profile UIDs
+- #411 Analyses don't get selected when copying an Analysis Request without profiles
+
+
+1.1.6 (2017-11-24)
+------------------
+
+**Changed**
+
+- #390 Remove log verbosity of UIDReference.get when value is None or empty
+
+**Fixed**
+
+- #403 Calculations not triggered in manage results view
+- #402 Sort Analysis Services correctly based on their Sortkey + Title (Again)
+- #398 PR-2315 ID Server does not find the next correct sequence after flushing the number generator
+- #399 PR-2318 AR Add fails silently if e.g. the ID of the AR was already taken
+- #400 PR-2319 AR Add fails if an Analysis Category was disabled
+- #401 PR-2321 AR Add Copy of multiple ARs from different clients raises a Traceback in the background
+- #397 Fix Issue-396: AttributeError: uid_catalog on AR publication
+
+
+1.1.5 (2017-11-20)
+------------------
+
+**Added**
+
+- #386 PR-2297 Added seeding function to IDServer
+- #372 Added build system to project root
+- #345 'SearchableText' field and adapter in Batches
+- #344 PR-2294 Allow year in any portal type's ID format string
+- #344 PR-2210 ID Server and bika setup updates along with migation step
+- #321 PR-2158 Multiple stickers printing in lists
+- #319 PR-2112 Laboratory Supervisor
+- #317 Enable backreferences associated to UIDReference fields
+- #315 PR-1942 Instrument Certification Interval
+- #292 PR-2125 Added descriptions for Analysis Requests
+- #291 PR-1972 Landscape Layout for Reports
+- #286 Added Github Issue/PR Template
+- #281 PR-2269 Show the Unit in Manage Analyses View
+- #279 Allow external Python library functions to be used in Calculation Formulas
+- #279 Calculation formula test widgets
+- #279 PR-2154 New ar add form
+
+**Changed**
+
+- #385 PR-2309 Unnecessary loops were done in instrument listing views
+- #369 Let DateTimeField setter accept datetime.datetime objects and convert them
+- #362 Add "Methods" column and hide unused columns in Analysis Services list
+- #353 Remove deprecation warnings
+- #338 Preserve Analysis Request order when adding into Worksheet
+- #338 Analyses sorted by priority in Add Analyses view
+- #333 Display analyses sorted by sortkey in results report
+- #331 Sort analyses lists by sortkey as default
+- #321 Sticker's autoprint generates PDF instead of browser's print dialog
+- #312 Worksheet: "Print" does not display/print partial results
+- #306 PR-2077 Better usability of Clients lists for sites with many users
+- #298 PR-2246 Implemented ProxyField to fix data duplication between ARs and Samples
+
+**Fixed**
+
+- #419 'getLastVerificator' function of Abstract Analyses fails when there is no Verificator.
+- #388 Unable to get the portal object when digesting/creating results report
+- #387 ClientWorkflowAction object has no attribute 'portal_url' when publishing multiple ARs
+- #386 PR-2313 UniqueFieldValidator: Encode value to utf-8 before passing it to the catalog
+- #386 PR-2312 IDServer: Fixed default split length value
+- #386 PR-2311 Fix ID Server to handle a flushed storage or existing IDs with the same prefix
+- #385 PR-2309 Some objects were missed in instrument listing views
+- #384 PR-2306 Do not use localized dates for control chart as it breaks the controlchart.js datetime parser
+- #382 PR-2305 TypeError in Analysis Specification category expansion
+- #380 PR-2303 UnicodeDecodeError if title field validator
+- #379 Missing "Instrument-Import-Interface" relationship
+- #375 Dependencies error in Manage Analyses view
+- #371 Reflex rules don't have 'inactive_state' values set
+- #365 LIMS installation fails during setting client permissions in bika_setup
+- #364 Error on Manage Results view while adding new Analyses from different Category
+- #363 PR-2293 Add CCEmails to recipients for Analysis Request publication reports
+- #352 Traceback on listings where objects follow the bika_inactive_workflow
+- #323 Allow IDServer to correctly allocate IDs for new attachments (add Attachment to portal_catalog)
+- #344 PR-2273. Ensure no counters in the number generator before initialising id server
+- #343 PR-2281 Fix publication preferences for CC Contacts
+- #340 TypeError: "Can't pickle objects in acquisition wrappers" (Calculation)
+- #339 Index not found warnings in bika listing
+- #337 Error when adding reference analysis in a Worksheet
+- #336 Accreditation Portlet renders an error message for anonymous users
+- #335 The Lab Name is always set to "Laboratory" after reinstallation
+- #334 TypeError (setRequestId, unexpected keyword argument) on AR Creation
+- #330 Show action buttons when sorting by column in listings
+- #318 PR-2205 Conditional Email Notification on Analysis Request retract
+- #316 Small fixes related with i18n domain in Worksheet's print fixtures
+- #314 'SamplingDate' and 'DateSampled' fields of AR and Sample objects don't behave properly
+- #313 The PDF generated for stickers doesn't have the right page dimensions
+- #311 PR-1931 Fixed Link User to Contact: LDAP Users not found
+- #309 PR-2233 Infinite Recursion on Report Publication.
+- #309 PR-2130 Copied ARs are created in random order.
+- #308 Analysis Service' interim fields not shown
+- #307 Fix sorting of Analysis Services list and disable manual sorting
+- #304 PR-2081 Fixed multiple partition creation from ARTemplate
+- #304 PR-2080 Batch Book raises an Error if the Batch inherits from 2 ARs
+- #304 PR-2053 Computed Sample Field "SampleTypeUID" does not check if a SampleType is set
+- #304 PR-2017 Fixed BatchID getter
+- #304 PR-1946 Showing Verified Worksheets under all
+- #299 PR-1931 Fixed Link User to Contact: LDAP Users not found
+- #298 PR-1932 AttributeError: 'bika_setup' on login on a new Plone site w/o bika.lims installed
+- #297 PR-2102 Inline rendered attachments are not displayed in rendered PDF
+- #296 PR-2093 Sort order in Bika Setup Listings
+- #294 PR-2016 Convert UDL and LDL values to string before copy
+- #293 Fix analysis_workflow permissions for Field Analysis Results
+- #284 PR-1917 Solved WF Translation issues and fixed WF Action Buttons in Bika Listings
+- #283 PR-2252 Traceback if the title contains braces on content creation
+- #282 PR-2266 Instrument Calibration Table fixes
+- #280 PR-2271 Setting 2 or more CCContacts in AR view produces a Traceback on Save
 
 
 1.0.0 (2017-10-13)
@@ -381,13 +586,6 @@ Changelog
 
 - LIMS-2299: Add ui for editing ar_count in all analysisrequest lists
 - Removed commented HTML that was causing Chameleon to choke when adding ARs.
-
-
-3.1.12 (2016-12-15)
--------------------
-
-- HEALTH-569 Bar code printing not working on sample registration
-- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
 
 
 3.1.12 (2016-12-15)

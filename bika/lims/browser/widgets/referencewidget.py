@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
@@ -84,11 +86,13 @@ class ReferenceWidget(StringWidget):
         fieldName = field.getName()
         if fieldName + "_uid" in form:
             uid = form.get(fieldName + "_uid", '')
-            if field.multiValued:
+            if field.multiValued and\
+                    (isinstance(uid, str) or isinstance(uid, unicode)):
                 uid = uid.split(",")
         elif fieldName in form:
             uid = form.get(fieldName, '')
-            if field.multiValued:
+            if field.multiValued and\
+                    (isinstance(uid, str) or isinstance(uid, unicode)):
                 uid = uid.split(",")
         else:
             uid = None

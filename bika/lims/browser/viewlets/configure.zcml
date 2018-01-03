@@ -1,0 +1,119 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           i18n_domain="bika">
+
+  <!-- AR Attachments Viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.viewlets.attachments"
+      class="bika.lims.browser.viewlets.attachments.AttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Worksheet Attachments Viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IWorksheet"
+      name="bika.lims.viewlets.worksheet_attachments"
+      class="bika.lims.browser.viewlets.attachments.WorksheetAttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Show new version and upgrade alert viewlet -->
+  <browser:viewlet
+      for="plone.app.controlpanel.interfaces.IPloneControlPanelView"
+      name="bika.lims.checknewversions"
+      class="bika.lims.browser.viewlets.new_versions.NewVersionsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/new_versions.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide BreadCrumbs for root views -->
+  <browser:viewlet
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide BreadCrumbs for other stuff -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IHaveNoBreadCrumbs"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Translated breadcrumbs -->
+  <browser:viewlet
+      for="*"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/path_bar.pt"
+      class="bika.lims.browser.viewlets.path_bar.PathBarViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide ByLine for everything -->
+  <browser:viewlet
+      for="*"
+      name="plone.belowcontenttitle.documentbyline"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Make document actions beautiful -->
+  <browser:viewlet
+      name="plone.abovecontenttitle.documentactions"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:viewlet
+      name="plone.abovecontenttitle.documentactions"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
+      class="bika.lims.browser.viewlets.document_actions.DocumentActionsViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:viewlet
+      name="plone.footer"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class="plone.app.layout.viewlets.common.FooterViewlet"
+      template="templates/footer.pt"
+      for="*"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      permission="zope2.View"
+      />
+  <browser:viewlet
+      name="plone.colophon"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      template="templates/colophon.pt"
+      for="*"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      permission="zope2.View"
+      />
+
+  <browser:viewlet
+      name="bika.lims.authenticator"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class="bika.lims.browser.viewlets.authenticator.AuthenticatorViewlet"
+      permission="zope2.View"
+      />
+
+</configure>

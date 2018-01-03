@@ -1,8 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims.utils import tmpID
 from Products.CMFCore.utils import getToolByName
@@ -30,6 +31,9 @@ def create_sample(client, request, values):
         # Specifically set the storage location
         if 'StorageLocation' in values:
             sample.setStorageLocation(values['StorageLocation'])
+        # Specifically set the DateSampled
+        if 'DateSampled' in values:
+            sample.setDateSampled(values['DateSampled'])
         # Update the created sample with indicated values
         sample.processForm(REQUEST=request, values=values)
         # Set the SampleID

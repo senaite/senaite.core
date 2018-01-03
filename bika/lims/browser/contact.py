@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Bika LIMS
+# This file is part of SENAITE.CORE
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import re
 from Acquisition import aq_base
@@ -13,6 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone import api
+from plone.app.controlpanel.usergroups import UsersOverviewControlPanel
 from plone.protect import CheckAuthenticator
 
 from bika.lims import PMF
@@ -94,16 +95,27 @@ class ContactLoginDetailsView(BrowserView):
     def linkable_users(self):
         """Search Plone users which are not linked to a contact or lab contact
         """
-        users = api.user.get_users()
-        # expected groups for client contacts
-        client_contact_groups = {'AuthenticatedUsers', 'Clients'}
+
+        # We make use of the existing controlpanel `@@usergroup-userprefs` view
+        # logic to make sure we get all users from all plugins (e.g. LDAP)
+        users_view = UsersOverviewControlPanel(self.context, self.request)
+
+        # expected roles for client contacts
+        # Client groups users have 'Member' and 'Client' roles.
+        client_contact_roles = {'Authenticated', 'Member', 'Client'}
+
+        users = users_view.doSearch("")
         out = []
         for user in users:
-            userid = user.getId()
+            userid = user.get("id", None)
+
+            if userid is None:
+                continue
 
             # Skip users which are already linked to a Contact
             contact = Contact.getContactByUsername(userid)
             labcontact = LabContact.getContactByUsername(userid)
+
             if contact or labcontact:
                 continue
             if self.is_contact():
@@ -111,22 +123,26 @@ class ContactLoginDetailsView(BrowserView):
                 # weird things could happen (a client contact assigned to a
                 # user with labman privileges, different contacts from
                 # different clients assigned to the same user, etc.)
-                user_groups = user.getGroups()
-                comparison = client_contact_groups.symmetric_difference(
-                    set(user_groups))
+                user_obj = api.user.get(userid=userid)
+                user_roles = api.user.get_roles(user=user_obj)
+                comparison = client_contact_roles.symmetric_difference(
+                    set(user_roles))
                 if comparison:
                     continue
             userdata = {
-                "userid": user.getId(),
-                "email": user.getProperty("email"),
-                "fullname": user.getProperty("fullname"),
+                "userid": userid,
+                "email": user.get("email"),
+                "fullname": user.get("title"),
             }
 
             # filter out users which do not match the searchstring
             if self.searchstring:
                 s = self.searchstring.lower()
-                if not any(map(lambda v: re.search(s, v.lower()), userdata.values())):
+                if not any(map(lambda v: re.search(s, str(v).lower()), userdata.values())):
                     continue
+
+            # update data (maybe for later use)
+            userdata.update(user)
 
             # Append the userdata for the results
             out.append(userdata)
@@ -182,11 +198,13 @@ class ContactLoginDetailsView(BrowserView):
     def _create_user(self):
         """Create a new user
         """
+
         def error(field, message):
             if field:
                 message = "%s: %s" % (field, message)
             self.context.plone_utils.addPortalMessage(message, 'error')
-            return self.template()
+            return self.request.response.redirect(
+                self.context.absolute_url() + "/login_details")
 
         form = self.request.form
         contact = self.context
@@ -203,8 +221,7 @@ class ContactLoginDetailsView(BrowserView):
             return error('email', PMF("Input is required but not given."))
 
         reg_tool = self.context.portal_registration
-        properties = self.context.portal_properties.site_properties
-
+        # properties = self.context.portal_properties.site_properties
         # if properties.validate_email:
         #     password = reg_tool.generatePassword()
         # else:
@@ -220,9 +237,16 @@ class ContactLoginDetailsView(BrowserView):
         if len(password) < 5:
             return error('password', PMF("Passwords must contain at least 5 "
                                          "characters."))
-        users = api.user.get_users()
+        # We make use of the existing controlpanel `@@usergroup-userprefs`
+        # view logic to make sure we get all users from all plugins (e.g. LDAP)
+        users_view = UsersOverviewControlPanel(self.context, self.request)
+        users = users_view.doSearch("")
         for user in users:
-            if user.getId() == username:
+            userid = user.get("id", None)
+            if userid is None:
+                continue
+            user_obj = api.user.get(userid=userid)
+            if user_obj.getUserName() == username:
                 msg = "Username {} already exists, please, choose " \
                       "another one.".format(username)
                 return error(None, msg)
@@ -238,7 +262,8 @@ class ContactLoginDetailsView(BrowserView):
             return error(None, msg)
 
         contact.setUser(username)
-
+        # TODO: Not sure if this is the correct behaviour after
+        # senaite-integration since there have been changes in permissions.
         # If we're being created in a Client context, then give
         # the contact an Owner local role on client.
         if contact.aq_parent.portal_type == 'Client':
@@ -246,9 +271,8 @@ class ContactLoginDetailsView(BrowserView):
             if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
                 contact.aq_parent.reindexObjectSecurity()
 
-            # add user to Clients group
-            group = self.context.portal_groups.getGroupById('Clients')
-            group.addMember(username)
+            # Grant roles to user
+            api.user.grant_roles(username=username, roles=['Member', 'Client'])
 
         # Additional groups for LabContact users.
         # not required (not available for client Contact)
@@ -265,12 +289,13 @@ class ContactLoginDetailsView(BrowserView):
                 reg_tool.registeredNotify(username)
             except:
                 transaction.abort()
-                return error(
-                    None, PMF("SMTP server disconnected."))
+                message = _("SMTP server disconnected. User creation aborted.")
+                return error(None, message)
         contact.reindexObject()
-        message = PMF("Member registered.")
+        message = _("Member registered and linked to the current Contact.")
         self.context.plone_utils.addPortalMessage(message, 'info')
-        return self.template()
+        return self.request.response.redirect(
+            self.context.absolute_url() + "/login_details")
 
     def tabindex(self):
         i = 0

@@ -1,29 +1,35 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
-from bika.lims.jsonapi import load_field_values, get_include_fields
-from bika.lims.utils import t
-from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.browser.log import LogView
-from bika.lims.content.analysisservice import getContainers
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IJSONReadExtender
+import json
+
 from Products.CMFCore.utils import getToolByName
-from magnitude import mg, MagnitudeError
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+
 from zope.component import adapts
 from zope.interface import implements
-import json, plone
+
+import plone
 import plone.protect
-import re
+
+from magnitude import mg
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.browser.log import LogView
+from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.content.analysisservice import getContainers
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IJSONReadExtender
+from bika.lims.jsonapi import load_field_values, get_include_fields
 from bika.lims.utils import to_unicode
 
-### AJAX methods for AnalysisService context
+# AJAX methods for AnalysisService context
+
 
 class ajaxGetContainers(BrowserView):
     """ajax Preservation/Container widget filter
@@ -35,27 +41,27 @@ class ajaxGetContainers(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        uc = getToolByName(self, 'uid_catalog')
 
         allow_blank = self.request.get('allow_blank', False) == 'true'
         show_container_types = json.loads(self.request.get('show_container_types', 'true'))
         show_containers = json.loads(self.request.get('show_containers', 'true'))
         minvol = self.request.get("minvol", "0")
         try:
-            minvol =  minvol.split()
+            minvol = minvol.split()
             minvol = mg(float(minvol[0]), " ".join(minvol[1:]))
         except:
             minvol = mg(0)
 
         containers = getContainers(
             self.context,
-            minvol = minvol,
-            allow_blank = allow_blank,
+            minvol=minvol,
+            allow_blank=allow_blank,
             show_containers=show_containers,
             show_container_types=show_container_types,
         )
 
         return json.dumps(containers)
+
 
 class ajaxServicePopup(BrowserView):
 
@@ -96,22 +102,20 @@ class ajaxServicePopup(BrowserView):
         self.partsetup = self.service.getPartitionSetup()
 
         # convert uids to comma-separated list of display titles
-        for i,ps in enumerate(self.partsetup):
+        for i, ps in enumerate(self.partsetup):
+            self.partsetup[i]['separate'] = 'separate' in ps and _('Yes') or _('No')
 
-            self.partsetup[i]['separate'] = \
-                ps.has_key('separate') and _('Yes') or _('No')
-
-            if type(ps['sampletype']) == str:
-                ps['sampletype'] = [ps['sampletype'],]
+            if isinstance(ps['sampletype'], basestring):
+                ps['sampletype'] = [ps['sampletype'], ]
             sampletypes = []
             for st in ps['sampletype']:
                 res = bsc(UID=st)
                 sampletypes.append(res and res[0].Title or st)
             self.partsetup[i]['sampletype'] = ", ".join(sampletypes)
 
-            if ps.has_key('container'):
-                if type(ps['container']) == str:
-                    self.partsetup[i]['container'] = [ps['container'],]
+            if 'container' in ps:
+                if isinstance(ps['container'], basestring):
+                    self.partsetup[i]['container'] = [ps['container'], ]
                 try:
                     containers = [bsc(UID=c)[0].Title for c in ps['container']]
                 except IndexError:
@@ -120,9 +124,9 @@ class ajaxServicePopup(BrowserView):
             else:
                 self.partsetup[i]['container'] = ''
 
-            if ps.has_key('preservation'):
-                if type(ps['preservation']) == str:
-                    ps['preservation'] = [ps['preservation'],]
+            if 'preservation' in ps:
+                if isinstance(ps['preservation'], basestring):
+                    ps['preservation'] = [ps['preservation'], ]
                 try:
                     preservations = [bsc(UID=c)[0].Title for c in ps['preservation']]
                 except IndexError:

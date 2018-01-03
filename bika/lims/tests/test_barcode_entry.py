@@ -1,21 +1,26 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import json
+
+import transaction
+from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.testing import BIKA_SIMPLE_FIXTURE
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
+
+from bika.lims.barcode import barcode_entry
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID, changeWorkflowState
 from bika.lims.workflow import doActionFor
-from plone.app.testing import login
-from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-from bika.lims.barcode import barcode_entry
-from DateTime import DateTime
-
-import json
-import transaction
 
 try:
     import unittest2 as unittest
@@ -24,7 +29,7 @@ except ImportError:  # Python 2.7
 
 
 class TestBarcodeEntry(BikaFunctionalTestCase):
-    layer = BIKA_SIMPLE_FIXTURE
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
@@ -35,6 +40,7 @@ class TestBarcodeEntry(BikaFunctionalTestCase):
 
     def setUp(self):
         super(TestBarcodeEntry, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
         login(self.portal, TEST_USER_NAME)
         clients = self.portal.clients
         bs = self.portal.bika_setup
@@ -110,6 +116,8 @@ class TestBarcodeEntry(BikaFunctionalTestCase):
         self.portal.REQUEST['_authenticator'] = self.getAuthenticator()
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
         expected = self.ar2.getBatch().absolute_url() + "/batchbook"
+        err_msg = value['error'] if hasattr(value, 'error') else 'No error'
+        self.assertEqual(value['failure'], False, err_msg)
         self.assertEqual(value['url'], expected,
                          "AR redirect should be batchbook %s but it's %s" % (
                              expected, value['url']))
@@ -137,5 +145,5 @@ def test_sample_with_single_ar_redirects_to_AR(self):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBarcodeEntry))
-    suite.layer = BIKA_SIMPLE_FIXTURE
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

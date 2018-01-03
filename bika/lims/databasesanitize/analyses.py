@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 import transaction
 from DateTime import DateTime
 from plone.api.portal import get_tool
@@ -25,7 +32,7 @@ def analyses_creation_date_recover():
     logger.info("Analysis Requests to walk over: {}".format(total_ars))
     total_modified = 0
     for ar_brain in ar_brains:
-        ans_brains = ans_catalog({"getAnalysisRequestUID": ar_brain.UID})
+        ans_brains = ans_catalog({"getRequestUID": ar_brain.UID})
         analyses_modified = set_correct_created_date(
             ar_brain.created, ans_brains)
         total_modified += analyses_modified

@@ -1,11 +1,14 @@
-from Products.CMFCore.utils import getToolByName
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from DateTime import DateTime
 
-from bika.lims import logger
-from bika.lims.utils.analysisrequest import notify_rejection
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import isBasicTransitionAllowed
 
 
 def _promote_transition(obj, transition_id):
@@ -131,6 +134,8 @@ def after_reject(obj):
         doActionFor(analysis, 'reject')
 
     if obj.bika_setup.getNotifyOnRejection():
+        # Import here to brake circular importing somewhere
+        from bika.lims.utils.analysisrequest import notify_rejection
         # Notify the Client about the Rejection.
         notify_rejection(obj)
 

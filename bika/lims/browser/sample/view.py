@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
@@ -190,7 +192,11 @@ class SamplesView(BikaListingView):
                          'getDatePreserved',
                          'getPreserver',
                          'DateReceived',
-                         'state_title']},
+                         'state_title'],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],},
             {'id': 'to_be_sampled',
              'title': _('To be sampled'),
              'contentFilter': {'review_state': ('to_be_sampled',
@@ -213,6 +219,10 @@ class SamplesView(BikaListingView):
                          'state_title'],
              'transitions': [
                 {'id': 'schedule_sampling'}, {'id': 'sample'}],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              },
             {'id': 'sample_due',
              'title': _('Due'),
@@ -263,7 +273,11 @@ class SamplesView(BikaListingView):
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
-                         'DateReceived']},
+                         'DateReceived'],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],},
             {'id':'expired',
              'title': _('Expired'),
              'contentFilter':{'review_state':'expired',
@@ -287,7 +301,11 @@ class SamplesView(BikaListingView):
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
-                         'DateReceived']},
+                         'DateReceived'],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],},
             {'id':'disposed',
              'title': _('Disposed'),
              'contentFilter':{'review_state':'disposed',
@@ -311,7 +329,11 @@ class SamplesView(BikaListingView):
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
-                         'DateReceived']},
+                         'DateReceived'],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],},
             {'id':'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled',
@@ -344,6 +366,10 @@ class SamplesView(BikaListingView):
                                'sort_order': 'reverse',
                                'sort_on': 'created'},
              'transitions': [],
+             'custom_actions': [{
+                 'id': 'print_stickers',
+                 'title': _('Print stickers'),
+                 'url': 'workflow_action?action=print_stickers'}],
              'columns': ['getSampleID',
                          'Client',
                          'Creator',

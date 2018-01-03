@@ -1,9 +1,10 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -44,7 +45,7 @@ class AnalysesView(BikaListingView):
         self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'created'
+        self.contentFilter['sort_on'] = 'sortable_title'
         self.contentFilter['sort_order'] = 'ascending'
         self.sort_order = 'ascending'
         self.context_actions = {}
@@ -82,6 +83,7 @@ class AnalysesView(BikaListingView):
             'Service': {
                 'title': _('Analysis'),
                 'attr': 'Title',
+                'index': 'sortable_title',
                 'sortable': False},
             'Partition': {
                 'title': _("Partition"),
@@ -242,25 +244,6 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
-    @deprecated('[1703] Orphan. No alternative')
-    def getAnalysisSpecsStr(self, spec):
-        """
-        Generates a string representation of the specifications passed in. If
-        neither min nor max values found, returns an empty string
-
-        :param spec: specifications dict, with 'min' and 'max' keys
-        :type spec: dict
-        :returns: a string representation of the passed in specs
-        :rtype: string
-        """
-        if spec['min'] and spec['max']:
-            return '%s - %s' % (spec['min'], spec['max'])
-        if spec['min']:
-            return '> %s' % spec['min']
-        if spec['max']:
-            return '< %s' % spec['max']
-        return ''
-
     def get_methods_vocabulary(self, analysis=None):
         """
         Returns a vocabulary with all the methods available for the passed in
@@ -399,7 +382,7 @@ class AnalysesView(BikaListingView):
         if ICatalogBrain.providedBy(obj):
             depuid = obj.getDepartmentUID
         else:
-            dep = obj.getService().getDepartment()
+            dep = obj.getDepartment()
             depuid = dep.UID() if dep else ''
         deps = self.request.get('filter_by_department_info', '')
         return not depuid or depuid in deps.split(',')
@@ -458,7 +441,7 @@ class AnalysesView(BikaListingView):
         item['class']['retested'] = 'center'
         item['result_captured'] = self.ulocalized_time(
             obj.getResultCaptureDate, long_format=0)
-        item['calculation'] = obj.getCalculation and True or False
+        item['calculation'] = obj.getCalculationUID and True or False
         if obj.meta_type == "ReferenceAnalysis":
             item['DueDate'] = self.ulocalized_time(
                 obj.getExpiryDate, long_format=0)
@@ -653,6 +636,8 @@ class AnalysesView(BikaListingView):
                 for attachment in attachments_objs:
                     af = attachment.getAttachmentFile()
                     icon = af.icon
+                    if callable(icon):
+                        icon = icon()
                     attachments += \
                         "<span class='attachment' attachment_uid='%s'>" % \
                         (attachment.UID())

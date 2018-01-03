@@ -1,8 +1,0 @@
-<div metal:define-macro="portal_footer"
-     i18n:domain="plone"
-     class="row">
-    <div class="cell width-full position-0">
-        <div id="portal-footer">
-        </div>
-    </div>
-</div>

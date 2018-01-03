@@ -1,8 +1,8 @@
 <tal:comment replace="nothing">
-    Print COA for a set of analysisrequests.
+  Print COA for a set of analysisrequests.
 
-    The filename starts with "multi" indicates this report is formatted
-    print multiple ARs.
+  The filename starts with "multi" indicates this report is formatted
+  print multiple ARs.
 </tal:comment>
 
 <tal:report tal:define="num_ars_per_page python:5;
@@ -12,101 +12,102 @@
 
     <!-- Address and Lab info, displayed only on first page. -->
     <div id="section-info"
-         tal:define="firstar         python:arspage[0][0];
-                     analysisrequest python:view.getAnalysisRequest(firstar);
-                     portal          analysisrequest/portal;
-                     client          python:analysisrequest['client']['obj'];
-                     contact         python:analysisrequest['contact']['obj'];
-                     lab             python:portal['obj'].bika_setup.laboratory;
-                     showqcanalyses  python:view.isQCAnalysesVisible();
-                     remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
-        <table width="100%" cellpadding="0" cellspacing="0">
+       tal:define="firstar python:arspage[0][0];
+           analysisrequest python:view.getAnalysisRequest(firstar);
+           portal          analysisrequest/portal;
+           client          python:analysisrequest['client']['obj'];
+           contact         python:analysisrequest['contact']['obj'];
+           lab             python:portal['obj'].bika_setup.laboratory;
+           showqcanalyses  python:view.isQCAnalysesVisible();
+           remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
+
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td colspan="2" id="section-info-heading" i18n:translate="section-info-heading">
+          <h1>CERTIFICATE OF ANALYSIS</h1>
+        </td>
+      </tr>
+    </table>
+    <hr size="1"/>
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <!-- Client -->
+          <table>
             <tr>
-                <td colspan="2" id="section-info-heading" i18n:translate="section-info-heading">
-                    <h1>CERTIFICATE OF ANALYSIS</h1>
-                </td>
-            </tr>
-        </table>
-        <hr size="1"/>
-        <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-                <td>
-                    <!-- Client -->
-                    <table>
-                        <tr>
-                            <th i18n:translate="" class="label">Client</th>
-                            <td tal:content="python:client.Title()"/>
-                        </tr>
-                        <tr>
-                            <th i18n:translate="" class="label">Contact</th>
-                            <td tal:content="python:contact.getFullname()"/>
-                        </tr>
-                        <tr>
-                            <th i18n:translate="" class="label">Email</th>
-                            <td id="client-email">
-                                <a tal:content="python:contact.getEmailAddress()"
-                                   tal:attributes="url python:'mailto:%s' % contact.getEmailAddress()"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th i18n:translate="" class="label">Telephone</th>
-                            <td tal:content="structure python: client.getPhone()"/>
-                        </tr>
-                        <tr>
-                            <th i18n:translate="" class="label">Address</th>
-                            <td tal:content="structure python:view._client_address(client)"/>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <!-- Laboratory -->
-                    <table>
-                        <tr>
-                            <th i18n:translate="" class="label">
-                                Laboratory
-                            </th>
-                            <td tal:content="python: lab.Title()"/>
-                        </tr>
-                        <tr>
-                            <th i18n:translate="" class="label">Email
-                            </th>
-                            <td>
-                                <a tal:content="python:lab.getEmailAddress()"
-                                   tal:attributes="url python:'mailto:%s' % lab.getEmailAddress()"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th i18n:translate="" class="label">
-                                Telephone
-                            </th>
-                            <td tal:content="structure python: lab.getPhone()"/>
-                        </tr>
-                        <tr>
-                            <th i18n:translate="" class="label">
-                                Address
-                            </th>
-                            <td tal:content="structure python:view._lab_address(lab)"/>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <hr size="1"/>
-        <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-                <th i18n:translate="" class="label">Report Date</th>
-                <td tal:content="structure view/current_date"/>
+              <th i18n:translate="" class="label">Client</th>
+              <td tal:content="python:client.Title()"/>
             </tr>
             <tr>
-                <th i18n:translate="" class="label">Number of samples</th>
-                <td tal:content="structure python:len(argroup)"/>
+              <th i18n:translate="" class="label">Contact</th>
+              <td tal:content="python:contact.getFullname()"/>
             </tr>
             <tr>
-                <th i18n:translate="" class="label">Certificate Number
-                </th>
-                <td tal:content="structure coanr"/>
+              <th i18n:translate="" class="label">Email</th>
+              <td id="client-email">
+                <a tal:content="python:contact.getEmailAddress()"
+                   tal:attributes="url python:'mailto:%s' % contact.getEmailAddress()"/>
+              </td>
             </tr>
-        </table>
+            <tr>
+              <th i18n:translate="" class="label">Telephone</th>
+              <td tal:content="structure python: client.getPhone()"/>
+            </tr>
+            <tr>
+              <th i18n:translate="" class="label">Address</th>
+              <td tal:content="structure python:view._client_address(client)"/>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <!-- Laboratory -->
+          <table>
+            <tr>
+              <th i18n:translate="" class="label">
+                Laboratory
+              </th>
+              <td tal:content="python: lab.Title()"/>
+            </tr>
+            <tr>
+              <th i18n:translate="" class="label">Email
+              </th>
+              <td>
+                <a tal:content="python:lab.getEmailAddress()"
+                   tal:attributes="url python:'mailto:%s' % lab.getEmailAddress()"/>
+              </td>
+            </tr>
+            <tr>
+              <th i18n:translate="" class="label">
+                Telephone
+              </th>
+              <td tal:content="structure python: lab.getPhone()"/>
+            </tr>
+            <tr>
+              <th i18n:translate="" class="label">
+                Address
+              </th>
+              <td tal:content="structure python:view._lab_address(lab)"/>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <hr size="1"/>
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <th i18n:translate="" class="label">Report Date</th>
+        <td tal:content="structure view/current_date"/>
+      </tr>
+      <tr>
+        <th i18n:translate="" class="label">Number of samples</th>
+        <td tal:content="structure python:len(argroup)"/>
+      </tr>
+      <tr>
+        <th i18n:translate="" class="label">Certificate Number
+        </th>
+        <td tal:content="structure coanr"/>
+      </tr>
+    </table>
 
         <hr size="1"/>
 

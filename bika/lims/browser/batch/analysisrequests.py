@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from operator import itemgetter
 from bika.lims import bikaMessageFactory as _
@@ -36,9 +38,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(AddAnalysisRequest, self.portal):
             self.context_actions[self.context.translate(_('Add new'))] = {
-                'url': self.context.absolute_url() + \
-                    "/portal_factory/"
-                    "AnalysisRequest/Request new analyses/ar_add?ar_count=1",
+                'url': self.context.absolute_url() + "/ar_add?ar_count=1",
                 'icon': '++resource++bika.lims.images/add.png'}
 
         return super(AnalysisRequestsView, self).__call__()

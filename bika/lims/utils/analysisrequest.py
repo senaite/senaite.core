@@ -1,14 +1,14 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.analysisrequest.reject import \
-    AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis
 from bika.lims.utils import tmpID
@@ -87,7 +87,8 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create sample partitions
     if not partitions:
-        partitions = [{'services': service_uids}]
+        partitions = values.get('Partitions',
+                                [{'services': service_uids}])
 
     part_num = 0
     prefix = sample.getId() + "-P"
@@ -150,24 +151,6 @@ def create_analysisrequest(client, request, values, analyses=None,
         for partition in partitions:
             part = partition['object']
             doActionsFor(part, sampleactions)
-    else:
-        # If Preservation is required for some partitions, and the SamplingWorkflow
-        # is disabled, we need to transition to to_be_preserved manually.
-        if not sampling_workflow_enabled:
-            to_be_preserved = []
-            sample_due = []
-            lowest_state = 'sample_due'
-            for p in sample.objectValues('SamplePartition'):
-                if p.getPreservation():
-                    lowest_state = 'to_be_preserved'
-                    to_be_preserved.append(p)
-                else:
-                    sample_due.append(p)
-            for p in to_be_preserved:
-                doActionFor(p, 'to_be_preserved')
-            for p in sample_due:
-                doActionFor(p, 'sample_due')
-            doActionFor(sample, lowest_state)
 
     # Transition pre-preserved partitions
     for p in partitions:
@@ -202,7 +185,7 @@ def get_sample_from_values(context, values):
     return sample
 
 
-def get_services_uids(context=None, analyses_serv=[], values={}):
+def get_services_uids(context=None, analyses_serv=None, values=None):
     """
     This function returns a list of UIDs from analyses services from its
     parameters.
@@ -213,6 +196,11 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     :type values: dict
     :returns: a list of analyses services UIDs
     """
+    if analyses_serv is None:
+        analyses_serv = []
+    if values is None:
+        values = {}
+
     if not context or (not analyses_serv and not values):
         raise RuntimeError(
             "get_services_uids: Missing or wrong parameters.")
@@ -224,16 +212,19 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     # Sometimes we can get analyses and profiles that doesn't match and we
     # should act in consequence.
     # Getting the analyses profiles
-    analyses_profiles = values.get('Profiles')
-    if analyses_profiles:
-        analyses_profiles = analyses_profiles.split(',')
+    analyses_profiles = values.get('Profiles', [])
+    if not isinstance(analyses_profiles, (list, tuple)):
+        # Plone converts the incoming form value to a list, if there are
+        # multiple values; but if not, it will send a string (a single UID).
+        analyses_profiles = [analyses_profiles]
     if not analyses_services and not analyses_profiles:
         raise RuntimeError(
                 "create_analysisrequest: no analyses services or analysis"
                 " profile provided")
     # Add analysis services UIDs from profiles to analyses_services variable.
     for profile_uid in analyses_profiles:
-        # When creating an AR, JS builds a query from selected fields. Although it doesn't set empty values to any
+        # When creating an AR, JS builds a query from selected fields.
+        # Although it doesn't set empty values to any
         # Field, somehow 'Profiles' field can have an empty value in the set.
         # Thus, we should avoid querying by empty UID through 'uid_catalog'.
         if profile_uid:
@@ -320,7 +311,13 @@ def notify_rejection(analysisrequest):
     :param analysisrequest: Analysis Request to which the notification refers
     :returns: true if success
     """
-    arid = analysisrequest.getRequestID()
+
+    # We do this imports here to avoid circular dependencies until we deal
+    # better with this notify_rejection thing.
+    from bika.lims.browser.analysisrequest.reject import \
+        AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
+
+    arid = analysisrequest.getId()
 
     # This is the template to render for the pdf that will be either attached
     # to the email and attached the the Analysis Request for further access

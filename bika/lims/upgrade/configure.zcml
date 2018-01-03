@@ -17,4 +17,88 @@
        handler="bika.lims.upgrade.v01_00_000.upgrade"
        profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.0"
+       source="1.0.0"
+       destination="1.1.0"
+       handler="bika.lims.upgrade.v01_01_000.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.1"
+       source="1.1.0"
+       destination="1.1.1"
+       handler="bika.lims.upgrade.v01_01_001.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.2"
+       source="1.1.1"
+       destination="1.1.2"
+       handler="bika.lims.upgrade.v01_01_002.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.3"
+       source="1.1.2"
+       destination="1.1.3"
+       handler="bika.lims.upgrade.v01_01_003.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.4"
+       source="1.1.3"
+       destination="1.1.4"
+       handler="bika.lims.upgrade.v01_01_004.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.5"
+       source="1.1.4"
+       destination="1.1.5"
+       handler="bika.lims.upgrade.v01_01_005.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.6"
+       source="1.1.5"
+       destination="1.1.6"
+       handler="bika.lims.upgrade.v01_01_006.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.7"
+       source="1.1.6"
+       destination="1.1.7"
+       handler="bika.lims.upgrade.v01_01_007.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to Bika LIMS Evo 1.1.8"
+       source="1.1.7"
+       destination="1.1.8"
+       handler="bika.lims.upgrade.v01_01_008.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to SENAITE.CORE 1.2.0"
+       source="1.1.8"
+       destination="1.2.0"
+       handler="bika.lims.upgrade.v01_02_000.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to SENAITE.CORE 1.2.0"
+       source="1.1.9"
+       destination="1.2.0"
+       handler="bika.lims.upgrade.v01_02_000.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to SENAITE.CORE 1.2.1"
+       source="1.2.0"
+       destination="1.2.1"
+       handler="bika.lims.upgrade.v01_02_001.upgrade"
+       profile="bika.lims:default"/>
+
 </configure>

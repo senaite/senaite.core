@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import os
 import re
@@ -27,6 +29,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView, ulocalized_time
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest, IResultOutOfRange
 from bika.lims.interfaces.field import IUIDReferenceField
@@ -85,7 +88,7 @@ class AnalysisRequestPublishView(BrowserView):
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':
             self._ars = [self.context]
-        elif self.context.portal_type == 'AnalysisRequestsFolder' \
+        elif self.context.portal_type in ('AnalysisRequestsFolder', 'Client') \
                 and self.request.get('items', ''):
             uids = self.request.get('items').split(',')
             uc = getToolByName(self.context, 'uid_catalog')
@@ -260,6 +263,11 @@ class AnalysisRequestPublishView(BrowserView):
         """Returns true if hidden analyses are visible
         """
         return self.request.form.get('hvisible', '0').lower() in ['true', '1']
+
+    def isLandscape(self):
+        """ Returns if the layout is landscape
+        """
+        return self.request.form.get('landscape', '0').lower() in ['true', '1']
 
     def localise_images(self, htmlreport):
         """WeasyPrint will attempt to retrieve attachments directly from the URL
@@ -493,7 +501,22 @@ class AnalysisRequestPublishView(BrowserView):
         for cc in ar.getCCContact():
             recips.append({'title': to_utf8(cc.Title()),
                            'email': cc.getEmailAddress(),
-                           'pubpref': contact.getPublicationPreference()})
+                           'pubpref': cc.getPublicationPreference()})
+
+        # CC Emails
+        # https://github.com/senaite/bika.lims/issues/361
+        plone_utils = getToolByName(self.context, "plone_utils")
+        ccemails = map(lambda x: x.strip(), ar.getCCEmails().split(","))
+        for ccemail in ccemails:
+            # Better do that with a field validator
+            if not plone_utils.validateSingleEmailAddress(ccemail):
+                logger.warn(
+                    "Skipping invalid email address '{}'".format(ccemail))
+                continue
+            recips.append({
+                'title': ccemail,
+                'email': ccemail,
+                'pubpref': ('email', 'pdf',), })
 
         return recips
 
@@ -518,7 +541,7 @@ class AnalysisRequestPublishView(BrowserView):
         css = []
         blanks_found = False
         if ai:
-            ais.append(ar.getRequestID())
+            ais.append(ar.getId())
         if co:
             if ar.getClientOrderNumber():
                 if not ar.getClientOrderNumber() in cos:
@@ -635,25 +658,7 @@ class AnalysisRequestPublishView(BrowserView):
         lab_address = lab.getPostalAddress() \
                       or lab.getBillingAddress() \
                       or lab.getPhysicalAddress()
-        return self._format_address(lab_address)
-
-    def _client_address(self, client):
-        client_address = client.getPostalAddress() \
-                         or client.getBillingAddress() \
-                         or client.getPhysicalAddress()
-        return self._format_address(client_address)
-
-    def _format_address(self, address):
-        """Takes a value from an AddressField, returns a div class=address
-        with spans inside, containing the address field values.
-        """
-        addr = ''
-        if address:
-            # order of divs in output html
-            keys = ['address', 'city', 'district', 'state', 'zip', 'country']
-            addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
-                            if address.get(v, None)])
-        return "<div class='address'>%s</div>" % addr
+        return _format_address(lab_address)
 
     def explode_data(self, data, padding=''):
         out = ''
@@ -839,7 +844,7 @@ class AnalysisRequestDigester:
 
             elif fld.type == 'address':
                 # This is just a Record field
-                data[fieldname + "_formatted"] = self._format_address(rawvalue)
+                data[fieldname + "_formatted"] = _format_address(rawvalue)
                 # Also include un-formatted address
                 data[fieldname] = rawvalue
 
@@ -856,17 +861,33 @@ class AnalysisRequestDigester:
 
         return data
 
-    def _format_address(self, address):
-        """Takes a value from an AddressField, returns a div class=address
-        with spans inside, containing the address field values.
+    def getDimension(self):
+        """ Returns the dimension of the report
         """
-        addr = ''
-        if address:
-            # order of divs in output html
-            keys = ['address', 'city', 'district', 'state', 'zip', 'country']
-            addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
-                            if address.get(v, None)])
-        return "<div class='address'>%s</div>" % addr
+        return self.request.form.get("layout", "A4")
+
+    def isLandscape(self):
+        """ Returns if the layout is landscape
+        """
+        return self.request.form.get('landscape', '0').lower() in ['true', '1']
+
+    def getDirection(self):
+        """ Return landscape or horizontal
+        """
+        return self.isLandscape() and "landscape" or "horizontal"
+
+    def getLayout(self):
+        """ Returns the layout of the report
+        """
+        mapping = {
+            "A4": (210, 297),
+            "letter": (216, 279)
+        }
+        dimension = self.getDimension()
+        layout = mapping.get(dimension, mapping.get("A4"))
+        if self.isLandscape():
+            layout = tuple(reversed(layout))
+        return layout
 
     def _workflow_data(self, instance):
         """Add some workflow information for all actions performed against
@@ -918,7 +939,10 @@ class AnalysisRequestDigester:
                 'prepublish': False,
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None,
-                }
+                'resultsinterpretation':ar.getResultsInterpretation(),
+                'ar_attachments': self._get_ar_attachments(ar),
+                'an_attachments': self._get_an_attachments(ar),
+        }
 
         # Sub-objects
         excludearuids.append(ar.UID())
@@ -1011,6 +1035,78 @@ class AnalysisRequestDigester:
 
         return data
 
+    def _get_attachment_info(self, attachment):
+        attachment_file = attachment.getAttachmentFile()
+        attachment_size = attachment.get_size()
+        attachment_type = attachment.getAttachmentType()
+        attachment_mime = attachment_file.getContentType()
+
+        def get_kb_size():
+            size = attachment_size / 1024
+            if size < 1:
+                return 1
+            return size
+
+        info = {
+            "obj": attachment,
+            "uid": attachment.UID(),
+            "keywords": attachment.getAttachmentKeys(),
+            "type": attachment_type and attachment_type.Title() or "",
+            "file": attachment_file,
+            "filename": attachment_file.filename,
+            "filesize": attachment_size,
+            "size": "{} Kb".format(get_kb_size()),
+            "download": "{}/at_download/AttachmentFile".format(
+                attachment.absolute_url()),
+            "mimetype": attachment_mime,
+            "title": attachment_file.Title(),
+            "icon": attachment_file.icon(),
+            "inline": "<embed src='{}/AttachmentFile' class='inline-attachment inline-attachment-{}'/>".format(
+                attachment.absolute_url(), self.getDirection()),
+            "renderoption": attachment.getReportOption(),
+        }
+        if attachment_mime.startswith("image"):
+            info["inline"] = "<img src='{}/AttachmentFile' class='inline-attachment inline-attachment-{}'/>".format(
+                attachment.absolute_url(), self.getDirection())
+        return info
+
+    def _sorted_attachments(self, ar, attachments=[]):
+        """Sorter to return the attachments in the same order as the user
+        defined in the attachments viewlet
+        """
+        inf = float("inf")
+        view = ar.restrictedTraverse("attachments_view")
+        order = view.get_attachments_order()
+
+        def att_cmp(att1, att2):
+            _n1 = att1.get('uid')
+            _n2 = att2.get('uid')
+            _i1 = _n1 in order and order.index(_n1) + 1 or inf
+            _i2 = _n2 in order and order.index(_n2) + 1 or inf
+            return cmp(_i1, _i2)
+
+        return sorted(attachments, cmp=att_cmp)
+
+    def _get_ar_attachments(self, ar):
+        attachments = []
+        for attachment in ar.getAttachment():
+            # Skip attachments which have the (i)gnore flag set
+            if attachment.getReportOption() == "i":
+                continue
+            attachments.append(self._get_attachment_info(attachment))
+
+        return self._sorted_attachments(ar, attachments)
+
+    def _get_an_attachments(self, ar):
+        attachments = []
+        for analysis in ar.getAnalyses(full_objects=True):
+            for attachment in analysis.getAttachment():
+                # Skip attachments which have the (i)gnore flag set
+                if attachment.getReportOption() == "i":
+                    continue
+                attachments.append(self._get_attachment_info(attachment))
+        return self._sorted_attachments(ar, attachments)
+
     def _batch_data(self, ar):
         data = {}
         batch = ar.getBatch()
@@ -1074,10 +1170,10 @@ class AnalysisRequestDigester:
             contact = contact[0].getObject() if contact else None
             cfullname = contact.getFullname() if contact else None
             cemail = contact.getEmailAddress() if contact else None
-            physical_address = self._format_address(
+            physical_address = _format_address(
                 contact.getPhysicalAddress()) if contact else ''
             postal_address =\
-                self._format_address(contact.getPostalAddress())\
+                    _format_address(contact.getPostalAddress())\
                 if contact else ''
             data = {'id': member.id,
                     'fullname': to_utf8(cfullname) if cfullname else to_utf8(
@@ -1088,7 +1184,6 @@ class AnalysisRequestDigester:
                     'home_phone': contact.getHomePhone() if contact else '',
                     'mobile_phone': contact.getMobilePhone() if contact else '',
                     'job_title': to_utf8(contact.getJobTitle()) if contact else '',
-                    'department': to_utf8(contact.getDepartment()) if contact else '',
                     'physical_address': physical_address,
                     'postal_address': postal_address,
                     'home_page': to_utf8(mhomepage)}
@@ -1118,15 +1213,17 @@ class AnalysisRequestDigester:
         lab_address = lab.getPostalAddress() \
                       or lab.getBillingAddress() \
                       or lab.getPhysicalAddress()
-        return self._format_address(lab_address)
+        return _format_address(lab_address)
 
     def _lab_data(self):
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         lab = self.context.bika_setup.laboratory
-
+        sv = lab.getSupervisor()
+        sv = sv.getFullname() if sv else ""
         return {'obj': lab,
                 'title': to_utf8(lab.Title()),
                 'url': to_utf8(lab.getLabURL()),
+                'supervisor': to_utf8(sv),
                 'address': to_utf8(self._lab_address(lab)),
                 'confidence': lab.getConfidence(),
                 'accredited': lab.getLaboratoryAccredited(),
@@ -1144,10 +1241,6 @@ class AnalysisRequestDigester:
                     'pubpref': contact.getPublicationPreference()}
         return data
 
-    def _client_address(self, client):
-        client_address = client.getPostalAddress()
-        return self._format_address(client_address)
-
     def _client_data(self, ar):
         data = {}
         client = ar.aq_parent
@@ -1159,7 +1252,7 @@ class AnalysisRequestDigester:
             data['phone'] = to_utf8(client.getPhone())
             data['fax'] = to_utf8(client.getFax())
 
-            data['address'] = to_utf8(self._client_address(client))
+            data['address'] = to_utf8(get_client_address(ar))
         return data
 
     def _specs_data(self, ar):
@@ -1185,9 +1278,13 @@ class AnalysisRequestDigester:
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         showhidden = self.isHiddenAnalysesVisible()
-        for an in ar.getAnalyses(
-                full_objects=True, review_state=analysis_states):
 
+        catalog = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
+        brains = catalog({'getRequestUID': ar.UID(),
+                          'review_state': analysis_states,
+                          'sort_on': 'sortable_title'})
+        for brain in brains:
+            an = brain.getObject()
             # Omit hidden analyses?
             if not showhidden and an.getHidden():
                 continue
@@ -1441,3 +1538,35 @@ def EndRequestHandler(event):
     # If this commit() is not here, then the data does not appear to be
     # saved.  IEndRequest happens outside the transaction?
     transaction.commit()
+
+
+def get_client_address(context):
+    if context.portal_type == 'AnalysisRequest':
+        client = context.aq_parent
+    else:
+        client = context
+    client_address = client.getPostalAddress()
+    if not client_address:
+        ar = context
+        if not IAnalysisRequest.providedBy(ar):
+            return ""
+        # Data from the first contact
+        contact = ar.getContact()
+        if contact and contact.getBillingAddress():
+            client_address = contact.getBillingAddress()
+        elif contact and contact.getPhysicalAddress():
+            client_address = contact.getPhysicalAddress()
+    return _format_address(client_address)
+
+
+def _format_address(address):
+    """Takes a value from an AddressField, returns a div class=address
+    with spans inside, containing the address field values.
+    """
+    addr = ''
+    if address:
+        # order of divs in output html
+        keys = ['address', 'city', 'district', 'state', 'zip', 'country']
+        addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
+                        if address.get(v, None)])
+    return "<div class='address'>%s</div>" % addr
