@@ -58,6 +58,7 @@ Create a new buildout file ``senaite.cfg`` which extends your existing
 your main buildout.cfg which you can also use on the production server::
 
   [buildout]
+  index = https://pypi.python.org/simple
   extends = buildout.cfg
 
   [instance]
@@ -97,6 +98,7 @@ from your main buildout.cfg which you can also use on the production server.
 ``senaite.cfg``::
 
   [buildout]
+  index = https://pypi.python.org/simple
   extends = buildout.cfg
   develop +=
       src/senaite.core
