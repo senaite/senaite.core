@@ -81,7 +81,7 @@
        profile="bika.lims:default"/>
 
  <genericsetup:upgradeStep
-       title="Upgrade to Bika LIMS Evo 1.1.9"
+       title="Upgrade to SENAITE.CORE 1.1.9"
        source="1.1.8"
        destination="1.1.9"
        handler="bika.lims.upgrade.v01_01_009.upgrade"
