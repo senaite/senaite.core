@@ -13,7 +13,7 @@ from bika.lims.upgrade.utils import UpgradeUtils
 from Products.CMFCore.Expression import Expression
 from bika.lims.utils import changeWorkflowState
 
-version = '1.1.9'  # Remember version number in metadata.xml and setup.py
+version = '1.2.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
 @upgradestep(product, version)
@@ -48,6 +48,7 @@ def rename_bika_setup():
     bika_setup = api.get_bika_setup()
     bika_setup.setTitle("Setup")
     bika_setup.reindexObject()
+
 
 def fix_workflow_transitions(portal):
     """

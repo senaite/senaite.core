@@ -7,7 +7,7 @@ import sys
 import optparse
 from datetime import datetime
 
-SRC_DIR='${buildout:directory}/bika/lims'
+SRC_DIR = '${buildout:directory}/bika/lims'
 
 YEAR_FROM = '2018'
 TEMPLATE = """# -*- coding: utf-8 -*-
@@ -18,6 +18,7 @@ TEMPLATE = """# -*- coding: utf-8 -*-
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """
+
 
 def get_template():
     copy_years = datetime.now().strftime("%Y")

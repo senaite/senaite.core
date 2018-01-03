@@ -1,17 +1,16 @@
 Changelog
 =========
 
-1.1.9 (unreleased)
+1.2.0 (2018-01-03)
 ------------------
 
 **Added**
 
-
-**Removed**
-
+- #498 Added getPriorityText method to Analysis Request
 
 **Changed**
 
+- #519 #527 #528 bika.lims to senaite.core distribution
 
 **Fixed**
 
@@ -27,8 +26,6 @@ Changelog
 - #499 Applying a WS template which references a Duplicate raises an Error
 - #513 ShowPrices doctest is failing
 - #488 JS Errors in bika.lims.analysisrequest.js
-
-**Security**
 
 
 1.1.8 (2017-12-23)
@@ -570,13 +567,6 @@ Changelog
 
 - LIMS-2299: Add ui for editing ar_count in all analysisrequest lists
 - Removed commented HTML that was causing Chameleon to choke when adding ARs.
-
-
-3.1.12 (2016-12-15)
--------------------
-
-- HEALTH-569 Bar code printing not working on sample registration
-- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
 
 
 3.1.12 (2016-12-15)

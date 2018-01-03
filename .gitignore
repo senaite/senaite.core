@@ -6,8 +6,7 @@
 *.swp
 *.tags*
 *.wpr
-*.wpu
-*MANIFEST*
+*.wp
 *project
 *workspace
 *~

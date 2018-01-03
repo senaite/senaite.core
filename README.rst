@@ -29,7 +29,7 @@ Introduction
 
 SENAITE.CORE is an Open Source Laboratory Information Management System (LIMS)
 for enterprise environments, especially focused to behave with high speed,
-excellent performance and good stability. 
+excellent performance and good stability.
 
 This software is a derivative work of `Bika LIMS <https://github.com/bikalims/bika.lims>`_
 software and comes with the same user interface. Since SENAITE.CORE provides the
@@ -52,26 +52,21 @@ below:
 Ready-to-go installation
 ------------------------
 With this installation modality, the sources from ``senaite.core`` will be
-downloaded automatically from `Python Package Index (Pypi) <https://pypi.python.org/pypi/senaite.core>`_
-want the latest code from the `source code repository <https://github.com/senaite/senaite.core>`_,
-follow the installation instructions for development.
+downloaded automatically from `Python Package Index (Pypi) <https://pypi.python.org/pypi/senaite.core>`_.
+If you want the latest code from the `source code repository <https://github.com/senaite/senaite.core>`_,
+follow the `installation instructions for development <https://github.com/senaite/senaite.core/blob/master/README.rst#installation-for-development>`_.
 
 Create a new buildout file ``senaite.cfg`` which extends your existing
 ``buildout.cfg`` – this way you can easily keep development stuff separate from
 your main buildout.cfg which you can also use on the production server::
 
   [buildout]
+  index = https://pypi.python.org/simple
   extends = buildout.cfg
 
   [instance]
   eggs +=
       senaite.core
-
-  [versions]
-  setuptools =
-  zc.buildout =
-  CairoSVG = 1.0.20
-  five.pt = 2.2.4
 
 Note that with this approach you do not need to modify the existing buildout.cfg
 file.
@@ -91,7 +86,7 @@ Installation for development
 
 This is the recommended approach how to enable ``senaite.core`` for your
 development environment. With this approach, you'll be able to download the
-latest source code from `senaite.core's repository <https://github.com/senaite/senaite.core>`_ 
+latest source code from `senaite.core's repository <https://github.com/senaite/senaite.core>`_
 and contribute as well.
 
 Use git to fetch ``senaite.core`` source code to your buildout environment::
@@ -106,6 +101,7 @@ from your main buildout.cfg which you can also use on the production server.
 ``senaite.cfg``::
 
   [buildout]
+  index = https://pypi.python.org/simple
   extends = buildout.cfg
   develop +=
       src/senaite.core
@@ -113,12 +109,6 @@ from your main buildout.cfg which you can also use on the production server.
   [instance]
   eggs +=
       senaite.core
-
-  [versions]
-  setuptools =
-  zc.buildout =
-  CairoSVG = 1.0.20
-  five.pt = 2.2.4
 
 Note that with this approach you do not need to modify the existing buildout.cfg
 file.
@@ -129,15 +119,12 @@ Then build it out with this special config file::
 
 and buildout will automatically download and install all required dependencies.
 
-For further details about Buildout and how to install add-ons for Plone, please check
-`Installing add-on packages using Buildout from Plone documentation <https://docs.plone.org/4/en/manage/installing/installing_addons.html>`_.
-
 
 Contribute
 ==========
 
 We want contributing to SENAITE.CORE to be fun, enjoyable, and educational for
-anyone, and everyone. This project adheres to the `Contributor Covenant <https://github.com/senaite/senaite.core/blob/master/CODE_OF_CONDUCT.md>`_. 
+anyone, and everyone. This project adheres to the `Contributor Covenant <https://github.com/senaite/senaite.core/blob/master/CODE_OF_CONDUCT.md>`_.
 By participating, you are expected to uphold this code. Please report
 unacceptable behavior.
 
@@ -150,5 +137,5 @@ document <https://github.com/senaite/senaite.core/blob/master/CONTRIBUTING.md>`_
 Feedback and support
 ====================
 
-* `Gitter channel <https://gitter.im/senaite/Lobby>`_ 
+* `Gitter channel <https://gitter.im/senaite/Lobby>`_
 * `Users list <https://sourceforge.net/projects/senaite/lists/senaite-users>`_
