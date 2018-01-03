@@ -67,12 +67,6 @@ your main buildout.cfg which you can also use on the production server::
   eggs +=
       senaite.core
 
-  [versions]
-  setuptools =
-  zc.buildout =
-  CairoSVG = 1.0.20
-  five.pt = 2.2.4
-
 Note that with this approach you do not need to modify the existing buildout.cfg
 file.
 
