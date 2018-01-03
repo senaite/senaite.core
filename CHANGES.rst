@@ -595,13 +595,6 @@ Changelog
 - Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
 
 
-3.1.12 (2016-12-15)
--------------------
-
-- HEALTH-569 Bar code printing not working on sample registration
-- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
-
-
 3.1.11 (2016-04-22)
 -------------------
 
