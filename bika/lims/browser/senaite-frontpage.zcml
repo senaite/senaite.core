@@ -1,0 +1,36 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="bika">
+
+    <include package="plone.app.contentmenu" />
+
+    <!-- TODO: TO BE REMOVED
+    It is only used to prevent an ugly Traceback when the instance hasn't been
+    yet upgraded to 1.1.9. If authenticated, displays a landing page telling the
+    user to upgrade to 1.1.9. If not authenticated, redirects to login page as
+    usual.-->
+    <browser:page
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        name="bika-frontpage"
+        class="bika.lims.browser.senaite-frontpage.FrontPageView"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        name="senaite-frontpage"
+        class="bika.lims.browser.senaite-frontpage.FrontPageView"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:menuItem
+        for="Products.CMFCore.interfaces.ISiteRoot"
+        menu="plone_displayviews"
+        title="SENAITE front-page"
+        action="senaite-frontpage"
+        description="SENAITE LIMS front-page"
+    />
+</configure>
