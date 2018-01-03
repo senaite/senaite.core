@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #536 Instrument import interface: Sysmex XT-1800i
 
 **Removed**
 
