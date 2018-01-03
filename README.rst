@@ -52,9 +52,9 @@ below:
 Ready-to-go installation
 ------------------------
 With this installation modality, the sources from ``senaite.core`` will be
-downloaded automatically from `Python Package Index (Pypi) <https://pypi.python.org/pypi/senaite.core>`_
-want the latest code from the `source code repository <https://github.com/senaite/senaite.core>`_,
-follow the installation instructions for development.
+downloaded automatically from `Python Package Index (Pypi) <https://pypi.python.org/pypi/senaite.core>`_.
+If you want the latest code from the `source code repository <https://github.com/senaite/senaite.core>`_,
+follow the `installation instructions for development <https://github.com/senaite/senaite.core/blob/master/README.rst#installation-for-development>`_.
 
 Create a new buildout file ``senaite.cfg`` which extends your existing
 ``buildout.cfg`` – this way you can easily keep development stuff separate from
