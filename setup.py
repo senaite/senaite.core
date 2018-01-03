@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 
-version = '1.2.0'
+version = '1.2.1'
 
 setup(
     name='senaite.core',
