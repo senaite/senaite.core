@@ -38,4 +38,4 @@ before_install:
 install:
   - bin/buildout -n -t 3 -c travis.cfg
 script:
-  - bin/test -m bika.lims
+  - bin/test -m senaite.core
