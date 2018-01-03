@@ -20,6 +20,7 @@ Needed Imports::
     >>> import transaction
     >>> from DateTime import DateTime
     >>> from plone import api as ploneapi
+    >>> from zope.lifecycleevent import modified
 
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest

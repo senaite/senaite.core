@@ -829,3 +829,17 @@ def is_bika_installed():
     """
     qi = api.portal.get_tool("portal_quickinstaller")
     return qi.isProductInstalled("bika.lims")
+
+def convert_unit(result, formula, dmk, precision):
+    """ take a value and a unit conversion formula and convert the result
+    """
+    try:
+        formula = formula.replace('Value', '%f')
+        new =  eval(formula % float(result))
+        fmt = '{{:.{}f}}'.format(precision)
+        formatted = fmt.format(new)
+    except ValueError, e:
+        logger.info('convert unit failed to eval %s - %s: %s' % (
+            formula, result, str(e)))
+        return '-'
+    return formatted

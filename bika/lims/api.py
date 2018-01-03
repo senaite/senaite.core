@@ -148,6 +148,8 @@ def create(container, portal_type, *args, **kwargs):
 
     if fti.product:
         obj = _createObjectByType(portal_type, container, tmp_id)
+        obj.edit(**kwargs)
+        obj.processForm()
     else:
         # newstyle factory
         factory = getUtility(IFactory, fti.factory)
@@ -160,13 +162,6 @@ def create(container, portal_type, *args, **kwargs):
         # we get the object here with the current object id, as it might be renamed
         # already by an event handler
         obj = container._getOb(obj.getId())
-
-    # handle AT Content
-    if is_at_content(obj):
-        obj.processForm()
-
-    # Edit after processForm; processForm does AT unmarkCreationFlag.
-    obj.edit(**kwargs)
 
     # explicit notification
     modified(obj)

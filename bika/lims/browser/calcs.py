@@ -11,6 +11,7 @@ from zope.component import adapts
 from zope.component import getAdapters
 from zope.interface import implements
 
+from plone import api as ploneapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
@@ -19,6 +20,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.utils import convert_unit
 from bika.lims.utils import t, isnumber
 from bika.lims.utils.analysis import format_numeric_result
 
@@ -70,7 +72,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         self.context = context
         self.request = request
 
-    def calculate(self, uid=None):
+    def calculate(self, uid=None, sample_type_uid=None):
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]['result']
         calculation = analysis.getCalculation()
@@ -90,6 +92,24 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         except:
             if form_result == "0/0":
                 Result['result'] = ""
+
+        if sample_type_uid and Result['result']:
+            service = analysis.getAnalysisService()
+            for unit_conversion in service.getUnitConversions():
+                if unit_conversion.get('SampleType') and \
+                   unit_conversion.get('Unit') and \
+                   unit_conversion.get('ShowOnListing', False) and \
+                   unit_conversion.get('SampleType') == sample_type_uid:
+                    conversion = ploneapi.content.get(
+                            UID=unit_conversion['Unit'])
+                    Result['converted_result'] = '%s %s' % (
+                        convert_unit(
+                            Result['result'],
+                            conversion.formula,
+                            self.context.bika_setup.getResultsDecimalMark(),
+                            analysis.getPrecision()),
+                        conversion.converted_unit)
+                    break
 
         if calculation:
             """We need first to create the map of available parameters
@@ -376,7 +396,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             self.analyses[analysis_uid] = analysis
 
         if uid not in self.ignore_uids:
-            self.calculate(uid)
+            sample_type_uid = self.context.getSampleType().UID()
+            self.calculate(uid, sample_type_uid)
 
         results = []
         for result in self.results:

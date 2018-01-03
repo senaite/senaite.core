@@ -120,6 +120,7 @@ def initialize(context):
     from content.suppliercontact import SupplierContact
     from content.supplyorderfolder import SupplyOrderFolder
     from content.supplyorder import SupplyOrder
+    from content.unitconversion import UnitConversion
     from content.worksheet import Worksheet
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate
@@ -155,6 +156,7 @@ def initialize(context):
     from controlpanel.bika_srtemplates import SRTemplates
     from controlpanel.bika_subgroups import SubGroups
     from controlpanel.bika_suppliers import Suppliers
+    from controlpanel.bika_unitconversions import UnitConversions
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
     from controlpanel.bika_reflexrulefolder import ReflexRuleFolder
 

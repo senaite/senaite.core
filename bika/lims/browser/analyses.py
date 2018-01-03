@@ -6,11 +6,10 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims.utils import t, dicts_to_dict, format_supsub
-from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IResultOutOfRange
@@ -18,10 +17,14 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import isActive
+from bika.lims.utils import convert_unit
 from bika.lims.utils import getUsers
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import t, dicts_to_dict, format_supsub
+from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
 from operator import itemgetter
+from plone import api as ploneapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from zope.component import getAdapters
@@ -112,6 +115,11 @@ class AnalysesView(BikaListingView):
                 'input_width': '6',
                 'input_class': 'ajax_calculate numeric',
                 'sortable': False},
+            'ConvertedResult': {
+                'title': _('Converted Result'),
+                'input_width': '6',
+                'input_class': 'ajax_calculate numeric',
+                'sortable': False},
             'Specification': {
                 'title': _('Specification'),
                 'sortable': False},
@@ -155,6 +163,7 @@ class AnalysesView(BikaListingView):
                          'Partition',
                          'DetectionLimit',
                          'Result',
+                         'ConvertedResult',
                          'Specification',
                          'Method',
                          'Instrument',
@@ -431,6 +440,7 @@ class AnalysesView(BikaListingView):
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(unit) if unit else ''
         item['Result'] = ''
+        item['ConvertedResult'] = ''
         item['formatted_result'] = ''
         item['interim_fields'] = interim_fields
         item['Remarks'] = obj.getRemarks
@@ -895,6 +905,7 @@ class AnalysesView(BikaListingView):
                          t(_("Assigned to: ${worksheet_id}",
                              mapping={'worksheet_id': safe_unicode(ws.id)}))))
         item['after']['state_title'] = '&nbsp;'.join(after_icons)
+
         after_icons = []
         if obj.getIsReflexAnalysis:
             after_icons.append("<img\
@@ -904,6 +915,31 @@ class AnalysesView(BikaListingView):
                 t(_('It comes form a reflex rule'))
             ))
         item['after']['Service'] = '&nbsp;'.join(after_icons)
+
+        # add unit conversion information
+        item['unit_conversions'] = []
+        if item['review_state'] not in (
+                'retracted', 'sample_due', 'sampled', 'sample_received') and \
+           item['Result'] != '':
+            service = obj.getObject().getAnalysisService()
+            conversions = []
+            if hasattr(service, 'getUnitConversions'):
+                conversions = service.getUnitConversions()
+            for unit_conversion in conversions:
+                if unit_conversion.get('SampleType') and \
+                   unit_conversion.get('Unit') and \
+                   unit_conversion.get('SampleType') == item['st_uid']:
+                    if unit_conversion.get('ShowOnListing', False):
+                        converted_unit = ploneapi.content.get(
+                            UID=unit_conversion['Unit'])
+                        item['ConvertedResult'] = '%s %s' % (
+                                convert_unit(
+                                        item['Result'],
+                                        converted_unit.formula,
+                                        self.dmk,
+                                        service.getPrecision()),
+                                converted_unit.converted_unit)
+                item['unit_conversions'].append(unit_conversion['Unit'])
 
 
         # Users that can Add Analyses to an Analysis Request must be able to

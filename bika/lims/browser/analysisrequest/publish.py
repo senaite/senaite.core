@@ -34,10 +34,12 @@ from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils import attachPdf, createPdf, encode_header, \
     format_supsub, \
     isnumber
+from bika.lims.utils import convert_unit
 from bika.lims.utils import formatDecimalMark, to_utf8
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.vocabularies import getARReportTemplates
 from bika.lims.workflow import wasTransitionPerformed
+from plone import api as ploneapi
 from plone.api.portal import get_registry_record
 from plone.api.portal import set_registry_record
 from plone.app.blob.interfaces import IBlobField
@@ -963,7 +965,8 @@ class AnalysisRequestDigester:
         data['sample'] = self._sample_data(ar)
         data['batch'] = self._batch_data(ar)
         data['specifications'] = self._specs_data(ar)
-        data['analyses'] = self._analyses_data(ar, ['verified', 'published'])
+        data['analyses'] = self._analyses_data(
+                ar, ['verified', 'published'], data['sample'])
         data['qcanalyses'] = self._qcanalyses_data(ar,
                                                    ['verified', 'published'])
         data['points_of_capture'] = sorted(
@@ -1268,7 +1271,7 @@ class AnalysisRequestDigester:
 
         return data
 
-    def _analyses_data(self, ar, analysis_states=None):
+    def _analyses_data(self, ar, analysis_states=None, sample=None):
         if not analysis_states:
             analysis_states = ['verified', 'published']
         analyses = []
@@ -1288,7 +1291,7 @@ class AnalysisRequestDigester:
                 continue
 
             # Build the analysis-specific dict
-            andict = self._analysis_data(an, dm)
+            andict = self._analysis_data(an, dm, sample)
 
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
@@ -1310,10 +1313,24 @@ class AnalysisRequestDigester:
                 andict['previous_results'] = ", ".join(
                     [p['formatted_result'] for p in andict['previous'][-5:]])
 
+            #Append original analysis
             analyses.append(andict)
+
+            #Append addition analysis for each unit conversion
+            if andict['unit_conversions']:
+                for uc_uid in andict['unit_conversions']:
+                    new = dict(andict)
+                    unit_conversion = get_object_by_uid(uid=uc_uid)
+                    new['unit'] = unit_conversion.converted_unit
+                    new['formatted_unit'] = unit_conversion.converted_unit
+                    if andict.get('result'):
+                        new['formatted_result'] = new['result'] = convert_unit(
+                                    andict['result'], dm, unit_conversion.formula)
+                    analyses.append(new)
+
         return analyses
 
-    def _analysis_data(self, analysis, decimalmark=None):
+    def _analysis_data(self, analysis, decimalmark=None, sample=None):
 
         andict = {'obj': analysis,
                   'id': analysis.id,
@@ -1343,7 +1360,9 @@ class AnalysisRequestDigester:
                       else None,
                   'worksheet': None,
                   'specs': {},
-                  'formatted_specs': ''}
+                  'formatted_specs': '',
+                  'unit_conversions': [],
+                  }
 
         if analysis.portal_type == 'DuplicateAnalysis':
             andict['reftype'] = 'd'
@@ -1402,6 +1421,19 @@ class AnalysisRequestDigester:
                 if ret and ret['out_of_range']:
                     andict['outofrange'] = True
                     break
+
+        # Get unit conversions for result
+        st_uid = None
+        if sample and sample.get('sample_type') and \
+           sample['sample_type'].get('obj'):
+            st_uid = sample['sample_type']['obj'].UID()
+        if st_uid:
+            for unit_conversion in service.getUnitConversions():
+                if unit_conversion.get('SampleType') and \
+                   unit_conversion.get('Unit') and \
+                   unit_conversion.get('SampleType') == st_uid:
+                    andict['unit_conversions'].append(unit_conversion['Unit'])
+
         return andict
 
     def _qcanalyses_data(self, ar, analysis_states=None):

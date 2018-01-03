@@ -7,6 +7,7 @@ from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
+from bika.lims import api
 from bika.lims.utils import tmpID, to_unicode
 from bika.lims.utils import to_utf8
 from bika.lims import bikaMessageFactory as _
@@ -2269,3 +2270,16 @@ class Invoice_Batches(WorksheetImporter):
                 BatchEndDate=row['end'],
             )
             renameAfterCreation(obj)
+
+class Unit_Conversions(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_unitconversions
+        for row in self.get_rows(3):
+            if row['unit']:
+                obj = api.create(folder, 'UnitConversion',
+                        title=row['unit'],
+                        converted_unit=row['converted_unit'],
+                        formula=row['formula'],
+                        description=row['description'])
+                renameAfterCreation(obj)

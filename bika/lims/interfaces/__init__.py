@@ -823,3 +823,8 @@ class ITopWideHTMLComponentsHook(Interface):
     """
     Marker interface to hook html components in bikalisting
     """
+
+class IUnitConversions(Interface):
+    """ A Unit Conversion container.
+    """
+

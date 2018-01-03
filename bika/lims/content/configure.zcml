@@ -9,6 +9,8 @@
     <adapter name="BatchDate" factory=".batch.BatchDate" />
     <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
     <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
+    <adapter name="title" factory=".unitconversion.title" />
+    <adapter name="sortable_title" factory=".unitconversion.sortable_title" />
 
     <subscriber
       for="bika.lims.interfaces.IPricelist
