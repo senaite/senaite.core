@@ -117,9 +117,6 @@ Then build it out with this special config file::
 
 and buildout will automatically download and install all required dependencies.
 
-For further details about Buildout and how to install add-ons for Plone, please check
-`Installing add-on packages using Buildout from Plone documentation <https://docs.plone.org/4/en/manage/installing/installing_addons.html>`_.
-
 
 Contribute
 ==========
