@@ -49,6 +49,7 @@ def rename_bika_setup():
     bika_setup.setTitle("Setup")
     bika_setup.reindexObject()
 
+
 def fix_workflow_transitions(portal):
     """
     Replace target states from some workflow statuses

@@ -1,17 +1,16 @@
 Changelog
 =========
 
-1.1.9 (unreleased)
+1.1.9 (2018-01-03)
 ------------------
 
 **Added**
 
-
-**Removed**
-
+- #498 Added getPriorityText method to Analysis Request
 
 **Changed**
 
+- #519 #527 #528 bika.lims to senaite.core distribution
 
 **Fixed**
 
@@ -27,8 +26,6 @@ Changelog
 - #499 Applying a WS template which references a Duplicate raises an Error
 - #513 ShowPrices doctest is failing
 - #488 JS Errors in bika.lims.analysisrequest.js
-
-**Security**
 
 
 1.1.8 (2017-12-23)
