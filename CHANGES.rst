@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #BC-271 Added 7 BC Instruments
 - #498 Added getPriorityText method to Analysis Request
 
 **Changed**
