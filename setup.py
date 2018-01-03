@@ -54,7 +54,7 @@ setup(
         'plone.app.dexterity',
         'plone.app.relationfield',
         'plone.app.referenceablebehavior',
-        'five.pt',
+        'five.pt==2.2.4',
         'z3c.jbot',
         'plone.resource',
         'CairoSVG==1.0.20',
