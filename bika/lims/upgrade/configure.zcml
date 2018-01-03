@@ -81,17 +81,17 @@
        profile="bika.lims:default"/>
 
  <genericsetup:upgradeStep
-       title="Upgrade to SENAITE.CORE 1.1.9"
+       title="Upgrade to SENAITE.CORE 1.2.0"
        source="1.1.8"
-       destination="1.1.9"
-       handler="bika.lims.upgrade.v01_01_009.upgrade"
+       destination="1.2.0"
+       handler="bika.lims.upgrade.v01_02_000.upgrade"
        profile="bika.lims:default"/>
 
  <genericsetup:upgradeStep
-       title="Upgrade to SENAITE.CORE 1.1.10"
+       title="Upgrade to SENAITE.CORE 1.2.0"
        source="1.1.9"
-       destination="1.1.10"
-       handler="bika.lims.upgrade.v01_01_010.upgrade"
+       destination="1.2.0"
+       handler="bika.lims.upgrade.v01_02_000.upgrade"
        profile="bika.lims:default"/>
 
 </configure>
