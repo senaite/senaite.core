@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -72,6 +74,7 @@ class HistoryAwareReferenceField(ReferenceField):
         add = [v for v in uids if v and v not in targetUIDs]
 
         newuids = [t for t in list(targetUIDs) + list(uids) if t not in sub]
+        newuids = list(set(newuids))
         for uid in newuids:
             # update version_id of all existing references that aren't
             # about to be removed anyway (contents of sub)

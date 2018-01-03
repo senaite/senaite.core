@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from zope.interface import implements
 from App.class_init import InitializeClass
@@ -19,10 +21,11 @@ from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
 CATALOG_ANALYSIS_LISTING = 'bika_analysis_catalog'
 # Defining the indexes for this catalog
 _indexes_dict = {
+    'sortable_title': 'FieldIndex',
     'worksheetanalysis_review_state': 'FieldIndex',
     'cancellation_state': 'FieldIndex',
     'getParentUID': 'FieldIndex',
-    'getAnalysisRequestUID': 'FieldIndex',
+    'getRequestUID': 'FieldIndex',
     'getDepartmentUID': 'FieldIndex',
     'getDueDate': 'DateIndex',
     'getDateSampled': 'DateIndex',
@@ -61,14 +64,14 @@ _columns_list = [
     'getReferenceAnalysesGroupID',
     'getResultCaptureDate',
     'getParentURL',
-    'getAnalysisRequestURL',
+    'getRequestURL',
     'getParentTitle',
     'getParentUID',
     'getClientTitle',
     'getClientURL',
-    'getAnalysisRequestTitle',
+    'getRequestTitle',
     'getResult',
-    'getCalculation',
+    'getCalculationUID',
     'getUnit',
     'getKeyword',
     'getCategoryTitle',

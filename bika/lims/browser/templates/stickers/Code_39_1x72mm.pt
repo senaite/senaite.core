@@ -45,7 +45,7 @@
     smart_id          python:part.getId() if show_partitions else sample.getId();
     hazardous         python:sample.getSampleType().getHazardous();">
 
-    <table cellpadding="0" cellspacing="0">
+    <table cellpadding="0" cellspacing="0" class="info-container">
         <thead>
             <tr>
                 <th i18n:translate="">Sample ID</th>

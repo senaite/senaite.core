@@ -20,7 +20,7 @@
                     portal_type='AnalysisRequest',
                     review_state='to_be_verified',
                     cancellation_state='active',
-                    sort_on='getRequestID') or [];
+                    sort_on='sortable_title') or [];
                  ar_results python:[p.getObject() for p in ar[:5]];
                  rs python:ws_results + ar_results;
                  results python:rs[:5];"

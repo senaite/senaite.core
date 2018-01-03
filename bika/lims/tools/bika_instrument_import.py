@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
@@ -28,7 +30,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
     security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile):
         workflow = getToolByName(self, 'portal_workflow')
-        prefixes = self.bika_setup.getPrefixes()
+        prefixes = self.bika_setup.getIDFormatting()
         ws_prefix = 'WS-'
         for d in prefixes:
             if d['portal_type'] == 'Worksheet':

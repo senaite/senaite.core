@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
@@ -14,6 +16,10 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
+from bika.lims.utils import getUsers
+from bika.lims import api
 
 schema = Organisation.schema.copy() + Schema((
     StringField('LabURL',
@@ -24,6 +30,18 @@ schema = Organisation.schema.copy() + Schema((
             label=_("Lab URL"),
             description=_("The Laboratory's web address"),
         ),
+    ),
+    UIDReferenceField(
+        'Supervisor',
+        required=0,
+        allowed_types=('LabContact',),
+        vocabulary='_getLabContacts',
+        write_permission = ManageBika,
+        widget=UIDSelectionWidget(
+            format='select',
+            label=_("Supervisor"),
+            description=_("Supervisor of the Lab")
+        )
     ),
     IntegerField('Confidence',
         schemata = 'Accreditation',
@@ -121,5 +139,15 @@ class Laboratory(UniqueObject, Organisation):
     def Title(self):
         title = self.getName() and self.getName() or _("Laboratory")
         return safe_unicode(title).encode('utf-8')
+
+    def _getLabContacts(self):
+        bsc = api.get_tool('bika_setup_catalog')
+        # fallback - all Lab Contacts
+        pairs = [['', '']]
+        for contact in bsc(portal_type='LabContact',
+                           inactive_state='active',
+                           sort_on='sortable_title'):
+            pairs.append((contact.UID, contact.Title))
+        return DisplayList(pairs)
 
 registerType(Laboratory, PROJECTNAME)

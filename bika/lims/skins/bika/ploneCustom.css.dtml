@@ -830,12 +830,14 @@ ul.errors {
     color:#720000;
 }
 
+/* bootstrap handles this now.
 div.alert {
     background-color: #FFDDCC;
     border-left: 4px solid red;
     margin: 10px 0;
     padding: 10px;
 }
+*/
 
 /* ARImport */
 .icons-on .section-arimports .contenttype-folder{
@@ -1395,6 +1397,29 @@ table.analysisrequest.add {}
     border-radius: 5px;
     font-size: 0.85em;
     padding: 4px 10px;
+}
+
+div.bika-listing-table-top-hooks:after {
+    clear: both;
+    content: " ";
+    display: block;
+    font-size: 0;
+    height: 0;
+    visibility: hidden;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-left,
+div.bika-listing-table-top-hooks div.listing-hook-top-right {
+    width:50%;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-right {
+    float:right;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-left {
+    float:left;
+}
+div.bika-listing-table-top-hooks div.listing-hook-top-wide {
+    clear:both;
+    display:block;
 }
 
 </dtml-with>

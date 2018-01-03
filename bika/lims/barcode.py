@@ -1,16 +1,19 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
-
-from bika.lims.browser import BrowserView
-from bika.lims.permissions import EditResults
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
+
 import plone.protect
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
+
+from bika.lims.browser import BrowserView
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.permissions import EditResults
 
 
 class barcode_entry(BrowserView):
@@ -55,7 +58,14 @@ class barcode_entry(BrowserView):
         return entry
 
     def resolve_item(self, entry):
-        for catalog in [self.bika_catalog, self.bika_setup_catalog]:
+        ar_catalog = getToolByName(
+            self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
+        catalogs = [
+            self.bika_catalog,
+            self.bika_setup_catalog,
+            ar_catalog,
+        ]
+        for catalog in catalogs:
             brains = catalog(title=entry)
             if brains:
                 return brains[0].getObject()

@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
@@ -1608,9 +1610,8 @@ class Analysis_Services(WorksheetImporter):
                 ManualEntryOfResults=allowmanualentry,
                 InstrumentEntryOfResults=allowinstrentry,
                 Instruments=instruments,
-                _Calculation=_calculation,
+                Calculation=_calculation,
                 UseDefaultCalculation=usedefaultcalculation,
-                DeferredCalculation=deferredcalculation,
                 DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
@@ -1966,7 +1967,7 @@ class Setup(WorksheetImporter):
 class ID_Prefixes(WorksheetImporter):
 
     def Import(self):
-        prefixes = self.context.bika_setup.getPrefixes()
+        prefixes = self.context.bika_setup.getIDFormatting()
         for row in self.get_rows(3):
             # remove existing prefix from list
             prefixes = [p for p in prefixes
@@ -1979,7 +1980,7 @@ class ID_Prefixes(WorksheetImporter):
                              'padding': row['padding'],
                              'prefix': row['prefix'],
                              'separator': separator})
-        self.context.bika_setup.setPrefixes(prefixes)
+        #self.context.bika_setup.setIDFormatting(prefixes)
 
 
 class Attachment_Types(WorksheetImporter):

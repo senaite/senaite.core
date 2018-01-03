@@ -36,6 +36,6 @@ before_install:
   - virtualenv .
   - bin/pip install --upgrade pip setuptools zc.buildout
 install:
-  - bin/buildout -N -t 3 -c travis.cfg
+  - bin/buildout -n -t 3 -c travis.cfg
 script:
-  - bin/test -m bika.lims --layer=bika.lims.testing.BikaTestingLayer:Functional
+  - bin/test -m bika.lims

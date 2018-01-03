@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims.jsonapi import set_fields_from_request
 from Products.CMFCore.utils import getToolByName
@@ -112,7 +114,7 @@ class Update(object):
             brain = uc(UID=self.request.get('obj_uid', ''))
             obj = brain[0].getObject() if brain else None
         if self.request.get('obj_path', '') and not obj:
-            obj_path = self.request['obj_path']
+            obj_path = self.request['obj_path'].split("?")[0]
             site_path = context.portal_url.getPortalObject().getPhysicalPath()
             if site_path and isinstance(site_path, basestring):
                 site_path = site_path if site_path.startswith('/') else '/' + site_path

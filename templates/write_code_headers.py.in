@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+#
+# Scans a source tree for python files and writes the header template on top of each file
+
+import os
+import sys
+import optparse
+from datetime import datetime
+
+SRC_DIR='${buildout:directory}/bika/lims'
+
+YEAR_FROM = '2018'
+TEMPLATE = """# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright {copy_years} by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
+"""
+
+def get_template():
+    copy_years = datetime.now().strftime("%Y")
+    if copy_years != YEAR_FROM:
+        copy_years = '{}-{}'.format(YEAR_FROM, copy_years)
+    template_data = {
+        "copy_years": copy_years,
+    }
+    return TEMPLATE.format(**template_data)
+
+
+if __name__ == "__main__":
+
+    parser = optparse.OptionParser()
+
+    parser.add_option('-d', '--directory',
+                      dest='directory',
+                      default=SRC_DIR,
+                      help='Source code directory to scan [default: %default]')
+
+    parser.add_option('-e', '--extensions',
+                      dest='extensions',
+                      default='.py',
+                      help='Comma separated list of file extensions [default: %default]')
+
+    options, args = parser.parse_args(sys.argv)
+
+    data = {}
+    directory = options.directory
+    extensions = map(lambda ext: ext.strip(), options.extensions.split(","))
+
+    def callback(arg, dirname, names):
+        # only write the header to the files where the file extension match (.py per default)
+        file_names = filter(lambda x: os.path.splitext(x)[-1] in extensions, names)
+        # generate a list of full file paths
+        file_paths = map(lambda x: os.path.abspath(os.path.join(dirname, x)), file_names)
+        # make a mapping of path -> file data
+        for path in file_paths:
+            lines = open(path, "r").readlines()
+            data[path] = lines
+
+    # walk the directory
+    os.path.walk(directory, callback, None)
+
+    for path, lines in data.iteritems():
+        # the new lines start with our header
+        new_lines = [get_template()]
+
+        skip = True
+        for num, line in enumerate(lines):
+            # skip all commented lines, but not those of Script (Python)
+            if skip and line.startswith("#") and not line.startswith("##"):
+                continue
+            # skip app empty lines
+            if skip and line == "\n":
+                continue
+
+            # if we reach this point, we found the first code line
+            if skip:
+                print "Found first code line for file {} at {}".format(path, num)
+                skip = False
+
+            # append all code lines below the new_lines
+            new_lines.append(line)
+
+        with open(path, "w") as f:
+            # get the last line
+            last_line = new_lines[-1]
+            # remove all trailing empty lines and add a single one
+            new_lines[-1] = last_line.rstrip("\n") + "\n"
+            f.writelines(new_lines)
+            print "Wrote header to {}".format(path)

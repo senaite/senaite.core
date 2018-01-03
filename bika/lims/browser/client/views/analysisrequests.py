@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analysisrequest import AnalysisRequestsView
@@ -41,10 +43,8 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
                 addPortalMessage(msg)
             else:
                 if mtool.checkPermission(AddAnalysisRequest, self.context):
-                    self.context_actions[t(_('Add'))] = {
-                        'url': self.context.absolute_url() + \
-                               "/portal_factory/AnalysisRequest" + \
-                               "/Request new analyses/ar_add",
+                    self.context_actions[_('Add')] = {
+                        'url': self.context.absolute_url() + "/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
 
         return super(ClientAnalysisRequestsView, self).__call__()

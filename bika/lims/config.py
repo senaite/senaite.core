@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-
-# This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Archetypes.public import DisplayList
 from bika.lims import bikaMessageFactory as _
@@ -16,8 +15,7 @@ PROJECTNAME = "bika.lims"
 
 GLOBALS = globals()
 
-VERSIONABLE_TYPES = ('AnalysisService',
-                     'Calculation',
+VERSIONABLE_TYPES = ('Calculation',
                      )
 
 POINTS_OF_CAPTURE = DisplayList((
@@ -54,6 +52,11 @@ ATTACHMENT_OPTIONS = DisplayList((
     ('r', _('Required')),
     ('p', _('Permitted')),
     ('n', _('Not Permitted')),
+))
+ATTACHMENT_REPORT_OPTIONS = DisplayList((
+    ('r', _('Render in Report')),
+    ('a', _('Attach to Report')),
+    ('i', _('Ignore in Report')),
 ))
 DEFAULT_AR_SPECS = DisplayList((
     ('ar_specs', _('Analysis Request Specifications')),

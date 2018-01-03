@@ -1,31 +1,28 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
+import json
+from operator import attrgetter
 
 from AccessControl import getSecurityManager
-from bika.lims import bikaMessageFactory as _
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.i18nl10n import ulocalized_time
 from bika.lims import PMF
+from bika.lims import bikaMessageFactory as _
+from bika.lims.api import get_tool
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
-from bika.lims.permissions import EditResults, EditWorksheet, ManageWorksheets
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.permissions import EditResults, ManageWorksheets
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
-from zope.component import adapts
-from zope.component import getAdapters
-from zope.component import getMultiAdapter
-from zope.interface import implements
-from Products.CMFPlone.i18nl10n import ulocalized_time
-
-import plone
-import plone.protect
-import json
+from plone.protect import CheckAuthenticator
 
 
 class WorksheetFolderWorkflowAction(WorkflowAction):
@@ -35,7 +32,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
     """
     def __call__(self):
         form = self.request.form
-        plone.protect.CheckAuthenticator(form)
+        CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         action, came_from = WorkflowAction._get_form_workflow_action(self)
@@ -86,7 +83,7 @@ class WorksheetWorkflowAction(WorkflowAction):
     """
     def __call__(self):
         form = self.request.form
-        plone.protect.CheckAuthenticator(form)
+        CheckAuthenticator(form)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -95,7 +92,6 @@ class WorksheetWorkflowAction(WorkflowAction):
 
 
         if action == 'submit':
-
             # Submit the form. Saves the results, methods, etc.
             self.submit()
 
@@ -105,16 +101,43 @@ class WorksheetWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
-            selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
-            if selected_analyses:
-                for uid in selected_analysis_uids:
-                    analysis = rc.lookupObject(uid)
-                    # Double-check the state first
-                    if (workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'unassigned'
-                    and workflow.getInfoFor(analysis, 'review_state') == 'sample_received'
-                    and workflow.getInfoFor(analysis, 'cancellation_state') == 'active'):
-                        self.context.addAnalysis(analysis)
+            analysis_uids = form.get("uids", [])
+            if analysis_uids:
+                # We retrieve the analyses from the database sorted by AR ID
+                # ascending, so the positions of the ARs inside the WS are
+                # consistent with the order of the ARs
+                catalog = get_tool(CATALOG_ANALYSIS_LISTING)
+                brains = catalog({'UID': analysis_uids,
+                                  'sort_on': 'getRequestID'})
+
+                # Now, we need the analyses within a request ID to be sorted by
+                # sortkey (sortable_title index), so it will appear in the same
+                # order as they appear in Analyses list from AR view
+                curr_arid = None
+                curr_brains = []
+                sorted_brains = []
+                for brain in brains:
+                    arid = brain.getRequestID
+                    if curr_arid != arid:
+                        # Sort the brains we've collected until now, that belong to
+                        # the same Analysis Request
+                        curr_brains.sort(key=attrgetter('getPrioritySortkey'))
+                        sorted_brains.extend(curr_brains)
+                        curr_arid = arid
+                        curr_brains = []
+
+                    # Now we are inside the same AR
+                    curr_brains.append(brain)
+                    continue
+
+                # Sort the last set of brains we've collected
+                curr_brains.sort(key=attrgetter('getPrioritySortkey'))
+                sorted_brains.extend(curr_brains)
+
+                # Add analyses in the worksheet
+                for brain in sorted_brains:
+                    analysis = brain.getObject()
+                    self.context.addAnalysis(analysis)
 
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)

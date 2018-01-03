@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from zope.interface import Interface
 
@@ -13,6 +15,9 @@ class IBikaLIMS(Interface):
        "bika" theme, this interface must be its layer
     """
 
+class IGenerateID(Interface):
+    """Marker Interface to generate an ID
+    """
 
 class IHaveNoBreadCrumbs(Interface):
 
@@ -69,6 +74,12 @@ class IRoutineAnalysis(Interface):
     """This adapter distinguishes normal analyses from Duplicates, References,
     Rejections, etc.
     """
+
+
+class IAnalysisSpec(Interface):
+
+    """Analysis Specs"""
+
 
 class IDuplicateAnalysis(Interface):
 
@@ -195,6 +206,9 @@ class IAnalysisCategories(Interface):
 
     ""
 
+class IBaseAnalysis(Interface):
+    ""
+
 
 class IAnalysisService(Interface):
 
@@ -282,6 +296,26 @@ class IInstrumentLocation(Interface):
 
 class IInstrumentLocations(Interface):
     """Physical places, where instruments can be located
+    """
+
+class IInstrumentCalibration(Interface):
+    """Instrument Calibration
+    """
+
+class IInstrumentCertification(Interface):
+    """Instrument Certification
+    """
+
+class IInstrumentValidation(Interface):
+    """Instrument Validation
+    """
+
+class IInstrumentCertification(Interface):
+    """Instrument Certification
+    """
+
+class IInstrumentValidation(Interface):
+    """Instrument Validation
     """
 
 class IAnalysisSpecs(Interface):
@@ -461,6 +495,12 @@ class IIdServer(Interface):
     def generate_id(self, portal_type, batch_size=None):
         """ Generate a new id for 'portal_type' """
 
+class IBatchSearchableText(Interface):
+
+    """ Interface for BatchSearchableText """
+
+    def get_plain_text_fields(self):
+        """ Returns field names as a list of strings"""
 
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts
@@ -744,3 +784,42 @@ class IAcquireFieldDefaults(Interface):
     def __call__(context, field):
         """This function must return the surrogate (source) value directly.
         """
+
+class IProxyField(Interface):
+    """A field that proxies transparently to the field of another object.
+    Mainly needed for AnalysisRequest fields that are actually stored on the Sample.
+    """
+
+class IARAnalysesField(Interface):
+    """A field that manages AR Analyses
+    """
+
+class IFrontPageAdapter(Interface):
+
+    """ Bika Front Page Url Finder Adapter's Interface"""
+
+    def get_front_page_url(self):
+        """ Get url of necessary front-page """
+
+class INumberGenerator(Interface):
+    """A utility to generates unique numbers by key
+    """
+
+class IGenerateID(Interface):
+    """Marker Interface to generate an ID
+    """
+
+class ITopRightHTMLComponentsHook(Interface):
+    """
+    Marker interface to hook html components in bikalisting
+    """
+
+class ITopLeftHTMLComponentsHook(Interface):
+    """
+    Marker interface to hook html components in bikalisting
+    """
+
+class ITopWideHTMLComponentsHook(Interface):
+    """
+    Marker interface to hook html components in bikalisting
+    """

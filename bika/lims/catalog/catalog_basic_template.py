@@ -1,9 +1,10 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-# Basic definitions to use in catalog definitions machinery
 BASE_CATALOG_INDEXES = {
     # Returns the catalog id
     'id': 'FieldIndex',
@@ -11,6 +12,7 @@ BASE_CATALOG_INDEXES = {
     # Return the object id
     'getId': 'FieldIndex',
     'portal_type': 'FieldIndex',
+    'object_provides': 'KeywordIndex',
     'UID': 'UUIDIndex',
     # created returns a DataTime object
     'created': 'DateIndex',
@@ -37,6 +39,7 @@ BASE_CATALOG_COLUMNS = [
     'Title',
     'review_state',
     'state_title',
+    'portal_type',
     # allowedRolesAndUsers is compulsory if we are going to run
     # advancedqueries in this catalog.
     'allowedRolesAndUsers',

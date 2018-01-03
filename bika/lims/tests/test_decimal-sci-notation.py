@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
-
-# This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-
-from bika.lims.content.analysis import Analysis
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from Products.CMFCore.utils import getToolByName
+from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.workflow import doActionFor
-from plone.app.testing import login, logout
+from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
-from Products.CMFCore.utils import getToolByName
-import unittest
+from plone.app.testing import login
+from plone.app.testing import setRoles
 
 try:
     import unittest2 as unittest
@@ -22,13 +20,14 @@ except ImportError: # Python 2.7
     import unittest
 
 
-class Test_DecimalSciNotation(BikaFunctionalTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
+class TestDecimalSciNotation(BikaFunctionalTestCase):
+    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
-        super(Test_DecimalSciNotation, self).setUp()
+        super(TestDecimalSciNotation, self).setUp()
+        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
-
         # analysis-service-3: Calcium (Ca)
         servs = self.portal.bika_setup.bika_analysisservices
         self.service = servs['analysisservice-3']
@@ -46,8 +45,7 @@ class Test_DecimalSciNotation(BikaFunctionalTestCase):
         self.service.setPrecision(self.orig_as_prec)
         self.service.setExponentialFormatPrecision(self.orig_as_expf)
         self.service.setLowerDetectionLimit(self.orig_as_ldl)
-        logout()
-        super(Test_DecimalSciNotation, self).tearDown()
+        super(TestDecimalSciNotation, self).tearDown()
 
     def test_DecimalSciNotation(self):
         # Notations
@@ -317,7 +315,7 @@ class Test_DecimalSciNotation(BikaFunctionalTestCase):
         s.setLowerDetectionLimit('-99999') # We want to test results below 0 too
         prevm = []
         an = None
-        bs = self.portal.bika_setup;
+        bs = self.portal.bika_setup
         for m in matrix:
             # Create the AR and set the values to the AS, but only if necessary
             if not an or prevm[0] != m[0] or prevm[1] != m[1]:
@@ -337,7 +335,7 @@ class Test_DecimalSciNotation(BikaFunctionalTestCase):
                 wf = getToolByName(ar, 'portal_workflow')
                 wf.doActionFor(ar, 'receive')
                 an = ar.getAnalyses()[0].getObject()
-                prevm = m;
+                prevm = m
             an.setResult(m[3])
 
             self.assertEqual(an.getResult(), m[3])
@@ -348,6 +346,6 @@ class Test_DecimalSciNotation(BikaFunctionalTestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Test_DecimalSciNotation))
-    suite.layer = BIKA_FUNCTIONAL_TESTING
+    suite.addTest(unittest.makeSuite(TestDecimalSciNotation))
+    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

@@ -1,11 +1,15 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import getSecurityManager
+from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
@@ -14,17 +18,13 @@ from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
+from bika.lims.utils import t, check_permission
 from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
-from DateTime import DateTime
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import wasTransitionPerformed
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import PloneMessageFactory as PMF
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
-import plone
 
 class AnalysisRequestViewView(BrowserView):
 
@@ -37,23 +37,31 @@ class AnalysisRequestViewView(BrowserView):
     messages = []
 
     def __init__(self, context, request):
-        super(AnalysisRequestViewView, self).__init__(context, request)
+        self.init__ = super(AnalysisRequestViewView, self).__init__(context,
+                                                                    request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
         self.messages = []
 
     def __call__(self):
         ar = self.context
-        if 'check_edit' in self.request and\
-                self.request.get('check_edit') == '1':
-                # Another check, here to increase performance, is it stupid?
-                state = ar.getObjectWorkflowStates().get('review_state', '')
-                if state in ['to_be_verified', 'sample_received']:
-                    # It mens we should redirect to manage_results
-                    redirect = self.context.absolute_url() + '/manage_results'
-                    self.request.response.redirect(redirect)
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'transition' in self.request.form:
             doActionFor(self.context, self.request.form['transition'])
+
+        # If the analysis request has been received and hasn't been yet
+        # verified yet, redirect the user to manage_results view, but only if
+        # the user has privileges to Edit(Field)Results, cause otherwise she/he
+        # will receive an InsufficientPrivileges error!
+        if (self.request.PATH_TRANSLATED.endswith(self.context.id) and
+            check_permission(EditResults, self.context) and
+            check_permission(EditFieldResults, self.context) and
+            wasTransitionPerformed(self.context, 'receive') and
+            not wasTransitionPerformed(self.context, 'verify')):
+            # Redirect to manage results view
+            manage_results_url = self.context.absolute_url() + '/manage_results'
+            self.request.response.redirect(manage_results_url)
+            return
+
         # Contacts get expanded for view
         contact = self.context.getContact()
         contacts = []
@@ -88,7 +96,7 @@ class AnalysisRequestViewView(BrowserView):
                                  self.request,
                                  getPointOfCapture=poc,
                                  show_categories=self.context.bika_setup.getCategoriseAnalysisServices(),
-                                 getAnalysisRequestUID=self.context.UID())
+                                 getRequestUID=self.context.UID())
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id': 'submit'},
@@ -140,7 +148,7 @@ class AnalysisRequestViewView(BrowserView):
                         'listed here for trace-ability purposes. Please follow '
                         'the link to the retest')
             if childar:
-                message = (message + " %s.") % childar.getRequestID()
+                message = (message + " %s.") % childar.getId()
             else:
                 message = message + "."
             self.addMessage(message, 'warning')
@@ -153,7 +161,7 @@ class AnalysisRequestViewView(BrowserView):
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': par.getRequestID()})
+                        mapping={'retracted_request_id': par.getId()})
             self.addMessage(message, 'info')
         self.renderMessages()
         return self.template()
@@ -161,12 +169,12 @@ class AnalysisRequestViewView(BrowserView):
     def getAttachments(self):
         attachments = []
         ar_atts = self.context.getAttachment()
-        analyses = self.context.getAnalyses(full_objects = True)
+        analyses = self.context.getAnalyses(full_objects=True)
         for att in ar_atts:
-            file_obj = att.getAttachmentFile()
-            fsize = file_obj.get_size() if file_obj else 0
-            if isinstance(fsize, tuple):
-                fsize = 0
+            fsize = 0
+            file = att.getAttachmentFile()
+            if file:
+                fsize = file.get_size()
             if fsize < 1024:
                 fsize = '%s b' % fsize
             else:
@@ -175,18 +183,19 @@ class AnalysisRequestViewView(BrowserView):
                 'keywords': att.getAttachmentKeys(),
                 'analysis': '',
                 'size': fsize,
-                'name': file_obj.filename,
-                'Icon': file_obj.icon,
-                'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                'name': file.filename,
+                'Icon': file.icon,
+                'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                 'absolute_url': att.absolute_url(),
                 'UID': att.UID(),
+                'report_option': att.getReportOption(),
             })
 
         for analysis in analyses:
             an_atts = analysis.getAttachment()
             for att in an_atts:
-                file_obj = att.getAttachmentFile()
-                fsize = file_obj.get_size() if file_obj else 0
+                file = att.getAttachmentFile()
+                fsize = file.get_size() if file else 0
                 if fsize < 1024:
                     fsize = '%s b' % fsize
                 else:
@@ -195,11 +204,12 @@ class AnalysisRequestViewView(BrowserView):
                     'keywords': att.getAttachmentKeys(),
                     'analysis': analysis.Title(),
                     'size': fsize,
-                    'name': file_obj.filename,
-                    'Icon': file_obj.icon,
-                    'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                    'name': file.filename,
+                    'Icon': file.icon,
+                    'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
                     'absolute_url': att.absolute_url(),
                     'UID': att.UID(),
+                    'report_option': att.getReportOption(),
                 })
         return attachments
 
@@ -312,7 +322,7 @@ class AnalysisRequestViewView(BrowserView):
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         res = []
         for analysis in bac(portal_type="Analysis",
-                           getRequestID=self.context.RequestID):
+                            getRequestUID=self.context.UID()):
             analysis = analysis.getObject()
             res.append([analysis.getPointOfCapture(),
                         analysis.getCategoryUID(),
@@ -456,7 +466,7 @@ class AnalysisRequestViewView(BrowserView):
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
             childar = hasattr(ar, 'getChildAnalysisRequest') \
                         and ar.getChildAnalysisRequest() or None
-            anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getRequestID())) or None
+            anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getId())) or None
             if anchor:
                 custom['ChildAR'] = {
                     'title': t(_("AR for retested results")),
@@ -467,7 +477,7 @@ class AnalysisRequestViewView(BrowserView):
         if hasattr(ar, 'getParentAnalysisRequest') \
             and ar.getParentAnalysisRequest():
             par = ar.getParentAnalysisRequest()
-            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
+            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getId())
             custom['ParentAR'] = {
                 'title': t(_("Invalid AR retested")),
                 'value': anchor

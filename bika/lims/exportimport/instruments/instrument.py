@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """ Generic controller for instrument results import view
 """
@@ -80,3 +82,17 @@ def GenericImport(context, request, parser, importer=None):
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
+
+
+def format_keyword(keyword):
+    """
+    Removing special character from a keyword. Analysis Services must have
+    this kind of keywords. E.g. if assay name from the Instrument is
+    'HIV-1 2.0', an AS must be created on Bika with the keyword 'HIV120'
+    """
+    import re
+    result = ''
+    if keyword:
+        result = re.sub(r"\W", "", keyword)
+        result = re.sub("_", "", result)
+    return result

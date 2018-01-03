@@ -1,14 +1,17 @@
-from Products.CMFCore.utils import getToolByName
-from DateTime import DateTime
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import logger
+import transaction
+from Products.CMFCore.utils import getToolByName
+
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
 
 
@@ -48,6 +51,15 @@ def after_retract(obj):
     # LIMS-1290 - Analyst must be able to retract, which creates a new
     # Analysis.  So, _verifyObjectPaste permission check must be cancelled:
     parent._verifyObjectPaste = str
+    # This is needed for tests:
+    # https://docs.plone.org/develop/plone/content/rename.html
+    # Testing warning: Rename mechanism relies of Persistent attribute
+    # called _p_jar to be present on the content object. By default, this is
+    # not the case on unit tests. You need to call transaction.savepoint() to
+    # make _p_jar appear on persistent objects.
+    # If you don't do this, you'll receive a "CopyError" when calling
+    # manage_renameObjects that the operation is not supported.
+    transaction.savepoint()
     parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
     delattr(parent, '_verifyObjectPaste')
 

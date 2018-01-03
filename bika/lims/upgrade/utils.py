@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from bika.lims import logger
@@ -285,6 +292,16 @@ class UpgradeUtils(object):
             ))
             self.refreshcatalog.append(cat.id)
         transaction.commit()
+
+    def reindexIndex(self, catalog, index):
+        cat = self._getCatalog(catalog)
+        if index not in cat.indexes():
+            logger.warn("Index {} not found in {}".format(index, catalog))
+            return
+        indexes = self.reindexcatalog.get(cat.id, [])
+        if index not in indexes:
+            indexes.append(index)
+            self.reindexcatalog[cat.id] = indexes
 
     def refreshCatalogs(self):
         """

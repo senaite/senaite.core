@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
@@ -48,7 +50,7 @@ def load_brain_metadata(proxy, include_fields):
     """
     ret = {}
     for index in proxy.indexes():
-        if not index in proxy:
+        if index not in proxy:
             continue
         if include_fields and index not in include_fields:
             continue
@@ -67,6 +69,7 @@ def load_field_values(instance, include_fields):
     """
     ret = {}
     schema = instance.Schema()
+    val = None
     for field in schema.fields():
         fieldname = field.getName()
         if include_fields and fieldname not in include_fields:
@@ -74,25 +77,32 @@ def load_field_values(instance, include_fields):
         try:
             val = field.get(instance)
         except AttributeError:
-            # If this error is raised, make a look to the add-on content expressions used to obtain their data.
+            # If this error is raised, make a look to the add-on content
+            # expressions used to obtain their data.
             print "AttributeError:", sys.exc_info()[1]
             print "Unreachable object. Maybe the object comes from an Add-on"
             print traceback.format_exc()
 
         if val:
-            if field.type == "blob" or field.type == 'file':
+            field_type = field.type
+            # If it a proxy field, we should know to the type of the proxied
+            # field
+            if field_type == 'proxy':
+                actual_field = field.get_proxy(instance)
+                field_type = actual_field.type
+            if field_type == "blob" or field_type == 'file':
                 continue
             # I put the UID of all references here in *_uid.
-            if field.type == 'reference':
+            if field_type == 'reference':
                 if type(val) in (list, tuple):
                     ret[fieldname + "_uid"] = [v.UID() for v in val]
                     val = [to_utf8(v.Title()) for v in val]
                 else:
                     ret[fieldname + "_uid"] = val.UID()
                     val = to_utf8(val.Title())
-            elif field.type == 'boolean':
+            elif field_type == 'boolean':
                 val = True if val else False
-            elif field.type == 'text':
+            elif field_type == 'text':
                 val = to_utf8(val)
 
         try:

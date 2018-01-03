@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Archetypes.public import BaseSchema
 from plone.app.folder.folder import ATFolderSchema
@@ -46,8 +48,3 @@ BikaFolderSchema['constrainTypesMode'].schemata = 'settings'
 BikaFolderSchema['locallyAllowedTypes'].widget.visible = False
 BikaFolderSchema['immediatelyAddableTypes'].widget.visible = False
 BikaFolderSchema['constrainTypesMode'].widget.visible = False
-
-
-BikaFolderSchema['title'].validators = ('uniquefieldvalidator',)
-# Update the validation layer after change the validator in runtime
-BikaFolderSchema['title']._validationLayer()

@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema, registerType
@@ -14,6 +16,8 @@ from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.subscribers import skip
+from bika.lims.workflow import in_state
+from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from bika.lims.workflow.duplicateanalysis import events
 from zope.interface import implements
 
@@ -70,10 +74,15 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         return self.aq_parent
 
     @security.public
-    def getSiblings(self):
-        """Returns the list of duplicate analyses that share the same Request
-        and are included in the same Worksheet as the current. The current
-        duplicate is excluded from the list
+    def getSiblings(self, retracted=False):
+        """
+        Return the list of duplicate analyses that share the same Request and
+        are included in the same Worksheet as the current analysis. The current
+        duplicate is excluded from the list.
+        :param retracted: If false, retracted/rejected siblings are dismissed
+        :type retracted: bool
+        :return: list of siblings for this analysis
+        :rtype: list of IAnalysis
         """
         worksheet = self.getWorksheet()
         requestuid = self.getRequestUID()
@@ -81,21 +90,36 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             return []
 
         siblings = []
+        retracted_states = [STATE_RETRACTED, STATE_REJECTED]
         analyses = worksheet.getAnalyses()
         for analysis in analyses:
             if analysis.UID() == self.UID():
                 # Exclude me from the list
                 continue
-            if IRequestAnalysis.providedBy(analysis):
-                # We exclude here all analyses that do not have an analysis
-                # request associated (e.g. IReferenceAnalysis)
-                if analysis.getRequestUID() == requestuid:
-                    siblings.append(analysis)
+
+            if IRequestAnalysis.providedBy(analysis) is False:
+                # Exclude analyses that do not have an analysis request
+                # associated
+                continue
+
+            if analysis.getRequestUID() != requestuid:
+                # Exclude those analyses that does not belong to the same
+                # analysis request I belong to
+                continue
+
+            if retracted is False and in_state(analysis, retracted_states):
+                # Exclude retracted analyses
+                continue
+
+            siblings.append(analysis)
+
         return siblings
 
     @security.public
     def setAnalysis(self, analysis):
         # Copy all the values from the schema
+        if not analysis:
+            return
         discard = ['id', ]
         keys = analysis.Schema().keys()
         for key in keys:
@@ -107,19 +131,13 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             self.getField(key).set(self, val)
         self.getField('Analysis').set(self, analysis)
 
-    @deprecated('[1705] Use events.after_attach from '
-                'bika.lims.workflow.duplicateanalysis.events')
     def workflow_script_attach(self):
         events.after_attach(self)
 
-    @deprecated('[1705] Use events.after_retract from '
-                'bika.lims.workflow.duplicateanalysis.events')
     @security.public
     def workflow_script_retract(self):
         events.after_retract(self)
 
-    @deprecated('[1705] Use events.after_verify from '
-                'bika.lims.workflow.duplicateanalysis.events')
     @security.public
     def workflow_script_verify(self):
         events.after_verify(self)

@@ -174,7 +174,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisServices"
-      name="base_view"
+      name="folder_view"
       class=".bika_analysisservices.AnalysisServicesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"

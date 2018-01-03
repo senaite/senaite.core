@@ -1,24 +1,24 @@
 <tal:report tal:define="analysisrequest python:view.getAnalysisRequest();">
-    <h1>TAL Field Reference for the development of new Results Templates</h1>
-    <p>
-      All data is available using the analysisrequest dictionary.
-      Example for accessing and displaying data:
-    </p>
-    <pre>
+  <h1>TAL Field Reference for the development of new Results Templates</h1>
+  <p>
+    All data is available using the analysisrequest dictionary.
+    Example for accessing and displaying data:
+  </p>
+  <pre>
     &lt;p tal:content="python:analysisrequest['laboratory']['title']"&gt;&lt;/p&gt;
-    </pre>
-    or
-    <pre>
+  </pre>
+  or
+  <pre>
     &lt;p tal:content="analysisrequest/laboratory/title"&gt;&lt;/p&gt;
-    </pre>
-    <p>
+  </pre>
+  <p>
     Take a look to the documentation for more information about
     available data and fields.
     <a target="_blank" href="https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates">
       https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates
     </a>
-    </p>
-    <hr size="1"/>
-    <pre tal:content="structure python:view.explode_data(analysisrequest)"></pre>
-    <p>&nbsp;</p>
+  </p>
+  <hr size="1"/>
+  <pre tal:content="structure python:view.explode_data(analysisrequest)"></pre>
+  <p>&nbsp;</p>
 </tal:report>

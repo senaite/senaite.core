@@ -1,37 +1,38 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import json
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from string import Template
+
+import plone
+import zope.event
+from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from bika.lims import PMF, api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims import PMF
+from bika.lims import interfaces
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
-from bika.lims.utils import encode_header
 from bika.lims.utils import copy_field_values
+from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
+from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
-from DateTime import DateTime
-from string import Template
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.Utils import formataddr
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode, _createObjectByType
-from bika.lims import interfaces
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import wasTransitionPerformed
-
-import json
-import plone
-import zope.event
+from email.Utils import formataddr
 
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
@@ -60,6 +61,68 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             method()
         else:
             WorkflowAction.__call__(self)
+
+    def notify_ar_retract(self, ar, newar):
+        bika_setup = api.get_bika_setup()
+        laboratory = bika_setup.laboratory
+        lab_address = "<br/>".join(laboratory.getPrintAddress())
+        mime_msg = MIMEMultipart('related')
+        mime_msg['Subject'] = t(_("Erroneus result publication from ${request_id}",
+                                mapping={"request_id": ar.getId()}))
+        mime_msg['From'] = formataddr(
+            (encode_header(laboratory.getName()),
+             laboratory.getEmailAddress()))
+        to = []
+        contact = ar.getContact()
+        if contact:
+            to.append(formataddr((encode_header(contact.Title()),
+                                  contact.getEmailAddress())))
+        for cc in ar.getCCContact():
+            formatted = formataddr((encode_header(cc.Title()),
+                                   cc.getEmailAddress()))
+            if formatted not in to:
+                to.append(formatted)
+
+        managers = self.context.portal_groups.getGroupMembers('LabManagers')
+        for bcc in managers:
+            user = self.portal.acl_users.getUser(bcc)
+            if user:
+                uemail = user.getProperty('email')
+                ufull = user.getProperty('fullname')
+                formatted = formataddr((encode_header(ufull), uemail))
+                if formatted not in to:
+                    to.append(formatted)
+        mime_msg['To'] = ','.join(to)
+        aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
+                                            ar.getId())
+        naranchor = "<a href='%s'>%s</a>" % (newar.absolute_url(),
+                                             newar.getId())
+        addremarks = ('addremarks' in self.request and ar.getRemarks()) and ("<br/><br/>" + _("Additional remarks:") +
+                                                                             "<br/>" + ar.getRemarks().split("===")[1].strip() +
+                                                                             "<br/><br/>") or ''
+        sub_d = dict(request_link=aranchor,
+                     new_request_link=naranchor,
+                     remarks=addremarks,
+                     lab_address=lab_address)
+        body = Template("Some errors have been detected in the results report "
+                        "published from the Analysis Request $request_link. The Analysis "
+                        "Request $new_request_link has been created automatically and the "
+                        "previous has been invalidated.<br/>The possible mistake "
+                        "has been picked up and is under investigation.<br/><br/>"
+                        "$remarks $lab_address").safe_substitute(sub_d)
+        msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
+                           _subtype='html')
+        mime_msg.preamble = 'This is a multi-part MIME message.'
+        mime_msg.attach(msg_txt)
+        try:
+            host = getToolByName(self.context, 'MailHost')
+            host.send(mime_msg.as_string(), immediate=True)
+        except Exception as msg:
+            message = _('Unable to send an email to alert lab '
+                        'client contacts that the Analysis Request has been '
+                        'retracted: ${error}',
+                        mapping={'error': safe_unicode(msg)})
+            self.context.plone_utils.addPortalMessage(message, 'warning')
 
     def workflow_action_save_partitions_button(self):
         form = self.request.form
@@ -310,7 +373,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 continue
             # Prevent saving data if the analysis is already transitioned
             if not (checkPermission(EditResults, analysis) or checkPermission(EditFieldResults, analysis)):
-                title = safe_unicode(analysis.getService().Title())
+                title = safe_unicode(analysis.Title())
                 msgid = _('Result for ${analysis} could not be saved because '
                           'it was already submitted by another user.',
                           mapping={'analysis': title})
@@ -364,14 +427,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 # allow_setinstrument = sm.checkPermission(SetAnalysisInstrument)
                 allow_setinstrument = True
                 # ---8<-----
-                if allow_setinstrument == True:
+                if allow_setinstrument is True:
                     # The current analysis allows the instrument regards
                     # to its analysis service and method?
                     if (instruments[uid]==''):
                         previnstr = analysis.getInstrument()
                         if previnstr:
                             previnstr.removeAnalysis(analysis)
-                        analysis.setInstrument(None);
+                        analysis.setInstrument(None)
                     elif analysis.isInstrumentAllowed(instruments[uid]):
                         previnstr = analysis.getInstrument()
                         if previnstr:
@@ -386,7 +449,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
                 allow_setmethod = True
                 # ---8<-----
-                if allow_setmethod == True and analysis.isMethodAllowed(methods[uid]):
+                if allow_setmethod is True and analysis.isMethodAllowed(methods[uid]):
                     analysis.setMethod(methods[uid])
 
             # Need to save the analyst?
@@ -488,10 +551,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         return self.workflow_action_default(action='verify', came_from=came_from)
 
     def workflow_action_retract_ar(self):
-        workflow = getToolByName(self.context, 'portal_workflow')
+
         # AR should be retracted
         # Can't transition inactive ARs
-        if not isActive(self.context):
+        if not api.is_active(self.context):
             message = _('Item is inactive.')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
@@ -502,7 +565,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar = self.cloneAR(ar)
 
         # 2. The old AR gets a status of 'invalid'
-        workflow.doActionFor(ar, 'retract_ar')
+        api.do_transition_for(ar, 'retract_ar')
 
         # 3. The new AR copy opens in status 'to be verified'
         changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
@@ -512,73 +575,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # picked up and is under investigation.
         # A much possible information is provided in the email, linking
         # to the AR online.
-        laboratory = self.context.bika_setup.laboratory
-        lab_address = "<br/>".join(laboratory.getPrintAddress())
-        mime_msg = MIMEMultipart('related')
-        mime_msg['Subject'] = t(_("Erroneus result publication from ${request_id}",
-                                mapping={"request_id": ar.getRequestID()}))
-        mime_msg['From'] = formataddr(
-            (encode_header(laboratory.getName()),
-             laboratory.getEmailAddress()))
-        to = []
-        contact = ar.getContact()
-        if contact:
-            to.append(formataddr((encode_header(contact.Title()),
-                                   contact.getEmailAddress())))
-        for cc in ar.getCCContact():
-            formatted = formataddr((encode_header(cc.Title()),
-                                   cc.getEmailAddress()))
-            if formatted not in to:
-                to.append(formatted)
-
-        managers = self.context.portal_groups.getGroupMembers('LabManagers')
-        for bcc in managers:
-            user = self.portal.acl_users.getUser(bcc)
-            if user:
-                uemail = user.getProperty('email')
-                ufull = user.getProperty('fullname')
-                formatted = formataddr((encode_header(ufull), uemail))
-                if formatted not in to:
-                    to.append(formatted)
-        mime_msg['To'] = ','.join(to)
-        aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
-                                            ar.getRequestID())
-        naranchor = "<a href='%s'>%s</a>" % (newar.absolute_url(),
-                                             newar.getRequestID())
-        addremarks = ('addremarks' in self.request
-                      and ar.getRemarks()) \
-                    and ("<br/><br/>"
-                         + _("Additional remarks:")
-                         + "<br/>"
-                         + ar.getRemarks().split("===")[1].strip()
-                         + "<br/><br/>") \
-                    or ''
-        sub_d = dict(request_link=aranchor,
-                     new_request_link=naranchor,
-                     remarks=addremarks,
-                     lab_address=lab_address)
-        body = Template("Some errors have been detected in the results report "
-                        "published from the Analysis Request $request_link. The Analysis "
-                        "Request $new_request_link has been created automatically and the "
-                        "previous has been invalidated.<br/>The possible mistake "
-                        "has been picked up and is under investigation.<br/><br/>"
-                        "$remarks $lab_address").safe_substitute(sub_d)
-        msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
-                           _subtype='html')
-        mime_msg.preamble = 'This is a multi-part MIME message.'
-        mime_msg.attach(msg_txt)
-        try:
-            host = getToolByName(self.context, 'MailHost')
-            host.send(mime_msg.as_string(), immediate=True)
-        except Exception as msg:
-            message = _('Unable to send an email to alert lab '
-                        'client contacts that the Analysis Request has been '
-                        'retracted: ${error}',
-                        mapping={'error': safe_unicode(msg)})
-            self.context.plone_utils.addPortalMessage(message, 'warning')
+        bika_setup = api.get_bika_setup()
+        if bika_setup.getNotifyOnARRetract():
+            self.notify_ar_retract(ar, newar)
 
         message = _('${items} invalidated.',
-                    mapping={'items': ar.getRequestID()})
+                    mapping={'items': ar.getId()})
         self.context.plone_utils.addPortalMessage(message, 'warning')
         self.request.response.redirect(newar.absolute_url())
 
@@ -591,8 +593,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             referer = self.request.get_header("referer")
             self.request.response.redirect(referer)
             return
-        url = self.context.absolute_url() + "/portal_factory/" + \
-            "AnalysisRequest/Request new analyses/ar_add" + \
+        url = self.context.absolute_url() + "/ar_add" + \
             "?ar_count={0}".format(len(objects)) + \
             "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)

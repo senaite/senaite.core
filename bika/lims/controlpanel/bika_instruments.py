@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
@@ -108,20 +110,19 @@ class InstrumentsView(BikaListingView):
             items[x]['Model'] = obj.getModel()
 
             data = obj.getCertificateExpireDate()
-            if data == '':
-                items[x]['ExpiryDate'] = "No date avaliable"
+            if data is None:
+                items[x]['ExpiryDate'] = _("No date set")
             else:
                 items[x]['ExpiryDate'] = data.asdatetime().strftime(self.date_format_short)
 
             if obj.isOutOfDate():
-                items[x]['WeeksToExpire'] = "Out of date"
+                items[x]['WeeksToExpire'] = _("Out of date")
             else:
-                date = int(str(obj.getWeeksToExpire()).split(',')[0].split(' ')[0])
-                weeks,days = divmod(date,7)
-                items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
+                weeks, days = obj.getWeeksToExpire()
+                weeks_to_expire = _("{} weeks and {} day(s)".format(str(weeks), str(days)))
+                items[x]['WeeksToExpire'] = weeks_to_expire
 
             methods = obj.getMethods()
-            items[x]["Methods"] = methods
             urls = []
             titles = []
             for method in methods:
