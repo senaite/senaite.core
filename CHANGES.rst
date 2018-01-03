@@ -1,7 +1,37 @@
 Changelog
 =========
 
-1.1.8 (unreleased)
+1.1.9 (unreleased)
+------------------
+
+**Added**
+
+
+**Removed**
+
+
+**Changed**
+
+
+**Fixed**
+
+- #522 Worksheets: Analyses listing does not show attached Analyses
+- #514 Site Error when listing Dormant Worksheet Templates
+- #517 Expired Reference Samples are displayed in Add Blank/Add Control views
+- #517 Inactive services displayed for selection in Add Blank/Add Control views
+- #516 List of Analyses Services is not properly filtered by state
+- #516 Activate and Deactivate buttons do not appear in Analysis Services list
+- #512 Duplicates transition to "Attachment due" after submit
+- #499 Wrong slots when adding analyses manually in Worksheet with a WST assigned
+- #499 When a Worksheet Template is used, slot positions are not applied correctly
+- #499 Applying a WS template which references a Duplicate raises an Error
+- #513 ShowPrices doctest is failing
+- #488 JS Errors in bika.lims.analysisrequest.js
+
+**Security**
+
+
+1.1.8 (2017-12-23)
 ------------------
 
 **Added**
@@ -11,8 +41,6 @@ Changelog
 - #467 All/Mine filters in Dashboard panels
 - #423 Instrument import interface for Abbott's m2000 Real Time
 
-**Removed**
-
 **Changed**
 
 - #469 Remove unique field validator for Batch titles
@@ -21,6 +49,10 @@ Changelog
 
 **Fixed**
 
+- #494 Rejection reasons widget does not appear on rejection
+- #492 Fix AR Add Form: CC Contacts not set on Contact Change
+- #489 Worksheet Templates selection list is empty in Worksheets view
+- #490 Fix AR Add Form: No specifications found if a sample type was set
 - #475 Assigning Analyses to a WS raises AttributeError
 - #466 UnicodeDecodeError if unicode characters are entered into the title field
 - #453 Sample points do not show the referenced sample types in view
@@ -31,8 +63,6 @@ Changelog
 - #452 Traceback error when deleting attachment from Analysis Request
 - #450 Traceback after clicking "Manage Results" in a WS w/o Analyses assigned
 - #445 Fix AR Add Form: No sample points are found if a sample type was set
-
-**Security**
 
 
 1.1.7 (2017-12-01)

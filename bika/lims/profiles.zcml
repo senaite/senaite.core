@@ -5,9 +5,9 @@
 
   <genericsetup:registerProfile
       name="default"
-      title="Bika LIMS Evo"
+      title="SENAITE Core"
       directory="profiles/default"
-      description='Open Source Web based Laboratory Information Management System suitable for all types of laboratories'
+      description='Open Source Web based Laboratory Information Management System'
       provides="Products.GenericSetup.interfaces.EXTENSION"/>
 
   <genericsetup:importStep

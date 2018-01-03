@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """ReferenceSample represents a reference sample used for quality control testing
 """
@@ -392,6 +394,26 @@ class ReferenceSample(BaseFolder):
                 else:
                     specstr = specs[0]
         return specstr
+
+    def isValid(self):
+        """
+        Returns if the current Reference Sample is valid. This is, the sample
+        hasn't neither been expired nor disposed.
+        """
+        today = DateTime()
+        expiry_date = self.getExpiryDate()
+        if expiry_date and today > expiry_date:
+            return False
+        # TODO: Do We really need ExpiryDate + DateExpired? Any difference?
+        date_expired = self.getDateExpired()
+        if date_expired and today > date_expired:
+            return False
+
+        date_disposed = self.getDateDisposed()
+        if date_disposed and today > date_disposed:
+            return False
+
+        return True
 
     # XXX workflow methods
     def workflow_script_expire(self):

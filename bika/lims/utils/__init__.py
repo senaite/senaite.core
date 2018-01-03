@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import os
 import re
@@ -829,3 +829,32 @@ def is_bika_installed():
     """
     qi = api.portal.get_tool("portal_quickinstaller")
     return qi.isProductInstalled("bika.lims")
+
+
+def get_display_list(brains_or_objects=None, none_item=False):
+    """
+    Returns a DisplayList with the items sorted by Title
+    :param brains_or_objects: list of brains or objects
+    :param none_item: adds an item with empty uid and text "Select.." in pos 0
+    :return: DisplayList (uid, title) sorted by title ascending
+    :rtype: DisplayList
+    """
+    if brains_or_objects is None:
+        return get_display_list(list(), none_item)
+
+    items = list()
+    for brain in brains_or_objects:
+        uid = api.get_uid(brain)
+        if not uid:
+            continue
+        title = api.get_title(brain)
+        items.append((uid, title))
+
+    # Sort items by title ascending
+    items.sort(lambda x, y: cmp(x[1], y[1]))
+
+    # Add the first item?
+    if none_item:
+        items.insert(0, ('', t('Select...')))
+
+    return DisplayList(items)
