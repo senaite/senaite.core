@@ -1,5 +1,12 @@
-Abbott's m2000 Real Time import interface
-=========================================
+Instruments import interface
+============================
+We are going to test all instruments import interfaces on this one doctest
+1. These files can only be added on `tests/files/instruments/`
+2. The filenames(files to be imported) have to have the same name as their
+   import data interface i.e `exportimport/instruments/generic/two_dimension.py`
+   would match with `tests/files/instruments/generic.two_dimension.csv`
+3. All the files would have the same SampleID/AR-ID, same analyses and same
+   results because they will be testing against the same AR
 
 Running this test from the buildout directory::
 
@@ -47,6 +54,7 @@ Variables::
     >>> bika_samplepoints = bika_setup.bika_samplepoints
     >>> bika_analysiscategories = bika_setup.bika_analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
+    >>> bika_calculations = bika_setup.bika_calculations
 
 We need certain permissions to create and access objects used in this test,
 so here we will assume the role of Lab Manager::
@@ -82,45 +90,53 @@ This service matches the service specified in the file from which the import wil
     >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
     <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
-    >>> analysisservice = api.create(bika_analysisservices,
+    >>> analysisservice1 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="HIV06ml",
     ...                              ShortTitle="hiv06",
     ...                              Category=analysiscategory,
     ...                              Keyword="HIV06ml")
-    >>> analysisservice
+    >>> analysisservice1
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
 
-Set some interim fields present in the results test file to the created `AnalysisService`::
+    >>> analysisservice2 = api.create(bika_analysisservices,
+    ...                       'AnalysisService',
+    ...                       title='Magnesium',
+    ...                       ShortTitle='Mg',
+    ...                       Category=analysiscategory,
+    ...                       Keyword="Mg")
+    >>> analysisservice2
+    <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>
+    >>> analysisservice3 = api.create(bika_analysisservices,
+    ...                     'AnalysisService',
+    ...                     title='Calcium',
+    ...                     ShortTitle='Ca',
+    ...                     Category=analysiscategory,
+    ...                     Keyword="Ca")
+    >>> analysisservice3
+    <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-3>
 
-    >>> service_interim_fields = [{'keyword': 'ASRExpDate',
-    ...                            'title': 'ASRExpDate',
-    ...                            'unit': '',
-    ...                            'default': ''},
-    ...                           {'keyword': 'ASRLotNumber',
-    ...                            'title': 'ASRLotNumber',
-    ...                            'unit': '',
-    ...                            'default': ''},
-    ...                           {'keyword': 'AssayCalibrationTime',
-    ...                            'title': 'AssayCalibrationTime',
-    ...                            'unit': '',
-    ...                            'default': ''},
-    ...                           {'keyword': 'FinalResult',
-    ...                            'title': 'FinalResult',
-    ...                            'unit': '',
-    ...                            'default': ''},
-    ...                           {'keyword': 'Location',
-    ...                            'title': 'Location',
-    ...                            'unit': '',
-    ...                            'default': ''},
-    ...                           ]
-    >>> analysisservice.setInterimFields(service_interim_fields)
-    >>> analysisservice.getInterimFields()
-    [{'default': '', 'unit': '', 'keyword': 'ASRExpDate', 'title': 'ASRExpDate'},
-     {'default': '', 'unit': '', 'keyword': 'ASRLotNumber', 'title': 'ASRLotNumber'},
-     {'default': '', 'unit': '', 'keyword': 'AssayCalibrationTime', 'title': 'AssayCalibrationTime'},
-     {'default': '', 'unit': '', 'keyword': 'FinalResult', 'title': 'FinalResult'},
-     {'default': '', 'unit': '', 'keyword': 'Location', 'title': 'Location'}]
+    >>> total_calc = api.create(bika_calculations, 'Calculation', title='TotalMagCal')
+    >>> total_calc.setFormula('[Mg] + [Ca]')
+    >>> analysisservice4 = api.create(bika_analysisservices, 'AnalysisService', title='THCaCO3', Keyword="THCaCO3")
+    >>> analysisservice4.setUseDefaultCalculation(False)
+    >>> analysisservice4.setCalculation(total_calc)
+    >>> analysisservice4
+    <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-4>
+
+    >>> interim_calc = api.create(bika_calculations, 'Calculation', title='Test-Total-Pest')
+    >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> pest2 = {'keyword': 'pest2', 'title': 'Pesticide 2', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> pest3 = {'keyword': 'pest3', 'title': 'Pesticide 3', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> interims = [pest1, pest2, pest3]
+    >>> interim_calc.setInterimFields(interims)
+    >>> self.assertEqual(interim_calc.getInterimFields(), interims)
+    >>> interim_calc.setFormula('((([pest1] > 0.0) or ([pest2] > .05) or ([pest3] > 10.0) ) and "FAIL" or "PASS" )')
+    >>> analysisservice5 = api.create(bika_analysisservices, 'AnalysisService', title='Total Terpenes', Keyword="TotalTerpenes")
+    >>> analysisservice5.setUseDefaultCalculation(False)
+    >>> analysisservice5.setCalculation(interim_calc)
+    >>> analysisservice5
+    <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-5>
 
 Create an `AnalysisRequest` with this `AnalysisService` and receive it::
 
@@ -131,7 +147,12 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     ...           'DateSampled': date_now,
     ...           'SampleType': sampletype.UID()
     ...          }
-    >>> service_uids = [analysisservice.UID()]
+    >>> service_uids = [analysisservice1.UID(),
+    ...                 analysisservice2.UID(),
+    ...                 analysisservice3.UID(),
+    ...                 analysisservice4.UID(),
+    ...                 analysisservice5.UID()
+    ...                ]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
     <AnalysisRequest at /plone/clients/client-1/H2O-0001-R01>
@@ -178,13 +199,14 @@ Check that the instrument interface is available::
 
 Assigning the Import Interface to an Instrument
 -----------------------------------------------
-TODO: Find a to test that the instruments have been created
 Create an `Instrument` and assign to it the tested Import Interface::
 
     >>> for inter in interfaces:
     ...     title = inter.split('.')[0].title()
     ...     instrument = api.create(bika_instruments, "Instrument", title=title)
     ...     instrument.setImportDataInterface([inter])
+    ...     if instrument.getImportDataInterface() != [inter]:
+    ...         self.fail('Instrument Import Data Interface did not get set')
     
     >>> for inter in mylist:
     ...     exec('from bika.lims.exportimport.instruments.{} import Import'.format(inter[0]))
@@ -196,14 +218,21 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...                                artoapply='received',
     ...                                results_override='nooverride',
     ...                                instrument_results_file=import_file,
-    ...                                override='nooverride',
-    ...                                filename=import_file,
-    ...                                format='tsv',
     ...                                sample='requestid',
     ...                                instrument=''))
     ...     context = self.portal
     ...     results = Import(context, request)
     ...     test_results = eval(results)
-    ...     if 'Import finished successfully: 1 ARs and 1 results updated' not in test_results['log']:
+    ...     if 'Import finished successfully: 1 ARs and 2 results updated' not in test_results['log']:
     ...         self.fail("Results Update failed")
-
+    ...
+    ...     analyses = ar.getAnalyses(full_objects=True)
+    ...     for an in analyses:
+    ...         if an.getKeyword() ==  'Ca':
+    ...             if an.getResult() != '0.0':
+    ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
+    ...                 self.fail(msg)
+    ...         if an.getKeyword() ==  'Mg':
+    ...             if an.getResult() != '2.0':
+    ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
+    ...                 self.fail(msg)
