@@ -1,0 +1,2 @@
+Metals Mix Method with IS longer cali	CAL1	H2O-0001	9/23/2016 11:54:59 AM		MRC	Mg	QUANT	193.759	1	ppb											2	22	23							After Drift Correction	-0.0936625	-0.1063610	-0.1266098								-0.1088778	0.0166172	15.26
+Metals Mix Method with IS longer cali	CAL1	H2O-0001	9/23/2016 11:54:59 AM		MRC	Ca	QUANT	----	1	ppb										19	----	25								After Drift Correction	-0.0936625	-0.1063610	-0.1266098								-0.1088778	0.0166172	15.26

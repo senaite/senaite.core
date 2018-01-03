@@ -172,18 +172,18 @@ Where testing files live::
     >>> instruments_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../..', 'exportimport/instruments'))
     >>> files = os.listdir(files_path)
     >>> interfaces = []
-    >>> mylist = [] #TODO: rename mylist
+    >>> importer_filename = [] #List of tuples [(importer,filename),(importer, filename)]
     >>> for fl in files:
     ...     inst_interface = os.path.splitext(fl)[0] 
     ...     inst_path = '.'.join([inst_interface.replace('.', '/'), 'py'])
     ...     if os.path.isfile(os.path.join(instruments_path, inst_path)):
     ...         interfaces.append(inst_interface)
-    ...         mylist.append((inst_interface, fl))
+    ...         importer_filename.append((inst_interface, fl))
     ...     else:
     ...         inst_path = '.'.join([fl.replace('.', '/'), 'py'])
     ...         if os.path.isfile(os.path.join(instruments_path, inst_path)):
-    ...             interfaces.append(inst_interface)
-    ...             mylist.append((inst_interface, fl))
+    ...             interfaces.append(fl)
+    ...             importer_filename.append((fl, fl))
     ...         else:
     ...             self.fail('File {} found does match any import interface'.format(fl))
 
@@ -208,15 +208,15 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     if instrument.getImportDataInterface() != [inter]:
     ...         self.fail('Instrument Import Data Interface did not get set')
     
-    >>> for inter in mylist:
+    >>> for inter in importer_filename:
     ...     exec('from bika.lims.exportimport.instruments.{} import Import'.format(inter[0]))
     ...     filename = os.path.join(files_path, inter[1])
     ...     data = open(filename, 'r').read()
-    ...     import_file = FileUpload(TestFile(cStringIO.StringIO(data)))
+    ...     import_file = FileUpload(TestFile(cStringIO.StringIO(data), inter[1]))
     ...     request = TestRequest(form=dict(
     ...                                submitted=True,
-    ...                                artoapply='received',
-    ...                                results_override='nooverride',
+    ...                                artoapply='received_tobeverified',
+    ...                                results_override='override',
     ...                                instrument_results_file=import_file,
     ...                                sample='requestid',
     ...                                instrument=''))
@@ -236,3 +236,6 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...             if an.getResult() != '2.0':
     ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
     ...                 self.fail(msg)
+    ...
+    ...     if 'Import' in globals():
+    ...         del Import

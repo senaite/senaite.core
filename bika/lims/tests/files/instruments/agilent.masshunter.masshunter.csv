@@ -1,0 +1,18 @@
+Analysis Time,7/13/2017 9:55,,,,,,,,,,,,,,,,,
+Analyst Name,MassHunter01\Agilent,,,,,,,,,,,,,,,,,
+Batch Data Path,D:\MassHunter\GCMS\Terpenes\2017\July\20170711\QuantResults\20170711 Sample Workup,,,,,,,,,,,,,,,,,
+Batch Name,20170711 Sample Workup,,,,,,,,,,,,,,,,,
+Batch State,Processed,,,,,,,,,,,,,,,,,
+Calibration Last Updated Time,6/29/2017 15:57,,,,,,,,,,,,,,,,,
+Report Generation Time,1/1/0001 12:00:00 AM,,,,,,,,,,,,,,,,,
+Report Generator Name,None,,,,,,,,,,,,,,,,,
+Report Results Data Path,None,,,,,,,,,,,,,,,,,
+SchemaVersion,65586,,,,,,,,,,,,,,,,,
+Quant Batch Version,B.08.00,,,,,,,,,,,,,,,,,
+Quant Report Version,B.08.00,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+SampleID,CompoundID,SampleName,Compound,CalculatedConcentration,FinalConcentration,Dilution,AcqOperator,DataPathName,DataFileName,AcqDateTime,Failed Ratios Outlier Flag,InstrumentName,CompoundType,CompoundGroupSurrogateRecoveryOutlier(High/Low),SurrogatePercentRecovery,OutlierOutOfCalibrationRange(Low/High),CurveFitLimitLow,ISTDRespOutlier(high/Low)
+0,6,Check Standard Lot# 1,Mg,0.003082313,2,1,HCT,D:\MassHunter\GCMS\Terpenes\2017\July\20170711,H2O-0001,7/11/2017 16:52,FALSE,gcms_fid,Target,,,,,0.00025
+0,14,Check Standard Lot# 1,Ca,0.003150832,,1,HCT,D:\MassHunter\GCMS\Terpenes\2017\July\20170711,H2O-0001,7/11/2017 16:52,FALSE,gcms_fid,Target,,,,,0.00025
+3,29,1-17-03459-001,Limonene,0.015752441,15.75244089,1,HCT,D:\MassHunter\GCMS\Terpenes\2017\July\20170711,20170711_15.D,7/11/2017 21:50,FALSE,gcms_fid,Target,,,,,0.00025
