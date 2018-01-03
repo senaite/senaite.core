@@ -14,6 +14,7 @@ from abbott.m2000rt import m2000rt
 from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
+from generic import two_dimension
 from thermoscientific.gallery import Ts9861x
 from thermoscientific.arena import xt20
 from thermoscientific.multiskan import go
@@ -47,6 +48,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120',
+           'generic.two_dimension',
            # 'generic.xml',
            'horiba.jobinyvon.icp',
            'rigaku.supermini.wxrf',
@@ -81,6 +83,7 @@ PARSERS = [
            ['foss.fiastar.fiastar', 'FOSSFIAStarCSVParser'],
            ['foss.winescan.auto', 'WinescanAutoCSVParser'],
            ['foss.winescan.ft120', 'WinescanFT120CSVParser'],
+           ['generic.two_dimension', '2-Dimensional-CSV'],
            # ['generic.xml', ''],
            ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
            ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
