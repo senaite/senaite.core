@@ -1,6 +1,6 @@
 ## Description of the issue/feature this PR addresses
 
-Linked issue: https://github.com/senaite/bika.lims/issues/
+Linked issue: https://github.com/senaite/senaite.core/issues/
 
 ## Current behavior before PR
 
