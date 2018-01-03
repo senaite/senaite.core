@@ -174,10 +174,8 @@ Load results test file and import the results::
 Check from the importer logs that the file from where the results have been imported is indeed
 the specified file::
 
-    >>> import re
-    >>> matches = re.search('(/bika.lims.+)', importer.logs[0])
-    >>> matches.group(0)
-    '/bika.lims/bika/lims/tests/files/Results.log.123'
+    >>> '/Results.log.123' in importer.logs[0]
+    True
 
 Check the rest of the importer logs to verify that the values were correctly imported::
 
