@@ -5,32 +5,47 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+
+import gzip
+import io
 import os
 import re
 import tempfile
 import types
 import urllib2
-from email import Encoders
-from time import time
-
+import zlib
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
+from email import Encoders
+from time import time
+
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api as api
-from bika.lims import logger
-from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
 from plone.memoize import ram
 from plone.registry.interfaces import IRegistry
 from weasyprint import CSS, HTML
+from weasyprint import VERSION_STRING
 from weasyprint import default_url_fetcher
+from weasyprint.compat import Request
+from weasyprint.compat import urlopen
+from weasyprint.urls import StreamingGzipFile
+from weasyprint.urls import UNICODE_SCHEME_RE
+from weasyprint.urls import iri_to_uri
+from weasyprint.urls import open_data_url
+from weasyprint.urls import urllib_get_charset
+from weasyprint.urls import urllib_get_content_type
+from weasyprint.urls import urllib_get_filename
 from zope.component import queryUtility
 from zope.i18n import translate
 from zope.i18n.locales import locales
+
+from bika.lims import api as api
+from bika.lims import logger
+from bika.lims.browser import BrowserView
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -386,25 +401,45 @@ def bika_url_fetcher(url):
     """Basically the same as the default_url_fetcher from WeasyPrint,
     but injects the __ac cookie to make an authenticated request to the resource.
     """
-    from weasyprint import VERSION_STRING
-    from weasyprint.compat import Request
-    from weasyprint.compat import urlopen_contenttype
 
     request = api.get_request()
     __ac = request.cookies.get("__ac", "")
 
     if request.get_header("HOST") in url:
-        result, mime_type, charset = urlopen_contenttype(
-            Request(url,
-                    headers={
-                        'Cookie': "__ac={}".format(__ac),
-                        'User-Agent': VERSION_STRING,
-                        'Authorization': request._auth,
-                    }))
-        return dict(file_obj=result,
-                    redirected_url=result.geturl(),
-                    mime_type=mime_type,
-                    encoding=charset)
+        HTTP_HEADERS = {
+            'Cookie': "__ac={}".format(__ac),
+            'User-Agent': VERSION_STRING,
+            'Authorization': request._auth,
+        }
+        if url.lower().startswith('data:'):
+            return open_data_url(url)
+        elif UNICODE_SCHEME_RE.match(url):
+            url = iri_to_uri(url)
+            response = urlopen(Request(url, headers=HTTP_HEADERS))
+            result = dict(redirected_url=response.geturl(),
+                          mime_type=urllib_get_content_type(response),
+                          encoding=urllib_get_charset(response),
+                          filename=urllib_get_filename(response))
+            content_encoding = response.info().get('Content-Encoding')
+            if content_encoding == 'gzip':
+                if StreamingGzipFile is None:
+                    result['string'] = gzip.GzipFile(
+                        fileobj=io.BytesIO(response.read())).read()
+                    response.close()
+                else:
+                    result['file_obj'] = StreamingGzipFile(fileobj=response)
+            elif content_encoding == 'deflate':
+                data = response.read()
+                try:
+                    result['string'] = zlib.decompress(data)
+                except zlib.error:
+                    # Try without zlib header or checksum
+                    result['string'] = zlib.decompress(data, -15)
+            else:
+                result['file_obj'] = response
+            return result
+        else:
+            raise ValueError('Not an absolute URI: %r' % url)
 
     return default_url_fetcher(url)
 
