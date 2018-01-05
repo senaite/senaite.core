@@ -382,7 +382,7 @@ UnitConversions = DataGridField(
     allow_reorder=True,
     allow_empty_rows=False,
     columns=('SampleType',
-             'HideOriginalUnit',
+             'HidePrimaryUnit',
              'ShowOnListing',
              'Unit',),
     default=[{'SampleType': [],
@@ -395,8 +395,8 @@ UnitConversions = DataGridField(
             'SampleType': SelectColumn(
                 'Sample Type',
                 vocabulary='Vocabulary_SampleTypes'),
-            'HideOriginalUnit': CheckboxColumn(
-                'Hide Original Unit',),
+            'HidePrimaryUnit': CheckboxColumn(
+                'Hide Primary Unit',),
             'ShowOnListing': CheckboxColumn(
                 'Show On Listing',),
             'Unit': SelectColumn(
