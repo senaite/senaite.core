@@ -30,6 +30,7 @@ import zope.event
 from bika.lims.exportimport.instruments.resultsimport import InstrumentCSVResultsFileParser,\
     AnalysisResultsImporter
 import traceback
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 
 title = "2-Dimensional-CSV"
 
@@ -107,10 +108,19 @@ def is_keyword(kw):
     bsc = api.get_tool('bika_setup_catalog')
     return len(bsc(getKeyword=kw))
 
-def find_kw(ar, kw):
+def find_kw(ar_or_sample, kw):
+    """ This function is used to find keywords that are not on the analysis
+        but keywords that are on the interim fields.
+
+        This function and is is_keyword function should probably be in
+        resultsimport.py or somewhere central where it can be used by other
+        instrument interfaces.
+    """
     keyword = None
-    bc= api.get_tool('bika_catalog')
-    ar = bc(portal_type='AnalysisRequest', id=ar)
+    bc= api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    ar = bc(portal_type='AnalysisRequest', id=ar_or_sample)
+    if len(ar) == 0:
+        ar = bc(portal_type='AnalysisRequest', getSampleID=ar_or_sample)
     if len(ar) == 1:
         obj  = ar[0].getObject()
         analyses = obj.getAnalyses(full_objects=True)

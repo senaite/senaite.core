@@ -135,6 +135,7 @@ This service matches the service specified in the file from which the import wil
     >>> analysisservice5 = api.create(bika_analysisservices, 'AnalysisService', title='Total Terpenes', Keyword="TotalTerpenes")
     >>> analysisservice5.setUseDefaultCalculation(False)
     >>> analysisservice5.setCalculation(interim_calc)
+    >>> analysisservice5.setInterimFields(interims)
     >>> analysisservice5
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-5>
 
@@ -223,7 +224,12 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     context = self.portal
     ...     results = Import(context, request)
     ...     test_results = eval(results)
-    ...     if 'Import finished successfully: 1 ARs and 2 results updated' not in test_results['log']:
+    ...     #TODO: Test for interim fields on other files aswell
+    ...     if 'Parsing file generic.two_dimension.csv' in test_results['log']:
+    ...         # Testing also for interim fields, only for `generic.two_dimension` interface
+    ...         if 'Import finished successfully: 1 ARs and 5 results updated' not in test_results['log']:
+    ...             self.fail("Results Update failed")
+    ...     elif 'Import finished successfully: 1 ARs and 2 results updated' not in test_results['log']:
     ...         self.fail("Results Update failed")
     ...
     ...     analyses = ar.getAnalyses(full_objects=True)
