@@ -64,6 +64,7 @@ def t(i18n_msg):
         logger.warn("{} couldn't be translated".format(text))
     return to_utf8(text)
 
+
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')
@@ -82,6 +83,7 @@ class js_log(BrowserView):
         """
         self.logger.info(message)
 
+
 class js_err(BrowserView):
 
     def __call__(self, message):
@@ -96,6 +98,7 @@ class js_warn(BrowserView):
         """Javascript sends a string for us to place into the warn log
         """
         self.logger.warning(message)
+
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
 
@@ -265,6 +268,7 @@ def encode_header(header, charset='utf-8'):
 def zero_fill(matchobj):
     return matchobj.group().zfill(8)
 
+
 num_sort_regex = re.compile('\d+')
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sortable_title')
@@ -303,7 +307,7 @@ def logged_in_client(context, member=None):
     client = None
     groups_tool = context.portal_groups
     member_groups = [groups_tool.getGroupById(group.id).getGroupName()
-                 for group in groups_tool.getGroupsByUserId(member.id)]
+                     for group in groups_tool.getGroupsByUserId(member.id)]
 
     if 'Clients' in member_groups:
         for obj in context.clients.objectValues("Client"):
@@ -343,7 +347,7 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
         'comments': "Setting state to %s" % state_id,
         'review_state': state_id,
         'time': DateTime(),
-        }
+    }
 
     # Updating wf_state from keyword args
     for k in kw.keys():
@@ -460,6 +464,7 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
         os.remove(fn)
     return pdf_data
 
+
 def attachPdf(mimemultipart, pdfreport, filename=None):
     part = MIMEBase('application', "pdf")
     part.add_header('Content-Disposition',
@@ -484,11 +489,11 @@ def get_invoice_item_description(obj):
     return description
 
 
-
 def currency_format(context, locale):
     locale = locales.getLocale(locale)
     currency = context.bika_setup.getCurrency()
     symbol = locale.numbers.currencies[currency].symbol
+
     def format(val):
         return '%s %0.2f' % (symbol, val)
     return format
@@ -507,6 +512,7 @@ def getHiddenAttributesForClass(classname):
             'Probem accessing optionally hidden attributes in registry')
 
     return []
+
 
 def isAttributeHidden(classname, fieldname):
     try:
@@ -534,6 +540,7 @@ def dicts_to_dict(dictionaries, key_subfieldname):
     for d in dictionaries:
         result[d[key_subfieldname]] = d
     return result
+
 
 def format_supsub(text):
     """
@@ -582,7 +589,7 @@ def format_supsub(text):
                 out.append(subsup.pop())
             else:
                 out.append(c)
-        elif c in ['+','-']:
+        elif c in ['+', '-']:
             if len(clauses) == 0 and len(subsup) > 0:
                 out.append(subsup.pop())
             out.append(c)
@@ -598,12 +605,14 @@ def format_supsub(text):
 
     return ''.join(out)
 
+
 def drop_trailing_zeros_decimal(num):
     """ Drops the trailinz zeros from decimal value.
         Returns a string
     """
     out = str(num)
     return out.rstrip('0').rstrip('.') if '.' in out else out
+
 
 def checkPermissions(permissions=[], obj=None):
     """
@@ -624,6 +633,7 @@ def checkPermissions(permissions=[], obj=None):
         if not sm.checkPermission(perm, obj):
             return ''
     return True
+
 
 def getFromString(obj, string):
     attrobj = obj
@@ -679,7 +689,7 @@ def measure_time(func_to_measure):
         return_value = func_to_measure(*args, **kwargs)
         finish_time = time()
         log = "%s took %0.4f seconds. start_time = %0.4f - finish_time = %0.4f\n" % (func_to_measure.func_name,
-                                                                                     finish_time-start_time,
+                                                                                     finish_time - start_time,
                                                                                      start_time,
                                                                                      finish_time)
         print log
@@ -739,6 +749,7 @@ def get_email_link(email, value=None):
     link_value = value and value or email
     return get_link(mailto, link_value)
 
+
 def get_registry_value(key, default=None):
     """
     Gets the utility for IRegistry and returns the value for the key passed in.
@@ -749,6 +760,7 @@ def get_registry_value(key, default=None):
     """
     registry = queryUtility(IRegistry)
     return registry.get(key, default)
+
 
 def check_permission(permission, obj):
     """
@@ -761,6 +773,7 @@ def check_permission(permission, obj):
     mtool = api.get_tool('portal_membership')
     object = api.get_object(obj)
     return mtool.checkPermission(permission, object)
+
 
 def to_int(value, default=0):
     """
