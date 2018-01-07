@@ -14,7 +14,8 @@ Changelog
 
 
 **Fixed**
-
+- #539 Using new "default_url_fetcher" method from WeasyPrint v0.42. Images
+aren't rendered.
 
 **Security**
 
