@@ -170,5 +170,6 @@ https://github.com/orgs/senaite/teams/community). This is the right place if
 you are willing to discuss about new ideas, further steps or improvements.
 
 If you are interested on contributing and participating in these discussions,
-please ask for membership through Gitter and one of the SENAITE org members 
-will give you access.
+please ask for membership through our [Gitter community channel](
+https://gitter.im/senaite/Lobby) and one of the SENAITE org members will give 
+you access.
