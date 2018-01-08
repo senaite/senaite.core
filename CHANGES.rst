@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #551 Traceback in Worksheet Templates list when there are Instruments assigned
 
 **Security**
 
