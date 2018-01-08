@@ -979,6 +979,17 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("COC Footer"),
         )
     ),
+    BooleanField(
+        'SampleRegistrationAllowed',
+            schemata="Analyses",
+            default=True,
+            widget=BooleanWidget(
+                label=_("Enable sample registration process"),
+                description=_(
+                    "Enables the creation of Samples "
+                    "without the need of creating an "
+                    "Analysis Request."))
+            ),
 ))
 
 schema['title'].validators = ()
