@@ -394,6 +394,8 @@ def senaite_url_fetcher(url):
     but injects the __ac cookie to make an authenticated request to the resource.
     """
 
+    logger.info("Fetching URL '{}' for WeasyPrint".format(url))
+
     # get the pyhsical path from the URL
     request = api.get_request()
     path = "/".join(request.physicalPathFromURL(url))
@@ -403,7 +405,10 @@ def senaite_url_fetcher(url):
     context = portal.restrictedTraverse(path, None)
 
     if context is None:
+        logger.info("URL is external, passing over to the default URL fetcher...")
         return default_url_fetcher(url)
+
+    logger.info("URL is local, fetching data by path '{}' via subrequest".format(path))
 
     # get the data via subrequest
     response = subrequest(path)
