@@ -15,43 +15,27 @@
 
     <browser:page
       for="bika.lims.interfaces.ISamplesFolder"
-      name="base_view"
-      class="bika.lims.browser.sample.SamplesView"
-      permission="bika.lims.ManageSamples"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISamplesFolder"
       name="print_sampling_sheets"
       class="bika.lims.browser.sample.SamplesPrint"
       permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!-- Workflow action button clicked for Sample -->
-    <!-- Uses the workflow action in analysisrequest.py, since the
-         forms are basically the same. -->
-    <browser:page
-      for="bika.lims.interfaces.ISample"
-      name="workflow_action"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestWorkflowAction"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
+    <!-- Sample Folder View -->
 
     <browser:page
-      for="bika.lims.interfaces.ISample"
+      for="bika.lims.interfaces.ISamplesFolder"
       name="base_view"
-      class="bika.lims.browser.sample.SampleView"
+      class="bika.lims.browser.sample.SamplesView"
       permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- Sample views -->
     <browser:page
       for="bika.lims.interfaces.ISample"
-      name="base_edit"
-      class="bika.lims.browser.sample.SampleEdit"
+      name="base_view"
+      class="bika.lims.browser.sample.SampleView"
       permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -73,14 +57,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISample"
-      name="createSamplePartition"
-      class="bika.lims.browser.sample.createSamplePartition"
-      permission="bika.lims.permissions.AddSamplePartition"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="*"
       name="getsampletypeinfo"
       class="bika.lims.browser.sample.ajaxGetSampleTypeInfo"
@@ -93,6 +69,47 @@
       name="doActionForSample"
       class="bika.lims.browser.sample.doActionForSample"
       permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Sample edition -->
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="base_edit"
+      class="bika.lims.browser.sample.SampleEdit"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Workflow action button clicked for Sample -->
+    <!-- Uses the workflow action in analysisrequest.py, since the
+         forms are basically the same. -->
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="workflow_action"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Sample creation -->
+
+    <browser:page
+      for="bika.lims.interfaces.ISamplesFolder"
+      name="sample_add"
+      class="bika.lims.browser.sample.SampleAddView"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Sample partition creation -->
+
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="createSamplePartition"
+      class="bika.lims.browser.sample.createSamplePartition"
+      permission="bika.lims.permissions.AddSamplePartition"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 </configure>
