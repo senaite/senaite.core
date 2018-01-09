@@ -753,6 +753,38 @@ class AnalysisResultsImporter(Logger):
 
         return analyses
 
+    def analysisHasCalcution(self, objid, analysis):
+        """ returns True or False"""
+
+        analyses = self._getZODBAnalyses(objid)
+        analyis_with_calculation = filter(lambda c: c.getCalculation(),analyses)
+        if analyis_with_calculation:
+            return True
+        return False
+
+    #TODO: Change function name to getAnaysesWithCalculation
+    def getAnaysisWithCalculation(self, objid, analysis, analyses):
+        if self.analysisHasCalcution(objid, analysis):
+            analyis_with_calculation = filter(lambda c: c.getCalculation(),analyses)
+            return analyis_with_calculation
+
+    def namelesfunction(self, objid, analysis):
+        if self.analysisHasCalcution(objid, analysis):
+            # Analysis With Calculation
+            analyses = self._getZODBAnalyses(objid)
+            analyis_with_calculation = self.getAnaysisWithCalculation(objid, analysis, analyses)
+            for aa in analyis_with_calculation:
+                calcultion = aa.getCalculation()
+                formular = calcultion.getMinifiedFormula()
+                # The analysis that we are currenly on
+                analysis_keyword = analysis.getKeyword()
+                if analysis_keyword in formular:
+                    calc_passed = aa.calculateResult(override=self._override[1])
+                    if calc_passed:
+                        #TODO: use api
+                        doActionFor(aa, 'submit')
+
+
     def _process_analysis(self, objid, analysis, values):
         resultsaved = False
         acode = analysis.getKeyword()
@@ -807,7 +839,6 @@ class AnalysisResultsImporter(Logger):
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
             # won't be doing setResult below, so manually calculate result.
-            analysis.calculateResult(override=self._override[1])
             fields_to_reindex.append('Result')
 
         if resultsaved == False and (values.get(defresultkey, '')
@@ -834,6 +865,8 @@ class AnalysisResultsImporter(Logger):
 
         if resultsaved or len(interimsout) > 0:
             doActionFor(analysis, 'submit')
+            self.namelesfunction(objid, analysis)
+            fields_to_reindex.append('Result')
 
         if (resultsaved or len(interimsout) > 0) \
             and values.get('Remarks', '') \
