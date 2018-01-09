@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #553 Fixed that images and barcodes were not printed in reports
+
 
 **Security**
 
