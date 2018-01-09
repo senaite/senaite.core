@@ -390,29 +390,63 @@ def isnumber(s):
 
 
 def senaite_url_fetcher(url):
-    """Basically the same as the default_url_fetcher from WeasyPrint,
-    but injects the __ac cookie to make an authenticated request to the resource.
+    """Uses plone.subrequest to fetch an internal image resource.
+
+    If the URL points to an external resource, the URL is handed
+    to weasyprint.default_url_fetcher.
+
+    Please see these links for details:
+
+        - https://github.com/plone/plone.subrequest
+        - https://pypi.python.org/pypi/plone.subrequest
+        - https://github.com/senaite/senaite.core/issues/538
+
+    :returns: A dict with the following keys:
+
+        * One of ``string`` (a byte string) or ``file_obj``
+          (a file-like object)
+        * Optionally: ``mime_type``, a MIME type extracted e.g. from a
+          *Content-Type* header. If not provided, the type is guessed from the
+          file extension in the URL.
+        * Optionally: ``encoding``, a character encoding extracted e.g. from a
+          *charset* parameter in a *Content-Type* header
+        * Optionally: ``redirected_url``, the actual URL of the resource
+          if there were e.g. HTTP redirects.
+        * Optionally: ``filename``, the filename of the resource. Usually
+          derived from the *filename* parameter in a *Content-Disposition*
+          header
+
+        If a ``file_obj`` key is given, it is the caller’s responsibility
+        to call ``file_obj.close()``.
     """
 
     logger.info("Fetching URL '{}' for WeasyPrint".format(url))
 
     # get the pyhsical path from the URL
     request = api.get_request()
+    host = request.get_header("HOST")
     path = "/".join(request.physicalPathFromURL(url))
 
     # fetch the object by sub-request
     portal = api.get_portal()
     context = portal.restrictedTraverse(path, None)
 
-    if context is None:
+    # We double check here to avoid an edge case, where we have the same path
+    # as well in our local site, e.g. we have `/senaite/img/systems/senaite.png`,
+    # but the user requested http://www.ridingbytes.com/img/systems/senaite.png:
+    #
+    # "/".join(request.physicalPathFromURL("http://www.ridingbytes.com/img/systems/senaite.png"))
+    # '/senaite/img/systems/senaite.png'
+    if context is None or host not in url:
         logger.info("URL is external, passing over to the default URL fetcher...")
         return default_url_fetcher(url)
 
     logger.info("URL is local, fetching data by path '{}' via subrequest".format(path))
 
-    # get the data via subrequest
+    # get the data via an authenticated subrequest
     response = subrequest(path)
 
+    # Prepare the return data as required by WeasyPrint
     string = response.getBody()
     filename = url.split("/")[-1]
     mime_type = mimetypes.guess_type(url)[0]
