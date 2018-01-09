@@ -34,6 +34,7 @@ setup(
     install_requires=[
         'setuptools',
         'plone.api',
+        'plone.subrequest',
         'plone.jsonapi.core',
         'Products.ATExtensions>=1.1a3',
         'Products.CMFEditions',

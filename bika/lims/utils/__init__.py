@@ -13,6 +13,8 @@ import urllib2
 from email import Encoders
 from time import time
 
+import mimetypes
+
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
@@ -26,6 +28,7 @@ from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
 from plone.memoize import ram
 from plone.registry.interfaces import IRegistry
+from plone.subrequest import subrequest
 from weasyprint import CSS, HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
@@ -386,31 +389,36 @@ def isnumber(s):
         return False
 
 
-def bika_url_fetcher(url):
+def senaite_url_fetcher(url):
     """Basically the same as the default_url_fetcher from WeasyPrint,
     but injects the __ac cookie to make an authenticated request to the resource.
     """
-    from weasyprint import VERSION_STRING
-    from weasyprint.compat import Request
-    from weasyprint.compat import urlopen_contenttype
 
+    # get the pyhsical path from the URL
     request = api.get_request()
-    __ac = request.cookies.get("__ac", "")
+    path = "/".join(request.physicalPathFromURL(url))
 
-    if request.get_header("HOST") in url:
-        result, mime_type, charset = urlopen_contenttype(
-            Request(url,
-                    headers={
-                        'Cookie': "__ac={}".format(__ac),
-                        'User-Agent': VERSION_STRING,
-                        'Authorization': request._auth,
-                    }))
-        return dict(file_obj=result,
-                    redirected_url=result.geturl(),
-                    mime_type=mime_type,
-                    encoding=charset)
+    # fetch the object by sub-request
+    portal = api.get_portal()
+    context = portal.restrictedTraverse(path, None)
 
-    return default_url_fetcher(url)
+    if context is None:
+        return default_url_fetcher(url)
+
+    # get the data via subrequest
+    response = subrequest(path)
+
+    string = response.getBody()
+    filename = url.split("/")[-1]
+    mime_type = mimetypes.guess_type(url)[0]
+    redirected_url = url
+
+    return {
+        "string": string,
+        "filename": filename,
+        "mime_type": mime_type,
+        "redirected_url": redirected_url,
+    }
 
 
 def createPdf(htmlreport, outfile=None, css=None, images={}):
@@ -450,7 +458,7 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
 
     # render
     htmlreport = to_utf8(htmlreport)
-    renderer = HTML(string=htmlreport, url_fetcher=bika_url_fetcher, encoding='utf-8')
+    renderer = HTML(string=htmlreport, url_fetcher=senaite_url_fetcher, encoding='utf-8')
     pdf_fn = outfile if outfile else tempfile.mktemp(suffix=".pdf")
     if css:
         renderer.write_pdf(pdf_fn, stylesheets=[CSS(string=css_def)])
