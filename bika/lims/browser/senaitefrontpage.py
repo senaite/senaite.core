@@ -95,7 +95,6 @@ class FrontPageView(BrowserView):
         self.upgrades = {}
         qi = getToolByName(self.context, "portal_quickinstaller")
         for key in qi.keys():
-            info = qi.upgradeInfo('senaite.core')
             self.versions[key] = qi.getProductVersion(key)
             info = qi.upgradeInfo(key)
             if info and 'installedVersion' in info:
