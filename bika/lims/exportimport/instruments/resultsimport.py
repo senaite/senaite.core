@@ -757,32 +757,31 @@ class AnalysisResultsImporter(Logger):
         """ returns True or False"""
 
         analyses = self._getZODBAnalyses(objid)
-        analyis_with_calculation = filter(lambda c: c.getCalculation(),analyses)
-        if analyis_with_calculation:
+        analyses_with_calculation = filter(lambda c: c.getCalculation(),analyses)
+        if analyses_with_calculation:
             return True
         return False
 
-    #TODO: Change function name to getAnaysesWithCalculation
-    def getAnaysisWithCalculation(self, objid, analysis, analyses):
+    def getAnalysesWithCalculation(self, objid, analysis, analyses):
         if self.analysisHasCalcution(objid, analysis):
-            analyis_with_calculation = filter(lambda c: c.getCalculation(),analyses)
-            return analyis_with_calculation
+            analyses_with_calculation = filter(lambda c: c.getCalculation(),analyses)
+            return analyses_with_calculation
 
-    def namelesfunction(self, objid, analysis):
+    def calculateTotalResults(self, objid, analysis):
         if self.analysisHasCalcution(objid, analysis):
             # Analysis With Calculation
             analyses = self._getZODBAnalyses(objid)
-            analyis_with_calculation = self.getAnaysisWithCalculation(objid, analysis, analyses)
-            for aa in analyis_with_calculation:
-                calcultion = aa.getCalculation()
+            analyses_with_calculation = self.getAnalysesWithCalculation(objid, analysis, analyses)
+            for analysis_with_calc in analyses_with_calculation:
+                calcultion = analysis_with_calc.getCalculation()
                 formular = calcultion.getMinifiedFormula()
                 # The analysis that we are currenly on
                 analysis_keyword = analysis.getKeyword()
                 if analysis_keyword in formular:
-                    calc_passed = aa.calculateResult(override=self._override[1])
+                    calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
                     if calc_passed:
                         #TODO: use api
-                        doActionFor(aa, 'submit')
+                        doActionFor(analysis_with_calc, 'submit')
 
 
     def _process_analysis(self, objid, analysis, values):
@@ -865,7 +864,7 @@ class AnalysisResultsImporter(Logger):
 
         if resultsaved or len(interimsout) > 0:
             doActionFor(analysis, 'submit')
-            self.namelesfunction(objid, analysis)
+            self.calculateTotalResults(objid, analysis)
             fields_to_reindex.append('Result')
 
         if (resultsaved or len(interimsout) > 0) \
