@@ -96,6 +96,14 @@
     <!-- Sample creation -->
 
     <browser:page
+      for="*"
+      name="sample_add_manage"
+      class="bika.lims.browser.sample.SampleManageView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.ISamplesFolder"
       name="sample_add"
       class="bika.lims.browser.sample.SampleAddView"
