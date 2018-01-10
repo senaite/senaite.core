@@ -5,13 +5,14 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from plone.dexterity.content import Container
-from zope.interface import implements
+from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IUnitConversions
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import get_email_link, get_link
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
-from bika.lims.interfaces import IUnitConversions
-from bika.lims import bikaMessageFactory as _
+from plone.dexterity.content import Container
+from zope.interface import implements
 
 
 class UnitConversionsView(BikaListingView):
@@ -79,20 +80,26 @@ class UnitConversionsView(BikaListingView):
                          ]},
         ]
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for item in items:
-            obj = item.get("obj", None)
-            if obj is None:
-                continue
-            item['Unit'] = obj.title
-            item['replace']['Unit'] = "<a href='%s' title='%s'>%s</a>" % \
-                 (item['url'], item['url_href_title'], item['Unit'])
-            item['Converted Unit'] = obj.converted_unit
-            item['Formula'] = obj.formula
-            item['Description'] = obj.Description()
-
-        return items
+    def folderitem(self, obj, item, index):
+        """
+        Applies new properties to the item (UnitConversion) that is currently
+        being rendered as a row in the list
+        :param obj: unit conversion to be rendered as a row in the list
+        :param item: dict representation of the unit, suitable for the list
+        :param index: current position of the item within the list
+        :type obj: DexterityContentType
+        :type item: dict
+        :type index: int
+        :return: the dict representation of the item
+        :rtype: dict
+        """
+        item['Unit'] = obj.title
+        item['replace']['Unit'] = "<a href='%s' title='%s'>%s</a>" % \
+              (item['url'], item['url_href_title'], item['Unit'])
+        item['Converted Unit'] = obj.converted_unit
+        item['Formula'] = obj.formula
+        item['Description'] = obj.Description()
+        return item
 
 
 class UnitConversions(Container):
