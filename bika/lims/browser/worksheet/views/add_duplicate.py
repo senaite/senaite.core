@@ -1,9 +1,9 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import getSecurityManager
 from plone.app.layout.globals.interfaces import IViewView
@@ -47,9 +47,8 @@ class AddDuplicateView(BrowserView):
             ar_uid = self.request.get('ar_uid', '')
             src_slot = [slot['position'] for slot in self.context.getLayout() if
                         slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
-            position = self.request.get('position', '')
             self.request['context_uid'] = self.context.UID()
-            self.context.addDuplicateAnalyses(src_slot, position)
+            self.context.addDuplicateAnalyses(src_slot)
             self.request.response.redirect(self.context.absolute_url() + "/manage_results")
         else:
             self.ARs = AnalysisRequestsView(self.context, self.request)

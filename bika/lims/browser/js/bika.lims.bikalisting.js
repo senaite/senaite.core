@@ -639,6 +639,7 @@
           rows = $('<table>' + data + '</table>').find('tr');
           $('[form_id=\'' + form_id + '\'] tr[data-ajax_category=\'' + cat_title + '\']').replaceWith(rows);
           $(element).removeClass('collapsed').addClass('expanded');
+          load_transitions();
           def.resolve();
         });
       } else {

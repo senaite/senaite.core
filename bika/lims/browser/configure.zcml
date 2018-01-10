@@ -5,7 +5,7 @@
 
   <include package="plone.resource" file="meta.zcml"/>
 
-  <include file="bika-frontpage.zcml"/>
+  <include file="senaite-frontpage.zcml"/>
 
   <include file="analysis.zcml"/>
   <include file="analysisprofile.zcml"/>

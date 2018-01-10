@@ -1,11 +1,18 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import warnings
 import pkg_resources
-__version__ = pkg_resources.get_distribution("bika.lims").version
+
+try:
+    __version__ = pkg_resources.get_distribution("senaite.core").version
+except TypeError:
+    __version__ = pkg_resources.get_distribution("bika.lims").version
+    print 'Using old distribution name: bika.lims'
 
 # import this to create messages in the bika domain.
 from zope.i18nmessageid import MessageFactory

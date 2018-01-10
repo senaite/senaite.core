@@ -1,11 +1,13 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from operator import itemgetter
+
+from bika.lims.workflow import isActive
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
@@ -42,7 +44,7 @@ class ReferenceSamplesView(BaseView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter':{'review_state':'current'},
+             'contentFilter':{'review_state': 'current'},
              'columns': ['ID',
                          'Title',
                          'Definition',
@@ -57,6 +59,14 @@ class ReferenceSamplesView(BaseView):
         if not self.control_type:
             return t(_("No control type specified"))
         return super(ReferenceSamplesView, self).contents_table()
+
+    def isItemAllowed(self, obj):
+        """
+        Only valid reference samples (neither expired nor disposed) are allowed
+        """
+        if not obj.isValid() or not isActive(obj):
+            return False
+        return super(ReferenceSamplesView, self).isItemAllowed(obj)
 
     def folderitems(self):
         translate = self.context.translate
