@@ -17,6 +17,7 @@ Changelog
 
 - #553 Fixed that images and barcodes were not printed in reports
 - #551 Traceback in Worksheet Templates list when there are Instruments assigned
+- #530 Calculated results do not get updated when importing instrument results
 
 **Security**
 
