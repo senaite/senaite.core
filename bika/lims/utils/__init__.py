@@ -318,7 +318,7 @@ def logged_in_client(context, member=None):
                 client = obj
     return client
 
-
+# TODO: This function dismiss other state_variables than review_state (e.g. inactive_state)
 def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):
     """Change the workflow state of an object
