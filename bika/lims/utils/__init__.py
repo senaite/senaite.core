@@ -26,6 +26,7 @@ from bika.lims import api as api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
+from plone import api as ploneapi
 from plone.memoize import ram
 from plone.registry.interfaces import IRegistry
 from plone.subrequest import subrequest
@@ -890,7 +891,7 @@ def is_bika_installed():
     qi = api.portal.get_tool("portal_quickinstaller")
     return qi.isProductInstalled("bika.lims")
 
-def convert_unit(result, formula, dmk, precision):
+def convert_unit(result, formula, precision):
     """ take a value and a unit conversion formula and convert the result
     """
     try:
@@ -903,6 +904,41 @@ def convert_unit(result, formula, dmk, precision):
             formula, result, str(e)))
         return '-'
     return formatted
+
+def resolve_unit(analysis, result):
+    """ calculate the converted result
+        note if more than one can be resolved, only the first is returned
+    """
+    if result == '':
+        return ''
+
+    sample_type_uid = analysis.getSampleTypeUID()
+    if not sample_type_uid:
+        return ''
+
+    conversions = analysis.getUnitConversions()
+    conv_result = ''
+    for conversion in conversions:
+        conv_sample_type_uid = conversion.get('SampleType')
+        if conv_sample_type_uid != sample_type_uid:
+            continue
+
+        conv_unit = conversion.get('Unit')
+        if not conv_unit:
+            continue
+
+        if not conversion.get('ShowOnListing', False):
+            continue
+
+        converted_unit = ploneapi.content.get(UID=conv_unit)
+        conv_result = '{} {}'.format(
+                convert_unit(
+                        result,
+                        converted_unit.formula,
+                        analysis.getPrecision()),
+                converted_unit.converted_unit)
+        break
+    return conv_result
 
 def get_display_list(brains_or_objects=None, none_item=False):
     """

@@ -13,11 +13,6 @@ from Products.Archetypes.public import BooleanField, BooleanWidget, \
     DisplayList, MultiSelectionWidget, Schema, registerType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.DataGridField import CheckboxColumn
-from Products.DataGridField import Column
-from Products.DataGridField import DataGridField
-from Products.DataGridField import DataGridWidget
-from Products.DataGridField import SelectColumn
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
@@ -29,7 +24,6 @@ from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IAnalysisService, IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.vocabularies import CatalogVocabulary
 from magnitude import mg
 from zope.interface import implements
 
@@ -373,37 +367,6 @@ InterimFields = InterimFieldsField(
             "specified in the Calculation Interim Fields."),
     )
 )
-UnitConversions = DataGridField(
-    'UnitConversions',
-    schemata="Result Options",
-    allow_insert=True,
-    allow_delete=True,
-    allow_reorder=True,
-    allow_empty_rows=False,
-    columns=('SampleType',
-             'HidePrimaryUnit',
-             'ShowOnListing',
-             'Unit',),
-    default=[{'SampleType': [],
-              'Unit': '',
-              }],
-    widget=DataGridWidget(
-        label=_("Reporting Units per Sample Type"),
-        description=_("Analyses can be reported with more that one unit. Here is the list of additional reporting units per Sample Type."),
-        columns={
-            'SampleType': SelectColumn(
-                'Sample Type',
-                vocabulary='Vocabulary_SampleTypes'),
-            'HidePrimaryUnit': CheckboxColumn(
-                'Hide Primary Unit',),
-            'ShowOnListing': CheckboxColumn(
-                'Show On Listing',),
-            'Unit': SelectColumn(
-                'Unit',
-                vocabulary='Vocabulary_UnitConversions'),
-        }
-    )
-)
 
 schema = schema.copy() + Schema((
     Separate,
@@ -415,7 +378,6 @@ schema = schema.copy() + Schema((
     UseDefaultCalculation,
     Calculation,
     InterimFields,
-    UnitConversions,
 ))
 
 # Re-order some fields from AbstractBaseAnalysis schema.
@@ -648,21 +610,5 @@ class AnalysisService(AbstractBaseAnalysis):
                 pu.addPortalMessage(message, 'error')
                 transaction.get().abort()
                 raise WorkflowException
-
-    def Vocabulary_SampleTypes(self):
-        vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = 'bika_setup_catalog'
-        return vocabulary(allow_blank=True, portal_type='SampleType')
-
-    def Vocabulary_UnitConversions(self):
-        catalog = getToolByName(self, 'portal_catalog')
-        brains = catalog(portal_type='UnitConversion')
-        items = [('', '')]
-        for brain in brains:
-            obj = brain.getObject()
-            key = obj.UID()
-            value = '{} --> {}'.format(_c(obj.title), _c(obj.converted_unit))
-            items.append((key, value))
-        return DisplayList(items)
 
 registerType(AnalysisService, PROJECTNAME)

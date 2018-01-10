@@ -26,6 +26,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView, ulocalized_time
@@ -728,7 +729,7 @@ class AnalysisRequestDigester:
         verified = wasTransitionPerformed(ar, 'verify')
         if not overwrite and verified:
             # Prevent any error related with digest
-            data = ar.getDigest() if hasattr(ar, 'getDigest') else {}
+            data = {} #ar.getDigest() if hasattr(ar, 'getDigest') else {}
             if data:
                 # Check if the department managers have changed since
                 # verification:
@@ -1315,20 +1316,24 @@ class AnalysisRequestDigester:
                 andict['previous_results'] = ", ".join(
                     [p['formatted_result'] for p in andict['previous'][-5:]])
 
-            #Append original analysis
-            analyses.append(andict)
-
             #Append addition analysis for each unit conversion
             if andict['unit_conversions']:
                 for uc_uid in andict['unit_conversions']:
                     new = dict(andict)
-                    unit_conversion = get_object_by_uid(uid=uc_uid)
+                    unit_conversion = api.get_object_by_uid(uid=uc_uid)
                     new['unit'] = unit_conversion.converted_unit
                     new['formatted_unit'] = unit_conversion.converted_unit
                     if andict.get('result'):
-                        new['formatted_result'] = new['result'] = convert_unit(
-                                    andict['result'], dm, unit_conversion.formula)
+                        new['formatted_result'] = new['result'] = \
+                            convert_unit(
+                                    andict['result'], 
+                                    unit_conversion.formula,
+                                    andict['obj'].getPrecision())
                     analyses.append(new)
+            #Append original analysis
+            if not andict.get('hide_primary_result'):
+                analyses.append(andict)
+
 
         return analyses
 
@@ -1364,6 +1369,7 @@ class AnalysisRequestDigester:
                   'specs': {},
                   'formatted_specs': '',
                   'unit_conversions': [],
+                  'hide_primary_result': False,
                   }
 
         if analysis.portal_type == 'DuplicateAnalysis':
@@ -1430,11 +1436,18 @@ class AnalysisRequestDigester:
            sample['sample_type'].get('obj'):
             st_uid = sample['sample_type']['obj'].UID()
         if st_uid:
-            for unit_conversion in service.getUnitConversions():
+            for unit_conversion in analysis.getUnitConversions():
                 if unit_conversion.get('SampleType') and \
                    unit_conversion.get('Unit') and \
                    unit_conversion.get('SampleType') == st_uid:
                     andict['unit_conversions'].append(unit_conversion['Unit'])
+                    # Hide if any UC is set to hide
+                    print '---------- %s %s'  % (
+                            analysis.getId(),
+                            unit_conversion.get('HidePrimaryUnit', '0') )
+                    if andict['hide_primary_result'] == False:
+                        andict['hide_primary_result'] = \
+                            unit_conversion.get('HidePrimaryUnit', '0') == '1'
 
         return andict
 

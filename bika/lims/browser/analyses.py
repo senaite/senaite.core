@@ -18,14 +18,13 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import isActive
-from bika.lims.utils import convert_unit
+from bika.lims.utils import resolve_unit
 from bika.lims.utils import getUsers
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
 from operator import itemgetter
-from plone import api as ploneapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from zope.component import getAdapters
@@ -920,30 +919,12 @@ class AnalysesView(BikaListingView):
         item['after']['Service'] = '&nbsp;'.join(after_icons)
 
         # add unit conversion information
-        item['unit_conversions'] = []
         if item['review_state'] not in (
                 'retracted', 'sample_due', 'sampled', 'sample_received') and \
            item['Result'] != '':
-            service = obj.getObject().getAnalysisService()
-            conversions = []
-            if hasattr(service, 'getUnitConversions'):
-                conversions = service.getUnitConversions()
-            for unit_conversion in conversions:
-                if unit_conversion.get('SampleType') and \
-                   unit_conversion.get('Unit') and \
-                   unit_conversion.get('SampleType') == item['st_uid']:
-                    if unit_conversion.get('ShowOnListing', False):
-                        converted_unit = ploneapi.content.get(
-                            UID=unit_conversion['Unit'])
-                        item['ConvertedResult'] = '%s %s' % (
-                                convert_unit(
-                                        item['Result'],
-                                        converted_unit.formula,
-                                        self.dmk,
-                                        service.getPrecision()),
-                                converted_unit.converted_unit)
-                item['unit_conversions'].append(unit_conversion['Unit'])
-
+            # calculate the converted result
+            # note if more than one can be resolved, only the last is used
+            item['ConvertedResult'] = resolve_unit(full_obj, item['Result'])
 
         # Users that can Add Analyses to an Analysis Request must be able to
         # set the visibility of the analysis in results report, also if the
@@ -1183,3 +1164,4 @@ class QCAnalysesView(AnalysesView):
         # Sort items
         items = sorted(items, key=itemgetter('sortcode'))
         return items
+

@@ -5,7 +5,7 @@ Changelog
 ------------------
 
 **Added**
-
+- Unit Conversions to allow results to be reported in alternative units
 
 **Removed**
 
