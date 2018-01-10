@@ -146,12 +146,13 @@ def create(container, portal_type, *args, **kwargs):
     types_tool = get_tool("portal_types")
     fti = types_tool.getTypeInfo(portal_type)
 
-    if is_at_content(obj):
+    if fti.product: 
+        # AT content type
         obj = _createObjectByType(portal_type, container, tmp_id)
         obj.edit(**kwargs)
         obj.processForm()
     else:
-        # newstyle factory
+        # dexterity content type
         factory = getUtility(IFactory, fti.factory)
         obj = factory(tmp_id, *args, **kwargs)
         if hasattr(obj, '_setPortalTypeName'):
