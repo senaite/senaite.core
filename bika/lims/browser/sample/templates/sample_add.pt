@@ -28,6 +28,152 @@
   </head>
 
   <body>
-  Hello world
+
+    <metal:title fill-slot="content-title">
+    <h1 id="sample-header">
+      <img tal:condition="view/icon | nothing" tal:attributes="src view/icon"/>
+      <span i18n:translate="">Register Sample</span>
+      <span style="display:inline-block;padding-left:0.5em;">
+        <form method="GET" class="form-inline">
+          <input type="hidden"
+                 name="copy_from" tal:attributes="value request/copy_from|nothing"/>
+          <input type="number"
+                 name="sample_count"
+                 min="1"
+                 class="form-control context_action_link"
+                 style="width:4em;border-radius:0;border:1px solid #ddd;padding:2px;"
+                 tal:attributes="value view/sample_count|1"/>
+          <button type="submit"
+                  class="btn btn-link context_action_link">
+            <img src="#"
+                 tal:attributes="src string:${context/absolute_url}/++resource++bika.lims.images/add.png"/>
+          </button>
+        </form>
+      </span>
+    </h1>
+  </metal:title>
+
+    <metal:description fill-slot="content-description">
+    </metal:description>
+
+    <div metal:fill-slot="content-core"
+       tal:define="portal context/@@plone_portal_state/portal;
+                   user context/portal_membership/getAuthenticatedMember;
+                   currency_symbol python:view.get_currency().symbol;">
+
+      <form id="sample_add_form"
+            name="sample_add_form"
+            method="POST">
+
+        <input type="hidden" name="submitted" value="1"/>
+        <input type="hidden" name="portal_url" value="" tal:attributes="value portal/absolute_url"/>
+        <span tal:replace="structure context/@@authenticator/authenticator"/>
+        <input type="hidden"
+               name="came_from" tal:attributes="value view/came_from"/>
+        <input type="hidden" id="sample_count" name="sample_count"
+               tal:attributes="value view/sample_count"/>
+
+
+        <!-- ADD Form -->
+        <table class="sample-table grid">
+          <tr>
+            <td>
+              <div id="manage-sample-fields"
+                  tal:condition="python:user.has_role('LabManager') or user.has_role('Manager')">
+                <a id="manage-sample-fields-link"
+                  href=""
+                  class="btn btn-link"
+                  target="_blank"
+                  tal:attributes="href python:context.absolute_url() + '/sample_add_manage'">
+                  &#9998;
+                  <span i18n:translate="">Manage Form Fields</span>
+                </a>
+              </div>
+            </td>
+            <td></td>
+            <tal:columns
+                    tal:repeat="samplenum python:range(view.sample_count)">
+              <td class="sample-column-header">
+                <span i18n:translate="">Sample</span>
+                <span tal:content="python: samplenum + 1"></span>
+              </td>
+            </tal:columns>
+          </tr>
+
+          <!-- All edit fields with fields with add=visible -->
+          <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
+            <tal:def define="fieldName python:field.getName();
+                             widget python:field.widget;
+                             errors python:{};
+                             mode string:edit;">
+              <tr tal:attributes="fieldName fieldName;">
+                <td>
+                  <label class="formQuestion">
+                    <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                    <span class="fieldRequired"
+                          tal:condition="field/required"
+                          title="Required"
+                          i18n:attributes="title title_required;">&nbsp;</span>
+                    <span class="formHelp discreet"
+                          tal:define="description python:view.context.translate(widget.Description(here))"
+                          tal:content="structure description"
+                          tal:attributes="id string:${fieldName}_help">Help</span>
+                  </label>
+                </td>
+                <td>
+                  <!-- Copy Button -->
+                  <img class="copybutton"
+                        tal:condition="python:view.sample_count > 1"
+                        tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                </td>
+
+                <tal:columns tal:repeat="samplenum python:range(view.sample_count)">
+                  <td tal:define="newFieldName python:view.get_fieldname(field, samplenum)"
+                      tal:attributes="
+                        samplenum samplenum;
+                        fieldName newFieldName">
+                    <tal:field-cond
+                            define="macro python:view.get_input_widget(fieldName, samplenum, mode='edit')"
+                            condition="python: macro is not None">
+                      <metal:field use-macro="macro"/>
+                    </tal:field-cond>
+                  </td>
+                </tal:columns>
+
+              </tr>
+            </tal:def>
+          </tal:field>
+
+          <!-- Hidden Fields -->
+          <tal:field tal:repeat="field python:view.get_fields_with_visibility('hidden')">
+            <tal:def define="fieldName python:field.getName();">
+              <tr style="display:none" tal:attributes="fieldName fieldName">
+                <tal:columns
+                        tal:repeat="samplenum python:range(view.ar_count)">
+                  <td tal:define="newFieldName python:view.get_fieldname(field, samplenum);
+                                  val python:view.fieldvalues.get(newFieldName)"
+                      tal:attributes="samplenum samplenum; fieldName newFieldName">
+
+                    <input type="hidden"
+                           tal:attributes="value val/Title|nothing;
+                                           name newFieldName;"/>
+                    <input type="hidden"
+                           tal:attributes="value val/UID|nothing;
+                                           name string:${newFieldName}_uid;"/>
+                  </td>
+                </tal:columns>
+              </tr>
+            </tal:def>
+          </tal:field>
+        </table>
+
+        <input class="btn btn-success btn-sm allowMultiSubmit"
+               type="submit"
+               name="save_button"
+               i18n:attributes="value"
+               value="Save"/>
+      </form>
+      <div class="sample-footer"></div>
+    </div>
   </body>
 </html>

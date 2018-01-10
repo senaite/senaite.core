@@ -8,6 +8,7 @@
 
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.i18n.locales import locales
 
 from bika.lims import api
 from bika.lims import logger
@@ -39,6 +40,14 @@ class SampleAddView(BrowserView):
         logger.info(
             "*** Prepared data for {} Samples ***".format(self.sample_count))
         return self.template()
+
+    def get_currency(self):
+        """Returns the configured currency
+        """
+        bika_setup = api.get_bika_setup()
+        currency = bika_setup.getCurrency()
+        currencies = locales.getLocale('en').numbers.currencies
+        return currencies[currency]
 
     def get_sample_count(self):
         """Return the sample_count request paramteter
@@ -145,3 +154,91 @@ class SampleAddView(BrowserView):
         base_name = name.split("-")[0]
         suffix = "-{}".format(samplenum)
         return "{}{}".format(base_name, suffix)
+
+    def get_fields_with_visibility(self, visibility, mode="add"):
+        """Return the Sample fields with the current visibility
+        """
+        sample = self.get_sample()
+        # TODO: Create sample add manager view
+        mv = api.get_view("ar_add_manage", context=sample)
+        mv.get_field_order()
+
+        out = []
+        for field in mv.get_fields_with_visibility(visibility, mode):
+            # check custom field condition
+            visible = self.is_field_visible(field)
+            if visible is False and visibility != "hidden":
+                continue
+            out.append(field)
+        return out
+
+    def is_field_visible(self, field):
+        """Check if the field is visible
+        """
+        context = self.context
+        fieldname = field.getName()
+
+        # hide the Client field on client and batch contexts
+        if fieldname == "Client" and context.portal_type in ("Client", ):
+            return False
+
+        return True
+
+    def get_input_widget(self, fieldname, samplenum=0, **kw):
+        """Get the field widget of the Sample in column <samplenum>
+
+        :param fieldname: The base fieldname
+        :type fieldname: string
+        """
+
+        # temporary AR Context
+        context = self.get_sample()
+        # request = self.request
+        schema = context.Schema()
+        # get original field in the schema from the base_fieldname
+        base_fieldname = fieldname.split("-")[0]
+        field = context.getField(base_fieldname)
+        if field is None:
+            logger.warn(
+                "Field {} not found for object type {}"
+                .format(base_fieldname, context.portal_type))
+            return None
+        # fieldname with -<samplenum> suffix
+        new_fieldname = self.get_fieldname(field, samplenum)
+        new_field = field.copy(name=new_fieldname)
+
+        # get the default value for this field
+        fieldvalues = self.fieldvalues
+        field_value = fieldvalues.get(new_fieldname)
+        # request_value = request.form.get(new_fieldname)
+        # value = request_value or field_value
+        value = field_value
+
+        def getAccessor(instance):
+            def accessor(**kw):
+                return value
+            return accessor
+
+        # inject the new context for the widget renderer
+        # see: Products.Archetypes.Renderer.render
+        kw["here"] = context
+        kw["context"] = context
+        kw["fieldName"] = new_fieldname
+
+        # make the field available with this name
+        # XXX: This is actually a hack to make the widget available
+        # in the template
+        schema._fields[new_fieldname] = new_field
+        new_field.getAccessor = getAccessor
+
+        # set the default value
+        form = dict()
+        form[new_fieldname] = value
+        self.request.form.update(form)
+
+        logger.info(
+            "get_input_widget: fieldname={} arnum={} -> "
+            "new_fieldname={} value={}".format(
+                fieldname, samplenum, new_fieldname, value))
+        widget = context.widget(new_fieldname, **kw)
+        return widget
