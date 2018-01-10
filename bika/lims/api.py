@@ -146,7 +146,7 @@ def create(container, portal_type, *args, **kwargs):
     types_tool = get_tool("portal_types")
     fti = types_tool.getTypeInfo(portal_type)
 
-    if fti.product:
+    if is_at_content(obj):
         obj = _createObjectByType(portal_type, container, tmp_id)
         obj.edit(**kwargs)
         obj.processForm()
@@ -157,10 +157,11 @@ def create(container, portal_type, *args, **kwargs):
         if hasattr(obj, '_setPortalTypeName'):
             obj._setPortalTypeName(fti.getId())
         notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and ContainerModifiedEvent
+        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
+        # ContainerModifiedEvent
         container._setObject(tmp_id, obj)
-        # we get the object here with the current object id, as it might be renamed
-        # already by an event handler
+        # we get the object here with the current object id,
+        # as it might be renamed already by an event handler
         obj = container._getOb(obj.getId())
 
     # explicit notification
