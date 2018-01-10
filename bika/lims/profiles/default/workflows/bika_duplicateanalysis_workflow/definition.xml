@@ -130,7 +130,7 @@
     </guard>
   </transition>
 
-  <transition transition_id="submit" title="Submit" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
     </guard>

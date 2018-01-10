@@ -15,7 +15,17 @@
 
       <!-- Add Attachments -->
       <div class="ws_attachments_add">
-        <form action="." method="post" name="add_attachment" enctype="multipart/form-data">
+
+        <!-- Add Form -->
+        <form action="attachments_view"
+              name="attachments_add_form"
+              enctype="multipart/form-data"
+              tal:attributes="action string:${context/absolute_url}/@@attachments_view/add_to_ws"
+              method="POST">
+
+          <input type="hidden" name="submitted" value="1"/>
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
+
           <table class="listing">
             <tr>
               <th i18n:translate="">Add new Attachment</th>

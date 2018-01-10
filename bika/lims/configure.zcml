@@ -79,13 +79,13 @@
   />
 
   <browser:resource
-      file="skins/bika/logo.png"
-      name="bika-lims-logo.png"
+      file="skins/bika/senaite-core-logo.png"
+      name="senaite-core-logo.png"
       />
 
   <browser:resource
-      file="skins/bika/bika-logo-crop.png"
-      name="bikaonly-logo.png"
+      file="skins/bika/senaite-hexagon-logo.png"
+      name="senaite-hexagon-logo.png"
       />
 
   <utility

@@ -6,7 +6,7 @@
         <element value="folder_listing"/>
         <element value="folder_summary_view"/>
         <element value="folder_tabular_view"/>
-        <element value="bika-frontpage"/>
+        <element value="senaite-frontpage"/>
     </property>
-    <property name="default_view">bika-frontpage</property>
+    <property name="default_view">senaite-frontpage</property>
 </object>

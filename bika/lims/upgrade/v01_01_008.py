@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
 from bika.lims import logger
@@ -37,7 +42,6 @@ def upgrade(tool):
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
-
 
 def upgrade_indexes():
     logger.info("Fixing broken calculations (re-assignment of dependents)...")

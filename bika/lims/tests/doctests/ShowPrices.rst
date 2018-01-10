@@ -24,6 +24,7 @@ Needed Imports:
     >>> from plone import api as ploneapi
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
+    >>> from time import sleep
     >>> import transaction
 
 Functional Helpers:
@@ -36,10 +37,12 @@ Functional Helpers:
     >>> def enableShowPrices():
     ...     self.portal.bika_setup.setShowPrices(True)
     ...     transaction.commit()
+    ...     sleep(1)
 
     >>> def disableShowPrices():
     ...     self.portal.bika_setup.setShowPrices(False)
     ...     transaction.commit()
+    ...     sleep(1)
 
 Variables:
 

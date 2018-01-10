@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
-version = '1.1.9'  # Remember version number in metadata.xml and setup.py
+version = '1.2.1'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
 @upgradestep(product, version)

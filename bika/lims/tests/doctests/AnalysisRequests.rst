@@ -109,13 +109,18 @@ Finally, the `AnalysisRequest` can be created::
     ...           'Contact': contact.UID(),
     ...           'SamplingDate': date_now,
     ...           'DateSampled': date_now,
-    ...           'SampleType': sampletype.UID()
+    ...           'SampleType': sampletype.UID(),
+    ...           'Priority': '1',
     ...          }
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
     <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    >>> ar.getPriority()
+    '1'
+    >>> ar.getPriorityText()
+    u'Highest'
 
 
 Proxy Fields

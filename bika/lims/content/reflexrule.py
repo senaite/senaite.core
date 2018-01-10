@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import Schema
@@ -391,7 +398,7 @@ def _createWorksheet(base, worksheettemplate, analyst):
         Analyst=analyst,
         )
     if worksheettemplate:
-        ws.setWorksheetTemplate(worksheettemplate)
+        ws.applyWorksheetTemplate(worksheettemplate)
     return ws
 
 

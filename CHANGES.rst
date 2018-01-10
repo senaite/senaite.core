@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.9 (unreleased)
+1.2.1 (unreleased)
 ------------------
 
 **Added**
@@ -15,9 +15,38 @@ Changelog
 
 **Fixed**
 
+- #553 Fixed that images and barcodes were not printed in reports
+- #551 Traceback in Worksheet Templates list when there are Instruments assigned
 
 **Security**
 
+
+
+1.2.0 (2018-01-03)
+------------------
+
+**Added**
+
+- #498 Added getPriorityText method to Analysis Request
+
+**Changed**
+
+- #519 #527 #528 bika.lims to senaite.core distribution
+
+**Fixed**
+
+- #522 Worksheets: Analyses listing does not show attached Analyses
+- #514 Site Error when listing Dormant Worksheet Templates
+- #517 Expired Reference Samples are displayed in Add Blank/Add Control views
+- #517 Inactive services displayed for selection in Add Blank/Add Control views
+- #516 List of Analyses Services is not properly filtered by state
+- #516 Activate and Deactivate buttons do not appear in Analysis Services list
+- #512 Duplicates transition to "Attachment due" after submit
+- #499 Wrong slots when adding analyses manually in Worksheet with a WST assigned
+- #499 When a Worksheet Template is used, slot positions are not applied correctly
+- #499 Applying a WS template which references a Duplicate raises an Error
+- #513 ShowPrices doctest is failing
+- #488 JS Errors in bika.lims.analysisrequest.js
 
 
 1.1.8 (2017-12-23)
@@ -560,13 +589,6 @@ Changelog
 
 - LIMS-2299: Add ui for editing ar_count in all analysisrequest lists
 - Removed commented HTML that was causing Chameleon to choke when adding ARs.
-
-
-3.1.12 (2016-12-15)
--------------------
-
-- HEALTH-569 Bar code printing not working on sample registration
-- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
 
 
 3.1.12 (2016-12-15)

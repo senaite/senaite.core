@@ -1,10 +1,9 @@
-# encoding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView

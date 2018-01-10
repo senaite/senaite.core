@@ -1,9 +1,10 @@
-# coding=utf-8
-
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -635,6 +636,8 @@ class AnalysesView(BikaListingView):
                 for attachment in attachments_objs:
                     af = attachment.getAttachmentFile()
                     icon = af.icon
+                    if callable(icon):
+                        icon = icon()
                     attachments += \
                         "<span class='attachment' attachment_uid='%s'>" % \
                         (attachment.UID())

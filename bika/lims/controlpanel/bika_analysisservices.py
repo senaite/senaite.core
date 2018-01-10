@@ -1,7 +1,10 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from transaction import savepoint
 
 from Products.ATContentTypes.content.schemata import finalizeATCTSchema
@@ -147,6 +150,7 @@ class AnalysisServicesView(BikaListingView):
         self.icon = self.portal_url + \
             "/++resource++bika.lims.images/analysisservice_big.png"
         self.title = self.context.translate(_("Analysis Services"))
+        self.form_id = "list_analysisservices"
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -236,7 +240,6 @@ class AnalysisServicesView(BikaListingView):
             {'id': 'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': [{'id': 'deactivate'}, ],
              'columns': ['Title',
                          'Category',
                          'Keyword',
@@ -258,7 +261,6 @@ class AnalysisServicesView(BikaListingView):
             {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': [{'id': 'activate'}, ],
              'columns': ['Title',
                          'Category',
                          'Keyword',

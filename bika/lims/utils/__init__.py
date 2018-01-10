@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import os
 import re
@@ -12,6 +12,8 @@ import types
 import urllib2
 from email import Encoders
 from time import time
+
+import mimetypes
 
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
@@ -26,6 +28,7 @@ from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
 from plone.memoize import ram
 from plone.registry.interfaces import IRegistry
+from plone.subrequest import subrequest
 from weasyprint import CSS, HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
@@ -64,6 +67,7 @@ def t(i18n_msg):
         logger.warn("{} couldn't be translated".format(text))
     return to_utf8(text)
 
+
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')
@@ -82,6 +86,7 @@ class js_log(BrowserView):
         """
         self.logger.info(message)
 
+
 class js_err(BrowserView):
 
     def __call__(self, message):
@@ -96,6 +101,7 @@ class js_warn(BrowserView):
         """Javascript sends a string for us to place into the warn log
         """
         self.logger.warning(message)
+
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
 
@@ -265,6 +271,7 @@ def encode_header(header, charset='utf-8'):
 def zero_fill(matchobj):
     return matchobj.group().zfill(8)
 
+
 num_sort_regex = re.compile('\d+')
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sortable_title')
@@ -303,7 +310,7 @@ def logged_in_client(context, member=None):
     client = None
     groups_tool = context.portal_groups
     member_groups = [groups_tool.getGroupById(group.id).getGroupName()
-                 for group in groups_tool.getGroupsByUserId(member.id)]
+                     for group in groups_tool.getGroupsByUserId(member.id)]
 
     if 'Clients' in member_groups:
         for obj in context.clients.objectValues("Client"):
@@ -343,7 +350,7 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
         'comments': "Setting state to %s" % state_id,
         'review_state': state_id,
         'time': DateTime(),
-        }
+    }
 
     # Updating wf_state from keyword args
     for k in kw.keys():
@@ -382,31 +389,75 @@ def isnumber(s):
         return False
 
 
-def bika_url_fetcher(url):
-    """Basically the same as the default_url_fetcher from WeasyPrint,
-    but injects the __ac cookie to make an authenticated request to the resource.
+def senaite_url_fetcher(url):
+    """Uses plone.subrequest to fetch an internal image resource.
+
+    If the URL points to an external resource, the URL is handed
+    to weasyprint.default_url_fetcher.
+
+    Please see these links for details:
+
+        - https://github.com/plone/plone.subrequest
+        - https://pypi.python.org/pypi/plone.subrequest
+        - https://github.com/senaite/senaite.core/issues/538
+
+    :returns: A dict with the following keys:
+
+        * One of ``string`` (a byte string) or ``file_obj``
+          (a file-like object)
+        * Optionally: ``mime_type``, a MIME type extracted e.g. from a
+          *Content-Type* header. If not provided, the type is guessed from the
+          file extension in the URL.
+        * Optionally: ``encoding``, a character encoding extracted e.g. from a
+          *charset* parameter in a *Content-Type* header
+        * Optionally: ``redirected_url``, the actual URL of the resource
+          if there were e.g. HTTP redirects.
+        * Optionally: ``filename``, the filename of the resource. Usually
+          derived from the *filename* parameter in a *Content-Disposition*
+          header
+
+        If a ``file_obj`` key is given, it is the caller’s responsibility
+        to call ``file_obj.close()``.
     """
-    from weasyprint import VERSION_STRING
-    from weasyprint.compat import Request
-    from weasyprint.compat import urlopen_contenttype
 
+    logger.info("Fetching URL '{}' for WeasyPrint".format(url))
+
+    # get the pyhsical path from the URL
     request = api.get_request()
-    __ac = request.cookies.get("__ac", "")
+    host = request.get_header("HOST")
+    path = "/".join(request.physicalPathFromURL(url))
 
-    if request.get_header("HOST") in url:
-        result, mime_type, charset = urlopen_contenttype(
-            Request(url,
-                    headers={
-                        'Cookie': "__ac={}".format(__ac),
-                        'User-Agent': VERSION_STRING,
-                        'Authorization': request._auth,
-                    }))
-        return dict(file_obj=result,
-                    redirected_url=result.geturl(),
-                    mime_type=mime_type,
-                    encoding=charset)
+    # fetch the object by sub-request
+    portal = api.get_portal()
+    context = portal.restrictedTraverse(path, None)
 
-    return default_url_fetcher(url)
+    # We double check here to avoid an edge case, where we have the same path
+    # as well in our local site, e.g. we have `/senaite/img/systems/senaite.png`,
+    # but the user requested http://www.ridingbytes.com/img/systems/senaite.png:
+    #
+    # "/".join(request.physicalPathFromURL("http://www.ridingbytes.com/img/systems/senaite.png"))
+    # '/senaite/img/systems/senaite.png'
+    if context is None or host not in url:
+        logger.info("URL is external, passing over to the default URL fetcher...")
+        return default_url_fetcher(url)
+
+    logger.info("URL is local, fetching data by path '{}' via subrequest".format(path))
+
+    # get the data via an authenticated subrequest
+    response = subrequest(path)
+
+    # Prepare the return data as required by WeasyPrint
+    string = response.getBody()
+    filename = url.split("/")[-1]
+    mime_type = mimetypes.guess_type(url)[0]
+    redirected_url = url
+
+    return {
+        "string": string,
+        "filename": filename,
+        "mime_type": mime_type,
+        "redirected_url": redirected_url,
+    }
 
 
 def createPdf(htmlreport, outfile=None, css=None, images={}):
@@ -446,7 +497,7 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
 
     # render
     htmlreport = to_utf8(htmlreport)
-    renderer = HTML(string=htmlreport, url_fetcher=bika_url_fetcher, encoding='utf-8')
+    renderer = HTML(string=htmlreport, url_fetcher=senaite_url_fetcher, encoding='utf-8')
     pdf_fn = outfile if outfile else tempfile.mktemp(suffix=".pdf")
     if css:
         renderer.write_pdf(pdf_fn, stylesheets=[CSS(string=css_def)])
@@ -459,6 +510,7 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
     for fn in cleanup:
         os.remove(fn)
     return pdf_data
+
 
 def attachPdf(mimemultipart, pdfreport, filename=None):
     part = MIMEBase('application', "pdf")
@@ -484,11 +536,11 @@ def get_invoice_item_description(obj):
     return description
 
 
-
 def currency_format(context, locale):
     locale = locales.getLocale(locale)
     currency = context.bika_setup.getCurrency()
     symbol = locale.numbers.currencies[currency].symbol
+
     def format(val):
         return '%s %0.2f' % (symbol, val)
     return format
@@ -507,6 +559,7 @@ def getHiddenAttributesForClass(classname):
             'Probem accessing optionally hidden attributes in registry')
 
     return []
+
 
 def isAttributeHidden(classname, fieldname):
     try:
@@ -534,6 +587,7 @@ def dicts_to_dict(dictionaries, key_subfieldname):
     for d in dictionaries:
         result[d[key_subfieldname]] = d
     return result
+
 
 def format_supsub(text):
     """
@@ -582,7 +636,7 @@ def format_supsub(text):
                 out.append(subsup.pop())
             else:
                 out.append(c)
-        elif c in ['+','-']:
+        elif c in ['+', '-']:
             if len(clauses) == 0 and len(subsup) > 0:
                 out.append(subsup.pop())
             out.append(c)
@@ -598,12 +652,14 @@ def format_supsub(text):
 
     return ''.join(out)
 
+
 def drop_trailing_zeros_decimal(num):
     """ Drops the trailinz zeros from decimal value.
         Returns a string
     """
     out = str(num)
     return out.rstrip('0').rstrip('.') if '.' in out else out
+
 
 def checkPermissions(permissions=[], obj=None):
     """
@@ -624,6 +680,7 @@ def checkPermissions(permissions=[], obj=None):
         if not sm.checkPermission(perm, obj):
             return ''
     return True
+
 
 def getFromString(obj, string):
     attrobj = obj
@@ -679,7 +736,7 @@ def measure_time(func_to_measure):
         return_value = func_to_measure(*args, **kwargs)
         finish_time = time()
         log = "%s took %0.4f seconds. start_time = %0.4f - finish_time = %0.4f\n" % (func_to_measure.func_name,
-                                                                                     finish_time-start_time,
+                                                                                     finish_time - start_time,
                                                                                      start_time,
                                                                                      finish_time)
         print log
@@ -739,6 +796,7 @@ def get_email_link(email, value=None):
     link_value = value and value or email
     return get_link(mailto, link_value)
 
+
 def get_registry_value(key, default=None):
     """
     Gets the utility for IRegistry and returns the value for the key passed in.
@@ -749,6 +807,7 @@ def get_registry_value(key, default=None):
     """
     registry = queryUtility(IRegistry)
     return registry.get(key, default)
+
 
 def check_permission(permission, obj):
     """
@@ -761,6 +820,7 @@ def check_permission(permission, obj):
     mtool = api.get_tool('portal_membership')
     object = api.get_object(obj)
     return mtool.checkPermission(permission, object)
+
 
 def to_int(value, default=0):
     """
