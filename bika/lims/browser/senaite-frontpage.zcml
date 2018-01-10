@@ -13,7 +13,7 @@
     <browser:page
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         name="bika-frontpage"
-        class="bika.lims.browser.senaite-frontpage.FrontPageView"
+        class="bika.lims.browser.senaitefrontpage.FrontPageView"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -21,7 +21,7 @@
     <browser:page
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         name="senaite-frontpage"
-        class="bika.lims.browser.senaite-frontpage.FrontPageView"
+        class="bika.lims.browser.senaitefrontpage.FrontPageView"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
     />
