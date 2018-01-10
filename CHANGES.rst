@@ -6,9 +6,8 @@ Changelog
 
 **Added**
 
-- #555 Don't allow the inactivation Analysis Services with active dependencies
+- #555 Don't allow the deactivation Analysis Services with active dependencies
 - #555 Don't allow the activation of Analysis Services with inactive dependents
-- #555 Don't allow the activation of Analysis Services with inactive calculation
 
 **Removed**
 
