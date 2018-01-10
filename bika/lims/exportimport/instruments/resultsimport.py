@@ -782,6 +782,13 @@ class AnalysisResultsImporter(Logger):
                     if calc_passed:
                         #TODO: use api
                         doActionFor(analysis_with_calc, 'submit')
+                        self.log(
+                            "${request_id}: calculated result for "
+                            "'${analysis_keyword}': '${analysis_result}'",
+                            mapping={"request_id": objid,
+                                     "analysis_keyword": analysis_with_calc.getKeyword(),
+                                     "analysis_result": str(analysis_with_calc.getResult())}
+                        )
 
 
     def _process_analysis(self, objid, analysis, values):
