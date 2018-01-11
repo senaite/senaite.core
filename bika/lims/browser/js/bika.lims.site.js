@@ -61,8 +61,7 @@
       this.bind_eventhandler();
       this.allowed_keys = [8, 9, 13, 35, 36, 37, 39, 46, 44, 60, 62, 45, 69, 101, 61];
       this.department_filter_cookie = "filter_by_department_info";
-      this.department_filter_disabled_cookie = "dep_filter_disabled";
-      return window.sv = this;
+      return this.department_filter_disabled_cookie = "dep_filter_disabled";
     };
 
 

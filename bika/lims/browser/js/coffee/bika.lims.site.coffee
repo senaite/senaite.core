@@ -56,9 +56,6 @@ class window.SiteView
     @department_filter_cookie = "filter_by_department_info"
     @department_filter_disabled_cookie = "dep_filter_disabled"
 
-    # develop only
-    window.sv = @
-
 
   ### INITIALIZERS ###
 
