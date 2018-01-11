@@ -214,7 +214,7 @@ class AnalysisProfile(BaseContent):
 
         # Remove the service from the settings map
         settings = self.getAnalysisServicesSettings()
-        settings = [item for item in settings if item.get('uid', '') == uid]
+        settings = [item for item in settings if item.get('uid', '') != uid]
         self.setAnalysisServicesSettings(settings)
 
         return removed

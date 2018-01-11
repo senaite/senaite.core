@@ -13,6 +13,7 @@ from Products.Archetypes.public import BooleanField, BooleanWidget, \
     DisplayList, MultiSelectionWidget, Schema, registerType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
@@ -589,9 +590,17 @@ class AnalysisService(AbstractBaseAnalysis):
         This function is called automatically by
         bika.lims.workflow.AfterTransitionEventHandler
         """
+        # Remove the service from profiles to which is assigned
         profiles = self.getBackReferences('AnalysisProfileAnalysisService')
         for profile in profiles:
             profile.remove_service(self)
+
+        # Remove the service from templates to which is assigned
+        bsc = api.get_tool('bika_setup_catalog')
+        templates = bsc(portal_type='ARTemplate')
+        for template in templates:
+            template = api.get_object(template)
+            template.remove_service(self)
 
 
 registerType(AnalysisService, PROJECTNAME)
