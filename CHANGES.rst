@@ -12,6 +12,7 @@ Changelog
 
 **Changed**
 
+- #455 On the AR View Date Published should appear once
 
 **Fixed**
 
@@ -61,7 +62,6 @@ Changelog
 
 **Changed**
 
-- #455 On the AR View Date Published should appear once
 - #469 Remove unique field validator for Batch titles
 - #459 PR-1942 Feature/instrument certification interval refactoring
 - #431 Make ARAnalysesField setter to accept Analysis/Service objects

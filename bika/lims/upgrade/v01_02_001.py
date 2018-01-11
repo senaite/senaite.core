@@ -10,6 +10,8 @@ from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
+from plone import api
+
 version = '1.2.1'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
@@ -27,6 +29,14 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
+    pc = api.portal.get_tool('portal_catalog')
+    pc.clearFindAndRebuild()
+
+    bcal = api.portal.get_tool('bika_catalog_analysisrequest_listing')
+    bcal.clearFindAndRebuild()
+
+    bca = api.portal.get_tool('bika_analysis_catalog')
+    bca.clearFindAndRebuild()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 
