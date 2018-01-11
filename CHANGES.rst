@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #562 Client Batch lists are empty
 - #561 Sampler field is not displayed in Analysis Request Add form
 - #559 Fix numeric field event handler in bika.lims.site.js
 - #553 Fixed that images and barcodes were not printed in reports
