@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #563 Deactivated Analyses are added in new ARs when using Analysis Profiles/Template
 - #562 Client Batch lists are empty
 - #561 Sampler field is not displayed in Analysis Request Add form
 - #559 Fix numeric field event handler in bika.lims.site.js
