@@ -581,5 +581,17 @@ class AnalysisService(AbstractBaseAnalysis):
         deps_uids = [service.UID() for service in deps]
         return deps_uids
 
+    @security.public
+    def after_deactivate_transition_event(self):
+        """Method triggered after a 'deactivate' transition for the current
+        AnalysisService is performed. Removes this service from the Analysis
+        Profiles or Analysis Request Templates where is assigned.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        profiles = self.getBackReferences('AnalysisProfileAnalysisService')
+        for profile in profiles:
+            profile.remove_service(self)
+
 
 registerType(AnalysisService, PROJECTNAME)
