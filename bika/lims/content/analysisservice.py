@@ -581,36 +581,5 @@ class AnalysisService(AbstractBaseAnalysis):
         deps_uids = [service.UID() for service in deps]
         return deps_uids
 
-    def workflow_script_activate(self):
-        workflow = getToolByName(self, 'portal_workflow')
-        pu = getToolByName(self, 'plone_utils')
-        # A service cannot be activated if it's calculation is inactive
-        calc = self.getCalculation()
-        inactive_state = workflow.getInfoFor(calc, "inactive_state")
-        if calc and inactive_state == "inactive":
-            message = _(
-                "This Analysis Service cannot be activated because it's "
-                "calculation is inactive.")
-            pu.addPortalMessage(message, 'error')
-            transaction.get().abort()
-            raise WorkflowException
-
-    def workflow_scipt_deactivate(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        pu = getToolByName(self, 'plone_utils')
-        # A service cannot be deactivated if "active" calculations list it
-        # as a dependency.
-        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
-        calculations = (c.getObject() for c in active_calcs)
-        for calc in calculations:
-            deps = [dep.UID() for dep in calc.getDependentServices()]
-            if self.UID() in deps:
-                message = _(
-                    "This Analysis Service cannot be deactivated because one "
-                    "or more active calculations list it as a dependency")
-                pu.addPortalMessage(message, 'error')
-                transaction.get().abort()
-                raise WorkflowException
-
 
 registerType(AnalysisService, PROJECTNAME)
