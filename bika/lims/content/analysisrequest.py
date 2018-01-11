@@ -208,9 +208,10 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField(
+    ProxyField(
         'Client',
         required=1,
+        proxy="context.getSample()",
         allowed_types=('Client',),
         relationship='AnalysisRequestClient',
         mode="rw",

@@ -155,6 +155,19 @@ class SampleAddView(BrowserView):
         sample = self.get_sample()
         return sample.Schema()
 
+    def get_client(self):
+        """Returns the Client
+        """
+        context = self.context
+        parent = api.get_parent(context)
+        if context.portal_type == "Client":
+            return context
+        elif parent.portal_type == "Client":
+            return parent
+        logger.warn(
+            'No client got from context {}'.format(context.getId()))
+        return None
+
     def get_fieldname(self, field, samplenum):
         """Generate a new fieldname with a '-<samplenum>' suffix
         """
@@ -245,7 +258,7 @@ class SampleAddView(BrowserView):
         self.request.form.update(form)
 
         logger.info(
-            "get_input_widget: fieldname={} arnum={} -> "
+            "get_input_widget: fieldname={} sample={} -> "
             "new_fieldname={} value={}".format(
                 fieldname, samplenum, new_fieldname, value))
         widget = context.widget(new_fieldname, **kw)

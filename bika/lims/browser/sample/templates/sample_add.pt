@@ -100,7 +100,7 @@
             </tal:columns>
           </tr>
 
-          <!-- All edit fields with fields with add=visible -->
+          <!-- All edit fields with fields with edit=visible -->
           <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
             <tal:def define="fieldName python:field.getName();
                              widget python:field.widget;
@@ -149,7 +149,7 @@
             <tal:def define="fieldName python:field.getName();">
               <tr style="display:none" tal:attributes="fieldName fieldName">
                 <tal:columns
-                        tal:repeat="samplenum python:range(view.ar_count)">
+                        tal:repeat="samplenum python:range(view.sample_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, samplenum);
                                   val python:view.fieldvalues.get(newFieldName)"
                       tal:attributes="samplenum samplenum; fieldName newFieldName">

@@ -66,7 +66,7 @@
 
         <ul id="fieldlist">
           <tal:field
-                  tal:repeat="field python:view.get_fields_with_visibility('add')">
+                  tal:repeat="field python:view.get_fields_with_visibility('edit')">
             <tal:def define="fieldName python:field.getName();
                              required python:field.required;
                              widget python:field.widget;">
