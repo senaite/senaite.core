@@ -30,8 +30,6 @@
       this.update_form = bind(this.update_form, this);
       this.recalculate_records = bind(this.recalculate_records, this);
       this.get_global_settings = bind(this.get_global_settings, this);
-      this.render_template = bind(this.render_template, this);
-      this.template_dialog = bind(this.template_dialog, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
@@ -71,52 +69,6 @@
       return $(this).on("ajax:end", this.on_ajax_end);
     };
 
-    SampleAdd.prototype.template_dialog = function(template_id, context, buttons) {
-
-      /*
-       * Render the content of a Handlebars template in a jQuery UID dialog
-         [1] http://handlebarsjs.com/
-         [2] https://jqueryui.com/dialog/
-       */
-      var content;
-      if (buttons == null) {
-        buttons = {};
-        buttons[this._("Yes")] = function() {
-          $(this).trigger("yes");
-          return $(this).dialog("close");
-        };
-        buttons[this._("No")] = function() {
-          $(this).trigger("no");
-          return $(this).dialog("close");
-        };
-      }
-      content = this.render_template(template_id, context);
-      return $(content).dialog({
-        width: 450,
-        resizable: false,
-        closeOnEscape: false,
-        buttons: buttons,
-        open: function(event, ui) {
-          return $(".ui-dialog-titlebar-close").hide();
-        }
-      });
-    };
-
-    SampleAdd.prototype.render_template = function(template_id, context) {
-
-      /*
-       * Render Handlebars JS template
-       */
-      var content, source, template;
-      source = $("#" + template_id).html();
-      if (!source) {
-        return;
-      }
-      template = Handlebars.compile(source);
-      content = template(context);
-      return content;
-    };
-
     SampleAdd.prototype.get_global_settings = function() {
 
       /*
@@ -149,58 +101,12 @@
       var me;
       console.debug("*** update_form ***");
       me = this;
-      $(".service-lockbtn").hide();
-      return $.each(records, function(arnum, record) {
+      return $.each(records, function(samplenum, record) {
         $.each(record.client_metadata, function(uid, client) {
-          return me.set_client(arnum, client);
+          return me.set_client(samplenum, client);
         });
-        $.each(record.contact_metadata, function(uid, contact) {
-          return me.set_contact(arnum, contact);
-        });
-        $.each(record.service_metadata, function(uid, metadata) {
-          var lock;
-          lock = $("#" + uid + "-" + arnum + "-lockbtn");
-          if (uid in record.service_to_profiles) {
-            lock.show();
-          }
-          if (uid in record.service_to_dms) {
-            lock.show();
-          }
-          return me.set_service(arnum, uid, true);
-        });
-        $.each(record.template_metadata, function(uid, template) {
-          return me.set_template(arnum, template);
-        });
-        $.each(record.specification_metadata, function(uid, spec) {
-          return $.each(spec.specifications, function(uid, service_spec) {
-            return me.set_service_spec(arnum, uid, service_spec);
-          });
-        });
-        $.each(record.sample_metadata, function(uid, sample) {
-          return me.set_sample(arnum, sample);
-        });
-        $.each(record.sampletype_metadata, function(uid, sampletype) {
-          return me.set_sampletype(arnum, sampletype);
-        });
-        return $.each(record.unmet_dependencies, function(uid, dependencies) {
-          var context, dialog, service;
-          service = record.service_metadata[uid];
-          context = {
-            "service": service,
-            "dependencies": dependencies
-          };
-          dialog = me.template_dialog("dependency-add-template", context);
-          dialog.on("yes", function() {
-            $.each(dependencies, function(index, service) {
-              return me.set_service(arnum, service.uid, true);
-            });
-            return $(me).trigger("form:changed");
-          });
-          dialog.on("no", function() {
-            me.set_service(arnum, uid, false);
-            return $(me).trigger("form:changed");
-          });
-          return false;
+        return $.each(record.sampletype_metadata, function(uid, sampletype) {
+          return me.set_sampletype(samplenum, sampletype);
         });
       });
     };
@@ -244,29 +150,29 @@
       return $("#sample_add_form");
     };
 
-    SampleAdd.prototype.get_fields = function(arnum) {
+    SampleAdd.prototype.get_fields = function(samplenum) {
 
       /*
        * Get all fields of the form
        */
       var fields, fields_selector, form;
       form = this.get_form();
-      fields_selector = "tr[fieldname] td[arnum] input";
-      if (arnum != null) {
-        fields_selector = "tr[fieldname] td[arnum=" + arnum + "] input";
+      fields_selector = "tr[fieldname] td[samplenum] input";
+      if (samplenum != null) {
+        fields_selector = "tr[fieldname] td[samplenum=" + samplenum + "] input";
       }
       fields = $(fields_selector, form);
       return fields;
     };
 
-    SampleAdd.prototype.get_field_by_id = function(id, arnum) {
+    SampleAdd.prototype.get_field_by_id = function(id, samplenum) {
 
       /*
        * Query the field by id
        */
       var field_id, name, ref, suffix;
       ref = id.split("_"), name = ref[0], suffix = ref[1];
-      field_id = name + "-" + arnum;
+      field_id = name + "-" + samplenum;
       if (suffix != null) {
         field_id = field_id + "_" + suffix;
       }
@@ -378,67 +284,34 @@
       }
     };
 
-    SampleAdd.prototype.set_client = function(arnum, client) {
+    SampleAdd.prototype.set_client = function(samplenum, client) {
 
       /*
-       * Filter Contacts
-       * Filter CCContacts
-       * Filter InvoiceContacts
        * Filter SamplePoints
-       * Filter ARTemplates
-       * Filter Specification
-       * Filter SamplingRound
        */
       var field, query;
-      field = $("#Contact-" + arnum);
-      query = client.filter_queries.contact;
-      this.set_reference_field_query(field, query);
-      field = $("#CCContact-" + arnum);
-      query = client.filter_queries.cc_contact;
-      this.set_reference_field_query(field, query);
-      field = $("#InvoiceContact-" + arnum);
-      query = client.filter_queries.invoice_contact;
-      this.set_reference_field_query(field, query);
-      field = $("#SamplePoint-" + arnum);
+      field = $("#SamplePoint-" + samplenum);
       query = client.filter_queries.samplepoint;
-      this.set_reference_field_query(field, query);
-      field = $("#Template-" + arnum);
-      query = client.filter_queries.artemplates;
-      this.set_reference_field_query(field, query);
-      field = $("#Profiles-" + arnum);
-      query = client.filter_queries.analysisprofiles;
-      this.set_reference_field_query(field, query);
-      field = $("#Specification-" + arnum);
-      query = client.filter_queries.analysisspecs;
-      this.set_reference_field_query(field, query);
-      field = $("#SamplingRound-" + arnum);
-      query = client.filter_queries.samplinground;
-      this.set_reference_field_query(field, query);
-      field = $("#Sample-" + arnum);
-      query = client.filter_queries.sample;
       return this.set_reference_field_query(field, query);
     };
 
-    SampleAdd.prototype.set_sampletype = function(arnum, sampletype) {
+    SampleAdd.prototype.set_sampletype = function(samplenum, sampletype) {
 
       /*
        * Recalculate partitions
        * Filter Sample Points
        */
       var field, query, title, uid;
-      field = $("#SamplePoint-" + arnum);
+      field = $("#SamplePoint-" + samplenum);
       query = sampletype.filter_queries.samplepoint;
       this.set_reference_field_query(field, query);
-      field = $("#DefaultContainerType-" + arnum);
+      field = $("#DefaultContainerType-" + samplenum);
       if (!field.val()) {
         uid = sampletype.container_type_uid;
         title = sampletype.container_type_title;
         this.flush_reference_field(field);
-        this.set_reference_field(field, uid, title);
+        return this.set_reference_field(field, uid, title);
       }
-      field = $("#Specification-" + arnum);
-      query = sampletype.filter_queries.specification;
-      return this.set_reference_field_query(field, query);
     };
 
 
@@ -447,19 +320,19 @@
     SampleAdd.prototype.on_client_changed = function(event) {
 
       /*
-       * Eventhandler when the client changed (happens on Batches)
+       * Eventhandler when the client changed
        */
-      var $el, arnum, el, field_ids, me, uid;
+      var $el, el, field_ids, me, samplenum, uid;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       uid = $el.attr("uid");
-      arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
-      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "Specification"];
+      samplenum = $el.closest("[samplenum]").attr("samplenum");
+      console.debug("°°° on_client_changed: samplenum=" + samplenum + " °°°");
+      field_ids = ["SamplePoint"];
       $.each(field_ids, function(index, id) {
         var field;
-        field = me.get_field_by_id(id, arnum);
+        field = me.get_field_by_id(id, samplenum);
         return me.flush_reference_field(field);
       });
       return $(me).trigger("form:changed");
@@ -471,22 +344,22 @@
        * Eventhandler when the SampleType was changed.
        * Fires form:changed event
        */
-      var $el, arnum, el, field_ids, has_sampletype_selected, me, uid, val;
+      var $el, el, field_ids, has_sampletype_selected, me, samplenum, uid, val;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       uid = $(el).attr("uid");
       val = $el.val();
-      arnum = $el.closest("[arnum]").attr("arnum");
+      samplenum = $el.closest("[samplenum]").attr("samplenum");
       has_sampletype_selected = $el.val();
       console.debug("°°° on_sampletype_change::UID=" + uid + " SampleType=" + val + "°°°");
       if (!has_sampletype_selected) {
         $("input[type=hidden]", $el.parent()).val("");
       }
-      field_ids = ["SamplePoint", "Specification"];
+      field_ids = ["SamplePoint"];
       $.each(field_ids, function(index, id) {
         var field;
-        field = me.get_field_by_id(id, arnum);
+        field = me.get_field_by_id(id, samplenum);
         return me.flush_reference_field(field);
       });
       return $(me).trigger("form:changed");
@@ -499,17 +372,17 @@
        * Copies the value of the first field in this row to the remaining.
        * XXX Refactor
        */
-      var $el, $td1, $tr, ar_count, el, field, i, me, mvl, record_one, results, td1, tr, uid, value;
+      var $el, $td1, $tr, el, field, i, me, mvl, record_one, results, sample_count, td1, tr, uid, value;
       console.debug("°°° on_copy_button_click °°°");
       me = this;
       el = event.target;
       $el = $(el);
       tr = $el.closest('tr')[0];
       $tr = $(tr);
-      td1 = $(tr).find('td[arnum="0"]').first();
+      td1 = $(tr).find('td[samplenum="0"]').first();
       $td1 = $(td1);
-      ar_count = parseInt($('input[id="ar_count"]').val(), 10);
-      if (!(ar_count > 1)) {
+      sample_count = parseInt($('input[id="sample_count"]').val(), 10);
+      if (!(sample_count > 1)) {
         return;
       }
       record_one = this.records_snapshot[0];
@@ -522,14 +395,14 @@
         mvl = el.find(".multiValued-listing");
         $.each((function() {
           results = [];
-          for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
+          for (var i = 1; 1 <= sample_count ? i <= sample_count : i >= sample_count; 1 <= sample_count ? i++ : i--){ results.push(i); }
           return results;
-        }).apply(this), function(arnum) {
+        }).apply(this), function(samplenum) {
           var _el, _field, _td;
-          if (!(arnum > 0)) {
+          if (!(samplenum > 0)) {
             return;
           }
-          _td = $tr.find("td[arnum=" + arnum + "]");
+          _td = $tr.find("td[samplenum=" + samplenum + "]");
           _el = $(_td).find(".ArchetypesReferenceWidget");
           _field = _el.find("input[type=text]");
           me.flush_reference_field(_field);
@@ -554,14 +427,14 @@
         checked = $el.prop("checked");
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
           return results1;
-        }).apply(this), function(arnum) {
+        }).apply(this), function(samplenum) {
           var _el, _td;
-          if (!(arnum > 0)) {
+          if (!(samplenum > 0)) {
             return;
           }
-          _td = $tr.find("td[arnum=" + arnum + "]");
+          _td = $tr.find("td[samplenum=" + samplenum + "]");
           _el = $(_td).find("input[type=checkbox]")[index];
           return $(_el).prop("checked", checked);
         });
@@ -573,14 +446,14 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
           return results1;
-        }).apply(this), function(arnum) {
+        }).apply(this), function(samplenum) {
           var _el, _td;
-          if (!(arnum > 0)) {
+          if (!(samplenum > 0)) {
             return;
           }
-          _td = $tr.find("td[arnum=" + arnum + "]");
+          _td = $tr.find("td[samplenum=" + samplenum + "]");
           _el = $(_td).find("select")[index];
           return $(_el).val(value);
         });
@@ -592,14 +465,14 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
           return results1;
-        }).apply(this), function(arnum) {
+        }).apply(this), function(samplenum) {
           var _el, _td;
-          if (!(arnum > 0)) {
+          if (!(samplenum > 0)) {
             return;
           }
-          _td = $tr.find("td[arnum=" + arnum + "]");
+          _td = $tr.find("td[samplenum=" + samplenum + "]");
           _el = $(_td).find("input[type=text]")[index];
           return $(_el).val(value);
         });
@@ -611,14 +484,14 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
           return results1;
-        }).apply(this), function(arnum) {
+        }).apply(this), function(samplenum) {
           var _el, _td;
-          if (!(arnum > 0)) {
+          if (!(samplenum > 0)) {
             return;
           }
-          _td = $tr.find("td[arnum=" + arnum + "]");
+          _td = $tr.find("td[samplenum=" + samplenum + "]");
           _el = $(_td).find("textarea")[index];
           return $(_el).val(value);
         });
@@ -639,7 +512,7 @@
       base_url = this.get_base_url();
       url = base_url + "/ajax_ar_add/" + endpoint;
       console.debug("Ajax POST to url " + url);
-      form = $("#analysisrequest_add_form");
+      form = $("#sample_add_form");
       form_data = new FormData(form[0]);
       ajax_options = {
         url: url,
@@ -759,12 +632,12 @@
     };
 
     SampleAdd.prototype.file_addbtn_click = function(event, element) {
-      var arnum, counter, del_btn, del_btn_src, existing_file_field_names, existing_file_fields, file_field, file_field_div, holding_div, name, newfieldname, ref;
+      var counter, del_btn, del_btn_src, existing_file_field_names, existing_file_fields, file_field, file_field_div, holding_div, name, newfieldname, ref, samplenum;
       file_field = $(element).clone();
       file_field.val("");
       file_field.wrap("<div class='field'/>");
       file_field_div = file_field.parent();
-      ref = $(element).attr("name").split("-"), name = ref[0], arnum = ref[1];
+      ref = $(element).attr("name").split("-"), name = ref[0], samplenum = ref[1];
       holding_div = $(element).parent().parent();
       existing_file_fields = holding_div.find("input[type='file']");
       existing_file_field_names = existing_file_fields.map(function(index, element) {
@@ -773,7 +646,7 @@
       counter = 0;
       newfieldname = $(element).attr("name");
       while (indexOf.call(existing_file_field_names, newfieldname) >= 0) {
-        newfieldname = name + "_" + counter + "-" + arnum;
+        newfieldname = name + "_" + counter + "-" + samplenum;
         counter++;
       }
       file_field.attr("name", newfieldname);

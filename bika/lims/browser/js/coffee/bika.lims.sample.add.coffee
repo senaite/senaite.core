@@ -19,7 +19,7 @@ class window.SampleAdd
     @global_settings = {}
 
     # services data snapshot from recalculate_records
-    # returns a mapping of arnum -> services data
+    # returns a mapping of samplenum -> services data
     @records_snapshot = {}
 
     # Remove the '.blurrable' class to avoid inline field validation
@@ -68,54 +68,6 @@ class window.SampleAdd
     $(this).on "ajax:end", @on_ajax_end
 
 
-  template_dialog: (template_id, context, buttons) =>
-    ###
-     * Render the content of a Handlebars template in a jQuery UID dialog
-       [1] http://handlebarsjs.com/
-       [2] https://jqueryui.com/dialog/
-    ###
-
-    # prepare the buttons
-    if not buttons?
-      buttons = {}
-      buttons[@_("Yes")] = ->
-        # trigger 'yes' event
-        $(@).trigger "yes"
-        $(@).dialog "close"
-      buttons[@_("No")] = ->
-        # trigger 'no' event
-        $(@).trigger "no"
-        $(@).dialog "close"
-
-    # render the Handlebars template
-    content = @render_template template_id, context
-
-    # render the dialog box
-    $(content).dialog
-      width: 450
-      resizable: no
-      closeOnEscape: no
-      buttons: buttons
-      open: (event, ui) ->
-        # Hide the X button on the top right border
-        $(".ui-dialog-titlebar-close").hide()
-
-
-  render_template: (template_id, context) =>
-    ###
-     * Render Handlebars JS template
-    ###
-
-    # get the template by ID
-    source = $("##{template_id}").html()
-    return unless source
-    # Compile the handlebars template
-    template = Handlebars.compile(source)
-    # Render the template with the given context
-    content = template(context)
-    return content
-
-
   get_global_settings: =>
     ###
      * Submit all form values to the server to recalculate the records
@@ -147,78 +99,16 @@ class window.SampleAdd
 
     me = this
 
-    # initially hide all lock icons
-    $(".service-lockbtn").hide()
-
-    # set all values for one record (a single column in the AR Add form)
-    $.each records, (arnum, record) ->
+    # set all values for one record (a single column in the Sample Add form)
+    $.each records, (samplenum, record) ->
 
       # set client
       $.each record.client_metadata, (uid, client) ->
-        me.set_client arnum, client
-
-      # set contact
-      $.each record.contact_metadata, (uid, contact) ->
-        me.set_contact arnum, contact
-
-      # set services
-      $.each record.service_metadata, (uid, metadata) ->
-        # lock icon (to be displayed when the service cannot be deselected)
-        lock = $("##{uid}-#{arnum}-lockbtn")
-        # service is included in a profile
-        if uid of record.service_to_profiles
-          lock.show()
-        # service is part of the template
-        # if uid of record.service_to_templates
-        #   lock.show()
-        # service is part of the drymatter service
-        if uid of record.service_to_dms
-          lock.show()
-
-        # select the service
-        me.set_service arnum, uid, yes
-
-      # set template
-      $.each record.template_metadata, (uid, template) ->
-        me.set_template arnum, template
-
-      # set specification
-      $.each record.specification_metadata, (uid, spec) ->
-        $.each spec.specifications, (uid, service_spec) ->
-          me.set_service_spec arnum, uid, service_spec
-
-      # set sample
-      $.each record.sample_metadata, (uid, sample) ->
-        me.set_sample arnum, sample
+        me.set_client samplenum, client
 
       # set sampletype
       $.each record.sampletype_metadata, (uid, sampletype) ->
-        me.set_sampletype arnum, sampletype
-
-      # handle unmet dependencies, one at a time
-      $.each record.unmet_dependencies, (uid, dependencies) ->
-        service = record.service_metadata[uid]
-
-        context =
-          "service": service
-          "dependencies": dependencies
-
-        dialog = me.template_dialog "dependency-add-template", context
-
-        dialog.on "yes", ->
-          # select the services
-          $.each dependencies, (index, service) ->
-            me.set_service arnum, service.uid, yes
-          # trigger form:changed event
-          $(me).trigger "form:changed"
-        dialog.on "no", ->
-          # deselect the dependant service
-          me.set_service arnum, uid, no
-          # trigger form:changed event
-          $(me).trigger "form:changed"
-
-        # break the iteration after the first loop to avoid multiple dialogs.
-        return false
+        me.set_sampletype samplenum, sampletype
 
 
   get_portal_url: =>
@@ -253,20 +143,20 @@ class window.SampleAdd
     return $("#sample_add_form")
 
 
-  get_fields: (arnum) =>
+  get_fields: (samplenum) =>
     ###
      * Get all fields of the form
     ###
     form = @get_form()
 
-    fields_selector = "tr[fieldname] td[arnum] input"
-    if arnum?
-      fields_selector = "tr[fieldname] td[arnum=#{arnum}] input"
+    fields_selector = "tr[fieldname] td[samplenum] input"
+    if samplenum?
+      fields_selector = "tr[fieldname] td[samplenum=#{samplenum}] input"
     fields = $(fields_selector, form)
     return fields
 
 
-  get_field_by_id: (id, arnum) =>
+  get_field_by_id: (id, samplenum) =>
     ###
      * Query the field by id
     ###
@@ -274,8 +164,8 @@ class window.SampleAdd
     # split the fieldname from the suffix
     [name, suffix] = id.split "_"
 
-    # append the arnum
-    field_id = "#{name}-#{arnum}"
+    # append the samplenum
+    field_id = "#{name}-#{samplenum}"
 
     # append the suffix if it is there
     if suffix?
@@ -403,77 +293,29 @@ class window.SampleAdd
       $field.val("")
 
 
-  set_client: (arnum, client) =>
+  set_client: (samplenum, client) =>
     ###
-     * Filter Contacts
-     * Filter CCContacts
-     * Filter InvoiceContacts
      * Filter SamplePoints
-     * Filter ARTemplates
-     * Filter Specification
-     * Filter SamplingRound
     ###
-
-    # filter Contacts
-    field = $("#Contact-#{arnum}")
-    query = client.filter_queries.contact
-    @set_reference_field_query field, query
-
-    # filter CCContacts
-    field = $("#CCContact-#{arnum}")
-    query = client.filter_queries.cc_contact
-    @set_reference_field_query field, query
-
-    # filter InvoiceContact
-    # XXX Where is this field?
-    field = $("#InvoiceContact-#{arnum}")
-    query = client.filter_queries.invoice_contact
-    @set_reference_field_query field, query
-
     # filter Sample Points
-    field = $("#SamplePoint-#{arnum}")
+    field = $("#SamplePoint-#{samplenum}")
     query = client.filter_queries.samplepoint
     @set_reference_field_query field, query
 
-    # filter AR Templates
-    field = $("#Template-#{arnum}")
-    query = client.filter_queries.artemplates
-    @set_reference_field_query field, query
 
-    # filter Analysis Profiles
-    field = $("#Profiles-#{arnum}")
-    query = client.filter_queries.analysisprofiles
-    @set_reference_field_query field, query
-
-    # filter Analysis Specs
-    field = $("#Specification-#{arnum}")
-    query = client.filter_queries.analysisspecs
-    @set_reference_field_query field, query
-
-    # filter Samplinground
-    field = $("#SamplingRound-#{arnum}")
-    query = client.filter_queries.samplinground
-    @set_reference_field_query field, query
-
-    # filter Sample
-    field = $("#Sample-#{arnum}")
-    query = client.filter_queries.sample
-    @set_reference_field_query field, query
-
-
-  set_sampletype: (arnum, sampletype) =>
+  set_sampletype: (samplenum, sampletype) =>
     ###
      * Recalculate partitions
      * Filter Sample Points
     ###
 
     # restrict the sample points
-    field = $("#SamplePoint-#{arnum}")
+    field = $("#SamplePoint-#{samplenum}")
     query = sampletype.filter_queries.samplepoint
     @set_reference_field_query field, query
 
     # set the default container
-    field = $("#DefaultContainerType-#{arnum}")
+    field = $("#DefaultContainerType-#{samplenum}")
     # apply default container if the field is empty
     if not field.val()
       uid = sampletype.container_type_uid
@@ -481,38 +323,27 @@ class window.SampleAdd
       @flush_reference_field field
       @set_reference_field field, uid, title
 
-    # restrict the specifications
-    field = $("#Specification-#{arnum}")
-    query = sampletype.filter_queries.specification
-    @set_reference_field_query field, query
-
   ### EVENT HANDLER ###
 
   on_client_changed: (event) =>
     ###
-     * Eventhandler when the client changed (happens on Batches)
+     * Eventhandler when the client changed
     ###
 
     me = this
     el = event.currentTarget
     $el = $(el)
     uid = $el.attr "uid"
-    arnum = $el.closest("[arnum]").attr "arnum"
+    samplenum = $el.closest("[samplenum]").attr "samplenum"
 
-    console.debug "°°° on_client_changed: arnum=#{arnum} °°°"
+    console.debug "°°° on_client_changed: samplenum=#{samplenum} °°°"
 
     # Flush client depending fields
     field_ids = [
-      "Contact"
-      "CCContact"
-      "InvoiceContact"
       "SamplePoint"
-      "Template"
-      "Profiles"
-      "Specification"
     ]
     $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
+      field = me.get_field_by_id id, samplenum
       me.flush_reference_field field
 
     # trigger form:changed event
@@ -530,7 +361,7 @@ class window.SampleAdd
     $el = $(el)
     uid = $(el).attr "uid"
     val = $el.val()
-    arnum = $el.closest("[arnum]").attr "arnum"
+    samplenum = $el.closest("[samplenum]").attr "samplenum"
     has_sampletype_selected = $el.val()
     console.debug "°°° on_sampletype_change::UID=#{uid} SampleType=#{val}°°°"
 
@@ -542,10 +373,9 @@ class window.SampleAdd
     # Flush sampletype depending fields
     field_ids = [
       "SamplePoint"
-      "Specification"
     ]
     $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
+      field = me.get_field_by_id id, samplenum
       me.flush_reference_field field
 
     # trigger form:changed event
@@ -568,11 +398,11 @@ class window.SampleAdd
     tr = $el.closest('tr')[0]
     $tr = $(tr)
 
-    td1 = $(tr).find('td[arnum="0"]').first()
+    td1 = $(tr).find('td[samplenum="0"]').first()
     $td1 = $(td1)
 
-    ar_count = parseInt($('input[id="ar_count"]').val(), 10)
-    return unless ar_count > 1
+    sample_count = parseInt($('input[id="sample_count"]').val(), 10)
+    return unless sample_count > 1
 
     # the record data of the first AR
     record_one = @records_snapshot[0]
@@ -588,11 +418,11 @@ class window.SampleAdd
       value = field.val()
       mvl = el.find(".multiValued-listing")
 
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..sample_count], (samplenum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless samplenum > 0
 
-        _td = $tr.find("td[arnum=#{arnum}]")
+        _td = $tr.find("td[samplenum=#{samplenum}]")
         _el = $(_td).find(".ArchetypesReferenceWidget")
         _field = _el.find("input[type=text]")
 
@@ -622,10 +452,10 @@ class window.SampleAdd
       $el = $(el)
       checked = $el.prop "checked"
       # iterate over columns, starting from column 2
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..sample_count], (samplenum) ->
         # skip the first column
-        return unless arnum > 0
-        _td = $tr.find("td[arnum=#{arnum}]")
+        return unless samplenum > 0
+        _td = $tr.find("td[samplenum=#{samplenum}]")
         _el = $(_td).find("input[type=checkbox]")[index]
         $(_el).prop "checked", checked
 
@@ -634,10 +464,10 @@ class window.SampleAdd
       console.debug "-> Copy select field"
       $el = $(el)
       value = $el.val()
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..sample_count], (samplenum) ->
         # skip the first column
-        return unless arnum > 0
-        _td = $tr.find("td[arnum=#{arnum}]")
+        return unless samplenum > 0
+        _td = $tr.find("td[samplenum=#{samplenum}]")
         _el = $(_td).find("select")[index]
         $(_el).val value
 
@@ -646,10 +476,10 @@ class window.SampleAdd
       console.debug "-> Copy text field"
       $el = $(el)
       value = $el.val()
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..sample_count], (samplenum) ->
         # skip the first column
-        return unless arnum > 0
-        _td = $tr.find("td[arnum=#{arnum}]")
+        return unless samplenum > 0
+        _td = $tr.find("td[samplenum=#{samplenum}]")
         _el = $(_td).find("input[type=text]")[index]
         $(_el).val value
 
@@ -658,10 +488,10 @@ class window.SampleAdd
       console.debug "-> Copy textarea field"
       $el = $(el)
       value = $el.val()
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..sample_count], (samplenum) ->
         # skip the first column
-        return unless arnum > 0
-        _td = $tr.find("td[arnum=#{arnum}]")
+        return unless samplenum > 0
+        _td = $tr.find("td[samplenum=#{samplenum}]")
         _el = $(_td).find("textarea")[index]
         $(_el).val value
 
@@ -681,7 +511,7 @@ class window.SampleAdd
     console.debug "Ajax POST to url #{url}"
 
     # extract the form data
-    form = $("#analysisrequest_add_form")
+    form = $("#sample_add_form")
     # form.serialize does not include file attachments
     # form_data = form.serialize()
     form_data = new FormData(form[0])
@@ -813,7 +643,7 @@ class window.SampleAdd
     file_field.val("")
     file_field.wrap "<div class='field'/>"
     file_field_div = file_field.parent()
-    [name, arnum] = $(element).attr("name").split("-")
+    [name, samplenum] = $(element).attr("name").split("-")
 
     # Get all existing input fields and their names
     holding_div = $(element).parent().parent()
@@ -825,7 +655,7 @@ class window.SampleAdd
     counter = 0
     newfieldname = $(element).attr("name")
     while newfieldname in existing_file_field_names
-      newfieldname = "#{name}_#{counter}-#{arnum}"
+      newfieldname = "#{name}_#{counter}-#{samplenum}"
       counter++
 
     # set the new id, name

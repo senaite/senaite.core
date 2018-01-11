@@ -85,9 +85,8 @@ schema = BikaSchema.copy() + Schema((
                 'invalid': {'view': 'visible', 'edit': 'invisible'},
                 'rejected': {'view': 'visible', 'edit': 'invisible'},
             },
-            catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
+            catalog_name="portal_catalog",
             base_query={'inactive_state': 'active'},
-            showOn=True,
         ),
     ),
     # Sample field
