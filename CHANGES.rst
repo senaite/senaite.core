@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #559 Fix numeric field event handler in bika.lims.site.js
 - #553 Fixed that images and barcodes were not printed in reports
 - #551 Traceback in Worksheet Templates list when there are Instruments assigned
 
