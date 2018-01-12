@@ -45,6 +45,12 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
+      name="Client_Licence_Types"
+      factory="bika.lims.exportimport.setupdata.Client_Licence_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
       name="Container_Types"
       factory="bika.lims.exportimport.setupdata.Container_Types"
       provides="bika.lims.interfaces.ISetupDataImporter"
