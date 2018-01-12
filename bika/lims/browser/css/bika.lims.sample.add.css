@@ -4,155 +4,68 @@
 #ar-header {
     display: inline-block;
 }
-/* Manage AR Add */
-#manage-ar-fields {
+/* Manage Sample Add */
+#manage-sample-fields {
     display: inline-block;
     vertical-align: top;
 }
-#manage-ar-fields-link {
+#manage-sample-fields-link {
 }
-/* /Manage AR Add */
+/* /Manage Sample Add */
 
-/* AnalysisRequest Table */
-.ar-table .ar-column-header {
+/* Sample Table */
+.sample-table .sample-column-header {
     font-weight: bold;
     color: grey;
 }
-.ar-table .copybutton:hover {
+.sample-table .copybutton:hover {
     cursor: pointer;
 }
-.ar-table tr td {
+.sample-table tr td {
     text-align: center;
     vertical-align: top;
 }
-.ar-table tr:hover>* {
+.sample-table tr:hover>* {
     background-color: #fcf8e3!important;
 }
-.ar-table tr td:nth-child(1) {
+.sample-table tr td:nth-child(1) {
     width: 20em;
     font-weight: bold;
     background-color: #f5f5f5;
     text-align: left;
 }
-.ar-table tr td:nth-child(2) {
+.sample-table tr td:nth-child(2) {
     width: 1.5em;
 }
-.ar-table span.price {
+.sample-table span.price {
     font-weight: bold;
     font-size: 120%;
     color: grey;
 }
-.ar-footer {
+.sample-footer {
     padding: 1em 0;
 }
 
-/* /AnalysisRequest Table */
+/* /Sample Table */
 
 /* POC Header (Field/Lab) */
-.ar-table tr.service-listing-header td {
+.sample-table tr.service-listing-header td {
     text-align: left;
     cursor: pointer;
 }
-.ar-table tr.lab.service-listing-header td {
+.sample-table tr.lab.service-listing-header td {
     background-color: #d9edf7;
 }
-.ar-table tr.lab.service-listing-header td:hover {
+.sample-table tr.lab.service-listing-header td:hover {
     background-color: #d9edf7!important;
 }
-.ar-table tr.field.service-listing-header td {
+.sample-table tr.field.service-listing-header td {
     background-color: #dff0d8;
 }
-.ar-table tr.field.service-listing-header td:hover {
+.sample-table tr.field.service-listing-header td:hover {
     background-color: #dff0d8!important;
 }
 /* /POC Header (Field/Lab) */
-
-/* AnalysisCategory */
-.ar-table tr.category {
-    display: none;
-}
-.ar-table tr.category.visible {
-    display: table-row;
-}
-.ar-table tr.category td {
-    cursor: pointer;
-}
-.ar-table tr.category.field td:nth-child(1),
-.ar-table tr.category.lab td:nth-child(1) {
-    background-color: transparent;
-    cursor: pointer;
-}
-/* /AnalysisCategory */
-
-/* AnalysisServices */
-.ar-table tr.service {
-    display: none;
-}
-.ar-table tr.service .part {
-    display: none;
-}
-.ar-table tr.service.visible {
-    display: table-row;
-}
-.ar-table tr td.service-header {
-    font-weight: normal;
-    background-color: transparent;
-    padding-left: 2em;
-    color: grey;
-}
-.ar-table tr td.service-column div {
-    display: inline-block;
-}
-/* /AnalysisServices */
-
-
-/* AS settings */
-.partition-label {
-    color: grey;
-    font-size: 90%;
-}
-/* /AS settings */
-
-
-/* Service Info Table */
-.service-info {
-    padding: 1em 0 0 0;
-    width: 100%;
-}
-.service-info-table {
-    width: 100%;
-    font-size: 85%;
-    text-align: left;
-}
-.service-infobtn {
-    cursor: pointer;
-}
-.service-lockbtn {
-    cursor: pointer;
-    display: none;
-}
-.service-info-table td.service-info-key {
-    width: 33%!important;
-}
-.service-info-table td.service-info-value {
-    text-align: left;
-}
-.service-info-table tr:hover>* {
-    background-color: transparent!important;
-}
-.service-info-accredited-image {
-    width: 12px;
-    height: 12px;
-}
-.service-info-drymatter-image {
-    width: 12px;
-    height: 12px;
-}
-.dialog-listing {
-    padding: 0.5em 1em;
-}
-/* /Service Info Table */
-
 
 /* BUTTON STYLES COPIED FROM TWITTER BOOTSTRAP */
 .btn {
