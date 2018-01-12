@@ -18,6 +18,7 @@ from DateTime import DateTime
 version = '1.2.1'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
+
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
@@ -34,10 +35,12 @@ def upgrade(tool):
     # -------- ADD YOUR STUFF HERE --------
     set_guards_to_inactive_workflow()
     fix_service_status_inconsistences()
+    fix_service_profile_template_inconsistences()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
+
 
 def set_guards_to_inactive_workflow():
     wtool = api.get_tool('portal_workflow')
@@ -54,7 +57,7 @@ def set_guards_to_inactive_workflow():
     activate.guard = activate_guard
 
 
-def fix_service_status_inconsistences(active=True):
+def fix_service_status_inconsistences():
     catalog = api.get_tool('bika_setup_catalog')
     brains = catalog(portal_type='AnalysisService')
     for brain in brains:
@@ -73,6 +76,19 @@ def fix_service_status_inconsistences(active=True):
             dependency = api.get_object(dependency)
             if not isActive(dependency):
                 _change_inactive_state(dependency, 'active')
+
+
+def fix_service_profile_template_inconsistences():
+    catalog = api.get_tool('bika_setup_catalog')
+    brains = catalog(portal_type='AnalysisService')
+    for brain in brains:
+        obj = api.get_object(brain)
+        if isActive(obj):
+            continue
+
+        # If this service is inactive, be sure is not used neither in Profiles
+        # nor in AR Templates
+        obj.after_deactivate_transition_event()
 
 
 def _change_inactive_state(service, new_state):
