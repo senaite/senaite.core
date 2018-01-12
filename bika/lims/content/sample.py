@@ -42,10 +42,8 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 from bika.lims.browser.fields import DateTimeField
-from bika.lims.browser.fields import ProxyField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import sys
 from bika.lims.utils import to_unicode
 
@@ -65,7 +63,7 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             render_own_label=True,
             visible={
-                'edit': 'invisible',
+                'edit': 'visible',
                 'view': 'visible',
                 'add': 'edit',
                 'secondary': 'disabled',
@@ -286,7 +284,10 @@ schema = BikaSchema.copy() + Schema((
                      'view': 'visible',
                      'add': 'edit',
                      'header_table': 'visible',
-                     'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_registered': {
+                         'view': 'invisible',
+                         'edit': 'invisible',
+                         'add': 'edit', },
                      'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
                      'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},

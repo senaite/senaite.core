@@ -212,17 +212,17 @@ class SampleAddView(BrowserView):
         :type fieldname: string
         """
 
-        # temporary AR Context
-        context = self.get_sample()
+        # temporary Sample Context
+        sample = self.get_sample()
         # request = self.request
-        schema = context.Schema()
+        schema = sample.Schema()
         # get original field in the schema from the base_fieldname
         base_fieldname = fieldname.split("-")[0]
-        field = context.getField(base_fieldname)
+        field = sample.getField(base_fieldname)
         if field is None:
             logger.warn(
                 "Field {} not found for object type {}"
-                .format(base_fieldname, context.portal_type))
+                .format(base_fieldname, sample.portal_type))
             return None
         # fieldname with -<samplenum> suffix
         new_fieldname = self.get_fieldname(field, samplenum)
@@ -242,8 +242,8 @@ class SampleAddView(BrowserView):
 
         # inject the new context for the widget renderer
         # see: Products.Archetypes.Renderer.render
-        kw["here"] = context
-        kw["context"] = context
+        kw["here"] = sample
+        kw["context"] = sample
         kw["fieldName"] = new_fieldname
 
         # make the field available with this name
@@ -261,7 +261,7 @@ class SampleAddView(BrowserView):
             "get_input_widget: fieldname={} sample={} -> "
             "new_fieldname={} value={}".format(
                 fieldname, samplenum, new_fieldname, value))
-        widget = context.widget(new_fieldname, **kw)
+        widget = sample.widget(new_fieldname, **kw)
         return widget
 
 
