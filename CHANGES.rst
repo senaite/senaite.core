@@ -8,7 +8,8 @@ Changelog
 
 - #555 Don't allow the deactivation Analysis Services with active dependencies
 - #555 Don't allow the activation of Analysis Services with inactive dependents
-
+- #540 Added ClientClicenceType content type, Licence field on Client and AR
+  
 **Removed**
 
 
