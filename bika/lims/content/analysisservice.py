@@ -13,6 +13,7 @@ from Products.Archetypes.public import BooleanField, BooleanWidget, \
     DisplayList, MultiSelectionWidget, Schema, registerType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField, UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
@@ -580,35 +581,24 @@ class AnalysisService(AbstractBaseAnalysis):
         deps_uids = [service.UID() for service in deps]
         return deps_uids
 
-    def workflow_script_activate(self):
-        workflow = getToolByName(self, 'portal_workflow')
-        pu = getToolByName(self, 'plone_utils')
-        # A service cannot be activated if it's calculation is inactive
-        calc = self.getCalculation()
-        inactive_state = workflow.getInfoFor(calc, "inactive_state")
-        if calc and inactive_state == "inactive":
-            message = _(
-                "This Analysis Service cannot be activated because it's "
-                "calculation is inactive.")
-            pu.addPortalMessage(message, 'error')
-            transaction.get().abort()
-            raise WorkflowException
+    @security.public
+    def after_deactivate_transition_event(self):
+        """Method triggered after a 'deactivate' transition for the current
+        AnalysisService is performed. Removes this service from the Analysis
+        Profiles or Analysis Request Templates where is assigned.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        # Remove the service from profiles to which is assigned
+        profiles = self.getBackReferences('AnalysisProfileAnalysisService')
+        for profile in profiles:
+            profile.remove_service(self)
 
-    def workflow_scipt_deactivate(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        pu = getToolByName(self, 'plone_utils')
-        # A service cannot be deactivated if "active" calculations list it
-        # as a dependency.
-        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
-        calculations = (c.getObject() for c in active_calcs)
-        for calc in calculations:
-            deps = [dep.UID() for dep in calc.getDependentServices()]
-            if self.UID() in deps:
-                message = _(
-                    "This Analysis Service cannot be deactivated because one "
-                    "or more active calculations list it as a dependency")
-                pu.addPortalMessage(message, 'error')
-                transaction.get().abort()
-                raise WorkflowException
+        # Remove the service from templates to which is assigned
+        bsc = api.get_tool('bika_setup_catalog')
+        templates = bsc(portal_type='ARTemplate')
+        for template in templates:
+            template = api.get_object(template)
+            template.remove_service(self)
 
 registerType(AnalysisService, PROJECTNAME)
