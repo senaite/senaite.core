@@ -507,7 +507,7 @@ class window.SampleAdd
     console.debug "°°° ajax_post_form::Endpoint=#{endpoint} °°°"
     # calculate the right form URL
     base_url = @get_base_url()
-    url = "#{base_url}/ajax_ar_add/#{endpoint}"
+    url = "#{base_url}/ajax_sample_add/#{endpoint}"
     console.debug "Ajax POST to url #{url}"
 
     # extract the form data
@@ -584,7 +584,7 @@ class window.SampleAdd
     @ajax_post_form("submit").done (data) ->
       ###
       # data contains the following useful keys:
-      # - errors: any errors which prevented the AR from being created
+      # - errors: any errors which prevented the Sample from being created
       #   these are displayed immediately and no further ation is taken
       # - destination: the URL to which we should redirect on success.
       #   This includes GET params for printing labels, so that we do not
@@ -611,9 +611,9 @@ class window.SampleAdd
 
       else if data['stickers']
         destination = base_url
-        ars = data['stickers']
+        samples = data['stickers']
         stickertemplate = data['stickertemplate']
-        q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + ars.join(',')
+        q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + samples.join(',')
         window.location.replace destination + q
       else
         window.location.replace base_url

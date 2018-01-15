@@ -5,54 +5,32 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import json
-import magnitude
 from datetime import datetime
-from DateTime import DateTime
 
+import magnitude
 from BTrees.OOBTree import OOBTree
-
-from plone import protect
-
-from plone.memoize.volatile import cache
-from plone.memoize.volatile import DontCache
-
-from zope.annotation.interfaces import IAnnotations
-from zope.publisher.interfaces import IPublishTraverse
-from zope.interface import implements
-from zope.i18n.locales import locales
-
-from Products.CMFPlone.utils import safe_unicode
+from DateTime import DateTime
 from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone import protect
+from plone.memoize.volatile import cache
+from zope.annotation.interfaces import IAnnotations
+from zope.i18n.locales import locales
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import api
-from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.utils import cache_key
+from bika.lims.utils import returns_json
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample"]
-
-
-def returns_json(func):
-    """Decorator for functions which return JSON
-    """
-    def decorator(*args, **kwargs):
-        instance = args[0]
-        request = getattr(instance, 'request', None)
-        request.response.setHeader("Content-Type", "application/json")
-        result = func(*args, **kwargs)
-        return json.dumps(result)
-    return decorator
-
-
-def cache_key(method, self, obj):
-    if obj is None:
-        raise DontCache
-    return api.get_cache_key(obj)
 
 
 def mg(value):

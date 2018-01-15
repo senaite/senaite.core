@@ -111,6 +111,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="ajax_sample_add"
+      class="bika.lims.browser.sample.add.ajaxSampleAdd"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
     <!-- Sample partition creation -->
 
     <browser:page

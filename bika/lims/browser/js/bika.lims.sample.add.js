@@ -510,7 +510,7 @@
        */
       console.debug("°°° ajax_post_form::Endpoint=" + endpoint + " °°°");
       base_url = this.get_base_url();
-      url = base_url + "/ajax_ar_add/" + endpoint;
+      url = base_url + "/ajax_sample_add/" + endpoint;
       console.debug("Ajax POST to url " + url);
       form = $("#sample_add_form");
       form_data = new FormData(form[0]);
@@ -577,13 +577,13 @@
 
         /*
          * data contains the following useful keys:
-         * - errors: any errors which prevented the AR from being created
+         * - errors: any errors which prevented the Sample from being created
          *   these are displayed immediately and no further ation is taken
          * - destination: the URL to which we should redirect on success.
          *   This includes GET params for printing labels, so that we do not
          *   have to care about this here.
          */
-        var ars, destination, errorbox, field, fieldname, message, msg, parent, q, stickertemplate;
+        var destination, errorbox, field, fieldname, message, msg, parent, q, samples, stickertemplate;
         if (data['errors']) {
           msg = data.errors.message;
           if (msg !== "") {
@@ -604,9 +604,9 @@
           return window.scroll(0, 0);
         } else if (data['stickers']) {
           destination = base_url;
-          ars = data['stickers'];
+          samples = data['stickers'];
           stickertemplate = data['stickertemplate'];
-          q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + ars.join(',');
+          q = '/sticker?autoprint=1&template=' + stickertemplate + '&items=' + samples.join(',');
           return window.location.replace(destination + q);
         } else {
           return window.location.replace(base_url);

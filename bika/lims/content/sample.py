@@ -7,45 +7,37 @@
 
 """Sample represents a physical sample submitted for testing
 """
+import sys
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.WorkflowCore import WorkflowException
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.api import get_object_by_uid
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.utils import t, getUsers
+
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.ATExtensions.field import RecordsField
-from bika.lims import deprecated
-from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
-from bika.lims.browser.widgets import RejectionWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISample, ISamplePrepWorkflow
-from bika.lims.permissions import SampleSample
-from bika.lims.permissions import ScheduleSampling
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import skip
-from bika.lims.workflow.sample import guards
-from bika.lims.workflow.sample import events
-from DateTime import DateTime
 from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
+from bika.lims import bikaMessageFactory as _
+from bika.lims.api import get_object_by_uid
 from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-import sys
+from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ISample, ISamplePrepWorkflow
+from bika.lims.permissions import ScheduleSampling
+from bika.lims.utils import getUsers
 from bika.lims.utils import to_unicode
+from bika.lims.workflow.sample import events
+from bika.lims.workflow.sample import guards
 
 schema = BikaSchema.copy() + Schema((
 
@@ -85,11 +77,13 @@ schema = BikaSchema.copy() + Schema((
             },
             catalog_name="portal_catalog",
             base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     # Sample field
+    # TODO: Deprecated?
     StringField('SampleID',
-        required=1,
+        required=0,
         searchable=True,
         mode="rw",
         read_permission=permissions.View,
@@ -275,15 +269,18 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateSampled',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=SampleSample,
+        write_permission=permissions.ModifyPortalContent,
+        # see SamplingWOrkflowWidgetVisibility
         widget = DateTimeWidget(
             label=_("Date Sampled"),
             show_time=True,
+            description=_("The date when the sample was taken"),
             size=20,
+            datepicker_nofuture=1,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
-                     'header_table': 'visible',
+                     'header_table': 'prominent',
                      'sample_registered': {
                          'view': 'invisible',
                          'edit': 'invisible',
@@ -304,26 +301,34 @@ schema = BikaSchema.copy() + Schema((
     StringField('Sampler',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=SampleSample,
+        write_permission=permissions.ModifyPortalContent,
         vocabulary='getSamplers',
+        # see SamplingWOrkflowWidgetVisibility
         widget=BikaSelectionWidget(
             format='select',
             label=_("Sampler"),
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'edit',
-                     'header_table': 'visible',
-                     'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
-                     'expired':           {'view': 'visible', 'edit': 'invisible'},
-                     'disposed':          {'view': 'visible', 'edit': 'invisible'},
-                     'rejected':          {'view': 'visible', 'edit': 'visible'}
-                     },
+            description=_("The person who took the sample"),
+            visible={
+                'edit': 'visible',
+                'view': 'visible',
+                'add': 'edit',
+                'header_table': 'prominent',
+                'sample_registered': {'view': 'invisible',
+                                      'edit': 'invisible'},
+                'to_be_sampled': {'view': 'invisible', 'edit': 'visible'},
+                'scheduled_sampling': {'view': 'invisible', 'edit': 'visible'},
+                'sampled': {'view': 'visible', 'edit': 'invisible'},
+                'to_be_preserved': {'view': 'visible', 'edit': 'invisible'},
+                'sample_due': {'view': 'visible', 'edit': 'invisible'},
+                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
+                'sample_received': {'view': 'visible', 'edit': 'invisible'},
+                'attachment_due': {'view': 'visible', 'edit': 'invisible'},
+                'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
+                'verified': {'view': 'visible', 'edit': 'invisible'},
+                'published': {'view': 'visible', 'edit': 'invisible'},
+                'invalid': {'view': 'visible', 'edit': 'invisible'},
+                'rejected': {'view': 'visible', 'edit': 'invisible'},
+            },
             render_own_label=True,
         ),
     ),
@@ -332,6 +337,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=ScheduleSampling,
         vocabulary='getSamplers',
+        # see SamplingWOrkflowWidgetVisibility
         widget=BikaSelectionWidget(
             description=_("Define the sampler supposed to do the sample in "
                           "the scheduled date"),
