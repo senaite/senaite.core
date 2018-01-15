@@ -157,3 +157,19 @@ Some things that will increase the chance that your pull request is accepted:
 
 For more details about Git usage, please check out Chapters 1 and 2 from
 [Pro Git book](https://git-scm.com/book/en/v2).
+
+
+## Contributing with new ideas
+
+All suggestions and proposals are welcome. We strongly believe that the 
+feedback of the community is an important asset to make a better project. With
+the aim to get the most of these contributions, but without interfering with 
+the undergoing work regarding to issues and Pull Requests, we've created a 
+[Community discussion board on Github](
+https://github.com/orgs/senaite/teams/community). This is the right place if 
+you are willing to discuss about new ideas, further steps or improvements.
+
+If you are interested on contributing and participating in these discussions,
+please ask for membership through our [Gitter community channel](
+https://gitter.im/senaite/Lobby) and one of the SENAITE org members will give 
+you access.

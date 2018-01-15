@@ -16,6 +16,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.ATExtensions.field.records import RecordsField
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.interfaces import IARTemplate
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
@@ -269,5 +270,30 @@ class ARTemplate(BaseContent):
             else:
                 raise ValueError('%s is not valid' % uid)
         return sets.get('hidden', False)
+
+
+    def remove_service(self, service):
+        """Removes the service passed in from the services offered by the
+        current Template. If the Analysis Service passed in is not assigned to
+        this Analysis Template, returns False.
+        :param service: the service to be removed from this AR Template
+        :type service: AnalysisService
+        :return: True if the AnalysisService has been removed successfully
+        """
+        uid = api.get_uid(service)
+
+        # Remove the service from the referenced services
+        services = self.getAnalyses()
+        num_services = len(services)
+        services = [item for item in services if item.get('service_uid', '') != uid]
+        removed = len(services) < num_services
+        self.setAnalyses(services)
+
+        # Remove the service from the settings map
+        settings = self.getAnalysisServicesSettings()
+        settings = [item for item in settings if item.get('uid', '') != uid]
+        self.setAnalysisServicesSettings(settings)
+
+        return removed
 
 registerType(ARTemplate, PROJECTNAME)
