@@ -1006,6 +1006,18 @@ And get the contact associated to the user:
     >>> api.get_user_contact(user)
     <LabContact at /plone/bika_setup/bika_labcontacts/labcontact-1>
 
+As well as if we specify only `LabContact` type:
+
+    >>> api.get_user_contact(user, ['LabContact'])
+    <LabContact at /plone/bika_setup/bika_labcontacts/labcontact-1>
+
+But fails if we specify only `Contact` type:
+
+    >>> nuser = api.get_user_contact(user, ['Contact'])
+    >>> nuser is None
+    True
+
+
 
 Creating a Cache Key
 --------------------
