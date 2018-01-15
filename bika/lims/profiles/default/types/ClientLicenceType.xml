@@ -20,6 +20,7 @@
   <property name="behaviors">
      <element value="bika.lims.interfaces.IGenerateID" />
      <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
+     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
    </property>
 
   <!-- View information -->
