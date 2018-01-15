@@ -1052,23 +1052,21 @@ def get_current_user():
     return ploneapi.user.get_current()
 
 
-def get_user_contact(user, contact_types=None):
-    """Returns the current contact associated to the user passed in, if any.
-    If the user passed in has no contact associated, return None. If
-    contact_types is not specified, searches for 'Contact' and 'LabContact'
+def get_user_contact(user, contact_types=['Contact', 'LabContact']):
+    """Returns the associated contact of a Plone user
+
+    If the user passed in has no contact associated, return None.
+    The `contact_types` parameter filter the portal types for the search.
+
     :param: Plone user
-    :contact_types: array with the contact types to look for
-    :returns: Contact associated to the Plone user, if any. Otherwise, None
+    :contact_types: List with the contact portal types to search
+    :returns: Contact associated to the Plone user or None
     """
     if not user:
         return None
 
-    ctypes = ['Contact', 'LabContact']
-    if contact_types:
-        ctypes = contact_types
-    user_id = user.id
-    pc = get_tool('portal_catalog')
-    brains = pc(portal_type = ctypes, getUsername = user_id)
+    query = {'portal_type': contact_types, 'getUsername': user.id}
+    brains = search(query, catalog='portal_catalog')
     if not brains:
         return None
 
@@ -1076,7 +1074,7 @@ def get_user_contact(user, contact_types=None):
         # Oops, the user has multiple contacts assigned, return None
         contacts = map(lambda c: c.Title, brains)
         err_msg = "User '{}' is bound to multiple Contacts '{}'"
-        err_msg = err_msg.format(user_id, ','.join(contacts))
+        err_msg = err_msg.format(user.id, ','.join(contacts))
         logger.error(err_msg)
         return None
 
