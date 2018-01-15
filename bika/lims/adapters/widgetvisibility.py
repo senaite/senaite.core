@@ -118,14 +118,12 @@ class SamplingWorkflowWidgetVisibility(object):
         #  - DateSampled and Sampler:
         #       visible, not editable after creation (appears in
         #       header_table), DateSampled required in 'add' view.
-        #  - 'SamplingDate' and 'ScheduledSamplingSampler':
-        #       disabled everywhere.
+        #  - 'SamplingDate': disabled everywhere.
         else:
-            if fieldName in ['DateSampled', 'Sampler']:
+            if fieldName in ['DateSampled', ]:
                 if mode == 'add':
                     state = 'edit'
-                    if fieldName == 'DateSampled':
-                        field.required = 1
+                    field.required = 1
                 elif mode == 'edit':
                     state = 'invisible'
                 elif mode == 'view':
