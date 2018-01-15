@@ -14,6 +14,8 @@ Changelog
 
 **Changed**
 
+- #569 Minimalistic dashboard indicators
+
 
 **Fixed**
 
