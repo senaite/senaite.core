@@ -7,14 +7,12 @@
 
 from datetime import datetime
 
-from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone import protect
 from plone.memoize.volatile import cache
-from zope.annotation.interfaces import IAnnotations
 from zope.i18n.locales import locales
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -22,20 +20,18 @@ from zope.publisher.interfaces import IPublishTraverse
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.base_manage_add_view import BaseManageAddView
 from bika.lims.utils import cache_key
 from bika.lims.utils import returns_json
 from bika.lims.utils.sample import create_sample
 
-SAMPLE_CONFIGURATION_STORAGE = "bika.lims.browser.sample.manage.add"
-SKIP_FIELD_ON_COPY = []
-
 
 def get_tmp_sample(view):
-    if not view.tmp_sample:
+    if not view.tmp_obj:
         logger.info("*** CREATING TEMPORARY SAMPLE ***")
         view.tmp_sample = view.context.restrictedTraverse(
             "portal_factory/Sample/sample_tmp")
-    return view.tmp_sample
+    return view.tmp_obj
 
 
 class SampleAddView(BrowserView):
@@ -283,127 +279,22 @@ class SampleAddView(BrowserView):
         return widget
 
 
-class SampleManageView(BrowserView):
+class SampleManageView(BaseManageAddView):
     """Sample Manage View
     """
     template = ViewPageTemplateFile("templates/sample_add_manage.pt")
 
     def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.context = context
-        self.request = request
-        self.tmp_sample = None
+        BaseManageAddView.__init__(self, context, request)
+        self.CONFIGURATION_STORAGE = "bika.lims.browser.sample.manage.add"
 
     def __call__(self):
-        protect.CheckAuthenticator(self.request.form)
-        form = self.request.form
-        if form.get("submitted", False) and form.get("save", False):
-            order = form.get("order")
-            self.set_field_order(order)
-            visibility = form.get("visibility")
-            self.set_field_visibility(visibility)
-        if form.get("submitted", False) and form.get("reset", False):
-            self.flush()
+        BaseManageAddView.__call__(self)
         return self.template()
 
-    def get_sample(self):
-        self.tmp_sample = get_tmp_sample(self)
-        return self.tmp_sample
-
-    def get_annotation(self):
-        bika_setup = api.get_bika_setup()
-        return IAnnotations(bika_setup)
-
-    @property
-    def storage(self):
-        annotation = self.get_annotation()
-        if annotation.get(SAMPLE_CONFIGURATION_STORAGE) is None:
-            annotation[SAMPLE_CONFIGURATION_STORAGE] = OOBTree()
-        return annotation[SAMPLE_CONFIGURATION_STORAGE]
-
-    def flush(self):
-        annotation = self.get_annotation()
-        if annotation.get(SAMPLE_CONFIGURATION_STORAGE) is not None:
-            del annotation[SAMPLE_CONFIGURATION_STORAGE]
-
-    def set_field_order(self, order):
-        self.storage.update({"order": order})
-
-    def get_field_order(self):
-        order = self.storage.get("order")
-        if order is None:
-            return map(lambda f: f.getName(), self.get_fields())
-        return order
-
-    def set_field_visibility(self, visibility):
-        self.storage.update({"visibility": visibility})
-
-    def get_field_visibility(self):
-        return self.storage.get("visibility")
-
-    def is_field_visible(self, field):
-        if field.required:
-            return True
-        visibility = self.get_field_visibility()
-        if visibility is None:
-            return True
-        return visibility.get(field.getName(), True)
-
-    def get_field(self, name):
-        """Get Sample field by name
-        """
-        sample = self.get_sample()
-        return sample.getField(name)
-
-    def get_fields(self):
-        """Return all Sample fields
-        """
-        sample = self.get_sample()
-        return sample.Schema().fields()
-
-    def get_sorted_fields(self):
-        """Return the sorted fields
-        """
-        inf = float("inf")
-        order = self.get_field_order()
-
-        def field_cmp(field1, field2):
-            _n1 = field1.getName()
-            _n2 = field2.getName()
-            _i1 = _n1 in order and order.index(_n1) + 1 or inf
-            _i2 = _n2 in order and order.index(_n2) + 1 or inf
-            return cmp(_i1, _i2)
-
-        return sorted(self.get_fields(), cmp=field_cmp)
-
-    def get_fields_with_visibility(self, visibility="edit", mode="add"):
-        """Return the fields with visibility
-        """
-        fields = self.get_sorted_fields()
-
-        out = []
-
-        for field in fields:
-            v = field.widget.isVisible(
-                self.context, mode, default='invisible', field=field)
-
-            if self.is_field_visible(field) is False:
-                v = "hidden"
-
-            visibility_guard = True
-            # visibility_guard is a widget field defined in the schema in order
-            # to know the visibility of the widget when the field is related to
-            # a dynamically changing content such as workflows. For instance
-            # those fields related to the workflow will be displayed only if
-            # the workflow is enabled, otherwise they should not be shown.
-            if 'visibility_guard' in dir(field.widget):
-                visibility_guard = eval(field.widget.visibility_guard)
-            # if 'Sampler' == field.getName():
-            #     import pdb;pdb.set_trace()
-            if v == visibility and visibility_guard:
-                out.append(field)
-
-        return out
+    def get_obj(self):
+        self.tmp_obj = get_tmp_sample(self)
+        return self.tmp_obj
 
 
 class ajaxSampleAdd(SampleAddView):
