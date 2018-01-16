@@ -22,7 +22,7 @@ from zope.publisher.interfaces import IPublishTraverse
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.base_manage_add_view import BaseManageAddView
+from bika.lims.browser.base_add_view import BaseManageAddView
 from bika.lims.utils import cache_key
 from bika.lims.utils import returns_json
 from bika.lims.utils import tmpID
