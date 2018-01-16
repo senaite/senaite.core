@@ -541,9 +541,17 @@ class window.AnalysisRequestAdd
      * Apply the sample data to all fields of arnum
     ###
 
-    # set the sampling date (required)
+    # set the sampling date
+    # If sampling workflow enabled visible it is editable until sample due.
+    # If SamplingWorkflow is Disabled, SamplingDate: disabled everywhere.
     field = $("#SamplingDate-#{arnum}")
     value = sample.sampling_date
+    field.val value
+
+    # set the date sampled
+    # If SamplingWorkflow is Disabled, DateSampled required in 'add' view.
+    field = $("#DateSampled-#{arnum}")
+    value = sample.date_sampled
     field.val value
 
     # set the sample type (required)

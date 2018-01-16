@@ -102,8 +102,6 @@ class SamplingWorkflowWidgetVisibility(object):
         # - DateSampled and Sampler: invisible during creation.
         # - SamplingDate and ScheduledSamplingSampler: visible and
         #   editable until sample due.
-        # if 'Sampler' == field.getName():
-        #     import pdb;pdb.set_trace()
         if swf_enabled:
             if fieldName in ['DateSampled', 'Sampler']:
                 if mode == 'add':
