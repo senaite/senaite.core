@@ -5,17 +5,17 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.permissions import AddBatch
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import ManageInvoices
-from bika.lims.utils import t
-from operator import itemgetter
-from plone.app.content.browser.interfaces import IFolderContentsView
-from bika.lims.browser import BrowserView
-from zope.interface import implements
-import plone
 import json
+from operator import itemgetter
+
+import plone
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import AddBatch
+from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.interface import implements
 
 
 class BatchFolderContentsView(BikaListingView):
@@ -138,34 +138,43 @@ class BatchFolderContentsView(BikaListingView):
                 return True
         return False
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if 'obj' not in items[x]:
-                continue
-            obj = items[x]['obj']
+    def folderitem(self, obj, item, index):
+        """Applies new properties to the item (Batch) that is currently being
+        rendered as a row in the list
+        :param obj: client to be rendered as a row in the list
+        :param item: dict representation of the batch, suitable for the list
+        :param index: current position of the item within the list
+        :type obj: ATContentType/DexterityContentType
+        :type item: dict
+        :type index: int
+        :return: the dict representation of the item
+        :rtype: dict
+        """
+        # TODO This can be done entirely by using brains
+        full_obj = api.get_object(obj)
+        bid = full_obj.getId()
+        item['BatchID'] = bid
+        item['replace']['BatchID'] = "<a href='%s/%s'>%s</a>" % (
+            item['url'], 'analysisrequests', bid)
 
-            bid = obj.getBatchID()
-            items[x]['BatchID'] = bid
-            items[x]['replace']['BatchID'] = "<a href='%s/%s'>%s</a>" % (items[x]['url'], 'analysisrequests', bid)
+        title = full_obj.Title()
+        item['Title'] = title
+        item['replace']['Title'] = "<a href='%s/%s'>%s</a>" % (
+            item['url'], 'analysisrequests', title)
+        item['Client'] = ''
+        client = full_obj.getClient()
+        if client:
+            item['Client'] = client.Title()
+            item['replace']['Client'] = "<a href='%s'>%s</a>" % (
+                client.absolute_url(), client.Title())
 
-            title = obj.Title()
-            items[x]['Title'] = title
-            items[x]['replace']['Title'] = "<a href='%s/%s'>%s</a>" % (items[x]['url'], 'analysisrequests', title)
-
-            if obj.getClient():
-                items[x]['Client'] = obj.getClient().Title()
-                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % ( obj.getClient().absolute_url(), obj.getClient().Title())
-            else:
-                items[x]['Client'] = ''
-
-            date = obj.Schema().getField('BatchDate').get(obj)
-            if callable(date):
-                date = date()
-            items[x]['BatchDate'] = date
-            items[x]['replace']['BatchDate'] = self.ulocalized_time(date)
-
-        return items
+        # TODO This workaround is necessary?
+        date = full_obj.Schema().getField('BatchDate').get(obj)
+        if callable(date):
+            date = date()
+        item['BatchDate'] = date
+        item['replace']['BatchDate'] = self.ulocalized_time(date)
+        return item
 
 
 class ajaxGetBatches(BrowserView):

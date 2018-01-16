@@ -31,7 +31,7 @@ SENAITE.CORE is an Open Source Laboratory Information Management System (LIMS)
 for enterprise environments, especially focused to behave with high speed,
 excellent performance and good stability.
 
-This software is a derivative work of `Bika LIMS <https://github.com/bikalims/bika.lims>`_
+This software is a derivative work of BikaLIMS_
 software and comes with the same user interface. Since SENAITE.CORE provides the
 core functionalities and entities used by `SENAITE.LIMS <https://github.com/senaite/senaite.lims>`_,
 the installation of the latter is strongly recommended for an optimal user
@@ -147,8 +147,7 @@ SENAITE.CORE
 Copyright (C) 2018 Senaite Foundation
 
 This software, henceforth "SENAITE.CORE", an add-on for
-`Plone software <https://plone.org/>`_, is a derivative work of
-`Bika LIMS <https://github.com/bikalims/bika.lims>`_.
+`Plone software <https://plone.org/>`_, is a derivative work of BIKALIMS_.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the `GNU General Public License version 2 <./LICENSE>`_ as published by the Free Software Foundation.
@@ -160,3 +159,8 @@ GNU General Public License for more details.
 
 SENAITE.CORE uses third party libraries that are distributed under their own
 terms (see LICENSE-3RD-PARTY.rst)
+
+
+.. Links
+
+.. _BIKALIMS: https://github.com/bikalims/bika.lims

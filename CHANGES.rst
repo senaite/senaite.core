@@ -6,15 +6,25 @@ Changelog
 
 **Added**
 
+- #555 Don't allow the deactivation Analysis Services with active dependencies
+- #555 Don't allow the activation of Analysis Services with inactive dependents
 
 **Removed**
 
 
 **Changed**
 
+- #569 Minimalistic dashboard indicators
+
 
 **Fixed**
 
+- #563 Deactivated Analyses are added in new ARs when using Analysis Profiles/Template
+- #562 Client Batch lists are empty
+- #561 Sampler field is not displayed in Analysis Request Add form
+- #559 Fix numeric field event handler in bika.lims.site.js
+- #553 Fixed that images and barcodes were not printed in reports
+- #551 Traceback in Worksheet Templates list when there are Instruments assigned
 
 **Security**
 
