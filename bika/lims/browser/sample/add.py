@@ -768,8 +768,7 @@ class ajaxSampleAdd(SampleAddView):
 
             # Create the Sample
             try:
-                sample = create_sample(
-                    client, self.request, record, set_transition=True)
+                sample = create_sample(client, self.request, record)
             except (KeyError, RuntimeError) as e:
                 errors["message"] = e.message
                 return {"errors": errors}

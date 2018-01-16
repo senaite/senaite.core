@@ -12,13 +12,11 @@ from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 
 
-def create_sample(client, request, values, set_transition=False):
+def create_sample(client, request, values):
     """
     Creates a sample for the passed in client.
 
-    If "set_transition" parameter is False, the sample will stay at the first
-    possible state "sample_registered". If "set_transition" is True, the
-    sample will be transitioned to "sampled" if sampling workflow is not
+    The sample will be transitioned to "sampled" if sampling workflow is not
     enabled or "to_be_sampled" otherwise.
     """
     # Retrieve the required tools
