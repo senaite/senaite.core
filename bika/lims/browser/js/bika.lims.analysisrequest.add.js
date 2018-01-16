@@ -751,7 +751,7 @@
       uid = $el.attr("uid");
       arnum = $el.closest("[arnum]").attr("arnum");
       console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
-      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "Specification"];
+      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "SamplingRound", "Specification", "Sample"];
       $.each(field_ids, function(index, id) {
         var field;
         field = me.get_field_by_id(id, arnum);

@@ -841,7 +841,9 @@ class window.AnalysisRequestAdd
       "SamplePoint"
       "Template"
       "Profiles"
+      "SamplingRound"
       "Specification"
+      "Sample"
     ]
     $.each field_ids, (index, id) ->
       field = me.get_field_by_id id, arnum
