@@ -373,7 +373,12 @@ def generateUniqueId(context, **kw):
     id_template = config.get("form", "")
 
     # Interpolate the ID template
-    new_id = id_template.format(**variables)
+    try:
+        new_id = id_template.format(**variables)
+    except KeyError, e:
+        logger.error('KeyError: {} not in id_template {}'.format(
+            e, id_template))
+        raise 
     normalized_id = api.normalize_filename(new_id)
     logger.info("generateUniqueId: {}".format(normalized_id))
 
