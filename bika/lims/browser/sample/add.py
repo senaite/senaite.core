@@ -9,17 +9,16 @@ from datetime import datetime
 
 from DateTime import DateTime
 from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone import protect
 from plone.memoize.volatile import cache
-from zope.i18n.locales import locales
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.base_add_view import BaseAddView
 from bika.lims.browser.base_add_view import BaseManageAddView
 from bika.lims.utils import cache_key
 from bika.lims.utils import returns_json
@@ -29,92 +28,57 @@ from bika.lims.utils.sample import create_sample
 def get_tmp_sample(view):
     if not view.tmp_obj:
         logger.info("*** CREATING TEMPORARY SAMPLE ***")
-        view.tmp_sample = view.context.restrictedTraverse(
+        view.tmp_obj = view.context.restrictedTraverse(
             "portal_factory/Sample/sample_tmp")
     return view.tmp_obj
 
 
-class SampleAddView(BrowserView):
+class SampleAddView(BaseAddView):
     """Sample Add view
     """
     template = ViewPageTemplateFile("templates/sample_add.pt")
 
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.tmp_sample = None
-
     def __call__(self):
-        self.portal = api.get_portal()
-        self.portal_url = self.portal.absolute_url()
-        self.bika_setup = api.get_bika_setup()
-        self.request.set('disable_plone.rightcolumn', 1)
+        BaseAddView.__call__(self)
         self.icon = self.portal_url + \
             "/++resource++bika.lims.images/sample_big.png"
-        self.came_from = "add"
-        self.tmp_sample = self.get_sample()
-        self.sample_count = self.get_sample_count()
-        self.fieldvalues = self.generate_fieldvalues(self.sample_count)
+        self.fieldvalues = self.generate_fieldvalues(self.obj_count)
         logger.info(
-            "*** Prepared data for {} Samples ***".format(self.sample_count))
+            "*** Prepared data for {} Samples ***".format(self.obj_count))
         return self.template()
 
-    def get_currency(self):
-        """Returns the configured currency
-        """
-        bika_setup = api.get_bika_setup()
-        currency = bika_setup.getCurrency()
-        currencies = locales.getLocale('en').numbers.currencies
-        return currencies[currency]
-
-    def get_sample_count(self):
-        """Return the sample_count request paramteter
-        """
-        try:
-            sample_count = int(self.request.form.get("sample_count", 1))
-        except (TypeError, ValueError):
-            sample_count = 1
-        return sample_count
-
-    def get_sample(self):
+    def get_obj(self):
         """Create a temporary Sample to fetch the fields from
         """
-        self.tmp_sample = get_tmp_sample(self)
-        return self.tmp_sample
+        self.tmp_obj = get_tmp_sample(self)
+        return self.tmp_obj
+
+    def get_obj_count(self):
+        """Return the obj_count request parameter
+        """
+        try:
+            obj_count = int(self.request.form.get("sample_count", 1))
+        except (TypeError, ValueError):
+            obj_count = 1
+        return obj_count
 
     def generate_fieldvalues(self, count=1):
         """Returns a mapping of '<fieldname>-<count>' to the default value
         of the field or the field value of the source Sample
         """
-        sample_context = self.get_sample()
-
-        # mapping of UID index to Sample objects
-        # {1: <Sample1>, 2: <Sample2> ...}
-        copy_from = self.get_copy_from()
-
+        sample_context = self.get_obj()
         out = {}
         # the original schema fields of a Sample (including extended fields)
-        fields = self.get_sample_fields()
+        fields = self.get_obj_fields()
 
         # generate fields for all requested Samples
         for samplenum in range(count):
-            source = copy_from.get(samplenum)
-            parent = None
-            if source is not None:
-                parent = self.get_parent_sample(source)
             for field in fields:
-                value = None
-                fieldname = field.getName()
-                if source and fieldname not in SKIP_FIELD_ON_COPY:
-                    # get the field value stored on the source
-                    context = parent or source
-                    value = self.get_field_value(field, context)
-                else:
-                    # get the default value of this field
-                    value = self.get_default_value(field, sample_context)
+                # get the default value of this field
+                value = self.get_default_value(field, sample_context)
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, samplenum)
                 out[new_fieldname] = value
-
         return out
 
     def get_object_by_uid(self, uid):
@@ -126,75 +90,10 @@ class SampleAddView(BrowserView):
             logger.warn("!! No object found for UID #{} !!")
         return obj
 
-    def get_copy_from(self):
-        """Returns a mapping of UID index -> Sample object
-        """
-        # Create a mapping of source Sample for copy
-        copy_from = self.request.form.get("copy_from", "").split(",")
-        # clean out empty strings
-        copy_from_uids = filter(lambda x: x, copy_from)
-        out = dict().fromkeys(range(len(copy_from_uids)))
-        for n, uid in enumerate(copy_from_uids):
-            sample = self.get_object_by_uid(uid)
-            if sample is None:
-                continue
-            out[n] = sample
-        logger.info("get_copy_from: uids={}".format(copy_from_uids))
-        return out
-
-    def get_default_value(self, field, context):
-        """Get the default value of the field
-        """
-        name = field.getName()
-        default = field.getDefault(context)
-        if name == "Client":
-            client = self.get_client()
-            if client is not None:
-                default = client
-        logger.info("get_default_value: context={} field={} value={}".format(
-            context, name, default))
-        return default
-
-    def get_sample_fields(self):
-        """Return the Sample schema fields (including extendend fields)
-        """
-        logger.info("*** GET SAMPLE FIELDS ***")
-        schema = self.get_sample_schema()
-        return schema.fields()
-
-    def get_sample_schema(self):
-        """Return the Sample schema
-        """
-        logger.info("*** GET SAMPLE SCHEMA ***")
-        sample = self.get_sample()
-        return sample.Schema()
-
-    def get_client(self):
-        """Returns the Client
-        """
-        context = self.context
-        parent = api.get_parent(context)
-        if context.portal_type == "Client":
-            return context
-        elif parent.portal_type == "Client":
-            return parent
-        logger.warn(
-            'No client got from context {}'.format(context.getId()))
-        return None
-
-    def get_fieldname(self, field, samplenum):
-        """Generate a new fieldname with a '-<samplenum>' suffix
-        """
-        name = field.getName()
-        # ensure we have only *one* suffix
-        base_name = name.split("-")[0]
-        suffix = "-{}".format(samplenum)
-        return "{}{}".format(base_name, suffix)
-
     def get_fields_with_visibility(self, visibility, mode="add"):
         """Return the Sample fields with the current visibility
         """
-        sample = self.get_sample()
+        sample = self.get_obj()
         mv = api.get_view("sample_add_manage", context=sample)
         mv.get_field_order()
 
@@ -206,77 +105,6 @@ class SampleAddView(BrowserView):
                 continue
             out.append(field)
         return out
-
-    def is_field_visible(self, field):
-        """Check if the field is visible
-        """
-        context = self.context
-        fieldname = field.getName()
-
-        # hide the Client field on client and batch contexts
-        if fieldname == "Client" and context.portal_type in ("Client", ):
-            return False
-
-        return True
-
-    def get_input_widget(self, fieldname, samplenum=0, **kw):
-        """Get the field widget of the Sample in column <samplenum>
-
-        :param fieldname: The base fieldname
-        :type fieldname: string
-        """
-
-        # temporary Sample Context
-        sample = self.get_sample()
-        # request = self.request
-        schema = sample.Schema()
-        # get original field in the schema from the base_fieldname
-        base_fieldname = fieldname.split("-")[0]
-        field = sample.getField(base_fieldname)
-        if field is None:
-            logger.warn(
-                "Field {} not found for object type {}"
-                .format(base_fieldname, sample.portal_type))
-            return None
-        # fieldname with -<samplenum> suffix
-        new_fieldname = self.get_fieldname(field, samplenum)
-        new_field = field.copy(name=new_fieldname)
-
-        # get the default value for this field
-        fieldvalues = self.fieldvalues
-        field_value = fieldvalues.get(new_fieldname)
-        # request_value = request.form.get(new_fieldname)
-        # value = request_value or field_value
-        value = field_value
-
-        def getAccessor(instance):
-            def accessor(**kw):
-                return value
-            return accessor
-
-        # inject the new context for the widget renderer
-        # see: Products.Archetypes.Renderer.render
-        kw["here"] = sample
-        kw["context"] = sample
-        kw["fieldName"] = new_fieldname
-
-        # make the field available with this name
-        # XXX: This is actually a hack to make the widget available
-        # in the template
-        schema._fields[new_fieldname] = new_field
-        new_field.getAccessor = getAccessor
-
-        # set the default value
-        form = dict()
-        form[new_fieldname] = value
-        self.request.form.update(form)
-
-        logger.info(
-            "get_input_widget: fieldname={} sample={} -> "
-            "new_fieldname={} value={}".format(
-                fieldname, samplenum, new_fieldname, value))
-        widget = sample.widget(new_fieldname, **kw)
-        return widget
 
 
 class SampleManageView(BaseManageAddView):
@@ -365,7 +193,7 @@ class ajaxSampleAdd(SampleAddView):
         [{"Contact": "Rita Mohale", ...}, {Contact: "Neil Standard"} ...]
         """
         form = self.request.form
-        sample_count = self.get_sample_count()
+        sample_count = self.get_obj_count()
 
         records = []
         # Group belonging Sample fields together
@@ -579,7 +407,7 @@ class ajaxSampleAdd(SampleAddView):
         """
 
         # Get Sample required fields (including extended fields)
-        fields = self.get_sample_fields()
+        fields = self.get_obj_fields()
 
         # extract records from request
         records = self.get_records()

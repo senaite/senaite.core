@@ -11,17 +11,16 @@ import magnitude
 from DateTime import DateTime
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone import protect
 from plone.memoize.volatile import cache
-from zope.i18n.locales import locales
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.base_add_view import BaseAddView
 from bika.lims.browser.base_add_view import BaseManageAddView
 from bika.lims.utils import cache_key
 from bika.lims.utils import returns_json
@@ -45,42 +44,32 @@ def mg(value):
     return magnitude.mg(val, unit)
 
 
-class AnalysisRequestAddView(BrowserView):
+class AnalysisRequestAddView(BaseAddView):
     """AR Add view
     """
     template = ViewPageTemplateFile("templates/ar_add2.pt")
 
     def __init__(self, context, request):
-        super(AnalysisRequestAddView, self).__init__(context, request)
-        self.request = request
-        self.context = context
-        self.fieldvalues = {}
-        self.tmp_ar = None
+        BaseAddView.__init__(self, context, request)
+        self.SKIP_FIELD_ON_COPY = ["Sample"]
 
     def __call__(self):
-        self.portal = api.get_portal()
-        self.portal_url = self.portal.absolute_url()
-        self.bika_setup = api.get_bika_setup()
-        self.request.set('disable_plone.rightcolumn', 1)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
-        self.came_from = "add"
-        self.tmp_ar = self.get_ar()
-        self.ar_count = self.get_ar_count()
-        self.fieldvalues = self.generate_fieldvalues(self.ar_count)
-        self.specifications = self.generate_specifications(self.ar_count)
-        self.ShowPrices = self.bika_setup.getShowPrices()
-        logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
+        BaseAddView.__call__(self)
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/analysisrequest_big.png"
+        self.fieldvalues = self.generate_fieldvalues(self.obj_count)
+        self.specifications = self.generate_specifications(self.obj_count)
+        logger.info("*** Prepared data for {} ARs ***".format(self.obj_count))
         return self.template()
 
-    def get_view_url(self):
-        """Return the current view url including request parameters
+    def get_obj_count(self):
+        """Return the obj_count request parameter
         """
-        request = self.request
-        url = request.getURL()
-        qs = request.getHeader("query_string")
-        if not qs:
-            return url
-        return "{}?{}".format(url, qs)
+        try:
+            obj_count = int(self.request.form.get("ar_count", 1))
+        except (TypeError, ValueError):
+            obj_count = 1
+        return obj_count
 
     def get_object_by_uid(self, uid):
         """Get the object by UID
@@ -90,14 +79,6 @@ class AnalysisRequestAddView(BrowserView):
         if obj is None:
             logger.warn("!! No object found for UID #{} !!")
         return obj
-
-    def get_currency(self):
-        """Returns the configured currency
-        """
-        bika_setup = api.get_bika_setup()
-        currency = bika_setup.getCurrency()
-        currencies = locales.getLocale('en').numbers.currencies
-        return currencies[currency]
 
     def is_ar_specs_allowed(self):
         """Checks if AR Specs are allowed
@@ -111,46 +92,14 @@ class AnalysisRequestAddView(BrowserView):
         bika_setup = api.get_bika_setup()
         return bika_setup.getDryMatterService()
 
-    def get_ar_count(self):
-        """Return the ar_count request paramteter
-        """
-        ar_count = 1
-        try:
-            ar_count = int(self.request.form.get("ar_count", 1))
-        except (TypeError, ValueError):
-            ar_count = 1
-        return ar_count
-
-    def get_ar(self):
+    def get_obj(self):
         """Create a temporary AR to fetch the fields from
         """
-        if not self.tmp_ar:
+        if not self.tmp_obj:
             logger.info("*** CREATING TEMPORARY AR ***")
-            self.tmp_ar = self.context.restrictedTraverse("portal_factory/AnalysisRequest/Request new analyses")
-        return self.tmp_ar
-
-    def get_ar_schema(self):
-        """Return the AR schema
-        """
-        logger.info("*** GET AR SCHEMA ***")
-        ar = self.get_ar()
-        return ar.Schema()
-
-    def get_ar_fields(self):
-        """Return the AR schema fields (including extendend fields)
-        """
-        logger.info("*** GET AR FIELDS ***")
-        schema = self.get_ar_schema()
-        return schema.fields()
-
-    def get_fieldname(self, field, arnum):
-        """Generate a new fieldname with a '-<arnum>' suffix
-        """
-        name = field.getName()
-        # ensure we have only *one* suffix
-        base_name = name.split("-")[0]
-        suffix = "-{}".format(arnum)
-        return "{}{}".format(base_name, suffix)
+            self.tmp_obj = self.context.restrictedTraverse(
+                "portal_factory/AnalysisRequest/Request new analyses")
+        return self.tmp_obj
 
     def generate_specifications(self, count=1):
         """Returns a mapping of count -> specification
@@ -180,131 +129,6 @@ class AnalysisRequestAddView(BrowserView):
 
         return out
 
-    def get_input_widget(self, fieldname, arnum=0, **kw):
-        """Get the field widget of the AR in column <arnum>
-
-        :param fieldname: The base fieldname
-        :type fieldname: string
-        """
-
-        # temporary AR Context
-        context = self.get_ar()
-        # request = self.request
-        schema = context.Schema()
-
-        # get original field in the schema from the base_fieldname
-        base_fieldname = fieldname.split("-")[0]
-        field = context.getField(base_fieldname)
-
-        # fieldname with -<arnum> suffix
-        new_fieldname = self.get_fieldname(field, arnum)
-        new_field = field.copy(name=new_fieldname)
-
-        # get the default value for this field
-        fieldvalues = self.fieldvalues
-        field_value = fieldvalues.get(new_fieldname)
-        # request_value = request.form.get(new_fieldname)
-        # value = request_value or field_value
-        value = field_value
-
-        def getAccessor(instance):
-            def accessor(**kw):
-                return value
-            return accessor
-
-        # inject the new context for the widget renderer
-        # see: Products.Archetypes.Renderer.render
-        kw["here"] = context
-        kw["context"] = context
-        kw["fieldName"] = new_fieldname
-
-        # make the field available with this name
-        # XXX: This is actually a hack to make the widget available in the template
-        schema._fields[new_fieldname] = new_field
-        new_field.getAccessor = getAccessor
-
-        # set the default value
-        form = dict()
-        form[new_fieldname] = value
-        self.request.form.update(form)
-
-        logger.info("get_input_widget: fieldname={} arnum={} -> new_fieldname={} value={}".format(
-            fieldname, arnum, new_fieldname, value))
-        widget = context.widget(new_fieldname, **kw)
-        return widget
-
-    def get_copy_from(self):
-        """Returns a mapping of UID index -> AR object
-        """
-        # Create a mapping of source ARs for copy
-        copy_from = self.request.form.get("copy_from", "").split(",")
-        # clean out empty strings
-        copy_from_uids = filter(lambda x: x, copy_from)
-        out = dict().fromkeys(range(len(copy_from_uids)))
-        for n, uid in enumerate(copy_from_uids):
-            ar = self.get_object_by_uid(uid)
-            if ar is None:
-                continue
-            out[n] = ar
-        logger.info("get_copy_from: uids={}".format(copy_from_uids))
-        return out
-
-    def get_default_value(self, field, context):
-        """Get the default value of the field
-        """
-        name = field.getName()
-        default = field.getDefault(context)
-        if name == "Batch":
-            batch = self.get_batch()
-            if batch is not None:
-                default = batch
-        if name == "Client":
-            client = self.get_client()
-            if client is not None:
-                default = client
-        if name == "Contact":
-            contact = self.get_default_contact()
-            if contact is not None:
-                default = contact
-        logger.info("get_default_value: context={} field={} value={}".format(
-            context, name, default))
-        return default
-
-    def get_field_value(self, field, context):
-        """Get the stored value of the field
-        """
-        name = field.getName()
-        value = context.getField(name).get(context)
-        logger.info("get_field_value: context={} field={} value={}".format(
-            context, name, value))
-        return value
-
-    def get_client(self):
-        """Returns the Client
-        """
-        context = self.context
-        parent = api.get_parent(context)
-        if context.portal_type == "Client":
-            return context
-        elif parent.portal_type == "Client":
-            return parent
-        elif context.portal_type == "Batch":
-            return context.getClient()
-        elif parent.portal_type == "Batch":
-            return context.getClient()
-        return None
-
-    def get_batch(self):
-        """Returns the Batch
-        """
-        context = self.context
-        parent = api.get_parent(context)
-        if context.portal_type == "Batch":
-            return context
-        elif parent.portal_type == "Batch":
-            return parent
-        return None
-
     def get_parent_ar(self, ar):
         """Returns the parent AR
         """
@@ -328,14 +152,14 @@ class AnalysisRequestAddView(BrowserView):
         """Returns a mapping of '<fieldname>-<count>' to the default value
         of the field or the field value of the source AR
         """
-        ar_context = self.get_ar()
+        ar_context = self.get_obj()
 
         # mapping of UID index to AR objects {1: <AR1>, 2: <AR2> ...}
         copy_from = self.get_copy_from()
 
         out = {}
         # the original schema fields of an AR (including extended fields)
-        fields = self.get_ar_fields()
+        fields = self.get_obj_fields()
 
         # generate fields for all requested ARs
         for arnum in range(count):
@@ -346,7 +170,7 @@ class AnalysisRequestAddView(BrowserView):
             for field in fields:
                 value = None
                 fieldname = field.getName()
-                if source and fieldname not in SKIP_FIELD_ON_COPY:
+                if source and fieldname not in self.SKIP_FIELD_ON_COPY:
                     # get the field value stored on the source
                     context = parent or source
                     value = self.get_field_value(field, context)
@@ -399,26 +223,10 @@ class AnalysisRequestAddView(BrowserView):
             return False
         return client.getMemberDiscountApplies()
 
-    def is_field_visible(self, field):
-        """Check if the field is visible
-        """
-        context = self.context
-        fieldname = field.getName()
-
-        # hide the Client field on client and batch contexts
-        if fieldname == "Client" and context.portal_type in ("Client", ):
-            return False
-
-        # hide the Batch field on batch contexts
-        if fieldname == "Batch" and context.portal_type in ("Batch", ):
-            return False
-
-        return True
-
     def get_fields_with_visibility(self, visibility, mode="add"):
         """Return the AR fields with the current visibility
         """
-        ar = self.get_ar()
+        ar = self.get_obj()
         mv = api.get_view("ar_add_manage", context=ar)
         mv.get_field_order()
 
@@ -725,7 +533,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         [{"Contact": "Rita Mohale", ...}, {Contact: "Neil Standard"} ...]
         """
         form = self.request.form
-        ar_count = self.get_ar_count()
+        ar_count = self.get_obj_count()
 
         records = []
         # Group belonging AR fields together
@@ -1559,7 +1367,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """
 
         # Get AR required fields (including extended fields)
-        fields = self.get_ar_fields()
+        fields = self.get_obj_fields()
 
         # extract records from request
         records = self.get_records()

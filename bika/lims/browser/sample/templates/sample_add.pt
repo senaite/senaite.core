@@ -38,11 +38,11 @@
           <input type="hidden"
                  name="copy_from" tal:attributes="value request/copy_from|nothing"/>
           <input type="number"
-                 name="sample_count"
+                 name="obj_count"
                  min="1"
                  class="form-control context_action_link"
                  style="width:4em;border-radius:0;border:1px solid #ddd;padding:2px;"
-                 tal:attributes="value view/sample_count|1"/>
+                 tal:attributes="value view/obj_count|1"/>
           <button type="submit"
                   class="btn btn-link context_action_link">
             <img src="#"
@@ -70,8 +70,8 @@
         <span tal:replace="structure context/@@authenticator/authenticator"/>
         <input type="hidden"
                name="came_from" tal:attributes="value view/came_from"/>
-        <input type="hidden" id="sample_count" name="sample_count"
-               tal:attributes="value view/sample_count"/>
+        <input type="hidden" id="obj_count" name="obj_count"
+               tal:attributes="value view/obj_count"/>
 
 
         <!-- ADD Form -->
@@ -92,7 +92,7 @@
             </td>
             <td></td>
             <tal:columns
-                    tal:repeat="samplenum python:range(view.sample_count)">
+                    tal:repeat="samplenum python:range(view.obj_count)">
               <td class="sample-column-header">
                 <span i18n:translate="">Sample</span>
                 <span tal:content="python: samplenum + 1"></span>
@@ -123,11 +123,11 @@
                 <td>
                   <!-- Copy Button -->
                   <img class="copybutton"
-                        tal:condition="python:view.sample_count > 1"
+                        tal:condition="python:view.obj_count > 1"
                         tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
                 </td>
 
-                <tal:columns tal:repeat="samplenum python:range(view.sample_count)">
+                <tal:columns tal:repeat="samplenum python:range(view.obj_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, samplenum)"
                       tal:attributes="
                         samplenum samplenum;
@@ -149,7 +149,7 @@
             <tal:def define="fieldName python:field.getName();">
               <tr style="display:none" tal:attributes="fieldName fieldName">
                 <tal:columns
-                        tal:repeat="samplenum python:range(view.sample_count)">
+                        tal:repeat="samplenum python:range(view.obj_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, samplenum);
                                   val python:view.fieldvalues.get(newFieldName)"
                       tal:attributes="samplenum samplenum; fieldName newFieldName">
