@@ -5,14 +5,22 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from datetime import datetime
+
 from BTrees.OOBTree import OOBTree
+from DateTime import DateTime
 from Products.Five.browser import BrowserView
 from plone import protect
+from plone.memoize.volatile import cache
 from zope.annotation.interfaces import IAnnotations
 from zope.i18n.locales import locales
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.utils import cache_key
+from bika.lims.utils import returns_json
 
 
 class BaseManageAddView(BrowserView):
@@ -373,7 +381,7 @@ class BaseAddView(BrowserView):
         """Returns a mapping of '<fieldname>-<count>' to the default value
         of the field or the field value of the source Object (copy from)
         """
-        raise NotImplementedError("get_obj is not implemented.")
+        raise NotImplementedError("generate_fieldvalues is not implemented.")
 
     def is_field_visible(self, field):
         """Check if the field is visible
@@ -396,4 +404,164 @@ class BaseAddView(BrowserView):
 
         It is recommended to get those values from an AddManagerView
         """
-        raise NotImplementedError("get_obj is not implemented.")
+        raise NotImplementedError(
+            "get_fields_with_visibility is not implemented.")
+
+
+class BaseAjaxAddView(BaseAddView):
+    """Ajax helpers for an Object Add form
+    """
+    implements(IPublishTraverse)
+
+    def __init__(self, context, request):
+        BaseAddView.__init__(self, context, request)
+        self.traverse_subpath = []
+        # Errors are aggregated here, and returned together to the browser
+        self.errors = {}
+
+    def publishTraverse(self, request, name):
+        """ get's called before __call__ for each path name
+        """
+        self.traverse_subpath.append(name)
+        return self
+
+    @returns_json
+    def __call__(self):
+        """Dispatch the path to a method and return JSON.
+        """
+        protect.CheckAuthenticator(self.request.form)
+        protect.PostOnly(self.request.form)
+
+        if len(self.traverse_subpath) != 1:
+            return self.error("Not found", status=404)
+        func_name = "ajax_{}".format(self.traverse_subpath[0])
+        func = getattr(self, func_name, None)
+        if func is None:
+            return self.error("Invalid function", status=400)
+        return func()
+
+    def error(self, message, status=500, **kw):
+        """Set a JSON error object and a status to the response
+        """
+        self.request.response.setStatus(status)
+        result = {"success": False, "errors": message}
+        result.update(kw)
+        return result
+
+    def to_iso_date(self, dt):
+        """Return the ISO representation of a date object
+        """
+        if dt is None:
+            return ""
+        if isinstance(dt, DateTime):
+            return dt.ISO8601()
+        if isinstance(dt, datetime):
+            return dt.isoformat()
+        raise TypeError("{} is neither an instance of DateTime nor datetime"
+                        .format(repr(dt)))
+
+    def get_records(self):
+        """Returns a list of Sample records
+
+        All fields coming from `request.form` have a number prefix,
+        e.g. `Contact-0`.
+        All fields with the same suffix number are grouped together in a
+        record.
+        Each record represents the data for one column in the Sample Add
+        form and contains a mapping of the fieldName (w/o prefix) -> value.
+
+        Example:
+        [{"Contact": "Rita Mohale", ...}, {Contact: "Neil Standard"} ...]
+        """
+        form = self.request.form
+        obj_count = self.get_obj_count()
+
+        records = []
+        # Group belonging Object fields together
+        for objenum in range(obj_count):
+            record = {}
+            s1 = "-{}".format(objenum)
+            keys = filter(lambda key: s1 in key, form.keys())
+            for key in keys:
+                new_key = key.replace(s1, "")
+                value = form.get(key)
+                record[new_key] = value
+            records.append(record)
+        return records
+
+    def get_objs_from_record(self, record, key):
+        """Returns a mapping of UID -> object
+        """
+        uids = self.get_uids_from_record(record, key)
+        objs = map(self.get_object_by_uid, uids)
+        return dict(zip(uids, objs))
+
+    def get_uids_from_record(self, record, key):
+        """Returns a list of parsed UIDs from a single form field identified
+        by the given key.
+
+        A form field ending with `_uid` can contain an empty value, a
+        single UID or multiple UIDs separated by a comma.
+
+        This method parses the UID value and returns a list of non-empty UIDs.
+        """
+        value = record.get(key, None)
+        if value is None:
+            return []
+        if isinstance(value, basestring):
+            value = value.split(",")
+        return filter(lambda uid: uid, value)
+
+    @cache(cache_key)
+    def get_base_info(self, obj):
+        """Returns the base info of an object
+        """
+        if obj is None:
+            return {}
+
+        info = {
+            "id": obj.getId(),
+            "uid": obj.UID(),
+            "title": obj.Title(),
+            "description": obj.Description(),
+            "url": obj.absolute_url(),
+        }
+
+        return info
+
+    @cache(cache_key)
+    def get_container_info(self, obj):
+        """Returns the info for a Container
+        """
+        info = self.get_base_info(obj)
+        info.update({})
+        return info
+
+    @cache(cache_key)
+    def get_preservation_info(self, obj):
+        """Returns the info for a Preservation
+        """
+        info = self.get_base_info(obj)
+        info.update({})
+        return info
+
+    def ajax_get_global_settings(self):
+        """Returns the global Bika settings
+        """
+        bika_setup = api.get_bika_setup()
+        settings = {
+            "show_prices": bika_setup.getShowPrices(),
+        }
+        return settings
+
+    def ajax_recalculate_records(self):
+        """Recalculate all Object records and dependencies
+        """
+        raise NotImplementedError(
+            "ajax_recalculate_records is not implemented.")
+
+    def ajax_submit(self):
+        """Submit & create the Object
+        """
+        raise NotImplementedError(
+            "ajax_recalculate_records is not implemented.")
