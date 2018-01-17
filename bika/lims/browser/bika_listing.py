@@ -1085,10 +1085,9 @@ class BikaListingView(BrowserView):
                 if not state_title:
                     state_title = workflow.getTitleForStateOnType(state, ptype)
                     if state_title:
-                        state_title = t(PMF(state_title))
                         self.state_titles[state] = state_title
                 if state_title and state == obj.review_state:
-                    results_dict['state_title'] = state_title
+                    results_dict['state_title'] = _(state_title)
 
             # extra classes for individual fields on this item
             # { field_id : "css classes" }
