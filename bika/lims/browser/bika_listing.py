@@ -40,14 +40,14 @@ DATETIME_EXCEPTIONS = (DateError, TimeError, DateTimeError, SyntaxError)
 
 
 class WorkflowAction:
-    """ Workflow actions taken in any Bika contextAnalysisRequest context
+    """Workflow actions taken in any Bika contextAnalysisRequest context
 
-        This function provides the default behaviour for workflow actions
-        invoked from bika_listing tables.
+    This function provides the default behaviour for workflow actions
+    invoked from bika_listing tables.
 
-        Some actions (eg, AR copy_to_new) can be invoked from multiple contexts.
-        In that case, I will begin to register their handlers here.
-        XXX WorkflowAction handlers should be simple adapters.
+    Some actions (eg, AR copy_to_new) can be invoked from multiple contexts.
+    In that case, I will begin to register their handlers here.
+    XXX WorkflowAction handlers should be simple adapters.
     """
 
     def __init__(self, context, request):
@@ -57,7 +57,7 @@ class WorkflowAction:
         self.request = request
         # Save context UID for benefit of event subscribers.
         self.request['context_uid'] = hasattr(self.context, 'UID') and \
-                                      self.context.UID() or ''
+            self.context.UID() or ''
         self.portal = api.get_portal()
         self.addPortalMessage = self.context.plone_utils.addPortalMessage
 
@@ -88,8 +88,8 @@ class WorkflowAction:
         return action, came_from
 
     def _get_selected_items(self):
-        """ return a list of selected form objects
-            full_objects defaults to True
+        """return a list of selected form objects
+           full_objects defaults to True
         """
         form = self.request.form
         uids = form.get("uids", [])
@@ -138,17 +138,16 @@ class WorkflowAction:
             return
 
         url = self.context.absolute_url() + "/ar_add" + \
-              "?ar_count={0}".format(len(objects)) + \
-              "&copy_from={0}".format(",".join(objects.keys()))
+            "?ar_count={0}".format(len(objects)) + \
+            "&copy_from={0}".format(",".join(objects.keys()))
 
         self.request.response.redirect(url)
         return
 
     def workflow_action_print_stickers(self):
         """Invoked from AR or Sample listings in the current context, passing
-           the uids of the selected items and default sticker template as
-           request parameters to the stickers rendering machinery, that
-           generates the PDF
+        the uids of the selected items and default sticker template as request
+        parameters to the stickers rendering machinery, that generates the PDF
         """
         uids = self.request.form.get("uids", [])
         if not uids:
@@ -208,11 +207,12 @@ class WorkflowAction:
 
     # noinspection PyUnusedLocal
     def submitTransition(self, action, came_from, items):
-        """ Performs the action's transition for the specified items
-            Returns (numtransitions, destination), where:
-            - numtransitions: the number of objects successfully transitioned.
-                If no objects have been successfully transitioned, gets 0 value
-            - destination: the destination url to be loaded immediately
+        """Performs the action's transition for the specified items
+
+        Returns (numtransitions, destination), where:
+        - numtransitions: the number of objects successfully transitioned.
+            If no objects have been successfully transitioned, gets 0 value
+        - destination: the destination url to be loaded immediately
         """
         dest = None
         transitioned = []
@@ -500,7 +500,7 @@ class BikaListingView(BrowserView):
         self.field_icons = {}
         super(BikaListingView, self).__init__(context, request)
         path = hasattr(context, 'getPath') and context.getPath() \
-               or "/".join(context.getPhysicalPath())
+            or "/".join(context.getPhysicalPath())
         if hasattr(self, 'contentFilter'):
             if 'path' not in self.contentFilter:
                 self.contentFilter['path'] = {"query": path, "level": 0}
@@ -545,8 +545,10 @@ class BikaListingView(BrowserView):
     @property
     def review_state(self):
         """Get workflow state of object in wf_id.
+
         First try request: <form_id>_review_state
         Then try 'default': self.default_review_state
+
         :return: item from self.review_states
         """
         if not self.review_states:
@@ -566,9 +568,9 @@ class BikaListingView(BrowserView):
         return review_state
 
     def getPOSTAction(self):
-        """
-        This function returns a string as the value for the action attribute of
-        the form element in the template.
+        """This function returns a string as the value for the action attribute
+        of the form element in the template.
+
         This method is used in bika_listing_table.pt
         """
         return 'workflow_action'
@@ -656,7 +658,7 @@ class BikaListingView(BrowserView):
             idx = catalog.Indexes.get(index, None)
             if idx is None:
                 logger.warn("index named '%s' not found in %s.  "
-                             "(Perhaps the index is still empty)." %
+                            "(Perhaps the index is still empty)." %
                             (index, self.catalog))
                 continue
             request_key = "%s_%s" % (form_id, index)
@@ -729,10 +731,9 @@ class BikaListingView(BrowserView):
             self.columns[col]['toggle'] = col in toggle_cols
 
     def _set_sorting_criteria(self):
-        """
-        Sets the sorting criteria by resetting the value of sort_on, sort_order
-        and/or manual_sort in accordance with the values set in the request,
-        contentFilter and by default for this list
+        """Sets the sorting criteria by resetting the value of sort_on,
+        sort_order and/or manual_sort in accordance with the values set in the
+        request, contentFilter and by default for this list
         """
         self.sort_on = self.get_sort_on()
         self.manual_sort_on = None
@@ -762,18 +763,19 @@ class BikaListingView(BrowserView):
         self.sort_order = sort_order
 
     def get_sort_on(self):
-        """
-        Returns the value by which this list must be sorted on.
+        """Returns the value by which this list must be sorted on.
+
         Returns the name of the index to be used for sorting by using an
         advancedQuery if defined in self.columns. Otherwise, returns the name
         of the column the list must be sorted on.
+
         :return: the sort_on index or column name
         :rtype: str
         """
 
         def corrected_sort_value(value):
-            """
-            Checks the value passed in against the columns and indexes.
+            """Checks the value passed in against the columns and indexes.
+
             If the value passed is a column name, will return the index of the
             column if defined in self.columns. Otherwise, will return the
             column name, but only if a column is defined in self.columns for
@@ -815,9 +817,8 @@ class BikaListingView(BrowserView):
         # sort_on value 'created', an index all catalogs has in common
         return 'created'
 
-
     def get_columns_indexes(self):
-        indexes = [val['index'] for name, val in self.columns.items() \
+        indexes = [val['index'] for name, val in self.columns.items()
                    if 'index' in val]
         return indexes
 
@@ -890,7 +891,8 @@ class BikaListingView(BrowserView):
                     item['columns'].remove(column)
 
     def __call__(self):
-        """ Handle request parameters and render the form."""
+        """Handle request parameters and render the form
+        """
 
         # ajax_categories, basic sanity.
         # we do this here to allow subclasses time to define these things.
@@ -978,18 +980,19 @@ class BikaListingView(BrowserView):
 
     # noinspection PyUnusedLocal
     def folderitem(self, obj, item, index):
-        """ Service triggered each time an item is iterated in folderitems.
-            The use of this service prevents the extra-loops in child objects.
-            :obj: the instance of the class to be foldered
-            :item: dict containing the properties of the object to be used by
-                the template
-            :index: current index of the item
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
         """
         return item
 
     def folderitems(self, full_objects=False, classic=True):
-        """
-        This function returns an array of dictionaries where each dictionary
+        """This function returns an array of dictionaries where each dictionary
         contains the columns data to render the list.
 
         No object is needed by default. We should be able to get all
@@ -999,11 +1002,12 @@ class BikaListingView(BrowserView):
         full_objects as True but performance can be lowered.
 
         :full_objects: a boolean, if True, each dictionary will contain an item
-        with the object itself. item.get('obj') will return a object.
-        Only works with the 'classic' way.
+                       with the object itself. item.get('obj') will return a
+                       object. Only works with the 'classic' way.
         WARNING: :full_objects: could create a big performance hit!
         :classic: if True, the old way folderitems works will be executed. This
-        function is mainly used to maintain the integrity with the old version.
+                  function is mainly used to maintain the integrity with the
+                  old version.
         """
         # Getting a security manager instance for the current request
         self.security_manager = getSecurityManager()
@@ -1124,10 +1128,12 @@ class BikaListingView(BrowserView):
 
     def _fetch_brains(self, idxfrom=0):
         """Returns the brains that must be displayed in the current list
+
         Uses the contentFilter and/or contentsMethod class variables (or
         functions) to query against the database. Also takes into account if
         only a subset of the results must be returned by using idxfrom and. If
         the number of results is lower than idxfrom, will return an empty array
+
         :param idxfrom: index to start to count for results
         :return: the list of brains to be displayed in this list
         """
@@ -1206,7 +1212,7 @@ class BikaListingView(BrowserView):
 
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
-                   "/".join(obj.getPhysicalPath())
+                "/".join(obj.getPhysicalPath())
 
             # This item must be rendered, we need the object instead of a brain
             obj = obj.getObject() if hasattr(obj, 'getObject') else obj
@@ -1372,17 +1378,17 @@ class BikaListingView(BrowserView):
         return results
 
     def contents_table(self, table_only=None):
-        """ If you set table_only to true, then nothing outside of the
-            <table/> tag will be printed (form tags, authenticator, etc).
-            Then you can insert your own form tags around it.
+        """If you set table_only to true, then nothing outside of the
+           <table/> tag will be printed (form tags, authenticator, etc).
+           Then you can insert your own form tags around it.
         """
         table = BikaListingTable(bika_listing=self, table_only=table_only)
         return table.render(self)
 
     def rendered_items(self):
-        """ If you set table_only to true, then nothing outside of the
-            <table/> tag will be printed (form tags, authenticator, etc).
-            Then you can insert your own form tags around it.
+        """If you set table_only to true, then nothing outside of the
+           <table/> tag will be printed (form tags, authenticator, etc).
+           Then you can insert your own form tags around it.
         """
         # Category which we are going to query:
         self.cat = self.request.get('ajax_category_expand')
@@ -1428,8 +1434,8 @@ class BikaListingView(BrowserView):
         return out
 
     def get_workflow_actions(self):
-        """ Compile a list of possible workflow transitions for items
-            in this Table.
+        """Compile a list of possible workflow transitions for items
+           in this Table.
         """
 
         # cbb return empty list if we are unable to select items
@@ -1492,9 +1498,9 @@ class BikaListingView(BrowserView):
             yield i
 
     def getFilterBar(self):
-        """
-        This function creates an instance of BikaListingFilterBar if the
+        """ This function creates an instance of BikaListingFilterBar if the
         class has not created one yet.
+
         :return: a BikaListingFilterBar instance
         """
         self._advfilterbar = self._advfilterbar if self._advfilterbar else \
@@ -1502,17 +1508,16 @@ class BikaListingView(BrowserView):
         return self._advfilterbar
 
     def save_filter_bar_values(self, filter_bar_items=None):
-        """
-        This function saves the values to filter the bika_listing inside the
+        """This function saves the values to filter the bika_listing inside the
         BikaListingFilterBar object.
+
         :filter_bar_items: an array of tuples with the items to define the
         query. The array has the following format: [(key, value), (), ...]
         """
         self.getFilterBar().save_filter_bar_values(filter_bar_items)
 
     def get_filter_bar_queryaddition(self):
-        """
-        This function calls the filter bar get_filter_bar_queryaddition
+        """This function calls the filter bar get_filter_bar_queryaddition
         from self._advfilterbar in order to obtain the obtain the extra filter
         conditions.
         """
@@ -1522,20 +1527,21 @@ class BikaListingView(BrowserView):
             return {}
 
     def get_filter_bar_values(self):
-        """
-        This function calls the filter bar get_filter_bar_dict
+        """This function calls the filter bar get_filter_bar_dict
         from the filterbar object in order to obtain the filter values.
+
         :return: a dictionary
         """
         return self.getFilterBar().get_filter_bar_dict()
 
     def filter_bar_check_item(self, item):
-        """
-        This functions receives a key-value items, and checks if it should be
-        displayed.
+        """This functions receives a key-value items, and checks if it should
+        be displayed.
+
         It is recomended to be used in isItemAllowed() method.
         This function should be only used for those fields without
         representation as an index in the catalog.
+
         :item: The item to check.
         :return: boolean
         """
@@ -1573,8 +1579,8 @@ class BikaListingTable(tableview.Table):
         self.items = folderitems
 
     def rendered_items(self, cat=None, **kwargs):
-        """
-        Render the table rows of items in a particular category.
+        """Render the table rows of items in a particular category.
+
         :param cat: the category ID with which we will filter the results
         :param kwargs: all other keyword args are set as attributes of
                        self and self.bika_listing, for injecting attributes
@@ -1594,9 +1600,9 @@ class BikaListingTable(tableview.Table):
         return self.render_items(self.context)
 
     def hide_hidden_attributes(self):
-        """Use the bika_listing's contentFilter's portal_type
-        values, if any, to remove fields from review_states if they
-        are marked as hidden in the registry.
+        """Use the bika_listing's contentFilter's portal_type values, if any,
+        to remove fields from review_states if they are marked as hidden in the
+        registry.
         """
         if 'portal_type' not in self.bika_listing.contentFilter:
             return
@@ -1614,30 +1620,24 @@ class BikaListingTable(tableview.Table):
         self.bika_listing.review_states = new_states
 
     def get_top_right_hooks(self):
-        """
-        Get adapters (hooks) that implements ITopRightListingHook.
-        The information got from those adapters will be placed right-over the
-        list.
+        """Get adapters (hooks) that implements ITopRightListingHook. The
+        information got from those adapters will be placed right-over the list.
 
         :return: html code
         """
         return self.get_adapters_html(ITopRightHTMLComponentsHook)
 
     def get_top_left_hooks(self):
-        """
-        Get adapters (hooks) that implements ITopLeftListingHook.
-        The information got from those adapters will be placed left-over the
-        list.
+        """Get adapters (hooks) that implements ITopLeftListingHook. The
+        information got from those adapters will be placed left-over the list.
 
         :return: html code
         """
         return self.get_adapters_html(ITopLeftHTMLComponentsHook)
 
     def get_top_wide_hooks(self):
-        """
-        Get adapters (hooks) that implements ITopWideListingHook.
-        The information got from those adapters will be placed wide-over the
-        list.
+        """Get adapters (hooks) that implements ITopWideListingHook. The
+        information got from those adapters will be placed wide-over the list.
 
         :return: html code
         """
@@ -1660,8 +1660,7 @@ class BikaListingTable(tableview.Table):
 
 
 class BikaListingFilterBar(BrowserView):
-    """
-    This class defines a filter bar to make advanced queries in
+    """This class defines a filter bar to make advanced queries in
     BikaListingView. This filter shouldn't override the 'filter by state'
     functionality
     """
@@ -1669,28 +1668,28 @@ class BikaListingFilterBar(BrowserView):
     _filter_bar_dict = {}
 
     def render(self):
-        """
-        Returns a ViewPageTemplateFile instance with the filter inputs and
+        """Returns a ViewPageTemplateFile instance with the filter inputs and
         submit button.
         """
         return self.template()
 
     def setRender(self, new_template):
-        """
-        Defines a new template to render.
+        """Defines a new template to render.
+
         :new_template: should be a ViewPageTemplateFile object such as
-            'ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")'
+                       'ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")'
         """
         if new_template:
             self.template = new_template
 
     def save_filter_bar_values(self, filter_bar_items=None):
-        """
-        This function saves the values to filter the bika_listing inside the
+        """This function saves the values to filter the bika_listing inside the
         BikaListingFilterBar object.
+
         The dictionary is saved inside a class attribute.
         This function tranforms the unicodes to strings and removes the
         'bika_listing_filter_bar_' starting string of each key.
+
         :filter_bar_items: a dictionary with the items to define the
         query.
         """
@@ -1703,43 +1702,44 @@ class BikaListingFilterBar(BrowserView):
             self._filter_bar_dict = new_dict
 
     def get_filter_bar_dict(self):
-        """
-        Returns the _filter_bar_dict attribute
+        """Returns the _filter_bar_dict attribute
         """
         return self._filter_bar_dict
 
     def get_filter_bar_queryaddition(self):
-        """
-        This function gets the values from the filter bar inputs in order to
+        """This function gets the values from the filter bar inputs in order to
         create a catalog query accordingly.
+
         Only returns the items that can be added to contentFilter dictionary,
         this means that only the dictionary items (key-value) with index
         representations should be returned.
+
         :return: a dictionary to be added to contentFilter.
         """
         return {}
 
     # noinspection PyUnusedLocal
     def filter_bar_check_item(self, item):
-        """
-        This functions receives a key-value items, and checks if it should be
-        displayed.
-        It is recomended to be used in isItemAllowed() method.
-        This function should be only used for those fields without
-        representation as an index in the catalog.
+        """This functions receives a key-value items, and checks if it should
+        be displayed.
+
+        It is recomended to be used in isItemAllowed() method. This function
+        should be only used for those fields without representation as an index
+        in the catalog.
+
         :item: The item to check.
         :return: boolean.
         """
         return True
 
     def filter_bar_builder(self):
-        """
-        The template is going to call this method to create the filter bar in
-        bika_listing_filter_bar.pt
-        If the method returns None, the filter bar will not be shown.
+        """The template is going to call this method to create the filter bar
+        in bika_listing_filter_bar.pt If the method returns None, the filter
+        bar will not be shown.
+
         :return: a list of dictionaries as the filtering fields or None.
 
-        Eaxh dictionary defines a field, those are the expected elements
+        Each dictionary defines a field, those are the expected elements
         for each field type by the default template:
         - select/multiple:
             {
