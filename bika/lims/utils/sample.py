@@ -5,13 +5,19 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.utils import tmpID
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 
+from bika.lims.utils import tmpID
+from bika.lims.workflow import doActionFor
+
 
 def create_sample(client, request, values):
-    """Creates a sample for the passed in client
+    """
+    Creates a sample for the passed in client.
+
+    The sample will be transitioned to "sampled" if sampling workflow is not
+    enabled or "to_be_sampled" otherwise.
     """
     # Retrieve the required tools
     uc = getToolByName(client, 'uid_catalog')
@@ -38,5 +44,23 @@ def create_sample(client, request, values):
         sample.processForm(REQUEST=request, values=values)
         # Set the SampleID
         sample.edit(SampleID=sample.getId())
+
+        # Apply state transitions
+        sampling_workflow_enabled = sample.getSamplingWorkflowEnabled()
+        if sampling_workflow_enabled:
+            action = 'sampling_workflow'
+        else:
+            action = 'no_sampling_workflow'
+        # Transition the Analysis Request and related objects to
+        # "sampled" (if
+        # sampling workflow not enabled) or to "to_be_sampled"
+        # statuses.
+        doActionFor(sample, action)
+        # Once the ar is fully created, check if there are rejection
+        #  reasons
+        reject_field = values.get('RejectionReasons', '')
+        if reject_field and reject_field.get('checkbox', False):
+            doActionFor(sample, 'reject')
+
     # Return the newly created sample
     return sample

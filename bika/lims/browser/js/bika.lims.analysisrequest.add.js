@@ -510,6 +510,9 @@
       field = $("#SamplingDate-" + arnum);
       value = sample.sampling_date;
       field.val(value);
+      field = $("#DateSampled-" + arnum);
+      value = sample.date_sampled;
+      field.val(value);
       field = $("#SampleType-" + arnum);
       uid = sample.sample_type_uid;
       title = sample.sample_type_title;
@@ -751,7 +754,7 @@
       uid = $el.attr("uid");
       arnum = $el.closest("[arnum]").attr("arnum");
       console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
-      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "Specification"];
+      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "SamplingRound", "Specification", "Sample"];
       $.each(field_ids, function(index, id) {
         var field;
         field = me.get_field_by_id(id, arnum);
@@ -1158,7 +1161,7 @@
        * Copies the value of the first field in this row to the remaining.
        * XXX Refactor
        */
-      var $el, $td1, $tr, ar_count, el, field, i, me, mvl, record_one, results, td1, tr, uid, value;
+      var $el, $td1, $tr, el, field, i, me, mvl, obj_count, record_one, results, td1, tr, uid, value;
       console.debug("°°° on_copy_button_click °°°");
       me = this;
       el = event.target;
@@ -1167,8 +1170,8 @@
       $tr = $(tr);
       td1 = $(tr).find('td[arnum="0"]').first();
       $td1 = $(td1);
-      ar_count = parseInt($('input[id="ar_count"]').val(), 10);
-      if (!(ar_count > 1)) {
+      obj_count = parseInt($('input[id="obj_count"]').val(), 10);
+      if (!(obj_count > 1)) {
         return;
       }
       record_one = this.records_snapshot[0];
@@ -1181,7 +1184,7 @@
         mvl = el.find(".multiValued-listing");
         $.each((function() {
           results = [];
-          for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
+          for (var i = 1; 1 <= obj_count ? i <= obj_count : i >= obj_count; 1 <= obj_count ? i++ : i--){ results.push(i); }
           return results;
         }).apply(this), function(arnum) {
           var _el, _field, _td;
@@ -1213,7 +1216,7 @@
         checked = $el.prop("checked");
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(arnum) {
           var _el, _td;
@@ -1232,7 +1235,7 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(arnum) {
           var _el, _td;
@@ -1251,7 +1254,7 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(arnum) {
           var _el, _td;
@@ -1270,7 +1273,7 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(arnum) {
           var _el, _td;

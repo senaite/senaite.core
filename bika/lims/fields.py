@@ -7,16 +7,25 @@
 
 """Generic field extensions
 """
-from Acquisition import aq_inner
-from Acquisition import aq_parent
-from Acquisition import Implicit
-from Acquisition import ImplicitAcquisitionWrapper
+
+from Products.ATExtensions.ateapi import RecordField
+from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.public import AnnotationStorage
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import DateTimeField
+from Products.Archetypes.public import FloatField
+from Products.Archetypes.public import IntegerField
+from Products.Archetypes.public import LinesField
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import TextField
 from archetypes.schemaextender.interfaces import IExtensionField
-from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import DateTimeField
-from Products.ATExtensions.ateapi import RecordField, RecordsField
 from zope.interface import implements
 from zope.site.hooks import getSite
+
+from bika.lims.browser.fields.proxyfield import ProxyField
+
 
 class ExtensionField(object):
 
@@ -123,45 +132,7 @@ class ExtTextField(ExtensionField, TextField):
 
     "Field extender"
 
-# #
-# # Method Initialization
-# # apply default getters and setters to schemaextender fields.
-# #
 
-# def generateMethods(context, fields):
-#     for field in fields:
-#         name = field.getName()
-#         if getattr(context, 'get'+name, None) is None:
-#             if field.getType().find("Reference") > -1:
-#                 setattr(context, 'get'+name,
-#                         context.Schema()[name].getAccessor(
-#                                                     context.__of__(getSite())))
-#             else:
-#                 setattr(context, 'get'+name,
-#                         context.Schema()[name].getMutator(context))
-#         if getattr(context, 'set'+name, None) is None:
-#             if field.getType().find("Reference") > -1:
-#                 setattr(context, 'set'+name,
-#                         context.Schema()[name].getMutator(
-#                                                     context.__of__(getSite())))
-#             else:
-#                 setattr(context, 'set'+name,
-#                         context.Schema()[name].getMutator(context))
-#         if field.getType().find("Reference") > -1:
-#             setattr(context, name, atapi.ATReferenceFieldProperty(fieldname))
-#         else:
-#             setattr(context, name, atapi.ATFieldProperty(fieldname))
+class ExtProxyField(ExtensionField, ProxyField):
 
-# class field_getter:
-#     def __init__(self, context, fieldname):
-#         self.context = context
-#         self.fieldname = fieldname
-#     def __call__(self, **kwargs):
-#         return self.context.Schema()[self.fieldname].getAccessor(self.context)(**kwargs)
-
-# class field_setter:
-#     def __init__(self, context, fieldname):
-#         self.context = context
-#         self.fieldname = fieldname
-#     def __call__(self, value, **kwargs):
-#         return self.context.Schema()[self.fieldname].getMutator(self.context)(value, **kwargs)
+    """Field extender"""

@@ -33,6 +33,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+
     set_guards_to_inactive_workflow()
     fix_service_status_inconsistences()
     fix_service_profile_template_inconsistences()

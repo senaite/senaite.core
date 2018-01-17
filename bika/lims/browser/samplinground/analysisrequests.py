@@ -257,7 +257,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                 'url': self.context.aq_parent.absolute_url() + \
                     "/portal_factory/"
                     "AnalysisRequest/Request new analyses/ar_add?samplinground="
-                    + self.context.UID() + "&ar_count=" + str(num_art),
+                    + self.context.UID() + "&obj_count=" + str(num_art),
                 'icon': '++resource++bika.lims.images/add.png'}
         return super(AnalysisRequestsView, self).__call__()
 

@@ -541,9 +541,17 @@ class window.AnalysisRequestAdd
      * Apply the sample data to all fields of arnum
     ###
 
-    # set the sampling date (required)
+    # set the sampling date
+    # If sampling workflow enabled visible it is editable until sample due.
+    # If SamplingWorkflow is Disabled, SamplingDate: disabled everywhere.
     field = $("#SamplingDate-#{arnum}")
     value = sample.sampling_date
+    field.val value
+
+    # set the date sampled
+    # If SamplingWorkflow is Disabled, DateSampled required in 'add' view.
+    field = $("#DateSampled-#{arnum}")
+    value = sample.date_sampled
     field.val value
 
     # set the sample type (required)
@@ -841,7 +849,9 @@ class window.AnalysisRequestAdd
       "SamplePoint"
       "Template"
       "Profiles"
+      "SamplingRound"
       "Specification"
+      "Sample"
     ]
     $.each field_ids, (index, id) ->
       field = me.get_field_by_id id, arnum
@@ -1303,8 +1313,8 @@ class window.AnalysisRequestAdd
     td1 = $(tr).find('td[arnum="0"]').first()
     $td1 = $(td1)
 
-    ar_count = parseInt($('input[id="ar_count"]').val(), 10)
-    return unless ar_count > 1
+    obj_count = parseInt($('input[id="obj_count"]').val(), 10)
+    return unless obj_count > 1
 
     # the record data of the first AR
     record_one = @records_snapshot[0]
@@ -1320,7 +1330,7 @@ class window.AnalysisRequestAdd
       value = field.val()
       mvl = el.find(".multiValued-listing")
 
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..obj_count], (arnum) ->
         # skip the first column
         return unless arnum > 0
 
@@ -1354,7 +1364,7 @@ class window.AnalysisRequestAdd
       $el = $(el)
       checked = $el.prop "checked"
       # iterate over columns, starting from column 2
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..obj_count], (arnum) ->
         # skip the first column
         return unless arnum > 0
         _td = $tr.find("td[arnum=#{arnum}]")
@@ -1366,7 +1376,7 @@ class window.AnalysisRequestAdd
       console.debug "-> Copy select field"
       $el = $(el)
       value = $el.val()
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..obj_count], (arnum) ->
         # skip the first column
         return unless arnum > 0
         _td = $tr.find("td[arnum=#{arnum}]")
@@ -1378,7 +1388,7 @@ class window.AnalysisRequestAdd
       console.debug "-> Copy text field"
       $el = $(el)
       value = $el.val()
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..obj_count], (arnum) ->
         # skip the first column
         return unless arnum > 0
         _td = $tr.find("td[arnum=#{arnum}]")
@@ -1390,7 +1400,7 @@ class window.AnalysisRequestAdd
       console.debug "-> Copy textarea field"
       $el = $(el)
       value = $el.val()
-      $.each [1..ar_count], (arnum) ->
+      $.each [1..obj_count], (arnum) ->
         # skip the first column
         return unless arnum > 0
         _td = $tr.find("td[arnum=#{arnum}]")

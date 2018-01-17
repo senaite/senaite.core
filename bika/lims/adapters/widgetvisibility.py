@@ -83,7 +83,9 @@ class SamplingWorkflowWidgetVisibility(object):
         self.sort = 10
 
     def __call__(self, context, mode, field, default):
-        fields = ['Sampler', 'DateSampled', 'SamplingDate']
+        fields = [
+            'Sampler', 'DateSampled', 'SamplingDate',
+            'ScheduledSamplingSampler']
         state = default if default else 'invisible'
         fieldName = field.getName()
         if fieldName not in fields:
@@ -97,10 +99,11 @@ class SamplingWorkflowWidgetVisibility(object):
             swf_enabled = context.bika_setup.getSamplingWorkflowEnabled()
 
         # If SWF Enabled, we mostly use the dictionary from the Field, but:
-        # - DateSampled: invisible during creation.
-        # - SamplingDate and Sampler: visible and editable until sample due.
+        # - DateSampled and Sampler: invisible during creation.
+        # - SamplingDate and ScheduledSamplingSampler: visible and
+        #   editable until sample due.
         if swf_enabled:
-            if fieldName == 'DateSampled':
+            if fieldName in ['DateSampled', 'Sampler']:
                 if mode == 'add':
                     state = 'invisible'
                     field.required = 0
@@ -110,12 +113,12 @@ class SamplingWorkflowWidgetVisibility(object):
                 elif mode == 'view':
                     state = 'visible'
         # If SamplingWorkflow is Disabled:
-        #  - DateSampled: visible,
-        #                 not editable after creation (appears in header_table),
-        #                 required in 'add' view.
-        #  - 'SamplingDate' and 'Sampler': disabled everywhere.
+        #  - DateSampled and Sampler:
+        #       visible, not editable after creation (appears in
+        #       header_table), DateSampled required in 'add' view.
+        #  - 'SamplingDate': disabled everywhere.
         else:
-            if fieldName == 'DateSampled':
+            if fieldName in ['DateSampled', ]:
                 if mode == 'add':
                     state = 'edit'
                     field.required = 1

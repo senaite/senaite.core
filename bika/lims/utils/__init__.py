@@ -5,28 +5,27 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import json
 import os
 import re
 import tempfile
 import types
 import urllib2
-from email import Encoders
-from time import time
-
 import mimetypes
 
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
+from email import Encoders
+from time import time
+
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api as api
-from bika.lims import logger
-from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
 from plone.memoize import ram
+from plone.memoize.volatile import DontCache
 from plone.registry.interfaces import IRegistry
 from plone.subrequest import subrequest
 from weasyprint import CSS, HTML
@@ -34,6 +33,10 @@ from weasyprint import default_url_fetcher
 from zope.component import queryUtility
 from zope.i18n import translate
 from zope.i18n.locales import locales
+
+from bika.lims import api as api
+from bika.lims import logger
+from bika.lims.browser import BrowserView
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -53,6 +56,18 @@ def to_unicode(text):
     if text is None:
         text = ''
     return safe_unicode(text)
+
+
+def returns_json(func):
+    """Decorator for functions which return JSON
+    """
+    def decorator(*args, **kwargs):
+        instance = args[0]
+        request = getattr(instance, 'request', None)
+        request.response.setHeader("Content-Type", "application/json")
+        result = func(*args, **kwargs)
+        return json.dumps(result)
+    return decorator
 
 
 def t(i18n_msg):
@@ -918,3 +933,9 @@ def get_display_list(brains_or_objects=None, none_item=False):
         items.insert(0, ('', t('Select...')))
 
     return DisplayList(items)
+
+
+def cache_key(method, self, obj):
+    if obj is None:
+        raise DontCache
+    return api.get_cache_key(obj)

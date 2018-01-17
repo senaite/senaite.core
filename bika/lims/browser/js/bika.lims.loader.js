@@ -147,6 +147,9 @@ window.bika.lims.controllers =  {
     "#ar_publish_container":
         ['RangeGraph', 'AnalysisRequestPublishView'],
 
+    // AR Add 2
+	"#sample_add_form": ['SampleAdd'],
+
     // Samples PrintView
      "#preview_container.samples_print_preview":
          ['FormPrintView'],
