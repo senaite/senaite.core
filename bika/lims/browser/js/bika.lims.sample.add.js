@@ -372,7 +372,7 @@
        * Copies the value of the first field in this row to the remaining.
        * XXX Refactor
        */
-      var $el, $td1, $tr, el, field, i, me, mvl, record_one, results, sample_count, td1, tr, uid, value;
+      var $el, $td1, $tr, el, field, i, me, mvl, obj_count, record_one, results, td1, tr, uid, value;
       console.debug("°°° on_copy_button_click °°°");
       me = this;
       el = event.target;
@@ -381,8 +381,8 @@
       $tr = $(tr);
       td1 = $(tr).find('td[samplenum="0"]').first();
       $td1 = $(td1);
-      sample_count = parseInt($('input[id="sample_count"]').val(), 10);
-      if (!(sample_count > 1)) {
+      obj_count = parseInt($('input[id="obj_count"]').val(), 10);
+      if (!(obj_count > 1)) {
         return;
       }
       record_one = this.records_snapshot[0];
@@ -395,7 +395,7 @@
         mvl = el.find(".multiValued-listing");
         $.each((function() {
           results = [];
-          for (var i = 1; 1 <= sample_count ? i <= sample_count : i >= sample_count; 1 <= sample_count ? i++ : i--){ results.push(i); }
+          for (var i = 1; 1 <= obj_count ? i <= obj_count : i >= obj_count; 1 <= obj_count ? i++ : i--){ results.push(i); }
           return results;
         }).apply(this), function(samplenum) {
           var _el, _field, _td;
@@ -427,7 +427,7 @@
         checked = $el.prop("checked");
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(samplenum) {
           var _el, _td;
@@ -446,7 +446,7 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(samplenum) {
           var _el, _td;
@@ -465,7 +465,7 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(samplenum) {
           var _el, _td;
@@ -484,7 +484,7 @@
         value = $el.val();
         return $.each((function() {
           results1 = [];
-          for (var j = 1; 1 <= sample_count ? j <= sample_count : j >= sample_count; 1 <= sample_count ? j++ : j--){ results1.push(j); }
+          for (var j = 1; 1 <= obj_count ? j <= obj_count : j >= obj_count; 1 <= obj_count ? j++ : j--){ results1.push(j); }
           return results1;
         }).apply(this), function(samplenum) {
           var _el, _td;

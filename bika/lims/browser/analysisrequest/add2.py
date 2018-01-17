@@ -62,15 +62,6 @@ class AnalysisRequestAddView(BaseAddView):
         logger.info("*** Prepared data for {} ARs ***".format(self.obj_count))
         return self.template()
 
-    def get_obj_count(self):
-        """Return the obj_count request parameter
-        """
-        try:
-            obj_count = int(self.request.form.get("ar_count", 1))
-        except (TypeError, ValueError):
-            obj_count = 1
-        return obj_count
-
     def get_object_by_uid(self, uid):
         """Get the object by UID
         """

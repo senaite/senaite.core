@@ -20,6 +20,6 @@ def SamplingRoundAddedEventHandler(instance, event):
     destination_url = instance.aq_parent.absolute_url() + \
                     "/portal_factory/" + \
                     "AnalysisRequest/Request new analyses/ar_add?samplinground=" + \
-                    instance.UID() + "&ar_count=" + str(num_art)
+                    instance.UID() + "&obj_count=" + str(num_art)
     request = getattr(instance, 'REQUEST', None)
     request.response.redirect(destination_url)

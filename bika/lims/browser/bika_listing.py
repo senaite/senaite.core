@@ -138,7 +138,7 @@ class WorkflowAction:
             return
 
         url = self.context.absolute_url() + "/ar_add" + \
-              "?ar_count={0}".format(len(objects)) + \
+              "?obj_count={0}".format(len(objects)) + \
               "&copy_from={0}".format(",".join(objects.keys()))
 
         self.request.response.redirect(url)

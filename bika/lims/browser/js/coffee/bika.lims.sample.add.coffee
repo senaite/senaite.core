@@ -401,8 +401,8 @@ class window.SampleAdd
     td1 = $(tr).find('td[samplenum="0"]').first()
     $td1 = $(td1)
 
-    sample_count = parseInt($('input[id="sample_count"]').val(), 10)
-    return unless sample_count > 1
+    obj_count = parseInt($('input[id="obj_count"]').val(), 10)
+    return unless obj_count > 1
 
     # the record data of the first AR
     record_one = @records_snapshot[0]
@@ -418,7 +418,7 @@ class window.SampleAdd
       value = field.val()
       mvl = el.find(".multiValued-listing")
 
-      $.each [1..sample_count], (samplenum) ->
+      $.each [1..obj_count], (samplenum) ->
         # skip the first column
         return unless samplenum > 0
 
@@ -452,7 +452,7 @@ class window.SampleAdd
       $el = $(el)
       checked = $el.prop "checked"
       # iterate over columns, starting from column 2
-      $.each [1..sample_count], (samplenum) ->
+      $.each [1..obj_count], (samplenum) ->
         # skip the first column
         return unless samplenum > 0
         _td = $tr.find("td[samplenum=#{samplenum}]")
@@ -464,7 +464,7 @@ class window.SampleAdd
       console.debug "-> Copy select field"
       $el = $(el)
       value = $el.val()
-      $.each [1..sample_count], (samplenum) ->
+      $.each [1..obj_count], (samplenum) ->
         # skip the first column
         return unless samplenum > 0
         _td = $tr.find("td[samplenum=#{samplenum}]")
@@ -476,7 +476,7 @@ class window.SampleAdd
       console.debug "-> Copy text field"
       $el = $(el)
       value = $el.val()
-      $.each [1..sample_count], (samplenum) ->
+      $.each [1..obj_count], (samplenum) ->
         # skip the first column
         return unless samplenum > 0
         _td = $tr.find("td[samplenum=#{samplenum}]")
@@ -488,7 +488,7 @@ class window.SampleAdd
       console.debug "-> Copy textarea field"
       $el = $(el)
       value = $el.val()
-      $.each [1..sample_count], (samplenum) ->
+      $.each [1..obj_count], (samplenum) ->
         # skip the first column
         return unless samplenum > 0
         _td = $tr.find("td[samplenum=#{samplenum}]")

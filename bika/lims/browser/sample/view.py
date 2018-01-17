@@ -62,7 +62,7 @@ class SamplesView(BikaListingView):
                 self.context_actions = {}
         if self.context.bika_setup.getSampleRegistrationAllowed():
             self.context_actions[_('Add')] = \
-                {'url': "sample_add?sample_count=1",
+                {'url': "sample_add?obj_count=1",
                  'icon': '++resource++bika.lims.images/add.png'}
         self.show_sort_column = False
         self.show_select_row = False

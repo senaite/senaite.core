@@ -53,15 +53,6 @@ class SampleAddView(BaseAddView):
         self.tmp_obj = get_tmp_sample(self)
         return self.tmp_obj
 
-    def get_obj_count(self):
-        """Return the obj_count request parameter
-        """
-        try:
-            obj_count = int(self.request.form.get("sample_count", 1))
-        except (TypeError, ValueError):
-            obj_count = 1
-        return obj_count
-
     def generate_fieldvalues(self, count=1):
         """Returns a mapping of '<fieldname>-<count>' to the default value
         of the field or the field value of the source Sample
@@ -193,11 +184,11 @@ class ajaxSampleAdd(SampleAddView):
         [{"Contact": "Rita Mohale", ...}, {Contact: "Neil Standard"} ...]
         """
         form = self.request.form
-        sample_count = self.get_obj_count()
+        obj_count = self.get_obj_count()
 
         records = []
         # Group belonging Sample fields together
-        for samplenum in range(sample_count):
+        for samplenum in range(obj_count):
             record = {}
             s1 = "-{}".format(samplenum)
             keys = filter(lambda key: s1 in key, form.keys())
