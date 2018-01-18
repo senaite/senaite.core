@@ -19,6 +19,7 @@ Changelog
 
 **Fixed**
 
+- #585 Empty value for Analysis Request column in aggregated list of analyses
 - #578 Fix translation for review state titles in listings
 - #580 Fix calculations using built-ins
 - #563 Deactivated Analyses are added in new ARs when using Analysis Profiles/Template
