@@ -292,6 +292,10 @@ class AnalysisRequestAddView(BrowserView):
             contact = self.get_default_contact()
             if contact is not None:
                 default = contact
+        if name == "Sample":
+            sample = self.get_sample()
+            if sample is not None:
+                default = sample
         logger.info("get_default_value: context={} field={} value={}".format(
             context, name, default))
         return default
@@ -318,6 +322,15 @@ class AnalysisRequestAddView(BrowserView):
             return context.getClient()
         elif parent.portal_type == "Batch":
             return context.getClient()
+        return None
+
+    def get_sample(self):
+        """
+        Returns the Sample
+        """
+        context = self.context
+        if context.portal_type == "Sample":
+            return context
         return None
 
     def get_batch(self):
