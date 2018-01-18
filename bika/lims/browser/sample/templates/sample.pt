@@ -9,10 +9,18 @@
 
 <metal:title fill-slot="content-title">
 	<h1>
-        <img tal:condition="view/icon | nothing"
-            src="" tal:attributes="src view/icon"/>
-        <span tal:content="here/title_or_id"/>
-    </h1>
+		<img tal:condition="view/icon | nothing"
+				src="" tal:attributes="src view/icon"/>
+		<span tal:content="here/title_or_id"/>
+		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
+			<a tal:attributes="
+				style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+			 	href python:view.context_actions[add_item]['url'];
+			 	class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+				<span tal:replace="python:add_item"/>
+			</a>
+		</tal:add_actions>
+	</h1>
 </metal:title>
 
 <metal:content fill-slot="content-core" tal:define="
