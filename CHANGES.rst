@@ -19,6 +19,7 @@ Changelog
 
 **Fixed**
 
+- #578 Fix translation for review state titles in listings
 - #580 Fix calculations using built-ins
 - #563 Deactivated Analyses are added in new ARs when using Analysis Profiles/Template
 - #562 Client Batch lists are empty
