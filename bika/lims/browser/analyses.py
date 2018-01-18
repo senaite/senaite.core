@@ -9,8 +9,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
+from bika.lims import api
 from bika.lims import logger
-from bika.lims.utils import t, dicts_to_dict, format_supsub
+from bika.lims.utils import t, dicts_to_dict, format_supsub, check_permission, \
+    get_link
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
@@ -18,13 +20,13 @@ from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
 from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
+from bika.lims.workflow import wasTransitionPerformed, isActive
 from zope.component import getAdapters
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from plone.api.user import has_permission
@@ -170,6 +172,131 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
+        # This is used to cache the permissions for the current user, to avoid
+        # the need of asking for the same permission now and then.
+        # Is managed by `has_permission` function
+        self._permissions_map = dict()
+
+        # This is used to cache the instruments instead of retrieving them
+        # individually each time we folder an analysis item
+        # Is managed by `get_instrument`
+        self._instruments_map = dict()
+
+        # This is used to cache if the analyses are editable or not, cause
+        # retrieving this information for same analysis multiple times is to
+        # expensive in terms of performance.
+        # Is managed by `is_analysis_edition_allowed` function
+        self._analysis_edit_map = dict()
+
+        # This is used to cache analysis keywords with Point of Capture to
+        # reduce the number objects that need to be woken up
+        # Is managed by `is_analysis_edition_allowed` function
+        self._keywords_poc_map = dict()
+
+        # This is used to cache the objects that have been woken up.
+        # Is managed by `_get_object` function
+        self._objects_map = dict()
+
+        # This is used to display method and instrument columns if there is at
+        # least one analysis to be rendered that allows the assignment of method
+        # and/or instrument
+        self.show_methodinstr_columns = False
+
+    def has_permission(self, permission, obj=None):
+        """Returns if the current user has rights for the permission
+        :param permission: permission identifier
+        :param obj: object to check the permission against
+        :return: True if the user has rights for the permission passed in
+        """
+        if obj is None:
+            obj = self.context
+
+        obj_uid = api.get_uid(obj)
+        if obj_uid not in self._permissions_map:
+            self._permissions_map[obj_uid] = dict()
+
+        obj_permissions = self._permissions_map[obj_uid]
+        if permission not in obj_permissions:
+            allowed = check_permission(permission, obj)
+            self._permissions_map[obj_uid][permission] = allowed
+
+        return self._permissions_map[obj_uid][permission]
+
+    def is_analysis_edition_allowed(self, analysis_brain):
+        """Returns if the analysis passed in can be edited by the current user
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the user can edit the analysis, otherwise False"""
+        if not self.context_active:
+            # The current context must be active. We cannot edit analyses from
+            # inside a deactivated Analysis Request, for instance
+            return False
+
+        if analysis_brain.review_state == 'retracted':
+            # Retracted analyses cannot be edited
+            return False
+
+        analysis_uid = analysis_brain.UID
+        if analysis_uid in self._analysis_edit_map:
+            # This analysis has been checked before, no need to go further
+            return self._analysis_edit_map[analysis_uid]
+
+        #TODO: Performance. We are waking up the object here
+        analysis_keyword = analysis_brain.getKeyword
+        if analysis_keyword not in self._keywords_poc_map:
+            analysis_obj = api.get_object(analysis_brain)
+            analysis_poc = analysis_obj.getPointOfCapture()
+            self._keywords_poc_map[analysis_keyword] = analysis_poc
+        poc = self._keywords_poc_map[analysis_keyword]
+        if poc == 'field':
+            if not self.has_permission(EditFieldResults):
+                # Current user cannot edit field analyses
+                self._analysis_edit_map[analysis_uid] = False
+                return False
+
+            # If the analysis hasn't been yet submitted (results set), then
+            # allow this one to be editable
+            analysis_obj = api.get_object(analysis_brain)
+            if wasTransitionPerformed(analysis_obj, 'submit'):
+                self._analysis_edit_map[analysis_uid] = False
+                return False
+
+        elif not self.has_permission(EditResults):
+            # Current user cannot edit lab analyses
+            self._analysis_edit_map[analysis_uid] = False
+            return False
+
+        # Is the instrument out of date?
+        instrument_valid = self.is_analysis_instrument_valid(analysis_brain)
+        self._analysis_edit_map[analysis_uid] = instrument_valid
+        return instrument_valid
+
+    def is_analysis_instrument_valid(self, analysis_brain):
+        """Return if the analysis has a valid instrument. If the analysis passed
+        in is from ReferenceAnalysis type or does not have an instrument
+        assigned, returns True"""
+        if analysis_brain.meta_type == 'ReferenceAnalysis':
+            return True
+
+        instrument = self.get_instrument(analysis_brain)
+        if not instrument:
+            return True
+
+        return instrument.isValid()
+
+    def get_instrument(self, analysis_brain):
+        """Returns the instrument assigned to the analysis passed in, if any"""
+        instrument_uid = analysis_brain.getInstrumentUID
+        if not instrument_uid:
+            return None
+
+        if instrument_uid not in self._instruments_map:
+            instrument = api.get_object_by_uid(instrument_uid, None)
+            if not instrument:
+                return None
+            self._instruments_map[instrument_uid] = instrument
+
+        return self._instruments_map[instrument_uid]
+
     def get_analysis_spec(self, analysis):
         """
         Returns the dictionary with the result specifications (min, max,
@@ -191,7 +318,7 @@ class AnalysesView(BikaListingView):
         """
         if ICatalogBrain.providedBy(analysis):
             # It is a brain
-            if not 'getResultsRange' in dir(analysis):
+            if 'getResultsRange' not in dir(analysis):
                 pass
             if analysis.getResultsRange and not \
                     isinstance(analysis.getResultsRange, list):
@@ -298,9 +425,8 @@ class AnalysesView(BikaListingView):
             {'ResultValue': <instrument_UID>,
              'ResultText': <instrument_Title>}
 
-        :param analysis: A single Analysis or ReferenceAnalysis content object
-        :type analysis: bika.lims.content.analysis.Analysis
-                        bika.lims.content.referenceAnalysis.ReferenceAnalysis
+        :param analysis_brain: A single Analysis or ReferenceAnalysis
+        :type analysis_brain: Analysis or.ReferenceAnalysis
         :returns: A vocabulary with the instruments for the analysis
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
@@ -340,7 +466,7 @@ class AnalysesView(BikaListingView):
                             'ResultText': ins.Title()})
 
         ret.insert(0, {'ResultValue': '',
-                       'ResultText': _('None')});
+                       'ResultText': _('None')})
         return ret
 
     def getAnalysts(self):
@@ -371,6 +497,11 @@ class AnalysesView(BikaListingView):
         if not obj:
             return False
 
+        # Does the user has enough privileges to see retracted analyses?
+        if obj.review_state == 'retracted' and \
+                not has_permission(ViewRetractedAnalyses):
+            return False
+
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             # Filtering by department is disabled. Return True
             return True
@@ -378,14 +509,444 @@ class AnalysesView(BikaListingView):
         # Department filtering is enabled. Check if the Analysis Service
         # associated to this Analysis is assigned to at least one of the
         # departments currently selected.
-        depuid = ''
-        if ICatalogBrain.providedBy(obj):
-            depuid = obj.getDepartmentUID
-        else:
-            dep = obj.getDepartment()
-            depuid = dep.UID() if dep else ''
-        deps = self.request.get('filter_by_department_info', '')
-        return not depuid or depuid in deps.split(',')
+        dep_uid = obj.getDepartmentUID
+        departments = self.request.get('filter_by_department_info', '')
+        return not dep_uid or dep_uid in departments.split(',')
+
+    def _folder_item_css_class(self, obj, item):
+        # If this is a Reference Analysis or a Duplicate from a Reference
+        # Analysis, add the css class 'qc-analysis' accordingly.
+        row_class = item.get('table_row_class', '')
+        is_reference = obj.meta_type == 'ReferenceAnalysis'
+        is_duplicate = obj.meta_type == 'DuplicateAnalysis'
+        qc_class_name = 'qc-analysis'
+        if is_reference:
+            row_class = '{} {}'.format(row_class, qc_class_name)
+            item['table_row_class'] = row_class
+        elif is_duplicate:
+            # Is this a duplicate from a ReferenceAnalysis?
+            if obj.getAnalysisPortalType == 'ReferenceAnalysis':
+                row_class = '{} {}'.format(row_class, qc_class_name)
+                item['table_row_class'] = row_class
+
+    def _folder_item_duedate(self, obj, item):
+        # Set the analysis' due date. Note that if a Reference Analysis, the
+        # getDueDate returns the date when the ReferenceSample expires. If the
+        # analysis is a duplicate, returns the due date of the source analysis.
+        due_date = obj.getDueDate
+        due_date_str = self.ulocalized_time(due_date, long_format=0)
+        item['DueDate'] = due_date_str
+
+        # If the Analysis is late/overdue, display an icon
+        capture_date = obj.getResultCaptureDate
+        capture_date = capture_date or DateTime()
+        if capture_date > due_date:
+            # The analysis is late or overdue
+            img_src = '{}/++resource++bika.lims.images/late.png'
+            img_src = img_src.format(self.portal_url)
+            html = '{} <img width="16" height="16" src="{}" title="{}"/>'
+            html = html.format(due_date_str, img_src, t(_("Late Analysis")))
+            item['replace']['DueDate'] = html
+
+    def _folder_item_result(self, obj, item):
+        item['Result'] = ''
+        if not self.has_permission(ViewResults, obj):
+            img_src = "{}/++resource++bika.lims.images/to_follow.png"
+            img_src = img_src.format(self.portal_url)
+            img = '<img width="16" height="16" src="{}"/>'.format(img_src)
+            item['before']['Result'] = img
+            return
+
+        result = obj.getResult
+        capture_date = obj.getResultCaptureDate
+        capture_date_str = self.ulocalized_time(capture_date, long_format=0)
+        item['Result'] = result
+        item['CaptureDate'] = capture_date_str
+        item['result_captured'] = capture_date_str
+
+        # If this analysis has a predefined set of options as result, tell the
+        # template that selection list (choices) must be rendered instead of an
+        # input field for the introduction of result.
+        choices = obj.getResultOptions
+        if choices:
+            item['choices']['Result'] = choices
+
+        if self.is_analysis_edition_allowed(obj):
+            item['allow_edit'].extend(['Result', 'Remarks'])
+
+        # Wake up the object only if necessary. If there is no result set, then
+        # there is no need to go further with formatted result
+        if result is None or result == '':
+            return
+
+        # TODO: Performance, we wake-up the full object here
+        full_obj = self._get_object(obj)
+        formatted_result = full_obj.getFormattedResult(
+                            sciformat=int(self.scinot), decimalmark=self.dmk)
+        item['formatted_result'] = formatted_result
+
+    def _folder_item_calculation(self, obj, item):
+        is_editable = self.is_analysis_edition_allowed(obj)
+        # Set interim fields. Note we add the key 'formatted_value' to the list
+        # of interims the analysis has assigned already.
+        interim_fields = obj.getInterimFields or list()
+        for interim_field in interim_fields:
+            interim_keyword = interim_field.get('keyword', '')
+            if not interim_keyword:
+                continue
+            interim_value = interim_field.get('value', '')
+            interim_formatted = formatDecimalMark(interim_value, self.dmk)
+            interim_field['formatted_value'] = interim_formatted
+            item[interim_keyword] = interim_field
+            item['class'][interim_keyword] = 'interim'
+            if is_editable:
+                item['allow_edit'].append(interim_keyword)
+
+            # Add this analysis' interim fields to the interim_columns list
+            interim_hidden = interim_field.get('hidden', False)
+            if not interim_hidden:
+                interim_title = interim_field.get('title')
+                self.interim_columns[interim_keyword] = interim_title
+
+        item['interimfields'] = interim_fields
+
+        # Set calculation
+        calculation_uid = obj.getCalculationUID
+        has_calculation = calculation_uid and True or False
+        item['calculation'] = has_calculation
+        if is_editable and (not has_calculation or interim_fields):
+            # If the analysis is editable and doesn't have a calculation or it
+            # does, but has interim fields, it must be re-testable.
+            item['allow_edit'].append('retested')
+
+    def _folder_item_method(self, obj, item):
+        is_editable = self.is_analysis_edition_allowed(obj)
+        method_title = obj.getMethodTitle
+        item['Method'] = method_title or ''
+        if is_editable:
+            method_vocabulary = self.get_methods_vocabulary(obj)
+            if method_vocabulary:
+                item['Method'] = obj.getMethodUID
+                item['choices']['Method'] = method_vocabulary
+                item['allow_edit'].append('Method')
+                self.show_methodinstr_columns = True
+        elif method_title:
+            item['replace']['Method'] = get_link(obj.getMethodURL, method_title)
+            self.show_methodinstr_columns = True
+
+    def _folder_item_instrument(self, obj, item):
+        item['Instrument'] = ''
+        if not obj.getInstrumentEntryOfResults:
+            # Manual entry of results, instrument is not allowed
+            item['Instrument'] = _('Manual')
+            msgtitle = t(_(
+                "Instrument entry of results not allowed for ${service}",
+                mapping={"service": obj.Title},
+            ))
+            item['replace']['Instrument'] = \
+                '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
+            return
+
+        # Instrument can be assigned to this analysis
+        is_editable = self.is_analysis_edition_allowed(obj)
+        self.show_methodinstr_columns = True
+        instrument = self.get_instrument(obj)
+        if is_editable:
+            # Edition allowed
+            voc = self.get_instruments_vocabulary(obj)
+            if voc:
+                # The service has at least one instrument available
+                item['Instrument'] = instrument.UID() if instrument else ''
+                item['choices']['Instrument'] = voc
+                item['allow_edit'].append('Instrument')
+                return
+
+        if instrument:
+            # Edition not allowed
+            instrument_title = instrument and instrument.Title() or ''
+            instrument_link = get_link(instrument.absolute_url(),
+                                       instrument_title)
+            item['Instrument'] = instrument_title
+            item['replace']['Instrument'] = instrument_link
+            return
+
+    def _folder_item_analyst(self, obj, item):
+        is_editable = self.is_analysis_edition_allowed(obj)
+        if not is_editable:
+            item['Analyst'] = obj.getAnalystName
+            return
+
+        # Analyst is editable
+        item['Analyst'] = obj.getAnalyst or api.get_current_user().id
+        item['choices']['Analyst'] = self.getAnalysts()
+        item['allow_edit'].append('Analyst')
+
+    def _folder_item_attachments(self, obj, item):
+        item['Attachments'] = ''
+        at_uids = obj.getAttachmentUIDs
+        if not at_uids:
+            return
+
+        if not self.has_permission(ViewResults, obj):
+            return
+
+        attachments_html = []
+        attachments = api.search({'UID': at_uids}, 'uid_catalog')
+        for attachment in attachments:
+            attachment = api.get_object(attachment)
+            uid = api.get_uid(attachment)
+            html = '<span class="attachment" attachment_uid="{}">'.format(uid)
+            attachments_html.append(html)
+
+            at_file = attachment.getAttachmentFile()
+            icon = at_file.icon
+            if callable(icon):
+                icon = icon()
+            if icon:
+                html = '<img src="{}/{}">'.format(self.portal_url, icon)
+                attachments_html.append(html)
+
+            url = '{}/at_download/AttachmentFile'
+            url = url.format(attachment.absolute_url)
+            link = get_link(url, at_file.filename)
+            attachments_html.append(link)
+
+            if not self.is_analysis_edition_allowed(obj):
+                attachments_html.append('<br/></span>')
+                continue
+
+            img = '<img class="deleteAttachmentButton"' \
+                  ' attachment_uid="{}" src="{}"/>'
+            img = img.format(uid, '++resource++bika.lims.images/delete.png')
+            attachments_html.append(img)
+            attachments_html.append('<br/></span>')
+
+        if attachments_html:
+            # Remove the last <br/></span> and add only </span>
+            attachments_html = attachments_html[:-1]
+            attachments_html.append('</span>')
+            item['replace']['Attachments'] = ''.join(attachments_html)
+
+    def _folder_item_uncertainty(self, obj, item):
+        item['Uncertainty'] = ''
+        if not self.has_permission(ViewResults, obj):
+            return
+
+        result = obj.getResult
+        if result is None or result == '':
+            # Wake up the object only if necessary. If this analysis has no
+            # result set yet, there is no need to go further with Uncertainty
+            return
+
+        # TODO: Performance, we wake-up the full object here
+        full_obj = self._get_object(obj)
+        formatted = format_uncertainty(full_obj, result, decimalmark=self.dmk,
+                                       sciformat=int(self.scinot))
+        if formatted:
+            item['Uncertainty'] = formatted
+            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
+            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
+            item['after']['Uncertainty'] = after.format(obj.getUnit)
+            item['structure'] = True
+
+        is_editable = self.is_analysis_edition_allowed(obj)
+        if is_editable and full_obj.getAllowManualUncertainty():
+            # User can set the value of uncertainty manually
+            uncertainty = full_obj.getUncertainty(result)
+            item['Uncertainty'] = uncertainty or ''
+            item['allow_edit'].append('Uncertainty')
+            item['structure'] = False
+
+    def _folder_item_detection_limits(self, obj, item):
+        is_editable = self.is_analysis_edition_allowed(obj)
+        if not is_editable:
+            return
+
+        # TODO: Performance, we wake-up the full object here
+        full_obj = self._get_object(obj)
+        uid = api.get_uid(obj)
+
+        is_below_ldl = full_obj.isBelowLowerDetectionLimit()
+        is_above_udl = full_obj.isAboveUpperDetectionLimit()
+
+        # Allow to use LDL and UDL in calculations.
+        # Since LDL, UDL, etc. are wildcards that can be used in calculations,
+        # these fields must be loaded always for 'live' calculations.
+        dls = {
+            'above_udl': is_above_udl,
+            'below_ldl': is_below_ldl,
+            'is_ldl': full_obj.isLowerDetectionLimit(),
+            'is_udl': full_obj.isUpperDetectionLimit(),
+            'default_ldl': full_obj.getLowerDetectionLimit(),
+            'default_udl': full_obj.getUpperDetectionLimit(),
+            'manual_allowed': full_obj.getAllowManualDetectionLimit(),
+            'dlselect_allowed': full_obj.getDetectionLimitSelector()
+        }
+        dlsin = \
+            '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
+        dlsin = dlsin % (uid, json.dumps(dls))
+        item['after']['Result'] = dlsin
+
+        if full_obj.getDetectionLimitSelector():
+            # The user cannot manually set the Detection Limit
+            return
+
+        # User can manually set the Detection Limit for this analysis.
+        # A selector with options '', '<' and '>' must be displayed.
+        dl_operator = ''
+        if is_below_ldl or is_above_udl:
+            dl_operator = '<' if is_below_ldl else '>'
+
+        item['allow_edit'].append('DetectionLimit')
+        item['DetectionLimit'] = dl_operator
+        item['choices']['DetectionLimit'] = [
+                {'ResultValue': '<', 'ResultText': '<'},
+                {'ResultValue': '>', 'ResultText': '>'}
+        ]
+        self.columns['DetectionLimit']['toggle'] = True
+        defaults = {'min': full_obj.getLowerDetectionLimit(),
+                    'max': full_obj.getUpperDetectionLimit(),
+                    'manual': full_obj.getAllowManualDetectionLimit()}
+        defin = \
+            '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
+        defin = defin % (uid, json.dumps(defaults))
+        item['after']['DetectionLimit'] = defin
+
+    def _folder_item_specifications(self, obj, item):
+        # Everyone can see valid-ranges
+        item['Specification'] = ''
+        spec = self.get_analysis_spec(obj)
+        if not spec:
+            return
+        min_val = spec.get('min', '')
+        min_str = ">{0}".format(min_val) if min_val else ''
+        max_val = spec.get('max', '')
+        max_str = "<{0}".format(max_val) if max_val else ''
+        error_val = spec.get('error', '')
+        error_str = "{0}%".format(error_val) if error_val else ''
+        rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
+        item['Specification'] = rngstr
+
+    def _folder_item_verify_criteria(self, obj, item):
+        submitter = obj.getSubmittedBy
+        if not submitter:
+            return
+
+        after_key = 'state_title'
+        if submitter in obj.getVerificators.split(','):
+            # If analysis has been submitted and verified by the same person,
+            # display a warning icon
+            msg = t(_("Submitted and verified by the same user: {}"))
+            msg = msg.format(submitter)
+            icon = "<img src='{}/++resource++bika.lims.images/warning.png'" \
+                   " title='{}'/>".format(self.portal_url, msg)
+            self._append_after_element(item, after_key, icon)
+
+        if obj.review_state != 'to_be_verified':
+            return
+
+        numverifications = obj.getNumberOfRequiredVerifications
+        pending = numverifications
+        if numverifications > 1:
+            # More than one verification required, place an icon
+            # Get the number of verifications already done:
+            done = obj.getNumberOfVerifications
+            pending = numverifications - done
+            ratio = float(done) / float(numverifications) if done > 0 else 0
+            ratio = int(ratio*100)
+            scale = ratio == 0 and 0 or (ratio/25)*25
+            anchor = "<a href='#' title='{} &#13;{} {}' " \
+                     "class='multi-verification scale-{}'>{}/{}</a>"
+            anchor = anchor.format(t(_("Multi-verification required")),
+                                   str(pending),
+                                   t(_("verification(s) pending")),
+                                   str(scale),
+                                   str(done),
+                                   str(numverifications))
+            self._append_after_element(item, after_key, anchor)
+
+        # Check if the user has "Bika: Verify" privileges
+        username = self.member.getUserName()
+        verify_permission = has_permission(VerifyPermission, username=username)
+        if not verify_permission:
+            return
+
+        self_submitted = submitter == username
+        # The submitter and the user must be different unless the analysis
+        # has the option SelfVerificationEnabled set to true
+        selfverification = obj.isSelfVerificationEnabled
+        isUserAllowedToVerify = not (self_submitted and not selfverification)
+        if not isUserAllowedToVerify:
+            img = '/++resource++bika.lims.images/submitted-by-current-user.png'
+            title = t(_("Multi-verification by same user is not allowed"))
+            html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
+                                                          title)
+            self._append_after_element(item, after_key, html)
+            return
+
+        if isUserAllowedToVerify and  numverifications > 1:
+
+
+        # Are they the same? TODO
+        username = self.member.getUserName()
+        user_id = self.member.getUser().getId()
+        isUserAllowedToVerify = True
+        # Check if the user who submited the result is the same as the
+        # current one
+        self_submitted = submitter == user_id
+        # The submitter and the user must be different unless the analysis
+        # has the option SelfVerificationEnabled set to true
+        selfverification = obj.isSelfVerificationEnabled
+        if verify_permission and self_submitted and not selfverification:
+            isUserAllowedToVerify = False
+        # Checking verifiability depending on multi-verification type
+        # of bika_setup
+        if isUserAllowedToVerify and numverifications > 1:
+            # If user verified before and self_multi_disabled, then
+            # return False
+            if self.mv_type == 'self_multi_disabled' and \
+                            username in obj.getVerificators.split(','):
+                isUserAllowedToVerify = False
+            # If user is the last verificator and consecutively
+            # multi-verification is disabled, then return False
+            # Comparing was added just to check if this method is called
+            # before/after verification
+            elif self.mv_type == 'self_multi_not_cons' and \
+                            username == obj.getLastVerificator and \
+                            pending > 0:
+                isUserAllowedToVerify = False
+        if verify_permission and not isUserAllowedToVerify:
+            after_icons.append(
+                "<img src='++resource++bika.lims.images/submitted"
+                "-by-current-user.png' title='%s'/>" %
+                (t(_(
+                    "Cannot verify, submitted or"
+                    " verified by current user before")))
+            )
+        elif verify_permission and isUserAllowedToVerify:
+            if submitter == user_id:
+                after_icons.append(
+                    "<img src='++resource++bika.lims.images/warning.png'"
+                    " title='%s'/>" %
+                    (t(_("Can verify, but submitted by current user")))
+                )
+
+    def _append_after_element(self, item, element, html, glue="&nbsp;"):
+        item['after'] = item.get('after', {})
+        original = item['after'].get(element, '')
+        if not original:
+            item['after'][element] = html
+            return
+        item['after'][element] = glue.join([original, html])
+
+    def _get_object(self, brain_object):
+        uid = api.get_uid(brain_object)
+        if uid not in self._objects_map:
+            logger.warn('Waking up object {} ({}): {}'.format(brain_object.getId, brain_object.Title, brain_object.UID))
+            obj = api.get_object(brain_object)
+            self._objects_map[uid] = obj
+            logger.warn("Cached objects: {}".format(len(self._objects_map)))
+        return self._objects_map[uid]
 
     def folderitem(self, obj, item, index):
         """
@@ -394,18 +955,7 @@ class AnalysesView(BikaListingView):
         # Additional info from AnalysisRequest to be added in the item
         # generated by default by bikalisting.
 
-        # Call the folderitem method from the base class
-        item = BikaListingView.folderitem(self, obj, item, index)
-        checkPermission = self.mtool.checkPermission
-        if not item:
-            return None
-        if not ('obj' in item):
-            return None
-        if obj.review_state == 'retracted' \
-                and not checkPermission(ViewRetractedAnalyses, self.context):
-            return None
         # Getting the dictionary values
-        result = obj.getResult
         unit = obj.getUnit
         if self.show_categories:
             cat = obj.getCategoryTitle
@@ -413,475 +963,66 @@ class AnalysesView(BikaListingView):
             item['category'] = cat
             if (cat, cat_order) not in self.categories:
                 self.categories.append((cat, cat_order))
-        # Check for InterimFields attribute on our object,
-        interim_fields = obj.getInterimFields
-        # TODO: This should never happen, we must ensure that interim_fields
-        # is always a list
-        if not isinstance(interim_fields, list):
-            logger.warn(
-                "InterimFields from {} isn't a list " +
-                "object. This should never happen".format(obj.getId))
-            interim_fields = []
-        full_obj = None
-        # kick some pretty display values in.
-        for x in range(len(interim_fields)):
-            interim_fields[x]['formatted_value'] = \
-                formatDecimalMark(interim_fields[x]['value'], self.dmk)
-        self.interim_fields[obj.UID] = interim_fields
+
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(unit) if unit else ''
-        item['Result'] = ''
-        item['formatted_result'] = ''
-        item['interim_fields'] = interim_fields
         item['Remarks'] = obj.getRemarks
         item['Uncertainty'] = ''
         item['DetectionLimit'] = ''
         item['retested'] = obj.getRetested
         item['class']['retested'] = 'center'
-        item['result_captured'] = self.ulocalized_time(
-            obj.getResultCaptureDate, long_format=0)
-        item['calculation'] = obj.getCalculationUID and True or False
-        if obj.meta_type == "ReferenceAnalysis":
-            item['DueDate'] = self.ulocalized_time(
-                obj.getExpiryDate, long_format=0)
-        else:
-            item['DueDate'] = self.ulocalized_time(
-                obj.getDueDate, long_format=1)
-        cd = obj.getResultCaptureDate
-        item['CaptureDate'] = cd and self.ulocalized_time(
-            cd, long_format=1) or ''
-        tblrowclass = item.get('table_row_class', '')
 
-        if obj.meta_type == 'ReferenceAnalysis':
-            item['st_uid'] = obj.getParentUID
-            item['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis'])
-        elif obj.meta_type == 'DuplicateAnalysis' and \
-                        obj.getAnalysisPortalType == 'ReferenceAnalysis':
-            item['st_uid'] = obj.getParentUID
-            item['table_row_class'] = \
-                ' '.join([tblrowclass, 'qc-analysis'])
-        else:
-            item['st_uid'] = obj.getSampleTypeUID
+        # Note that getSampleTypeUID returns the type of the Sample, no matter
+        # if the sample associated to the analysis is a regular Sample (routine
+        # analysis) or if is a Reference Sample (Reference Analysis). If the
+        # analysis is a duplicate, it returns the Sample Type of the sample
+        # associated to the source analysis.
+        item['st_uid'] = obj.getSampleTypeUID
 
-        if checkPermission(ManageBika, self.context):
+        # TODO: Is this necessary? If so, why?
+        if self.has_permission(ManageBika):
             item['Service'] = obj.Title
             item['class']['Service'] = "service_title"
 
-        # choices defined on Service apply to result fields.
-        choices = obj.getResultOptions
-        if choices:
-            item['choices']['Result'] = choices
-        # Editing Field Results is possible while in Sample Due.
-        poc = self.contentFilter.get("getPointOfCapture", 'lab')
-        # Getting the first edit_analysis permission
-        can_edit_analysis = self.allow_edit and self.context_active
-        # If the view has edit permissions, lets check if the user has them
-        if can_edit_analysis and poc == 'field':
-            can_edit_analysis = \
-                self.security_manager.checkPermission(
-                    EditFieldResults, full_obj)
-        if can_edit_analysis and poc != 'field':
-            can_edit_analysis = \
-                self.security_manager.checkPermission(EditResults, obj)
+        # Fill item's row class
+        self._folder_item_css_class(obj, item)
 
-        allowed_method_states = [
-            'to_be_sampled',
-            'to_be_preserved',
-            'sample_received',
-            'sample_registered',
-            'sampled',
-            'assigned']
-        can_edit_analysis = can_edit_analysis and \
-                            obj.review_state in allowed_method_states
-        # TODO: Getting the instrument object until we define the correct
-        # metacolumns for instrument brains.
-        instrument_uid = obj.getInstrumentUID
-        instrument = None
-        if self.bsc is None:
-            self.bsc = getToolByName(self.context, 'bika_setup_catalog')
-        instrument_brain = self.bsc(UID=instrument_uid)
-        isInstrumentValid = True
-        if instrument_brain:
-            instrument = instrument_brain[0].getObject()
-            isInstrumentValid = instrument.isValid()
-        # Prevent from being edited if the instrument assigned
-        # is not valid (out-of-date or uncalibrated), except if
-        # the analysis is a QC with assigned status
-        can_edit_analysis =\
-            can_edit_analysis and \
-            (isInstrumentValid or obj.meta_type == 'ReferenceAnalysis')
-        if can_edit_analysis:
-            item['allow_edit'].extend([
-                'Analyst',
-                'Result',
-                'Remarks'])
-            # if the Result field is editable, our interim fields are too
-            for f in self.interim_fields[obj.UID]:
-                item['allow_edit'].append(f['keyword'])
+        # Fill result and/or result options
+        self._folder_item_result(obj, item)
 
-            # if there isn't a calculation then result must be re-testable,
-            # and if there are interim fields, they too must be re-testable.
-            if not item.get('calculation') or \
-                    (item['calculation'] and self.interim_fields[obj.UID]):
-                item['allow_edit'].append('retested')
+        # Fill calculation and interim fields
+        self._folder_item_calculation(obj, item)
 
-        # TODO: Only the labmanager should be able to change the method
-        can_set_method = can_edit_analysis \
-                         and item['review_state'] in allowed_method_states
+        # Fill method
+        self._folder_item_method(obj, item)
 
-        # Display the methods selector if the AS has at least one
-        # method assigned
-        item['Method'] = ''
-        item['replace']['Method'] = ''
-        if can_set_method:
-            voc = self.get_methods_vocabulary(obj)
-            if voc:
-                # The service has at least one method available
-                item['Method'] = obj.getMethodUID
-                item['choices']['Method'] = voc
-                item['allow_edit'].append('Method')
-                self.show_methodinstr_columns = True
-            else:
-                method = obj.getMethodUID
-                if method:
-                    # This should never happen
-                    # The analysis has set a method, but its parent
-                    # service hasn't any method available O_o
-                    item['Method'] = obj.getMethodTitle
-                    item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                                                (obj.getMethodURL,
-                                                 obj.getMethodTitle)
-                    self.show_methodinstr_columns = True
-        elif obj.getMethodUID:
-            # Edition not allowed, but method set
-            item['Method'] = obj.getMethodTitle
-            item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                                        (obj.getMethodURL, obj.getMethodTitle)
-            self.show_methodinstr_columns = True
+        # Fill instrument
+        self._folder_item_instrument(obj, item)
 
-        # TODO: Instrument selector dynamic behavior in worksheet Results
-        # Only the labmanager must be able to change the instrument to be used.
-        # Also, the instrument selection should be done in accordance with the
-        # method selected
-        # can_set_instrument = service.getInstrumentEntryOfResults() and
-        # getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
-        can_set_instrument = obj.getInstrumentEntryOfResults \
-                             and can_edit_analysis \
-                             and item['review_state'] in allowed_method_states
+        # Fill analyst
+        self._folder_item_analyst(obj, item)
 
-        item['Instrument'] = ''
-        item['replace']['Instrument'] = ''
-        if obj.getInstrumentEntryOfResults:
-            if can_set_instrument:
-                # Edition allowed
-                voc = self.get_instruments_vocabulary(obj)
-                if voc:
-                    # The service has at least one instrument available
-                    item['Instrument'] = instrument.UID() if instrument else ''
-                    item['choices']['Instrument'] = voc
-                    item['allow_edit'].append('Instrument')
-                    self.show_methodinstr_columns = True
+        # Fill attachments
+        self._folder_item_attachments(obj, item)
 
-                elif instrument:
-                    # This should never happen
-                    # The analysis has an instrument set, but the
-                    # service hasn't any available instrument
-                    item['Instrument'] = instrument.Title()
-                    item['replace']['Instrument'] = \
-                        "<a href='%s'>%s</a>" % (instrument.absolute_url(),
-                                                 instrument.Title())
-                    self.show_methodinstr_columns = True
+        # Fill uncertainty
+        self._folder_item_uncertainty(obj, item)
 
-            elif instrument:
-                # Edition not allowed, but instrument set
-                item['Instrument'] = instrument.Title()
-                item['replace']['Instrument'] = \
-                    "<a href='%s'>%s</a>" % (instrument.absolute_url(),
-                                             instrument.Title())
-                self.show_methodinstr_columns = True
+        # Fill Detection Limits
+        self._folder_item_detection_limits(obj, item)
 
-        else:
-            # Manual entry of results, instrument not allowed
-            item['Instrument'] = _('Manual')
-            msgtitle = t(_(
-                "Instrument entry of results not allowed for ${service}",
-                mapping={"service": obj.Title},
-            ))
-            item['replace']['Instrument'] = \
-                '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
+        # Fill Specifications
+        self._folder_item_specifications(obj, item)
 
-        # Sets the analyst assigned to this analysis
-        if can_edit_analysis:
-            analyst = obj.getAnalyst
-            # widget default: current user
-            if not analyst:
-                analyst = self.mtool.getAuthenticatedMember().getUserName()
-            item['Analyst'] = analyst
-            item['choices']['Analyst'] = self.getAnalysts()
-        else:
-            item['Analyst'] = obj.getAnalystName
-        # permission to view this item's results and add attachment to it
-        can_view_result = \
-            self.security_manager.checkPermission(ViewResults, obj)
-        can_add_attachment = \
-            self.security_manager.checkPermission(AddAttachment, obj)
-        # If the analysis service has the option 'attachment' enabled
-        if can_add_attachment or can_view_result:
-            attachments = ""
-            at_uids = obj.getAttachmentUIDs
-            if at_uids:
-                uc = getToolByName(self.context, 'uid_catalog')
-                attachments_objs = [x.getObject() for x in uc(UID=at_uids)]
-                for attachment in attachments_objs:
-                    af = attachment.getAttachmentFile()
-                    icon = af.icon
-                    if callable(icon):
-                        icon = icon()
-                    attachments += \
-                        "<span class='attachment' attachment_uid='%s'>" % \
-                        (attachment.UID())
-                    if icon:
-                        attachments += "<img src='%s/%s'/>" % \
-                                       (self.portal_url, icon)
-                    attachments += \
-                        '<a href="%s/at_download/AttachmentFile"/>%s</a>' % \
-                        (attachment.absolute_url(), af.filename)
-                    if can_edit_analysis:
-                        attachments += "<img class='deleteAttachmentButton' " \
-                                       "attachment_uid='%s' src='%s'/>" % (
-                                           attachment.UID(),
-                                           "++resource++bika.lims.images/delete.png")
-                    attachments += "</br></span>"
-            item['replace']['Attachments'] = attachments[:-12] + "</span>"
-        # TODO-performance: This part gets the full object...
-        # Only display data bearing fields if we have ViewResults
-        # permission, otherwise just put an icon in Result column.
-        if can_view_result:
-            full_obj = full_obj if full_obj else obj.getObject()
-            item['Result'] = result
-            item['formatted_result'] = \
-                full_obj.getFormattedResult(
-                    sciformat=int(self.scinot), decimalmark=self.dmk)
+        # Fill Due Date and icon if late/overdue
+        self._folder_item_duedate(obj, item)
 
-            # LIMS-1379 Allow manual uncertainty value input
-            # https://jira.bikalabs.com/browse/LIMS-1379
-            fu = format_uncertainty(
-                full_obj, result, decimalmark=self.dmk, sciformat=int(
-                    self.scinot))
-            fu = fu if fu else ''
-            if can_edit_analysis and full_obj.getAllowManualUncertainty():
-                unc = full_obj.getUncertainty(result)
-                item['allow_edit'].append('Uncertainty')
-                item['Uncertainty'] = unc if unc else ''
-                item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-                item['after'][
-                    'Uncertainty'] = '<em class="discreet" ' \
-                                     'style="white-space:nowrap;"> %s</em>' % \
-                                     item['Unit']
-                item['structure'] = False
-            elif fu:
-                item['Uncertainty'] = fu
-                item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-                item['after'][
-                    'Uncertainty'] = '<em class="discreet" ' \
-                                     'style="white-space:nowrap;"> %s</em>' % \
-                                     item['Unit']
-                item['structure'] = True
+        # Fill verification criteria
+        self._folder_item_verify_criteria(obj, item)
 
-            # LIMS-1700. Allow manual input of Detection Limits
-            # LIMS-1775. Allow to select LDL or UDL defaults in results
-            # with readonly mode
-            # https://jira.bikalabs.com/browse/LIMS-1700
-            # https://jira.bikalabs.com/browse/LIMS-1775
-            if can_edit_analysis and \
-                    hasattr(full_obj, 'getDetectionLimitOperand') and \
-                    hasattr(full_obj, 'getDetectionLimitSelector') and \
-                    full_obj.getDetectionLimitSelector():
-                isldl = full_obj.isBelowLowerDetectionLimit()
-                isudl = full_obj.isAboveUpperDetectionLimit()
-                dlval = ''
-                if isldl or isudl:
-                    dlval = '<' if isldl else '>'
-                item['allow_edit'].append('DetectionLimit')
-                item['DetectionLimit'] = dlval
-                choices = [
-                    {'ResultValue': '<', 'ResultText': '<'},
-                    {'ResultValue': '>', 'ResultText': '>'}]
-                item['choices']['DetectionLimit'] = choices
-                self.columns['DetectionLimit']['toggle'] = True
-                defdls = {'min': full_obj.getLowerDetectionLimit(),
-                          'max': full_obj.getUpperDetectionLimit(),
-                          'manual': full_obj.getAllowManualDetectionLimit()}
-                defin = \
-                    '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
-                defin = defin % (full_obj.UID(), json.dumps(defdls))
-                item['after']['DetectionLimit'] = defin
-
-            # LIMS-1769. Allow to use LDL and UDL in calculations.
-            # https://jira.bikalabs.com/browse/LIMS-1769
-            # Since LDL, UDL, etc. are wildcards that can be used
-            # in calculations, these fields must be loaded always
-            # for 'live' calculations.
-            if can_edit_analysis:
-                dls = {'default_ldl': 'none',
-                       'default_udl': 'none',
-                       'below_ldl': False,
-                       'above_udl': False,
-                       'is_ldl': False,
-                       'is_udl': False,
-                       'manual_allowed': False,
-                       'dlselect_allowed': False}
-                if hasattr(full_obj, 'getDetectionLimits'):
-                    dls['below_ldl'] = full_obj.isBelowLowerDetectionLimit()
-                    dls['above_udl'] = full_obj.isBelowLowerDetectionLimit()
-                    dls['is_ldl'] = full_obj.isLowerDetectionLimit()
-                    dls['is_udl'] = full_obj.isUpperDetectionLimit()
-                    dls['default_ldl'] = full_obj.getLowerDetectionLimit()
-                    dls['default_udl'] = full_obj.getUpperDetectionLimit()
-                    dls['manual_allowed'] = \
-                        full_obj.getAllowManualDetectionLimit()
-                    dls['dlselect_allowed'] = \
-                        full_obj.getDetectionLimitSelector()
-                dlsin = \
-                    '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
-                dlsin = dlsin % (full_obj.UID(), json.dumps(dls))
-                item['after']['Result'] = dlsin
-
-        else:
-            item['Specification'] = ""
-            if 'Result' in item['allow_edit']:
-                item['allow_edit'].remove('Result')
-            item['before']['Result'] = \
-                '<img width="16" height="16" ' + \
-                'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
-                (self.portal_url)
-
-        # Everyone can see valid-ranges
-        spec = self.get_analysis_spec(obj)
-        if spec:
-            min_val = spec.get('min', '')
-            min_str = ">{0}".format(min_val) if min_val else ''
-            max_val = spec.get('max', '')
-            max_str = "<{0}".format(max_val) if max_val else ''
-            error_val = spec.get('error', '')
-            error_str = "{0}%".format(error_val) if error_val else ''
-            rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
-        else:
-            rngstr = ""
-
-        item['Specification'] = rngstr
-        # Add this analysis' interim fields to the interim_columns list
-        for f in self.interim_fields[obj.UID]:
-            if f['keyword'] not in self.interim_columns and not f.get('hidden',
-                                                                      False):
-                self.interim_columns[f['keyword']] = f['title']
-            # and to the item itself
-            item[f['keyword']] = f
-            item['class'][f['keyword']] = 'interim'
-        # check if this analysis is late/overdue
-        resultdate = obj.getDateSampled \
-            if obj.meta_type == 'ReferenceAnalysis' \
-            else obj.getResultCaptureDate
-        duedate = obj.getExpiryDate \
-            if obj.meta_type == 'ReferenceAnalysis' \
-            else obj.getDueDate
-        item['replace']['DueDate'] = \
-            self.ulocalized_time(duedate, long_format=1)
-
-        if item['review_state'] not in ['to_be_sampled',
-                                        'to_be_preserved',
-                                        'sample_due',
-                                        'published']:
-            if (resultdate and resultdate > duedate) \
-                    or (not resultdate and DateTime() > duedate):
-                item['replace'][
-                    'DueDate'] = '%s <img width="16" height="16" ' \
-                                 'src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                                 (self.ulocalized_time(duedate, long_format=1),
-                                  self.portal_url,
-                                  t(_("Late Analysis")))
-
-        after_icons = []
-        submitter = obj.getSubmittedBy
-        # Submitting user may not verify results unless the user is labman
-        # or manager and the AS has isSelfVerificationEnabled set to True
-        if item['review_state'] == 'to_be_verified':
-            # If multi-verification required, place an informative icon
-            numverifications = obj.getNumberOfRequiredVerifications
-            if numverifications > 1:
-                # More than one verification required, place an icon
-                # Get the number of verifications already done:
-                done = obj.getNumberOfVerifications
-                pending = numverifications - done
-                ratio = float(done) / float(numverifications) \
-                    if done > 0 else 0
-                scale = '' if ratio < 0.25 else '25' \
-                    if ratio < 0.50 else '50' \
-                    if ratio < 0.75 else '75'
-                anchor = "<a href='#' title='%s &#13;%s %s' " \
-                         "class='multi-verification scale-%s'>%s/%s</a>"
-                anchor = anchor % (t(_("Multi-verification required")),
-                                   str(pending),
-                                   t(_("verification(s) pending")),
-                                   scale, str(done), str(numverifications))
-                after_icons.append(anchor)
-            # Are they the same? TODO
-            username = self.member.getUserName()
-            user_id = self.member.getUser().getId()
-            # Check if the user has "Bika: Verify" privileges
-            verify_permission = has_permission(
-                VerifyPermission,
-                username=username)
-            isUserAllowedToVerify = True
-            # Check if the user who submited the result is the same as the
-            # current one
-            self_submitted = submitter == user_id
-            # The submitter and the user must be different unless the analysis
-            # has the option SelfVerificationEnabled set to true
-            selfverification = obj.isSelfVerificationEnabled
-            if verify_permission and self_submitted and not selfverification:
-                isUserAllowedToVerify = False
-            # Checking verifiability depending on multi-verification type
-            # of bika_setup
-            if isUserAllowedToVerify and numverifications > 1:
-                # If user verified before and self_multi_disabled, then
-                # return False
-                if self.mv_type == 'self_multi_disabled' and \
-                                username in obj.getVerificators.split(','):
-                    isUserAllowedToVerify = False
-                # If user is the last verificator and consecutively
-                # multi-verification is disabled, then return False
-                # Comparing was added just to check if this method is called
-                # before/after verification
-                elif self.mv_type == 'self_multi_not_cons' and \
-                                username == obj.getLastVerificator and \
-                                pending > 0:
-                    isUserAllowedToVerify = False
-            if verify_permission and not isUserAllowedToVerify:
-                after_icons.append(
-                    "<img src='++resource++bika.lims.images/submitted"
-                    "-by-current-user.png' title='%s'/>" %
-                    (t(_(
-                        "Cannot verify, submitted or"
-                        " verified by current user before")))
-                )
-            elif verify_permission and isUserAllowedToVerify:
-                if submitter == user_id:
-                    after_icons.append(
-                        "<img src='++resource++bika.lims.images/warning.png'"
-                        " title='%s'/>" %
-                        (t(_("Can verify, but submitted by current user")))
-                    )
-        # If analysis Submitted and Verified by the same person, then warning
-        # icon will appear.
-        if submitter and submitter in obj.getVerificators.split(','):
-            after_icons.append(
-                "<img src='++resource++bika.lims.images/warning.png'"
-                " title='%s'/>" %
-                (t(_("Submited and verified by the same user- " + submitter)))
-            )
         # add icon for assigned analyses in AR views
+        full_obj = api.get_object(obj)
         if self.context.meta_type == 'AnalysisRequest':
             if obj.meta_type in ['ReferenceAnalysis',
                                    'DuplicateAnalysis'] or \
