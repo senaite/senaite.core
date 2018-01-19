@@ -15,8 +15,6 @@ from bika.lims.workflow import changeWorkflowState
 from bika.lims.workflow import isActive
 from DateTime import DateTime
 
-from plone import api
-
 version = '1.2.1'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
@@ -38,15 +36,6 @@ def upgrade(tool):
     set_guards_to_inactive_workflow()
     fix_service_status_inconsistences()
     fix_service_profile_template_inconsistences()
-
-    pc = api.portal.get_tool('portal_catalog')
-    pc.clearFindAndRebuild()
-
-    bcal = api.portal.get_tool('bika_catalog_analysisrequest_listing')
-    bcal.clearFindAndRebuild()
-
-    bca = api.portal.get_tool('bika_analysis_catalog')
-    bca.clearFindAndRebuild()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 
