@@ -31,7 +31,7 @@ from bika.lims.utils import getFromString
 from bika.lims.utils import getHiddenAttributesForClass, isActive
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, doAsyncActionFor
 from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
 from zope.component import getAdapters, getMultiAdapter
@@ -113,7 +113,7 @@ class WorkflowAction:
         if items:
             trans, dest = self.submitTransition(action, came_from, items)
             if trans:
-                message = PMF('Changes saved.')
+                message = PMF('Changesssss saved.')
                 self.addPortalMessage(message, 'info')
             if dest:
                 self.request.response.redirect(dest)
@@ -243,13 +243,13 @@ class WorkflowAction:
                         username = member.getUserName()
                         item.addVerificator(username)
                         if revers - nmvers <= 1:
-                            success, message = doActionFor(item, action)
+                            success, message = doAsyncActionFor(item, action)
                             if not success:
                                 # If failed, delete last verificator.
                                 item.deleteLastVerificator()
                         item.reindexObject()
                     else:
-                        success, message = doActionFor(item, action)
+                        success, message = doAsyncActionFor(item, action)
                     if success:
                         transitioned.append(item.id)
                     else:

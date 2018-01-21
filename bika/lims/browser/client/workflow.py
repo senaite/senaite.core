@@ -57,6 +57,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 return
 
         if action == "sample":
+            import pdb; pdb.set_trace()
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
             dsfn='getDateSampled'

@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import bikaMessageFactory as _
 from bika.lims import enum
 from bika.lims import PMF
 from bika.lims.browser import ulocalized_time
@@ -13,13 +14,15 @@ from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from bika.lims import logger
+from collective.taskqueue.interfaces import ITaskQueue
+from plone import api as ploneapi
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces import IWorkflowChain
 from Products.CMFPlone.workflow import ToolWorkflowChain
 from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
-from zope.component import adapts
+from zope.component import adapts, queryUtility
 from zope.interface import implementer
 from zope.interface import implements
 from zope.interface import Interface
@@ -70,6 +73,7 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     """
     actionperformed = False
     message = ''
+    import pdb; pdb.set_trace()
     if isinstance(instance, list):
         # This check is here because sometimes Plone creates a list
         # from submitted form elements.
@@ -119,6 +123,35 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
         message = str(e)
         logger.error(message)
     return actionperformed, message
+
+
+def doAsyncActionFor(instance, action_id):
+    task_queue = queryUtility(ITaskQueue, name='transition-objects')
+    if task_queue is None:
+        logger.info('Do NOT Queue object %s for transition %s' % (
+            instance.getId(), action_id))
+        return doActionFor(instance, action_id)
+
+    logger.info('Queue object %s for transition %s' % (
+        instance.getId(), action_id))
+    path = [i for i in instance.getPhysicalPath()[:-1]]
+    path.append('async_transition_object')
+    path = '/'.join(path)
+
+    params = {
+            'obj_uid': instance.UID(),
+            'action_id': action_id
+            }
+    logger.info('Queue Task: path=%s' % path)
+    task_id = task_queue.add(path,
+            method='POST',
+            params=params)
+    message = instance.translate(
+            _("Submitted %s %s to the queue" % (
+                action_id, instance.Title())))
+    plone_utils = ploneapi.portal.get_tool('plone_utils')
+    plone_utils.addPortalMessage(message, 'info')
+    return True, message
 
 
 def _logTransitionFailure(obj, transition_id):
