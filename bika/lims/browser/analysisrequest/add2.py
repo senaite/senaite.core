@@ -1827,7 +1827,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # Create the Analysis Request
                 try:
                     ar = crar(client, self.request, record, specifications=specifications)
-                except (KeyError, RuntimeError) as e:
+                except KeyError as e:
+                    errors["message"] = "Missing key {}.".format(e.message)
+                    return {"errors": errors}
+                except RuntimeError as e:
                     errors["message"] = e.message
                     return {"errors": errors}
                 ARs.append(ar.Title())
