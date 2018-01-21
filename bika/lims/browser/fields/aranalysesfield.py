@@ -135,6 +135,9 @@ class ARAnalysesField(ObjectField):
                             'sample_due', 'sample_received',
                             'attachment_due', 'to_be_verified')
 
+        if prices is None:
+            prices = {}
+
         # - Modify existing AR specs with new form values for selected analyses.
         # - new analysis requests are also using this function, so ResultsRange
         #   may be undefined.  in this case, specs= will contain the entire
@@ -183,6 +186,9 @@ class ARAnalysesField(ObjectField):
             for i, r in enumerate(rr):
                 if r['keyword'] == analysis.getKeyword():
                     r['uid'] = analysis.UID()
+
+            price = prices.get(service.UID(), service.getPrice())
+            analysis.setPrice(price)
 
         # delete analyses
         delete_ids = []
