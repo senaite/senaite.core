@@ -197,7 +197,7 @@ class ARAnalysesField(ObjectField):
 
             # If it is assigned to a worksheet, unassign it before deletion.
             if self._is_assigned_to_worksheet(analysis):
-                backrefs = self._get_assigned_worksheets()
+                backrefs = self._get_assigned_worksheets(analysis)
                 ws = backrefs[0]
                 ws.removeAnalysis(analysis)
 

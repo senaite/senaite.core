@@ -52,6 +52,7 @@ Variables::
     >>> analysisspecs = setup.bika_analysisspecs
     >>> analysisservices = setup.bika_analysisservices
     >>> labcontacts = setup.bika_labcontacts
+    >>> worksheets = setup.worksheets
     >>> storagelocations = setup.bika_storagelocations
     >>> samplingdeviations = setup.bika_samplingdeviations
     >>> sampleconditions = setup.bika_sampleconditions
@@ -562,3 +563,41 @@ The Analysis also inherits the Interim Fields of the Analysis Service:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
     ['D']
+
+
+Worksheets
+..........
+
+If the an Analysis is assigned to a worksheet, it should be detached before it
+is removed from an Analysis Request.
+
+Assign the `PH` Analysis:
+
+    >>> new_analyses = field.set(ar, [analysisservice1])
+    >>> new_analyses
+    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+
+Create a new Worksheet and assign the Analysis to it:
+
+    >>> ws = api.create(worksheets, "Worksheet", "WS")
+    >>> analysis = new_analyses[0]
+    >>> ws.addAnalysis(analysis)
+
+The analysis should be now in the 'assigned' state:
+
+    >>> api.get_workflow_status_of(analysis, state_var='worksheetanalysis_review_state')
+    'assigned'
+
+The worksheet has now the Analysis assigned:
+
+    >>> ws.getAnalyses()
+    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+
+Removing the analysis from the AR also unassignes it from the worksheet:
+
+    >>> new_analyses = field.set(ar, [analysisservice2])
+    >>> new_analyses
+    [<Analysis at /plone/clients/client-1/water-0001-R01/MG>]
+
+    >>> ws.getAnalyses()
+    []
