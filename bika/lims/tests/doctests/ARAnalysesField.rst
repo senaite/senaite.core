@@ -1,6 +1,15 @@
 AR Analyses Field
 =================
 
+This field manages Analyses for Analysis Requests.
+
+It is capable to perform the following tasks:
+
+  - Create Analyses from Analysis Services
+  - Delete assigned Analyses
+  - Update Prices of assigned Analyses
+  - Update Specifications of assigned Analyses
+  - Update Interim Fields of assigned Analyses
 
 Running this test from the buildout directory::
 
@@ -36,6 +45,7 @@ Variables::
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = portal.bika_setup
+    >>> calculations = setup.bika_calculations
     >>> sampletypes = setup.bika_sampletypes
     >>> samplepoints = setup.bika_samplepoints
     >>> analysiscategories = setup.bika_analysiscategories
@@ -93,6 +103,13 @@ Create an Analysis Category:
     >>> analysiscategory
     <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
 
+Create some Calculations:
+
+    >>> calc1 = api.create(calculations, "Calculation", title="Round", Formula="round(3.157, 2)")
+    >>> calc2 = api.create(calculations, "Calculation", title="MG in ppt", Formula="[MG] * 1000")
+    >>> calc3 = api.create(calculations, "Calculation", title="CA in ppt", Formula="[CA] * 1000")
+    >>> calc4 = api.create(calculations, "Calculation", title="Total Hardness", Formula="[CA] + [MG]")
+
 Create Analysis Service for PH (Keyword: `PH`):
 
     >>> analysisservice1 = api.create(analysisservices, "AnalysisService", title="PH", ShortTitle="ph", Category=analysiscategory, Keyword="PH", Price="10")
@@ -101,15 +118,21 @@ Create Analysis Service for PH (Keyword: `PH`):
 
 Create Analysis Service for Magnesium (Keyword: `MG`):
 
-    >>> analysisservice2 = api.create(analysisservices, "AnalysisService", title="Magnesium", ShortTitle="mg", Category=analysiscategory, Keyword="MG", Price="20")
+    >>> analysisservice2 = api.create(analysisservices, "AnalysisService", title="Magnesium", ShortTitle="mg", Category=analysiscategory, Keyword="MG", Price="20", Calculation=calc2)
     >>> analysisservice2
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>
 
 Create Analysis Service for Calcium (Keyword: `CA`):
 
-    >>> analysisservice3 = api.create(analysisservices, "AnalysisService", title="Calcium", ShortTitle="ca", Category=analysiscategory, Keyword="CA", Price="30")
+    >>> analysisservice3 = api.create(analysisservices, "AnalysisService", title="Calcium", ShortTitle="ca", Category=analysiscategory, Keyword="CA", Price="30", Calculation=calc3)
     >>> analysisservice3
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-3>
+
+Create Analysis Service for Total Hardness (Keyword: `THCaCO3`):
+
+    >>> analysisservice4 = api.create(analysisservices, "AnalysisService", title="Total Hardness", ShortTitle="Tot. Hard", Category=analysiscategory, Keyword="THCaCO3", Price="40", Calculation=calc4)
+    >>> analysisservice4
+    <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-4>
 
 Create an Analysis Specification for `Water`:
 
@@ -121,7 +144,6 @@ Create an Analysis Specification for `Water`:
     >>> rr = [rr1, rr2, rr3]
 
     >>> analysisspec1 = api.create(analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype_uid, ResultsRange=rr)
-
 
 Create an Analysis Request:
 
@@ -396,7 +418,6 @@ Prices are primarily defined on Analyses Services:
     >>> analysisservice3.getPrice()
     '30.00'
 
-
 Created Analyses inherit that price:
 
     >>> new_analyses = field.set(ar, all_services)
@@ -447,3 +468,97 @@ The Services should retain the old prices:
 
     >>> analysisservice3.getPrice()
     '30.00'
+
+
+Calculations and Interim Fields
+...............................
+
+When an Analysis is assigned to an AR, it inherits its Calculation and Interim Fields.
+
+Create some interim fields:
+
+    >>> interim1 = {"keyword": "A", "title": "Interim A", "value": 1, "hidden": False, "type": "int", "unit": "x"}
+    >>> interim2 = {"keyword": "B", "title": "Interim B", "value": 2, "hidden": False, "type": "int", "unit": "x"}
+    >>> interim3 = {"keyword": "C", "title": "Interim C", "value": 3, "hidden": False, "type": "int", "unit": "x"}
+    >>> interim4 = {"keyword": "D", "title": "Interim D", "value": 4, "hidden": False, "type": "int", "unit": "x"}
+
+Append interim field `A` to the `Total Hardness` Calculation:
+
+    >>> calc4.setInterimFields([interim1])
+    >>> map(lambda x: x["keyword"], calc4.getInterimFields())
+    ['A']
+
+Append interim field `C` to the `Total Hardness` Analysis Service:
+
+    >>> analysisservice4.setInterimFields([interim2])
+    >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
+    ['B']
+
+Now we assign the `Total Hardness` Analysis Service:
+
+    >>> new_analyses = field.set(ar, [analysisservice4])
+    >>> analysis = new_analyses[0]
+    >>> analysis
+    <Analysis at /plone/clients/client-1/water-0001-R01/THCaCO3>
+
+The created Analysis has the same Calculation attached, as the Analysis Service:
+
+    >>> analysis_calc = analysis.getCalculation()
+    >>> analysis_calc
+    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+
+And therofore, also the same Interim Fields as the Calculation:
+
+    >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
+    ['A']
+
+The Analysis also inherits the Interim Fields of the Analysis Service:
+
+    >>> map(lambda x: x["keyword"], analysis.getInterimFields())
+    ['B']
+
+But what happens if the Interim Fields of either the Analysis Service or of the
+Calculation change and the AR is updated with the same Analysis Service?
+
+Change the Interim Fields of the Calculation:
+
+    >>> calc4.setInterimFields([interim3])
+    >>> map(lambda x: x["keyword"], calc4.getInterimFields())
+    ['C']
+
+Change the Interim Fields of the Analysis Service:
+
+    >>> analysisservice4.setInterimFields([interim4])
+    >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
+    ['D']
+
+Update the AR with the new Analysis Service:
+
+    >>> new_analyses = field.set(ar, [analysisservice4])
+
+Since no new Analyses were created, the field should return an empty list:
+
+    >>> new_analyses
+    []
+
+The Analysis should be still there:
+
+    >>> analysis = ar[analysisservice4.getKeyword()]
+    >>> analysis
+    <Analysis at /plone/clients/client-1/water-0001-R01/THCaCO3>
+
+The calculation should be still there:
+
+    >>> analysis_calc = analysis.getCalculation()
+    >>> analysis_calc
+    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+
+And therofore, also the same Interim Fields as the Calculation:
+
+    >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
+    ['C']
+
+The Analysis also inherits the Interim Fields of the Analysis Service:
+
+    >>> map(lambda x: x["keyword"], analysis.getInterimFields())
+    ['D']

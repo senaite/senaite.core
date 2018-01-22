@@ -166,29 +166,15 @@ class ARAnalysesField(ObjectField):
         for service in services:
             keyword = service.getKeyword()
 
-            # analysis->InterimFields
-            calc = service.getCalculation()
-            interim_fields = calc and list(calc.getInterimFields()) or []
-
-            # override defaults from service->InterimFields
-            service_interims = service.getInterimFields()
-            sif = dict([(x['keyword'], x.get('value', ''))
-                        for x in service_interims])
-            for i, i_f in enumerate(interim_fields):
-                if i_f['keyword'] in sif:
-                    interim_fields[i]['value'] = sif[i_f['keyword']]
-                    service_interims = [x for x in service_interims
-                                        if x['keyword'] != i_f['keyword']]
-            # Add remaining service interims to the analysis
-            for v in service_interims:
-                interim_fields.append(v)
-
             # Create the Analysis if it doesn't exist
             if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
                 analysis = create_analysis(instance, service)
                 new_analyses.append(analysis)
+
+            # Update the interim fields
+            self._update_interims(analysis, service)
 
             # Set the price of the Analysis
             self._update_price(analysis, service, prices)
@@ -295,11 +281,20 @@ class ARAnalysesField(ObjectField):
             analysis, state_var='worksheetanalysis_review_state')
         return state in ASSIGNED_STATES
 
+    def _update_interims(self, analysis, service, prices):
+        """Update AR specifications
+
+        :param analysis: Analysis Object
+        :param service: Analysis Service Object
+        """
+        service_interims = service.getInterimFields()
+        analysis.setInterimFields(service_interims)
+
     def _update_price(self, analysis, service, prices):
         """Update AR specifications
 
-        :param analysis: Analysis Brain/Object
-        :param service: Analysis Service Brain/Object
+        :param analysis: Analysis Object
+        :param service: Analysis Service Object
         :param prices: Price mapping
         """
         prices = prices or {}
