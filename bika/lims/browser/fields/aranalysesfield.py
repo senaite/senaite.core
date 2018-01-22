@@ -159,11 +159,13 @@ class ARAnalysesField(ObjectField):
             if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
+                # TODO: Entry point for interims assignment and Calculation
+                #       decoupling from Analysis. See coments PR#593
                 analysis = create_analysis(instance, service)
+                # XXX: To be removed when the `create_analysis` function supports this
+                # Set the interim fields only for new created Analysis
+                self._update_interims(analysis, service)
                 new_analyses.append(analysis)
-
-            # Update the interim fields
-            self._update_interims(analysis, service)
 
             # Set the price of the Analysis
             self._update_price(analysis, service, prices)

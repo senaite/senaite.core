@@ -568,15 +568,15 @@ The calculation should be still there:
     >>> analysis_calc
     <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
 
-And therofore, also the same Interim Fields as the Calculation:
+And therefore, also the same Interim Fields as the Calculation:
 
     >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
     ['C']
 
-The Analysis also inherits the Interim Fields of the Analysis Service:
+The existing Analysis retains the initial Interim Fields of the Analysis Service:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
-    ['D']
+    ['B']
 
 
 Worksheets
