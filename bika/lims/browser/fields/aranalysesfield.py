@@ -5,6 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import itertools
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import api, deprecated, logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
@@ -136,6 +138,14 @@ class ARAnalysesField(ObjectField):
 
         # Convert the items to a valid list of AnalysisServices
         services = filter(None, map(self._to_service, items))
+
+        # Calculate dependencies
+        dependencies = map(lambda s: s.getServiceDependencies(), services)
+        dependencies = list(itertools.chain.from_iterable(dependencies))
+
+        # Merge dependencies and services
+        services = set(services + dependencies)
+
         # Service UIDs
         service_uids = map(api.get_uid, services)
 

@@ -104,13 +104,6 @@ Create an Analysis Category:
     >>> analysiscategory
     <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
 
-Create some Calculations:
-
-    >>> calc1 = api.create(calculations, "Calculation", title="Round", Formula="round(3.157, 2)")
-    >>> calc2 = api.create(calculations, "Calculation", title="MG in ppt", Formula="[MG] * 1000")
-    >>> calc3 = api.create(calculations, "Calculation", title="CA in ppt", Formula="[CA] * 1000")
-    >>> calc4 = api.create(calculations, "Calculation", title="Total Hardness", Formula="[CA] + [MG]")
-
 Create Analysis Service for PH (Keyword: `PH`):
 
     >>> analysisservice1 = api.create(analysisservices, "AnalysisService", title="PH", ShortTitle="ph", Category=analysiscategory, Keyword="PH", Price="10")
@@ -119,21 +112,42 @@ Create Analysis Service for PH (Keyword: `PH`):
 
 Create Analysis Service for Magnesium (Keyword: `MG`):
 
-    >>> analysisservice2 = api.create(analysisservices, "AnalysisService", title="Magnesium", ShortTitle="mg", Category=analysiscategory, Keyword="MG", Price="20", Calculation=calc2)
+    >>> analysisservice2 = api.create(analysisservices, "AnalysisService", title="Magnesium", ShortTitle="mg", Category=analysiscategory, Keyword="MG", Price="20")
     >>> analysisservice2
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>
 
 Create Analysis Service for Calcium (Keyword: `CA`):
 
-    >>> analysisservice3 = api.create(analysisservices, "AnalysisService", title="Calcium", ShortTitle="ca", Category=analysiscategory, Keyword="CA", Price="30", Calculation=calc3)
+    >>> analysisservice3 = api.create(analysisservices, "AnalysisService", title="Calcium", ShortTitle="ca", Category=analysiscategory, Keyword="CA", Price="30")
     >>> analysisservice3
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-3>
 
 Create Analysis Service for Total Hardness (Keyword: `THCaCO3`):
 
-    >>> analysisservice4 = api.create(analysisservices, "AnalysisService", title="Total Hardness", ShortTitle="Tot. Hard", Category=analysiscategory, Keyword="THCaCO3", Price="40", Calculation=calc4)
+    >>> analysisservice4 = api.create(analysisservices, "AnalysisService", title="Total Hardness", ShortTitle="Tot. Hard", Category=analysiscategory, Keyword="THCaCO3", Price="40")
     >>> analysisservice4
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-4>
+
+Create some Calculations with Formulas referencing existing AS keywords:
+
+    >>> calc1 = api.create(calculations, "Calculation", title="Round")
+    >>> calc1.setFormula("round(12345, 2)")
+
+    >>> calc2 = api.create(calculations, "Calculation", title="A in ppt")
+    >>> calc2.setFormula("[A] * 1000")
+
+    >>> calc3 = api.create(calculations, "Calculation", title="B in ppt")
+    >>> calc3.setFormula("[B] * 1000")
+
+    >>> calc4 = api.create(calculations, "Calculation", title="Total Hardness")
+    >>> calc4.setFormula("[CA] + [MG]")
+
+Assign the calculations to the Analysis Services:
+
+    >>> analysisservice1.setCalculation(calc1)
+    >>> analysisservice2.setCalculation(calc2)
+    >>> analysisservice3.setCalculation(calc3)
+    >>> analysisservice4.setCalculation(calc4)
 
 Create an Analysis Specification for `Water`:
 
@@ -601,3 +615,29 @@ Removing the analysis from the AR also unassignes it from the worksheet:
 
     >>> ws.getAnalyses()
     []
+
+
+Dependencies
+............
+
+The Analysis Service `Total Hardness` uses the `Total Hardness` Calculation:
+
+    >>> analysisservice4.getCalculation()
+    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+
+The Calculation is dependent on the `CA` and `MG` Services through its Formula:
+
+    >>> analysisservice4.getCalculation().getFormula()
+    '[CA] + [MG]'
+
+Get the dependent services:
+
+    >>> sorted(analysisservice4.getServiceDependencies(), key=methodcaller('getId'))
+    [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>, <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-3>]
+
+We expect that dependent services get automatically set:
+
+    >>> new_analyses = field.set(ar, [analysisservice4], debug=1)
+
+    >>> sorted(ar.objectValues("Analysis"), key=methodcaller('getId'))
+    [<Analysis at /plone/clients/client-1/water-0001-R01/CA>, <Analysis at /plone/clients/client-1/water-0001-R01/MG>, <Analysis at /plone/clients/client-1/water-0001-R01/THCaCO3>]
