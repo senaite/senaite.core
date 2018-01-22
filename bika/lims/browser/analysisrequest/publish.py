@@ -1320,7 +1320,8 @@ class AnalysisRequestDigester:
             if andict['unit_conversions']:
                 for uc_uid in andict['unit_conversions']:
                     new = dict(andict)
-                    unit_conversion = api.get_object_by_uid(uid=uc_uid)
+                    unit_conversion = api.get_object_by_uid(
+                            uid=uc_uid, context=an)
                     new['unit'] = unit_conversion.converted_unit
                     new['formatted_unit'] = unit_conversion.converted_unit
                     if andict.get('result'):

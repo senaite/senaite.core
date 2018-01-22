@@ -444,7 +444,7 @@ def get_icon(brain_or_object, html_tag=True):
     return tag
 
 
-def get_object_by_uid(uid, default=_marker):
+def get_object_by_uid(uid, default=_marker, context=None):
     """Find an object by a given UID
 
     :param uid: The UID of the object to find
@@ -461,11 +461,11 @@ def get_object_by_uid(uid, default=_marker):
 
     # we defined the portal object UID to be '0'::
     if uid == '0':
-        return get_portal()
+        return get_portal(context=context)
 
     # we try to find the object with both catalogs
-    pc = get_portal_catalog()
-    uc = get_tool("uid_catalog")
+    pc = get_portal_catalog(context=context)
+    uc = get_tool("uid_catalog", context=context)
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
@@ -670,12 +670,12 @@ def safe_getattr(brain_or_object, attr, default=_marker):
             attr, repr(brain_or_object)))
 
 
-def get_portal_catalog():
+def get_portal_catalog(context=None):
     """Get the portal catalog tool
 
     :returns: Portal Catalog Tool
     """
-    return get_tool("portal_catalog")
+    return get_tool("portal_catalog", context=context)
 
 
 def get_review_history(brain_or_object, rev=True):
