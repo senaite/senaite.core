@@ -117,11 +117,11 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField(
-        'LaboratoryLicenseID',
+        'LaboratoryLicenceID',
         write_permission = ManageBika,
         widget=StringWidget(
-            label=_("Laboratory License ID"),
-            description=_("The Laboratory's License ID issued by the state"),
+            label=_("Laboratory Licence ID"),
+            description=_("The Laboratory's Licence ID issued by the state"),
         ),
     ),
 ))
