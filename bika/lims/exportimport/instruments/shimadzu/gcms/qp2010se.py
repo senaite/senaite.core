@@ -51,7 +51,7 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    parser = GCMSTQ8030GCMSMSCSVParser(infile)
+    parser = GCMSQP2010SECSVParser(infile)
 
     if parser:
         # Load the importer
@@ -102,7 +102,7 @@ def Import(context, request):
     return json.dumps(results)
 
 
-class GCMSTQ8030GCMSMSCSVParser(InstrumentCSVResultsFileParser):
+class GCMSQP2010SECSVParser(InstrumentCSVResultsFileParser):
 
     HEADERTABLE_KEY = '[Header]'
     HEADERKEY_FILENAME = 'Data File Name'

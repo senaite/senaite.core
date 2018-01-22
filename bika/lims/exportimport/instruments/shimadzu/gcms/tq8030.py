@@ -51,7 +51,7 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    parser = GCMSQP2010SECSVParser(infile)
+    parser = GCMSTQ8030GCMSMSCSVParser(infile)
 
     if parser:
         # Load the importer
@@ -102,7 +102,7 @@ def Import(context, request):
 
     return json.dumps(results)
 
-class GCMSQP2010SECSVParser(InstrumentCSVResultsFileParser):
+class GCMSTQ8030GCMSMSCSVParser(InstrumentCSVResultsFileParser):
 
     def __init__(self, csv):
         InstrumentCSVResultsFileParser.__init__(self, csv)
