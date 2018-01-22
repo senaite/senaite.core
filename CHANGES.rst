@@ -19,6 +19,7 @@ Changelog
 
 **Fixed**
 
+- #593 Fixed Price/Spec/Interim not set in AR Manage Analyses
 - #585 Empty value for Analysis Request column in aggregated list of analyses
 - #578 Fix translation for review state titles in listings
 - #580 Fix calculations using built-ins
