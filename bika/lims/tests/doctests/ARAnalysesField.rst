@@ -489,7 +489,7 @@ Append interim field `A` to the `Total Hardness` Calculation:
     >>> map(lambda x: x["keyword"], calc4.getInterimFields())
     ['A']
 
-Append interim field `C` to the `Total Hardness` Analysis Service:
+Append interim field `B` to the `Total Hardness` Analysis Service:
 
     >>> analysisservice4.setInterimFields([interim2])
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
@@ -521,13 +521,13 @@ The Analysis also inherits the Interim Fields of the Analysis Service:
 But what happens if the Interim Fields of either the Analysis Service or of the
 Calculation change and the AR is updated with the same Analysis Service?
 
-Change the Interim Fields of the Calculation:
+Change the Interim Field of the Calculation to `C`:
 
     >>> calc4.setInterimFields([interim3])
     >>> map(lambda x: x["keyword"], calc4.getInterimFields())
     ['C']
 
-Change the Interim Fields of the Analysis Service:
+Change the Interim Fields of the Analysis Service to `D`:
 
     >>> analysisservice4.setInterimFields([interim4])
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
