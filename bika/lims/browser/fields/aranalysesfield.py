@@ -261,7 +261,7 @@ class ARAnalysesField(ObjectField):
         return state == "assigned"
 
     def _update_interims(self, analysis, service):
-        """Update AR specifications
+        """Update Interim Fields of the Analysis
 
         :param analysis: Analysis Object
         :param service: Analysis Service Object
@@ -270,7 +270,7 @@ class ARAnalysesField(ObjectField):
         analysis.setInterimFields(service_interims)
 
     def _update_price(self, analysis, service, prices):
-        """Update AR specifications
+        """Update the Price of the Analysis
 
         :param analysis: Analysis Object
         :param service: Analysis Service Object
