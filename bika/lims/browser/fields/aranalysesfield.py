@@ -281,7 +281,7 @@ class ARAnalysesField(ObjectField):
             analysis, state_var='worksheetanalysis_review_state')
         return state in ASSIGNED_STATES
 
-    def _update_interims(self, analysis, service, prices):
+    def _update_interims(self, analysis, service):
         """Update AR specifications
 
         :param analysis: Analysis Object
