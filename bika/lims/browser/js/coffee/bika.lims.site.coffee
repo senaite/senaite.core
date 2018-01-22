@@ -719,9 +719,11 @@ class window.SiteView
     ###
     console.debug "°°° SiteView::on_numeric_field_keypress °°°"
 
+    el = event.currentTarget
+    $el = $(el)
 
     key = event.which
-    isAllowedKey = @allowedKeys.join(',').match(new RegExp(key))
+    isAllowedKey = @allowed_keys.join(',').match(new RegExp(key))
 
     # IE doesn't support indexOf
     # Some browsers just don't raise events for control keys. Easy. e.g. Safari backspace.
