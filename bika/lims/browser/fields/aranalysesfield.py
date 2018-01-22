@@ -140,6 +140,8 @@ class ARAnalysesField(ObjectField):
         services = filter(None, map(self._to_service, items))
 
         # Calculate dependencies
+        # FIXME Infinite recursion error possible here, if the formula includes
+        #       the Keyword of the Service that includes the Calculation
         dependencies = map(lambda s: s.getServiceDependencies(), services)
         dependencies = list(itertools.chain.from_iterable(dependencies))
 
@@ -159,10 +161,10 @@ class ARAnalysesField(ObjectField):
             if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                # TODO: Entry point for interims assignment and Calculation
-                #       decoupling from Analysis. See coments PR#593
+                # TODO Entry point for interims assignment and Calculation
+                #      decoupling from Analysis. See comments PR#593
                 analysis = create_analysis(instance, service)
-                # XXX: To be removed when the `create_analysis` function supports this
+                # TODO Remove when the `create_analysis` function supports this
                 # Set the interim fields only for new created Analysis
                 self._update_interims(analysis, service)
                 new_analyses.append(analysis)
