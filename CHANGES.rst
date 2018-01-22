@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #BC-271 Added 7 BC Instruments
 - #555 Don't allow the deactivation Analysis Services with active dependencies
 - #555 Don't allow the activation of Analysis Services with inactive dependents
 
@@ -39,7 +40,6 @@ Changelog
 
 **Added**
 
-- #BC-271 Added 7 BC Instruments
 - #498 Added getPriorityText method to Analysis Request
 
 **Changed**
