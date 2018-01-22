@@ -11,6 +11,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis, IAnalysisService, IARAnalysesField
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
+from bika.lims.workflow import wasTransitionPerformed
 from Products.Archetypes.public import Field, ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.utils import shasattr
@@ -25,26 +26,6 @@ Run this test from the buildout directory:
 
     bin/test test_textual_doctests -t ARAnalysesField
 """
-
-ALLOWED_STATES = [
-    'sample_registered',
-    'sampled',
-    'to_be_sampled',
-    'to_be_preserved',
-    'sample_due',
-    'sample_received',
-    'attachment_due',
-    'to_be_verified',
-]
-
-FROZEN_STATES = [
-    "verified",
-    "published",
-]
-
-ASSIGNED_STATES = [
-    "assigned"
-]
 
 
 class ARAnalysesField(ObjectField):
@@ -148,12 +129,10 @@ class ARAnalysesField(ObjectField):
                 "Items parameter must be a tuple or list, got '{}'".format(
                     type(items)))
 
-        # Bail out if the AR is in a frozen state
-        ar_state = api.get_workflow_status_of(instance, state_var="review_state")
-        if ar_state not in ALLOWED_STATES:
+        # Bail out if the AR in frozen state
+        if self._is_frozen(instance):
             raise ValueError(
-                "Analyses can only be modified within the states: {}".format(
-                    ", ".join(ALLOWED_STATES)))
+                "Analyses can not be modified for inactive/verified ARs")
 
         # Convert the items to a valid list of AnalysisServices
         services = filter(None, map(self._to_service, items))
@@ -190,9 +169,7 @@ class ARAnalysesField(ObjectField):
 
             # Skip Analyses in frozen states
             if self._is_frozen(analysis):
-                logger.warn(
-                    "Workflow of Analysis '{}' prevented deletion."
-                    .format(repr(analysis)))
+                logger.warn("Inactive/verified Analyses can not be removed.")
                 continue
 
             # If it is assigned to a worksheet, unassign it before deletion.
@@ -252,14 +229,16 @@ class ARAnalysesField(ObjectField):
         logger.warn(msg)
         return None
 
-    def _is_frozen(self, analysis):
-        """Check if the Analysis is in one of the frozen states
+    def _is_frozen(self, brain_or_object):
+        """Check if the passed in object is frozen
 
-        :param analysis: Analysis Brain/Object
-        :returns: True if the Analysis is in a frozen state
+        :param obj: Analysis or AR Brain/Object
+        :returns: True if the object is frozen
         """
-        state = api.get_workflow_status_of(analysis, state_var='review_state')
-        return state in FROZEN_STATES
+        obj = api.get_object(brain_or_object)
+        active = api.is_active(obj)
+        verified = wasTransitionPerformed(obj, 'verify')
+        return not active or verified
 
     def _get_assigned_worksheets(self, analysis):
         """Return the assigned worksheets of this Analysis
@@ -279,7 +258,7 @@ class ARAnalysesField(ObjectField):
         analysis = api.get_object(analysis)
         state = api.get_workflow_status_of(
             analysis, state_var='worksheetanalysis_review_state')
-        return state in ASSIGNED_STATES
+        return state == "assigned"
 
     def _update_interims(self, analysis, service):
         """Update AR specifications
