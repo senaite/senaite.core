@@ -1442,10 +1442,6 @@ class AnalysisRequestDigester:
                    unit_conversion.get('Unit') and \
                    unit_conversion.get('SampleType') == st_uid:
                     andict['unit_conversions'].append(unit_conversion['Unit'])
-                    # Hide if any UC is set to hide
-                    print '---------- %s %s'  % (
-                            analysis.getId(),
-                            unit_conversion.get('HidePrimaryUnit', '0') )
                     if andict['hide_primary_result'] == False:
                         andict['hide_primary_result'] = \
                             unit_conversion.get('HidePrimaryUnit', '0') == '1'
