@@ -1811,8 +1811,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Process Form
 
+        bika_setup = api.get_bika_setup()
+        max_ars_async = bika_setup.getMaxARsBeforeAsync()
         task_queue = queryUtility(ITaskQueue, name='ar-create')
-        if task_queue is None:
+        if task_queue is None or len(valid_records) < max_ars_async:
             ARs = []
             for n, record in enumerate(valid_records):
                 client_uid = record.get("Client")
@@ -1888,7 +1890,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         self.context.plone_utils.addPortalMessage(message, level)
 
         # Automatic label printing won't print "register" labels for Secondary. ARs
-        bika_setup = api.get_bika_setup()
         auto_print = bika_setup.getAutoPrintStickers()
 
         # https://github.com/bikalabs/bika.lims/pull/2153
