@@ -206,7 +206,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.
-            The return value is dictionary of dictionaries (of dictionaries....)
+            The return value is dictionary of dictionaries
+            (of dictionaries....)
 
             {service_UID1:
                 {service_UID2:
@@ -231,7 +232,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                 deps[service.UID()] = {}
         return deps
 
-    def getCalculationDependants(self, deps=[]):
+    def getCalculationDependants(self, deps=None):
         """Return a flat list of services who depend on this calculation.
 
         This refers only to services who's Calculation UIDReferenceField have
@@ -240,7 +241,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         It has nothing to do with the services referenced in the calculation's
         Formula.
         """
-        deps = []
+        if deps is None:
+            deps = []
         backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
         services = map(get_object_by_uid, backrefs)
         for service in services:
@@ -316,7 +318,15 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """Return the globals dictionary for the formula calculation
         """
         # Default globals
-        globs = {"__builtins__": None, 'math': math}
+        globs = {
+            "__builtins__": None,
+            "math": math,
+            "round": round,
+            "divmod": divmod,
+            "float": float,
+            "int": int,
+            "max": max,
+        }
         # Update with keyword arguments
         globs.update(kwargs)
         # Update with additional Python libraries

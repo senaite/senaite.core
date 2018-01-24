@@ -15,15 +15,23 @@ Changelog
 
 **Changed**
 
+- #569 Minimalistic dashboard indicators
+
 
 **Fixed**
 
+- #598 BadRequest error when changing Calculation on Analysis Service
+- #593 Fixed Price/Spec/Interim not set in AR Manage Analyses
+- #585 Empty value for Analysis Request column in aggregated list of analyses
+- #578 Fix translation for review state titles in listings
+- #580 Fix calculations using built-ins
 - #563 Deactivated Analyses are added in new ARs when using Analysis Profiles/Template
 - #562 Client Batch lists are empty
 - #561 Sampler field is not displayed in Analysis Request Add form
 - #559 Fix numeric field event handler in bika.lims.site.js
 - #553 Fixed that images and barcodes were not printed in reports
 - #551 Traceback in Worksheet Templates list when there are Instruments assigned
+- #571 Added try/except around id-template format function to log key errors in ID generation
 
 **Security**
 
