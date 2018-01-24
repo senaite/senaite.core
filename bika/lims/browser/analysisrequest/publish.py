@@ -1316,22 +1316,12 @@ class AnalysisRequestDigester:
                 andict['previous_results'] = ", ".join(
                     [p['formatted_result'] for p in andict['previous'][-5:]])
 
-            #Append addition analysis for each unit conversion
-            if andict['unit_conversions']:
+            #Append addition analysis dicts for each unit conversion
+            if andict.get('unit_conversions', False):
                 for uc_uid in andict['unit_conversions']:
-                    new = dict(andict)
-                    unit_conversion = api.get_object_by_uid(
-                            uid=uc_uid, context=an)
-                    new['unit'] = unit_conversion.converted_unit
-                    new['formatted_unit'] = unit_conversion.converted_unit
-                    if andict.get('result'):
-                        new['formatted_result'] = new['result'] = \
-                            convert_unit(
-                                    andict['result'], 
-                                    unit_conversion.formula,
-                                    andict['obj'].getPrecision())
-                    analyses.append(new)
-            #Append original analysis
+                    analyses.append(_convert_unit_of(uc_uid, andict, an))
+
+            #Append primary analysis if appropriate
             if not andict.get('hide_primary_result'):
                 analyses.append(andict)
 
@@ -1438,13 +1428,16 @@ class AnalysisRequestDigester:
             st_uid = sample['sample_type']['obj'].UID()
         if st_uid:
             for unit_conversion in analysis.getUnitConversions():
-                if unit_conversion.get('SampleType') and \
-                   unit_conversion.get('Unit') and \
-                   unit_conversion.get('SampleType') == st_uid:
+                if unit_conversion.get('Unit') and \
+                   unit_conversion.get('SampleType', None) == st_uid:
+                    # Append new unit conversion
                     andict['unit_conversions'].append(unit_conversion['Unit'])
-                    if andict['hide_primary_result'] == False:
-                        andict['hide_primary_result'] = \
-                            unit_conversion.get('HidePrimaryUnit', '0') == '1'
+
+                    # if any one UC record indicates hiding, hide it
+                    hide_primary = \
+                        unit_conversion.get('HidePrimaryUnit', '0') == '1'
+                    if hide_primary:
+                        andict['hide_primary_result'] = True
 
         return andict
 
@@ -1612,3 +1605,29 @@ def _format_address(address):
         addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
                         if address.get(v, None)])
     return "<div class='address'>%s</div>" % addr
+
+def _convert_unit_of(uc_uid, andict, context=None):
+    """
+    Duplicate an existing analysis dict and add the converted values
+    according to the given Unit Convsersion record
+    """
+    new = dict(andict)
+    unit_conversion = api.get_object_by_uid(
+            uid=uc_uid, context=an)
+    new['unit'] = unit_conversion.converted_unit
+    new['formatted_unit'] = unit_conversion.converted_unit
+    if andict.get('result'):
+        new['formatted_result'] = new['result'] = \
+            convert_unit(
+                    andict['result'], 
+                    unit_conversion.formula,
+                    andict['obj'].getPrecision())
+    return new
+
+def _get_unit_conversion(unit_conversion, sample_type_id):
+    if unit_conversion.get('Unit') and \
+       unit_conversion.get('SampleType', None) == sample_type_id:
+        andict['unit_conversions'].append(unit_conversion['Unit'])
+        if andict['hide_primary_result'] == False:
+            andict['hide_primary_result'] = \
+                unit_conversion.get('HidePrimaryUnit', '0') == '1'
