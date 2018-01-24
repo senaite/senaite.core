@@ -42,6 +42,8 @@ Variables::
     >>> browser = self.getBrowser()
     >>> current_user = ploneapi.user.get_current()
     >>> ploneapi.user.grant_roles(user=current_user,roles = ['Manager'])
+    >>> bika_analysiscategories = bika_setup.bika_analysiscategories
+    >>> bika_analysisservices = bika_setup.bika_analysisservices
 
 Test user::
 
@@ -59,14 +61,14 @@ Client
 
 A `client` lives in the `/clients` folder::
 
-    >>> clients = self.portal.clients
+    >>> clients = portal.clients
     >>> client = api.create(clients, "Client", Name="RIDING BYTES", ClientID="RB")
     >>> client
     <Client at /plone/clients/client-1>
 
 A `UnitConversion` lives in `/bika_setup/bika_unitconversions` folder.::
 
-    >>> unitconversions = self.portal.bika_setup.bika_unitconversions
+    >>> unitconversions = portal.bika_setup.bika_unitconversions
     >>> unitconv = api.create(unitconversions, "UnitConversion", title="mg/L", converted_unit="%", formula="Value * 100", description="mg/L to percentage")
     >>> renameAfterCreation(unitconv)
     'unitconversion-1'
@@ -75,16 +77,66 @@ A `UnitConversion` lives in `/bika_setup/bika_unitconversions` folder.::
 
 A `SampleType` lives in `/bika_setup/bika_sampletypes` folder.::
 
-    >>> sampletypes = self.portal.bika_setup.bika_sampletypes
-    >>> stype = api.create(sampletypes, 'SampleType', title='Food')
-    >>> stype
+    >>> sampletypes = portal.bika_setup.bika_sampletypes
+    >>> sampletype = api.create(sampletypes, 'SampleType', title='Food')
+    >>> sampletype
     <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
 
-A `AnalysisService` lives in `/bika_setup/bika_analysisservices` folder.::
+To create a new AR, a `Contact` is needed::
 
-    >>> services = self.portal.bika_setup.bika_analysisservices
-    >>> aserv = api.create(services, 'AnalysisService', title='Ca')
-    >>> aserv.setUnitConversions([{'SampleType': stype.UID(), 'unit': unitconv.UID()},])
-    >>> aserv
+    >>> contact = api.create(client, "Contact", Firstname="Mike", Surname="Metcalfe")
+    >>> contact
+    <Contact at /plone/clients/client-1/contact-1>
+
+An `AnalysisCategory` categorizes different `AnalysisServices`::
+
+    >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
+    >>> analysiscategory
+    <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
+
+An `AnalysisService` defines a analysis service offered by the laboratory::
+
+    >>> analysisservice = api.create(bika_analysisservices, "AnalysisService", title="PH", ShortTitle="ph", Category=analysiscategory, Keyword="PH", Precision="2")
+    >>> analysisservice
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
+    >>> analysisservice.setUnitConversions([{'ShowOnListing': '1', 'SampleType': sampletype.UID(), 'Unit': unitconv.UID()},])
+    >>> len(analysisservice.getUnitConversions())
+    1
 
+A `AnalysisRequest` in `client-1` folder.::
+    >>> values = {
+    ...           'Client': client.UID(),
+    ...           'Contact': contact.UID(),
+    ...           'SamplingDate': date_now,
+    ...           'DateSampled': date_now,
+    ...           'SampleType': sampletype.UID(),
+    ...           'Priority': '1',
+    ...          }
+
+    >>> service_uids = [analysisservice.UID()]
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar
+    <AnalysisRequest at /plone/clients/client-1/0001-R01>
+    >>> state = ploneapi.content.get_state(obj=ar, default='Unknown')
+    >>> state
+    'sample_due'
+    >>> ploneapi.content.transition(obj=ar, transition='receive')
+    >>> state = ploneapi.content.get_state(obj=ar, default='Unknown')
+    >>> state
+    'sample_received'
+    >>> an = ar.getAnalyses()[0].getObject()
+    >>> an.setResult(10)
+    >>> an.getResult()
+    '10'
+    >>> current_user = ploneapi.user.get_current()
+    >>> ploneapi.user.grant_roles(user=current_user,roles = ['Analyst'])
+    >>> ploneapi.user.get_roles()
+    ['Manager', 'Authenticated', 'Analyst']
+    >>> an.setAnalyst(current_user.getUserName())
+    >>> ploneapi.content.transition(obj=an, transition='submit')
+    >>> state = ploneapi.content.get_state(obj=ar, default='Unknown')
+    >>> state
+    'to_be_verified'
+    >>> from bika.lims.utils import resolve_unit
+    >>> resolve_unit(an, an.getResult())
+    '1000.00 %'
