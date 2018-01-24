@@ -17,6 +17,7 @@
  <property name="allowed_content_types">
   <element value="Analysis"/>
   <element value="ARReport"/>
+  <element value="Link"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
