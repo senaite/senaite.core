@@ -1164,4 +1164,3 @@ class QCAnalysesView(AnalysesView):
         # Sort items
         items = sorted(items, key=itemgetter('sortcode'))
         return items
-
