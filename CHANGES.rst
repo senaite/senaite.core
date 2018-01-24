@@ -30,6 +30,8 @@ Changelog
 - #553 Fixed that images and barcodes were not printed in reports
 - #551 Traceback in Worksheet Templates list when there are Instruments assigned
 - #571 Added try/except around id-template format function to log key errors in ID generation
+- #591 Fixed workflow publish recursion error that reached max depth
+
 
 **Security**
 
