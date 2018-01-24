@@ -5,13 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import transaction
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import BooleanField, BooleanWidget, \
     DisplayList, MultiSelectionWidget, Schema, registerType
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import PMF, bikaMessageFactory as _
@@ -140,6 +138,7 @@ class PartitionSetupField(RecordsField):
     security = ClassSecurityInfo()
 
     security.declarePublic('SampleTypes')
+
     def SampleTypes(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
@@ -186,8 +185,8 @@ Separate = BooleanField(
     required=0,
     widget=BooleanWidget(
         label=_("Separate Container"),
-        description=_("Check this box to ensure a separate sample container is "
-                      "used for this analysis service"),
+        description=_("Check this box to ensure a separate sample"
+                      " container is used for this analysis service"),
     )
 )
 
@@ -600,5 +599,6 @@ class AnalysisService(AbstractBaseAnalysis):
         for template in templates:
             template = api.get_object(template)
             template.remove_service(self)
+
 
 registerType(AnalysisService, PROJECTNAME)
