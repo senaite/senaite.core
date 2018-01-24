@@ -2285,3 +2285,4 @@ class Unit_Conversions(WorksheetImporter):
                         formula=row['formula'],
                         description=row['description'])
                 renameAfterCreation(obj)
+                obj.reindexObject()
