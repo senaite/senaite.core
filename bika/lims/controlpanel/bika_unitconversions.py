@@ -8,7 +8,6 @@
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IUnitConversions
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import get_email_link, get_link
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from plone.dexterity.content import Container
@@ -22,14 +21,16 @@ class UnitConversionsView(BikaListingView):
 
     def __init__(self, context, request):
         super(UnitConversionsView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
+        self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'UnitConversion',
                               'sort_on': 'sortable_title'}
-        self.context_actions = {_('Add'):
-                                {'url': '++add++UnitConversion',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.context_actions = \
+            {_('Add'):
+                {'url': '++add++UnitConversion',
+                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = self.context.translate(_("Unit Conversions"))
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisspec_big.png"
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/analysisspec_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
@@ -39,40 +40,41 @@ class UnitConversionsView(BikaListingView):
 
         self.columns = {
             'Unit': {'title': _('Unit'),
-                      'index':'title'},
-            'Converted Unit': {'title': _('Converted Unit'),
-                            'index': 'converted_unit',
-                            'toggle': True},
+                     'index': 'title'},
+            'Converted Unit':
+                {'title': _('Converted Unit'),
+                 'index': 'converted_unit',
+                 'toggle': True},
             'Formula': {'title': _('Formula'),
-                            'index': 'formula',
-                            'toggle': True},
+                        'index': 'formula',
+                        'toggle': True},
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
         }
 
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': [{'id':'deactivate'}, ],
+             'transitions': [{'id': 'deactivate'}, ],
              'columns': ['Unit',
                          'Converted Unit',
                          'Formula',
                          'Description',
                          ]},
-            {'id':'inactive',
+            {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': [{'id':'activate'}, ],
+             'transitions': [{'id': 'activate'}, ],
              'columns': ['Unit',
                          'Converted Unit',
                          'Formula',
                          'Description',
                          ]},
-            {'id':'all',
+            {'id': 'all',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'columns': ['Unit',
                          'Converted Unit',
                          'Formula',
@@ -95,7 +97,7 @@ class UnitConversionsView(BikaListingView):
         """
         item['Unit'] = obj.title
         item['replace']['Unit'] = "<a href='%s' title='%s'>%s</a>" % \
-              (item['url'], item['url_href_title'], item['Unit'])
+            (item['url'], item['url_href_title'], item['Unit'])
         item['Converted Unit'] = obj.converted_unit
         item['Formula'] = obj.formula
         item['Description'] = obj.Description()
