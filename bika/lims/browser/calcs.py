@@ -88,15 +88,15 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         mapping = {}
 
         # values to be returned to form for this UID
-        Result = {'uid': uid, 'result': form_result}
-        try:
-            Result['result'] = float(form_result)
-        except:
-            if form_result == "0/0":
-                Result['result'] = ""
-
-        if Result['result']:
-            Result['converted_result'] = resolve_unit(analysis, Result['result'])
+        result = ""
+        if form_result != "0/0":
+            try:
+                result = float(form_result)
+            except:
+                result = form_results
+        if result:
+            result = resolve_unit(analysis, result)
+        Result = {"uid": uid, "result": result}
 
         if calculation:
             """We need first to create the map of available parameters
