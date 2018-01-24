@@ -1,62 +1,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal"
-    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    metal:use-macro="here/main_template/macros/master"
-    i18n:domain="bika">
-<body
-    tal:define="
-        form_id view/form_id;
-        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+  <body
+    tal:define="form_id view/form_id;
+                table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
     tal:omit-tag="python:table_only">
 
-<metal:content-title fill-slot="content-title"
-    tal:define="
-        form_id view/form_id;
-        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-    tal:condition="python:not table_only">
-    <h1>
+    <metal:content-title fill-slot="content-title"
+                         tal:define="form_id view/form_id;
+                                     table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+                         tal:condition="python:not table_only">
+      <h1>
         <img tal:condition="view/icon | nothing"
              src="" tal:attributes="src view/icon"/>
         <span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="python:view.context.translate(view.title)"/>
         <tal:add_actions repeat="add_item python:view.context_actions.keys()">
-            <a tal:attributes="
-                style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
-                href python:view.context_actions[add_item]['url'];
-                class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
-                <span tal:replace="python:add_item"/>
-            </a>
+          <a tal:attributes="style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+                             href python:view.context_actions[add_item]['url'];
+                             class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+            <span tal:replace="python:add_item"/>
+          </a>
         </tal:add_actions>
+      </h1>
+    </metal:content-title>
 
-    </h1>
-</metal:content-title>
+    <metal:content-description fill-slot="content-description"
+                               tal:define="form_id view/form_id;
+                                           table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+                               tal:condition="python:not table_only">
+      <div class="documentDescription"
+           tal:content="structure view/description"
+           tal:condition="view/description"/>
+    </metal:content-description>
 
-<metal:content-description fill-slot="content-description"
-    tal:define="
-        form_id view/form_id;
-        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-    tal:condition="python:not table_only">
-    <div class="documentDescription"
-        tal:content="structure view/description"
-        tal:condition="view/description"/>
-</metal:content-description>
-
-<metal:content-core fill-slot="content-core">
-    <div id="folderlisting-main-table"
-        tal:content="structure view/contents_table"/>
-
-    <tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')
-                                        and context.Schema()
-                                        and context.Schema().get('Remarks','')">
-        <tal:remarks define="
-            field python:context.Schema()['Remarks'];
-            errors python:{};">
-            <p style="margin-top:2em;"/>
-             <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+    <metal:content-core fill-slot="content-core">
+      <div id="folderlisting-main-table"
+           tal:content="structure view/contents_table"/>
+      <tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')
+                                     and context.Schema()
+                                     and context.Schema().get('Remarks','')">
+        <tal:remarks define="field python:context.Schema()['Remarks'];
+                             errors python:{};">
+          <p style="margin-top:2em;"/>
+          <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
         </tal:remarks>
-    </tal:hasremarks>
+      </tal:hasremarks>
+    </metal:content-core>
 
-</metal:content-core>
-
-</body>
+  </body>
 </html>
