@@ -15,6 +15,7 @@ from bika.lims.utils import tmpID
 from Products.Archetypes.config import REFERENCE_CATALOG
 from datetime import datetime
 from DateTime import DateTime
+from bika.lims import api
 from bika.lims.workflow import doActionFor
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import os
@@ -753,42 +754,42 @@ class AnalysisResultsImporter(Logger):
 
         return analyses
 
-    def analysisHasCalcution(self, objid, analysis):
-        """ returns True or False"""
-
-        analyses = self._getZODBAnalyses(objid)
-        analyses_with_calculation = filter(lambda c: c.getCalculation(),analyses)
-        if analyses_with_calculation:
-            return True
-        return False
-
-    def getAnalysesWithCalculation(self, objid, analysis, analyses):
-        if self.analysisHasCalcution(objid, analysis):
-            analyses_with_calculation = filter(lambda c: c.getCalculation(),analyses)
-            return analyses_with_calculation
-
     def calculateTotalResults(self, objid, analysis):
-        if self.analysisHasCalcution(objid, analysis):
-            # Analysis With Calculation
-            analyses = self._getZODBAnalyses(objid)
-            analyses_with_calculation = self.getAnalysesWithCalculation(objid, analysis, analyses)
-            for analysis_with_calc in analyses_with_calculation:
-                calcultion = analysis_with_calc.getCalculation()
-                formular = calcultion.getMinifiedFormula()
-                # The analysis that we are currenly on
-                analysis_keyword = analysis.getKeyword()
-                if analysis_keyword in formular:
-                    calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
-                    if calc_passed:
-                        #TODO: use api
-                        doActionFor(analysis_with_calc, 'submit')
-                        self.log(
-                            "${request_id}: calculated result for "
-                            "'${analysis_keyword}': '${analysis_result}'",
-                            mapping={"request_id": objid,
-                                     "analysis_keyword": analysis_with_calc.getKeyword(),
-                                     "analysis_result": str(analysis_with_calc.getResult())}
-                        )
+        """ If an AR(objid) has an analysis that has a calculation
+        then check if param analysis is used on the calculations formula.
+        Here we are dealing with two types of analysis.
+        1. Calculated Analysis - Results are calculated.
+        2. Analysis - Results are captured and not calculated
+        :param objid: AR ID or Worksheet's Reference Sample IDs
+        :param analysis: Analysis Object
+        """
+        analyses = self._getZODBAnalyses(objid)
+        # Filter Analyses With Calculation
+        analyses_with_calculation = filter(
+                                        lambda an: an.getCalculation(),
+                                        analyses)
+        for analysis_with_calc in analyses_with_calculation:
+            # Get the calculation to get the formula so that we can check
+            # if param analysis keyword is used on the calculation formula
+            calcultion = analysis_with_calc.getCalculation()
+            formula = calcultion.getMinifiedFormula()
+            # The analysis that we are currenly on
+            analysis_keyword = analysis.getKeyword()
+            if analysis_keyword not in formula:
+                continue
+
+            # If the analysis_keyword is in the formula, it means that this
+            # analysis is a dependent on that calculated analysis
+            calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
+            if calc_passed:
+                api.do_transition_for(analysis_with_calc, "submit")
+                self.log(
+                    "${request_id}: calculated result for "
+                    "'${analysis_keyword}': '${analysis_result}'",
+                    mapping={"request_id": objid,
+                             "analysis_keyword": analysis_with_calc.getKeyword(),
+                             "analysis_result": str(analysis_with_calc.getResult())}
+                )
 
 
     def _process_analysis(self, objid, analysis, values):
