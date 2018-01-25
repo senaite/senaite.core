@@ -846,6 +846,7 @@ class AnalysisResultsImporter(Logger):
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
             # won't be doing setResult below, so manually calculate result.
+            analysis.calculateResult(override=self._override[1])
             fields_to_reindex.append('Result')
 
         if resultsaved == False and (values.get(defresultkey, '')
