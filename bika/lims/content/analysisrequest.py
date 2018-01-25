@@ -1432,10 +1432,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    DateTimeField(
+    ComputedField(
         'DatePublished',
         mode="r",
         read_permission=permissions.View,
+        expression="here.getDatePublished().strftime('%Y-%m-%d %H:%M %p') if here.getDatePublished() else ''",
         widget=DateTimeWidget(
             label=_("Date Published"),
             visible={
@@ -1447,38 +1448,6 @@ schema = BikaSchema.copy() + Schema((
                 'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
                 'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
                 'scheduled_sampling': {'view': 'invisible', 'edit': 'invisible'},
-                'sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_due': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
-                'sample_received': {'view': 'invisible', 'edit': 'invisible'},
-                'attachment_due': {'view': 'invisible', 'edit': 'invisible'},
-                'to_be_verified': {'view': 'invisible', 'edit': 'invisible'},
-                'verified': {'view': 'invisible', 'edit': 'invisible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'invisible', 'edit': 'invisible'},
-            },
-        ),
-    ),
-    ComputedField(
-        'DatePublishedViewer',
-        mode="r",
-        read_permission=permissions.View,
-        expression="here.getDatePublished().strftime('%Y-%m-%d %H:%M %p') if here.getDatePublished() else ''",
-        widget=StringWidget(
-            label=_("Date Published"),
-            description=_("The date when the request was published"),
-            visible={
-                'edit': 'visible',
-                'view': 'visible',
-                'add': 'invisible',
-                'secondary': 'invisible',
-                'header_table': 'visible',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
-                'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling':
-                    {'view': 'invisible', 'edit': 'invisible'},
                 'sampled': {'view': 'invisible', 'edit': 'invisible'},
                 'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
                 'sample_due': {'view': 'invisible', 'edit': 'invisible'},

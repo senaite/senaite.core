@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #455 On the AR View Date Published should appear once
 - #569 Minimalistic dashboard indicators
 
 
