@@ -261,7 +261,9 @@ class SampleType(BaseContent, HistoryAwareMixin):
         :return: A string as an sticker ID
         """
         values = self.getField('AdmittedStickerTemplates').get(self)
-        value = values.get('small_default')
+        if not values:
+            return ''
+        value = values[0].get('small_default')
         return value
 
     def getDefaultLargeSticker(self):
@@ -271,8 +273,22 @@ class SampleType(BaseContent, HistoryAwareMixin):
         :return: A string as an sticker ID
         """
         values = self.getField('AdmittedStickerTemplates').get(self)
-        value = values.get('large_default')
+        if not values:
+            return ''
+        value = values[0].get('large_default')
         return value
+
+    def getAdmittedStickers(self):
+        """
+        Returns the admitted sticker IDs defined.
+
+        :return: An array of sticker IDs
+        """
+        values = self.getField('AdmittedStickerTemplates').get(self)
+        if not values:
+            return []
+        admitted = values[0].get('admitted')
+        return admitted
 
     def _small_default_voc(self):
         """
@@ -285,10 +301,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :return: A DisplayList
         """
-        values = self.getField('AdmittedStickerTemplates').get(self)
-        if not values:
-            return DisplayList()
-        admitted = values[0].get('admitted')
+        admitted = self.getAdmittedStickers()
         if not admitted:
             return DisplayList()
         voc = DisplayList()
@@ -311,10 +324,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :return: A DisplayList
         """
-        values = self.getField('AdmittedStickerTemplates').get(self)
-        if not values:
-            return DisplayList()
-        admitted = values[0].get('admitted')
+        admitted = self.getAdmittedStickers()
         if not admitted:
             return DisplayList()
         voc = DisplayList()
