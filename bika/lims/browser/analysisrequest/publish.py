@@ -729,7 +729,7 @@ class AnalysisRequestDigester:
         verified = wasTransitionPerformed(ar, 'verify')
         if not overwrite and verified:
             # Prevent any error related with digest
-            data = {} #ar.getDigest() if hasattr(ar, 'getDigest') else {}
+            data = ar.getDigest() if hasattr(ar, 'getDigest') else {}
             if data:
                 # Check if the department managers have changed since
                 # verification:
