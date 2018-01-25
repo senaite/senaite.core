@@ -23,7 +23,11 @@ class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         portal_type = base_query.get('portal_type', [])
         if 'Contact' in portal_type:
             base_query['getParentUID'] = [self.context.UID(), ]
-        self.request['base_query'] = json.dumps(base_query)
+            # If ensure_ascii is false, a result may be a unicode instance. This
+            # usually happens if the input contains unicode strings or the encoding
+            # parameter is used.
+            # see: https://github.com/senaite/senaite.core/issues/605
+            self.request['base_query'] = json.dumps(base_query, ensure_ascii=False)
         return DefaultReferenceWidgetVocabulary.__call__(self)
 
 
