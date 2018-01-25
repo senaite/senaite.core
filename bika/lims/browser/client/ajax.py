@@ -5,8 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import plone, json
+import json
 
+import plone
 from bika.lims.adapters.referencewidgetvocabulary import \
     DefaultReferenceWidgetVocabulary
 from bika.lims.browser import BrowserView
@@ -14,6 +15,9 @@ from Products.CMFCore.utils import getToolByName
 
 
 class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+    """Implements IReferenceWidgetVocabulary for Clients
+    """
+
     def __call__(self):
         base_query = json.loads(self.request['base_query'])
         portal_type = base_query.get('portal_type', [])
@@ -24,6 +28,9 @@ class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
 
 
 class ajaxGetClientInfo(BrowserView):
+    """Public exposed getClientInfo to be used by the JSON API
+    """
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         wf = getToolByName(self.context, 'portal_workflow')
