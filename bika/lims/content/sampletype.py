@@ -6,26 +6,41 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.browser import BrowserView
+from magnitude import mg
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import PROJECTNAME
-from bika.lims.browser.widgets import DurationWidget
+from bika.lims import logger
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import SampleTypeStickersWidget
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISampleType
-from magnitude import mg, MagnitudeError
-from zope.interface import implements
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
-import json
-import plone
-import sys
+from bika.lims.vocabularies import getStickerTemplates
+
+
+def sticker_templates():
+    """
+    It returns the registered stickers in the system.
+    :return: a DisplayList object
+    """
+    voc = DisplayList()
+    stickers = getStickerTemplates()
+    for sticker in stickers:
+        voc.add(sticker.get('id'), sticker.get('title'))
+    if voc.index == 0:
+        logger.warning('Sampletype: getStickerTemplates is empty!')
+    return voc
+
 
 schema = BikaSchema.copy() + Schema((
     DurationField('RetentionPeriod',
@@ -105,6 +120,47 @@ schema = BikaSchema.copy() + Schema((
         widget = ComputedWidget(
             visibile=False,
         )
+    ),
+    RecordsField(
+        'AdmittedStickerTemplates',
+        subfields=(
+            'admitted',
+            'small_default',
+            'large_default',
+            ),
+        subfield_labels={
+            'admitted': _(
+                'Admitted stickers for the sample type'),
+            'small_default': _(
+                'Default small sticker'),
+            'large_default': _(
+                'Default large sticker')},
+        subfield_sizes={
+            'admitted': 6,
+            'small_default': 1,
+            'large_default': 1},
+        subfield_types={
+            'admitted': 'selection',
+            'small_default': 'selection',
+            'large_default': 'selection'
+                        },
+        subfield_vocabularies={
+            'admitted': sticker_templates(),
+            'small_default': '_small_default_voc',
+            'large_default': '_large_default_voc',
+        },
+        required_subfields={
+            'admitted': 1,
+            'small_default': 1,
+            'large_default': 1},
+        default=[{}],
+        fixedSize=1,
+        widget=SampleTypeStickersWidget(
+            label=_("Admitted sticker templates"),
+            description=_(
+                "Defines the stickers to use for this sample type."),
+            allowDelete=False,
+        ),
     ),
 ))
 
@@ -197,6 +253,79 @@ class SampleType(BaseContent, HistoryAwareMixin):
     def ContainerTypesVocabulary(self):
         from bika.lims.content.containertype import ContainerTypes
         return ContainerTypes(self, allow_blank=True)
+
+    def getDefaultSmallSticker(self):
+        """
+        Returns the small sticker ID defined as default.
+
+        :return: A string as an sticker ID
+        """
+        values = self.getField('AdmittedStickerTemplates').get(self)
+        value = values.get('small_default')
+        return value
+
+    def getDefaultLargeSticker(self):
+        """
+        Returns the large sticker ID defined as default.
+
+        :return: A string as an sticker ID
+        """
+        values = self.getField('AdmittedStickerTemplates').get(self)
+        value = values.get('large_default')
+        return value
+
+    def _small_default_voc(self):
+        """
+        Returns the vocabulary to be used in
+        AdmittedStickerTemplates.small_default
+
+        If the object has saved not AdmittedStickerTemplates.admitted stickers,
+        this method will return an empty DisplayList. Otherwise it returns
+        the stickers selected in admitted.
+
+        :return: A DisplayList
+        """
+        values = self.getField('AdmittedStickerTemplates').get(self)
+        if not values:
+            return DisplayList()
+        admitted = values[0].get('admitted')
+        if not admitted:
+            return DisplayList()
+        voc = DisplayList()
+        stickers = getStickerTemplates()
+        for sticker in stickers:
+            if sticker.get('id') in admitted:
+                voc.add(sticker.get('id'), sticker.get('title'))
+        if voc.index > 0:
+            return voc
+        return DisplayList()
+
+    def _large_default_voc(self):
+        """
+        Returns the vocabulary to be used in
+        AdmittedStickerTemplates.large_default
+
+        If the object has saved not AdmittedStickerTemplates.admitted stickers,
+        this method will return an empty DisplayList. Otherwise it returns
+        the stickers selected in admitted.
+
+        :return: A DisplayList
+        """
+        values = self.getField('AdmittedStickerTemplates').get(self)
+        if not values:
+            return DisplayList()
+        admitted = values[0].get('admitted')
+        if not admitted:
+            return DisplayList()
+        voc = DisplayList()
+        stickers = getStickerTemplates()
+        for sticker in stickers:
+            if sticker.get('id') in admitted:
+                voc.add(sticker.get('id'), sticker.get('title'))
+        if voc.index > 0:
+            return voc
+        return DisplayList()
+
 
 registerType(SampleType, PROJECTNAME)
 

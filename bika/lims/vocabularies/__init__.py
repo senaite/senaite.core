@@ -539,9 +539,9 @@ class StickerTemplatesVocabulary(object):
     """
     implements(IVocabularyFactory)
 
-    def __call__(self, context):
+    def __call__(self, context, filter_by_type=False):
         out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
-               getStickerTemplates()]
+               getStickerTemplates(filter_by_type=filter_by_type)]
         return SimpleVocabulary(out)
 
 
