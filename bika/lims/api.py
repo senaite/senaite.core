@@ -146,7 +146,7 @@ def create(container, portal_type, *args, **kwargs):
     types_tool = get_tool("portal_types")
     fti = types_tool.getTypeInfo(portal_type)
 
-    if fti.product: 
+    if fti.product:
         # AT content type
         obj = _createObjectByType(portal_type, container, tmp_id)
         obj.edit(**kwargs)
@@ -639,7 +639,8 @@ def search(query, catalog=_marker):
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
-        fail("Multi Catalog Queries are not supported, please specify a catalog.")
+        fail("Multi Catalog Queries are not supported,"
+             "please specify a catalog.")
 
     return catalogs[0](query)
 
@@ -1120,7 +1121,8 @@ def normalize_id(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'".format(
+            type(string)))
     # get the id nomalizer utility
     normalizer = getUtility(IIDNormalizer).normalize
     return normalizer(string)
@@ -1135,10 +1137,12 @@ def normalize_filename(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'".format(
+            type(string)))
     # get the file nomalizer utility
     normalizer = getUtility(IFileNameNormalizer).normalize
     return normalizer(string)
+
 
 def is_uid(uid, validate=False):
     """Checks if the passed in uid is a valid UID
