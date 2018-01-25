@@ -13,13 +13,14 @@ Test Setup
 Needed Imports::
 
     >>> import transaction
+    >>> from bika.lims import api
+    >>> from bika.lims.idserver import renameAfterCreation
+    >>> from bika.lims.utils import resolve_unit
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from DateTime import DateTime
     >>> from plone import api as ploneapi
     >>> from zope.lifecycleevent import modified
 
-    >>> from bika.lims import api
-    >>> from bika.lims.idserver import renameAfterCreation
-    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
 
 Functional Helpers::
 
@@ -44,6 +45,10 @@ Variables::
     >>> ploneapi.user.grant_roles(user=current_user,roles = ['Manager'])
     >>> bika_analysiscategories = bika_setup.bika_analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
+
+    >>> bika_setup.setSelfVerificationEnabled(True)
+    >>> bika_setup.getSelfVerificationEnabled()
+    True
 
 Test user::
 
@@ -117,26 +122,34 @@ A `AnalysisRequest` in `client-1` folder.::
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
     <AnalysisRequest at /plone/clients/client-1/0001-R01>
-    >>> state = ploneapi.content.get_state(obj=ar, default='Unknown')
-    >>> state
+    >>> api.get_workflow_status_of(ar)
     'sample_due'
+
     >>> ploneapi.content.transition(obj=ar, transition='receive')
-    >>> state = ploneapi.content.get_state(obj=ar, default='Unknown')
-    >>> state
+    >>> api.get_workflow_status_of(ar)
     'sample_received'
     >>> an = ar.getAnalyses()[0].getObject()
     >>> an.setResult(10)
     >>> an.getResult()
     '10'
-    >>> current_user = ploneapi.user.get_current()
+
     >>> ploneapi.user.grant_roles(user=current_user,roles = ['Analyst'])
     >>> ploneapi.user.get_roles()
     ['Manager', 'Authenticated', 'Analyst']
     >>> an.setAnalyst(current_user.getUserName())
     >>> ploneapi.content.transition(obj=an, transition='submit')
-    >>> state = ploneapi.content.get_state(obj=ar, default='Unknown')
-    >>> state
+    >>> api.get_workflow_status_of(ar)
     'to_be_verified'
-    >>> from bika.lims.utils import resolve_unit
+
     >>> resolve_unit(an, an.getResult())
     '1000.00 %'
+
+    >>> ploneapi.content.transition(obj=an, transition='verify')
+    >>> api.get_workflow_status_of(ar)
+    'verified'
+
+    >>> ploneapi.content.transition(obj=ar, transition='publish')
+    >>> api.get_workflow_status_of(ar)
+    'published'
+    >>> api.get_workflow_status_of(an)
+    'published'
