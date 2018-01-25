@@ -101,4 +101,12 @@
        handler="bika.lims.upgrade.v01_02_001.upgrade"
        profile="bika.lims:default"/>
 
+ <genericsetup:upgradeDepends
+       description="Allow Link types in the context of an AR"
+       title="Upgrade to SENAITE.CORE 1.2.2"
+       source="1.2.1"
+       destination="1.2.2"
+       import_steps="typeinfo"
+       profile="bika.lims:default"/>
+
 </configure>
