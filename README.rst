@@ -15,7 +15,7 @@
     :target: https://scrutinizer-ci.com/g/senaite/senaite.core/
 
 .. image:: https://img.shields.io/github/issues-pr/senaite/senaite.core.svg?style=flat-square
-    :target: https://github.com/seniate/senaite.core/pulls
+    :target: https://github.com/senaite/senaite.core/pulls
 
 .. image:: https://img.shields.io/github/issues/senaite/senaite.core.svg?style=flat-square
     :target: https://github.com/senaite/senaite.core/issues

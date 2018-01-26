@@ -698,10 +698,12 @@
       /*
        * Eventhandler when the user pressed a key inside a numeric field.
        */
-      var isAllowedKey, key;
+      var $el, el, isAllowedKey, key;
       console.debug("°°° SiteView::on_numeric_field_keypress °°°");
+      el = event.currentTarget;
+      $el = $(el);
       key = event.which;
-      isAllowedKey = this.allowedKeys.join(',').match(new RegExp(key));
+      isAllowedKey = this.allowed_keys.join(',').match(new RegExp(key));
       if (!key || 48 <= key && key <= 57 || isAllowedKey) {
         window.setTimeout((function() {
           $el.val($el.val().replace(',', '.'));

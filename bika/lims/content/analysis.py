@@ -11,9 +11,8 @@ from bika.lims import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IRoutineAnalysis, ISamplePrepWorkflow
-from bika.lims.workflow import getCurrentState, in_state
+from bika.lims.workflow import in_state
 from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
-from bika.lims.workflow.analysis import events
 from zope.interface import implements
 
 schema = schema.copy() + Schema((
@@ -71,7 +70,7 @@ class Analysis(AbstractRoutineAnalysis):
         AR workflow_script_publish method and, if there are enough
         analyses, it will result in "RuntimeError: maximum recursion
         depth exceeded"
-        """ 
+        """
         pass
 
 

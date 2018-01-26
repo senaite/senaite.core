@@ -316,7 +316,15 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """Return the globals dictionary for the formula calculation
         """
         # Default globals
-        globs = {"__builtins__": None, 'math': math}
+        globs = {
+            "__builtins__": None,
+            "math": math,
+            "round": round,
+            "divmod": divmod,
+            "float": float,
+            "int": int,
+            "max": max,
+        }
         # Update with keyword arguments
         globs.update(kwargs)
         # Update with additional Python libraries
