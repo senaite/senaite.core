@@ -19,6 +19,10 @@ Changelog
 
 **Fixed**
 
+- #606 Handle unicode queries in Client ReferenceWidgetVocabulary
+- #603 Out of range Icons are not displayed through all Analysis states
+- #598 BadRequest error when changing Calculation on Analysis Service
+- #593 Fixed Price/Spec/Interim not set in AR Manage Analyses
 - #585 Empty value for Analysis Request column in aggregated list of analyses
 - #578 Fix translation for review state titles in listings
 - #580 Fix calculations using built-ins

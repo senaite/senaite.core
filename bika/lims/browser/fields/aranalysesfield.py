@@ -5,50 +5,55 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import itertools
+
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.public import *
-from Products.Archetypes.utils import shasattr
-from Products.CMFCore.utils import getToolByName
-from bika.lims import api, logger
+from bika.lims import api, deprecated, logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IARAnalysesField, IAnalysisService, IAnalysis
-from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.interfaces import IAnalysis, IAnalysisService, IARAnalysesField
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
-from plone.api.portal import get_tool
+from bika.lims.workflow import wasTransitionPerformed
+from Products.Archetypes.public import Field, ObjectField
+from Products.Archetypes.Registry import registerField
+from Products.Archetypes.utils import shasattr
+from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+
+"""Field to manage Analyses on ARs
+
+Please see the assigned doctest at tests/doctests/ARAnalysesField.rst
+
+Run this test from the buildout directory:
+
+    bin/test test_textual_doctests -t ARAnalysesField
+"""
 
 
 class ARAnalysesField(ObjectField):
     """A field that stores Analyses instances
-
-    get() returns the list of Analyses contained inside the AnalysesRequest
-    set() converts a sequence of UIDS to Analysis instances in the AR
     """
     implements(IARAnalysesField)
 
+    security = ClassSecurityInfo()
     _properties = Field._properties.copy()
     _properties.update({
         'type': 'analyses',
         'default': None,
     })
 
-    security = ClassSecurityInfo()
-
     security.declarePrivate('get')
 
     def get(self, instance, **kwargs):
-        """ get() returns the list of contained analyses
-            By default, return a list of catalog brains.
+        """Returns a list of Analyses assigned to this AR
 
-            If you want objects, pass full_objects = True
+        Return a list of catalog brains unless `full_objects=True` is passed.
+        Overrides "ViewRetractedAnalyses" when `retracted=True` is passed.
+        Other keyword arguments are passed to bika_analysis_catalog
 
-            If you want to override "ViewRetractedAnalyses",
-            pass retracted=True
-
-            other kwargs are passed to bika_analysis_catalog
-
+        :param instance: Analysis Request object
+        :param kwargs: Keyword arguments to be passed to control the output
+        :returns: A list of Analysis Objects/Catalog Brains
         """
 
         full_objects = False
@@ -59,6 +64,7 @@ class ARAnalysesField(ObjectField):
         if 'full_objects' in kwargs:
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']
+
         if 'get_reflexed' in kwargs:
             get_reflexed = kwargs['get_reflexed']
             del kwargs['get_reflexed']
@@ -68,15 +74,15 @@ class ARAnalysesField(ObjectField):
             del kwargs['retracted']
         else:
             mtool = getToolByName(instance, 'portal_membership')
-            retracted = mtool.checkPermission(ViewRetractedAnalyses,
-                                              instance)
+            retracted = mtool.checkPermission(
+                ViewRetractedAnalyses, instance)
 
         bac = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
         contentFilter = dict([(k, v) for k, v in kwargs.items()
                               if k in bac.indexes()])
         contentFilter['portal_type'] = "Analysis"
         contentFilter['sort_on'] = "getKeyword"
-        contentFilter['path'] = {'query': "/".join(instance.getPhysicalPath()),
+        contentFilter['path'] = {'query': api.get_path(instance),
                                  'level': 0}
         analyses = bac(contentFilter)
         if not retracted or full_objects or not get_reflexed:
@@ -99,158 +105,236 @@ class ARAnalysesField(ObjectField):
     security.declarePrivate('set')
 
     def set(self, instance, items, prices=None, specs=None, **kwargs):
-        """Set the 'Analyses' field value, by creating and removing Analysis
-        objects from the AR.
+        """Set/Assign Analyses to this AR
 
-        items is a list that contains the items to be set:
-            The list can contain Analysis objects/brains, AnalysisService
-            objects/brains and/or Analysis Service uids.
-
-        prices is a dictionary:
-            key = AnalysisService UID
-            value = price
-
-        specs is a dictionary:
-            key = AnalysisService UID
-            value = dictionary: defined in ResultsRange field definition
-
+        :param items: List of Analysis objects/brains, AnalysisService
+                      objects/brains and/or Analysis Service uids
+        :type items: list
+        :param prices: Mapping of AnalysisService UID -> price
+        :type prices: dict
+        :param specs: List of AnalysisService UID -> Result Range Record mappings
+        :type specs: list
+        :returns: list of new assigned Analyses
         """
-        if not items:
-            return
 
-        assert isinstance(items,
-                          (list, tuple)), "items must be a list or a tuple"
-
-        # Convert the items list to a list of service uids and remove empties
-        service_uids = map(self._get_service_uid, items)
-        service_uids = filter(None, service_uids)
-
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        workflow = getToolByName(instance, 'portal_workflow')
-
-        # one can only edit Analyses up to a certain state.
-        ar_state = workflow.getInfoFor(instance, 'review_state', '')
-        assert ar_state in ('sample_registered', 'sampled',
-                            'to_be_sampled', 'to_be_preserved',
-                            'sample_due', 'sample_received',
-                            'attachment_due', 'to_be_verified')
-
-        # - Modify existing AR specs with new form values for selected analyses.
-        # - new analysis requests are also using this function, so ResultsRange
-        #   may be undefined.  in this case, specs= will contain the entire
-        #   AR spec.
-        rr = instance.getResultsRange()
-        specs = specs if specs else []
-        for s in specs:
-            s_in_rr = False
-            for i, r in enumerate(rr):
-                if s['keyword'] == r['keyword']:
-                    rr[i].update(s)
-                    s_in_rr = True
-            if not s_in_rr:
-                rr.append(s)
-        instance.setResultsRange(rr)
-
+        # This setter returns a list of new set Analyses
         new_analyses = []
-        proxies = bsc(UID=service_uids)
-        for proxy in proxies:
-            service = proxy.getObject()
+
+        # Prevent removing all Analyses
+        if not items:
+            logger.warn("Not allowed to remove all Analyses from AR.")
+            return new_analyses
+
+        # Bail out if the items is not a list type
+        if not isinstance(items, (list, tuple)):
+            raise TypeError(
+                "Items parameter must be a tuple or list, got '{}'".format(
+                    type(items)))
+
+        # Bail out if the AR in frozen state
+        if self._is_frozen(instance):
+            raise ValueError(
+                "Analyses can not be modified for inactive/verified ARs")
+
+        # Convert the items to a valid list of AnalysisServices
+        services = filter(None, map(self._to_service, items))
+
+        # Calculate dependencies
+        # FIXME Infinite recursion error possible here, if the formula includes
+        #       the Keyword of the Service that includes the Calculation
+        dependencies = map(lambda s: s.getServiceDependencies(), services)
+        dependencies = list(itertools.chain.from_iterable(dependencies))
+
+        # Merge dependencies and services
+        services = set(services + dependencies)
+
+        # Service UIDs
+        service_uids = map(api.get_uid, services)
+
+        # Modify existing AR specs with new form values of selected analyses.
+        self._update_specs(instance, specs)
+
+        for service in services:
             keyword = service.getKeyword()
 
-            # analysis->InterimFields
-            calc = service.getCalculation()
-            interim_fields = calc and list(calc.getInterimFields()) or []
-
-            # override defaults from service->InterimFields
-            service_interims = service.getInterimFields()
-            sif = dict([(x['keyword'], x.get('value', ''))
-                        for x in service_interims])
-            for i, i_f in enumerate(interim_fields):
-                if i_f['keyword'] in sif:
-                    interim_fields[i]['value'] = sif[i_f['keyword']]
-                    service_interims = [x for x in service_interims
-                                        if x['keyword'] != i_f['keyword']]
-            # Add remaining service interims to the analysis
-            for v in service_interims:
-                interim_fields.append(v)
-
-            # create the analysis if it doesn't exist
+            # Create the Analysis if it doesn't exist
             if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
+                # TODO Entry point for interims assignment and Calculation
+                #      decoupling from Analysis. See comments PR#593
                 analysis = create_analysis(instance, service)
+                # TODO Remove when the `create_analysis` function supports this
+                # Set the interim fields only for new created Analysis
+                self._update_interims(analysis, service)
                 new_analyses.append(analysis)
-            for i, r in enumerate(rr):
-                if r['keyword'] == analysis.getKeyword():
-                    r['uid'] = analysis.UID()
+
+            # Set the price of the Analysis
+            self._update_price(analysis, service, prices)
 
         # delete analyses
         delete_ids = []
         for analysis in instance.objectValues('Analysis'):
             service_uid = analysis.getServiceUID()
-            if service_uid not in service_uids:
-                # If it is verified or published, don't delete it.
-                state = workflow.getInfoFor(analysis, 'review_state')
-                if state in ('verified', 'published'):
-                    continue
-                # If it is assigned to a worksheet, unassign it before deletion.
-                state = workflow.getInfoFor(analysis,
-                                            'worksheetanalysis_review_state')
-                if state == 'assigned':
-                    ws = analysis.getBackReferences("WorksheetAnalysis")[0]
-                    ws.removeAnalysis(analysis)
-                # Unset the partition reference
-                analysis.edit(SamplePartition=None)
-                delete_ids.append(analysis.getId())
+
+            # Skip assigned Analyses
+            if service_uid in service_uids:
+                continue
+
+            # Skip Analyses in frozen states
+            if self._is_frozen(analysis):
+                logger.warn("Inactive/verified Analyses can not be removed.")
+                continue
+
+            # If it is assigned to a worksheet, unassign it before deletion.
+            if self._is_assigned_to_worksheet(analysis):
+                backrefs = self._get_assigned_worksheets(analysis)
+                ws = backrefs[0]
+                ws.removeAnalysis(analysis)
+
+            # Unset the partition reference
+            analysis.edit(SamplePartition=None)
+            delete_ids.append(analysis.getId())
 
         if delete_ids:
             # Note: subscriber might promote the AR
             instance.manage_delObjects(ids=delete_ids)
+
         return new_analyses
 
-    security.declarePublic('Vocabulary')
-
-    def Vocabulary(self, content_instance=None):
-        """ Create a vocabulary from analysis services
+    def _get_services(self, full_objects=False):
+        """Fetch and return analysis service objects
         """
-        vocab = []
-        for service in self.Services():
-            vocab.append((service.UID(), service.Title()))
-        return vocab
-
-    security.declarePublic('Services')
-
-    def Services(self):
-        """ Return analysis services
-        """
-        bsc = get_tool('bika_setup_catalog')
+        bsc = api.get_tool('bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService')
-        return [proxy.getObject() for proxy in brains]
+        if full_objects:
+            return map(api.get_object, brains)
+        return brains
 
-    def _get_service_uid(self, item):
-        if api.is_uid(item):
-            return item
+    def _to_service(self, thing):
+        """Convert to Analysis Service
 
-        if not api.is_object(item):
-            logger.warn("Not an UID: {}".format(item))
+        :param thing: UID/Catalog Brain/Object/Something
+        :returns: Analysis Service object or None
+        """
+
+        # Convert UIDs to objects
+        if api.is_uid(thing):
+            thing = api.get_object_by_uid(thing, None)
+
+        # Bail out if the thing is not a valid object
+        if not api.is_object(thing):
+            logger.warn("'{}' is not a valid object!".format(repr(thing)))
             return None
 
-        obj = api.get_object(item)
-        if IAnalysisService.providedBy(obj):
-            return api.get_uid(obj)
+        # Ensure we have an object here and not a brain
+        obj = api.get_object(thing)
 
-        if IAnalysis.providedBy(obj) and IRequestAnalysis.providedBy(obj):
-            return obj.getServiceUID()
+        if IAnalysisService.providedBy(obj):
+            return obj
+
+        if IAnalysis.providedBy(obj):
+            return obj.getAnalysisService()
 
         # An object, but neither an Analysis nor AnalysisService?
         # This should never happen.
         msg = "ARAnalysesField doesn't accept objects from {} type. " \
-              "The object will be dismissed."
-        logger.warn(msg.format(api.get_portal_type(obj)))
+            "The object will be dismissed.".format(api.get_portal_type(obj))
+        logger.warn(msg)
         return None
+
+    def _is_frozen(self, brain_or_object):
+        """Check if the passed in object is frozen
+
+        :param obj: Analysis or AR Brain/Object
+        :returns: True if the object is frozen
+        """
+        obj = api.get_object(brain_or_object)
+        active = api.is_active(obj)
+        verified = wasTransitionPerformed(obj, 'verify')
+        return not active or verified
+
+    def _get_assigned_worksheets(self, analysis):
+        """Return the assigned worksheets of this Analysis
+
+        :param analysis: Analysis Brain/Object
+        :returns: Worksheet Backreferences
+        """
+        analysis = api.get_object(analysis)
+        return analysis.getBackReferences("WorksheetAnalysis")
+
+    def _is_assigned_to_worksheet(self, analysis):
+        """Check if the Analysis is assigned to a worksheet
+
+        :param analysis: Analysis Brain/Object
+        :returns: True if the Analysis is assigned to a WS
+        """
+        analysis = api.get_object(analysis)
+        state = api.get_workflow_status_of(
+            analysis, state_var='worksheetanalysis_review_state')
+        return state == "assigned"
+
+    def _update_interims(self, analysis, service):
+        """Update Interim Fields of the Analysis
+
+        :param analysis: Analysis Object
+        :param service: Analysis Service Object
+        """
+        service_interims = service.getInterimFields()
+        analysis.setInterimFields(service_interims)
+
+    def _update_price(self, analysis, service, prices):
+        """Update the Price of the Analysis
+
+        :param analysis: Analysis Object
+        :param service: Analysis Service Object
+        :param prices: Price mapping
+        """
+        prices = prices or {}
+        price = prices.get(service.UID(), service.getPrice())
+        analysis.setPrice(price)
+
+    def _update_specs(self, instance, specs):
+        """Update AR specifications
+
+        :param instance: Analysis Request
+        :param specs: List of Specification Records
+        """
+
+        if specs is None:
+            return
+
+        rr = {item["keyword"]: item for item in instance.getResultsRange()}
+        for spec in specs:
+            keyword = spec.get("keyword")
+            if keyword in rr:
+                rr[keyword].update(spec)
+            else:
+                rr[keyword] = spec
+        return instance.setResultsRange(rr.values())
+
+    # DEPRECATED: The following code should not be in the field's domain
+
+    security.declarePublic('Vocabulary')
+
+    @deprecated("Please refactor, this method will be removed in senaite.core 1.5")
+    def Vocabulary(self, content_instance=None):
+        """Create a vocabulary from analysis services
+        """
+        vocab = []
+        for service in self._get_services():
+            vocab.append((api.get_uid(service), api.get_title(service)))
+        return vocab
+
+    security.declarePublic('Services')
+
+    @deprecated("Please refactor, this method will be removed in senaite.core 1.5")
+    def Services(self):
+        """Fetch and return analysis service objects
+        """
+        return self._get_services(full_objects=True)
 
 
 registerField(ARAnalysesField,
-              title='Analyses',
-              description='Used for Analysis instances'
-              )
+              title="Analyses",
+              description="Manages Analyses of ARs")
