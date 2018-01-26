@@ -336,6 +336,75 @@ class SampleType(BaseContent, HistoryAwareMixin):
             return voc
         return DisplayList()
 
+    def setDefaultSmallSticker(self, value):
+        """
+        Sets the small sticker ID defined as default.
+
+        :param value: A sticker ID
+        """
+        if value is None:
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/small_default' value"
+                " to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        if not isinstance(value, str):
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/small_default' value"
+                " type to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        field = self.getField('AdmittedStickerTemplates')
+        new_value = field.get(self)
+        new_value[0]['small_default'] = value
+        field.set(self, new_value)
+
+    def setDefaultLargeSticker(self, value):
+        """
+        Sets the large sticker ID defined as default.
+
+        :param value: A sticker ID
+        """
+        if value is None:
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/large_default' value"
+                " to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        if not isinstance(value, str):
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/large_default' value"
+                " type to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        field = self.getField('AdmittedStickerTemplates')
+        new_value = field.get(self)
+        new_value[0]['large_default'] = value
+        field.set(self, new_value)
+
+    def setAdmittedStickers(self, value):
+        """
+        Sets the admitted sticker IDs.
+
+        :param value: An array of sticker IDs
+        """
+        if value is None:
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/admitted' value"
+                " to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        if not isinstance(value, list):
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/admitted' value"
+                " type to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        field = self.getField('AdmittedStickerTemplates')
+        new_value = field.get(self)
+        new_value[0]['admitted'] = value
+        field.set(self, new_value)
+
 
 registerType(SampleType, PROJECTNAME)
 
