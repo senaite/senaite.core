@@ -9,11 +9,12 @@ import sys
 import inspect
 
 # from generic import xml
-from agilent.masshunter import quantitative
+from agilent.masshunter import quantitative, masshunter
 from abbott.m2000rt import m2000rt
 from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
+from generic import two_dimension
 from thermoscientific.gallery import Ts9861x
 from thermoscientific.arena import xt20
 from thermoscientific.multiskan import go
@@ -27,6 +28,9 @@ from beckmancoulter.access import model2
 from rochecobas.taqman import model48
 from rochecobas.taqman import model96
 from sealanalytical.aq2 import aq2
+from shimadzu.gcms import qp2010se, tq8030
+from shimadzu.icpe import multitype
+from shimadzu.nexera import LC2040C, LCMS8050
 from horiba.jobinyvon import icp
 from abaxis.vetscan import vs2
 from scilvet.abc import plus
@@ -38,6 +42,7 @@ from genexpert import genexpert
 
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
+           'agilent.masshunter.masshunter',
            'agilent.masshunter.quantitative',
            'alere.pima.beads',
            'alere.pima.cd4',
@@ -47,6 +52,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120',
+           'generic.two_dimension',
            # 'generic.xml',
            'horiba.jobinyvon.icp',
            'rigaku.supermini.wxrf',
@@ -58,6 +64,11 @@ __all__ = ['abaxis.vetscan.vs2',
            'lifetechnologies.qubit.qubit',
            'sysmex.xs.i500',
            'sysmex.xs.i1000',
+           'shimadzu.icpe.multitype',
+           'shimadzu.gcms.qp2010se',
+           'shimadzu.gcms.tq8030',
+           'shimadzu.nexera.LC2040C',
+           'shimadzu.nexera.LCMS8050',
            'scilvet.abc.plus',
            'sealanalytical.aq2.aq2',
            'tescan.tima.tima',
@@ -72,6 +83,7 @@ __all__ = ['abaxis.vetscan.vs2',
 PARSERS = [
            ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
            ['abbott.m2000rt.m2000rt', 'Abbottm2000rtTSVParser'],
+           ['agilent.masshunter.masshunter', 'AgilentMasshunterParser'],
            ['agilent.masshunter.quantitative', 'MasshunterQuantCSVParser'],
            ['alere.pima.beads', 'AlerePimaSLKParser'],
            ['alere.pima.cd4', 'AlerePimacd4SLKParser'],
@@ -81,6 +93,7 @@ PARSERS = [
            ['foss.fiastar.fiastar', 'FOSSFIAStarCSVParser'],
            ['foss.winescan.auto', 'WinescanAutoCSVParser'],
            ['foss.winescan.ft120', 'WinescanFT120CSVParser'],
+           ['generic.two_dimension', 'TwoDimensionCSVParser'],
            # ['generic.xml', ''],
            ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
            ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
@@ -92,6 +105,11 @@ PARSERS = [
            ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
            ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
            ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],
+           ['shimadzu.icpe.multitype', 'ICPEMultitypeCSVParser'],
+           ['shimadzu.gcms.qp2010se', 'GCMSQP2010SECSVParser'],
+           ['shimadzu.gcms.tq8030', 'GCMSTQ8030GCMSMSCSVParser'],
+           ['shimadzu.nexera.LC2040C', 'TSVParser'],
+           ['shimadzu.nexera.LCMS8050', 'TSVParser'],
            ['scilvet.abc.plus', 'AbaxisVetScanCSVVS2Parser'],
            ['sealanalytical.aq2.aq2', 'SealAnalyticsAQ2CSVParser'],
            ['tescan.tima.tima', 'TimaCSVParser'],

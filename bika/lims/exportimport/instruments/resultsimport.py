@@ -113,8 +113,7 @@ class InstrumentResultsFileParser(Logger):
         """
         count = 0
         for val in self.getRawResults().values():
-            for row in val:
-                count += len(val)
+            count += len(val)
         return count
 
     def getAnalysesTotalCount(self):
@@ -187,7 +186,7 @@ class InstrumentResultsFileParser(Logger):
             Called by the Results Importer after parse() call
         """
         if len(self.getRawResults()) == 0:
-            self.err("No results found")
+            self.warn("No results found")
             return False
         return True
 
@@ -371,7 +370,7 @@ class AnalysisResultsImporter(Logger):
             else:
                 acodes.append(acode)
         if len(acodes) == 0:
-            self.err("Service keywords: no matches found")
+            self.warn("Service keywords: no matches found")
 
         # Attachments will be created in any worksheet that contains
         # analyses that are updated by this import
@@ -392,11 +391,11 @@ class AnalysisResultsImporter(Logger):
                     insts = self.bsc(portal_type='Instrument', UID=self.instrument_uid)
                     if len(insts) == 0:
                         # No instrument found
-                        self.err("No Analysis Request with '${allowed_ar_states}' "
+                        self.warn("No Analysis Request with '${allowed_ar_states}' "
                                  "states found, And no QC analyses found for ${object_id}",
                                  mapping={"allowed_ar_states": ', '.join(allowed_ar_states_msg),
                                           "object_id": objid})
-                        self.err("Instrument not found")
+                        self.warn("Instrument not found")
                         continue
 
                     inst = insts[0].getObject()
@@ -413,14 +412,14 @@ class AnalysisResultsImporter(Logger):
 
                     elif refsample and len(refsample) > 1:
                         # More than one reference sample found!
-                        self.err(
+                        self.warn(
                             "More than one reference sample found for '${object_id}'",
                             mapping={"object_id": objid})
                         continue
 
                     else:
                         # No reference sample found!
-                        self.err("No Reference Sample found for ${object_id}",
+                        self.warn("No Reference Sample found for ${object_id}",
                                  mapping={"object_id": objid})
                         continue
 
@@ -435,7 +434,7 @@ class AnalysisResultsImporter(Logger):
 
                 elif len(analyses) == 0:
                     # No analyses found
-                    self.err("No Analysis Request with '${allowed_ar_states}' "
+                    self.warn("No Analysis Request with '${allowed_ar_states}' "
                              "states neither QC analyses found for ${object_id}",
                              mapping={
                                  "allowed_ar_states":', '.join(allowed_ar_states_msg),
@@ -455,13 +454,13 @@ class AnalysisResultsImporter(Logger):
                            if analysis.getKeyword() == acode]
 
                     if len(ans) > 1:
-                        self.err("More than one analysis found for ${object_id} and ${analysis_keyword}",
+                        self.warn("More than one analysis found for ${object_id} and ${analysis_keyword}",
                                  mapping={"object_id": objid,
                                           "analysis_keyword": acode})
                         continue
 
                     elif len(ans) == 0:
-                        self.err("No analyses found for ${object_id} and ${analysis_keyword}",
+                        self.warn("No analyses found for ${object_id} and ${analysis_keyword}",
                                  mapping={"object_id": objid,
                                           "analysis_keyword": acode})
                         continue
@@ -666,7 +665,7 @@ class AnalysisResultsImporter(Logger):
                         in allowed_an_states]
 
         if len(analyses) == 0:
-            self.err(
+            self.warn(
                 "No analyses '${allowed_analysis_states}' states found for ${object_id}",
                 mapping={"allowed_analysis_states": ', '.join(allowed_an_states_msg),
                          "object_id": objid})

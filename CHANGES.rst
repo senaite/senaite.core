@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #BC-271 Added 7 BC Instruments
 - #555 Don't allow the deactivation Analysis Services with active dependencies
 - #555 Don't allow the activation of Analysis Services with inactive dependents
 
