@@ -8,6 +8,8 @@ Changelog
 
 - #555 Don't allow the deactivation Analysis Services with active dependencies
 - #555 Don't allow the activation of Analysis Services with inactive dependents
+- #607 Choose the template in the preview and in accordance with the
+sample type
 
 **Removed**
 
