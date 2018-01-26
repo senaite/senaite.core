@@ -149,8 +149,8 @@ def create(container, portal_type, *args, **kwargs):
     if fti.product:
         # AT content type
         obj = _createObjectByType(portal_type, container, tmp_id)
-        obj.edit(**kwargs)
         obj.processForm()
+        obj.edit(**kwargs)
     else:
         # dexterity content type
         factory = getUtility(IFactory, fti.factory)
