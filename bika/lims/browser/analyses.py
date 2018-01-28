@@ -205,11 +205,15 @@ class AnalysesView(BikaListingView):
         self.show_methodinstr_columns = False
 
     def has_permission(self, permission, obj=None):
-        """Returns if the current user has rights for the permission
+        """Returns if the current user has rights for the permission passed in
         :param permission: permission identifier
         :param obj: object to check the permission against
         :return: True if the user has rights for the permission passed in
         """
+        if permission is None:
+            logger.warn("None permission is not allowed")
+            return False
+
         if obj is None:
             obj = self.context
 
