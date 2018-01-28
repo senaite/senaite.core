@@ -862,32 +862,34 @@ class AnalysesView(BikaListingView):
         rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
         item['Specification'] = rngstr
 
-    def _folder_item_verify_criteria(self, obj, item):
-        submitter = obj.getSubmittedBy
+    def _folder_item_verify_icons(self, analysis_brain, item):
+        """Sets the analysis' verification icons to the item passed in.
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
+        submitter = analysis_brain.getSubmittedBy
         if not submitter:
+            # This analysis hasn't yet been submitted, no verification yet
             return
 
-        after_key = 'state_title'
-        if submitter in obj.getVerificators.split(','):
+        verifiers = analysis_brain.getVerificators.split(',')
+        in_verifiers = submitter in verifiers
+        if in_verifiers:
             # If analysis has been submitted and verified by the same person,
             # display a warning icon
             msg = t(_("Submitted and verified by the same user: {}"))
             msg = msg.format(submitter)
             icon = "<img src='{}/++resource++bika.lims.images/warning.png'" \
                    " title='{}'/>".format(self.portal_url, msg)
-            self._append_after_element(item, after_key, icon)
+            self._append_after_element(item, 'state_title', icon)
 
-        if obj.review_state != 'to_be_verified':
-            return
 
-        numverifications = obj.getNumberOfRequiredVerifications
-        pending = numverifications
-        if numverifications > 1:
-            # More than one verification required, place an icon
-            # Get the number of verifications already done:
-            done = obj.getNumberOfVerifications
-            pending = numverifications - done
-            ratio = float(done) / float(numverifications) if done > 0 else 0
+        num_verifications = analysis_brain.getNumberOfRequiredVerifications
+        if num_verifications > 1:
+            # More than one verification required, place an icon and display the
+            # number of verifications done vs. total required
+            done = analysis_brain.getNumberOfVerifications
+            pending = num_verifications - done
+            ratio = float(done) / float(num_verifications) if done > 0 else 0
             ratio = int(ratio*100)
             scale = ratio == 0 and 0 or (ratio/25)*25
             anchor = "<a href='#' title='{} &#13;{} {}' " \
@@ -897,74 +899,75 @@ class AnalysesView(BikaListingView):
                                    t(_("verification(s) pending")),
                                    str(scale),
                                    str(done),
-                                   str(numverifications))
-            self._append_after_element(item, after_key, anchor)
+                                   str(num_verifications))
+            self._append_after_element(item, 'state_title', anchor)
+
+        if analysis_brain.review_state != 'to_be_verified':
+            # The verification of analysis has already been done or first
+            # verification has not been done yet. Nothing to do
+            return
 
         # Check if the user has "Bika: Verify" privileges
         username = self.member.getUserName()
         verify_permission = has_permission(VerifyPermission, username=username)
         if not verify_permission:
+            # User cannot verify, do nothing
             return
 
-        self_submitted = submitter == username
-        # The submitter and the user must be different unless the analysis
-        # has the option SelfVerificationEnabled set to true
-        selfverification = obj.isSelfVerificationEnabled
-        isUserAllowedToVerify = not (self_submitted and not selfverification)
-        if not isUserAllowedToVerify:
-            img = '/++resource++bika.lims.images/submitted-by-current-user.png'
-            title = t(_("Multi-verification by same user is not allowed"))
+        if username not in verifiers:
+            # Current user has not verified this analysis
+            if submitter != username:
+                # Current user is neither a submitter nor a verifier
+                return
+
+            # Current user is the same who submitted the result
+            if analysis_brain.isSelfVerificationEnabled:
+                # Same user who submitted can verify
+                title = t(_("Can verify, but submitted by current user"))
+                img = '++resource++bika.lims.images/warning.png'
+                html = '<img src="{}/{}" title="{}"/>'.format(
+                    self.portal_url, img,
+                    title)
+                self._append_after_element(item, 'state_title', html)
+                return
+
+            # User who submitted cannot verify
+            title = t(_("Cannot verify, submitted by current user"))
+            img = '++resource++bika.lims.images/submitted-by-current-user.png'
+            html = '<img src="{}/{}" title="{}"/>'.format(
+                self.portal_url, img,
+                title)
+            self._append_after_element(item, 'state_title', html)
+            return
+
+        # This user verified this analysis before
+        self_multi_verification = self.mv_type == 'self_multi_not_cons'
+        if not self_multi_verification:
+            # Multi verification by same user is not allowed
+            title = t(_("Cannot verify, was verified by current user"))
+            img = '++resource++bika.lims.images/submitted-by-current-user.png'
             html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
                                                           title)
-            self._append_after_element(item, after_key, html)
+            self._append_after_element(item, 'state_title', html)
             return
 
-        if isUserAllowedToVerify and  numverifications > 1:
+        # Multi-verification by same user, but non-consecutively, is allowed
+        if analysis_brain.getLastVerificator != username:
+            # Current user was not the last user to verify
+            title = t(_("Can verify, but was already verified by current user"))
+            img = '++resource++bika.lims.images/warning.png'
+            html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
+                                                          title)
+            self._append_after_element(item, 'state_title', html)
+            return
 
-
-        # Are they the same? TODO
-        username = self.member.getUserName()
-        user_id = self.member.getUser().getId()
-        isUserAllowedToVerify = True
-        # Check if the user who submited the result is the same as the
-        # current one
-        self_submitted = submitter == user_id
-        # The submitter and the user must be different unless the analysis
-        # has the option SelfVerificationEnabled set to true
-        selfverification = obj.isSelfVerificationEnabled
-        if verify_permission and self_submitted and not selfverification:
-            isUserAllowedToVerify = False
-        # Checking verifiability depending on multi-verification type
-        # of bika_setup
-        if isUserAllowedToVerify and numverifications > 1:
-            # If user verified before and self_multi_disabled, then
-            # return False
-            if self.mv_type == 'self_multi_disabled' and \
-                            username in obj.getVerificators.split(','):
-                isUserAllowedToVerify = False
-            # If user is the last verificator and consecutively
-            # multi-verification is disabled, then return False
-            # Comparing was added just to check if this method is called
-            # before/after verification
-            elif self.mv_type == 'self_multi_not_cons' and \
-                            username == obj.getLastVerificator and \
-                            pending > 0:
-                isUserAllowedToVerify = False
-        if verify_permission and not isUserAllowedToVerify:
-            after_icons.append(
-                "<img src='++resource++bika.lims.images/submitted"
-                "-by-current-user.png' title='%s'/>" %
-                (t(_(
-                    "Cannot verify, submitted or"
-                    " verified by current user before")))
-            )
-        elif verify_permission and isUserAllowedToVerify:
-            if submitter == user_id:
-                after_icons.append(
-                    "<img src='++resource++bika.lims.images/warning.png'"
-                    " title='%s'/>" %
-                    (t(_("Can verify, but submitted by current user")))
-                )
+        # Last user who verified is the same as current user
+        title = t(_("Cannot verify, last verified by current user"))
+        img = '++resource++bika.lims.images/submitted-by-current-user.png'
+        html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
+                                                      title)
+        self._append_after_element(item, 'state_title', html)
+        return
 
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
         item['after'] = item.get('after', {})
@@ -1054,7 +1057,7 @@ class AnalysesView(BikaListingView):
         self._folder_item_duedate(obj, item)
 
         # Fill verification criteria
-        self._folder_item_verify_criteria(obj, item)
+        self._folder_item_verify_icons(obj, item)
 
         # add icon for assigned analyses in AR views
         full_obj = api.get_object(obj)
