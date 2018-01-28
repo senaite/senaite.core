@@ -255,6 +255,70 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         raise NotImplementedError
 
 
+class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
+
+    def __init__(self, infile, separator, encoding=None,):
+        InstrumentResultsFileParser.__init__(self, infile, 'TXT')
+        # Some Instruments can generate files with different encodings, so we
+        # may need this parameter
+        self._separator = separator
+        self._encoding = encoding
+
+    def parse(self):
+        infile = self.getInputFile()
+        self.log("Parsing file ${file_name}", mapping={"file_name":infile.filename})
+        jump = 0
+        # We test in import functions if the file was uploaded
+        try:
+            if self._encoding:
+                import codecs
+                f = codecs.open(infile.name, 'r', encoding=self._encoding)
+            else:
+                f = open(infile.name, 'rU')
+        except AttributeError:
+            f = infile
+        for line in f.readlines():
+            self._numline += 1
+            if jump == -1:
+                # Something went wrong. Finish
+                self.err("File processing finished due to critical errors")
+                return False
+            if jump > 0:
+                # Jump some lines
+                jump -= 1
+                continue
+
+            if not line or not line.strip():
+                continue
+
+            line = line.strip()
+            jump = 0
+            if line:
+                jump = self._parseline(line)
+
+        self.log(
+            "End of file reached successfully: ${total_objects} objects, "
+            "${total_analyses} analyses, ${total_results} results",
+            mapping={"total_objects": self.getObjectsTotalCount(),
+                     "total_analyses": self.getAnalysesTotalCount(),
+                     "total_results":self.getResultsTotalCount()}
+        )
+        return True
+
+    def split_line(self, line):
+        sline = line.split(self._separator)
+        return [token.strip() for token in sline]
+
+    def _parseline(self, line):
+        """ Parses a line from the input CSV file and populates rawresults
+            (look at getRawResults comment)
+            returns -1 if critical error found and parser must end
+            returns the number of lines to be jumped in next read. If 0, the
+            parser reads the next line as usual
+        """
+        raise NotImplementedError
+
+
 class AnalysisResultsImporter(Logger):
 
     def __init__(self, parser, context,
