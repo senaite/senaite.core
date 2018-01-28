@@ -315,7 +315,9 @@ class AnalysesView(BikaListingView):
         return instrument.isValid()
 
     def get_instrument(self, analysis_brain):
-        """Returns the instrument assigned to the analysis passed in, if any"""
+        """Returns the instrument assigned to the analysis passed in, if any
+        :param analysis_brain: Brain that represents an analysis
+        :return: Instrument object or None"""
         instrument_uid = analysis_brain.getInstrumentUID
         if not instrument_uid:
             return None
@@ -347,41 +349,26 @@ class AnalysesView(BikaListingView):
         :returns: The result specifications that apply to the Analysis.
         :rtype: dict
         """
-        if ICatalogBrain.providedBy(analysis):
-            # It is a brain
-            if 'getResultsRange' not in dir(analysis):
-                pass
-            if analysis.getResultsRange and not \
-                    isinstance(analysis.getResultsRange, list):
-                return analysis.getResultsRange
-            if analysis.getResultsRange and \
-                    isinstance(analysis.getResultsRange, list):
-                rr = dicts_to_dict(
-                    analysis.getResultsRange, 'keyword')
-                return rr.get(analysis.getKeyword, None)
-            if analysis.getReferenceResults:
-                rr = dicts_to_dict(analysis.getReferenceResults, 'uid')
-                return rr.get(analysis.UID, None)
-            keyword = analysis.getKeyword
+        if api.is_brain(analysis):
+            # This is a brain
             uid = analysis.UID
-            return {
-                'keyword': keyword, 'uid': uid, 'min': '',
-                'max': '', 'error': ''}
+            keyword = analysis.getKeyword
+            range = analysis.getResultsRange
+        else:
+            # This is an object
+            uid = analysis.UID()
+            keyword = analysis.getKeyword()
+            range = analysis.getResultsRange()
 
-        # It is an object
-        if hasattr(analysis, 'getResultsRange'):
-            return analysis.getResultsRange()
-        if hasattr(analysis.aq_parent, 'getResultsRange'):
-            rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
-            return rr.get(analysis.getKeyword(), None)
-        if hasattr(analysis.aq_parent, 'getReferenceResults'):
-            rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
-            return rr.get(analysis.UID(), None)
-        keyword = analysis.getKeyword()
-        uid = analysis.UID()
-        return {
-            'keyword': keyword, 'uid': uid, 'min': '',
-            'max': '', 'error': ''}
+        default = {'keyword': keyword, 'uid': uid,
+                   'min': '', 'max': '', 'error': ''}
+        range = range or default
+        if isinstance(range, list):
+            # Convert the list of dicts to a dictionary
+            # TODO: Is this required? Why?
+            range = dicts_to_dict(range, 'keyword')
+            range = range.get(keyword, None) or default
+        return range
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
