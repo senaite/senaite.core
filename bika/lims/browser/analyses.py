@@ -617,11 +617,14 @@ class AnalysesView(BikaListingView):
                             sciformat=int(self.scinot), decimalmark=self.dmk)
         item['formatted_result'] = formatted_result
 
-    def _folder_item_calculation(self, obj, item):
-        is_editable = self.is_analysis_edition_allowed(obj)
+    def _folder_item_calculation(self, analysis_brain, item):
+        """Sets the analysis' calculation and interims to the item passed in.
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
+        is_editable = self.is_analysis_edition_allowed(analysis_brain)
         # Set interim fields. Note we add the key 'formatted_value' to the list
-        # of interims the analysis has assigned already.
-        interim_fields = obj.getInterimFields or list()
+        # of interims the analysis has already assigned.
+        interim_fields = analysis_brain.getInterimFields or list()
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
             if not interim_keyword:
@@ -643,7 +646,7 @@ class AnalysesView(BikaListingView):
         item['interimfields'] = interim_fields
 
         # Set calculation
-        calculation_uid = obj.getCalculationUID
+        calculation_uid = analysis_brain.getCalculationUID
         has_calculation = calculation_uid and True or False
         item['calculation'] = has_calculation
         if is_editable and (not has_calculation or interim_fields):
