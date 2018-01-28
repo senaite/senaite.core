@@ -295,8 +295,17 @@ class AnalysesView(BikaListingView):
     def is_analysis_instrument_valid(self, analysis_brain):
         """Return if the analysis has a valid instrument. If the analysis passed
         in is from ReferenceAnalysis type or does not have an instrument
-        assigned, returns True"""
+        assigned, returns True
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the instrument assigned is valid or is None"""
+
+        # TODO: Workflow. All this logic will be considered in submit guard
+
         if analysis_brain.meta_type == 'ReferenceAnalysis':
+            # If this is a ReferenceAnalysis, there is no need to check the
+            # validity of the instrument, because this is a QC analysis and by
+            # definition, it has the ability to promote an instrument to a
+            # valid state if the result is correct.
             return True
 
         instrument = self.get_instrument(analysis_brain)
