@@ -246,32 +246,43 @@ class AnalysesView(BikaListingView):
             # This analysis has been checked before, no need to go further
             return self._analysis_edit_map[analysis_uid]
 
-        #TODO: Performance. We are waking up the object here
+        analysis_obj = None
         analysis_keyword = analysis_brain.getKeyword
         if analysis_keyword not in self._keywords_poc_map:
+            # Store the point of capture for this analysis keyword in cache, so
+            # waking up analyses with same keyword will not be longer required
             analysis_obj = api.get_object(analysis_brain)
             analysis_poc = analysis_obj.getPointOfCapture()
             self._keywords_poc_map[analysis_keyword] = analysis_poc
+
         poc = self._keywords_poc_map[analysis_keyword]
         if poc == 'field':
+            # This analysis must be captured on field, during sampling.
             if not self.has_permission(EditFieldResults):
-                # Current user cannot edit field analyses
-                self._analysis_edit_map[analysis_uid] = False
-                return False
-
-            # If the analysis hasn't been yet submitted (results set), then
-            # allow this one to be editable
-            analysis_obj = api.get_object(analysis_brain)
-            if wasTransitionPerformed(analysis_obj, 'submit'):
+                # Current user cannot edit field analyses.
+                # Cache the value, so further checks for edition for this
+                # specific analysis and user will be resolved rapidly
                 self._analysis_edit_map[analysis_uid] = False
                 return False
 
         elif not self.has_permission(EditResults):
-            # Current user cannot edit lab analyses
+            # The Point of Capture is 'lab' and the current user cannot edit
+            # lab analyses. Cache the value, so further checks for edition for
+            # this specific analysis and user will be resolved rapidly
+            self._analysis_edit_map[analysis_uid] = False
+            return False
+
+        analysis_obj = analysis_obj or api.get_object(analysis_brain)
+        if wasTransitionPerformed(analysis_obj, 'submit'):
+            # Analysis has been already submitted. This analysis cannot be
+            # edited anymore. Cache the value, so further checks for edition for
+            # this specific analysis and user will be resolved rapidly
             self._analysis_edit_map[analysis_uid] = False
             return False
 
         # Is the instrument out of date?
+        # The user can assign a result to the analysis if it does not have any
+        # instrument assigned or the instrument assigned is valid.
         instrument_valid = self.is_analysis_instrument_valid(analysis_brain)
         self._analysis_edit_map[analysis_uid] = instrument_valid
         return instrument_valid
