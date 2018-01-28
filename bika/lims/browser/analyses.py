@@ -553,16 +553,20 @@ class AnalysesView(BikaListingView):
                 row_class = '{} {}'.format(row_class, qc_class_name)
                 item['table_row_class'] = row_class
 
-    def _folder_item_duedate(self, obj, item):
-        # Set the analysis' due date. Note that if a Reference Analysis, the
-        # getDueDate returns the date when the ReferenceSample expires. If the
-        # analysis is a duplicate, returns the due date of the source analysis.
-        due_date = obj.getDueDate
+    def _folder_item_duedate(self, analysis_brain, item):
+        """Sets the analysis' due date to the item passed in.
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
+
+        # Note that if the analysis is a Reference Analysis, `getDueDate`
+        # returns the date when the ReferenceSample expires. If the analysis is
+        # a duplicate, `getDueDate` returns the due date of the source analysis
+        due_date = analysis_brain.getDueDate
         due_date_str = self.ulocalized_time(due_date, long_format=0)
         item['DueDate'] = due_date_str
 
         # If the Analysis is late/overdue, display an icon
-        capture_date = obj.getResultCaptureDate
+        capture_date = analysis_brain.getResultCaptureDate
         capture_date = capture_date or DateTime()
         if capture_date > due_date:
             # The analysis is late or overdue
