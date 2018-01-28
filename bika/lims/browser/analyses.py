@@ -17,7 +17,7 @@ from bika.lims.utils import t, dicts_to_dict, format_supsub, check_permission, \
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IFieldIcons, IAnalysisRequest
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import *
@@ -969,6 +969,36 @@ class AnalysesView(BikaListingView):
         self._append_after_element(item, 'state_title', html)
         return
 
+    def _folder_item_assigned_worksheet(self, analysis_brain, item):
+        """Adds an icon to the item dict if the analysis is assigned to a
+        worksheet and if the icon is suitable for the current context
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
+        if IAnalysisRequest.providedBy(self.context):
+            # We want this icon to only appear if the context is an AR
+            return
+
+        if analysis_brain.worksheetanalysis_review_state != 'assigned':
+            # No need to go further. This analysis is not assigned to any WS
+            return
+
+        #TODO: Performance. Waking-up object here
+        analysis_obj = self._get_object(analysis_brain)
+        worksheet = analysis_obj.getBackReferences('WorksheetAnalysis')
+        if not worksheet:
+            # No worksheet assigned. Do nothing
+            return
+
+        worksheet = worksheet[0]
+        title = t(_("Assigned to: ${worksheet_id}",
+                    mapping={'worksheet_id': safe_unicode(worksheet.id)}))
+        img = '++resource++bika.lims.images/worksheet.png'
+        img_html = '<img src="{}" title="{}"/>'.format(self.portal_url, img,
+                                                       title)
+        href = worksheet.absolute_url()
+        anchor = '<a href="{}">{}</a>'.format(href, img_html)
+        self._append_after_element(item, 'state_title', anchor)
+
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
         item['after'] = item.get('after', {})
         original = item['after'].get(element, '')
@@ -1059,24 +1089,9 @@ class AnalysesView(BikaListingView):
         # Fill verification criteria
         self._folder_item_verify_icons(obj, item)
 
-        # add icon for assigned analyses in AR views
-        full_obj = api.get_object(obj)
-        if self.context.meta_type == 'AnalysisRequest':
-            if obj.meta_type in ['ReferenceAnalysis',
-                                   'DuplicateAnalysis'] or \
-                            obj.worksheetanalysis_review_state == 'assigned':
-                full_obj = full_obj if full_obj else obj.getObject()
-                br = full_obj.getBackReferences('WorksheetAnalysis')
-                if len(br) > 0:
-                    ws = br[0]
-                    after_icons.append(
-                        "<a href='%s'><img "
-                        "src='++resource++bika.lims.images/worksheet.png' "
-                        "title='%s'/></a>" %
-                        (ws.absolute_url(),
-                         t(_("Assigned to: ${worksheet_id}",
-                             mapping={'worksheet_id': safe_unicode(ws.id)}))))
-        item['after']['state_title'] = '&nbsp;'.join(after_icons)
+        # Fill worksheet anchor/icon
+        self._folder_item_assigned_worksheet(obj, item)
+
         after_icons = []
         if obj.getIsReflexAnalysis:
             after_icons.append("<img\
@@ -1098,7 +1113,7 @@ class AnalysesView(BikaListingView):
         # analyses is managed in publish and are not visible to clients.
         if 'Hidden' in self.columns:
             # TODO Performance. Use brain instead
-            full_obj = full_obj if full_obj else obj.getObject()
+            full_obj = self._get_object(obj)
             item['Hidden'] = full_obj.getHidden()
             if IRoutineAnalysis.providedBy(full_obj):
                     item['allow_edit'].append('Hidden')
