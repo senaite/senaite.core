@@ -531,19 +531,25 @@ class AnalysesView(BikaListingView):
         departments = self.request.get('filter_by_department_info', '')
         return not dep_uid or dep_uid in departments.split(',')
 
-    def _folder_item_css_class(self, obj, item):
+    def _folder_item_css_class(self, analysis_brain, item):
+        """Sets the suitable css class name(s) to `table_row_class` from the
+        item passed in, depending on the properties of the analysis object
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
+        row_class = item.get('table_row_class', '')
+        is_reference = analysis_brain.meta_type == 'ReferenceAnalysis'
+        is_duplicate = analysis_brain.meta_type == 'DuplicateAnalysis'
+        qc_class_name = 'qc-analysis'
         # If this is a Reference Analysis or a Duplicate from a Reference
         # Analysis, add the css class 'qc-analysis' accordingly.
-        row_class = item.get('table_row_class', '')
-        is_reference = obj.meta_type == 'ReferenceAnalysis'
-        is_duplicate = obj.meta_type == 'DuplicateAnalysis'
-        qc_class_name = 'qc-analysis'
         if is_reference:
             row_class = '{} {}'.format(row_class, qc_class_name)
             item['table_row_class'] = row_class
-        elif is_duplicate:
-            # Is this a duplicate from a ReferenceAnalysis?
-            if obj.getAnalysisPortalType == 'ReferenceAnalysis':
+            return
+
+        if is_duplicate:
+            if analysis_brain.getAnalysisPortalType == 'ReferenceAnalysis':
+                # This a duplicate from a ReferenceAnalysis
                 row_class = '{} {}'.format(row_class, qc_class_name)
                 item['table_row_class'] = row_class
 
