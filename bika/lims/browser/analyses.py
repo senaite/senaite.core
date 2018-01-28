@@ -232,6 +232,11 @@ class AnalysesView(BikaListingView):
         """Returns if the analysis passed in can be edited by the current user
         :param analysis_brain: Brain that represents an analysis
         :return: True if the user can edit the analysis, otherwise False"""
+
+        # TODO: Workflow. This function will be replaced by
+        # `isTransitionAllowed(submit)` as soon as all this logic gets moved
+        # into analysis' submit guard.... Very soon
+
         if not self.context_active:
             # The current context must be active. We cannot edit analyses from
             # inside a deactivated Analysis Request, for instance
