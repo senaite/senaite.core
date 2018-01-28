@@ -576,17 +576,21 @@ class AnalysesView(BikaListingView):
             html = html.format(due_date_str, img_src, t(_("Late Analysis")))
             item['replace']['DueDate'] = html
 
-    def _folder_item_result(self, obj, item):
+    def _folder_item_result(self, analysis_brain, item):
+        """Sets the analysis' result to the item passed in.
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
         item['Result'] = ''
-        if not self.has_permission(ViewResults, obj):
+        if not self.has_permission(ViewResults, analysis_brain):
+            # If user has no permissions, don't display the result but an icon
             img_src = "{}/++resource++bika.lims.images/to_follow.png"
             img_src = img_src.format(self.portal_url)
             img = '<img width="16" height="16" src="{}"/>'.format(img_src)
             item['before']['Result'] = img
             return
 
-        result = obj.getResult
-        capture_date = obj.getResultCaptureDate
+        result = analysis_brain.getResult
+        capture_date = analysis_brain.getResultCaptureDate
         capture_date_str = self.ulocalized_time(capture_date, long_format=0)
         item['Result'] = result
         item['CaptureDate'] = capture_date_str
@@ -595,11 +599,11 @@ class AnalysesView(BikaListingView):
         # If this analysis has a predefined set of options as result, tell the
         # template that selection list (choices) must be rendered instead of an
         # input field for the introduction of result.
-        choices = obj.getResultOptions
+        choices = analysis_brain.getResultOptions
         if choices:
             item['choices']['Result'] = choices
 
-        if self.is_analysis_edition_allowed(obj):
+        if self.is_analysis_edition_allowed(analysis_brain):
             item['allow_edit'].extend(['Result', 'Remarks'])
 
         # Wake up the object only if necessary. If there is no result set, then
@@ -608,7 +612,7 @@ class AnalysesView(BikaListingView):
             return
 
         # TODO: Performance, we wake-up the full object here
-        full_obj = self._get_object(obj)
+        full_obj = self._get_object(analysis_brain)
         formatted_result = full_obj.getFormattedResult(
                             sciformat=int(self.scinot), decimalmark=self.dmk)
         item['formatted_result'] = formatted_result
