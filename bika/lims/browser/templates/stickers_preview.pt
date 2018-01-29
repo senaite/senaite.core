@@ -61,6 +61,23 @@
               background-color: #bbb;
               text-shadow: 1px 1px 1px #aaa;
         }
+        #sticker-preview-header #sticker-copies input {
+            text-align:center;
+            width:15mm;
+            margin:0 0 10px 0;
+            background-color: #aaa;
+            border-radius: 5px;
+            color: #fff;
+            font-family: Helvetica,Arial;
+            font-size: 9pt;
+            font-weight: bold;
+            padding: 4px 2px;
+            text-decoration: none;
+            text-shadow: 1px 1px 1px #999;
+            text-transform: uppercase;
+            border:none;
+            cursor:pointer;
+        }
         #sticker-rule {
             color: rgb(51, 51, 51);
             height: 10mm;
@@ -220,6 +237,15 @@
                                   tal:condition="not:tpl/selected"></option>
                     </tal:formats>
                     </select>
+                </div>
+                <div id='sticker-copies'>
+                    <label for="copies_count" i18n:translate="">Number of copies</label>
+                    <input name="copies_count"
+                        class="copies_count context_action_link"
+                        type="number"
+                        min="1"
+                    />
+                    />
                 </div>
             </div>
             <div id='sticker-buttons'>
