@@ -159,10 +159,10 @@
                 window.location = $(this).attr('data-url');
             });
             $('select#template').change(function(e) {
-                reload($('select#template').val());
+                reload($('select#template').val(), $('#copies_count').val());
             });
             $('#copies_count').change(function(e) {
-                update_sticker_copies($('#copies_count').val());
+                update_sticker_copies($('#copies_count').val(), $('select#template').val());
             });
             var stickwidth = $('.sticker').first().width();
             $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
@@ -171,14 +171,14 @@
             /**
              * Re-loads the stickers preview by using the template specified
              */
-            function reload(template) {
+            function reload(template, copies_count) {
                 var baseurl = $('body').attr('data-itemsurl');
                 $('#stickers-wrapper').fadeTo('fast', 0.4);
                 $.ajax({
                     url: baseurl,
                     type: 'POST',
                     async: true,
-                    data: {"template": template}
+                    data: {"template": template, "copies_count": copies_count}
                 })
                 .always(function(data) {
                     var htmldata = data;
@@ -196,25 +196,26 @@
             /**
              * Re-loads the stickers preview when the number of copies changes
              */
-            function update_sticker_copies(copies) {
+            function update_sticker_copies(copies, template) {
                 var baseurl = $('body').attr('data-itemsurl');
                 $('#stickers-wrapper').fadeTo('fast', 0.4);
                 $.ajax({
                     url: baseurl,
                     type: 'POST',
                     async: true,
-                    data: {"copies_count": copies}
+                    data: {"copies_count": copies, "template": template}
                 })
                 .always(function(data) {
                     var htmldata = data;
-                    htmldata = $(htmldata).find('#copies_count').html();
-                    $('#copies_count').html(htmldata);
+                    htmldata = $(htmldata).find('#stickers-wrapper').html();
+                    $('#stickers-wrapper').html(htmldata);
                     $('#stickers-wrapper').fadeTo('fast', 1);
                     // reload barcoding
                     bika.lims.BarcodeUtils.load();
                     var stickwidth = $('.sticker').first().width();
                     $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
                     $('#sticker-rule').fadeIn();
+                    $('#stickers-wrapper').fadeIn();
                 });
             }
 
@@ -293,11 +294,10 @@
               </tal:tick>
             </div>
             <tal:stickers repeat="sticker view/items">
-            <tal:sticker define="item_id python:sticker[2].getId() if sticker else None;"
-                         condition="python:not item_id or item_id not in view.rendered_items">
-            <div class='sticker'
-                 tal:content='structure python:view.renderItem()'></div>
-            </tal:sticker>
+                    <tal:sticker define="item_id python:sticker[2].getId() if sticker else None;">
+                    <div class='sticker'
+                         tal:content='structure python:view.renderItem()'></div>
+                    </tal:sticker>
             </tal:stickers>
         </div>
     </div>

@@ -149,8 +149,9 @@ class Sticker(BrowserView):
         elif portal_type == 'Batch':
             return [[None, None, item]]
         items = []
-        for part in parts:
-            items.append([ar, sample, part])
+        for copy in range(self.copies_count):
+            for part in parts:
+                items.append([ar, sample, part])
         return items
 
     def getAvailableTemplates(self):
