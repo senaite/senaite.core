@@ -327,7 +327,7 @@ class Sticker(BrowserView):
         return pdf_file
 
     def get_copies_count(self):
-        """Return the copies_count request paramteter
+        """Return the copies_count request parameter
         """
         try:
             copies_count = int(self.request.form.get("copies_count", 1))
