@@ -994,6 +994,27 @@ class AnalysesView(BikaListingView):
         img = get_image('reflexrule.png', t(_('It comes form a reflex rule')))
         self._append_after_element(item, 'Service', img)
 
+    def _folder_report_visibility(self, analysis_brain, item):
+        """Sets if the hidden field can be edited (enabled/disabled)
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
+        # Users that can Add Analyses to an Analysis Request must be able to
+        # set the visibility of the analysis in results report, also if the
+        # current state of the Analysis Request (e.g. verified) does not allow
+        # the edition of other fields. Note that an analyst has no privileges
+        # by default to edit this value, cause this "visibility" field is
+        # related with results reporting and/or visibility from the client side.
+        # This behavior only applies to routine analyses, the visibility of QC
+        # analyses is managed in publish and are not visible to clients.
+        if 'Hidden' not in self.columns:
+            return
+
+        # TODO Performance. Use brain instead
+        full_obj = self._get_object(analysis_brain)
+        item['Hidden'] = full_obj.getHidden()
+        if IRoutineAnalysis.providedBy(full_obj):
+            item['allow_edit'].append('Hidden')
+
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
         item['after'] = item.get('after', {})
         original = item['after'].get(element, '')
@@ -1090,21 +1111,8 @@ class AnalysesView(BikaListingView):
         # Fill reflex analysis icons
         self._folder_reflex_icons(obj, item)
 
-
-        # Users that can Add Analyses to an Analysis Request must be able to
-        # set the visibility of the analysis in results report, also if the
-        # current state of the Analysis Request (e.g. verified) does not allow
-        # the edition of other fields. Note that an analyst has no privileges
-        # by default to edit this value, cause this "visibility" field is
-        # related with results reporting and/or visibility from the client side.
-        # This behavior only applies to routine analyses, the visibility of QC
-        # analyses is managed in publish and are not visible to clients.
-        if 'Hidden' in self.columns:
-            # TODO Performance. Use brain instead
-            full_obj = self._get_object(obj)
-            item['Hidden'] = full_obj.getHidden()
-            if IRoutineAnalysis.providedBy(full_obj):
-                    item['allow_edit'].append('Hidden')
+        # Fill hidden field (report visibility)
+        self._folder_report_visibility(obj, item)
 
         # Renders additional icons to be displayed for this item, if any
         self._folder_item_fieldicons(obj)
