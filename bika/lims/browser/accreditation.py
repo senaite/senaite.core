@@ -64,19 +64,6 @@ class AccreditationView(AnalysisServicesView):
         self.show_select_column = False
         request.set('disable_border', 1)
 
-        self.columns = {
-            'Title': {'title': _('Service'), 'sortable': False},
-            'Keyword': {'title': _('Keyword'), 'sortable': False},
-            'Category': {'title': _('Category'), 'sortable': False},
-            'Department': {'title': _('Department'), 'sortable': False},
-            'Instrument': {'title': _('Instrument'), 'sortable': False},
-            'Unit': {'title': _('Unit'), 'sortable': False},
-            'Price': {'title': _('Price'), 'sortable': False},
-            'MaxTimeAllowed': {'title': _('Max Time'), 'sortable': False},
-            'DuplicateVariation': {'title': _('Dup Var'), 'sortable': False},
-            'Calculation': {'title': _('Calculation'), 'sortable': False},
-        }
-
         self.review_states = [
             {'id': 'default',
              'title': _('All'),
