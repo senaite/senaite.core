@@ -393,7 +393,7 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
-    def get_methods_vocabulary(self, analysis):
+    def get_methods_vocabulary(self, analysis_brain):
         """
         Returns a vocabulary with all the methods available for the passed in
         analysis, either those assigned to an instrument that are capable to
@@ -408,7 +408,7 @@ class AnalysesView(BikaListingView):
         :type analysis: CatalogBrain
         :returns: A list of dicts
         """
-        uids = analysis.getAllowedMethodUIDs
+        uids = analysis_brain.getAllowedMethodUIDs
         # Resolve those methods that we have stored in cache
         cached = filter(lambda uid: uid in self._methods_map, uids)
         brains = map(self._methods_map.get, cached)
