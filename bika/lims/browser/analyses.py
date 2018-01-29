@@ -808,7 +808,8 @@ class AnalysesView(BikaListingView):
         capture_date = capture_date or DateTime()
         if capture_date > due_date:
             # The analysis is late or overdue
-            img = get_image('late.png', t(_("Late Analysis")))
+            img = get_image('late.png', title=t(_("Late Analysis")),
+                            width='16px',  height='16px')
             item['replace']['DueDate'] = '{} {}'.format(due_date_str, img)
 
     def _folder_item_result(self, analysis_brain, item):
@@ -818,9 +819,7 @@ class AnalysesView(BikaListingView):
         item['Result'] = ''
         if not self.has_permission(ViewResults, analysis_brain):
             # If user has no permissions, don't display the result but an icon
-            img_src = "{}/++resource++bika.lims.images/to_follow.png"
-            img_src = img_src.format(self.portal_url)
-            img = '<img width="16" height="16" src="{}"/>'.format(img_src)
+            img = get_image('to_follow.png', width='16px', height='16px')
             item['before']['Result'] = img
             return
 
@@ -843,7 +842,7 @@ class AnalysesView(BikaListingView):
 
         # Wake up the object only if necessary. If there is no result set, then
         # there is no need to go further with formatted result
-        if result is None or result == '':
+        if not result:
             return
 
         # TODO: Performance, we wake-up the full object here
@@ -1112,7 +1111,7 @@ class AnalysesView(BikaListingView):
             # If analysis has been submitted and verified by the same person,
             # display a warning icon
             msg = t(_("Submitted and verified by the same user: {}"))
-            icon = get_image('warning.png', msg.format(submitter))
+            icon = get_image('warning.png', title=msg.format(submitter))
             self._append_after_element(item, 'state_title', icon)
 
 
@@ -1157,13 +1156,13 @@ class AnalysesView(BikaListingView):
             if analysis_brain.isSelfVerificationEnabled:
                 # Same user who submitted can verify
                 title = t(_("Can verify, but submitted by current user"))
-                html = get_image('warning.png', title)
+                html = get_image('warning.png', title=title)
                 self._append_after_element(item, 'state_title', html)
                 return
 
             # User who submitted cannot verify
             title = t(_("Cannot verify, submitted by current user"))
-            html = get_image('submitted-by-current-user.png', title)
+            html = get_image('submitted-by-current-user.png', title=title)
             self._append_after_element(item, 'state_title', html)
             return
 
@@ -1172,7 +1171,7 @@ class AnalysesView(BikaListingView):
         if not self_multi_verification:
             # Multi verification by same user is not allowed
             title = t(_("Cannot verify, was verified by current user"))
-            html = get_image('submitted-by-current-user.png', title)
+            html = get_image('submitted-by-current-user.png', title=title)
             self._append_after_element(item, 'state_title', html)
             return
 
@@ -1180,13 +1179,13 @@ class AnalysesView(BikaListingView):
         if analysis_brain.getLastVerificator != username:
             # Current user was not the last user to verify
             title = t(_("Can verify, but was already verified by current user"))
-            html = get_image('warning.png', title)
+            html = get_image('warning.png', title=title)
             self._append_after_element(item, 'state_title', html)
             return
 
         # Last user who verified is the same as current user
         title = t(_("Cannot verify, last verified by current user"))
-        html = get_image('submitted-by-current-user.png', title)
+        html = get_image('submitted-by-current-user.png', title=title)
         self._append_after_element(item, 'state_title', html)
         return
 
@@ -1213,7 +1212,7 @@ class AnalysesView(BikaListingView):
         worksheet = worksheet[0]
         title = t(_("Assigned to: ${worksheet_id}",
                     mapping={'worksheet_id': safe_unicode(worksheet.id)}))
-        img = get_image('worksheet.png', title)
+        img = get_image('worksheet.png', title=title)
         anchor = get_link(worksheet.absolute_url(), img)
         self._append_after_element(item, 'state_title', anchor)
 
@@ -1226,7 +1225,7 @@ class AnalysesView(BikaListingView):
             # Do nothing
             return
 
-        img = get_image('reflexrule.png', t(_('It comes form a reflex rule')))
+        img = get_image('reflexrule.png', title=t(_('It comes form a reflex rule')))
         self._append_after_element(item, 'Service', img)
 
     def _folder_item_report_visibility(self, analysis_brain, item):

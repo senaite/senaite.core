@@ -794,10 +794,9 @@ def get_email_link(email, value=None):
     return get_link(mailto, link_value)
 
 
-def get_image(name, title=None, **kwargs):
+def get_image(name, **kwargs):
     """Returns a well-formed image
     :param name: file name of the image
-    :param title: title to be set to title attribute
     :param kwargs: additional attributes and values
     :return: a well-formed html img
     """
@@ -805,8 +804,8 @@ def get_image(name, title=None, **kwargs):
         return ""
     portal_url = api.get_url(api.get_portal())
     attr = render_html_attributes(**kwargs)
-    html = '<img src="{}/++resource++bika.lims.images/{}" title="{}" {}/>'
-    return html.format(portal_url, name, title, attr)
+    html = '<img src="{}/++resource++bika.lims.images/{}" {}/>'
+    return html.format(portal_url, name, attr)
 
 
 def render_html_attributes(**kwargs):
