@@ -184,6 +184,10 @@ class AnalysesView(BikaListingView):
         # Is managed by `get_instrument`
         self._instruments_map = dict()
 
+        # This is used to cache the methods instead of retrieving them
+        # individually each time we folder an analysis item
+        self._methods_map = dict()
+
         # This is used to cache if the analyses are editable or not, cause
         # retrieving this information for same analysis multiple times is to
         # expensive in terms of performance.
@@ -389,17 +393,40 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
-    def get_methods_vocabulary(self, analysis=None):
+    def get_methods_brains(self, uids=None):
+        """Returns the methods for the uids passed in. Keeps methods in cache
+        :param uids: list of uids. If None, returns an empty list
+        """
+        if not uids:
+            return list()
+
+        brains = list()
+        # Resolve those methods that we have stored in cache
+        cached = [uid for uid in uids if uid in self._methods_map]
+        if cached:
+            brains = map(self._methods_map.get, cached)
+
+        if len(cached) == len(uids):
+            # All them are already stored in cache, no need to store them
+            # into the map again
+            return brains
+
+        uncached = [uid for uid in uids if uid not in cached]
+        query = {'portal-type': 'Method', 'UID': uncached}
+        new_brains = api.search(query)
+        for brain in new_brains:
+            # Store them into cache to prevent further queries for same
+            # methods
+            self._methods_map[brain.UID] = brain
+        brains.extend(new_brains)
+        return brains
+
+    def get_methods_vocabulary(self, analysis):
         """
         Returns a vocabulary with all the methods available for the passed in
         analysis, either those assigned to an instrument that are capable to
         perform the test (option "Allow Entry of Results") and those assigned
-        manually in the associated Analysis Service. If the associated
-        Analysis Service has a "None" method assigned by default (also if
-        the Analysis Service has instruments with methods assigned), a "None"
-        option is added in the vocabulary.
-        If the analysis passed in is None, returns a vocabulary with all the
-        methods available in the system.
+        manually in the associated Analysis Service.
         The vocabulary is a list of dictionaries. Each dictionary has the
         following structure:
             {'ResultValue': <method_UID>,
@@ -409,24 +436,9 @@ class AnalysesView(BikaListingView):
         :type analysis: CatalogBrain
         :returns: A list of dicts
         """
-        ret = []
-        if analysis:
-            # This function returns  a list of tuples as [(UID,Title),(),...]
-            uids = analysis.getAllowedMethodUIDs
-            # inactive_state is not specified below, because it is not relevant.
-            # If the analysis was created with some method, that is the method
-            # we want to permit the user select.
-            brains = self.bsc(portal_type='Method', UID=uids)
-        else:
-            # All active methods
-            brains = self.bsc(portal_type='Method', inactive_state='active')
-        for brain in brains:
-            ret.append({'ResultValue': brain.UID,
-                        'ResultText': brain.Title})
-        if not ret:
-            ret = [{'ResultValue': '',
-                    'ResultText': _('None')}]
-        return ret
+        brains = self.get_methods_brains(analysis.getAllowedMethodUIDs)
+        return map(lambda brain: {'ResultValue': brain.UID,
+                                  'ResultText': brain.Title}, brains)
 
     def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
@@ -460,7 +472,7 @@ class AnalysesView(BikaListingView):
             # inactive_state is not specified below, because it is not relevant.
             # If the analysis was created with some method, that is the method
             # we want to permit the user select.
-            brains = bsc(portal_type='Method', UID=m_uid)
+            brains = self.get_methods_brains([m_uid])
             method = brains[0].getObject() if brains else None
         if method:
             instruments = method.getInstruments()
@@ -788,7 +800,6 @@ class AnalysesView(BikaListingView):
 
         item['table_row_class'] = ' '.join(css_names)
 
-
     def _folder_item_duedate(self, analysis_brain, item):
         """Sets the analysis' due date to the item passed in.
 
@@ -809,13 +820,16 @@ class AnalysesView(BikaListingView):
         if capture_date > due_date:
             # The analysis is late or overdue
             img = get_image('late.png', title=t(_("Late Analysis")),
-                            width='16px',  height='16px')
+                            width='16px', height='16px')
             item['replace']['DueDate'] = '{} {}'.format(due_date_str, img)
 
     def _folder_item_result(self, analysis_brain, item):
         """Sets the analysis' result to the item passed in.
+
         :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row"""
+        :item: analysis' dictionary counterpart to be represented as a row
+        """
+
         item['Result'] = ''
         if not self.has_permission(ViewResults, analysis_brain):
             # If user has no permissions, don't display the result but an icon
@@ -853,8 +867,11 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Sets the analysis' calculation and interims to the item passed in.
+
         :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row"""
+        :item: analysis' dictionary counterpart to be represented as a row
+        """
+
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
@@ -889,6 +906,12 @@ class AnalysesView(BikaListingView):
             item['allow_edit'].append('retested')
 
     def _folder_item_method(self, obj, item):
+        """Fills the analysis' method to the item passed in.
+
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row
+        """
+
         is_editable = self.is_analysis_edition_allowed(obj)
         method_title = obj.getMethodTitle
         item['Method'] = method_title or ''
