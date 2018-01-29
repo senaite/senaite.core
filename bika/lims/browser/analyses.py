@@ -768,24 +768,26 @@ class AnalysesView(BikaListingView):
     def _folder_item_css_class(self, analysis_brain, item):
         """Sets the suitable css class name(s) to `table_row_class` from the
         item passed in, depending on the properties of the analysis object
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row"""
-        row_class = item.get('table_row_class', '')
-        is_reference = analysis_brain.meta_type == 'ReferenceAnalysis'
-        is_duplicate = analysis_brain.meta_type == 'DuplicateAnalysis'
-        qc_class_name = 'qc-analysis'
-        # If this is a Reference Analysis or a Duplicate from a Reference
-        # Analysis, add the css class 'qc-analysis' accordingly.
-        if is_reference:
-            row_class = '{} {}'.format(row_class, qc_class_name)
-            item['table_row_class'] = row_class
-            return
 
-        if is_duplicate:
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row
+        """
+        meta_type = analysis_brain.meta_type
+
+        # Default css names for table_row_class
+        css_names = item.get('table_row_class', '').split()
+        css_names.extend(['state-{}'.format(analysis_brain.review_state),
+                          'type-{}'.format(meta_type.lower())])
+
+        if meta_type == 'ReferenceAnalysis':
+            css_names.append('qc-analysis')
+
+        elif meta_type == 'DuplicateAnalysis':
             if analysis_brain.getAnalysisPortalType == 'ReferenceAnalysis':
-                # This a duplicate from a ReferenceAnalysis
-                row_class = '{} {}'.format(row_class, qc_class_name)
-                item['table_row_class'] = row_class
+                css_names.append('qc-analysis')
+
+        item['table_row_class'] = ' '.join(css_names)
+
 
     def _folder_item_duedate(self, analysis_brain, item):
         """Sets the analysis' due date to the item passed in.
