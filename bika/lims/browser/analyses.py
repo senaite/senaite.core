@@ -993,11 +993,23 @@ class AnalysesView(BikaListingView):
         title = t(_("Assigned to: ${worksheet_id}",
                     mapping={'worksheet_id': safe_unicode(worksheet.id)}))
         img = '++resource++bika.lims.images/worksheet.png'
-        img_html = '<img src="{}" title="{}"/>'.format(self.portal_url, img,
+        img_html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
                                                        title)
         href = worksheet.absolute_url()
         anchor = '<a href="{}">{}</a>'.format(href, img_html)
         self._append_after_element(item, 'state_title', anchor)
+
+    def _folder_item_reflex_icons(self, analysis_brain, item):
+        """Adds an icon to the item dictionary if the analysis has been
+        automatically generated due to a reflex rule
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row"""
+        if analysis_brain.getIsReflexAnalysis:
+            title = t(_('It comes form a reflex rule'))
+            img = '++resource++bika.lims.images/reflexrule.png'
+            html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
+                                                          title)
+            self._append_after_element(item, 'Service', html)
 
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
         item['after'] = item.get('after', {})
@@ -1092,15 +1104,8 @@ class AnalysesView(BikaListingView):
         # Fill worksheet anchor/icon
         self._folder_item_assigned_worksheet(obj, item)
 
-        after_icons = []
-        if obj.getIsReflexAnalysis:
-            after_icons.append("<img\
-            src='%s/++resource++bika.lims.images/reflexrule.png'\
-            title='%s'>" % (
-                self.portal_url,
-                t(_('It comes form a reflex rule'))
-            ))
-        item['after']['Service'] = '&nbsp;'.join(after_icons)
+        # Fill reflex analysis icons
+        self._folder_reflex_icons(obj, item)
 
 
         # Users that can Add Analyses to an Analysis Request must be able to
