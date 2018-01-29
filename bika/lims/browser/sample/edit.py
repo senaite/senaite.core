@@ -7,19 +7,19 @@
 
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.layout.globals.interfaces import IViewView
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.api import get_tool
+from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.workflow import doActionFor
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
-from . import SamplePartitionsView
 from . import SampleAnalysesView
-from bika.lims.api import get_tool
+from . import SamplePartitionsView
 
 
 class SampleEdit(BrowserView):
