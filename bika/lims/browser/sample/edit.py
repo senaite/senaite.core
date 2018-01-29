@@ -19,6 +19,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from . import SamplePartitionsView
 from . import SampleAnalysesView
+from bika.lims.api import get_tool
 
 
 class SampleEdit(BrowserView):
@@ -34,6 +35,7 @@ class SampleEdit(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.allow_edit = True
+        self.context_actions = {}
 
     def now(self):
         return DateTime()
@@ -51,10 +53,14 @@ class SampleEdit(BrowserView):
         return default_spec
 
     def __call__(self):
-
         if 'transition' in self.request.form:
             doActionFor(self.context, self.request.form['transition'])
-
+        # Add an Analysis request creation button
+        mtool = get_tool('portal_membership', context=self.context)
+        if mtool.checkPermission(AddAnalysisRequest, self.context):
+            self.context_actions[_('Add Analysis Request')] = \
+                {'url': "ar_add?ar_count=1",
+                 'icon': '++resource++bika.lims.images/add.png'}
         ## render header table
         self.header_table = HeaderTableView(self.context, self.request)
 
