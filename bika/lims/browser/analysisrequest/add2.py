@@ -19,6 +19,7 @@ from plone.memoize.volatile import DontCache
 
 from zope.annotation.interfaces import IAnnotations
 from zope.publisher.interfaces import IPublishTraverse
+from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from zope.interface import implements
 from zope.i18n.locales import locales
 
@@ -296,6 +297,24 @@ class AnalysisRequestAddView(BrowserView):
             sample = self.get_sample()
             if sample is not None:
                 default = sample
+        # Querying for adapters to get default values from add-ons':
+        # We don't know which fields the form will render since
+        # some of them may come from add-ons. In order to obtain the default
+        # value for those fields we take advantage of adapters. Adapters
+        # registration should have the following format:
+        # < adapter
+        #   factory = ...
+        #   for = "*"
+        #   provides = "bika.lims.interfaces.IGetDefaultFieldValueARAddHook"
+        #   name = "<fieldName>_default_value_hook"
+        # / >
+        hook_name = name + '_default_value_hook'
+        adapter = queryAdapter(
+            self.request,
+            name=hook_name,
+            interface=IGetDefaultFieldValueARAddHook)
+        if adapter is not None:
+            default = adapter(self.context)
         logger.info("get_default_value: context={} field={} value={}".format(
             context, name, default))
         return default
