@@ -532,6 +532,11 @@ class AnalysesView(BikaListingView):
         return not dep_uid or dep_uid in departments.split(',')
 
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
+        """Appends html value after element in the item dict
+        :param item: dictionary that represents an analysis row
+        :element: id of the element the html must be added thereafter
+        :html: element to append
+        :glue: glue to use for appending"""
         item['after'] = item.get('after', {})
         original = item['after'].get(element, '')
         if not original:
@@ -540,6 +545,10 @@ class AnalysesView(BikaListingView):
         item['after'][element] = glue.join([original, html])
 
     def _get_object(self, brain_object):
+        """Returns the ATContent object associated to the brain_object
+        :param brain_object: instance for which the object must be woken up
+        :returns: the object associated to the brain_object
+        """
         uid = api.get_uid(brain_object)
         if uid not in self._objects_map:
             logger.warn('Waking up object {} ({}): {}'.format(brain_object.getId, brain_object.Title, brain_object.UID))
