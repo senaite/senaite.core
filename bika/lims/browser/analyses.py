@@ -408,22 +408,18 @@ class AnalysesView(BikaListingView):
         :type analysis: CatalogBrain
         :returns: A list of dicts
         """
-        brains = list()
         uids = analysis.getAllowedMethodUIDs
         # Resolve those methods that we have stored in cache
-        cached = [uid for uid in uids if uid in self._methods_map]
-        if cached:
-            brains = map(self._methods_map.get, cached)
+        cached = filter(lambda uid: uid in self._methods_map, uids)
+        brains = map(self._methods_map.get, cached)
 
         if len(cached) != len(uids):
             # There are some methods that are not yet in cache
-            non_cached = [uid for uid in uids if uid not in cached]
+            non_cached = filter(lambda uid: uid not in cached, uids)
             query = {'portal-type': 'Method', 'UID': non_cached}
-            new_brains = api.search(query)
-            for brain in new_brains:
-                # Store them in cache
+            for brain in api.search(query):
                 self._methods_map[brain.UID] = brain
-            brains.extend(new_brains)
+                brains.append(brain)
 
         # Build the vocabulary
         return map(lambda brain: {'ResultValue': brain.UID,
