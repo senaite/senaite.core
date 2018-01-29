@@ -329,7 +329,6 @@ class Sticker(BrowserView):
     def get_copies_count(self):
         """Return the copies_count request paramteter
         """
-        copies_count = 1
         try:
             copies_count = int(self.request.form.get("copies_count", 1))
         except (TypeError, ValueError):
