@@ -13,7 +13,7 @@ from bika.lims import deprecated
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.utils import t, dicts_to_dict, format_supsub, check_permission, \
-    get_link
+    get_link, get_image
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
@@ -877,9 +877,7 @@ class AnalysesView(BikaListingView):
             # If analysis has been submitted and verified by the same person,
             # display a warning icon
             msg = t(_("Submitted and verified by the same user: {}"))
-            msg = msg.format(submitter)
-            icon = "<img src='{}/++resource++bika.lims.images/warning.png'" \
-                   " title='{}'/>".format(self.portal_url, msg)
+            icon = get_image('warning.png', msg.format(submitter))
             self._append_after_element(item, 'state_title', icon)
 
 
@@ -924,19 +922,13 @@ class AnalysesView(BikaListingView):
             if analysis_brain.isSelfVerificationEnabled:
                 # Same user who submitted can verify
                 title = t(_("Can verify, but submitted by current user"))
-                img = '++resource++bika.lims.images/warning.png'
-                html = '<img src="{}/{}" title="{}"/>'.format(
-                    self.portal_url, img,
-                    title)
+                html = get_image('warning.png', title)
                 self._append_after_element(item, 'state_title', html)
                 return
 
             # User who submitted cannot verify
             title = t(_("Cannot verify, submitted by current user"))
-            img = '++resource++bika.lims.images/submitted-by-current-user.png'
-            html = '<img src="{}/{}" title="{}"/>'.format(
-                self.portal_url, img,
-                title)
+            html = get_image('submitted-by-current-user.png', title)
             self._append_after_element(item, 'state_title', html)
             return
 
@@ -945,9 +937,7 @@ class AnalysesView(BikaListingView):
         if not self_multi_verification:
             # Multi verification by same user is not allowed
             title = t(_("Cannot verify, was verified by current user"))
-            img = '++resource++bika.lims.images/submitted-by-current-user.png'
-            html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
-                                                          title)
+            html = get_image('submitted-by-current-user.png', title)
             self._append_after_element(item, 'state_title', html)
             return
 
@@ -955,17 +945,13 @@ class AnalysesView(BikaListingView):
         if analysis_brain.getLastVerificator != username:
             # Current user was not the last user to verify
             title = t(_("Can verify, but was already verified by current user"))
-            img = '++resource++bika.lims.images/warning.png'
-            html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
-                                                          title)
+            html = get_image('warning.png', title)
             self._append_after_element(item, 'state_title', html)
             return
 
         # Last user who verified is the same as current user
         title = t(_("Cannot verify, last verified by current user"))
-        img = '++resource++bika.lims.images/submitted-by-current-user.png'
-        html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
-                                                      title)
+        html = get_image('submitted-by-current-user.png', title)
         self._append_after_element(item, 'state_title', html)
         return
 
@@ -992,11 +978,8 @@ class AnalysesView(BikaListingView):
         worksheet = worksheet[0]
         title = t(_("Assigned to: ${worksheet_id}",
                     mapping={'worksheet_id': safe_unicode(worksheet.id)}))
-        img = '++resource++bika.lims.images/worksheet.png'
-        img_html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
-                                                       title)
-        href = worksheet.absolute_url()
-        anchor = '<a href="{}">{}</a>'.format(href, img_html)
+        img = get_image('worksheet.png', title)
+        anchor = get_link(worksheet.absolute_url(), img)
         self._append_after_element(item, 'state_title', anchor)
 
     def _folder_item_reflex_icons(self, analysis_brain, item):
@@ -1005,11 +988,9 @@ class AnalysesView(BikaListingView):
         :analysis_brain: Brain that represents an analysis
         :item: analysis' dictionary counterpart to be represented as a row"""
         if analysis_brain.getIsReflexAnalysis:
-            title = t(_('It comes form a reflex rule'))
-            img = '++resource++bika.lims.images/reflexrule.png'
-            html = '<img src="{}/{}" title="{}"/>'.format(self.portal_url, img,
-                                                          title)
-            self._append_after_element(item, 'Service', html)
+            img = get_image('reflexrule.png',
+                            t(_('It comes form a reflex rule')))
+            self._append_after_element(item, 'Service', img)
 
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
         item['after'] = item.get('after', {})
