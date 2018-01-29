@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #550 Wrong Listings of Analyses called from Dashboard
+
 
 **Security**
 
