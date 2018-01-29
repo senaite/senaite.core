@@ -393,34 +393,6 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
-    def get_methods_brains(self, uids=None):
-        """Returns the methods for the uids passed in. Keeps methods in cache
-        :param uids: list of uids. If None, returns an empty list
-        """
-        if not uids:
-            return list()
-
-        brains = list()
-        # Resolve those methods that we have stored in cache
-        cached = [uid for uid in uids if uid in self._methods_map]
-        if cached:
-            brains = map(self._methods_map.get, cached)
-
-        if len(cached) == len(uids):
-            # All them are already stored in cache, no need to store them
-            # into the map again
-            return brains
-
-        uncached = [uid for uid in uids if uid not in cached]
-        query = {'portal-type': 'Method', 'UID': uncached}
-        new_brains = api.search(query)
-        for brain in new_brains:
-            # Store them into cache to prevent further queries for same
-            # methods
-            self._methods_map[brain.UID] = brain
-        brains.extend(new_brains)
-        return brains
-
     def get_methods_vocabulary(self, analysis):
         """
         Returns a vocabulary with all the methods available for the passed in
@@ -436,7 +408,24 @@ class AnalysesView(BikaListingView):
         :type analysis: CatalogBrain
         :returns: A list of dicts
         """
-        brains = self.get_methods_brains(analysis.getAllowedMethodUIDs)
+        brains = list()
+        uids = analysis.getAllowedMethodUIDs
+        # Resolve those methods that we have stored in cache
+        cached = [uid for uid in uids if uid in self._methods_map]
+        if cached:
+            brains = map(self._methods_map.get, cached)
+
+        if len(cached) != len(uids):
+            # There are some methods that are not yet in cache
+            non_cached = [uid for uid in uids if uid not in cached]
+            query = {'portal-type': 'Method', 'UID': non_cached}
+            new_brains = api.search(query)
+            for brain in new_brains:
+                # Store them in cache
+                self._methods_map[brain.UID] = brain
+            brains.extend(new_brains)
+
+        # Build the vocabulary
         return map(lambda brain: {'ResultValue': brain.UID,
                                   'ResultText': brain.Title}, brains)
 
