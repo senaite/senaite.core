@@ -544,28 +544,28 @@ class DashboardView(BrowserView):
         # Analyses to be assigned
         name = _('Assignment pending')
         desc = _('Assignment pending')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=default'
         query['review_state'] = ['sample_received', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
         name = _('Results pending')
         desc = _('Results pending')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
         query['review_state'] = ['assigned','attachment_due']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
         name = _('To be verified')
         desc = _('To be verified')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses verified
         name = _('Verified')
         desc = _('Verified')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 

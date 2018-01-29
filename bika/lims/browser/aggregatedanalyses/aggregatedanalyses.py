@@ -58,15 +58,36 @@ class AggregatedAnalysesView(AnalysesView):
             }
         self.review_states = [
             {'id': 'default',
-             'title':  _('Results pending'),
+             'title': _('Assignment pending'),
+             'transitions': [{'id': 'submit'},
+                             {'id': 'cancel'},
+                             # {'id': 'assign'}
+                             ],
+             'contentFilter': {
+                 'review_state': ['sample_received'],
+                 'cancellation_state': 'active', },
+             'columns': ['AnalysisRequest',
+                         'Worksheet',
+                         'Service',
+                         'Result',
+                         'Uncertainty',
+                         'Partition',
+                         'Method',
+                         'Instrument',
+                         'Analyst',
+                         'state_title',
+                         ]
+             },
+            {'id': 'results_pending',
+             'title': _('Results pending'),
              'transitions': [{'id': 'sample'},
                              {'id': 'submit'},
                              {'id': 'cancel'},
                              # {'id': 'assign'}
                              ],
-             'contentFilter': {'review_state': [
-                'sample_received', 'assigned', 'attachment_due'],
-                'cancellation_state': 'active', },
+             'contentFilter': {
+                 'review_state': ['assigned', 'attachment_due'],
+                 'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
@@ -87,6 +108,24 @@ class AggregatedAnalysesView(AnalysesView):
              'contentFilter': {
                 'review_state': ['to_be_verified'],
                 'cancellation_state': 'active', },
+             'columns': ['AnalysisRequest',
+                         'Worksheet',
+                         'Service',
+                         'Result',
+                         'Uncertainty',
+                         'Partition',
+                         'Method',
+                         'Instrument',
+                         'Analyst',
+                         'state_title',
+                         ]
+             },
+            {'id': 'verified',
+             'title': _('Verified'),
+             'transitions': [],
+             'contentFilter': {
+                 'review_state': ['verified'],
+                 'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
