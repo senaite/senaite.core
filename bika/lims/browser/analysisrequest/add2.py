@@ -6,28 +6,30 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
-from datetime import datetime
-
 import magnitude
-from BTrees.OOBTree import OOBTree
+from datetime import datetime
 from DateTime import DateTime
-from Products.CMFPlone.utils import _createObjectByType
+
+from BTrees.OOBTree import OOBTree
+
+from plone import protect
+
+from plone.memoize.volatile import cache
+from plone.memoize.volatile import DontCache
+
+from zope.annotation.interfaces import IAnnotations
+from zope.publisher.interfaces import IPublishTraverse
+from zope.interface import implements
+from zope.i18n.locales import locales
+
 from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone import protect
-from plone.memoize.volatile import DontCache
-from plone.memoize.volatile import cache
-from zope.annotation.interfaces import IAnnotations
-from zope.component import queryAdapter
-from zope.i18n.locales import locales
-from zope.interface import implements
-from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
+from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 
@@ -294,24 +296,6 @@ class AnalysisRequestAddView(BrowserView):
             sample = self.get_sample()
             if sample is not None:
                 default = sample
-        # Querying for adapters to get default values from add-ons':
-        # We don't know which fields the form will render since
-        # some of them may come from add-ons. In order to obtain the default
-        # value for those fields we take advantage of adapters. Adapters
-        # registration should have the following format:
-        # < adapter
-        #   factory = ...
-        #   for = "*"
-        #   provides = "bika.lims.interfaces.IGetDefaultFieldValueARAddHook"
-        #   name = "<fieldName>_default_value_hook"
-        # / >
-        hook_name = name + '_default_value_hook'
-        adapter = queryAdapter(
-            self.request,
-            name=hook_name,
-            interface=IGetDefaultFieldValueARAddHook)
-        if adapter is not None:
-            default = adapter(self.context)
         logger.info("get_default_value: context={} field={} value={}".format(
             context, name, default))
         return default

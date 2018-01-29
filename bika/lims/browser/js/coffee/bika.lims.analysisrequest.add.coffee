@@ -541,14 +541,9 @@ class window.AnalysisRequestAdd
      * Apply the sample data to all fields of arnum
     ###
 
-    # set the sampling date
+    # set the sampling date (required)
     field = $("#SamplingDate-#{arnum}")
     value = sample.sampling_date
-    field.val value
-
-    # set the date sampeld
-    field = $("#DateSampled-#{arnum}")
-    value = sample.date_sampled
     field.val value
 
     # set the sample type (required)
