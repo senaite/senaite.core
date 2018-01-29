@@ -5,20 +5,20 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from datetime import datetime
+
+from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.utils import t
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.exportimport.instruments.logger import Logger
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from Products.Archetypes.config import REFERENCE_CATALOG
-from datetime import datetime
-from DateTime import DateTime
-from bika.lims import api
 from bika.lims.workflow import doActionFor
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-import os
+
 
 class InstrumentResultsFileParser(Logger):
 
@@ -98,6 +98,7 @@ class InstrumentResultsFileParser(Logger):
             self._rawresults[resid] = [values]
         else:
             self._rawresults[resid].append(values)
+
 
     def _emptyRawResults(self):
         """ Remove all grabbed raw results
@@ -806,15 +807,19 @@ class AnalysisResultsImporter(Logger):
                 capturedate = None
                 pass
             del values['DateTime']
+        #
+        fields_to_reindex = []
+        # get interims
         interimsout = []
         interims = hasattr(analysis, 'getInterimFields') \
-                    and analysis.getInterimFields() or []
+                   and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interim['keyword']
             title = interim['title']
             if values.get(keyword, '') or values.get(keyword, '') == 0:
                 res = values.get(keyword)
-                self.log("${request_id} result for '${analysis_keyword}:${interim_keyword}': '${result}'",
+                self.log("${request_id} result for '${analysis_keyword}"
+                         ":${interim_keyword}': '${result}'",
                          mapping={"request_id": objid,
                                   "analysis_keyword": acode,
                                   "interim_keyword": keyword,
@@ -824,10 +829,6 @@ class AnalysisResultsImporter(Logger):
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             elif values.get(title, '') or values.get(title, '') == 0:
                 res = values.get(title)
                 self.log("%s/'%s:%s': '%s'"%(objid, acode, title, str(res)))
@@ -835,25 +836,15 @@ class AnalysisResultsImporter(Logger):
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             else:
                 interimsout.append(interim)
-
-        fields_to_reindex = []
+        # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-            # won't be doing setResult below, so manually calculate result.
-            analysis.calculateResult(override=self._override[1])
-            fields_to_reindex.append('Result')
 
-        if resultsaved == False and (values.get(defresultkey, '')
-                                     or values.get(defresultkey, '') == 0
-                                     or self._override[1] == True):
-            # set the result
-            res = values.get(defresultkey, '')
+        # Set result if present.
+        res = values.get(defresultkey, '')
+        if res or res == 0 or self._override[1] == True:
             # self.log("${object_id} result for '${analysis_keyword}': '${result}'",
             #          mapping={"obect_id": obid,
             #                   "analysis_keyword": acode,
@@ -864,19 +855,19 @@ class AnalysisResultsImporter(Logger):
                 analysis.setResultCaptureDate(capturedate)
             resultsaved = True
 
-        elif resultsaved == False:
+        if resultsaved == False:
             self.log("${request_id} result for '${analysis_keyword}': '${result}'",
                      mapping={"request_id": objid,
                               "analysis_keyword": acode,
                               "result":""
                      })
 
-        if resultsaved or len(interimsout) > 0:
+        if resultsaved:
             doActionFor(analysis, 'submit')
             self.calculateTotalResults(objid, analysis)
             fields_to_reindex.append('Result')
 
-        if (resultsaved or len(interimsout) > 0) \
+        if (resultsaved) \
             and values.get('Remarks', '') \
             and analysis.portal_type == 'Analysis' \
             and (analysis.getRemarks() != '' or self._override[1] == True):
@@ -885,4 +876,4 @@ class AnalysisResultsImporter(Logger):
 
         if len(fields_to_reindex):
             analysis.reindexObject(idxs=fields_to_reindex)
-        return resultsaved or len(interimsout) > 0
+        return resultsaved
