@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+#614: Fix accreditation category titles
 
 **Security**
 
