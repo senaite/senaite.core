@@ -341,8 +341,7 @@ class AnalysisRequestAddView(BrowserView):
         return None
 
     def get_sample(self):
-        """
-        Returns the Sample
+        """Returns the Sample
         """
         context = self.context
         if context.portal_type == "Sample":
