@@ -796,15 +796,16 @@ def get_email_link(email, value=None):
 
 def get_image(url, title=None, **kwargs):
     """Returns a well-formed image
-    :param url: value to be set to src attribute
+    :param url: relative url of the image to be set in src attribute
     :param title: title to be set to title attribute
     :param kwargs: additional attributes and values
     :return: a well-formed html img
     """
     if not url:
         return ""
+    portal_url = api.get_url(api.get_portal())
     attr = render_html_attributes(**kwargs)
-    return '<img src="{}" {}/>'.format(url, attr)
+    return '<img src="{}/{}" {}/>'.format(portal_url, url, attr)
 
 
 def render_html_attributes(**kwargs):
