@@ -66,6 +66,7 @@ class Sticker(BrowserView):
             pdfstream = self.pdf_from_post()
             return pdfstream
 
+        self.copies_count = self.get_copies_count()
         self.rendered_items = []
         items = self.request.get('items', '')
         # If filter by type is given in the request, only the templates under
@@ -324,3 +325,13 @@ class Sticker(BrowserView):
         pdf_fn = tempfile.mktemp(suffix='.pdf')
         pdf_file = createPdf(htmlreport=reporthtml, outfile=pdf_fn)
         return pdf_file
+
+    def get_copies_count(self):
+        """Return the copies_count request paramteter
+        """
+        copies_count = 1
+        try:
+            copies_count = int(self.request.form.get("copies_count", 1))
+        except (TypeError, ValueError):
+            copies_count = 1
+        return copies_count
