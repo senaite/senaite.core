@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #611 Advanced filter bar: filter Analysis Requests by Service name not working
+
 
 **Security**
 
