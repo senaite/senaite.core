@@ -805,7 +805,8 @@ def get_image(url, title=None, **kwargs):
         return ""
     portal_url = api.get_url(api.get_portal())
     attr = render_html_attributes(**kwargs)
-    return '<img src="{}/{}" {}/>'.format(portal_url, url, attr)
+    return '<img src="{}/++resource++bika.lims.images/{}" {}/>'.format(
+        portal_url, url, attr)
 
 
 def render_html_attributes(**kwargs):
