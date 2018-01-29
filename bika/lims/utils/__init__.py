@@ -794,19 +794,19 @@ def get_email_link(email, value=None):
     return get_link(mailto, link_value)
 
 
-def get_image(url, title=None, **kwargs):
+def get_image(name, title=None, **kwargs):
     """Returns a well-formed image
-    :param url: relative url of the image to be set in src attribute
+    :param name: file name of the image
     :param title: title to be set to title attribute
     :param kwargs: additional attributes and values
     :return: a well-formed html img
     """
-    if not url:
+    if not name:
         return ""
     portal_url = api.get_url(api.get_portal())
     attr = render_html_attributes(**kwargs)
-    return '<img src="{}/++resource++bika.lims.images/{}" {}/>'.format(
-        portal_url, url, attr)
+    html = '<img src="{}/++resource++bika.lims.images/{}" title="{}" {}/>'
+    return html.format(portal_url, name, title, attr)
 
 
 def render_html_attributes(**kwargs):
