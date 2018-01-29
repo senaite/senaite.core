@@ -1056,7 +1056,7 @@ class AnalysesView(BikaListingView):
         dlsin = dlsin % (uid, json.dumps(dls))
         item['after']['Result'] = dlsin
 
-        if full_obj.getDetectionLimitSelector():
+        if not full_obj.getDetectionLimitSelector():
             # The user cannot manually set the Detection Limit
             return
 
