@@ -791,8 +791,10 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_duedate(self, analysis_brain, item):
         """Sets the analysis' due date to the item passed in.
+
         :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row"""
+        :item: analysis' dictionary counterpart to be represented as a row
+        """
 
         # Note that if the analysis is a Reference Analysis, `getDueDate`
         # returns the date when the ReferenceSample expires. If the analysis is
@@ -806,11 +808,8 @@ class AnalysesView(BikaListingView):
         capture_date = capture_date or DateTime()
         if capture_date > due_date:
             # The analysis is late or overdue
-            img_src = '{}/++resource++bika.lims.images/late.png'
-            img_src = img_src.format(self.portal_url)
-            html = '{} <img width="16" height="16" src="{}" title="{}"/>'
-            html = html.format(due_date_str, img_src, t(_("Late Analysis")))
-            item['replace']['DueDate'] = html
+            img = get_image('late.png', t(_("Late Analysis")))
+            item['replace']['DueDate'] = '{} {}'.format(due_date_str, img)
 
     def _folder_item_result(self, analysis_brain, item):
         """Sets the analysis' result to the item passed in.
