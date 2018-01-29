@@ -7,6 +7,7 @@
 
 from zope.interface import implements
 
+from bika.lims import logger
 from bika.lims.interfaces import IGetStickerTemplates
 from bika.lims.vocabularies import getStickerTemplates
 
@@ -31,6 +32,12 @@ class GetSampleStickers(object):
     def __call__(self, request):
         self.request = request
         # Stickers admittance are saved in sample type
+        if not hasattr(self.context, 'getSampleType'):
+            logger.warning(
+                "{} has no attribute 'getSampleType', so no sticker will be "
+                "returned.". format(self.context.getId())
+            )
+            return []
         self.sample_type = self.context.getSampleType()
         sticker_ids = self.sample_type.getAdmittedStickers()
         default_sticker_id = self.get_default_sticker_id()

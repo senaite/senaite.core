@@ -174,6 +174,7 @@ class Sticker(BrowserView):
             # Gather all templates
             for name, adapter in adapters:
                 templates += adapter(self.request)
+        if templates:
             return templates
         # If there are no adapters, get all sticker templates in the system
         seltemplate = self.getSelectedTemplate()
