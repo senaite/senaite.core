@@ -9,6 +9,7 @@ import json
 import magnitude
 from datetime import datetime
 from DateTime import DateTime
+from zope.component import queryAdapter
 
 from BTrees.OOBTree import OOBTree
 
