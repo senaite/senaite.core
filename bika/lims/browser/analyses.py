@@ -987,10 +987,12 @@ class AnalysesView(BikaListingView):
         automatically generated due to a reflex rule
         :analysis_brain: Brain that represents an analysis
         :item: analysis' dictionary counterpart to be represented as a row"""
-        if analysis_brain.getIsReflexAnalysis:
-            img = get_image('reflexrule.png',
-                            t(_('It comes form a reflex rule')))
-            self._append_after_element(item, 'Service', img)
+        if not analysis_brain.getIsReflexAnalysis:
+            # Do nothing
+            return
+
+        img = get_image('reflexrule.png', t(_('It comes form a reflex rule')))
+        self._append_after_element(item, 'Service', img)
 
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
         item['after'] = item.get('after', {})
