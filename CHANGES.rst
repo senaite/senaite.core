@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #BC-271 Added 7 BC Instruments
 
 **Removed**
 
