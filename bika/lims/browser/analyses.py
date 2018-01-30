@@ -558,12 +558,12 @@ class AnalysesView(BikaListingView):
             if (cat, cat_order) not in self.categories:
                 self.categories.append((cat, cat_order))
 
+        item['Service'] = obj.Title
+        item['class']['service'] = 'service_title'
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
         item['Remarks'] = obj.getRemarks
-        item['Uncertainty'] = ''
-        item['DetectionLimit'] = ''
         item['retested'] = obj.getRetested
         item['class']['retested'] = 'center'
 
@@ -573,11 +573,6 @@ class AnalysesView(BikaListingView):
         # analysis is a duplicate, it returns the Sample Type of the sample
         # associated to the source analysis.
         item['st_uid'] = obj.getSampleTypeUID
-
-        # TODO: Is this necessary? If so, why?
-        if self.has_permission(ManageBika):
-            item['Service'] = obj.Title
-            item['class']['Service'] = "service_title"
 
         # Fill item's row class
         self._folder_item_css_class(obj, item)
@@ -1024,6 +1019,7 @@ class AnalysesView(BikaListingView):
             item['structure'] = False
 
     def _folder_item_detection_limits(self, obj, item):
+        item['DetectionLimit'] = ''
         is_editable = self.is_analysis_edition_allowed(obj)
         if not is_editable:
             return
