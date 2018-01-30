@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #616 Fix character encodings in analysisservice duplication
 
 **Security**
 
