@@ -339,8 +339,11 @@ class Sticker(BrowserView):
     def get_copies_count(self):
         """Return the copies_count request parameter
         """
-        if self.request.form.get('copies_count', None) is None:
+        try:
+            copies_count = int(self.request.form.get("copies_count"))
+        except (TypeError, ValueError):
+            # default number of copies is a mandatory integer field in bika setup
+            # so theoretically this should never fail
             copies_count = self.context.bika_setup.getDefaultNumberOfCopies()
-        else:
-            copies_count = int(self.request.form.get("copies_count", 1))
+
         return copies_count
