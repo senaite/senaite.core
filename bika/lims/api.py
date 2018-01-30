@@ -1052,6 +1052,35 @@ def get_current_user():
     return ploneapi.user.get_current()
 
 
+def get_user_contact(user, contact_types=['Contact', 'LabContact']):
+    """Returns the associated contact of a Plone user
+
+    If the user passed in has no contact associated, return None.
+    The `contact_types` parameter filter the portal types for the search.
+
+    :param: Plone user
+    :contact_types: List with the contact portal types to search
+    :returns: Contact associated to the Plone user or None
+    """
+    if not user:
+        return None
+
+    query = {'portal_type': contact_types, 'getUsername': user.id}
+    brains = search(query, catalog='portal_catalog')
+    if not brains:
+        return None
+
+    if len(brains) > 1:
+        # Oops, the user has multiple contacts assigned, return None
+        contacts = map(lambda c: c.Title, brains)
+        err_msg = "User '{}' is bound to multiple Contacts '{}'"
+        err_msg = err_msg.format(user.id, ','.join(contacts))
+        logger.error(err_msg)
+        return None
+
+    return get_object(brains[0])
+
+
 def get_cache_key(brain_or_object):
     """Generate a cache key for a common brain or object
 

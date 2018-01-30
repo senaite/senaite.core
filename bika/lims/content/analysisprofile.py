@@ -11,6 +11,7 @@
 """
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
 from bika.lims.browser.widgets import ServicesWidget
@@ -192,5 +193,30 @@ class AnalysisProfile(BaseContent):
         """
         price, vat = self.getAnalysisProfilePrice(), self.getVATAmount()
         return float(price) + float(vat)
+
+    def remove_service(self, service):
+        """Removes the service passed in from the services offered by the
+        current Profile. If the Analysis Service passed in is not assigned to
+        this Analysis Profile, returns False.
+        :param service: the service to be removed from this Analysis Profile
+        :type service: AnalysisService
+        :return: True if the AnalysisService has been removed successfully
+        """
+        obj = api.get_object(service)
+        uid = api.get_uid(obj)
+
+        # Remove the service from the referenced services
+        services = self.getService()
+        num_services = len(services)
+        services.remove(obj)
+        self.setService(services)
+        removed = len(services) < num_services
+
+        # Remove the service from the settings map
+        settings = self.getAnalysisServicesSettings()
+        settings = [item for item in settings if item.get('uid', '') != uid]
+        self.setAnalysisServicesSettings(settings)
+
+        return removed
 
 registerType(AnalysisProfile, PROJECTNAME)

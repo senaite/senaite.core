@@ -15,7 +15,7 @@
     :target: https://scrutinizer-ci.com/g/senaite/senaite.core/
 
 .. image:: https://img.shields.io/github/issues-pr/senaite/senaite.core.svg?style=flat-square
-    :target: https://github.com/seniate/senaite.core/pulls
+    :target: https://github.com/senaite/senaite.core/pulls
 
 .. image:: https://img.shields.io/github/issues/senaite/senaite.core.svg?style=flat-square
     :target: https://github.com/senaite/senaite.core/issues
@@ -31,7 +31,7 @@ SENAITE.CORE is an Open Source Laboratory Information Management System (LIMS)
 for enterprise environments, especially focused to behave with high speed,
 excellent performance and good stability.
 
-This software is a derivative work of `Bika LIMS <https://github.com/bikalims/bika.lims>`_
+This software is a derivative work of BikaLIMS_
 software and comes with the same user interface. Since SENAITE.CORE provides the
 core functionalities and entities used by `SENAITE.LIMS <https://github.com/senaite/senaite.lims>`_,
 the installation of the latter is strongly recommended for an optimal user
@@ -139,3 +139,28 @@ Feedback and support
 
 * `Gitter channel <https://gitter.im/senaite/Lobby>`_
 * `Users list <https://sourceforge.net/projects/senaite/lists/senaite-users>`_
+
+
+License
+=======
+SENAITE.CORE
+Copyright (C) 2018 Senaite Foundation
+
+This software, henceforth "SENAITE.CORE", an add-on for
+`Plone software <https://plone.org/>`_, is a derivative work of BIKALIMS_.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the `GNU General Public License version 2 <./LICENSE>`_ as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+SENAITE.CORE uses third party libraries that are distributed under their own
+terms (see LICENSE-3RD-PARTY.rst)
+
+
+.. Links
+
+.. _BIKALIMS: https://github.com/bikalims/bika.lims
