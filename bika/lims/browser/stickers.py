@@ -51,10 +51,12 @@ class Sticker(BrowserView):
             -- code_...mm.{css,pt}
             -- other_worksheet_stickers_...
     """
-    template = ViewPageTemplateFile("templates/stickers_preview.pt")
-    item_index = 0
-    current_item = None
-    rendered_items = []
+    def __init__(self):
+        self.template = ViewPageTemplateFile("templates/stickers_preview.pt")
+        self.item_index = 0
+        self.current_item = None
+        self.rendered_items = []
+        self.copies_count = None
 
     def __call__(self):
         # Need to generate a PDF with the stickers?
@@ -66,7 +68,11 @@ class Sticker(BrowserView):
             pdfstream = self.pdf_from_post()
             return pdfstream
 
-        self.copies_count = self.get_copies_count()
+        if self.copies_count is None:
+            self.copies_count = self.context.bika_setup.getDefaultNumberOfCopies()
+        else:
+            self.copies_count = self.get_copies_count()
+
         self.rendered_items = []
         items = self.request.get('items', '')
         # If filter by type is given in the request, only the templates under
