@@ -901,6 +901,11 @@ class AnalysesView(BikaListingView):
             self.show_methodinstr_columns = True
 
     def _folder_item_instrument(self, obj, item):
+        """Fills the analysis' instrument to the item passed in.
+
+        :analysis_brain: Brain that represents an analysis
+        :item: analysis' dictionary counterpart to be represented as a row
+        """
         item['Instrument'] = ''
         if not obj.getInstrumentEntryOfResults:
             # Manual entry of results, instrument is not allowed
