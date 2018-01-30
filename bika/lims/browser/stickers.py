@@ -51,12 +51,18 @@ class Sticker(BrowserView):
             -- code_...mm.{css,pt}
             -- other_worksheet_stickers_...
     """
-    def __init__(self):
-        self.template = ViewPageTemplateFile("templates/stickers_preview.pt")
+    template = ViewPageTemplateFile("templates/stickers_preview.pt")
+
+    def __init__(self, context, request):
         self.item_index = 0
         self.current_item = None
         self.rendered_items = []
         self.copies_count = None
+
+        self.context = context
+        self.request = request
+
+        super(Sticker, self).__init__(context, request)
 
     def __call__(self):
         # Need to generate a PDF with the stickers?
@@ -68,10 +74,7 @@ class Sticker(BrowserView):
             pdfstream = self.pdf_from_post()
             return pdfstream
 
-        if self.copies_count is None:
-            self.copies_count = self.context.bika_setup.getDefaultNumberOfCopies()
-        else:
-            self.copies_count = self.get_copies_count()
+        self.copies_count = self.get_copies_count()
 
         self.rendered_items = []
         items = self.request.get('items', '')
@@ -336,8 +339,8 @@ class Sticker(BrowserView):
     def get_copies_count(self):
         """Return the copies_count request parameter
         """
-        try:
+        if self.request.form.get('copies_count', None) is None:
+            copies_count = self.context.bika_setup.getDefaultNumberOfCopies()
+        else:
             copies_count = int(self.request.form.get("copies_count", 1))
-        except (TypeError, ValueError):
-            copies_count = 1
         return copies_count
