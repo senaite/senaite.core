@@ -428,8 +428,6 @@ class AnalysesView(BikaListingView):
     def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
-        If the analysis is None, the function returns all the active and
-        valid instruments registered in the system.
         If the option "Allow instrument entry of results" for the Analysis
         is disabled, the function returns an empty vocabulary.
         If the analysis passed in is a Reference Analysis (Blank or Control),
@@ -445,44 +443,35 @@ class AnalysesView(BikaListingView):
         :returns: A vocabulary with the instruments for the analysis
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
-        ret = []
-        if not analysis_brain or not analysis_brain.getInstrumentEntryOfResults:
-            return []
+        if not analysis_brain.getInstrumentEntryOfResults:
+            # Instrument entry of results for this analysis is not allowed
+            return list()
 
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        # If the analysis is a QC analysis, display all instruments, including
+        # those uncalibrated or for which the last QC test failed.
+        meta_type = analysis_brain.meta_type
+        uncalibrated = meta_type == 'ReferenceAnalysis'
+        if meta_type == 'DuplicateAnalysis':
+            base_analysis_type = analysis_brain.getAnalysisPortalType
+            uncalibrated = base_analysis_type == 'ReferenceAnalysis'
 
-        m_uid = analysis_brain.getMethodUID
-        method = None
-        if m_uid:
-            # inactive_state is not specified below, because it is not relevant.
-            # If the analysis was created with some method, that is the method
-            # we want to permit the user select.
-            brains = self.get_methods_brains([m_uid])
-            method = brains[0].getObject() if brains else None
-        if method:
-            instruments = method.getInstruments()
-        else:
-            i_uids = analysis_brain.getAllowedInstrumentUIDs
-            brains = bsc(
-                portal_type='Instrument', UID=i_uids, inactive_state='active')
-            instruments = [b.getObject() for b in brains]
-
-        for ins in instruments:
-            if analysis_brain.meta_type in [
-                'ReferenceAnalysis', 'DuplicateAnalysis'] \
-                    and not ins.isOutOfDate():
-                # Add the 'invalid', but in-date instrument
-                ret.append({'ResultValue': ins.UID(),
-                            'ResultText': ins.Title()})
-            if ins.isValid():
+        vocab = [{'ResultValue': '', 'ResultText': _('None')}]
+        query = {'portal_type': 'Instrument',
+                 'UID': analysis_brain.getAllowedInstrumentUIDs,
+                 'inactive_state':'active'}
+        instruments = api.search(query, 'bika_setup_catalog')
+        for instrument in instruments:
+            instrument = api.get_object(instrument)
+            if uncalibrated and not instrument.isOutOfDate():
+                # Is a QC analysis, include instrument also if is not valid
+                vocab.append({'ResultValue': instrument.UID(),
+                              'ResultText': instrument.Title()})
+            if instrument.isValid():
                 # Only add the 'valid' instruments: certificate
                 # on-date and valid internal calibration tests
-                ret.append({'ResultValue': ins.UID(),
-                            'ResultText': ins.Title()})
-
-        ret.insert(0, {'ResultValue': '',
-                       'ResultText': _('None')})
-        return ret
+                vocab.append({'ResultValue': instrument.UID(),
+                              'ResultText': instrument.Title()})
+        return vocab
 
     def getAnalysts(self):
         analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
