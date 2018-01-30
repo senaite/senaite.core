@@ -15,7 +15,7 @@ Changelog
 
 **Fixed**
 
-#620: Fix client batch list filters
+- #620: Client batch list filters do not work
 
 **Security**
 
