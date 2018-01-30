@@ -71,7 +71,6 @@ class AccreditationView(AnalysisServicesView):
              'transitions': [{'id': 'empty'}, ],  # none
              'columns': ['Title',
                          'Keyword',
-                         'Category',
                          'Price',
                          'MaxTimeAllowed',
                          'DuplicateVariation',
