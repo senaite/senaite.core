@@ -1,27 +1,44 @@
 Changelog
 =========
 
-1.2.1 (unreleased)
+1.2.2 (unreleased)
 ------------------
 
 **Added**
 - Unit Conversions to allow results to be reported in alternative units
 
-- #555 Don't allow the deactivation Analysis Services with active dependencies
-- #555 Don't allow the activation of Analysis Services with inactive dependents
 
 **Removed**
 
 
 **Changed**
 
-- #569 Minimalistic dashboard indicators
-
 
 **Fixed**
 
+
+**Security**
+
+
+
+1.2.1 (2018-01-26)
+------------------
+
+**Added**
+
+- #555 Don't allow the deactivation of Analysis Services with active dependencies
+- #555 Don't allow the activation of Analysis Services with inactive dependents
+
+**Changed**
+
+- #569 Minimalistic dashboard indicators
+
+**Fixed**
+
+- #606 Handle unicode queries in Client ReferenceWidgetVocabulary
+- #603 Out of range Icons are not displayed through all Analysis states
 - #598 BadRequest error when changing Calculation on Analysis Service
-- #593 Fixed Price/Spec/Interim not set in AR Manage Analyses
+- #593 Price/Spec/Interim not set in AR Manage Analyses
 - #585 Empty value for Analysis Request column in aggregated list of analyses
 - #578 Fix translation for review state titles in listings
 - #580 Fix calculations using built-ins
@@ -32,9 +49,6 @@ Changelog
 - #553 Fixed that images and barcodes were not printed in reports
 - #551 Traceback in Worksheet Templates list when there are Instruments assigned
 - #571 Added try/except around id-template format function to log key errors in ID generation
-
-**Security**
-
 
 
 1.2.0 (2018-01-03)
