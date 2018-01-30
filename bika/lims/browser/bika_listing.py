@@ -5,15 +5,16 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import re
+import time
 import collections
-import copy
 import json
 import traceback
+import Missing
+import DateTime
 
 from AccessControl import getSecurityManager
-from DateTime import DateTime
 from DateTime.DateTime import DateError, DateTimeError, SyntaxError, TimeError
-from Products.AdvancedQuery import And, Between, Eq, Generic, MatchRegexp, Or
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, deprecated
@@ -458,9 +459,8 @@ class BikaListingView(BrowserView):
         'state_title': {'title': _('State')},
     }
 
-    # Additional indexes to be searched
-    # any index name not specified in self.columns[] can be added here.
-    filter_indexes = ['title', 'SearchableText']
+    # BBB: Not used anymore
+    filter_indexes = []
 
     # The current or default review_state when one hasn't been selected.
     # With this setting, BikaListing instances must be careful to change it,
@@ -575,6 +575,23 @@ class BikaListingView(BrowserView):
         """
         return 'workflow_action'
 
+    def get_form_id(self):
+        """Return the form id
+
+        Note: The form_id must be unique when rendering multiple listing tables
+        """
+        return self.form_id
+
+    def get_pagesize(self):
+        """Return the pagesize request parameter
+        """
+        form_id = self.get_form_id()
+        pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
+        try:
+            return int(pagesize)
+        except (ValueError, TypeError):
+            return self.pagesize
+
     def _process_request(self):
         """Scan request for parameters and configure class attributes
         accordingly.  Setup AdvancedQuery or catalog contentFilter.
@@ -600,8 +617,7 @@ class BikaListingView(BrowserView):
             The parameter value will be matched with regexp if a FieldIndex or
             TextIndex.  Else, AdvancedQuery.Generic is used.
         """
-        form_id = self.form_id
-        catalog = getToolByName(self.context, self.catalog)
+        form_id = self.get_form_id()
 
         # Some ajax calls duplicate form values?  I have not figured out why!
         if self.request.form:
@@ -628,101 +644,11 @@ class BikaListingView(BrowserView):
         self._set_sorting_criteria()
 
         # pagesize
-        pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
-        if type(pagesize) in (list, tuple):
-            pagesize = pagesize[0]
-        try:
-            pagesize = int(pagesize)
-        except (ValueError, TypeError):
-            pagesize = self.pagesize = 10
-        self.pagesize = pagesize
+        self.pagesize = self.get_pagesize()
         # Plone's batching wants this variable:
         self.request.set('pagesize', self.pagesize)
         # and we want to make our choice remembered in bika_listing also
         self.request.set(self.form_id + '_pagesize', self.pagesize)
-
-        # index filters.
-        self.And = []
-        self.Or = []
-        for k, v in self.columns.items():
-            if 'index' not in v \
-                    or v['index'] == 'review_state' \
-                    or v['index'] in self.filter_indexes:
-                continue
-            self.filter_indexes.append(v['index'])
-
-        # any request variable named ${form_id}_{index_name}
-        # will pass it's value to that index in self.contentFilter.
-        # all conditions using ${form_id}_{index_name} are searched with AND
-        for index in self.filter_indexes:
-            idx = catalog.Indexes.get(index, None)
-            if idx is None:
-                logger.warn("index named '%s' not found in %s.  "
-                            "(Perhaps the index is still empty)." %
-                            (index, self.catalog))
-                continue
-            request_key = "%s_%s" % (form_id, index)
-            value = self.request.get(request_key, '')
-            if len(value) > 1:
-                if idx.meta_type in ('ZCTextIndex', 'FieldIndex'):
-                    self.And.append(MatchRegexp(index, value))
-                elif idx.meta_type == 'DateIndex':
-                    logger.info("Unhandled DateIndex search on '%s'" % index)
-                    continue
-                else:
-                    self.Or.append(Generic(index, value))
-
-        # if there's a ${form_id}_filter in request, then all indexes
-        # are are searched for it's value.
-        # ${form_id}_filter is searched with OR agains all indexes
-        request_key = "%s_filter" % form_id
-        value = self.request.get(request_key, '')
-        if type(value) in (list, tuple):
-            value = value[0]
-        if len(value) > 1:
-            for index in self.filter_indexes:
-                idx = catalog.Indexes.get(index, None)
-                if idx is None:
-                    logger.debug("index named '%s' not found in %s.  "
-                                 "(Perhaps the index is still empty)." %
-                                 (index, self.catalog))
-                    continue
-                if idx.meta_type in ('ZCTextIndex', 'FieldIndex'):
-                    # For SearchableText index, we search for any value
-                    # starting with keyword. Unfortunately for ZCTextIndexes
-                    # regex cannot start with special character like '*'
-                    if idx.meta_type == 'ZCTextIndex':
-                        value += '*'
-                    self.Or.append(MatchRegexp(index, value))
-                    self.expand_all_categories = True
-                    # https://github.com/bikalabs/Bika-LIMS/issues/1069
-                    vals = value.split('-')
-                    if len(vals) > 2:
-                        valroot = vals[0]
-                        for i in range(1, len(vals)):
-                            valroot = '%s-%s' % (valroot, vals[i])
-                            self.Or.append(MatchRegexp(index, valroot + '-*'))
-                            self.expand_all_categories = True
-                elif idx.meta_type == 'DateIndex':
-                    if type(value) in (list, tuple):
-                        value = value[0]
-                    if value.find(":") > -1:
-                        try:
-                            lohi = [DateTime(x) for x in value.split(":")]
-                        except DATETIME_EXCEPTIONS:
-                            logger.info("Error (And, DateIndex='%s')" % index)
-                        self.Or.append(Between(index, lohi[0], lohi[1]))
-                        self.expand_all_categories = True
-                    else:
-                        try:
-                            self.Or.append(Eq(index, DateTime(value)))
-                            self.expand_all_categories = True
-                        except DATETIME_EXCEPTIONS:
-                            logger.info("Error (Or, DateIndex='%s')" % index)
-                else:
-                    self.Or.append(Generic(index, value))
-                    self.expand_all_categories = True
-            self.Or.append(MatchRegexp('review_state', value))
 
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.
@@ -1125,48 +1051,172 @@ class BikaListingView(BrowserView):
                 idx += 1
         return results
 
-    def _fetch_brains(self, idxfrom=0):
-        """Returns the brains that must be displayed in the current list
+    def get_catalog(self, default="portal_catalog"):
+        """Get the catalog tool to be used in the listing
 
-        Uses the contentFilter and/or contentsMethod class variables (or
-        functions) to query against the database. Also takes into account if
-        only a subset of the results must be returned by using idxfrom and. If
-        the number of results is lower than idxfrom, will return an empty array
-
-        :param idxfrom: index to start to count for results
-        :return: the list of brains to be displayed in this list
+        :returns: ZCatalog tool
         """
-        # Creating a copy of the contentFilter dictionary in order to include
-        # the filter bar's filtering additions in the query. We don't want to
-        # modify contentFilter with those 'extra' filtering elements to be
-        # included in the.
-        contentFilterTemp = copy.deepcopy(self.contentFilter)
-        addition = self.get_filter_bar_queryaddition()
+        try:
+            return api.get_tool(self.catalog)
+        except api.BikaLIMSError:
+            return api.get_tool(default)
+
+    def get_catalog_query(self, searchterm=None):
+        """Return the catalog query
+
+        :param searchterm: Additional filter value to be added to the query
+        :returns: Catalog query dictionary
+        """
+        # create a copy of the base query
+        query = dict(self.contentFilter)
+
+        # # Pass the searchterm as well to the Searchable Text index
+        # if searchterm and isinstance(searchterm, basestring):
+        #     query.update({"SearchableText": searchterm + "*"})
+
         # Adding the extra filtering elements
-        if addition:
-            contentFilterTemp.update(addition)
-        # Check for 'and'/'or' logic queries
-        if (hasattr(self, 'And') and self.And) \
-                or (hasattr(self, 'Or') and self.Or):
-            # if contentsMethod is capable, we do an AdvancedQuery.
-            if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
-                aq = self.contentsMethod.makeAdvancedQuery(contentFilterTemp)
-                if hasattr(self, 'And') and self.And:
-                    tmpAnd = And()
-                    for q in self.And:
-                        tmpAnd.addSubquery(q)
-                    aq &= tmpAnd
-                if hasattr(self, 'Or') and self.Or:
-                    tmpOr = Or()
-                    for q in self.Or:
-                        tmpOr.addSubquery(q)
-                    aq &= tmpOr
-                brains = self.contentsMethod.evalAdvancedQuery(aq)
-            else:
-                # otherwise, self.contentsMethod must handle contentFilter
-                brains = self.contentsMethod(contentFilterTemp)
-        else:
-            brains = self.contentsMethod(contentFilterTemp)
+        extra = self.get_filter_bar_queryaddition() or {}
+        query.update(extra)
+        logger.info("get_catalog_query::query={}".format(query))
+        return query
+
+    def get_metadata_columns(self):
+        """Get a list of all metadata column names
+
+        :returns: List of catalog metadata column names
+        """
+        catalog = self.get_catalog()
+        return catalog.schema()
+
+    def get_metadata_for(self, brain):
+        """Fetch all metadata columns for the given ZCatalog brain
+
+        :param brain: ZCatalog Brain
+        :returns: Dictionary of metadata column name -> metadata mapping
+        """
+        keys = self.get_metadata_columns()
+        values = map(lambda k: getattr(brain, k, None), keys)
+        return dict(zip(keys, values))
+
+    def metadata_to_searchable_text(self, brain, key, value):
+        """Parse the given metadata to text
+
+        :param brain: ZCatalog Brain
+        :param key: The name of the metadata column
+        :param value: The raw value of the metadata column
+        :returns: Searchable and translated value or None
+        """
+        if value is Missing.Value:
+            return None
+        if value is None:
+            return None
+        if api.is_uid(value):
+            return None
+        if isinstance(value, (bool)):
+            return None
+        if isinstance(value, (list, tuple)):
+            for v in value:
+                return self.metadata_to_searchable_text(brain, key, v)
+        if isinstance(value, (dict)):
+            for k, v in value.items():
+                return self.metadata_to_searchable_text(brain, k, v)
+        if isinstance(value, DateTime.DateTime):
+            try:
+                return value.strftime(self.date_format_long)
+            except ValueError:
+                return str(value)
+        # if "review_state" in key.lower():
+        #     return self.translate(value)
+        return str(value)
+
+    def get_metadata_dump_for(self, brain):
+        """Extract the values of the metadata columns into a searchable text dump
+
+        :param brain: ZCatalog Brain
+        :returns: Comma separated text dump of all metadata columns
+        """
+        metadata = self.get_metadata_for(brain)
+        dump = []
+
+        # extract text-based values from the metadata columns
+        for key, value in metadata.items():
+            parsed = self.metadata_to_searchable_text(brain, key, value)
+            if parsed is None:
+                continue
+            # Append the metadata value
+            dump.append(parsed)
+        return ",".join(dump)
+
+    def make_regex_for(self, searchterm, ignorecase=True):
+        """Make a regular expression for the given searchterm
+
+        :param searchterm: The searchterm for the regular expression
+        :param ignorecase: Flag to compile with re.IGNORECASE
+        :returns: Compiled regular expression
+        """
+        if ignorecase:
+            return re.compile(searchterm, re.IGNORECASE)
+        return re.compile(searchterm)
+
+    def search(self, searchterm="", ignorecase=True):
+        """Search the catalog tool
+
+        :param searchterm: The searchterm for the regular expression
+        :param ignorecase: Flag to compile with re.IGNORECASE
+        :returns: List of catalog brains
+        """
+
+        # TODO Append start and pagesize to return just that slice of results
+
+        # start the timer for performance checks
+        start = time.time()
+
+        # strip whitespaces off the searchterm
+        searchterm = searchterm.strip()
+        # strip illegal characters off the searchterm
+        searchterm = searchterm.strip("*.!$%&/()=-+:'`´^")
+        logger.info("search::searchterm='{}'".format(searchterm))
+
+        # create a catalog query
+        query = self.get_catalog_query(searchterm=searchterm)
+
+        # search the catalog
+        catalog = api.get_tool(self.catalog)
+        brains = catalog(query)
+
+        # return the unfiltered catalog results
+        if not searchterm:
+            return brains
+
+        # Build a regular expression for the given searchterm
+        regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
+
+        # If the user entered a search term, filter the results by their metadata
+        out = []
+        for brain in brains:
+            metadata = self.get_metadata_dump_for(brain)
+            if regex.search(metadata):
+                out.append(brain)
+
+        end = time.time()
+        logger.info("Search for '{}' took {}s and found {} results".format(searchterm, end - start, len(out)))
+        return out
+
+    def get_searchterm(self):
+        """Get the user entered search value from the request
+
+        :returns: Current search box value from the request
+        """
+        form_id = self.get_form_id()
+        key = "{}_filter".format(form_id)
+        return self.request.get(key, "")
+
+    def _fetch_brains(self, idxfrom=0):
+        """Fetch the catalog results for the current listing table state
+        """
+
+        searchterm = self.get_searchterm()
+        brains = self.search(searchterm=searchterm)
 
         # Return a subset of results, if necessary
         if idxfrom and len(brains) > idxfrom:
