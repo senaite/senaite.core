@@ -201,6 +201,7 @@ function CalculationUtils() {
                         converted_result_input.val(result.converted_result);
                         converted_result_input.prop('type', 'text');
                         converted_result_input.prop('readonly', true);
+                        converted_result_input.prop('style', 'font-size: 100%');
 
                         $('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").val(result.dry_result);
                         $($('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").siblings()[0]).empty().append(result.dry_result);
