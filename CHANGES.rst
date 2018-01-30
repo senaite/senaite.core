@@ -15,7 +15,7 @@ Changelog
 
 **Fixed**
 
-- #620: Client batch list filters do not work
+- #620 Client batch list is not filtered by state
 
 **Security**
 
