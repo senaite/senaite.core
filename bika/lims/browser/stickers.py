@@ -342,7 +342,7 @@ class Sticker(BrowserView):
         try:
             copies_count = int(self.request.form.get("copies_count"))
         except (TypeError, ValueError):
-            # default number of copies is a mandatory integer field in bika setup
+            # default number of copies is a mandatory integer field in senaite setup
             # so theoretically this should never fail
             copies_count = self.context.bika_setup.getDefaultNumberOfCopies()
 
