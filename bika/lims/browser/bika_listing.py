@@ -16,6 +16,7 @@ import DateTime
 from AccessControl import getSecurityManager
 from DateTime.DateTime import DateError, DateTimeError, SyntaxError, TimeError
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, deprecated
 from bika.lims import api
@@ -1154,6 +1155,9 @@ class BikaListingView(BrowserView):
         :param ignorecase: Flag to compile with re.IGNORECASE
         :returns: Compiled regular expression
         """
+        # searchterm comes in as string, e.g. 'D\xc3\xa4'
+        # but must be u'D\xe4' to match the metadata
+        searchterm = safe_unicode(searchterm)
         if ignorecase:
             return re.compile(searchterm, re.IGNORECASE)
         return re.compile(searchterm)
