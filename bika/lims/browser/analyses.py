@@ -537,10 +537,8 @@ class AnalysesView(BikaListingView):
         """
         uid = api.get_uid(brain_object)
         if uid not in self._objects_map:
-            logger.warn('Waking up object {} ({}): {}'.format(brain_object.getId, brain_object.Title, brain_object.UID))
             obj = api.get_object(brain_object)
             self._objects_map[uid] = obj
-            logger.warn("Cached objects: {}".format(len(self._objects_map)))
         return self._objects_map[uid]
 
     def folderitem(self, obj, item, index):
