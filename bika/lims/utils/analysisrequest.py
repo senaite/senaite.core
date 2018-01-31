@@ -7,6 +7,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
@@ -25,10 +26,10 @@ from copy import deepcopy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
-from plone import api
 from Products.CMFPlone.utils import _createObjectByType
 import os
 import tempfile
+
 
 def create_analysisrequest(client, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
@@ -163,6 +164,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     if reject_field and reject_field.get('checkbox', False):
         doActionFor(ar, 'reject')
 
+    bika_setup = api.get_bika_setup()
+    if bika_setup.getRegisterAsReceivd():
+        # Transition AR and analyses to Received state
+        doActionFor(ar, 'receive')
+
     return ar
 
 
@@ -250,7 +256,6 @@ def _resolve_items_to_service_uids(items):
         If an item that doesn't match any of the criterias above is found, the
         function will raise a RuntimeError
     """
-    portal = None
     bsc = None
     service_uids = []
 
@@ -274,8 +279,7 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe object UID.
-        portal = portal if portal else api.portal.get()
-        bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
+        bsc = api.get_tool('bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
             uid = brains[0].UID
@@ -321,7 +325,8 @@ def notify_rejection(analysisrequest):
 
     # This is the template to render for the pdf that will be either attached
     # to the email and attached the the Analysis Request for further access
-    tpl = AnalysisRequestRejectPdfView(analysisrequest, analysisrequest.REQUEST)
+    tpl = AnalysisRequestRejectPdfView(
+            analysisrequest, analysisrequest.REQUEST)
     html = tpl.template()
     html = safe_unicode(html).encode('utf-8')
     filename = '%s-rejected' % arid
@@ -354,7 +359,8 @@ def notify_rejection(analysisrequest):
     # compose and send email.
     mailto = []
     lab = analysisrequest.bika_setup.laboratory
-    mailfrom = formataddr((encode_header(lab.getName()), lab.getEmailAddress()))
+    mailfrom = formataddr(
+            (encode_header(lab.getName()), lab.getEmailAddress()))
     mailsubject = _('%s has been rejected') % arid
     contacts = [analysisrequest.getContact()] + analysisrequest.getCCContact()
     for contact in contacts:
@@ -378,7 +384,7 @@ def notify_rejection(analysisrequest):
         host = getToolByName(analysisrequest, 'MailHost')
         host.send(mime_msg.as_string(), immediate=True)
     except:
-        logger.warning(
-            "Email with subject %s was not sent (SMTP connection error)" % mailsubject)
+        logger.warning("Email with subject {} was not sent"
+                       " (SMTP connection error)".format(mailsubject))
 
     return True
