@@ -869,6 +869,7 @@ class AnalysesView(BikaListingView):
                 self.interim_columns[interim_keyword] = interim_title
 
         item['interimfields'] = interim_fields
+        self.interim_fields[analysis_brain.UID] = interim_fields
 
         # Set calculation
         calculation_uid = analysis_brain.getCalculationUID
