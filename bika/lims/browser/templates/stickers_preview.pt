@@ -270,6 +270,7 @@
             <tal:stickers repeat="sticker view/items">
                     <tal:sticker define="item_id python:sticker[2].getId() if sticker else None;">
                     <div class='sticker'
+                         tal:condition="python:item_id is not None"
                          tal:content='structure python:view.renderItem()'></div>
                     </tal:sticker>
             </tal:stickers>
