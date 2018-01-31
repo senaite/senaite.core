@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #618 When previewing stickers the number of copies to print for each sticker can be modified.
+- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
 
 **Removed**
 
@@ -14,9 +16,13 @@ Changelog
 
 - #619 Changed listing tables search logic to operate on catalog metadata
 - #569 Minimalistic dashboard indicators
+- #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
 
+- #611 Advanced filter bar: filter Analysis Requests by Service name not working
+- #622 (Re-)Installation always adds another identifier type
+- #620 Client batch list is not filtered by state
 
 **Security**
 
