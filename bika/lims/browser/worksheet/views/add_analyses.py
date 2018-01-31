@@ -154,6 +154,27 @@ class AddAnalysesView(BikaListingView):
         else:
             return self.template()
 
+    def GET_url(self, include_current=True, **kwargs):
+        """Handler for the "Show More" Button
+        """
+        url = super(AddAnalysesView, self).GET_url(include_current=include_current, **kwargs)
+        form = self.request.form
+
+        # Remember the Client filtering when clicking show more...
+        client = form.get('FilterByClient', '')
+        if client:
+            url += "&FilterByClient={}".format(client)
+
+        category = form.get('FilterByCategory', '')
+        if category:
+            url += "&FilterByCategory={}".format(client)
+
+        service = form.get('FilterByService', '')
+        if service:
+            url += "&FilterByService={}".format(client)
+
+        return url
+
     def isItemAllowed(self, obj):
         """
         Checks if the passed in Analysis must be displayed in the list. If the
