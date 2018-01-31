@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #622 (Re-)Installation always adds another identifier type
 
 **Security**
 
