@@ -58,7 +58,6 @@ class Sticker(BrowserView):
 
         self.item_index = 0
         self.current_item = None
-        self.rendered_items = []
         self.copies_count = None
 
         self.context = context
@@ -76,7 +75,6 @@ class Sticker(BrowserView):
 
         self.copies_count = self.get_copies_count()
 
-        self.rendered_items = []
         items = self.request.get('items', '')
         # If filter by type is given in the request, only the templates under
         # the path with the type name will be given as vocabulary.
@@ -256,9 +254,7 @@ class Sticker(BrowserView):
         """
         if self.item_index == len(self.items):
             self.item_index = 0
-            self.rendered_items = []
         self.current_item = self.items[self.item_index]
-        self.rendered_items.append(self.current_item[2].getId())
         self.item_index += 1
         return self.current_item
 
