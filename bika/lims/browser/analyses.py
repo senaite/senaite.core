@@ -7,9 +7,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.utils import t, dicts_to_dict, format_supsub, check_permission, \
@@ -27,7 +25,6 @@ from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims.workflow import wasTransitionPerformed, isActive
 from zope.component import getAdapters
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
@@ -59,7 +56,6 @@ class AnalysesView(BikaListingView):
         self.show_column_toggles = False
         self.pagesize = 999999
         self.form_id = 'analyses_form'
-        # Initializing attributs for this view
         self.context_active = isActive(context)
         self.interim_fields = {}
         self.interim_columns = {}
@@ -68,7 +64,7 @@ class AnalysesView(BikaListingView):
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
         self.rc = getToolByName(context, REFERENCE_CATALOG)
-        # Initializing the deximal mark variable
+        # Initializing the decimal mark variable
         self.dmk = ''
         self.scinot = ''
         request.set('disable_plone.rightcolumn', 1)
@@ -350,29 +346,29 @@ class AnalysesView(BikaListingView):
         :type analysis: bika.lims.content.analysis.Analysis
                         bika.lims.content.referenceanalysis.ReferenceAnalysis
                         CatalogBrain
-        :returns: The result specifications that apply to the Analysis.
+        :return: The result specifications that apply to the Analysis.
         :rtype: dict
         """
         if api.is_brain(analysis):
             # This is a brain
             uid = analysis.UID
             keyword = analysis.getKeyword
-            range = analysis.getResultsRange
+            results_range = analysis.getResultsRange
         else:
             # This is an object
             uid = analysis.UID()
             keyword = analysis.getKeyword()
-            range = analysis.getResultsRange()
+            results_range = analysis.getResultsRange()
 
         default = {'keyword': keyword, 'uid': uid,
                    'min': '', 'max': '', 'error': ''}
-        range = range or default
-        if isinstance(range, list):
+        results_range = results_range or default
+        if isinstance(results_range, list):
             # Convert the list of dicts to a dictionary
             # TODO: Is this required? Why?
-            range = dicts_to_dict(range, 'keyword')
-            range = range.get(keyword, None) or default
-        return range
+            results_range = dicts_to_dict(results_range, 'keyword')
+            results_range = results_range.get(keyword, None) or default
+        return results_range
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
@@ -404,8 +400,8 @@ class AnalysesView(BikaListingView):
             {'ResultValue': <method_UID>,
              'ResultText': <method_Title>}
 
-        :param analysis: A single Analysis brain
-        :type analysis: CatalogBrain
+        :param analysis_brain: A single Analysis brain
+        :type analysis_brain: CatalogBrain
         :returns: A list of dicts
         """
         uids = analysis_brain.getAllowedMethodUIDs
@@ -440,7 +436,7 @@ class AnalysesView(BikaListingView):
 
         :param analysis_brain: A single Analysis or ReferenceAnalysis
         :type analysis_brain: Analysis or.ReferenceAnalysis
-        :returns: A vocabulary with the instruments for the analysis
+        :return: A vocabulary with the instruments for the analysis
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
         if not analysis_brain.getInstrumentEntryOfResults:
@@ -458,7 +454,7 @@ class AnalysesView(BikaListingView):
         vocab = [{'ResultValue': '', 'ResultText': _('None')}]
         query = {'portal_type': 'Instrument',
                  'UID': analysis_brain.getAllowedInstrumentUIDs,
-                 'inactive_state':'active'}
+                 'inactive_state': 'active'}
         instruments = api.search(query, 'bika_setup_catalog')
         for instrument in instruments:
             instrument = api.get_object(instrument)
@@ -737,8 +733,8 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_category(self, analysis_brain, item):
         """Sets the category to the item passed in
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
         """
         if not self.show_categories:
             return
@@ -752,9 +748,8 @@ class AnalysesView(BikaListingView):
     def _folder_item_css_class(self, analysis_brain, item):
         """Sets the suitable css class name(s) to `table_row_class` from the
         item passed in, depending on the properties of the analysis object
-
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
         """
         meta_type = analysis_brain.meta_type
 
@@ -774,9 +769,8 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_duedate(self, analysis_brain, item):
         """Sets the analysis' due date to the item passed in.
-
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
         """
 
         # Note that if the analysis is a Reference Analysis, `getDueDate`
@@ -797,9 +791,8 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_result(self, analysis_brain, item):
         """Sets the analysis' result to the item passed in.
-
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
         """
 
         item['Result'] = ''
@@ -839,9 +832,8 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Sets the analysis' calculation and interims to the item passed in.
-
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
         """
 
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
@@ -878,52 +870,51 @@ class AnalysesView(BikaListingView):
             # does, but has interim fields, it must be re-testable.
             item['allow_edit'].append('retested')
 
-    def _folder_item_method(self, obj, item):
+    def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
-
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
         """
 
-        is_editable = self.is_analysis_edition_allowed(obj)
-        method_title = obj.getMethodTitle
+        is_editable = self.is_analysis_edition_allowed(analysis_brain)
+        method_title = analysis_brain.getMethodTitle
         item['Method'] = method_title or ''
         if is_editable:
-            method_vocabulary = self.get_methods_vocabulary(obj)
+            method_vocabulary = self.get_methods_vocabulary(analysis_brain)
             if method_vocabulary:
-                item['Method'] = obj.getMethodUID
+                item['Method'] = analysis_brain.getMethodUID
                 item['choices']['Method'] = method_vocabulary
                 item['allow_edit'].append('Method')
                 self.show_methodinstr_columns = True
         elif method_title:
-            item['replace']['Method'] = get_link(obj.getMethodURL, method_title)
+            item['replace']['Method'] = get_link(analysis_brain.getMethodURL,
+                                                 method_title)
             self.show_methodinstr_columns = True
 
-    def _folder_item_instrument(self, obj, item):
+    def _folder_item_instrument(self, analysis_brain, item):
         """Fills the analysis' instrument to the item passed in.
-
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
         """
         item['Instrument'] = ''
-        if not obj.getInstrumentEntryOfResults:
+        if not analysis_brain.getInstrumentEntryOfResults:
             # Manual entry of results, instrument is not allowed
             item['Instrument'] = _('Manual')
-            msgtitle = t(_(
+            msg = t(_(
                 "Instrument entry of results not allowed for ${service}",
-                mapping={"service": obj.Title},
+                mapping={"service": analysis_brain.Title},
             ))
             item['replace']['Instrument'] = \
-                '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
+                '<a href="#" title="%s">%s</a>' % (msg, t(_('Manual')))
             return
 
         # Instrument can be assigned to this analysis
-        is_editable = self.is_analysis_edition_allowed(obj)
+        is_editable = self.is_analysis_edition_allowed(analysis_brain)
         self.show_methodinstr_columns = True
-        instrument = self.get_instrument(obj)
+        instrument = self.get_instrument(analysis_brain)
         if is_editable:
             # Edition allowed
-            voc = self.get_instruments_vocabulary(obj)
+            voc = self.get_instruments_vocabulary(analysis_brain)
             if voc:
                 # The service has at least one instrument available
                 item['Instrument'] = instrument.UID() if instrument else ''
@@ -953,15 +944,15 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_attachments(self, obj, item):
         item['Attachments'] = ''
-        at_uids = obj.getAttachmentUIDs
-        if not at_uids:
+        attachment_uids = obj.getAttachmentUIDs
+        if not attachment_uids:
             return
 
         if not self.has_permission(ViewResults, obj):
             return
 
         attachments_html = []
-        attachments = api.search({'UID': at_uids}, 'uid_catalog')
+        attachments = api.search({'UID': attachment_uids}, 'uid_catalog')
         for attachment in attachments:
             attachment = api.get_object(attachment)
             uid = api.get_uid(attachment)
@@ -1101,8 +1092,9 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_verify_icons(self, analysis_brain, item):
         """Sets the analysis' verification icons to the item passed in.
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row"""
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
         submitter = analysis_brain.getSubmittedBy
         if not submitter:
             # This analysis hasn't yet been submitted, no verification yet
@@ -1120,7 +1112,6 @@ class AnalysesView(BikaListingView):
             msg = t(_("Submitted and verified by the same user: {}"))
             icon = get_image('warning.png', title=msg.format(submitter))
             self._append_after_element(item, 'state_title', icon)
-
 
         num_verifications = analysis_brain.getNumberOfRequiredVerifications
         if num_verifications > 1:
@@ -1199,8 +1190,9 @@ class AnalysesView(BikaListingView):
     def _folder_item_assigned_worksheet(self, analysis_brain, item):
         """Adds an icon to the item dict if the analysis is assigned to a
         worksheet and if the icon is suitable for the current context
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row"""
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
         if IAnalysisRequest.providedBy(self.context):
             # We want this icon to only appear if the context is an AR
             return
@@ -1209,7 +1201,7 @@ class AnalysesView(BikaListingView):
             # No need to go further. This analysis is not assigned to any WS
             return
 
-        #TODO: Performance. Waking-up object here
+        # TODO: Performance. Waking-up object here
         analysis_obj = self._get_object(analysis_brain)
         worksheet = analysis_obj.getBackReferences('WorksheetAnalysis')
         if not worksheet:
@@ -1226,13 +1218,15 @@ class AnalysesView(BikaListingView):
     def _folder_item_reflex_icons(self, analysis_brain, item):
         """Adds an icon to the item dictionary if the analysis has been
         automatically generated due to a reflex rule
-        :analysis_brain: Brain that represents an analysis
-        :item: analysis' dictionary counterpart to be represented as a row"""
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
         if not analysis_brain.getIsReflexAnalysis:
             # Do nothing
             return
 
-        img = get_image('reflexrule.png', title=t(_('It comes form a reflex rule')))
+        img = get_image('reflexrule.png',
+                        title=t(_('It comes form a reflex rule')))
         self._append_after_element(item, 'Service', img)
 
     def _folder_item_report_visibility(self, analysis_brain, item):
@@ -1256,12 +1250,13 @@ class AnalysesView(BikaListingView):
         if IRoutineAnalysis.providedBy(full_obj):
             item['allow_edit'].append('Hidden')
 
-    def _folder_item_fieldicons(self, obj):
+    def _folder_item_fieldicons(self, analysis_brain):
         """Resolves if field-specific icons must be displayed for the object
         passed in.
+        :param analysis_brain: Brain that represents an analysis
         """
-        uid = api.get_uid(obj)
-        full_obj = api.get_object(obj)
+        uid = api.get_uid(analysis_brain)
+        full_obj = api.get_object(analysis_brain)
         for name, adapter in getAdapters((full_obj,), IFieldIcons):
             alerts = adapter()
             if not alerts or uid not in alerts:
