@@ -1321,6 +1321,13 @@ class BikaListingView(BrowserView):
             results_dict['state_title'] = st_title
 
             results_dict['class'] = {}
+
+            # As far as I am concerned, adapters for IFieldIcons are only used
+            # for Analysis content types. Since AnalysesView is not using this
+            # "classic" folderitems from bikalisting anymore, this logic has
+            # been added in AnalysesView. Even though, this logic hasn't been
+            # removed from here, cause this _folderitems function is marked as
+            # deprecated, so it will be eventually removed alltogether.
             for name, adapter in getAdapters((obj,), IFieldIcons):
                 auid = obj.UID() if hasattr(obj, 'UID') and callable(
                     obj.UID) else None

@@ -534,7 +534,7 @@
                                    class="err" size="5"
                                    placeholder="err%"
                                    i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.err:records;
+                                   tal:attributes="name string:${fieldname}.error:records;
                                                    value python:service_spec.get('error');"/>
                           </div>
                         </tal:specifications>
@@ -711,7 +711,7 @@
                                    class="err" size="5"
                                    placeholder="err%"
                                    i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.err:records;
+                                   tal:attributes="name string:${fieldname}.error:records;
                                                    value python:service_spec.get('error');"/>
                           </div>
                         </tal:specifications>
