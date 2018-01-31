@@ -578,29 +578,7 @@ class BikaListingView(BrowserView):
             return self.pagesize
 
     def _process_request(self):
-        """Scan request for parameters and configure class attributes
-        accordingly.  Setup AdvancedQuery or catalog contentFilter.
-
-        Request parameters:
-        <form_id>_limit_from:       index of the first item to display
-        <form_id>_rows_only:        returns only the rows
-        <form_id>_sort_on:          list items are sorted on this key
-        <form_id>_manual_sort_on:   no index - sort with python
-        <form_id>_pagesize:         number of items
-        <form_id>_filter:           A string, will be regex matched against
-                                    indexes in <form_id>_filter_indexes
-        <form_id>_filter_indexes:   list of index names which will be searched
-                                    for the value of <form_id>_filter
-
-        <form_id>_<index_name>:     Any index name can be used after <form_id>_.
-
-            any request variable named ${form_id}_{index_name} will pass it's
-            value to that index in self.contentFilter.
-
-            All conditions using ${form_id}_{index_name} are searched with AND.
-
-            The parameter value will be matched with regexp if a FieldIndex or
-            TextIndex.  Else, AdvancedQuery.Generic is used.
+        """BBB
         """
         form_id = self.get_form_id()
 
@@ -1032,6 +1010,7 @@ class BikaListingView(BrowserView):
         # Adding the extra filtering elements
         extra = self.get_filter_bar_queryaddition() or {}
         query.update(extra)
+
         logger.info("get_catalog_query::query={}".format(query))
         return query
 
