@@ -27,6 +27,7 @@ from bika.lims.utils import (getFromString, getHiddenAttributesForClass,
                              isActive, t, to_utf8)
 from bika.lims.workflow import doActionFor, skip
 from plone.app.content.browser import tableview
+from plone.memoize import view as viewcache
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -924,11 +925,13 @@ class BikaListingView(BrowserView):
         except api.BikaLIMSError:
             return api.get_tool(default)
 
+    @viewcache.memoize
     def get_catalog_indexes(self):
         """Return a list of registered catalog indexes
         """
         return self.get_catalog().indexes()
 
+    @viewcache.memoize
     def get_columns_indexes(self):
         """Returns a list of allowed sorting indexeds
         """
@@ -1017,6 +1020,7 @@ class BikaListingView(BrowserView):
         logger.info("get_catalog_query::query={}".format(query))
         return query
 
+    @viewcache.memoize
     def get_metadata_columns(self):
         """Get a list of all metadata column names
 
