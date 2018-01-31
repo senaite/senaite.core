@@ -1248,6 +1248,8 @@ class BikaListingView(BrowserView):
         logger.info("ListingView::search:searchterm='{}'".format(searchterm))
 
         # create a catalog query
+        logger.info("ListingView::search: Prepare catalog query for '{}'"
+                    .format(self.catalog))
         query = self.get_catalog_query(searchterm=searchterm)
 
         # search the catalog
