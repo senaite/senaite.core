@@ -318,7 +318,7 @@ class Sticker(BrowserView):
         for the stickers deppending on the filter_by_type.
         :param resource_name: The name of the resource folder.
         :type resource_name: string
-        :resturns: a string as a path
+        :returns: a string as a path
         """
         templates_dir =\
             queryResourceDirectory('stickers', resource_name).directory
@@ -339,7 +339,10 @@ class Sticker(BrowserView):
         return pdf_file
 
     def get_copies_count(self):
-        """Return the copies_count request parameter
+        """Return the copies_count number request parameter
+
+        :returns: the number of copies for each sticker as stated
+        in the request
         """
         try:
             copies_count = int(self.request.form.get("copies_count"))
