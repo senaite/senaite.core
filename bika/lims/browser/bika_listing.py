@@ -511,6 +511,11 @@ class BikaListingView(BrowserView):
         self.view_url = self.base_url
         self.workflow = None
 
+        # N.B. We set that here so that it can be overridden by subclasses,
+        #      e.g. by the worksheet add view
+        if "path" not in self.contentFilter:
+            self.contentFilter.update(self.get_path_query())
+
         # The listing object is bound to a class called BikaListingFilterBar
         # which can display an additional filter bar in the listing view in
         # order to filter the items by some terms. These terms should be
@@ -1072,6 +1077,23 @@ class BikaListingView(BrowserView):
 
         return default
 
+    def get_path_query(self, context=None, level=0):
+        """Return a path query
+
+        :param context: The context to get the physical path from
+        :param level: The depth level of the search
+        :returns: Catalog path query
+        """
+        if context is None:
+            context = self.context
+        path = api.get_path(context)
+        return {
+            "path": {
+                "query": path,
+                "level": level,
+            }
+        }
+
     def get_catalog_query(self, searchterm=None):
         """Return the catalog query
 
@@ -1081,14 +1103,6 @@ class BikaListingView(BrowserView):
 
         # avoid to change the original content filter
         query = copy.deepcopy(self.contentFilter)
-
-        # add the path if not there already
-        if "path" not in query:
-            path = api.get_path(self.context)
-            query["path"] = {
-                "query": path,
-                "level": 0,
-            }
 
         # contentFilter is allowed in every self.review_state.
         for k, v in self.review_state.get("contentFilter", {}).items():

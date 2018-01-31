@@ -129,27 +129,24 @@ class AddAnalysesView(BikaListingView):
                         _("No analyses were added to this worksheet."))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/add_analyses")
-            elif (
-                'FilterByCategory' in form or
-                'FilterByService' in form or
-                'FilterByClient' in form
-                    ):
-                # Apply filter elements
-                # Note that the name of those fields is '..Title', but we
-                # are getting their UID.
-                category = form.get('FilterByCategory', '')
-                if category:
-                    self.contentFilter['getCategoryUID'] = category
 
-                service = form.get('FilterByService', '')
-                if service:
-                    self.contentFilter['getServiceUID'] = service
 
-                client = form.get('FilterByClient', '')
-                if client:
-                    self.contentFilter['getClientUID'] = client
+        # Always apply filter elements
+        # Note that the name of those fields is '..Title', but we
+        # are getting their UID.
+        category = form.get('FilterByCategory', '')
+        if category:
+            self.contentFilter['getCategoryUID'] = category
 
-        self._process_request()
+        service = form.get('FilterByService', '')
+        if service:
+            self.contentFilter['getServiceUID'] = service
+
+        client = form.get('FilterByClient', '')
+        if client:
+            self.contentFilter['getClientUID'] = client
+
+        self.update()
 
         if self.request.get('table_only', '') == self.form_id or \
                 self.request.get('rows_only', '') == self.form_id:
