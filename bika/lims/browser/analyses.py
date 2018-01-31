@@ -1004,10 +1004,6 @@ class AnalysesView(BikaListingView):
             return
 
         result = obj.getResult
-        if result is None or result == '':
-            # Wake up the object only if necessary. If this analysis has no
-            # result set yet, there is no need to go further with Uncertainty
-            return
 
         # TODO: Performance, we wake-up the full object here
         full_obj = self._get_object(obj)
@@ -1015,10 +1011,11 @@ class AnalysesView(BikaListingView):
                                        sciformat=int(self.scinot))
         if formatted:
             item['Uncertainty'] = formatted
-            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
-            item['after']['Uncertainty'] = after.format(obj.getUnit)
             item['structure'] = True
+            # Add before and after snippets
+            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
+            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
+            item['after']['Uncertainty'] = after.format(obj.getUnit)
 
         is_editable = self.is_analysis_edition_allowed(obj)
         if is_editable and full_obj.getAllowManualUncertainty():
@@ -1027,6 +1024,10 @@ class AnalysesView(BikaListingView):
             item['Uncertainty'] = uncertainty or ''
             item['allow_edit'].append('Uncertainty')
             item['structure'] = False
+            # Add before and after snippets
+            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
+            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
+            item['after']['Uncertainty'] = after.format(obj.getUnit)
 
     def _folder_item_detection_limits(self, obj, item):
         item['DetectionLimit'] = ''
