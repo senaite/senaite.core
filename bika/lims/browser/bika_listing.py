@@ -563,10 +563,11 @@ class BikaListingView(BrowserView):
 
         # render
         self.before_render()
+
         if self.get_table_only():
-            return self.contents_table(table_only=self.form_id)
+            return self.contents_table(table_only=form_id)
         if self.get_rows_only():
-            return self.contents_table(table_only=self.form_id)
+            return self.contents_table(table_only=form_id)
         else:
             return self.template(self.context)
 
@@ -1039,6 +1040,7 @@ class BikaListingView(BrowserView):
             sort_order = self.contentFilter.get("sort_order", self.sort_order)
         if sort_order not in ["ascending", "descending"]:
             sort_order = "descending"
+
         return sort_order
 
     def get_sort_on(self, default="created"):
@@ -1254,6 +1256,7 @@ class BikaListingView(BrowserView):
 
         # return the unfiltered catalog results
         if not searchterm:
+            logger.info("ListingView::search: return {} results".format(len(brains)))
             return brains
 
         # Build a regular expression for the given searchterm
