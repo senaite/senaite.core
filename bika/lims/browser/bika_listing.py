@@ -5,36 +5,31 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
+import copy
+import DateTime
+import json
 import re
 import time
-import collections
-import json
 import traceback
-import Missing
-import DateTime
 
+import Missing
 from AccessControl import getSecurityManager
+from bika.lims import bikaMessageFactory as _
+from bika.lims import PMF, api, deprecated, logger
+from bika.lims.api import (get_current_user, get_object, get_object_by_uid,
+                           get_tool, get_transitions_for)
+from bika.lims.browser import BrowserView
+from bika.lims.interfaces import (IFieldIcons, ITopLeftHTMLComponentsHook,
+                                  ITopRightHTMLComponentsHook,
+                                  ITopWideHTMLComponentsHook)
+from bika.lims.utils import (getFromString, getHiddenAttributesForClass,
+                             isActive, t, to_utf8)
+from bika.lims.workflow import doActionFor, skip
+from plone.app.content.browser import tableview
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF, deprecated
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
-from bika.lims.api import get_tool, get_object_by_uid, get_current_user, \
-    get_object, get_transitions_for
-from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import ITopRightHTMLComponentsHook
-from bika.lims.interfaces import ITopLeftHTMLComponentsHook
-from bika.lims.interfaces import ITopWideHTMLComponentsHook
-from bika.lims.utils import getFromString
-from bika.lims.utils import getHiddenAttributesForClass, isActive
-from bika.lims.utils import t
-from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import skip
-from plone.app.content.browser import tableview
 from zope.component import getAdapters, getMultiAdapter
 
 
