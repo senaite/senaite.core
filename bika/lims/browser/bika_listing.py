@@ -498,7 +498,11 @@ class BikaListingView(BrowserView):
         super(BikaListingView, self).__init__(context, request)
         logger.info("ListingView::__init__")
 
-        self.base_url = api.get_url(self.context)
+        # set context and request for that view
+        self.context = context
+        self.request = request
+
+        self.base_url = context.absolute_url()
         self.field_icons = {}
         self.items = []
         self.limit_from = 0
