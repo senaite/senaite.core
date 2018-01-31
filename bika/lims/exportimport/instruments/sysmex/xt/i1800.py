@@ -64,12 +64,12 @@ def Import(context, request):
         over = override_mapping.get(override, [False, False])
         sam = sample_mapping.get(sample, ['getId', 'getSampleID', 'getClientSampleID'])
         importer = SysmexXTImporter(parser=parser,
-                                  context=context,
-                                  idsearchcriteria=sam,
-                                  allowed_ar_states=status,
-                                  allowed_analysis_states=None,
-                                  override=over,
-                                  instrument_uid=instrument)
+                                    context=context,
+                                    idsearchcriteria=sam,
+                                    allowed_ar_states=status,
+                                    allowed_analysis_states=None,
+                                    override=over,
+                                    instrument_uid=instrument)
         tbex = ''
         try:
             importer.process()
