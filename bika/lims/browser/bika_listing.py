@@ -1182,7 +1182,7 @@ class BikaListingView(BrowserView):
         wf = api.get_tool("portal_workflow")
         state_title = wf.getTitleForStateOnType(state, portal_type)
         translated_state = ts.translate(_(state_title or state), context=self.request)
-        logger.info("ListingView:translate_review_state: {} -> {} -> {}"
+        logger.info(u"ListingView:translate_review_state: {} -> {} -> {}"
                     .format(state, state_title, translated_state))
         return translated_state
 
@@ -1230,7 +1230,7 @@ class BikaListingView(BrowserView):
                 continue
             # Append the metadata value
             dump.append(parsed)
-        return ",".join(dump)
+        return ",".join(map(safe_unicode, dump))
 
     def make_regex_for(self, searchterm, ignorecase=True):
         """Make a regular expression for the given searchterm
@@ -1263,7 +1263,7 @@ class BikaListingView(BrowserView):
         searchterm = searchterm.strip()
         # strip illegal characters off the searchterm
         searchterm = searchterm.strip("*.!$%&/()=-+:'`´^")
-        logger.info("ListingView::search:searchterm='{}'".format(searchterm))
+        logger.info(u"ListingView::search:searchterm='{}'".format(searchterm))
 
         # create a catalog query
         logger.info("ListingView::search: Prepare catalog query for '{}'"
