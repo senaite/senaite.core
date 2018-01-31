@@ -11,8 +11,6 @@ import DateTime
 import json
 import re
 import time
-import traceback
-
 import Missing
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
@@ -476,12 +474,14 @@ class BikaListingView(BrowserView):
     # They will need to be handled manually in the appropriate WorkflowAction
     # subclass.
     review_states = [
-        {'id': 'default',
-         'contentFilter': {},
-         'title': _('All'),
-         'columns': ['obj_type', 'title_or_id', 'modified', 'state_title']
-         },
+        {
+            'id': 'default',
+            'contentFilter': {},
+            'title': _('All'),
+            'columns': ['obj_type', 'title_or_id', 'modified', 'state_title']
+        },
     ]
+
     # The advanced filter bar instance, it is initialized using
     # getAdvancedFilterBar
     _advfilterbar = None
@@ -499,8 +499,6 @@ class BikaListingView(BrowserView):
         logger.info("ListingView::__init__")
 
         self.base_url = api.get_url(self.context)
-        self.view_url = self.base_url
-
         self.field_icons = {}
         self.items = []
         self.limit_from = 0
@@ -510,6 +508,7 @@ class BikaListingView(BrowserView):
         self.show_more = False
         self.sort_on = None
         self.sort_order = 'ascending'
+        self.view_url = self.base_url
         self.workflow = None
 
         # The listing object is bound to a class called BikaListingFilterBar
@@ -884,9 +883,6 @@ class BikaListingView(BrowserView):
         """
         # Getting a security manager instance for the current request
         self.security_manager = getSecurityManager()
-        self.workflow = getToolByName(self.context, 'portal_workflow')
-        if not hasattr(self, 'contentsMethod'):
-            self.contentsMethod = getToolByName(self.context, self.catalog)
 
         if classic:
             return self._folderitems(full_objects)
@@ -1291,9 +1287,6 @@ class BikaListingView(BrowserView):
     def _folderitems(self, full_objects=False):
         """WARNING: :full_objects: could create a big performance hit.
         """
-        logger.warn("")
-        if not hasattr(self, 'contentsMethod'):
-            self.contentsMethod = getToolByName(self.context, self.catalog)
         # Setting up some attributes
         plone_layout = getMultiAdapter((self.context.aq_inner, self.request),
                                        name=u'plone_layout')
