@@ -900,12 +900,8 @@ class AnalysesView(BikaListingView):
         if not analysis_brain.getInstrumentEntryOfResults:
             # Manual entry of results, instrument is not allowed
             item['Instrument'] = _('Manual')
-            msg = t(_(
-                "Instrument entry of results not allowed for ${service}",
-                mapping={"service": analysis_brain.Title},
-            ))
             item['replace']['Instrument'] = \
-                '<a href="#" title="%s">%s</a>' % (msg, t(_('Manual')))
+                '<a href="#">{}</a>'.format(t(_('Manual')))
             return
 
         # Instrument can be assigned to this analysis
