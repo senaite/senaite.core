@@ -1035,6 +1035,28 @@ class BikaListingView(BrowserView):
         values = map(lambda k: getattr(brain, k, None), keys)
         return dict(zip(keys, values))
 
+    def is_date(self, thing):
+        """checks if the passed in value is a date
+
+        :param thing: an arbitrary object
+        :returns: True if it can be converted to a date time object
+        """
+        if isinstance(thing, DateTime.DateTime):
+            return True
+        return False
+
+    def to_str_date(self, date):
+        """Converts the date to a string
+
+        :param date: DateTime object or ISO date string
+        :returns: locale date string
+        """
+        date = DateTime.DateTime(date)
+        try:
+            return date.strftime(self.date_format_long)
+        except ValueError:
+            return str(date)
+
     def metadata_to_searchable_text(self, brain, key, value):
         """Parse the given metadata to text
 
@@ -1043,9 +1065,9 @@ class BikaListingView(BrowserView):
         :param value: The raw value of the metadata column
         :returns: Searchable and translated value or None
         """
-        if value is Missing.Value:
+        if not value:
             return None
-        if value is None:
+        if value is Missing.Value:
             return None
         if api.is_uid(value):
             return None
@@ -1057,11 +1079,8 @@ class BikaListingView(BrowserView):
         if isinstance(value, (dict)):
             for k, v in value.items():
                 return self.metadata_to_searchable_text(brain, k, v)
-        if isinstance(value, DateTime.DateTime):
-            try:
-                return value.strftime(self.date_format_long)
-            except ValueError:
-                return str(value)
+        if self.is_date(value):
+            return self.to_str_date(value)
         # if "review_state" in key.lower():
         #     return self.translate(value)
         return str(value)
