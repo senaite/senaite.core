@@ -5,6 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import codecs
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _, logger
@@ -207,7 +209,6 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         # We test in import functions if the file was uploaded
         try:
             if self._encoding:
-                import codecs
                 f = codecs.open(infile.name, 'r', encoding=self._encoding)
             else:
                 f = open(infile.name, 'rU')
