@@ -14,7 +14,6 @@ import Missing
 import DateTime
 
 from AccessControl import getSecurityManager
-from DateTime.DateTime import DateError, DateTimeError, SyntaxError, TimeError
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -37,8 +36,6 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
 from zope.component import getAdapters, getMultiAdapter
-
-DATETIME_EXCEPTIONS = (DateError, TimeError, DateTimeError, SyntaxError)
 
 
 class WorkflowAction:
