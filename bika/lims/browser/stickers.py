@@ -55,11 +55,9 @@ class Sticker(BrowserView):
 
     def __init__(self, context, request):
         super(Sticker, self).__init__(context, request)
-
         self.item_index = 0
         self.current_item = None
         self.copies_count = None
-
         self.context = context
         self.request = request
 
