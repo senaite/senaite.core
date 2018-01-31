@@ -1061,6 +1061,22 @@ class BikaListingView(BrowserView):
         except ValueError:
             return str(date)
 
+    @viewcache.memoize
+    def translate_review_state(self, state, portal_type):
+        """Translates the review state to the current set language
+
+        :param state: Review state title
+        :type state: basestring
+        :returns: Translated review state title
+        """
+        ts = api.get_tool("translation_service")
+        wf = api.get_tool("portal_workflow")
+        state_title = wf.getTitleForStateOnType(state, portal_type)
+        translated_state = ts.translate(_(state_title or state), context=self.request)
+        logger.info("Translate state={} title={} translated={}"
+                    .format(state, state_title, translated_state))
+        return translated_state
+
     def metadata_to_searchable_text(self, brain, key, value):
         """Parse the given metadata to text
 
@@ -1085,8 +1101,8 @@ class BikaListingView(BrowserView):
                 return self.metadata_to_searchable_text(brain, k, v)
         if self.is_date(value):
             return self.to_str_date(value)
-        # if "review_state" in key.lower():
-        #     return self.translate(value)
+        if "state" in key.lower():
+            return self.translate_review_state(value, api.get_portal_type(brain))
         return str(value)
 
     def get_metadata_dump_for(self, brain):
