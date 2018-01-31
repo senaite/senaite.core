@@ -33,6 +33,8 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters, getMultiAdapter
 
+COOKIE_LISTING_FILTER_BAR = "bika_listing_filter_bar"
+
 
 class WorkflowAction:
     """Workflow actions taken in any Bika contextAnalysisRequest context
@@ -538,35 +540,21 @@ class BikaListingView(BrowserView):
         # Always update on __call__
         self.update()
 
+        form_id = self.get_form_id()
+
+        # If table_only specifies another form_id, then we abort.
+        # this way, a single table among many can request a redraw,
+        # and only it's content will be rendered.
+        if not self.get_table_only(form_id):
+            return ""
+        if not self.get_rows_only(form_id):
+            return ""
+
         # ajax_categories, basic sanity.
         # we do this here to allow subclasses time to define these things.
         if self.ajax_categories and not self.category_index:
             msg = "category_index must be defined when using ajax_categories."
             raise AssertionError(msg)
-
-        # Getting the bika_listing_filter_bar cookie
-        cookie_filter_bar = self.request.get('bika_listing_filter_bar', '')
-        self.request.response.setCookie(
-            'bika_listing_filter_bar', None, path='/', max_age=0)
-        # Saving the filter bar values
-        if cookie_filter_bar is not None and cookie_filter_bar != '':
-            try:
-                cookie_filter_bar = json.loads(cookie_filter_bar)
-            except ValueError:
-                err_msg = traceback.format_exc() + '\n'
-                logger.error(
-                    err_msg +
-                    "Error decoding JSON object 'bika_listing_filter_bar' "
-                    "with value {} in {}."
-                    .format(cookie_filter_bar, self.context))
-                cookie_filter_bar = []
-        else:
-            cookie_filter_bar = []
-        # Creating a dict from cookie data
-        cookie_data = {}
-        for k, v in cookie_filter_bar:
-            cookie_data[k] = v
-        self.save_filter_bar_values(cookie_data)
 
         # ajax_category_expand is included in the form if this form submission
         # is an asynchronous one triggered by a category being expanded.
@@ -574,9 +562,11 @@ class BikaListingView(BrowserView):
             # - get nice formatted category contents (tr rows only)
             return self.rendered_items()
 
+        # render
         self.before_render()
-        if self.request.get('table_only', '') == self.form_id \
-                or self.request.get('rows_only', '') == self.form_id:
+        if self.get_table_only():
+            return self.contents_table(table_only=self.form_id)
+        if self.get_rows_only():
             return self.contents_table(table_only=self.form_id)
         else:
             return self.template(self.context)
@@ -592,23 +582,19 @@ class BikaListingView(BrowserView):
         self.member = api.get_current_user()
         self.translate = self.context.translate
 
-        form_id = self.get_form_id()
-
-        # Some ajax calls duplicate form values?  I have not figured out why!
+        # Sanitize the request form
+        # XXX When does this happen?
         if self.request.form:
             for key, value in self.request.form.items():
                 if isinstance(value, list):
                     self.request.form[key] = self.request.form[key][0]
 
-        # If table_only specifies another form_id, then we abort.
-        # this way, a single table among many can request a redraw,
-        # and only it's content will be rendered.
-        if form_id not in self.request.get('table_only', form_id) \
-                or form_id not in self.request.get('rows_only', form_id):
-            return ''
+        self.rows_only = self.get_rows_only()
+        self.limit_from = self.get_limit_from()
 
-        self.rows_only = self.request.get('rows_only', '') == form_id
-        self.limit_from = int(self.request.get(form_id + '_limit_from', 0))
+        # setup filter bar
+        filter_bar_config = self.read_filter_bar_cookie()
+        self.set_filter_bar_config(filter_bar_config)
 
         # pagesize
         self.pagesize = self.get_pagesize()
@@ -674,6 +660,58 @@ class BikaListingView(BrowserView):
         """
         return self.form_id
 
+    def parse_json(self, data):
+        """Parses the given json data
+        """
+        try:
+            return json.loads(data)
+        except (ValueError, TypeError):
+            return None
+
+    def read_filter_bar_cookie(self):
+        """Read the filter bar cookie
+        """
+        # get the cookie
+        cookie_value = self.request.get(COOKIE_LISTING_FILTER_BAR, [])
+
+        # not sure why this is needed...
+        self.unset_cookie(COOKIE_LISTING_FILTER_BAR)
+
+        config = self.parse_json(cookie_value)
+        if config is None:
+            config = []
+        logger.info("ListingView::read_filter_bar_cookie: config={}".format(config))
+        return config
+
+    def set_filter_bar_config(self, config):
+        """Set the filter bar values
+
+        :param config: list of dictionaries
+        """
+        cookie_data = {}
+        for k, v in config:
+            cookie_data[k] = v
+        self.save_filter_bar_values(cookie_data)
+
+    def set_cookie(self, cookie, value, **kw):
+        """Set cookie
+
+        :param cookie: The cookie name
+        :param value: The cookie value
+        :param kw: The keyword arguments to be set on the cookie
+        """
+        response = self.request.response
+        response.setCookie(cookie, value, **kw)
+
+    def unset_cookie(self, cookie):
+        """Unset cookie
+
+        :param cookie: The cookie name
+        """
+        self.set_cookie(cookie, value=None)
+        response = self.request.response
+        response.setCookie(cookie, None, path="/", max_age=0)
+
     def get_pagesize(self):
         """Return the pagesize request parameter
         """
@@ -684,11 +722,34 @@ class BikaListingView(BrowserView):
         except (ValueError, TypeError):
             return self.pagesize
 
-    def get_toggle_cols(self):
+    def get_limit_from(self):
+        """Return the limit_from request parameter
         """
-        Returns the list of column ids to be displayed for the current list.
-        :return: list of column ids to be displayed
-        :rtype: list of str
+        form_id = self.get_form_id()
+        limit = self.request.get(form_id + '_limit_from', 0)
+        try:
+            return int(limit)
+        except (ValueError, TypeError):
+            return 0
+
+    def get_rows_only(self, default=""):
+        """Checks if the rows_only request parameter is equal to form_id
+        """
+        form_id = self.get_form_id()
+        rows_only = self.request.get("rows_only", default)
+        return rows_only == form_id
+
+    def get_table_only(self, default=""):
+        """Checks if the table_only request parameter is equal to form_id
+        """
+        form_id = self.get_form_id()
+        table_only = self.request.get("table_only", default)
+        return table_only == form_id
+
+    def get_toggle_cols(self):
+        """Returns the list of column ids to be displayed for the current list.
+
+        :returns: list of column ids to be displayed
         """
         # Get the toggle configuration from the cookie
         cookie_toggle = self.request.get('toggle_cols', '{}')
