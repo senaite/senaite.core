@@ -775,6 +775,9 @@ class BikaListingView(BrowserView):
         return list_toggle
 
     def GET_url(self, include_current=True, **kwargs):
+        """Handler for the "Show More" Button
+        """
+
         url = self.request['URL'].split("?")[0]
         # take values from form (both html form and GET request slurped here)
         query = {}
@@ -782,6 +785,7 @@ class BikaListingView(BrowserView):
             for k, v in self.request.form.items():
                 if k.startswith(self.form_id + "_") and "uids" not in k:
                     query[k] = v
+
         # override from self attributes
         for x in ["pagesize",
                   "review_state",
