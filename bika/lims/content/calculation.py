@@ -231,7 +231,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                 deps[service.UID()] = {}
         return deps
 
-    def getCalculationDependants(self):
+    def getCalculationDependants(self, deps=None):
         """Return a flat list of services who depend on this calculation.
 
         This refers only to services who's Calculation UIDReferenceField have
@@ -240,7 +240,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         It has nothing to do with the services referenced in the calculation's
         Formula.
         """
-        deps = []
+        if deps is None:
+            deps = []
         backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
         services = map(get_object_by_uid, backrefs)
         for service in services:
