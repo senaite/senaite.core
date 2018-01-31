@@ -54,6 +54,8 @@ class Sticker(BrowserView):
     template = ViewPageTemplateFile("templates/stickers_preview.pt")
 
     def __init__(self, context, request):
+        super(Sticker, self).__init__(context, request)
+
         self.item_index = 0
         self.current_item = None
         self.rendered_items = []
@@ -62,7 +64,7 @@ class Sticker(BrowserView):
         self.context = context
         self.request = request
 
-        super(Sticker, self).__init__(context, request)
+
 
     def __call__(self):
         # Need to generate a PDF with the stickers?
