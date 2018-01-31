@@ -735,6 +735,16 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker should be used as the 'large' sticker by default")
         )
     ),
+    IntegerField(
+        'DefaultNumberOfCopies',
+        schemata="Sticker",
+        required="1",
+        default="1",
+        widget=IntegerWidget(
+            label=_("Number of copies"),
+            description=_("Set the default number of copies to be printed for each sticker")
+        )
+    ),
     IDFormattingField(
         'IDFormatting',
         schemata="ID Server",

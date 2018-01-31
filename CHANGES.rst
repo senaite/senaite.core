@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #618 When previewing stickers the number of copies to print for each sticker can be modified.
+- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
 
 **Removed**
 
