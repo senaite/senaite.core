@@ -33,6 +33,21 @@ def Import(context, request):
     errors = []
     logs = []
     warns = []
+    status_mapping = {
+        'received': ['sample_received'],
+        'received_tobeverified': ['sample_received', 'attachment_due', 'to_be_verified']
+    }
+    override_mapping = {
+        'nooverride': [False, False],
+        'override': [True, False],
+        'overrideempty': [True, True]
+    }
+    sample_mapping = {
+        'requestid': ['getId'],
+        'sampleid': ['getSampleID'],
+        'clientsid': ['getClientSampleID'],
+        'sample_clientsid': ['getSampleID', 'getClientSampleID']
+    }
 
     # Load the most suitable parser according to file extension/options/etc...
     parser = None
@@ -43,33 +58,11 @@ def Import(context, request):
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
-
     if parser:
         # Load the importer
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
-        if artoapply == 'received':
-            status = ['sample_received']
-        elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
-
-        over = [False, False]
-        if override == 'nooverride':
-            over = [False, False]
-        elif override == 'override':
-            over = [True, False]
-        elif override == 'overrideempty':
-            over = [True, True]
-
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
+        status = status_mapping.get(artoapply, ['sample_received', 'attachment_due', 'to_be_verified'])
+        over = override_mapping.get(override, [False, False])
+        sam = sample_mapping.get(sample, ['getId', 'getSampleID', 'getClientSampleID'])
         importer = SysmexXTImporter(parser=parser,
                                   context=context,
                                   idsearchcriteria=sam,
