@@ -346,8 +346,10 @@ class Sticker(BrowserView):
         object is given by copies_count
 
         :param items: list of objects whose stickers are going to be previewed.
+        :type items: list
         :returns: list containing n copies of each object in the items list,
         where n is self.copies_count
+        :rtype: list
         """
         copied_items = []
         for obj in items:
@@ -360,6 +362,7 @@ class Sticker(BrowserView):
 
         :returns: the number of copies for each sticker as stated
         in the request
+        :rtype: int
         """
         try:
             copies_count = int(self.request.form.get("copies_count"))
