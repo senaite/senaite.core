@@ -108,14 +108,16 @@ class TX1800iParser(InstrumentTXTResultsFileParser):
         return the code error -1
         """
         sline = line.split(SEPARATOR)
-        if sline[0] == SEGMENT_HEADER:
-            return self._handle_header(sline)
-        elif sline[0] == SEGMENT_OBSERVATION_ORDER:
-            return self._handle_new_record(sline)
-        elif sline[0] == SEGMENT_RESULT:
-            return self._handle_result_line(sline)
-        elif sline[0] == SEGMENT_EOF:
-            return self._handle_eof(sline)
+        segment = sline[0]
+        handlers = {
+            SEGMENT_HEADER: self._handle_header,
+            SEGMENT_EOF: self._handle_eof,
+            SEGMENT_RESULT: self._handle_result_line,
+            SEGMENT_OBSERVATION_ORDER: self._handle_new_record
+        }
+        handler = handlers.get(segment)
+        if handler:
+            return handler(sline)
         return 0
 
     def _handle_header(self, sline):
