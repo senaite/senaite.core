@@ -276,6 +276,14 @@ class Batch(ATFolder):
             return client.Title()
         return ""
 
+    def getClientUID(self):
+        """This index is required on batches so that batch listings can be
+        filtered by client
+        """
+        client = self.getClient()
+        if client:
+            return client.UID()
+
     def getContactTitle(self):
         return ""
 
