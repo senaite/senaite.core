@@ -64,8 +64,6 @@ class Sticker(BrowserView):
         self.context = context
         self.request = request
 
-
-
     def __call__(self):
         # Need to generate a PDF with the stickers?
         if self.request.form.get('pdf', '0') == '1':
