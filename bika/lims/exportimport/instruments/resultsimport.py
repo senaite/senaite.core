@@ -269,15 +269,8 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
         infile = self.getInputFile()
         self.log("Parsing file ${file_name}", mapping={"file_name": infile.filename})
         jump = 0
-        # We test in import functions if the file was uploaded
-        try:
-            if self._encoding:
-                f = codecs.open(infile.name, 'r', encoding=self._encoding)
-            else:
-                f = open(infile.name, 'rU')
-        except AttributeError:
-            f = infile
-        for line in f.readlines():
+        lines = self.read_file(infile)
+        for line in lines:
             self._numline += 1
             if jump == -1:
                 # Something went wrong. Finish
@@ -288,10 +281,9 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
                 jump -= 1
                 continue
 
-            if not line or not line.strip():
+            if not line:
                 continue
 
-            line = line.strip()
             jump = 0
             if line:
                 jump = self._parseline(line)
@@ -304,6 +296,24 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
                      "total_results": self.getResultsTotalCount()}
         )
         return True
+
+    def read_file(self, infile):
+        """Given an input file read its contents, strip whitespace from the
+         beginning and end of each line and return a list of the preprocessed
+         lines read.
+
+        :param infile: file that contains the data to be read
+        :return: list of the read lines with stripped whitespace
+        """
+        try:
+            encoding = self._encoding if self._encoding else None
+            mode = 'r' if self._encoding else 'rU'
+            with codecs.open(infile.name, mode, encoding=encoding) as f:
+                lines = f.readlines()
+        except AttributeError:
+            lines = infile.readlines()
+        lines = [line.strip() for line in lines]
+        return lines
 
     def split_line(self, line):
         sline = line.split(self._separator)
