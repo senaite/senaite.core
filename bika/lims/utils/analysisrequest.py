@@ -6,10 +6,8 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.CMFPlone.utils import _createObjectByType
-from Products.Five.browser import BrowserView
+import os
+import tempfile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -25,13 +23,19 @@ from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
+from collective.taskqueue.interfaces import ITaskQueue
 from copy import deepcopy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
 from plone import api as ploneapi
-import os
-import tempfile
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import _createObjectByType
+from Products.Five.browser import BrowserView
+from smtplib import SMTPRecipientsRefused
+from zope.component import queryUtility
+
 
 def create_analysisrequest(client, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
@@ -324,7 +328,8 @@ def notify_rejection(analysisrequest):
 
     # This is the template to render for the pdf that will be either attached
     # to the email and attached the the Analysis Request for further access
-    tpl = AnalysisRequestRejectPdfView(analysisrequest, analysisrequest.REQUEST)
+    tpl = AnalysisRequestRejectPdfView(
+            analysisrequest, analysisrequest.REQUEST)
     html = tpl.template()
     html = safe_unicode(html).encode('utf-8')
     filename = '%s-rejected' % arid
@@ -357,7 +362,8 @@ def notify_rejection(analysisrequest):
     # compose and send email.
     mailto = []
     lab = analysisrequest.bika_setup.laboratory
-    mailfrom = formataddr((encode_header(lab.getName()), lab.getEmailAddress()))
+    mailfrom = formataddr(
+            (encode_header(lab.getName()), lab.getEmailAddress()))
     mailsubject = _('%s has been rejected') % arid
     contacts = [analysisrequest.getContact()] + analysisrequest.getCCContact()
     for contact in contacts:
@@ -382,9 +388,11 @@ def notify_rejection(analysisrequest):
         host.send(mime_msg.as_string(), immediate=True)
     except:
         logger.warning(
-            "Email with subject %s was not sent (SMTP connection error)" % mailsubject)
+            "Email with subject %s was not sent (SMTP connection error)"
+            % mailsubject)
 
     return True
+
 
 class Async_AR_Utils(BrowserView):
 
@@ -403,17 +411,28 @@ class Async_AR_Utils(BrowserView):
                 msgs.append("Error: Client {} found".format(client_uid))
                 continue
 
-            # get the specifications and pass them directly to the AR create function.
+            # get the specifications and pass them directly to the AR
+            # create function.
             specifications = record.pop("Specifications", {})
 
-
-            ## Create the Analysis Request
+            # Create the Analysis Request
             ar = create_analysisrequest(
                 client,
                 self.request,
                 values=record,
                 specifications=specifications)
             ARs.append(ar.getId())
+
+            _attachments = []
+            for attachment in attachments.get(n, []):
+                if not attachment.filename:
+                    continue
+                att = _createObjectByType("Attachment", self.context, tmpID())
+                att.setAttachmentFile(attachment)
+                att.processForm()
+                _attachments.append(att)
+            if _attachments:
+                ar.setAttachment(_attachments)
 
         if len(ARs) == 1:
             msgs.append('Created AR {}'.format(ARs[0]))
@@ -442,11 +461,9 @@ Analysis request creation completed with the following messages:
 Cheers
 Bika LIMS
 """
-        portal = ploneapi.portal.get()
-        email_charset = portal.getProperty('email_charset')
         member = ploneapi.user.get_current()
         mail_host = ploneapi.portal.get_tool(name='MailHost')
-        from_email= mail_host.email_from_address
+        from_email = mail_host.email_from_address
         to_email = member.getProperty('email')
         subject = 'AR Creation Complete'
         if len(to_email) == 0:
@@ -459,5 +476,5 @@ Bika LIMS
             return mail_host.send(
                         mail_text, to_email, from_email,
                         subject=subject, charset="utf-8", immediate=False)
-        except smtplib.SMTPRecipientsRefused:
-            raise smtplib.SMTPRecipientsRefused('Recipient address rejected by server')
+        except SMTPRecipientsRefused:
+            raise SMTPRecipientsRefused('Recipient address rejected by server')
