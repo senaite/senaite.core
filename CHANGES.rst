@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
 - #611 Advanced filter bar: filter Analysis Requests by Service name not working
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
