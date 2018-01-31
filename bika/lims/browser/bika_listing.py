@@ -491,30 +491,25 @@ class BikaListingView(BrowserView):
     security_manager = None
 
     def __init__(self, context, request, **kwargs):
-        self.field_icons = {}
+        """View constructor
+        """
         super(BikaListingView, self).__init__(context, request)
+        logger.info("ListingView::__init__")
 
-        if 'show_categories' in kwargs:
-            self.show_categories = kwargs['show_categories']
-
-        if 'expand_all_categories' in kwargs:
-            self.expand_all_categories = kwargs['expand_all_categories']
-
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
-
-        self.base_url = context.absolute_url()
+        self.base_url = api.get_url(self.context)
         self.view_url = self.base_url
 
-        self.translate = self.context.translate
+        self.field_icons = {}
+        self.items = []
+        self.limit_from = 0
+        self.member = None
+        self.mtool = None
         self.show_all = False
         self.show_more = False
-        self.limit_from = 0
-        self.mtool = None
         self.sort_on = None
         self.sort_order = 'ascending'
-        self.member = None
         self.workflow = None
-        self.items = []
+
         # The listing object is bound to a class called BikaListingFilterBar
         # which can display an additional filter bar in the listing view in
         # order to filter the items by some terms. These terms should be
@@ -524,9 +519,120 @@ class BikaListingView(BrowserView):
         # Requests view checks bika_setup.getSamplingBarEnabledAnalysisRequests
         # to know if the functionality is activeated or not for its views.
         self.filter_bar_enabled = False
+
         # Stores the translations of the statuses from the items displayed in
         # this list. It value is set automatically in folderitems function.
         self.state_titles = {}
+
+        if 'show_categories' in kwargs:
+            self.show_categories = kwargs["show_categories"]
+
+        if 'expand_all_categories' in kwargs:
+            self.expand_all_categories = kwargs["expand_all_categories"]
+
+    def __call__(self):
+        """Handle request parameters and render the form
+        """
+        logger.info("ListingView::__call__")
+
+        # Always update on __call__
+        self.update()
+
+        # ajax_categories, basic sanity.
+        # we do this here to allow subclasses time to define these things.
+        if self.ajax_categories and not self.category_index:
+            msg = "category_index must be defined when using ajax_categories."
+            raise AssertionError(msg)
+
+        # Getting the bika_listing_filter_bar cookie
+        cookie_filter_bar = self.request.get('bika_listing_filter_bar', '')
+        self.request.response.setCookie(
+            'bika_listing_filter_bar', None, path='/', max_age=0)
+        # Saving the filter bar values
+        if cookie_filter_bar is not None and cookie_filter_bar != '':
+            try:
+                cookie_filter_bar = json.loads(cookie_filter_bar)
+            except ValueError:
+                err_msg = traceback.format_exc() + '\n'
+                logger.error(
+                    err_msg +
+                    "Error decoding JSON object 'bika_listing_filter_bar' "
+                    "with value {} in {}."
+                    .format(cookie_filter_bar, self.context))
+                cookie_filter_bar = []
+        else:
+            cookie_filter_bar = []
+        # Creating a dict from cookie data
+        cookie_data = {}
+        for k, v in cookie_filter_bar:
+            cookie_data[k] = v
+        self.save_filter_bar_values(cookie_data)
+
+        # ajax_category_expand is included in the form if this form submission
+        # is an asynchronous one triggered by a category being expanded.
+        if self.request.get('ajax_category_expand', False):
+            # - get nice formatted category contents (tr rows only)
+            return self.rendered_items()
+
+        self.before_render()
+        if self.request.get('table_only', '') == self.form_id \
+                or self.request.get('rows_only', '') == self.form_id:
+            return self.contents_table(table_only=self.form_id)
+        else:
+            return self.template(self.context)
+
+    def update(self):
+        """Update the view state
+        """
+        logger.info("ListingView::update")
+
+        self.portal = api.get_portal()
+        self.mtool = api.get_tool("portal_membership")
+        self.workflow = api.get_tool("portal_workflow")
+        self.member = api.get_current_user()
+        self.translate = self.context.translate
+
+        form_id = self.get_form_id()
+
+        # Some ajax calls duplicate form values?  I have not figured out why!
+        if self.request.form:
+            for key, value in self.request.form.items():
+                if isinstance(value, list):
+                    self.request.form[key] = self.request.form[key][0]
+
+        # If table_only specifies another form_id, then we abort.
+        # this way, a single table among many can request a redraw,
+        # and only it's content will be rendered.
+        if form_id not in self.request.get('table_only', form_id) \
+                or form_id not in self.request.get('rows_only', form_id):
+            return ''
+
+        self.rows_only = self.request.get('rows_only', '') == form_id
+        self.limit_from = int(self.request.get(form_id + '_limit_from', 0))
+
+        # pagesize
+        self.pagesize = self.get_pagesize()
+        # Plone's batching wants this variable:
+        self.request.set('pagesize', self.pagesize)
+        # and we want to make our choice remembered in bika_listing also
+        self.request.set(self.form_id + '_pagesize', self.pagesize)
+
+        # get toggle_cols cookie value
+        # and modify self.columns[]['toggle'] to match.
+        toggle_cols = self.get_toggle_cols()
+        for col in self.columns.keys():
+            self.columns[col]['toggle'] = col in toggle_cols
+
+    def before_render(self):
+        """Before render hook
+        """
+        logger.info("ListingView::before_render")
+
+    @deprecated("Please use BikaListingView.update()")
+    def _process_request(self):
+        """BBB
+        """
+        self.update()
 
     @property
     def review_state(self):
@@ -577,40 +683,6 @@ class BikaListingView(BrowserView):
             return int(pagesize)
         except (ValueError, TypeError):
             return self.pagesize
-
-    def _process_request(self):
-        """BBB
-        """
-        form_id = self.get_form_id()
-
-        # Some ajax calls duplicate form values?  I have not figured out why!
-        if self.request.form:
-            for key, value in self.request.form.items():
-                if isinstance(value, list):
-                    self.request.form[key] = self.request.form[key][0]
-
-        # If table_only specifies another form_id, then we abort.
-        # this way, a single table among many can request a redraw,
-        # and only it's content will be rendered.
-        if form_id not in self.request.get('table_only', form_id) \
-                or form_id not in self.request.get('rows_only', form_id):
-            return ''
-
-        self.rows_only = self.request.get('rows_only', '') == form_id
-        self.limit_from = int(self.request.get(form_id + '_limit_from', 0))
-
-        # pagesize
-        self.pagesize = self.get_pagesize()
-        # Plone's batching wants this variable:
-        self.request.set('pagesize', self.pagesize)
-        # and we want to make our choice remembered in bika_listing also
-        self.request.set(self.form_id + '_pagesize', self.pagesize)
-
-        # get toggle_cols cookie value
-        # and modify self.columns[]['toggle'] to match.
-        toggle_cols = self.get_toggle_cols()
-        for col in self.columns.keys():
-            self.columns[col]['toggle'] = col in toggle_cols
 
     def get_toggle_cols(self):
         """
@@ -665,70 +737,20 @@ class BikaListingView(BrowserView):
                                         for x, y in query.items()])
         return url
 
-    def before_render(self):
-        """
-        This function should be overriden in order to set value that should be
-        loaded before the template being rendered.
-        """
-        pass
-
     def remove_column(self, column):
-        """Removes the column passed-in, if exists"""
-        if column in self.columns:
-            del self.columns[column]
-            for item in self.review_states:
-                if column in item.get('columns', []):
-                    item['columns'].remove(column)
+        """Removes the column passed-in, if exists
 
-    def __call__(self):
-        """Handle request parameters and render the form
+        :param column: Column key
+        :returns: True if the column was removed
         """
+        if column not in self.columns:
+            return False
 
-        # ajax_categories, basic sanity.
-        # we do this here to allow subclasses time to define these things.
-        if self.ajax_categories and not self.category_index:
-            msg = "category_index must be defined when using ajax_categories."
-            raise AssertionError(msg)
-        # Getting the bika_listing_filter_bar cookie
-        cookie_filter_bar = self.request.get('bika_listing_filter_bar', '')
-        self.request.response.setCookie(
-            'bika_listing_filter_bar', None, path='/', max_age=0)
-        # Saving the filter bar values
-        if cookie_filter_bar is not None and cookie_filter_bar != '':
-            try:
-                cookie_filter_bar = json.loads(cookie_filter_bar)
-            except ValueError:
-                err_msg = traceback.format_exc() + '\n'
-                logger.error(
-                    err_msg +
-                    "Error decoding JSON object 'bika_listing_filter_bar' "
-                    "with value {} in {}."
-                    .format(cookie_filter_bar, self.context))
-                cookie_filter_bar = []
-        else:
-            cookie_filter_bar = []
-        # Creating a dict from cookie data
-        cookie_data = {}
-        for k, v in cookie_filter_bar:
-            cookie_data[k] = v
-        self.save_filter_bar_values(cookie_data)
-        self._process_request()
-        self.mtool = getToolByName(self.context, 'portal_membership')
-        self.member = self.mtool.getAuthenticatedMember()
-        self.workflow = getToolByName(self.context, 'portal_workflow')
-
-        # ajax_category_expand is included in the form if this form submission
-        # is an asynchronous one triggered by a category being expanded.
-        if self.request.get('ajax_category_expand', False):
-            # - get nice formatted category contents (tr rows only)
-            return self.rendered_items()
-
-        self.before_render()
-        if self.request.get('table_only', '') == self.form_id \
-                or self.request.get('rows_only', '') == self.form_id:
-            return self.contents_table(table_only=self.form_id)
-        else:
-            return self.template(self.context)
+        del self.columns[column]
+        for item in self.review_states:
+            if column in item.get('columns', []):
+                item['columns'].remove(column)
+        return True
 
     def selected_cats(self, items):
         """Return a list of categories that will be expanded by default when
@@ -1017,7 +1039,7 @@ class BikaListingView(BrowserView):
         extra = self.get_filter_bar_queryaddition() or {}
         query.update(extra)
 
-        logger.info("get_catalog_query::query={}".format(query))
+        logger.info("ListingView::get_catalog_query: query={}".format(query))
         return query
 
     @viewcache.memoize
@@ -1073,7 +1095,7 @@ class BikaListingView(BrowserView):
         wf = api.get_tool("portal_workflow")
         state_title = wf.getTitleForStateOnType(state, portal_type)
         translated_state = ts.translate(_(state_title or state), context=self.request)
-        logger.info("Translate state={} title={} translated={}"
+        logger.info("ListingView:translate_review_state: {} -> {} -> {}"
                     .format(state, state_title, translated_state))
         return translated_state
 
@@ -1154,7 +1176,7 @@ class BikaListingView(BrowserView):
         searchterm = searchterm.strip()
         # strip illegal characters off the searchterm
         searchterm = searchterm.strip("*.!$%&/()=-+:'`´^")
-        logger.info("search::searchterm='{}'".format(searchterm))
+        logger.info("ListingView::search:searchterm='{}'".format(searchterm))
 
         # create a catalog query
         query = self.get_catalog_query(searchterm=searchterm)
@@ -1178,7 +1200,8 @@ class BikaListingView(BrowserView):
                 out.append(brain)
 
         end = time.time()
-        logger.info("Search for '{}' took {}s and found {} results".format(searchterm, end - start, len(out)))
+        logger.info("ListingView::search: Search for '{}' executed in {:.2f}s ({} matches)"
+                    .format(searchterm, end - start, len(out)))
         return out
 
     def get_searchterm(self):
