@@ -357,6 +357,7 @@ class DashboardView(BrowserView):
         ratio = str("%%.%sf" % 1) % ratio
         out['legend'] = _('of') + " " + str(total) + ' (' + ratio +'%)'
         out['number'] = results
+        out['percentage'] = float(ratio)
         return out
 
     def get_analysisrequests_section(self):

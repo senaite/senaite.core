@@ -5,13 +5,14 @@
 
 from setuptools import setup, find_packages
 
-version = '1.2.1'
+version = '1.2.2'
 
 setup(
     name='senaite.core',
     version=version,
     description="SENAITE Core",
     long_description=open("README.rst").read() + "\n" +
+    open("RELEASE_NOTES.rst").read() + "\n" +
     open("CHANGES.rst").read() + "\n",
     # Get more strings from
     # http://pypi.python.org/pypi?:action=list_classifiers
@@ -34,6 +35,7 @@ setup(
     install_requires=[
         'setuptools',
         'plone.api',
+        'plone.subrequest',
         'plone.jsonapi.core',
         'Products.ATExtensions>=1.1a3',
         'Products.CMFEditions',

@@ -63,5 +63,20 @@ $(document).ready(function(){
         }
       }
     });
+
+    $('[datetimepicker="1"]').change(function() {
+      if(!this.value.includes("-")){
+        alert("Please enter a valid date");
+        this.text='';
+        this.value='';
+      }else{
+        var d = $(this).datepicker('getDate');
+        if (d && d.getFullYear() < 1901){
+          alert("Please choose a valid year...");
+          this.text='';
+          this.value='';
+        }
+      }
+    });
 });
 });

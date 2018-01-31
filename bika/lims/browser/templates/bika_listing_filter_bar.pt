@@ -4,117 +4,78 @@ allows the user to filter the list by more than one field or rang of values.
 This bar should display a “filter” button in order to submit the changes.
 This filter shouldn’t override the filter by state functionality
 -->
-<tal:tr-filter
-    tal:define="filter_fields view/filter_bar_builder">
-<tr
-    class="bika_listing_filter_bar noborder"
-    tal:condition="filter_fields">
+<tal:tr-filter tal:define="filter_fields view/filter_bar_builder">
+  <tr class="bika_listing_filter_bar noborder"
+      tal:condition="filter_fields">
     <td class="bika_listing_filter_bar noborder" style="whitespace:nowrap">
-        <div tal:repeat="field filter_fields">
-        <label
-            tal:content="python: field.get('label', '')">Label</label>
+      <div tal:repeat="field filter_fields">
+        <label tal:content="python: field.get('label', '')">Label</label>
         <!-- Select field type -->
-        <select
-            tal:condition="python: field.get('type', '') == 'select'"
-            tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '');"
-            tal:define="
-                olist python: field.get('voc', []);
-                ">
-                <option
-                    value=""/>
-                <option
-                    tal:repeat="option olist"
-                    tal:content="python:olist.getValue(option)"
-                    tal:define="
-                        pre_condition python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
-                    tal:attributes="
-                        selected python:'selected' if pre_condition == option else '';
-                        value python: option;"
-                    />
+        <select tal:condition="python: field.get('type', '') == 'select'"
+                tal:attributes="name python: 'bika_listing_filter_bar_' + field.get('name', '');"
+                tal:define="olist python: field.get('voc', []);">
+          <option value=""/>
+          <option tal:repeat="option olist"
+                  tal:content="python:olist.getValue(option)"
+                  tal:define="pre_condition python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
+            tal:attributes="selected python:'selected' if pre_condition == option else '';
+                            value python: option;"/>
         </select>
         <!-- Multiple select field type -->
-        <select
-            tal:condition="python: field.get('type', '') == 'multiple'"
-            multiple="true" size='2'
-            tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '');"
-            tal:define="
-                olist python: field.get('voc', []);
-                ">
-                <option
-                    tal:repeat="option olist"
-                    tal:content="python:olist.getValue(option)"
-                    tal:define="
-                        pre_condition python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
-                    tal:attributes="
-                        selected python:'selected' if pre_condition == option else '';
-                        value python: option;"
-                    />
+        <select tal:condition="python: field.get('type', '') == 'multiple'"
+                multiple="true"
+                size='2'
+                tal:attributes="name python: 'bika_listing_filter_bar_' + field.get('name', '');"
+                tal:define="olist python: field.get('voc', []);">
+          <option tal:repeat="option olist"
+                  tal:content="python:olist.getValue(option)"
+                  tal:define="pre_condition python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
+                  tal:attributes="selected python:'selected' if pre_condition == option else '';
+                                  value python: option;"/>
         </select>
         <!-- simple text input -->
-        <input
-            tal:condition="python: field.get('type', '') == 'text'"
-            tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '');
-                value python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
-                />
+        <input tal:condition="python: field.get('type', '') == 'text'"
+               tal:attributes="name python: 'bika_listing_filter_bar_' + field.get('name', '');
+                               value python:view.get_filter_bar_dict().get(field.get('name', ''), '');"/>
         <!-- autocomplete text input -->
-        <input
-            tal:condition="python: field.get('type', '') == 'autocomplete_text'"
-            class="autocomplete"
-            tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '');
-                value python:view.get_filter_bar_dict().get(field.get('name', ''), '');
-                voc python: field.get('voc', [])"
-                />
+        <input tal:condition="python: field.get('type', '') == 'autocomplete_text'"
+               class="autocomplete"
+               tal:attributes="name python: 'bika_listing_filter_bar_' + field.get('name', '');
+                               value python:view.get_filter_bar_dict().get(field.get('name', ''), '');
+                               voc python: field.get('voc', [])" />
         <!-- value range input -->
-        <input
-            class="range_0"
-            tal:condition="python: field.get('type', '') == 'range'"
-            tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';
-                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');"
-                />
-        <input
-            class="range_1"
-            tal:condition="python: field.get('type', '') == 'range'"
-            tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';
-                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_1', ''), '');"
-                />
+        <input class="range_0"
+               tal:condition="python: field.get('type', '') == 'range'"
+               tal:attributes="name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';
+                               value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');"/>
+        <input class="range_1"
+               tal:condition="python: field.get('type', '') == 'range'"
+               tal:attributes="name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';
+                               value python:view.get_filter_bar_dict().get(field.get('name', '')+'_1', ''), '');"/>
+
         <!-- date range input -->
         <tal:dprange condition="python: field.get('type', '') == 'date_range'">
-        <input
-            class="date_range_start datepicker_range"
-            tal:attributes="
-                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');
-                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';"
-                />
-        &nbsp;<span i18n:translate="">to</span>&nbsp;
-        <input
-            class="date_range_end datepicker_range"
-            tal:attributes="
-                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_1', '');
-                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';"
-                />
+          <input class="date_range_start datepicker_range"
+                 tal:attributes="value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');
+                                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';"/>
+          &nbsp;<span i18n:translate="">to</span>&nbsp;
+          <input class="date_range_end datepicker_range"
+                 tal:attributes="value python:view.get_filter_bar_dict().get(field.get('name', '')+'_1', '');
+                                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';" />
         </tal:dprange>
-        </div>
-        <div class="filter-buttons">
-        <input
-            type="button"
-            id="bika_listing_filter_bar_button"
-            value="Filter"
-            i18n:attributes="value"
-        />
-        <input
-            type="hidden"
-            id="bika_listing_filter_bar_submit"
-            name="bika_listing_filter_bar_submit"
-            tal:attributes="
-                value python:view.get_filter_bar_dict().get('submit', '0');"
-            />
-        </div>
+      </div>
+      <div class="filter-buttons">
+
+        <input type="button"
+               id="bika_listing_filter_bar_button"
+               value="Filter"
+               i18n:attributes="value"/>
+
+        <input type="hidden"
+               id="bika_listing_filter_bar_submit"
+               name="bika_listing_filter_bar_submit"
+               tal:attributes="value python:view.get_filter_bar_dict().get('submit', '0');"/>
+      </div>
     </td>
-</tr>
+  </tr>
 </tal:tr-filter>

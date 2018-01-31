@@ -150,7 +150,7 @@
               </legend>
 
               <div class="formHelp" i18n:translate="">
-                  Select one of the following configurations of Bika. You can  also de/activate the add-ons once the site has been created from the Plone's add-ons setup view
+                  Select one of the following configurations of SENAITE. You can  also de/activate the add-ons once the site has been created from the Plone's add-ons setup view
               </div>
 
               <dl id="extension_ids">
