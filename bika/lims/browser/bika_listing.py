@@ -850,6 +850,19 @@ class BikaListingView(BrowserView):
         """
         return True
 
+    def get_item_info(self, brain_or_object):
+        """Return the data of this brain or object
+        """
+        return {
+            "obj": brain_or_object,
+            "uid": api.get_uid(brain_or_object),
+            "url": api.get_url(brain_or_object),
+            "id": api.get_id(brain_or_object),
+            "title": api.get_title(brain_or_object),
+            "portal_type": api.get_portal_type(brain_or_object),
+            "review_state": getattr(brain_or_object, "review_state", ""),
+        }
+
     # noinspection PyUnusedLocal
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -918,15 +931,8 @@ class BikaListingView(BrowserView):
 
             # Building the dictionary with basic items
             results_dict = dict(
-                # obj can be an object or a brain!!
-                obj=obj,
-                uid=obj.UID,
-                url=obj.getURL(),
-                id=obj.getId,
-                title=obj.Title,
                 # To colour the list items by state
                 state_class=state_class,
-                review_state=obj.review_state,
                 # a list of names of fields that may be edited on this item
                 allow_edit=[],
                 # a dict where the column name works as a key and the value is
@@ -945,6 +951,10 @@ class BikaListingView(BrowserView):
                 replace={},
                 choices={},
             )
+
+            # update with the base item info
+            results_dict.update(self.get_item_info(obj))
+
             # Set states and state titles
             ptype = obj.portal_type
             workflow = get_tool('portal_workflow')
