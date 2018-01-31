@@ -973,6 +973,9 @@ class BikaListingView(BrowserView):
             if sort_on_index in self.get_catalog_indexes():
                 return sort_on_index
 
+        # The value for sort_on is not an index, force manual sorting
+        self.manual_sort_on = self.sort_on
+
         return default
 
     def get_catalog_query(self, searchterm=None):
