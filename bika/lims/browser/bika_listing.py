@@ -492,14 +492,6 @@ class BikaListingView(BrowserView):
     def __init__(self, context, request, **kwargs):
         self.field_icons = {}
         super(BikaListingView, self).__init__(context, request)
-        path = hasattr(context, 'getPath') and context.getPath() \
-            or "/".join(context.getPhysicalPath())
-        if hasattr(self, 'contentFilter'):
-            if 'path' not in self.contentFilter:
-                self.contentFilter['path'] = {"query": path, "level": 0}
-        else:
-            if 'path' not in self.contentFilter:
-                self.contentFilter = {'path': {"query": path, "level": 0}}
 
         if 'show_categories' in kwargs:
             self.show_categories = kwargs['show_categories']
@@ -628,14 +620,6 @@ class BikaListingView(BrowserView):
         self.rows_only = self.request.get('rows_only', '') == form_id
         self.limit_from = int(self.request.get(form_id + '_limit_from', 0))
 
-        # contentFilter is allowed in every self.review_state.
-        for k, v in self.review_state.get('contentFilter', {}).items():
-            self.contentFilter[k] = v
-
-        # Set the sort_on and sort_order criteria based on the params set in
-        # the request, the contentFilter and the sorting value set by default
-        self._set_sorting_criteria()
-
         # pagesize
         self.pagesize = self.get_pagesize()
         # Plone's batching wants this variable:
@@ -648,98 +632,6 @@ class BikaListingView(BrowserView):
         toggle_cols = self.get_toggle_cols()
         for col in self.columns.keys():
             self.columns[col]['toggle'] = col in toggle_cols
-
-    def _set_sorting_criteria(self):
-        """Sets the sorting criteria by resetting the value of sort_on,
-        sort_order and/or manual_sort in accordance with the values set in the
-        request, contentFilter and by default for this list
-        """
-        self.sort_on = self.get_sort_on()
-        self.manual_sort_on = None
-        if 'sort_on' in self.contentFilter:
-            del self.contentFilter['sort_on']
-
-        allowed_indexes = self.get_columns_indexes()
-        allowed_indexes.append('created')
-        if self.sort_on not in allowed_indexes:
-            # The value for sort_on is not an index, we need to force manual
-            # sorting so items will be sorted programmatically with python
-            self.manual_sort_on = self.sort_on
-
-        else:
-            # sort_on is an index, add it into the contentFilter so it can be
-            # used in the advanced query later
-            self.contentFilter['sort_on'] = self.sort_on
-
-        # By default, if sort_on is set, sort the items ASC
-        # Trick to allow 'descending' keyword instead of 'reverse'
-        sort_order = self.request.get(self.form_id + "_sort_order", None)
-        if not sort_order:
-            sort_order = self.contentFilter.get('sort_order', self.sort_order)
-        if sort_order != "ascending":
-            sort_order = "descending"
-        self.contentFilter['sort_order'] = sort_order
-        self.sort_order = sort_order
-
-    def get_sort_on(self):
-        """Returns the value by which this list must be sorted on.
-
-        Returns the name of the index to be used for sorting by using an
-        advancedQuery if defined in self.columns. Otherwise, returns the name
-        of the column the list must be sorted on.
-
-        :return: the sort_on index or column name
-        :rtype: str
-        """
-
-        def corrected_sort_value(value):
-            """Checks the value passed in against the columns and indexes.
-
-            If the value passed is a column name, will return the index of the
-            column if defined in self.columns. Otherwise, will return the
-            column name, but only if a column is defined in self.columns for
-            the value passed in. If non of both cases, returns None
-            """
-            if value in self.columns:
-                # The sort_on value refers to a column name. We try to get the index
-                # associated to this column name, if any
-                return self.columns[value].get('index', value)
-
-            if value in self.get_columns_indexes():
-                # The sort_on value refers to an index.
-                return value
-
-            # The sort_on value is neither an index nor a column. This should
-            # never happen
-            msg = "{}: sort_on is '{}', not a valid column/index".format(
-                self.__class__.__name__, value)
-            logger.warning(msg)
-            return None
-
-        # Request sort_on value has priority over contentsFilter's sort value,
-        # as well as self.sort_on (default sort_on criteria set for this list).
-        request_sort_on = self.request.get(self.form_id + "_sort_on", None)
-        filter_sort_on = self.contentFilter.get("sort_on", None)
-        sort_on_values = [request_sort_on, filter_sort_on, self.sort_on]
-        for sort_value in sort_on_values:
-            if not sort_value:
-                continue
-            if type(sort_value) in (list, tuple):
-                sort_value = sort_value[0]
-            sort_on = corrected_sort_value(sort_value)
-            if sort_on:
-                # There is a colunm or index for this sort_on value
-                return sort_on
-
-        # None of the sort_on values set either in the request or in the content
-        # filter are valid (no column or index defined), so we return the
-        # sort_on value 'created', an index all catalogs has in common
-        return 'created'
-
-    def get_columns_indexes(self):
-        indexes = [val['index'] for name, val in self.columns.items()
-                   if 'index' in val]
-        return indexes
 
     def get_toggle_cols(self):
         """
@@ -1054,14 +946,84 @@ class BikaListingView(BrowserView):
         except api.BikaLIMSError:
             return api.get_tool(default)
 
+    def get_catalog_indexes(self):
+        """Return a list of registered catalog indexes
+        """
+        return self.get_catalog().indexes()
+
+    def get_columns_indexes(self):
+        """Returns a list of allowed sorting indexeds
+        """
+        columns = self.columns
+        indexes = [v["index"] for k, v in columns.items() if "index" in v]
+        return indexes
+
+    def get_sort_order(self):
+        """Get the sort_order criteria from the request or view
+        """
+        form_id = self.get_form_id()
+        key = "{}_sort_order".format(form_id)
+        sort_order = self.request.get(key, None)
+
+        if sort_order is None:
+            sort_order = self.contentFilter.get("sort_order", self.sort_order)
+        if sort_order not in ["ascending", "descending"]:
+            sort_order = "descending"
+        return sort_order
+
+    def get_sort_on(self, default="created"):
+        """Get the sort_on criteria from the request or view
+        """
+        form_id = self.get_form_id()
+        key = "{}_sort_on".format(form_id)
+
+        sort_ons = [
+            self.request.get(key, None),
+            self.contentFilter.get("sort_on", None),
+            self.sort_on,
+        ]
+
+        sort_on_index = None
+        for sort_on in sort_ons:
+            # The value refers to a column name, try to get the associated index
+            if sort_on in self.columns:
+                sort_on_index = self.columns[sort_on].get("index", None)
+            # The value refers to a column index, just use it
+            if sort_on in self.get_columns_indexes():
+                sort_on_index = sort_on
+            # check if we have a known index for the catalog
+            if sort_on_index in self.get_catalog_indexes():
+                return sort_on_index
+
+        return default
+
     def get_catalog_query(self, searchterm=None):
         """Return the catalog query
 
         :param searchterm: Additional filter value to be added to the query
         :returns: Catalog query dictionary
         """
-        # create a copy of the base query
-        query = dict(self.contentFilter)
+
+        # avoid to change the original content filter
+        query = copy.deepcopy(self.contentFilter)
+
+        # add the path if not there already
+        if "path" not in query:
+            path = api.get_path(self.context)
+            query["path"] = {
+                "query": path,
+                "level": 0,
+            }
+
+        # contentFilter is allowed in every self.review_state.
+        for k, v in self.review_state.get("contentFilter", {}).items():
+            query[k] = v
+
+        # set the sort_on criteria
+        query["sort_on"] = self.get_sort_on()
+
+        # set the sort_order criteria
+        query["sort_order"] = self.get_sort_order()
 
         # # Pass the searchterm as well to the Searchable Text index
         # if searchterm and isinstance(searchterm, basestring):
