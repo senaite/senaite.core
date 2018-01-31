@@ -91,6 +91,9 @@ class Sticker(BrowserView):
             # Default fallback, load from context
             self.items = [self.context, ]
 
+        # before retrieving the required data for each type of object copy
+        # each object as many times as the number of desired sticker copies
+        self.items = self._resolve_number_of_copies(self.items)
         new_items = []
         for i in self.items:
             outitems = self._populateItems(i)
@@ -161,8 +164,7 @@ class Sticker(BrowserView):
             return [[None, None, item]]
         items = []
         for part in parts:
-            for copy in range(self.copies_count):
-                items.append([ar, sample, part])
+            items.append([ar, sample, part])
         return items
 
     def getAvailableTemplates(self):
@@ -337,6 +339,21 @@ class Sticker(BrowserView):
         pdf_fn = tempfile.mktemp(suffix='.pdf')
         pdf_file = createPdf(htmlreport=reporthtml, outfile=pdf_fn)
         return pdf_file
+
+    def _resolve_number_of_copies(self, items):
+        """For the given objects generate as many copies as the desired
+        number of stickers. The desired number of stickers for each
+        object is given by copies_count
+
+        :param items: list of objects whose stickers are going to be previewed.
+        :returns: list containing n copies of each object in the items list,
+        where n is self.copies_count
+        """
+        copied_items = []
+        for obj in items:
+            for copy in range(self.copies_count):
+                copied_items.append(obj)
+        return copied_items
 
     def get_copies_count(self):
         """Return the copies_count number request parameter
