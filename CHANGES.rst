@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
 
 **Security**
