@@ -1091,8 +1091,8 @@ class BikaListingView(BrowserView):
         :param ignorecase: Flag to compile with re.IGNORECASE
         :returns: Compiled regular expression
         """
-        # searchterm comes in as string, e.g. 'D\xc3\xa4'
-        # but must be u'D\xe4' to match the metadata
+        # searchterm comes in as a 8-bit string, e.g. 'D\xc3\xa4'
+        # but must be a unicode u'D\xe4' to match the metadata
         searchterm = safe_unicode(searchterm)
         if ignorecase:
             return re.compile(searchterm, re.IGNORECASE)
