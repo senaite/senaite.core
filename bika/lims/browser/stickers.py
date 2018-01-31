@@ -52,9 +52,14 @@ class Sticker(BrowserView):
             -- other_worksheet_stickers_...
     """
     template = ViewPageTemplateFile("templates/stickers_preview.pt")
-    item_index = 0
-    current_item = None
-    rendered_items = []
+
+    def __init__(self, context, request):
+        super(Sticker, self).__init__(context, request)
+        self.item_index = 0
+        self.current_item = None
+        self.copies_count = None
+        self.context = context
+        self.request = request
 
     def __call__(self):
         # Need to generate a PDF with the stickers?
@@ -66,7 +71,8 @@ class Sticker(BrowserView):
             pdfstream = self.pdf_from_post()
             return pdfstream
 
-        self.rendered_items = []
+        self.copies_count = self.get_copies_count()
+
         items = self.request.get('items', '')
         # If filter by type is given in the request, only the templates under
         # the path with the type name will be given as vocabulary.
@@ -79,6 +85,9 @@ class Sticker(BrowserView):
             # Default fallback, load from context
             self.items = [self.context, ]
 
+        # before retrieving the required data for each type of object copy
+        # each object as many times as the number of desired sticker copies
+        self.items = self._resolve_number_of_copies(self.items)
         new_items = []
         for i in self.items:
             outitems = self._populateItems(i)
@@ -243,9 +252,7 @@ class Sticker(BrowserView):
         """
         if self.item_index == len(self.items):
             self.item_index = 0
-            self.rendered_items = []
         self.current_item = self.items[self.item_index]
-        self.rendered_items.append(self.current_item[2].getId())
         self.item_index += 1
         return self.current_item
 
@@ -305,7 +312,7 @@ class Sticker(BrowserView):
         for the stickers deppending on the filter_by_type.
         :param resource_name: The name of the resource folder.
         :type resource_name: string
-        :resturns: a string as a path
+        :returns: a string as a path
         """
         templates_dir =\
             queryResourceDirectory('stickers', resource_name).directory
@@ -324,3 +331,36 @@ class Sticker(BrowserView):
         pdf_fn = tempfile.mktemp(suffix='.pdf')
         pdf_file = createPdf(htmlreport=reporthtml, outfile=pdf_fn)
         return pdf_file
+
+    def _resolve_number_of_copies(self, items):
+        """For the given objects generate as many copies as the desired
+        number of stickers. The desired number of stickers for each
+        object is given by copies_count
+
+        :param items: list of objects whose stickers are going to be previewed.
+        :type items: list
+        :returns: list containing n copies of each object in the items list,
+        where n is self.copies_count
+        :rtype: list
+        """
+        copied_items = []
+        for obj in items:
+            for copy in range(self.copies_count):
+                copied_items.append(obj)
+        return copied_items
+
+    def get_copies_count(self):
+        """Return the copies_count number request parameter
+
+        :returns: the number of copies for each sticker as stated
+        in the request
+        :rtype: int
+        """
+        try:
+            copies_count = int(self.request.form.get("copies_count"))
+        except (TypeError, ValueError):
+            # default number of copies is a mandatory integer field in senaite setup
+            # so theoretically this should never fail
+            copies_count = self.context.bika_setup.getDefaultNumberOfCopies()
+
+        return copies_count
