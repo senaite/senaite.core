@@ -12,6 +12,7 @@ Changelog
 
 **Changed**
 
+- #621 AnalysesView code refactoring
 
 **Fixed**
 
