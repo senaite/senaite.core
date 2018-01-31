@@ -193,32 +193,6 @@
                 });
             }
 
-            /**
-             * Re-loads the stickers preview when the number of copies changes
-             */
-            function update_sticker_copies(copies, template) {
-                var baseurl = $('body').attr('data-itemsurl');
-                $('#stickers-wrapper').fadeTo('fast', 0.4);
-                $.ajax({
-                    url: baseurl,
-                    type: 'POST',
-                    async: true,
-                    data: {"copies_count": copies, "template": template}
-                })
-                .always(function(data) {
-                    var htmldata = data;
-                    htmldata = $(htmldata).find('#stickers-wrapper').html();
-                    $('#stickers-wrapper').html(htmldata);
-                    $('#stickers-wrapper').fadeTo('fast', 1);
-                    // reload barcoding
-                    bika.lims.BarcodeUtils.load();
-                    var stickwidth = $('.sticker').first().width();
-                    $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
-                    $('#sticker-rule').fadeIn();
-                    $('#stickers-wrapper').fadeIn();
-                });
-            }
-
             function printPdf() {
                 var url = window.location.href;
                 // Get the stickers style
