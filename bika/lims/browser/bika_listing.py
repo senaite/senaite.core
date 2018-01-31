@@ -496,7 +496,7 @@ class BikaListingView(BrowserView):
         """View constructor
         """
         super(BikaListingView, self).__init__(context, request)
-        logger.info("ListingView::__init__")
+        logger.info(u"ListingView::__init__")
 
         # set context and request for that view
         self.context = context
@@ -543,7 +543,7 @@ class BikaListingView(BrowserView):
     def __call__(self):
         """Handle request parameters and render the form
         """
-        logger.info("ListingView::__call__")
+        logger.info(u"ListingView::__call__")
 
         # Always update on __call__
         self.update()
@@ -583,7 +583,7 @@ class BikaListingView(BrowserView):
     def update(self):
         """Update the view state
         """
-        logger.info("ListingView::update")
+        logger.info(u"ListingView::update")
 
         self.portal = api.get_portal()
         self.mtool = api.get_tool("portal_membership")
@@ -621,7 +621,7 @@ class BikaListingView(BrowserView):
     def before_render(self):
         """Before render hook
         """
-        logger.info("ListingView::before_render")
+        logger.info(u"ListingView::before_render")
 
     @deprecated("Please use BikaListingView.update()")
     def _process_request(self):
@@ -689,7 +689,7 @@ class BikaListingView(BrowserView):
         config = self.parse_json(cookie_value)
         if config is None:
             config = []
-        logger.info("ListingView::read_filter_bar_cookie: config={}".format(config))
+        logger.info(u"ListingView::read_filter_bar_cookie: config={}".format(config))
         return config
 
     def set_filter_bar_config(self, config):
@@ -1130,7 +1130,7 @@ class BikaListingView(BrowserView):
         extra = self.get_filter_bar_queryaddition() or {}
         query.update(extra)
 
-        logger.info("ListingView::get_catalog_query: query={}".format(query))
+        logger.info(u"ListingView::get_catalog_query: query={}".format(query))
         return query
 
     @viewcache.memoize
@@ -1266,11 +1266,11 @@ class BikaListingView(BrowserView):
         # strip whitespaces off the searchterm
         searchterm = searchterm.strip()
         # strip illegal characters off the searchterm
-        searchterm = searchterm.strip("*.!$%&/()=-+:'`´^")
+        searchterm = searchterm.strip(u"*.!$%&/()=-+:'`´^")
         logger.info(u"ListingView::search:searchterm='{}'".format(searchterm))
 
         # create a catalog query
-        logger.info("ListingView::search: Prepare catalog query for '{}'"
+        logger.info(u"ListingView::search: Prepare catalog query for '{}'"
                     .format(self.catalog))
         query = self.get_catalog_query(searchterm=searchterm)
 
@@ -1280,7 +1280,7 @@ class BikaListingView(BrowserView):
 
         # return the unfiltered catalog results
         if not searchterm:
-            logger.info("ListingView::search: return {} results".format(len(brains)))
+            logger.info(u"ListingView::search: return {} results".format(len(brains)))
             return brains
 
         # Build a regular expression for the given searchterm
@@ -1294,7 +1294,7 @@ class BikaListingView(BrowserView):
                 out.append(brain)
 
         end = time.time()
-        logger.info("ListingView::search: Search for '{}' executed in {:.2f}s ({} matches)"
+        logger.info(u"ListingView::search: Search for '{}' executed in {:.2f}s ({} matches)"
                     .format(searchterm, end - start, len(out)))
         return out
 
@@ -1305,7 +1305,8 @@ class BikaListingView(BrowserView):
         """
         form_id = self.get_form_id()
         key = "{}_filter".format(form_id)
-        return self.request.get(key, "")
+        # we need to ensure unicode here
+        return self.safe_unicode(self.request.get(key, ""))
 
     def _fetch_brains(self, idxfrom=0):
         """Fetch the catalog results for the current listing table state
