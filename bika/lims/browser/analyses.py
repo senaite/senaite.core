@@ -1110,6 +1110,10 @@ class AnalysesView(BikaListingView):
             # This analysis hasn't yet been submitted, no verification yet
             return
 
+        if analysis_brain.review_state == 'retracted':
+            # Don't display icons and additional info about verification
+            return
+
         verifiers = analysis_brain.getVerificators.split(',')
         in_verifiers = submitter in verifiers
         if in_verifiers:
