@@ -12,6 +12,7 @@ Changelog
 
 **Changed**
 
+- #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
 
