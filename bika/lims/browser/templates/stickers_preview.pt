@@ -162,7 +162,7 @@
                 reload($('select#template').val(), $('#copies_count').val());
             });
             $('#copies_count').change(function(e) {
-                update_sticker_copies($('#copies_count').val(), $('select#template').val());
+                reload($('select#template').val(), $('#copies_count').val());
             });
             var stickwidth = $('.sticker').first().width();
             $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
