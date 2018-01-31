@@ -272,7 +272,6 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
         # We test in import functions if the file was uploaded
         try:
             if self._encoding:
-                import codecs
                 f = codecs.open(infile.name, 'r', encoding=self._encoding)
             else:
                 f = open(infile.name, 'rU')
