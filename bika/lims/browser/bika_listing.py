@@ -910,6 +910,7 @@ class BikaListingView(BrowserView):
         """
         # Getting a security manager instance for the current request
         self.security_manager = getSecurityManager()
+        self.workflow = getToolByName(self.context, 'portal_workflow')
 
         if classic:
             return self._folderitems(full_objects)
@@ -1306,7 +1307,7 @@ class BikaListingView(BrowserView):
         form_id = self.get_form_id()
         key = "{}_filter".format(form_id)
         # we need to ensure unicode here
-        return self.safe_unicode(self.request.get(key, ""))
+        return safe_unicode(self.request.get(key, ""))
 
     def _fetch_brains(self, idxfrom=0):
         """Fetch the catalog results for the current listing table state
