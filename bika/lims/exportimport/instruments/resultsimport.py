@@ -267,7 +267,7 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
 
     def parse(self):
         infile = self.getInputFile()
-        self.log("Parsing file ${file_name}", mapping={"file_name":infile.filename})
+        self.log("Parsing file ${file_name}", mapping={"file_name": infile.filename})
         jump = 0
         # We test in import functions if the file was uploaded
         try:
@@ -301,7 +301,7 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
             "${total_analyses} analyses, ${total_results} results",
             mapping={"total_objects": self.getObjectsTotalCount(),
                      "total_analyses": self.getAnalysesTotalCount(),
-                     "total_results":self.getResultsTotalCount()}
+                     "total_results": self.getResultsTotalCount()}
         )
         return True
 
@@ -498,7 +498,6 @@ class AnalysisResultsImporter(Logger):
 
                     # For each acode, create a ReferenceAnalysis and attach it
                     # to the Reference Sample
-                    service_uids = []
                     services = self.bsc(portal_type='AnalysisService')
                     service_uids = [service.UID for service in services
                                     if service.getObject().getKeyword()
@@ -682,30 +681,30 @@ class AnalysisResultsImporter(Logger):
     def _getObjects(self, objid, criteria, states):
         # self.log("Criteria: %s %s") % (criteria, obji))
         obj = []
-        if (criteria == 'arid'):
+        if criteria == 'arid':
             obj = self.ar_catalog(
                            getId=objid,
                            review_state=states)
-        elif (criteria == 'sid'):
+        elif criteria == 'sid':
             obj = self.ar_catalog(
                            getSampleID=objid,
                            review_state=states)
-        elif (criteria == 'csid'):
+        elif criteria == 'csid':
             obj = self.ar_catalog(
                            getClientSampleID=objid,
                            review_state=states)
-        elif (criteria == 'aruid'):
+        elif criteria == 'aruid':
             obj = self.ar_catalog(
                            UID=objid,
                            review_state=states)
-        elif (criteria == 'rgid'):
+        elif criteria == 'rgid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'],
                            getReferenceAnalysesGroupID=objid)
-        elif (criteria == 'rid'):
+        elif criteria == 'rid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'], id=objid)
-        elif (criteria == 'ruid'):
+        elif criteria == 'ruid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'], UID=objid)
         if obj and len(obj) > 0:
@@ -732,11 +731,11 @@ class AnalysisResultsImporter(Logger):
         allowed_an_states_msg = [_(s) for s in allowed_an_states]
 
         # Acceleration of searches using priorization
-        if (self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']):
+        if self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']:
             # Look from reference analyses
             analyses = self._getZODBAnalysesFromReferenceAnalyses(
                     objid, self._priorizedsearchcriteria)
-        if (len(analyses) == 0):
+        if len(analyses) == 0:
             # Look from ar and derived
             analyses = self._getZODBAnalysesFromAR(objid,
                                                    '',
