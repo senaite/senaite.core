@@ -147,3 +147,35 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     >>> wf.doActionFor(ar, 'receive')
     >>> ar.getReceivedBy()
     'test_user_1_'
+
+Import test
+...........
+Load results test file and import the results::
+
+    >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
+    >>> temp_file = codecs.open(dir_path + '/2012-05-09_11-06-14-425_CBDB6A.txt',
+    ...                         encoding='utf-8-sig')
+    >>> test_file = ConvertToUploadFile(temp_file)
+    >>> tx1800i_parser = TX1800iParser(test_file)
+    >>> importer = SysmexXTImporter(parser=tx1800i_parser,
+    ...                             context=portal,
+    ...                             idsearchcriteria=['getId', 'getSampleID', 'getClientSampleID'],
+    ...                             allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
+    ...                             allowed_analysis_states=None,
+    ...                             override=[True, True])
+    >>> importer.process()
+
+Check from the importer logs that the file from where the results have been imported is indeed
+the specified file::
+
+    >>> '2012-05-09_11-06-14-425_CBDB6A.txt' in importer.logs[0]
+    True
+
+Check the rest of the importer logs to verify that the values were correctly imported::
+
+    >>> importer.logs[1:]
+    ['End of file reached successfully: 1 objects, 21 analyses, 1 results',
+     'Allowed Analysis Request states: sample_received, attachment_due, to_be_verified',
+     'Allowed analysis states: sampled, sample_received, attachment_due, to_be_verified',
+     "H2O-0001-R01: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
+     'Import finished successfully: 1 ARs and 4 results updated']
