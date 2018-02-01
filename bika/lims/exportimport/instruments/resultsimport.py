@@ -6,18 +6,18 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import codecs
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.utils import t
-from bika.lims.exportimport.instruments.logger import Logger
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import tmpID
 from datetime import datetime
 from DateTime import DateTime
-from bika.lims.workflow import doActionFor
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.exportimport.instruments.logger import Logger
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import t
+from bika.lims.utils import tmpID
+from bika.lims.workflow import doActionFor
 
 
 class InstrumentResultsFileParser(Logger):
@@ -850,6 +850,44 @@ class AnalysisResultsImporter(Logger):
 
         return analyses
 
+    def calculateTotalResults(self, objid, analysis):
+        """ If an AR(objid) has an analysis that has a calculation
+        then check if param analysis is used on the calculations formula.
+        Here we are dealing with two types of analysis.
+        1. Calculated Analysis - Results are calculated.
+        2. Analysis - Results are captured and not calculated
+        :param objid: AR ID or Worksheet's Reference Sample IDs
+        :param analysis: Analysis Object
+        """
+        analyses = self._getZODBAnalyses(objid)
+        # Filter Analyses With Calculation
+        analyses_with_calculation = filter(
+                                        lambda an: an.getCalculation(),
+                                        analyses)
+        for analysis_with_calc in analyses_with_calculation:
+            # Get the calculation to get the formula so that we can check
+            # if param analysis keyword is used on the calculation formula
+            calcultion = analysis_with_calc.getCalculation()
+            formula = calcultion.getMinifiedFormula()
+            # The analysis that we are currenly on
+            analysis_keyword = analysis.getKeyword()
+            if analysis_keyword not in formula:
+                continue
+
+            # If the analysis_keyword is in the formula, it means that this
+            # analysis is a dependent on that calculated analysis
+            calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
+            if calc_passed:
+                api.do_transition_for(analysis_with_calc, "submit")
+                self.log(
+                    "${request_id}: calculated result for "
+                    "'${analysis_keyword}': '${analysis_result}'",
+                    mapping={"request_id": objid,
+                             "analysis_keyword": analysis_with_calc.getKeyword(),
+                             "analysis_result": str(analysis_with_calc.getResult())}
+                )
+
+
     def _process_analysis(self, objid, analysis, values):
         resultsaved = False
         acode = analysis.getKeyword()
@@ -865,9 +903,12 @@ class AnalysisResultsImporter(Logger):
                 capturedate = None
                 pass
             del values['DateTime']
+
+        fields_to_reindex = []
+        # get interims
         interimsout = []
         interims = hasattr(analysis, 'getInterimFields') \
-            and analysis.getInterimFields() or []
+                   and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interim['keyword']
             title = interim['title']
@@ -885,10 +926,6 @@ class AnalysisResultsImporter(Logger):
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             elif values.get(title, '') or values.get(title, '') == 0:
                 res = values.get(title)
                 self.log("%s/'%s:%s': '%s'" % (objid, acode, title, str(res)))
@@ -896,27 +933,16 @@ class AnalysisResultsImporter(Logger):
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             else:
                 interimsout.append(interim)
-
-        fields_to_reindex = []
+        # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-            # won't be doing setResult below, so manually calculate result.
-            analysis.calculateResult(override=self._override[1])
-            fields_to_reindex.append('Result')
 
-        if resultsaved is False and (values.get(defresultkey, '') or
-                                     values.get(defresultkey, '') == 0 or
-                                     self._override[1] is True):
-            # set the result
-            res = values.get(defresultkey, '')
-            # self.log("${object_id} result for "
-            # '${analysis_keyword}': '${result}'",
+        # Set result if present.
+        res = values.get(defresultkey, '')
+        if res or res == 0 or self._override[1] == True:
+            # self.log("${object_id} result for '${analysis_keyword}': '${result}'",
             #          mapping={"obect_id": obid,
             #                   "analysis_keyword": acode,
             #                   "result": str(res)})
@@ -926,23 +952,25 @@ class AnalysisResultsImporter(Logger):
                 analysis.setResultCaptureDate(capturedate)
             resultsaved = True
 
-        elif resultsaved is False:
+        if resultsaved == False:
             self.log(
                 "${request_id} result for '${analysis_keyword}': '${result}'",
                 mapping={"request_id": objid,
                          "analysis_keyword": acode,
                          "result": ""})
 
-        if resultsaved or len(interimsout) > 0:
+        if resultsaved:
             doActionFor(analysis, 'submit')
+            self.calculateTotalResults(objid, analysis)
+            fields_to_reindex.append('Result')
 
-        if (resultsaved or len(interimsout) > 0) \
+        if (resultsaved) \
             and values.get('Remarks', '') \
             and analysis.portal_type == 'Analysis' \
-                and (analysis.getRemarks() != '' or self._override[1] is True):
+            and (analysis.getRemarks() != '' or self._override[1] == True):
             analysis.setRemarks(values['Remarks'])
             fields_to_reindex.append('Remarks')
 
         if len(fields_to_reindex):
             analysis.reindexObject(idxs=fields_to_reindex)
-        return resultsaved or len(interimsout) > 0
+        return resultsaved

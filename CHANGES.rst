@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #530 Calculated results do not get updated when importing instrument results
 - #614 Fix accreditation category titles
 - #611 Advanced filter bar: filter Analysis Requests by Service name not working
 - #622 (Re-)Installation always adds another identifier type
