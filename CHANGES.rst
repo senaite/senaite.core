@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV
 - #617 Instrument import interface: Agilent Masshunter
 - #617 Instrument import interface: Shimadzu GCMS-QP2010 SE
