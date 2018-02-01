@@ -23,6 +23,7 @@ from lifetechnologies.qubit import qubit
 from biodrop.ulite import ulite
 from tescan.tima import tima
 from sysmex.xs import i500, i1000
+from sysmex.xt import i1800, i4000
 from beckmancoulter.access import model2
 from rochecobas.taqman import model48
 from rochecobas.taqman import model96
@@ -58,6 +59,8 @@ __all__ = ['abaxis.vetscan.vs2',
            'lifetechnologies.qubit.qubit',
            'sysmex.xs.i500',
            'sysmex.xs.i1000',
+           'sysmex.xt.i1800',
+           'sysmex.xt.i4000',
            'scilvet.abc.plus',
            'sealanalytical.aq2.aq2',
            'tescan.tima.tima',
@@ -92,6 +95,8 @@ PARSERS = [
            ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
            ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
            ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],
+           ['sysmex.xt.i1800', 'SysmexXT1800iParser'],
+           ['sysmex.xt.i4000', 'SysmexXT1800iParser'],
            ['scilvet.abc.plus', 'AbaxisVetScanCSVVS2Parser'],
            ['sealanalytical.aq2.aq2', 'SealAnalyticsAQ2CSVParser'],
            ['tescan.tima.tima', 'TimaCSVParser'],
