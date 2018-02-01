@@ -56,3 +56,14 @@ Check that the instrument interface is available::
     ...     exims.append(exim_id)
     >>> 'sysmex.xt.i1800' in exims
     True
+    
+Assigning the Import Interface to an Instrument
+-----------------------------------------------
+Create an `Instrument` and assign to it the tested Import Interface::
+
+    >>> instrument = api.create(bika_instruments, "Instrument", title="Instrument-1")
+    >>> instrument
+    <Instrument at /plone/bika_setup/bika_instruments/instrument-1>
+    >>> instrument.setImportDataInterface(['sysmex.xt.i1800'])
+    >>> instrument.getImportDataInterface()
+    ['sysmex.xt.i1800']
