@@ -94,38 +94,39 @@ of the `AnalysisServices` that are found in the results file::
     >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
     <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
-    >>> analysisservice = api.create(bika_analysisservices,
+    >>> analysisservice_1 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="WBC",
     ...                              ShortTitle="wbc",
     ...                              Category=analysiscategory,
     ...                              Keyword="WBC")
-    >>> analysisservice
+    >>> analysisservice_1
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
-    >>> analysisservice = api.create(bika_analysisservices,
+    >>> analysisservice_2 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="RBC",
     ...                              ShortTitle="rbc",
     ...                              Category=analysiscategory,
     ...                              Keyword="RBC")
-    >>> analysisservice
+    >>> analysisservice_2
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>
-    >>> analysisservice = api.create(bika_analysisservices,
+    >>> analysisservice_3 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="HGB",
     ...                              ShortTitle="hgb",
     ...                              Category=analysiscategory,
     ...                              Keyword="HGB")
-    >>> analysisservice
+    >>> analysisservice_3
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-3>
-    >>> analysisservice = api.create(bika_analysisservices,
+    >>> analysisservice_4 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="HCT",
     ...                              ShortTitle="hct",
     ...                              Category=analysiscategory,
     ...                              Keyword="HCT")
-    >>> analysisservice
+    >>> analysisservice_4
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-4>
+    >>> analysisservices = [analysisservice_1, analysisservice_2, analysisservice_3, analysisservice_4]
 
 Create an `AnalysisRequest` with this `AnalysisService` and receive it::
 
@@ -136,7 +137,7 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     ...           'DateSampled': date_now,
     ...           'SampleType': sampletype.UID()
     ...          }
-    >>> service_uids = [analysisservice.UID()]
+    >>> service_uids = [analysisservice.UID() for analysisservice in analysisservices]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
     <AnalysisRequest at /plone/clients/client-1/H2O-0001-R01>
