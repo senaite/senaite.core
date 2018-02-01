@@ -3,7 +3,7 @@ Abbott's m2000 Real Time import interface
 
 Running this test from the buildout directory::
 
-    bin/test test_textual_doctests -t AbbottM2000rtImportInterfaceTotalResults
+    bin/test test_textual_doctests -t AbbottM2000rtImportInterface
 
 
 Test Setup
