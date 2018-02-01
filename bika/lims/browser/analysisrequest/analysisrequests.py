@@ -821,11 +821,11 @@ class AnalysisRequestsView(BikaListingView):
         @Obj: it is an analysis request brain.
         @return: boolean
         """
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
         if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
             return False
-        # Gettin the department from analysis service
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Getting the department from analysis service
         deps = obj.getDepartmentUIDs if hasattr(obj, 'getDepartmentUIDs')\
             else []
         result = True
