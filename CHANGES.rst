@@ -20,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #614 Fix accreditation category titles
 - #611 Advanced filter bar: filter Analysis Requests by Service name not working
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
