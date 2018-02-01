@@ -179,3 +179,19 @@ Check the rest of the importer logs to verify that the values were correctly imp
      'Allowed analysis states: sampled, sample_received, attachment_due, to_be_verified',
      "H2O-0001-R01: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
      'Import finished successfully: 1 ARs and 4 results updated']
+
+And finally check if indeed the analysis has the imported results::
+
+    >>> analyses = ar.getAnalyses()
+    >>> an = [analysis.getObject() for analysis in analyses if analysis.Title=='WBC'][0]
+    >>> an.getResult()
+    '6.01'
+    >>> an = [analysis.getObject() for analysis in analyses if analysis.Title=='RBC'][0]
+    >>> an.getResult()
+    '5.02'
+    >>> an = [analysis.getObject() for analysis in analyses if analysis.Title=='HGB'][0]
+    >>> an.getResult()
+    '13.2'
+    >>> an = [analysis.getObject() for analysis in analyses if analysis.Title=='HCT'][0]
+    >>> an.getResult()
+    '40.0'
