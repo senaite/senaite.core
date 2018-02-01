@@ -6,6 +6,13 @@ Changelog
 
 **Added**
 
+- #617 Instrument import interface: 2-Dimensional-CSV
+- #617 Instrument import interface: Agilent Masshunter
+- #617 Instrument import interface: Shimadzu GCMS-QP2010 SE
+- #617 Instrument import interface: Shimadzu GCMS-TQ8030 GC/MS/MS
+- #617 Instrument import interface: Shimadzu ICPE-9000 Multitype
+- #617 Instrument import interface: Shimadzu HPLC-PDA Nexera-I
+- #617 Instrument import interface: Shimadzu LC MS/MS Nexera X2
 - #537 Instrument import interface: Sysmex XT-4000i
 - #536 Instrument import interface: Sysmex XT-1800i
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
