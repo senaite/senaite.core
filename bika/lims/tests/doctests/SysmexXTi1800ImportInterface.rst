@@ -3,7 +3,7 @@ Sysmex xt i1800 import interface
 
 Running this test from the buildout directory::
 
-    bin/test test_textual_doctests -t SysmexXTi4000ImportInterface
+    bin/test test_textual_doctests -t SysmexXTi1800ImportInterface
 
 
 Test Setup
