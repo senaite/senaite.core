@@ -5,6 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import codecs
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _, logger
@@ -206,7 +208,6 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         # We test in import functions if the file was uploaded
         try:
             if self._encoding:
-                import codecs
                 f = codecs.open(infile.name, 'r', encoding=self._encoding)
             else:
                 f = open(infile.name, 'rU')
@@ -242,6 +243,79 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
     def splitLine(self, line):
         sline = line.split(',')
+        return [token.strip() for token in sline]
+
+    def _parseline(self, line):
+        """ Parses a line from the input CSV file and populates rawresults
+            (look at getRawResults comment)
+            returns -1 if critical error found and parser must end
+            returns the number of lines to be jumped in next read. If 0, the
+            parser reads the next line as usual
+        """
+        raise NotImplementedError
+
+
+class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
+
+    def __init__(self, infile, separator, encoding=None,):
+        InstrumentResultsFileParser.__init__(self, infile, 'TXT')
+        # Some Instruments can generate files with different encodings, so we
+        # may need this parameter
+        self._separator = separator
+        self._encoding = encoding
+
+    def parse(self):
+        infile = self.getInputFile()
+        self.log("Parsing file ${file_name}", mapping={"file_name": infile.filename})
+        jump = 0
+        lines = self.read_file(infile)
+        for line in lines:
+            self._numline += 1
+            if jump == -1:
+                # Something went wrong. Finish
+                self.err("File processing finished due to critical errors")
+                return False
+            if jump > 0:
+                # Jump some lines
+                jump -= 1
+                continue
+
+            if not line:
+                continue
+
+            jump = 0
+            if line:
+                jump = self._parseline(line)
+
+        self.log(
+            "End of file reached successfully: ${total_objects} objects, "
+            "${total_analyses} analyses, ${total_results} results",
+            mapping={"total_objects": self.getObjectsTotalCount(),
+                     "total_analyses": self.getAnalysesTotalCount(),
+                     "total_results": self.getResultsTotalCount()}
+        )
+        return True
+
+    def read_file(self, infile):
+        """Given an input file read its contents, strip whitespace from the
+         beginning and end of each line and return a list of the preprocessed
+         lines read.
+
+        :param infile: file that contains the data to be read
+        :return: list of the read lines with stripped whitespace
+        """
+        try:
+            encoding = self._encoding if self._encoding else None
+            mode = 'r' if self._encoding else 'rU'
+            with codecs.open(infile.name, mode, encoding=encoding) as f:
+                lines = f.readlines()
+        except AttributeError:
+            lines = infile.readlines()
+        lines = [line.strip() for line in lines]
+        return lines
+
+    def split_line(self, line):
+        sline = line.split(self._separator)
         return [token.strip() for token in sline]
 
     def _parseline(self, line):
@@ -433,7 +507,6 @@ class AnalysisResultsImporter(Logger):
 
                     # For each acode, create a ReferenceAnalysis and attach it
                     # to the Reference Sample
-                    service_uids = []
                     services = self.bsc(portal_type='AnalysisService')
                     service_uids = [service.UID for service in services
                                     if service.getObject().getKeyword()
@@ -617,30 +690,30 @@ class AnalysisResultsImporter(Logger):
     def _getObjects(self, objid, criteria, states):
         # self.log("Criteria: %s %s") % (criteria, obji))
         obj = []
-        if (criteria == 'arid'):
+        if criteria == 'arid':
             obj = self.ar_catalog(
                            getId=objid,
                            review_state=states)
-        elif (criteria == 'sid'):
+        elif criteria == 'sid':
             obj = self.ar_catalog(
                            getSampleID=objid,
                            review_state=states)
-        elif (criteria == 'csid'):
+        elif criteria == 'csid':
             obj = self.ar_catalog(
                            getClientSampleID=objid,
                            review_state=states)
-        elif (criteria == 'aruid'):
+        elif criteria == 'aruid':
             obj = self.ar_catalog(
                            UID=objid,
                            review_state=states)
-        elif (criteria == 'rgid'):
+        elif criteria == 'rgid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'],
                            getReferenceAnalysesGroupID=objid)
-        elif (criteria == 'rid'):
+        elif criteria == 'rid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'], id=objid)
-        elif (criteria == 'ruid'):
+        elif criteria == 'ruid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'], UID=objid)
         if obj and len(obj) > 0:
@@ -667,11 +740,11 @@ class AnalysisResultsImporter(Logger):
         allowed_an_states_msg = [_(s) for s in allowed_an_states]
 
         # Acceleration of searches using priorization
-        if (self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']):
+        if self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']:
             # Look from reference analyses
             analyses = self._getZODBAnalysesFromReferenceAnalyses(
                     objid, self._priorizedsearchcriteria)
-        if (len(analyses) == 0):
+        if len(analyses) == 0:
             # Look from ar and derived
             analyses = self._getZODBAnalysesFromAR(objid,
                                                    '',

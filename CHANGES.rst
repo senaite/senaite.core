@@ -13,6 +13,8 @@ Changelog
 - #617 Instrument import interface: Shimadzu ICPE-9000 Multitype
 - #617 Instrument import interface: Shimadzu HPLC-PDA Nexera-I
 - #617 Instrument import interface: Shimadzu LC MS/MS Nexera X2
+- #537 Instrument import interface: Sysmex XT-4000i
+- #536 Instrument import interface: Sysmex XT-1800i
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
 - #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
 
@@ -25,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #614 Fix accreditation category titles
 - #611 Advanced filter bar: filter Analysis Requests by Service name not working
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state

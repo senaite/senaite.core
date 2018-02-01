@@ -24,6 +24,7 @@ from lifetechnologies.qubit import qubit
 from biodrop.ulite import ulite
 from tescan.tima import tima
 from sysmex.xs import i500, i1000
+from sysmex.xt import i1800, i4000
 from beckmancoulter.access import model2
 from rochecobas.taqman import model48
 from rochecobas.taqman import model96
@@ -54,28 +55,30 @@ __all__ = ['abaxis.vetscan.vs2',
            'foss.winescan.ft120',
            'generic.two_dimension',
            # 'generic.xml',
+           'genexpert.genexpert',
            'horiba.jobinyvon.icp',
+           'lifetechnologies.qubit.qubit',
+           'myself.myinstrument',
+           'nuclisens.easyq',
+           'panalytical.omnia.axios_xrf',
            'rigaku.supermini.wxrf',
            'rochecobas.taqman.model48',
            'rochecobas.taqman.model96',
-           'thermoscientific.arena.xt20',
-           'thermoscientific.gallery.Ts9861x',
-           'panalytical.omnia.axios_xrf',
-           'lifetechnologies.qubit.qubit',
-           'sysmex.xs.i500',
-           'sysmex.xs.i1000',
-           'shimadzu.icpe.multitype',
-           'shimadzu.gcms.qp2010se',
-           'shimadzu.gcms.tq8030',
-           'shimadzu.nexera.LC2040C',
-           'shimadzu.nexera.LCMS8050',
            'scilvet.abc.plus',
            'sealanalytical.aq2.aq2',
+           'shimadzu.gcms.qp2010se',
+           'shimadzu.gcms.tq8030',
+           'shimadzu.icpe.multitype',
+           'shimadzu.nexera.LC2040C',
+           'shimadzu.nexera.LCMS8050',
+           'sysmex.xs.i1000',
+           'sysmex.xs.i500',
+           'sysmex.xt.i1800',
+           'sysmex.xt.i4000',
            'tescan.tima.tima',
+           'thermoscientific.arena.xt20',
+           'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
-           'myself.myinstrument',
-           'nuclisens.easyq',
-           'genexpert.genexpert'
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
@@ -110,6 +113,8 @@ PARSERS = [
            ['shimadzu.gcms.tq8030', 'GCMSTQ8030GCMSMSCSVParser'],
            ['shimadzu.nexera.LC2040C', 'TSVParser'],
            ['shimadzu.nexera.LCMS8050', 'TSVParser'],
+           ['sysmex.xt.i1800', 'SysmexXT1800iParser'],
+           ['sysmex.xt.i4000', 'SysmexXT1800iParser'],
            ['scilvet.abc.plus', 'AbaxisVetScanCSVVS2Parser'],
            ['sealanalytical.aq2.aq2', 'SealAnalyticsAQ2CSVParser'],
            ['tescan.tima.tima', 'TimaCSVParser'],
