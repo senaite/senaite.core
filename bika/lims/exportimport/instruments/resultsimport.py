@@ -6,19 +6,18 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import codecs
-
+from datetime import datetime
+from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.utils import t
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.exportimport.instruments.logger import Logger
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from datetime import datetime
-from DateTime import DateTime
 from bika.lims.workflow import doActionFor
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 
 
 class InstrumentResultsFileParser(Logger):
