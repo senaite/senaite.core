@@ -8,27 +8,32 @@ Running this test from the buildout directory::
 
 Test Setup
 ----------
-Needed imports::
+Needed imports:
 
+.. code::
+
+    >>> import codecs
     >>> import os
     >>> import transaction
+    >>> from DateTime import DateTime
     >>> from Products.CMFCore.utils import getToolByName
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from DateTime import DateTime
-
-    >>> import codecs
     >>> from bika.lims.exportimport import instruments
-    >>> from bika.lims.exportimport.instruments.abbott.m2000rt.m2000rt \
-    ...      import Abbottm2000rtTSVParser, Abbottm2000rtImporter
+    >>> from bika.lims.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtTSVParser
+    >>> from bika.lims.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtImporter
     >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
 
-Functional helpers::
+Functional helpers:
+
+.. code::
 
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
-Variables::
+Variables:
+
+.. code::
 
     >>> date_now = timestamp()
     >>> portal = self.portal
@@ -39,9 +44,12 @@ Variables::
     >>> bika_samplepoints = bika_setup.bika_samplepoints
     >>> bika_analysiscategories = bika_setup.bika_analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
+    >>> bika_calculations = bika_setup.bika_calculations
 
 We need certain permissions to create and access objects used in this test,
-so here we will assume the role of Lab Manager::
+so here we will assume the role of Lab Manager:
+
+.. code::
 
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import setRoles
@@ -49,7 +57,9 @@ so here we will assume the role of Lab Manager::
 
 Availability of instrument interface
 ------------------------------------
-Check that the instrument interface is available::
+Check that the instrument interface is available:
+
+.. code::
 
     >>> exims = []
     >>> for exim_id in instruments.__all__:
@@ -59,7 +69,9 @@ Check that the instrument interface is available::
 
 Assigning the Import Interface to an Instrument
 -----------------------------------------------
-Create an `Instrument` and assign to it the tested Import Interface::
+Create an `Instrument` and assign to it the tested Import Interface:
+
+.. code::
 
     >>> instrument = api.create(bika_instruments, "Instrument", title="Instrument-1")
     >>> instrument
@@ -75,7 +87,9 @@ Required steps: Create and receive Analysis Request for import test
 ...................................................................
 
 An `AnalysisRequest` can only be created inside a `Client`, and it also requires a `Contact` and
-a `SampleType`::
+a `SampleType`:
+
+.. code::
 
     >>> clients = self.portal.clients
     >>> client = api.create(clients, "Client", Name="NARALABS", ClientID="NLABS")
@@ -89,7 +103,9 @@ a `SampleType`::
     <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
 
 Create an `AnalysisCategory` (which categorizes different `AnalysisServices`), and add to it an `AnalysisService`.
-This service matches the service specified in the file from which the import will be performed::
+This service matches the service specified in the file from which the import will be performed:
+
+.. code::
 
     >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
@@ -103,7 +119,23 @@ This service matches the service specified in the file from which the import wil
     >>> analysisservice
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
 
-Set some interim fields present in the results test file to the created `AnalysisService`::
+    >>> total_calc = api.create(bika_calculations, 'Calculation', title='TotalCalc')
+    >>> total_calc.setFormula('[HIV06ml] * 100')
+    >>> analysisservice2 = api.create(bika_analysisservices,
+    ...                              "AnalysisService",
+    ...                              title="Test Total Results",
+    ...                              ShortTitle="TestTotalResults",
+    ...                              Category=analysiscategory,
+    ...                              Keyword="TTR")
+    >>> analysisservice2.setUseDefaultCalculation(False)
+    >>> analysisservice2.setCalculation(total_calc)
+    >>> analysisservice2
+    <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-2>
+
+Set some interim fields present in the results test file intoto the created
+AnalysisService, so not on the second server:
+
+.. code::
 
     >>> service_interim_fields = [{'keyword': 'ASRExpDate',
     ...                            'title': 'ASRExpDate',
@@ -134,7 +166,9 @@ Set some interim fields present in the results test file to the created `Analysi
      {'default': '', 'unit': '', 'keyword': 'FinalResult', 'title': 'FinalResult'},
      {'default': '', 'unit': '', 'keyword': 'Location', 'title': 'Location'}]
 
-Create an `AnalysisRequest` with this `AnalysisService` and receive it::
+Create an `AnalysisRequest` with this `AnalysisService` and receive it:
+
+.. code::
 
     >>> values = {
     ...           'Client': client.UID(),
@@ -143,7 +177,7 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     ...           'DateSampled': date_now,
     ...           'SampleType': sampletype.UID()
     ...          }
-    >>> service_uids = [analysisservice.UID()]
+    >>> service_uids = [analysisservice.UID(), analysisservice2.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
     <AnalysisRequest at /plone/clients/client-1/H2O-0001-R01>
@@ -156,10 +190,12 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
 
 Import test
 ...........
-Load results test file and import the results::
+Load results test file and import the results:
+
+.. code::
 
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
-    >>> temp_file = codecs.open(dir_path + '/Results.log.123',
+    >>> temp_file = codecs.open(dir_path + '/AbbottM2000.log.123',
     ...                         encoding='utf-8-sig')
     >>> test_file = ConvertToUploadFile(temp_file)
     >>> abbott_parser = Abbottm2000rtTSVParser(test_file)
@@ -172,35 +208,28 @@ Load results test file and import the results::
     >>> importer.process()
 
 Check from the importer logs that the file from where the results have been imported is indeed
-the specified file::
+the specified file:
 
-    >>> import re
-    >>> matches = re.search('(/bika.lims.+)', importer.logs[0])
-    >>> matches.group(0)
-    '/bika.lims/bika/lims/tests/files/Results.log.123'
+.. code::
 
-Check the rest of the importer logs to verify that the values were correctly imported::
+    >>> '/AbbottM2000.log.123' in importer.logs[0]
+    True
+
+Check the rest of the importer logs to verify that the values were correctly imported:
+
+.. code::
 
     >>> importer.logs[1:]
-    ['End of file reached successfully: 24 objects, 1 analyses, 24 results',
-     'Allowed Analysis Request states: sample_received, attachment_due, to_be_verified',
-     'Allowed analysis states: sampled, sample_received, attachment_due, to_be_verified',
-     "H2O-0001 result for 'HIV06ml:ASRExpDate': '20141211'",
-     "H2O-0001 result for 'HIV06ml:ASRLotNumber': '0123456'",
-     "H2O-0001 result for 'HIV06ml:AssayCalibrationTime': '20150423 16:37:05'",
-     "H2O-0001 result for 'HIV06ml:FinalResult': '18'",
-     "H2O-0001 result for 'HIV06ml:Location': 'A12'",
-     "H2O-0001-R01: [u'Analysis HIV06ml'] imported sucessfully",
-     'Import finished successfully: 1 ARs and 1 results updated']
+    ['End of file reached successfully: 24 objects, 1 analyses, 24 results', 'Allowed Analysis Request states: sample_received, attachment_due, to_be_verified', 'Allowed analysis states: sampled, sample_received, attachment_due, to_be_verified', "H2O-0001 result for 'HIV06ml:ASRExpDate': '20141211'", "H2O-0001 result for 'HIV06ml:ASRLotNumber': '0123456'", "H2O-0001 result for 'HIV06ml:AssayCalibrationTime': '20150423 16:37:05'", "H2O-0001 result for 'HIV06ml:FinalResult': '18'", "H2O-0001 result for 'HIV06ml:Location': 'A12'", "H2O-0001: calculated result for 'TTR': '1800.0'", "H2O-0001-R01: [u'Analysis HIV06ml'] imported sucessfully", 'Import finished successfully: 1 ARs and 1 results updated']
 
-And finally check if indeed the analysis has the imported results::
+And finally check if indeed the analysis has the imported results:
+
+.. code::
 
     >>> analyses = ar.getAnalyses()
     >>> an = [analysis.getObject() for analysis in analyses if analysis.Title == 'HIV06ml'][0]
-    >>> an.getInterimFields()
-    [{'default': '', 'value': '20141211', 'unit': '', 'keyword': 'ASRExpDate', 'title': 'ASRExpDate'},
-     {'default': '', 'value': '0123456', 'unit': '', 'keyword': 'ASRLotNumber', 'title': 'ASRLotNumber'},
-     {'default': '', 'value': '20150423 16:37:05', 'unit': '', 'keyword': 'AssayCalibrationTime', 'title': 'AssayCalibrationTime'},
-     {'default': '', 'value': '18', 'unit': '', 'keyword': 'FinalResult', 'title': 'FinalResult'},
-     {'default': '', 'value': 'A12', 'unit': '', 'keyword': 'Location', 'title': 'Location'}]
-
+    >>> an.getResult()
+    '18'
+    >>> an = [analysis.getObject() for analysis in analyses if analysis.Title == 'Test Total Results'][0]
+    >>> an.getResult()
+    '1800.0'

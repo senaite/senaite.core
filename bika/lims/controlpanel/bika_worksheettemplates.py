@@ -79,7 +79,7 @@ class WorksheetTemplatesView(BikaListingView):
         item['replace']['Title'] = get_link(item['url'], item['Title'])
         item['Instrument'] = ''
         instrument = obj.getInstrument()
-        item['Instrument'] = instrument and instrument.getTitle() or ''
+        item['Instrument'] = instrument and instrument.Title() or ''
         return item
 
 

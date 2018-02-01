@@ -34,7 +34,7 @@ Running this test from the buildout directory::
 Test Setup
 ----------
 
-Needed Imports::
+Needed Imports:
 
     >>> import transaction
     >>> from DateTime import DateTime
@@ -43,7 +43,7 @@ Needed Imports::
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
 
-Functional Helpers::
+Functional Helpers:
 
     >>> def start_server():
     ...     from Testing.ZopeTestCase.utils import startZServer
@@ -53,7 +53,7 @@ Functional Helpers::
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
-Variables::
+Variables:
 
     >>> date_now = timestamp()
     >>> year = date_now.split('-')[0][2:]
@@ -87,46 +87,46 @@ so here we will assume the role of Lab Manager.
 Analysis Requests (AR)
 ----------------------
 
-An `AnalysisRequest` can only be created inside a `Client`::
+An `AnalysisRequest` can only be created inside a `Client`:
 
     >>> clients = self.portal.clients
     >>> client = api.create(clients, "Client", Name="RIDING BYTES", ClientID="RB")
     >>> client
     <...client-1>
 
-To create a new AR, a `Contact` is needed::
+To create a new AR, a `Contact` is needed:
 
     >>> contact = api.create(client, "Contact", Firstname="Ramon", Surname="Bartl")
     >>> contact
     <...contact-1>
 
 A `SampleType` defines how long the sample can be retained, the minimum volume
-needed, if it is hazardous or not, the point where the sample was taken etc.::
+needed, if it is hazardous or not, the point where the sample was taken etc.:
 
     >>> sampletype = api.create(bika_sampletypes, "SampleType", Prefix="water")
     >>> sampletype
     <...sampletype-1>
 
-A `SamplePoint` defines the location, where a `Sample` was taken::
+A `SamplePoint` defines the location, where a `Sample` was taken:
 
     >>> samplepoint = api.create(bika_samplepoints, "SamplePoint", title="Lake of Constance")
     >>> samplepoint
     <...samplepoint-1>
 
-An `AnalysisCategory` categorizes different `AnalysisServices`::
+An `AnalysisCategory` categorizes different `AnalysisServices`:
 
     >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
     <...analysiscategory-1>
 
-An `AnalysisService` defines a analysis service offered by the laboratory::
+An `AnalysisService` defines a analysis service offered by the laboratory:
 
     >>> analysisservice = api.create(bika_analysisservices, "AnalysisService",
     ...     title="PH", Category=analysiscategory, Keyword="PH")
     >>> analysisservice
     <...analysisservice-1>
 
-Set up `ID Server` configuration::
+Set up `ID Server` configuration:
 
     >>> values = [
     ...            {'form': '{sampleType}{year}-{seq:04d}',
@@ -159,7 +159,7 @@ Set up `ID Server` configuration::
 
     >>> bika_setup.setIDFormatting(values)
 
-An `AnalysisRequest` can be created::
+An `AnalysisRequest` can be created:
 
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
@@ -172,10 +172,10 @@ An `AnalysisRequest` can be created::
     >>> transaction.commit()
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar
-    <...water17-0001-R1>
+    >>> ar.getId() == "water{}-0001-R1".format(year)
+    True
 
-Create a second `AnalysisRequest`::
+Create a second `AnalysisRequest`:
 
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
@@ -186,14 +186,15 @@ Create a second `AnalysisRequest`::
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar
-    <...water17-0002-R1>
+    >>> ar.getId() == "water{}-0002-R1".format(year)
+    True
 
-Create a third `AnalysisRequest` with existing sample::
+Create a third `AnalysisRequest` with existing sample:
 
     >>> sample = ar.getSample()
-    >>> sample
-    <Sample at /plone/clients/client-1/water17-0002>
+    >>> sample.getId() == "water{}-0002".format(year)
+    True
+
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
     ...           'SampleType': sampletype.UID(),
@@ -202,8 +203,8 @@ Create a third `AnalysisRequest` with existing sample::
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar
-    <...water17-0002-R2>
+    >>> ar.getId() == "water{}-0002-R2".format(year)
+    True
 
 Create a forth `Batch`::
     >>> batches = self.portal.batches
@@ -252,8 +253,8 @@ Change ID formats and create new `AnalysisRequest`::
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar
-    <AnalysisRequest at /plone/clients/client-1/RB-20170131-water-0001-R001>
+    >>> ar.getId()
+    'RB-20170131-water-0001-R001'
 
 Re-seed and create a new `Batch`::
     >>> ploneapi.user.grant_roles(user=current_user,roles = ['Manager'])

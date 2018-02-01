@@ -7,13 +7,13 @@
 
     <!-- TODO: TO BE REMOVED
     It is only used to prevent an ugly Traceback when the instance hasn't been
-    yet upgraded to 1.1.9. If authenticated, displays a landing page telling the
-    user to upgrade to 1.1.9. If not authenticated, redirects to login page as
+    yet upgraded to 1.2.0. If authenticated, displays a landing page telling the
+    user to upgrade to 1.2.0. If not authenticated, redirects to login page as
     usual.-->
     <browser:page
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         name="bika-frontpage"
-        class="bika.lims.browser.senaite-frontpage.FrontPageView"
+        class="bika.lims.browser.senaitefrontpage.FrontPageView"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -21,7 +21,7 @@
     <browser:page
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         name="senaite-frontpage"
-        class="bika.lims.browser.senaite-frontpage.FrontPageView"
+        class="bika.lims.browser.senaitefrontpage.FrontPageView"
         permission="zope2.View"
         layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -7,6 +7,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
@@ -14,6 +15,7 @@ from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import *
@@ -924,7 +926,26 @@ class AnalysesView(BikaListingView):
             if IRoutineAnalysis.providedBy(full_obj):
                     item['allow_edit'].append('Hidden')
 
+        # Renders additional icons to be displayed for this item, if any
+        self._folder_item_fieldicons(obj)
+
         return item
+
+    def _folder_item_fieldicons(self, obj):
+        """Resolves if field-specific icons must be displayed for the object
+        passed in.
+        """
+        uid = api.get_uid(obj)
+        full_obj = api.get_object(obj)
+        for name, adapter in getAdapters((full_obj,), IFieldIcons):
+            alerts = adapter()
+            if not alerts or uid not in alerts:
+                continue
+            alerts = alerts[uid]
+            if uid not in self.field_icons:
+                self.field_icons[uid] = alerts
+                continue
+            self.field_icons[uid].extend(alerts)
 
     def folderitems(self):
         # Check if mtool has been initialized

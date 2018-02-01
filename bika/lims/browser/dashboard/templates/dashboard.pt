@@ -23,12 +23,11 @@
         display:none;
     }
     .dashboard-section {
-        padding: 20px 0 0;
+        padding: 0 0 20px;
     }
     .dashboard-section-head {
-        background-color: #e3e3e3;
-        border-radius: 5px 5px 0 0;
-        padding: 3px 15px;
+        border-bottom: 1px dotted #dfdfdf;
+        margin: 0 0 10px;
     }
     .dashboard-section-head div.actions {
         float:right;
@@ -47,30 +46,29 @@
         visibility: hidden;
     }
     .dashboard-section h2 {
-        float:left;
-        font-size: 1.4em;
+        float: left;
+        font-size: 1.3em;
         font-weight: bold;
-        width:70%;
+        letter-spacing: 0;
+        padding: 5px 0 4px;
+        width: 70%;
     }
     .dashboard-section .h2-legend {
         font-size: 0.9em;
         padding: 0 0 10px 2px;
     }
     .dashboard-panels {
-        border: 1px solid #dcdcdc;
-        border-radius: 0px 0px 5px 5px;
-        padding: 5px 0;
     }
     .dashboard-info-panel-wrapper {
-        float:left;
-        margin: 0 20px 0px 0;
+        float: left;
+        margin: 0 10px 0 0;
     }
     .dashboard-info-panel {
-        /*border: 1px dotted #cdcdcd;*/
-        width: 150px;
-        height: 150px;
-        padding: 10px;
-        text-align: center;
+        background-color: #f6f6f6;
+        border-radius: 5px;
+        margin: 0;
+        padding: 10px 15px 0;
+        text-align: left;
     }
     #content .dashboard-info-panel-wrapper a {
         color:#333;
@@ -85,15 +83,15 @@
         -ms-transition: opacity 250ms ease-in-out;
         transition: opacity 250ms ease-in-out
     }
-    #content .dashboard-info-panel-wrapper a:hover div.dashboard-info-panel {
-        /*border: 1px dotted #205c90;*/
-    }
     .dashboard-info-panel-number {
-        font-size: 2.4em;
-        font-weight: bold;
-        line-height: 130%;
-        padding: 35px 0 0;
-        text-align: center;
+        float: left;
+        font-size: 2.6em;
+        font-weight: normal;
+        height: 38px;
+        line-height: 1em;
+        padding: 9px 4px 0 8px;
+        text-align: left;
+        color: #3b8686;
     }
     #content .dashboard-info-panel-wrapper {
         opacity:0.4;
@@ -106,6 +104,7 @@
     }
     #content .dashboard-info-panel-wrapper.highlight .dashboard-info-panel-number {
         color:#ff7f0e;
+        color:#79bd9a;
     }
 
     .dashboard-section .period-informative {
@@ -113,22 +112,27 @@
         font-size: 0.85em;
         padding: 10px;
     }
-
     .dashboard-info-panel-description {
-        color: #333;
-        font-size: 0.9em;
-        position: relative;
-        top: 15px;
+        background-color: #dfdfdf;
+        border-radius: 0 0 5px 5px;
+        clear: both;
+        display: block;
+        font-size: 0.95em;
+        font-weight: normal;
+        line-height: 160%;
+        margin: 0 0 0 -15px;
+        padding: 4px 15px;
+        width: 100%;
     }
     .dashboard-info-panel-total {
         color: #666;
+        float: left;
         font-size: 0.85em;
-        font-weight: bold;
-        height: 40px;
-        margin: 0 auto;
-        max-width: 70px;
-        position: relative;
-        top: 0;
+        font-weight: normal;
+        padding: 8px 0 0 5px;
+        text-align: left;
+        vertical-align: bottom;
+        width: 60px;
     }
     #content ul.dashboard-time-selector {
         list-style:none;
@@ -151,17 +155,13 @@
     .clearfix {
         clear: both;
     }
-    .pie-chart {
-        position: absolute;
-        z-index: -1;
-        padding: 0 10px;
-    }
     .bar-chart {
         width:100%;
         min-width:640px;
     }
     .bar-chart-period {
-        padding: 0 0 0 15px;
+        clear: both;
+        padding: 1px 0 0 15px;
     }
     .bar-chart .axis path,
     .bar-chart .axis line {
@@ -197,10 +197,10 @@
     }
     .toggle-barchart {
         text-align: left;
-        float:right;
+        padding: 0 0 10px;
     }
     .toggle-barchart a {
-        padding: 0 10px 0;
+        padding: 0;
     }
     .bar-chart-no-data {
         color: #b22222;
@@ -226,11 +226,24 @@
     a.dashboard-visibility-link:after {
         content: " ▼";
     }
+    .dashboard-info-panel-vertbar {
+        height:38px;
+        float:left;
+    }
+    .vertbar-remaining, .vertbar-done {
+        width:4px;
+    }
+    .vertbar-done {
+        background-color: #A8DBA8;
+    }
+    .vertbar-remaining {
+        background-color:#efefef;
+        border-radius: 2px 2px 0 0;
+    }
 </style>
 <script>
     (function( $ ) {
     $(document).ready(function(){
-        loadPieCharts();
         loadBarCharts();
         dashboard_cookie_controller();
         role_permission_input_controller();
@@ -395,41 +408,6 @@
           .text(function(d) { return d; })
     }
 
-    function loadPieCharts() {
-        $('.pie-chart').each(function(e) {
-            var id = $(this).attr('id');
-            var data = $.parseJSON($(this).attr('data'));
-            var width = 130;
-            var height = 130;
-            var radius = height / 2 - 10;
-
-            var arc = d3.svg.arc()
-                .innerRadius(radius - 4)
-                .outerRadius(radius);
-
-            var pie = d3.layout.pie()
-                .padAngle(.02);
-            pie.sort(null);
-
-            var color = d3.scale.category10();
-
-            var svg = d3.select("#"+id).append("svg")
-                .attr("width", width)
-                .attr("height", height)
-              .append("g")
-                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-            svg.selectAll("path")
-                .data(pie(data))
-              .enter().append("path")
-                .style("fill", function(d, i) {
-                    if (i == 0) {
-                        return color(1);
-                    }
-                    return color(0); })
-                .attr("d", arc);
-        });
-      }
       function load_roles_visibility_links() {
         $('a.dashboard-visibility-link').click(function(e){
             e.preventDefault();
@@ -598,12 +576,12 @@
              tal:attributes="class python:'dashboard-info-panel-wrapper %s %s' % (panel.get('class', ''), numclass);">
             <a tal:attributes="href panel/link">
                 <div class='dashboard-info-panel'>
-                <div class='pie-chart'
-                    tal:define='total panel/total;
-                                substract python:total-num;
-                                itemnum repeat/panel/number;'
-                    tal:attributes='data python:"[%s,%s]" % (str(substract), str(num));
-                                    id python:"pie-chart-%s-%s" % (section["id"],itemnum);'></div>
+                    <div class="dashboard-info-panel-vertbar">
+                        <div class="vertbar-remaining"
+                            tal:attributes="style python:'height: {}%'.format(100 - panel.get('percentage', 0))"></div>
+                        <div class="vertbar-done"
+                            tal:attributes="style python:'height: {}%'.format(panel.get('percentage', 0))"></div>
+                    </div>
                     <div tal:content="panel/number" class='dashboard-info-panel-number'></div>
                     <div tal:content="panel/legend" class='dashboard-info-panel-total' tal:condition="python:panel.get('legend','')"></div>
                     <div tal:content="panel/description" class='dashboard-info-panel-description'></div>
