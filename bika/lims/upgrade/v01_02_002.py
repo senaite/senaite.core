@@ -4,7 +4,8 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
@@ -29,6 +30,18 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    # Issue #574: Client batch listings are dumb.  This requires Batches to
+    # be reindexed, as thy now provide an accessor for getClientUID.
+    reindex_batch_getClientUID(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
+
+
+def reindex_batch_getClientUID(portal):
+    rc = getToolByName(portal, REFERENCE_CATALOG)
+    brains = rc(portal_type='Batch')
+    for brain in brains:
+        batch = brain.getObject()
+        batch.reindexObject(idxs=['getClientUID'])
