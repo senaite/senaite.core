@@ -47,3 +47,12 @@ so here we will assume the role of Lab Manager::
     >>> from plone.app.testing import setRoles
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
 
+Availability of instrument interface
+------------------------------------
+Check that the instrument interface is available::
+
+    >>> exims = []
+    >>> for exim_id in instruments.__all__:
+    ...     exims.append(exim_id)
+    >>> 'sysmex.xt.i1800' in exims
+    True
