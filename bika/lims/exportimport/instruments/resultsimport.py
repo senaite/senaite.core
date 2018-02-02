@@ -5,17 +5,19 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.utils import t
-from bika.lims.exportimport.instruments.logger import Logger
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import tmpID
+import codecs
 from datetime import datetime
 from DateTime import DateTime
-from bika.lims.workflow import doActionFor
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.exportimport.instruments.logger import Logger
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import t
+from bika.lims.utils import tmpID
+from bika.lims.workflow import doActionFor
 
 
 class InstrumentResultsFileParser(Logger):
@@ -112,8 +114,7 @@ class InstrumentResultsFileParser(Logger):
         """
         count = 0
         for val in self.getRawResults().values():
-            for row in val:
-                count += len(val)
+            count += len(val)
         return count
 
     def getAnalysesTotalCount(self):
@@ -207,7 +208,6 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         # We test in import functions if the file was uploaded
         try:
             if self._encoding:
-                import codecs
                 f = codecs.open(infile.name, 'r', encoding=self._encoding)
             else:
                 f = open(infile.name, 'rU')
@@ -243,6 +243,79 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
     def splitLine(self, line):
         sline = line.split(',')
+        return [token.strip() for token in sline]
+
+    def _parseline(self, line):
+        """ Parses a line from the input CSV file and populates rawresults
+            (look at getRawResults comment)
+            returns -1 if critical error found and parser must end
+            returns the number of lines to be jumped in next read. If 0, the
+            parser reads the next line as usual
+        """
+        raise NotImplementedError
+
+
+class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
+
+    def __init__(self, infile, separator, encoding=None,):
+        InstrumentResultsFileParser.__init__(self, infile, 'TXT')
+        # Some Instruments can generate files with different encodings, so we
+        # may need this parameter
+        self._separator = separator
+        self._encoding = encoding
+
+    def parse(self):
+        infile = self.getInputFile()
+        self.log("Parsing file ${file_name}", mapping={"file_name": infile.filename})
+        jump = 0
+        lines = self.read_file(infile)
+        for line in lines:
+            self._numline += 1
+            if jump == -1:
+                # Something went wrong. Finish
+                self.err("File processing finished due to critical errors")
+                return False
+            if jump > 0:
+                # Jump some lines
+                jump -= 1
+                continue
+
+            if not line:
+                continue
+
+            jump = 0
+            if line:
+                jump = self._parseline(line)
+
+        self.log(
+            "End of file reached successfully: ${total_objects} objects, "
+            "${total_analyses} analyses, ${total_results} results",
+            mapping={"total_objects": self.getObjectsTotalCount(),
+                     "total_analyses": self.getAnalysesTotalCount(),
+                     "total_results": self.getResultsTotalCount()}
+        )
+        return True
+
+    def read_file(self, infile):
+        """Given an input file read its contents, strip whitespace from the
+         beginning and end of each line and return a list of the preprocessed
+         lines read.
+
+        :param infile: file that contains the data to be read
+        :return: list of the read lines with stripped whitespace
+        """
+        try:
+            encoding = self._encoding if self._encoding else None
+            mode = 'r' if self._encoding else 'rU'
+            with codecs.open(infile.name, mode, encoding=encoding) as f:
+                lines = f.readlines()
+        except AttributeError:
+            lines = infile.readlines()
+        lines = [line.strip() for line in lines]
+        return lines
+
+    def split_line(self, line):
+        sline = line.split(self._separator)
         return [token.strip() for token in sline]
 
     def _parseline(self, line):
@@ -434,7 +507,6 @@ class AnalysisResultsImporter(Logger):
 
                     # For each acode, create a ReferenceAnalysis and attach it
                     # to the Reference Sample
-                    service_uids = []
                     services = self.bsc(portal_type='AnalysisService')
                     service_uids = [service.UID for service in services
                                     if service.getObject().getKeyword()
@@ -618,30 +690,30 @@ class AnalysisResultsImporter(Logger):
     def _getObjects(self, objid, criteria, states):
         # self.log("Criteria: %s %s") % (criteria, obji))
         obj = []
-        if (criteria == 'arid'):
+        if criteria == 'arid':
             obj = self.ar_catalog(
                            getId=objid,
                            review_state=states)
-        elif (criteria == 'sid'):
+        elif criteria == 'sid':
             obj = self.ar_catalog(
                            getSampleID=objid,
                            review_state=states)
-        elif (criteria == 'csid'):
+        elif criteria == 'csid':
             obj = self.ar_catalog(
                            getClientSampleID=objid,
                            review_state=states)
-        elif (criteria == 'aruid'):
+        elif criteria == 'aruid':
             obj = self.ar_catalog(
                            UID=objid,
                            review_state=states)
-        elif (criteria == 'rgid'):
+        elif criteria == 'rgid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'],
                            getReferenceAnalysesGroupID=objid)
-        elif (criteria == 'rid'):
+        elif criteria == 'rid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'], id=objid)
-        elif (criteria == 'ruid'):
+        elif criteria == 'ruid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
                                         'DuplicateAnalysis'], UID=objid)
         if obj and len(obj) > 0:
@@ -668,11 +740,11 @@ class AnalysisResultsImporter(Logger):
         allowed_an_states_msg = [_(s) for s in allowed_an_states]
 
         # Acceleration of searches using priorization
-        if (self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']):
+        if self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']:
             # Look from reference analyses
             analyses = self._getZODBAnalysesFromReferenceAnalyses(
                     objid, self._priorizedsearchcriteria)
-        if (len(analyses) == 0):
+        if len(analyses) == 0:
             # Look from ar and derived
             analyses = self._getZODBAnalysesFromAR(objid,
                                                    '',
@@ -778,6 +850,44 @@ class AnalysisResultsImporter(Logger):
 
         return analyses
 
+    def calculateTotalResults(self, objid, analysis):
+        """ If an AR(objid) has an analysis that has a calculation
+        then check if param analysis is used on the calculations formula.
+        Here we are dealing with two types of analysis.
+        1. Calculated Analysis - Results are calculated.
+        2. Analysis - Results are captured and not calculated
+        :param objid: AR ID or Worksheet's Reference Sample IDs
+        :param analysis: Analysis Object
+        """
+        analyses = self._getZODBAnalyses(objid)
+        # Filter Analyses With Calculation
+        analyses_with_calculation = filter(
+                                        lambda an: an.getCalculation(),
+                                        analyses)
+        for analysis_with_calc in analyses_with_calculation:
+            # Get the calculation to get the formula so that we can check
+            # if param analysis keyword is used on the calculation formula
+            calcultion = analysis_with_calc.getCalculation()
+            formula = calcultion.getMinifiedFormula()
+            # The analysis that we are currenly on
+            analysis_keyword = analysis.getKeyword()
+            if analysis_keyword not in formula:
+                continue
+
+            # If the analysis_keyword is in the formula, it means that this
+            # analysis is a dependent on that calculated analysis
+            calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
+            if calc_passed:
+                api.do_transition_for(analysis_with_calc, "submit")
+                self.log(
+                    "${request_id}: calculated result for "
+                    "'${analysis_keyword}': '${analysis_result}'",
+                    mapping={"request_id": objid,
+                             "analysis_keyword": analysis_with_calc.getKeyword(),
+                             "analysis_result": str(analysis_with_calc.getResult())}
+                )
+
+
     def _process_analysis(self, objid, analysis, values):
         resultsaved = False
         acode = analysis.getKeyword()
@@ -793,9 +903,12 @@ class AnalysisResultsImporter(Logger):
                 capturedate = None
                 pass
             del values['DateTime']
+
+        fields_to_reindex = []
+        # get interims
         interimsout = []
         interims = hasattr(analysis, 'getInterimFields') \
-            and analysis.getInterimFields() or []
+                   and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interim['keyword']
             title = interim['title']
@@ -813,10 +926,6 @@ class AnalysisResultsImporter(Logger):
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             elif values.get(title, '') or values.get(title, '') == 0:
                 res = values.get(title)
                 self.log("%s/'%s:%s': '%s'" % (objid, acode, title, str(res)))
@@ -824,27 +933,16 @@ class AnalysisResultsImporter(Logger):
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             else:
                 interimsout.append(interim)
-
-        fields_to_reindex = []
+        # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-            # won't be doing setResult below, so manually calculate result.
-            analysis.calculateResult(override=self._override[1])
-            fields_to_reindex.append('Result')
 
-        if resultsaved is False and (values.get(defresultkey, '') or
-                                     values.get(defresultkey, '') == 0 or
-                                     self._override[1] is True):
-            # set the result
-            res = values.get(defresultkey, '')
-            # self.log("${object_id} result for "
-            # '${analysis_keyword}': '${result}'",
+        # Set result if present.
+        res = values.get(defresultkey, '')
+        if res or res == 0 or self._override[1] == True:
+            # self.log("${object_id} result for '${analysis_keyword}': '${result}'",
             #          mapping={"obect_id": obid,
             #                   "analysis_keyword": acode,
             #                   "result": str(res)})
@@ -854,23 +952,25 @@ class AnalysisResultsImporter(Logger):
                 analysis.setResultCaptureDate(capturedate)
             resultsaved = True
 
-        elif resultsaved is False:
+        if resultsaved == False:
             self.log(
                 "${request_id} result for '${analysis_keyword}': '${result}'",
                 mapping={"request_id": objid,
                          "analysis_keyword": acode,
                          "result": ""})
 
-        if resultsaved or len(interimsout) > 0:
+        if resultsaved:
             doActionFor(analysis, 'submit')
+            self.calculateTotalResults(objid, analysis)
+            fields_to_reindex.append('Result')
 
-        if (resultsaved or len(interimsout) > 0) \
+        if (resultsaved) \
             and values.get('Remarks', '') \
             and analysis.portal_type == 'Analysis' \
-                and (analysis.getRemarks() != '' or self._override[1] is True):
+            and (analysis.getRemarks() != '' or self._override[1] == True):
             analysis.setRemarks(values['Remarks'])
             fields_to_reindex.append('Remarks')
 
         if len(fields_to_reindex):
             analysis.reindexObject(idxs=fields_to_reindex)
-        return resultsaved or len(interimsout) > 0
+        return resultsaved

@@ -8,6 +8,8 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.browser.dashboard.dashboard import \
+    setup_dashboard_panels_visibility_registry
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -41,6 +43,10 @@ def upgrade(tool):
     # Worksheet Template.
     fix_worksheet_template_index(portal, ut)
 
+    # Adds an entry to the registry to store the roles that can see Samples
+    # section from Dashboard
+    add_sample_section_in_dashboard(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
@@ -59,3 +65,7 @@ def fix_worksheet_template_index(portal, ut):
     ut.addIndex(CATALOG_WORKSHEET_LISTING, 'getWorksheetTemplateTitle',
                 'FieldIndex')
     ut.refreshCatalogs()
+
+def add_sample_section_in_dashboard(portal):
+    setup_dashboard_pane
+    egistry('samples')
