@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 **Added**
+- Unit Conversions to allow results to be reported in alternative units
 
 - #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV

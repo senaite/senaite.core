@@ -237,6 +237,14 @@
     />
 
     <browser:page
+        for="bika.lims.interfaces.IUnitConversions"
+        name="folder_view"
+        class=".bika_unitconversions.UnitConversionsView"
+        permission="bika.lims.ManageBika"
+        layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IWorksheetTemplates"
       name="folder_view"
       class=".bika_worksheettemplates.WorksheetTemplatesView"

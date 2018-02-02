@@ -103,6 +103,8 @@
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrderFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="UnitConversion" meta_type="Dexterity FTI" />
+ <object name="UnitConversions" meta_type="Dexterity FTI" />
  <object name="Worksheet" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetTemplate" meta_type="Factory-based Type Information with dynamic views"/>

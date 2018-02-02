@@ -26,6 +26,7 @@ from bika.lims import api as api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
+from plone import api as ploneapi
 from plone.memoize import ram
 from plone.registry.interfaces import IRegistry
 from plone.subrequest import subrequest
@@ -143,10 +144,12 @@ def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """
     wf = getToolByName(obj, 'portal_workflow')
-    if (hasattr(obj, 'inactive_state') and obj.inactive_state == 'inactive') or \
+    if (hasattr(obj, 'inactive_state') and
+       obj.inactive_state == 'inactive') or \
        wf.getInfoFor(obj, 'inactive_state', 'active') == 'inactive':
         return False
-    if (hasattr(obj, 'cancellation_state') and obj.inactive_state == 'cancelled') or \
+    if (hasattr(obj, 'cancellation_state') and
+       obj.inactive_state == 'cancelled') or \
        wf.getInfoFor(obj, 'cancellation_state', 'active') == 'cancelled':
         return False
     return True
@@ -318,14 +321,18 @@ def logged_in_client(context, member=None):
                 client = obj
     return client
 
-# TODO: This function dismiss other state_variables than review_state (e.g. inactive_state)
-def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
+# TODO: This function dismiss other state_variables than review_state
+# (e.g. inactive_state)
+
+
+def changeWorkflowState(content, wf_id, state_id,
+                        acquire_permissions=False,
                         portal_workflow=None, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
     @param state_id: name of the state to put on content
-    @param acquire_permissions: True->All permissions unchecked and on riles and
-                                acquired
+    @param acquire_permissions: True->All permissions unchecked and on
+    riles and acquired
                                 False->Applies new state security map
     @param portal_workflow: Provide workflow tool (optimisation) if known
     @param kw: change the values of same name of the state mapping
@@ -432,16 +439,20 @@ def senaite_url_fetcher(url):
     context = portal.restrictedTraverse(path, None)
 
     # We double check here to avoid an edge case, where we have the same path
-    # as well in our local site, e.g. we have `/senaite/img/systems/senaite.png`,
-    # but the user requested http://www.ridingbytes.com/img/systems/senaite.png:
+    # as well in our local site, e.g. we have
+    # `/senaite/img/systems/senaite.png`,
+    # but the user requested
+    # http://www.ridingbytes.com/img/systems/senaite.png:
     #
     # "/".join(request.physicalPathFromURL("http://www.ridingbytes.com/img/systems/senaite.png"))
     # '/senaite/img/systems/senaite.png'
     if context is None or host not in url:
-        logger.info("URL is external, passing over to the default URL fetcher...")
+        logger.info("URL is external, passing over to the default"
+                    "URL fetcher...")
         return default_url_fetcher(url)
 
-    logger.info("URL is local, fetching data by path '{}' via subrequest".format(path))
+    logger.info("URL is local, fetching data by path '{}'"
+                " via subrequest".format(path))
 
     # get the data via an authenticated subrequest
     response = subrequest(path)
@@ -497,7 +508,8 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
 
     # render
     htmlreport = to_utf8(htmlreport)
-    renderer = HTML(string=htmlreport, url_fetcher=senaite_url_fetcher, encoding='utf-8')
+    renderer = HTML(string=htmlreport, url_fetcher=senaite_url_fetcher,
+                    encoding='utf-8')
     pdf_fn = outfile if outfile else tempfile.mktemp(suffix=".pdf")
     if css:
         renderer.write_pdf(pdf_fn, stylesheets=[CSS(string=css_def)])
@@ -580,8 +592,8 @@ def dicts_to_dict(dictionaries, key_subfieldname):
     """Convert a list of dictionaries into a dictionary of dictionaries.
 
     key_subfieldname must exist in each Record's subfields and have a value,
-    which will be used as the key for the new dictionary. If a key is duplicated,
-    the earlier value will be overwritten.
+    which will be used as the key for the new dictionary. If a key is
+    duplicated, the earlier value will be overwritten.
     """
     result = {}
     for d in dictionaries:
@@ -732,19 +744,22 @@ def measure_time(func_to_measure):
     :param func_to_measure: function to be decorated
     """
     def wrap(*args, **kwargs):
-        start_time = time()
+        # start_time = time()
         return_value = func_to_measure(*args, **kwargs)
-        finish_time = time()
-        log = "%s took %0.4f seconds. start_time = %0.4f - finish_time = %0.4f\n" % (func_to_measure.func_name,
-                                                                                     finish_time - start_time,
-                                                                                     start_time,
-                                                                                     finish_time)
-        print log
+        # finish_time = time()
+        # log = "%s took %0.4f seconds. start_time ="
+        # " %0.4f - finish_time = %0.4f\n" % (
+        #               func_to_measure.func_name,
+        #               finish_time - start_time,
+        #               start_time,
+        #               finish_time)
+        # print log
         return return_value
     return wrap
 
 
-def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
+def copy_field_values(src, dst, ignore_fieldnames=None,
+                      ignore_fieldtypes=None):
     ignore_fields = ignore_fieldnames if ignore_fieldnames else []
     ignore_types = ignore_fieldtypes if ignore_fieldtypes else []
     if 'id' not in ignore_fields:
@@ -889,6 +904,60 @@ def is_bika_installed():
     """
     qi = api.portal.get_tool("portal_quickinstaller")
     return qi.isProductInstalled("bika.lims")
+
+
+def convert_unit(result, formula, precision):
+    """ take a value and a unit conversion formula and convert the result
+    """
+    try:
+        dm = api.get_bika_setup().getDecimalMark()
+        result = float(result)
+        formula = formula.replace('Value', '%f')
+        formula = formula % result
+        new = eval(formula)
+        fmt = '{{:{}{}f}}'.format(dm, precision)
+        formatted = fmt.format(new)
+    except ValueError as e:
+        logger.info('convert unit failed to eval %s - %s: %s' % (
+            formula, result, str(e)))
+        return '-'
+    return formatted
+
+
+def resolve_unit(analysis, result):
+    """ calculate the converted result
+        note if more than one can be resolved, only the first is returned
+    """
+    if result == '':
+        return ''
+
+    sample_type_uid = analysis.getSampleTypeUID()
+    if not sample_type_uid:
+        return ''
+
+    conversions = analysis.getUnitConversions()
+    conv_result = ''
+    for conversion in conversions:
+        conv_sample_type_uid = conversion.get('SampleType')
+        if conv_sample_type_uid != sample_type_uid:
+            continue
+
+        conv_unit = conversion.get('Unit')
+        if not conv_unit:
+            continue
+
+        if not conversion.get('ShowOnListing', False):
+            continue
+
+        converted_unit = ploneapi.content.get(UID=conv_unit)
+        conv_result = '{} {}'.format(
+                convert_unit(
+                        result,
+                        converted_unit.formula,
+                        analysis.getPrecision()),
+                converted_unit.converted_unit)
+        break
+    return conv_result
 
 
 def get_display_list(brains_or_objects=None, none_item=False):

@@ -91,6 +91,7 @@ class BikaGenerator(object):
                        'bika_subgroups',
                        'bika_suppliers',
                        'bika_referencedefinitions',
+                       'bika_unitconversions',
                        'bika_worksheettemplates'):
             try:
                 obj = portal.bika_setup[obj_id]

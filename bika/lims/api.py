@@ -147,26 +147,23 @@ def create(container, portal_type, *args, **kwargs):
     fti = types_tool.getTypeInfo(portal_type)
 
     if fti.product:
+        # AT content type
         obj = _createObjectByType(portal_type, container, tmp_id)
+        obj.processForm()
+        obj.edit(**kwargs)
     else:
-        # newstyle factory
+        # dexterity content type
         factory = getUtility(IFactory, fti.factory)
         obj = factory(tmp_id, *args, **kwargs)
         if hasattr(obj, '_setPortalTypeName'):
             obj._setPortalTypeName(fti.getId())
         notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and ContainerModifiedEvent
+        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
+        # ContainerModifiedEvent
         container._setObject(tmp_id, obj)
-        # we get the object here with the current object id, as it might be renamed
-        # already by an event handler
+        # we get the object here with the current object id,
+        # as it might be renamed already by an event handler
         obj = container._getOb(obj.getId())
-
-    # handle AT Content
-    if is_at_content(obj):
-        obj.processForm()
-
-    # Edit after processForm; processForm does AT unmarkCreationFlag.
-    obj.edit(**kwargs)
 
     # explicit notification
     modified(obj)
@@ -447,7 +444,7 @@ def get_icon(brain_or_object, html_tag=True):
     return tag
 
 
-def get_object_by_uid(uid, default=_marker):
+def get_object_by_uid(uid, default=_marker, context=None):
     """Find an object by a given UID
 
     :param uid: The UID of the object to find
@@ -464,11 +461,11 @@ def get_object_by_uid(uid, default=_marker):
 
     # we defined the portal object UID to be '0'::
     if uid == '0':
-        return get_portal()
+        return get_portal(context=context)
 
     # we try to find the object with both catalogs
-    pc = get_portal_catalog()
-    uc = get_tool("uid_catalog")
+    pc = get_portal_catalog(context=context)
+    uc = get_tool("uid_catalog", context=context)
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
@@ -642,7 +639,8 @@ def search(query, catalog=_marker):
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
-        fail("Multi Catalog Queries are not supported, please specify a catalog.")
+        fail("Multi Catalog Queries are not supported,"
+             "please specify a catalog.")
 
     return catalogs[0](query)
 
@@ -673,12 +671,12 @@ def safe_getattr(brain_or_object, attr, default=_marker):
             attr, repr(brain_or_object)))
 
 
-def get_portal_catalog():
+def get_portal_catalog(context=None):
     """Get the portal catalog tool
 
     :returns: Portal Catalog Tool
     """
-    return get_tool("portal_catalog")
+    return get_tool("portal_catalog", context=context)
 
 
 def get_review_history(brain_or_object, rev=True):
@@ -1123,7 +1121,8 @@ def normalize_id(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'".format(
+            type(string)))
     # get the id nomalizer utility
     normalizer = getUtility(IIDNormalizer).normalize
     return normalizer(string)
@@ -1138,10 +1137,12 @@ def normalize_filename(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'".format(
+            type(string)))
     # get the file nomalizer utility
     normalizer = getUtility(IFileNameNormalizer).normalize
     return normalizer(string)
+
 
 def is_uid(uid, validate=False):
     """Checks if the passed in uid is a valid UID
