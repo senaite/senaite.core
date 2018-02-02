@@ -27,6 +27,9 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISampleType
 from bika.lims.vocabularies import getStickerTemplates
 
+SMALL_DEFAULT_STICKER = 'small_default'
+LARGE_DEFAULT_STICKER = 'large_default'
+
 
 def sticker_templates():
     """
@@ -125,34 +128,34 @@ schema = BikaSchema.copy() + Schema((
         'AdmittedStickerTemplates',
         subfields=(
             'admitted',
-            'small_default',
-            'large_default',
+            SMALL_DEFAULT_STICKER,
+            LARGE_DEFAULT_STICKER,
             ),
         subfield_labels={
             'admitted': _(
                 'Admitted stickers for the sample type'),
-            'small_default': _(
+            SMALL_DEFAULT_STICKER: _(
                 'Default small sticker'),
-            'large_default': _(
+            LARGE_DEFAULT_STICKER: _(
                 'Default large sticker')},
         subfield_sizes={
             'admitted': 6,
-            'small_default': 1,
-            'large_default': 1},
+            SMALL_DEFAULT_STICKER: 1,
+            LARGE_DEFAULT_STICKER: 1},
         subfield_types={
             'admitted': 'selection',
-            'small_default': 'selection',
-            'large_default': 'selection'
+            SMALL_DEFAULT_STICKER: 'selection',
+            LARGE_DEFAULT_STICKER: 'selection'
                         },
         subfield_vocabularies={
             'admitted': sticker_templates(),
-            'small_default': '_small_default_voc',
-            'large_default': '_large_default_voc',
+            SMALL_DEFAULT_STICKER: '_small_default_voc',
+            LARGE_DEFAULT_STICKER: '_large_default_voc',
         },
         required_subfields={
             'admitted': 1,
-            'small_default': 1,
-            'large_default': 1},
+            SMALL_DEFAULT_STICKER: 1,
+            LARGE_DEFAULT_STICKER: 1},
         default=[{}],
         fixedSize=1,
         widget=SampleTypeStickersWidget(
@@ -263,7 +266,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
         values = self.getField('AdmittedStickerTemplates').get(self)
         if not values:
             return ''
-        value = values[0].get('small_default')
+        value = values[0].get(SMALL_DEFAULT_STICKER)
         return value
 
     def getDefaultLargeSticker(self):
@@ -275,7 +278,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
         values = self.getField('AdmittedStickerTemplates').get(self)
         if not values:
             return ''
-        value = values[0].get('large_default')
+        value = values[0].get(LARGE_DEFAULT_STICKER)
         return value
 
     def getAdmittedStickers(self):
@@ -356,7 +359,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
             return
         field = self.getField('AdmittedStickerTemplates')
         new_value = field.get(self)
-        new_value[0]['small_default'] = value
+        new_value[0][SMALL_DEFAULT_STICKER] = value
         field.set(self, new_value)
 
     def setDefaultLargeSticker(self, value):
@@ -379,7 +382,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
             return
         field = self.getField('AdmittedStickerTemplates')
         new_value = field.get(self)
-        new_value[0]['large_default'] = value
+        new_value[0][LARGE_DEFAULT_STICKER] = value
         field.set(self, new_value)
 
     def setAdmittedStickers(self, value):
