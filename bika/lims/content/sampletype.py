@@ -257,11 +257,11 @@ class SampleType(BaseContent, HistoryAwareMixin):
         from bika.lims.content.containertype import ContainerTypes
         return ContainerTypes(self, allow_blank=True)
 
-    def getDefaultSticker(self, size):
+    def _get_sticker_subfield(self, subfield):
         values = self.getField('AdmittedStickerTemplates').get(self)
         if not values:
             return ''
-        value = values[0].get(size)
+        value = values[0].get(subfield)
         return value
 
     def getDefaultSmallSticker(self):
@@ -270,7 +270,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :return: A string as an sticker ID
         """
-        return self.getDefaultSticker(SMALL_DEFAULT_STICKER)
+        return self._get_sticker_subfield(SMALL_DEFAULT_STICKER)
 
     def getDefaultLargeSticker(self):
         """
@@ -278,7 +278,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :return: A string as an sticker ID
         """
-        return self.getDefaultSticker(LARGE_DEFAULT_STICKER)
+        return self._get_sticker_subfield(LARGE_DEFAULT_STICKER)
 
     def getAdmittedStickers(self):
         """
@@ -286,11 +286,10 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :return: An array of sticker IDs
         """
-        values = self.getField('AdmittedStickerTemplates').get(self)
-        if not values:
-            return []
-        admitted = values[0].get('admitted')
-        return admitted
+        admitted = self._get_sticker_subfield('admitted')
+        if admitted:
+            return admitted
+        return []
 
     def _sticker_templates_vocabularies(self):
         """
