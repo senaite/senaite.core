@@ -310,9 +310,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
         for sticker in stickers:
             if sticker.get('id') in admitted:
                 voc.add(sticker.get('id'), sticker.get('title'))
-        if voc.index > 0:
-            return voc
-        return DisplayList()
+        return voc
 
     def setDefaultSmallSticker(self, value):
         """
