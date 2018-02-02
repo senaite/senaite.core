@@ -13,7 +13,6 @@ from string import Template
 import plone
 import zope.event
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
@@ -22,14 +21,16 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.permissions import *
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import PreserveSample
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import copy_field_values
 from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doAsyncActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import wasTransitionPerformed
 from email.Utils import formataddr
@@ -68,8 +69,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         laboratory = bika_setup.laboratory
         lab_address = "<br/>".join(laboratory.getPrintAddress())
         mime_msg = MIMEMultipart('related')
-        mime_msg['Subject'] = t(_("Erroneus result publication from ${request_id}",
-                                mapping={"request_id": ar.getId()}))
+        mime_msg['Subject'] = t(
+                _("Erroneus result publication from ${request_id}",
+                  mapping={"request_id": ar.getId()}))
         mime_msg['From'] = formataddr(
             (encode_header(laboratory.getName()),
              laboratory.getEmailAddress()))
@@ -98,18 +100,21 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                             ar.getId())
         naranchor = "<a href='%s'>%s</a>" % (newar.absolute_url(),
                                              newar.getId())
-        addremarks = ('addremarks' in self.request and ar.getRemarks()) and ("<br/><br/>" + _("Additional remarks:") +
-                                                                             "<br/>" + ar.getRemarks().split("===")[1].strip() +
-                                                                             "<br/><br/>") or ''
+        addremarks = ('addremarks' in self.request and ar.getRemarks()) and \
+                     ("<br/><br/>" + _("Additional remarks:") + "<br/>" +
+                      ar.getRemarks().split("===")[1].strip() +
+                      "<br/><br/>") or ''
         sub_d = dict(request_link=aranchor,
                      new_request_link=naranchor,
                      remarks=addremarks,
                      lab_address=lab_address)
         body = Template("Some errors have been detected in the results report "
-                        "published from the Analysis Request $request_link. The Analysis "
-                        "Request $new_request_link has been created automatically and the "
-                        "previous has been invalidated.<br/>The possible mistake "
-                        "has been picked up and is under investigation.<br/><br/>"
+                        "published from the Analysis Request $request_link. "
+                        "The Analysis Request $new_request_link has been"
+                        " created automatically and the previous has been"
+                        " invalidated.<br/>The possible mistake "
+                        "has been picked up and is under investigation."
+                        "<br/><br/>"
                         "$remarks $lab_address").safe_substitute(sub_d)
         msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
                            _subtype='html')
@@ -146,16 +151,19 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analyses = part.getAnalyses()
                 for a in analyses:
                     a.setSamplePartition(None)
-                sample.manage_delObjects(['%s%s' % (part_prefix, nr_existing - i), ])
+                sample.manage_delObjects(
+                        ['%s%s' % (part_prefix, nr_existing - i), ])
         # modify part container/preservation
         for part_uid, part_id in form['PartTitle'][0].items():
-            part = sample["%s%s" % (part_prefix, part_id.split(part_prefix)[1])]
+            part = sample["%s%s" % (
+                part_prefix, part_id.split(part_prefix)[1])]
             part.edit(
                 Container=form['getContainer'][0][part_uid],
                 Preservation=form['getPreservation'][0][part_uid],
             )
             part.reindexObject()
-            # Adding the Security Seal Intact checkbox's value to the container object
+            # Adding the Security Seal Intact checkbox's value to
+            # the container object
             container_uid = form['getContainer'][0][part_uid]
             uc = getToolByName(self.context, 'uid_catalog')
             cbr = uc(UID=container_uid)
@@ -163,7 +171,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 container_obj = cbr[0].getObject()
             else:
                 continue
-            value = form.get('setSecuritySealIntact', {}).get(part_uid, '') == 'on'
+            value = form.get(
+                    'setSecuritySealIntact', {}).get(part_uid, '') == 'on'
             container_obj.setSecuritySealIntact(value)
         objects = WorkflowAction._get_selected_items(self)
         if not objects:
@@ -182,7 +191,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_save_analyses_button(self):
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
-        bsc = self.context.bika_setup_catalog
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         # AR Manage Analyses: save Analyses
         ar = self.context
@@ -204,7 +212,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         for uid in Analyses:
             hidden = hiddenans.get(uid, '')
             hidden = True if hidden == 'on' else False
-            outs.append({'uid':uid, 'hidden':hidden})
+            outs.append({'uid': uid, 'hidden': hidden})
         ar.setAnalysisServicesSettings(outs)
 
         specs = {}
@@ -251,7 +259,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
                 ar_state = getCurrentState(ar)
             for analysis in new:
-                changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
+                changeWorkflowState(
+                        analysis, 'bika_analysis_workflow', ar_state)
 
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
@@ -295,11 +304,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         message = None
         if len(transitioned) > 1:
             message = _('${items} are waiting to be received.',
-                        mapping={'items': safe_unicode(', '.join(transitioned))})
+                        mapping={'items':
+                                 safe_unicode(', '.join(transitioned))})
             self.context.plone_utils.addPortalMessage(message, 'info')
         elif len(transitioned) == 1:
             message = _('${item} is waiting to be received.',
-                        mapping={'item': safe_unicode(', '.join(transitioned))})
+                        mapping={'item':
+                                 safe_unicode(', '.join(transitioned))})
             self.context.plone_utils.addPortalMessage(message, 'info')
         if not message:
             message = _('No changes made.')
@@ -314,16 +325,18 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         mapping={'item': safe_unicode(', '.join(incomplete))})
             self.context.plone_utils.addPortalMessage(message, 'error')
 
-        self.destination_url = self.request.get_header("referer",
-                               self.context.absolute_url())
+        self.destination_url = self.request.get_header(
+                "referer", self.context.absolute_url())
         self.request.response.redirect(self.destination_url)
 
     def workflow_action_receive(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
-        items = [self.context,] if came_from == 'workflow_action' \
-                else self._get_selected_items().values()
-        trans, dest = self.submitTransition(action, came_from, items)
-        if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
+        items = [self.context, ] if came_from == 'workflow_action' \
+            else self._get_selected_items().values()
+        trans, dest = self.submitTransition(
+                action, came_from, items, queue_it=True)
+        if trans and \
+           'receive' in self.context.bika_setup.getAutoPrintStickers():
             transitioned = [item.UID() for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
             q = "/sticker?autoprint=1&template=%s&items=" % tmpl
@@ -337,7 +350,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
     def workflow_action_submit(self):
         form = self.request.form
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
         if not isActive(self.context):
@@ -346,7 +358,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.context.absolute_url())
             return
         # calcs.js has kept item_data and form input interim values synced,
-        # so the json strings from item_data will be the same as the form values
+        # so the json strings from item_data will be the same as the
+        # form values
         item_data = {}
         if 'item_data' in form:
             if isinstance(form['item_data'], list):
@@ -373,7 +386,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             if not analysis:
                 continue
             # Prevent saving data if the analysis is already transitioned
-            if not (checkPermission(EditResults, analysis) or checkPermission(EditFieldResults, analysis)):
+            if not (checkPermission(EditResults, analysis) or
+                    checkPermission(EditFieldResults, analysis)):
                 title = safe_unicode(analysis.Title())
                 msgid = _('Result for ${analysis} could not be saved because '
                           'it was already submitted by another user.',
@@ -425,13 +439,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # Need to save the instrument?
             if uid in instruments and analysis_active:
                 # TODO: Add SetAnalysisInstrument permission
-                # allow_setinstrument = sm.checkPermission(SetAnalysisInstrument)
+                # allow_setinstrument =
+                #       sm.checkPermission(SetAnalysisInstrument)
                 allow_setinstrument = True
                 # ---8<-----
                 if allow_setinstrument is True:
                     # The current analysis allows the instrument regards
                     # to its analysis service and method?
-                    if (instruments[uid]==''):
+                    if (instruments[uid] == ''):
                         previnstr = analysis.getInstrument()
                         if previnstr:
                             previnstr.removeAnalysis(analysis)
@@ -450,7 +465,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
                 allow_setmethod = True
                 # ---8<-----
-                if allow_setmethod is True and analysis.isMethodAllowed(methods[uid]):
+                if allow_setmethod is True and \
+                   analysis.isMethodAllowed(methods[uid]):
                     analysis.setMethod(methods[uid])
 
             # Need to save the analyst?
@@ -489,7 +505,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 submissable.append(analysis)
         # and then submit them.
         for analysis in submissable:
-            doActionFor(analysis, 'submit')
+            doAsyncActionFor(analysis, 'submit')
 
         # LIMS-2366: Finally, when we are done processing all applicable
         # analyses, we must attempt to initiate the submit transition on the
@@ -503,12 +519,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             ar = self.context.aq_parent
         else:
             ar = self.context
-        doActionFor(ar, 'submit')
+        doAsyncActionFor(ar, 'submit')
 
-        message = PMF("Changes saved.")
+        message = PMF("Changes queued.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         if checkPermission(EditResults, self.context):
-            self.destination_url = self.context.absolute_url() + "/manage_results"
+            self.destination_url = \
+                    self.context.absolute_url() + "/manage_results"
         else:
             self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
@@ -521,10 +538,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
     def workflow_action_print(self):
         # Calls printLastReport method for selected ARs
-        uids = self.request.get('uids',[])
+        uids = self.request.get('uids', [])
         uc = getToolByName(self.context, 'uid_catalog')
         for obj in uc(UID=uids):
-            ar=obj.getObject()
+            ar = obj.getObject()
             ar.printLastReport()
         referer = self.request.get_header("referer")
         self.request.response.redirect(referer)
@@ -540,8 +557,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         uids = self.request.form.get('uids', [self.context.UID()])
         items = ",".join(uids)
         self.request.response.redirect(
-            self.context.portal_url() + "/analysisrequests/publish?items="
-            + items)
+            self.context.portal_url() +
+            "/analysisrequests/publish?items=" + items)
 
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
@@ -549,7 +566,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         if type(came_from) in (list, tuple):
             came_from = came_from[0]
-        return self.workflow_action_default(action='verify', came_from=came_from)
+        return self.workflow_action_default(
+                action='verify', came_from=came_from, queue_it=True)
 
     def workflow_action_retract_ar(self):
 
@@ -603,9 +621,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def cloneAR(self, ar):
         newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
         newar.setSample(ar.getSample())
-        ignore_fieldnames = ['Analyses', 'DatePublished', 'DatePublishedViewer',
-                             'ParentAnalysisRequest', 'ChildAnaysisRequest',
-                             'Digest', 'Sample']
+        ignore_fieldnames = \
+            ['Analyses', 'DatePublished', 'DatePublishedViewer',
+             'ParentAnalysisRequest', 'ChildAnaysisRequest',
+             'Digest', 'Sample']
         copy_field_values(ar, newar, ignore_fieldnames=ignore_fieldnames)
 
         # Set the results for each AR analysis
@@ -613,8 +632,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # If a whole AR is retracted and contains retracted Analyses, these
         # retracted analyses won't be created/shown in the new AR
         workflow = getToolByName(self, "portal_workflow")
-        analyses = [x for x in ans
-                if workflow.getInfoFor(x, "review_state") not in ("retracted")]
+        analyses = [x for x in ans if workflow.getInfoFor(x, "review_state")
+                    not in ("retracted")]
         for an in analyses:
             if hasattr(an, 'IsReflexAnalysis') and an.IsReflexAnalysis:
                 # We don't want reflex analyses to be copied
@@ -623,7 +642,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 nan = _createObjectByType("Analysis", newar, an.getKeyword())
             except Exception as e:
                 from bika.lims import logger
-                logger.warn('Cannot create analysis %s inside %s (%s)'%
+                logger.warn('Cannot create analysis %s inside %s (%s)' %
                             an.getAnalysisService().Title(), newar, e)
                 continue
             # Make a copy
