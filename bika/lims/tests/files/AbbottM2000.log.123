@@ -201,28 +201,28 @@ Calibrator Information:
 =================================================================
                       Result Information                         
 =================================================================
-Location	Well	Status	SampleId	SampleType	ASRId	ASRLotNumber	ASRExpDate	SampleRackPosition	SampleRackBarcode	SampleTubeLocation	FromDeepWellLocation	AssayName	AssayId	AssayVersion	AssayCalibrationTime	SampleStatus	ResultStatus	Flags	Comment	ErrorCode	ErrorDescription	ICResponse	InstrumentResponse	FinalResult	ReportedResult	InvariantReportedResult	Interpretation	CalName	CalLotNumber	CalExpDate	CalConcentration	ControlName	ControlLotNumber	ControlExpDate	ControlConcentration	ControlRangeMin	ControlRangeMax	
-A1	1	Valid	HIV_NEG	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.61	-1.00		Not detected	Not detected						Neg-1	0123	2015/01/11				
-A2	2	Valid	HIV_LOPOS	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.74	22.82	767	767 Copies / mL	767 Copies / mL						Pos-1	0123	2015/01/11	2.94	155	4,898	
-A3	3	Valid	HIV_HIPOS	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.59	15.84	96181	96,181 Copies / mL	96181 Copies / mL						Pos-2	0123	2015/01/11	4.89	13,804	436,516	
-A4	4	Valid	AAAAAAAA	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.81	24.67	213	213 Copies / mL	213 Copies / mL												
-A5	5	Valid	BBBBBBBB	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.59	-1.00		Not detected	Not detected	Target not detected											
-A6	6	Valid	CCCCCCCC	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.73	-1.00		Not detected	Not detected	Target not detected											
-A7	7	Valid	DDDDDDDD	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.64	-1.00		Not detected	Not detected	Target not detected											
-A8	8	Valid	EEEEEEEE	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.65	-1.00		Not detected	Not detected	Target not detected											
-A9	9	Valid	FFFFFFFF	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.71	-1.00		Not detected	Not detected	Target not detected											
-A10	10	Valid	GGGGGGGG	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.81	-1.00		Not detected	Not detected	Target not detected											
-A11	11	Valid	HHHHHHHH	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.60	15.42	128630	128,630 Copies / mL	128630 Copies / mL												
+Location	Well	Status	SampleId	SampleType	ASRId	ASRLotNumber	ASRExpDate	SampleRackPosition	SampleRackBarcode	SampleTubeLocation	FromDeepWellLocation	AssayName	AssayId	AssayVersion	AssayCalibrationTime	SampleStatus	ResultStatus	Flags	Comment	ErrorCode	ErrorDescription	ICResponse	InstrumentResponse	FinalResult	ReportedResult	InvariantReportedResult	Interpretation	CalName	CalLotNumber	CalExpDate	CalConcentration	ControlName	ControlLotNumber	ControlExpDate	ControlConcentration	ControlRangeMin	ControlRangeMax
+A1	1	Valid	HIV_NEG	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.61	-1.00		Not detected	Not detected						Neg-1	0123	2015/01/11
+A2	2	Valid	HIV_LOPOS	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.74	22.82	767	767 Copies / mL	767 Copies / mL						Pos-1	0123	2015/01/11	2.94	155	4,898
+A3	3	Valid	HIV_HIPOS	Control	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.59	15.84	96181	96,181 Copies / mL	96181 Copies / mL						Pos-2	0123	2015/01/11	4.89	13,804	436,516
+A4	4	Valid	AAAAAAAA	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.81	24.67	213	213 Copies / mL	213 Copies / mL
+A5	5	Valid	BBBBBBBB	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.59	-1.00		Not detected	Not detected	Target not detected
+A6	6	Valid	CCCCCCCC	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.73	-1.00		Not detected	Not detected	Target not detected
+A7	7	Valid	DDDDDDDD	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.64	-1.00		Not detected	Not detected	Target not detected
+A8	8	Valid	EEEEEEEE	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.65	-1.00		Not detected	Not detected	Target not detected
+A9	9	Valid	FFFFFFFF	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.71	-1.00		Not detected	Not detected	Target not detected
+A10	10	Valid	GGGGGGGG	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.81	-1.00		Not detected	Not detected	Target not detected
+A11	11	Valid	HHHHHHHH	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.60	15.42	128630	128,630 Copies / mL	128630 Copies / mL
 A12	12	Valid	H2O-0001	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.88	28.21	18	< 40 Copies / mL	< 40 Copies / mL	Detected
-B1	13	Valid	JJJJJJJJ	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.32	-1.00		Not detected	Not detected	Target not detected											
-B2	14	Valid	KKKKKKKK	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.24	-1.00		Not detected	Not detected	Target not detected											
-B3	15	Valid	LLLLLLLL	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.58	20.11	5006	5,006 Copies / mL	5006 Copies / mL												
-B4	16	Valid	MMMMMMMM	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					22.13	-1.00		Not detected	Not detected	Target not detected											
-B5	17	Valid	NNNNNNNN	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.75	-1.00		Not detected	Not detected	Target not detected											
-B6	18	Valid	OOOOOOOO	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.91	26.34	67	67 Copies / mL	67 Copies / mL												
-B7	19	Valid	PPPPPPPP	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.76	-1.00		Not detected	Not detected	Target not detected											
-B8	20	Valid	QQQQQQQQ	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.94	26.29	69	69 Copies / mL	69 Copies / mL												
-B9	21	Valid	RRRRRRRR	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.92	-1.00		Not detected	Not detected	Target not detected											
-B10	22	Valid	SSSSSSSS	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.16	-1.00		Not detected	Not detected	Target not detected											
-B11	23	Valid	TTTTTTTT	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.01	23.94	353	353 Copies / mL	353 Copies / mL												
-B12	24	Valid	UUUUUUUU	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.97	29.41	8	< 40 Copies / mL	< 40 Copies / mL	Detected											
+B1	13	Valid	JJJJJJJJ	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.32	-1.00		Not detected	Not detected	Target not detected
+B2	14	Valid	KKKKKKKK	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.24	-1.00		Not detected	Not detected	Target not detected
+B3	15	Valid	LLLLLLLL	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.58	20.11	5006	5,006 Copies / mL	5006 Copies / mL
+B4	16	Valid	MMMMMMMM	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					22.13	-1.00		Not detected	Not detected	Target not detected
+B5	17	Valid	NNNNNNNN	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.75	-1.00		Not detected	Not detected	Target not detected
+B6	18	Valid	OOOOOOOO	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.91	26.34	67	67 Copies / mL	67 Copies / mL
+B7	19	Valid	PPPPPPPP	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.76	-1.00		Not detected	Not detected	Target not detected
+B8	20	Valid	QQQQQQQQ	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.94	26.29	69	69 Copies / mL	69 Copies / mL
+B9	21	Valid	RRRRRRRR	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.92	-1.00		Not detected	Not detected	Target not detected
+B10	22	Valid	SSSSSSSS	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.16	-1.00		Not detected	Not detected	Target not detected
+B11	23	Valid	TTTTTTTT	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					21.01	23.94	353	353 Copies / mL	353 Copies / mL
+B12	24	Valid	UUUUUUUU	Patient	200	0123456	2014/12/11					HIV0.6ml	HIV0.6ml	3.00	2015/04/23 04:37:05 PM		Completed					20.97	29.41	8	< 40 Copies / mL	< 40 Copies / mL	Detected

@@ -43,6 +43,7 @@
             <element key="analyses">null</element>
             <element key="analysisrequests">null</element>
             <element key="worksheets">null</element>
+            <element key="samples">null</element>
         </value>
     </record>
 
