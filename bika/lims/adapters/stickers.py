@@ -61,7 +61,5 @@ class GetSampleStickers(object):
         """
         size = self.request.get('size', '')
         if size == 'small':
-            default = self.sample_type.getDefaultSmallSticker()
-        else:
-            default = self.sample_type.getDefaultLargeSticker()
-        return default
+            return self.sample_type.getDefaultSmallSticker()
+        return self.sample_type.getDefaultLargeSticker()
