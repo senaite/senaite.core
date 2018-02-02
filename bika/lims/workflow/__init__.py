@@ -73,7 +73,6 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     """
     actionperformed = False
     message = ''
-    import pdb; pdb.set_trace()
     if isinstance(instance, list):
         # This check is here because sometimes Plone creates a list
         # from submitted form elements.

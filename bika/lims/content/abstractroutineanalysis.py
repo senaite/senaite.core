@@ -610,7 +610,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         This function is called automatically by
         bika.lims.workfow.AfterTransitionEventHandler
         """
-        import pdb; pdb.set_trace()
         # The analyses that depends on this analysis to calculate their results
         # must be transitioned too, otherwise the user will be forced to submit
         # them individually. Note that the automatic transition of dependents
