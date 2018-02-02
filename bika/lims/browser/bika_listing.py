@@ -100,7 +100,7 @@ class WorkflowAction:
                 selected_items[uid] = obj
         return selected_items
 
-    def workflow_action_default(self, action, came_from):
+    def workflow_action_default(self, action, came_from, queue_it=False):
         if came_from in ['workflow_action', 'edit']:
             # If a single item was acted on we will create the item list
             # manually from this item itself.  Otherwise, bika_listing will
@@ -111,13 +111,18 @@ class WorkflowAction:
             items = self._get_selected_items().values()
 
         if items:
-            trans, dest = self.submitTransition(action, came_from, items)
-            if trans:
-                message = PMF('Changes saved.')
+            trans, dest = self.submitTransition(
+                    action, came_from, items, queue_it=queue_it)
+            if queue_it:
+                message = PMF('Changes queued.')
                 self.addPortalMessage(message, 'info')
-            if dest:
-                self.request.response.redirect(dest)
-                return
+            else:
+                if trans:
+                    message = PMF('Changes saved.')
+                    self.addPortalMessage(message, 'info')
+                if dest:
+                    self.request.response.redirect(dest)
+                    return
         else:
             message = _('No items selected')
             self.addPortalMessage(message, 'warn')
@@ -244,7 +249,7 @@ class WorkflowAction:
                         item.addVerificator(username)
                         if revers - nmvers <= 1:
                             success, message = doActionFor(
-                                    item, action, queue_it)
+                                    item, action, queue_it=queue_it)
                             if not success:
                                 # If failed, delete last verificator.
                                 item.deleteLastVerificator()

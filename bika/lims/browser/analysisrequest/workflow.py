@@ -566,7 +566,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if type(came_from) in (list, tuple):
             came_from = came_from[0]
         return self.workflow_action_default(
-                action='verify', came_from=came_from)
+                action='verify', came_from=came_from, queue_it=True)
 
     def workflow_action_retract_ar(self):
 
