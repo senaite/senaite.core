@@ -25,6 +25,11 @@ Changelog
 - #555 Don't allow the activation of Analysis Services with inactive dependents
 - #540 Added ClientClicenceType content type, Licence field on Client and AR
   
+
+- #587 Use TaskQueue to Process AR Creation in the background
+- #555 Don't allow the deactivation Analysis Services with active dependencies
+- #555 Don't allow the activation of Analysis Services with inactive dependents
+
 **Removed**
 
 

@@ -989,6 +989,16 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("COC Footer"),
         )
     ),
+    IntegerField(
+        'MaxARsBeforeAsync',
+        schemata="Analyses",
+        required=0,
+        default=1,
+        widget=IntegerWidget(
+            label=_("Maximum number of ARs before Async."),
+            description=_("If a user initiates the creation of more ARs than this number, they will be created in the background and an email will notify them when they are all created"),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
