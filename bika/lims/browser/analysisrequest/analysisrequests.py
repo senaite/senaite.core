@@ -730,7 +730,9 @@ class AnalysisRequestsView(BikaListingView):
                        src='%s/++resource++bika.lims.images/unassigned.png'/>"\
                        % (t(_("Unassigned")), self.portal_url),
              'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
-                               'review_state': ('to_be_sampled',
+                               'review_state': ('sample_registered',
+                                                'sample_prep',
+                                                'to_be_sampled',
                                                 'sample_due',
                                                 'sample_received',
                                                 'attachment_due',),
