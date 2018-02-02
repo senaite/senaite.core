@@ -5,7 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient
+from bika.lims.interfaces import IBatch, IClient
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.utils import getHiddenAttributesForClass
 from Products.CMFCore.utils import getToolByName
@@ -17,8 +17,9 @@ _marker = []
 
 
 class WorkflowAwareWidgetVisibility(object):
-    """This adapter allows the schema definition to have different widget visibility
-    settings for different workflow states in the primary review_state workflow.
+    """This adapter allows the schema definition to have different
+    widget visibility settings for different workflow states in the
+    primary review_state workflow.
 
     With this it is possible to write:
 
@@ -100,7 +101,7 @@ class SamplingWorkflowWidgetVisibility(object):
         # - DateSampled: invisible during creation.
         # - SamplingDate and Sampler: visible and editable until sample due.
         if swf_enabled:
-            if fieldName == 'DateSampled':
+            if fieldName in ('DateSampled', 'Sampler'):
                 if mode == 'add':
                     state = 'invisible'
                     field.required = 0
@@ -115,7 +116,7 @@ class SamplingWorkflowWidgetVisibility(object):
         #                 required in 'add' view.
         #  - 'SamplingDate' and 'Sampler': disabled everywhere.
         else:
-            if fieldName == 'DateSampled':
+            if fieldName in ('DateSampled', 'Sampler'):
                 if mode == 'add':
                     state = 'edit'
                     field.required = 1

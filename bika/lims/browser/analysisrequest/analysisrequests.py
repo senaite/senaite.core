@@ -174,7 +174,7 @@ class AnalysisRequestsView(BikaListingView):
                 'input_width': '10'},
             'getSampler': {
                 'title': _('Sampler'),
-                'toggle': SamplingWorkflowEnabled},
+                'toggle': True},
             'getDatePreserved': {
                 'title': _('Date Preserved'),
                 'toggle': False,
@@ -968,57 +968,46 @@ class AnalysisRequestsView(BikaListingView):
                 (obj.getContactURL, obj.getContactFullName)
         else:
             item['ClientContact'] = ""
-        # TODO-performance: If SamplingWorkflowEnabled, we have to get the
-        # full object to check the user permissions, so far this is
-        # a performance hit.
-        if obj.getSamplingWorkflowEnabled:
-            # We don't do anything with Sampling Date. User can modify Sampling date
-            # inside AR view. In this listing view, we only let the user to edit Date Sampled
-            # and Sampler if he wants to make 'sample' transaction.
-            if not obj.getDateSampled:
-                datesampled = self.ulocalized_time(
-                    DateTime(), long_format=True)
-                item['class']['getDateSampled'] = 'provisional'
-            else:
-                datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
 
-            sampler = obj.getSampler
-            if sampler:
-                item['replace']['getSampler'] = obj.getSamplerFullName
-            if 'Sampler' in self.roles and not sampler:
-                sampler = self.member.id
-                item['class']['getSampler'] = 'provisional'
-            # sampling workflow - inline edits for Sampler and Date Sampled
-            if states_dict.get('review_state', '') == 'to_be_sampled':
-                # We need to get the full object in order to check
-                # the permissions
-                full_object = obj.getObject()
-                checkPermission =\
-                    self.context.portal_membership.checkPermission
-                if checkPermission(SampleSample, full_object):
-                    item['required'] = ['getSampler', 'getDateSampled']
-                    item['allow_edit'] = ['getSampler', 'getDateSampled']
-                    # TODO-performance: hit performance while getting the
-                    # sample object...
-                    # TODO Can LabManagers be a Sampler?!
-                    samplers = getUsers(
-                        full_object.getSample(),
-                        ['Sampler', ])
-                    username = self.member.getUserName()
-                    users = [({
-                        'ResultValue': u,
-                        'ResultText': samplers.getValue(u)})
-                            for u in samplers]
-                    item['choices'] = {'getSampler': users}
-                    Sampler = sampler and sampler or \
-                        (username in samplers.keys() and username) or ''
-                    sampler = Sampler
-                else:
-                    datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
-                    sampler = obj.getSamplerFullName if obj.getSampler else ''
+        if not obj.getDateSampled:
+            datesampled = self.ulocalized_time(
+                DateTime(), long_format=True)
+            item['class']['getDateSampled'] = 'provisional'
         else:
             datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
-            sampler = ''
+
+        sampler = obj.getSampler
+        if sampler:
+            item['replace']['getSampler'] = obj.getSamplerFullName
+        if 'Sampler' in self.roles and not sampler:
+            sampler = self.member.id
+            item['class']['getSampler'] = 'provisional'
+        # We need to get the full object in order to check
+        # the permissions
+        full_object = obj.getObject()
+        checkPermission =\
+            self.context.portal_membership.checkPermission
+        if checkPermission(SampleSample, full_object):
+            item['required'] = ['getSampler', 'getDateSampled']
+            item['allow_edit'] = ['getSampler', 'getDateSampled']
+            # TODO-performance: hit performance while getting the
+            # sample object...
+            # TODO Can LabManagers be a Sampler?!
+            samplers = getUsers(
+                full_object.getSample(),
+                ['Sampler', ])
+            username = self.member.getUserName()
+            users = [({
+                'ResultValue': u,
+                'ResultText': samplers.getValue(u)})
+                    for u in samplers]
+            item['choices'] = {'getSampler': users}
+            Sampler = sampler and sampler or \
+                (username in samplers.keys() and username) or ''
+            sampler = Sampler
+        else:
+            datesampled = self.ulocalized_time(obj.getDateSampled, long_format=True)
+            sampler = obj.getSamplerFullName if obj.getSampler else ''
         item['getDateSampled'] = datesampled
         item['getSampler'] = sampler
 
