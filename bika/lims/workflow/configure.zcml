@@ -37,4 +37,12 @@
       handler="bika.lims.workflow.SamplePrepTransitionEventHandler"
     />
 
+  <browser:page
+    for="*"
+    name="async_do_action_for"
+    class="bika.lims.workflow.AsyncView"
+    attribute="async_do_action_for"
+    permission="cmf.ModifyPortalContent"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
 </configure>

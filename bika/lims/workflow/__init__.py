@@ -5,24 +5,25 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
 from bika.lims import enum
 from bika.lims import PMF
+from bika.lims.browser import BrowserView
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from bika.lims import logger
-from Products.CMFCore.interfaces import IContentish
+from collective.taskqueue.interfaces import ITaskQueue
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces import IWorkflowChain
 from Products.CMFPlone.workflow import ToolWorkflowChain
 from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
-from zope.component import adapts
+from zope.component import queryUtility
 from zope.interface import implementer
 from zope.interface import implements
-from zope.interface import Interface
 import traceback
 
 
@@ -32,8 +33,9 @@ def skip(instance, action, peek=False, unskip=False):
         peek - True just checks the value, does not set.
         unskip - remove skip key (for manual overrides).
 
-    called with only (instance, action_id), this will set the request variable preventing the
-    cascade's from re-transitioning the object and return None.
+    called with only (instance, action_id), this will set the request
+    variable preventing the cascade's from re-transitioning the object
+    and return None.
     """
 
     uid = callable(instance.UID) and instance.UID() or instance.UID
@@ -52,7 +54,8 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
+def doActionFor(instance, action_id, active_only=True,
+                allowed_transition=True, queue_it=False):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
@@ -61,10 +64,14 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     If active_only is set to True, the instance will only be transitioned if
     it's current state is active (not cancelled nor inactive)
 
+    If queue_it param is true, call doAsyncActionFor to put this task onto
+    the TaskQueue to be processes asynchronously
+
     :param instance: Object to be transitioned
     :param action_id: transition id
     :param active_only: True if transition must apply to active objects
     :param allowed_transition: True for a allowed transition check
+    :param queue_it: True if this task should be queued
     :returns: true if the transition has been performed and message
     :rtype: list
     """
@@ -86,11 +93,6 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     workflow = getToolByName(instance, "portal_workflow")
     skipaction = skip(instance, action_id, peek=True)
     if skipaction:
-        #clazzname = instance.__class__.__name__
-        #msg = "Skipping transition '{0}': {1} '{2}'".format(action_id,
-        #                                                    clazzname,
-        #                                                    instance.getId())
-        #logger.info(msg)
         return actionperformed, message
 
     if allowed_transition:
@@ -112,6 +114,12 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
         logger.warning(
             "doActionFor should never (ever) be called with allowed_transition"
             "set to True as it avoids permission checks.")
+
+    if queue_it:
+        # hand over this task to the task queue
+        return doAsyncActionFor(
+                instance, action_id, active_only, allowed_transition)
+
     try:
         workflow.doActionFor(instance, action_id)
         actionperformed = True
@@ -274,10 +282,9 @@ def isBasicTransitionAllowed(context, permission=None):
     normally be set in the guard_permission in workflow definition.
 
     """
-    workflow = getToolByName(context, "portal_workflow")
     mtool = getToolByName(context, "portal_membership")
-    if not isActive(context) \
-        or (permission and mtool.checkPermission(permission, context)):
+    if not isActive(context) or \
+       (permission and mtool.checkPermission(permission, context)):
         return False
     return True
 
@@ -378,6 +385,7 @@ def getCurrentState(obj, stateflowid='review_state'):
     wf = getToolByName(obj, 'portal_workflow')
     return wf.getInfoFor(obj, stateflowid, '')
 
+
 def in_state(obj, states, stateflowid='review_state'):
     """ Returns if the object passed matches with the states passed in
     """
@@ -385,6 +393,7 @@ def in_state(obj, states, stateflowid='review_state'):
         return False
     obj_state = getCurrentState(obj, stateflowid=stateflowid)
     return obj_state in states
+
 
 def getTransitionActor(obj, action_id):
     """Returns the actor that performed a given transition. If transition has
@@ -486,7 +495,6 @@ class JSONReadExtender(object):
             data['transitions'] = get_workflow_actions(self.context)
 
 
-
 @implementer(IWorkflowChain)
 def SamplePrepWorkflowChain(ob, wftool):
     """Responsible for inserting the optional sampling preparation workflow
@@ -541,3 +549,77 @@ def SamplePrepTransitionEventHandler(instance, event):
             # fallback state:
             dst_state = 'sample_received'
         changeWorkflowState(instance, primary_wf_name, dst_state)
+
+
+def doAsyncActionFor(
+        instance, action_id, active_only=True, allowed_transition=True):
+    """Performs the transition (action_id) to the instance.
+
+    The transition will only be triggered if the current state of the object
+    allows the action_id passed in (delegate to isTransitionAllowed) and the
+    instance hasn't been flagged as to be skipped previously.
+    If active_only is set to True, the instance will only be transitioned if
+    it's current state is active (not cancelled nor inactive)
+
+    :param instance: Object to be transitioned
+    :param action_id: transition id
+    :param active_only: True if transition must apply to active objects
+    :param allowed_transition: True for a allowed transition check
+    :returns: true if the transition has been performed and message
+    :rtype: list
+    """
+    task_queue = queryUtility(ITaskQueue, name='transition-ar')
+    if task_queue is None:
+        logger.info('Do NOT Queue object %s for transition %s' % (
+            instance.getId(), action_id))
+        return doActionFor(
+                instance, action_id, active_only, allowed_transition)
+
+    logger.info('Queue object %s for transition %s' % (
+        instance.getId(), action_id))
+    path = [i for i in instance.getPhysicalPath()[:-1]]
+    path.append('async_do_action_for')
+    path = '/'.join(path)
+
+    params = {
+            'obj_uid': instance.UID(),
+            'action_id': action_id,
+            'active_only': active_only,
+            'allowed_transition': allowed_transition,
+            }
+    logger.info('Queue Task: path=%s' % path)
+    task_queue.add(path, method='POST', params=params)
+    message = instance.translate("{} {} added to the queue".format(
+                action_id, unicode(instance.Title(), errors="ignore")))
+
+    return True, message
+
+
+class AsyncView(BrowserView):
+    """
+    A browser view for methods the TaskQueue server
+    """
+
+    def async_do_action_for(self):
+        """
+        The method the invoked by the TaskQueue
+        It parses the arguments from the form and calls doActionFor
+        """
+        logger.info('async_transition_object server entered')
+        form = self.request.form
+        obj_uid = form.get('obj_uid')
+        if obj_uid is None:
+            raise RuntimeError('async_transition_object requires obj_uid')
+        obj = api.get_object_by_uid(uid=obj_uid)
+        if obj is None:
+            raise RuntimeError('async_transition_object unknown obj_uid')
+
+        action_id = form.get('action_id')
+        if action_id is None:
+            raise RuntimeError('async_transition_object requires action_id')
+
+        active_only = form.get('active_only', True)
+        allowed_transition = form.get('allowed_transition', True)
+
+        doActionFor(obj, action_id, active_only, allowed_transition)
+        logger.info('async_transition_object server complete')

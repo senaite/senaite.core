@@ -206,7 +206,7 @@ class WorkflowAction:
             return
 
     # noinspection PyUnusedLocal
-    def submitTransition(self, action, came_from, items):
+    def submitTransition(self, action, came_from, items, queue_it=False):
         """Performs the action's transition for the specified items
 
         Returns (numtransitions, destination), where:
@@ -243,13 +243,14 @@ class WorkflowAction:
                         username = member.getUserName()
                         item.addVerificator(username)
                         if revers - nmvers <= 1:
-                            success, message = doActionFor(item, action)
+                            success, message = doActionFor(
+                                    item, action, queue_it)
                             if not success:
                                 # If failed, delete last verificator.
                                 item.deleteLastVerificator()
                         item.reindexObject()
                     else:
-                        success, message = doActionFor(item, action)
+                        success, message = doActionFor(item, action, queue_it)
                     if success:
                         transitioned.append(item.id)
                     else:
@@ -273,7 +274,8 @@ class BikaListingView(BrowserView):
     """Base View for Bika Table Listings
     """
     template = ViewPageTemplateFile("templates/bika_listing.pt")
-    render_items = ViewPageTemplateFile("templates/bika_listing_table_items.pt")
+    render_items = ViewPageTemplateFile(
+            "templates/bika_listing_table_items.pt")
 
     # If the view is rendered with control of it's own main_template etc,
     # then it will use this for the title/description.  This gives each
@@ -393,7 +395,8 @@ class BikaListingView(BrowserView):
     # - type:
     #   "string"    is the default.
     #   "boolean"   a checkbox is rendered
-    #   "date"      A text field is rendered, with a jquery DatePicker attached.
+    #   "date"      A text field is rendered, with a jquery DatePicker
+    #               attached.
     #   "choices"   Renders a dropdown.  The vocabulary data must be placed in
     #               item['choices'][column_id]. It's a list of dictionaries:
     #               [{'ResultValue':x}, {'ResultText',x}].
@@ -470,12 +473,12 @@ class BikaListingView(BrowserView):
     # review_state
     #
     # A list of dictionaries, specifying parameters for listing filter buttons.
-    # - If review_state[x]['transitions'] is defined it's a list of dictionaries
-    #     [{'id':'x'}]
+    # - If review_state[x]['transitions'] is defined it's a list of
+    #   dictionaries:  [{'id':'x'}]
     # Transitions will be ordered by and restricted to, these items.
     #
-    # - If review_state[x]['custom_transitions'] is defined it's a list of dict:
-    #     [{'id':'x'}]
+    # - If review_state[x]['custom_transitions'] is defined it's a list of
+    #   dictionaries:  [{'id':'x'}]
     # These transitions will be forced into the list of workflow actions.
     # They will need to be handled manually in the appropriate WorkflowAction
     # subclass.
@@ -590,7 +593,7 @@ class BikaListingView(BrowserView):
         <form_id>_filter_indexes:   list of index names which will be searched
                                     for the value of <form_id>_filter
 
-        <form_id>_<index_name>:     Any index name can be used after <form_id>_.
+        <form_id>_<index_name>:     Any index name can be used after <form_id>_
 
             any request variable named ${form_id}_{index_name} will pass it's
             value to that index in self.contentFilter.
@@ -782,8 +785,8 @@ class BikaListingView(BrowserView):
             the value passed in. If non of both cases, returns None
             """
             if value in self.columns:
-                # The sort_on value refers to a column name. We try to get the index
-                # associated to this column name, if any
+                # The sort_on value refers to a column name. We try to get
+                # the index associated to this column name, if any
                 return self.columns[value].get('index', value)
 
             if value in self.get_columns_indexes():
@@ -812,9 +815,10 @@ class BikaListingView(BrowserView):
                 # There is a colunm or index for this sort_on value
                 return sort_on
 
-        # None of the sort_on values set either in the request or in the content
-        # filter are valid (no column or index defined), so we return the
-        # sort_on value 'created', an index all catalogs has in common
+        # None of the sort_on values set either in the request or in
+        # the content # filter are valid (no column or index defined),
+        # so we return the sort_on value 'created', an index all
+        # catalogs has in common
         return 'created'
 
     def get_columns_indexes(self):
@@ -1307,7 +1311,8 @@ class BikaListingView(BrowserView):
 
             if wf_state_var is not None:
                 rs = self.workflow.getInfoFor(obj, wf_state_var)
-                st_title = self.workflow.getTitleForStateOnType(rs, obj.portal_type)
+                st_title = self.workflow.getTitleForStateOnType(
+                        rs, obj.portal_type)
                 st_title = t(PMF(st_title))
 
             if rs:
@@ -1559,7 +1564,8 @@ class BikaListingView(BrowserView):
 
 class BikaListingTable(tableview.Table):
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
-    render_items = ViewPageTemplateFile("templates/bika_listing_table_items.pt")
+    render_items = ViewPageTemplateFile(
+            "templates/bika_listing_table_items.pt")
 
     def __init__(self, bika_listing=None, table_only=None):
         self.table = self
