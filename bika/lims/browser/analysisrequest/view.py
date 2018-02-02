@@ -20,7 +20,7 @@ from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from bika.lims.utils import t, check_permission
 from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, doAsyncActionFor
 from bika.lims.workflow import wasTransitionPerformed
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -46,7 +46,7 @@ class AnalysisRequestViewView(BrowserView):
         ar = self.context
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'transition' in self.request.form:
-            doActionFor(self.context, self.request.form['transition'])
+            doAsyncActionFor(self.context, self.request.form['transition'])
 
         # If the analysis request has been received and hasn't been yet
         # verified yet, redirect the user to manage_results view, but only if

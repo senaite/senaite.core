@@ -92,6 +92,7 @@ def ObjectRemovedEventHandler(instance, event):
     # Note: AR adds itself to the skiplist so we have to take it off again
     #       to allow multiple promotions (maybe by more than one deleted instance).
     if can_submit and workflow.getInfoFor(ar, 'review_state') == 'sample_received':
+        import pdb; pdb.set_trace()
         try:
             workflow.doActionFor(ar, 'submit')
         except WorkflowException:
