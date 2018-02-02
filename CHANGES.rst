@@ -28,6 +28,7 @@ Changelog
 
 **Fixed**
 
+- #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
 - #530 Calculated results do not get updated when importing instrument results
 - #614 Fix accreditation category titles
 - #611 Advanced filter bar: filter Analysis Requests by Service name not working
