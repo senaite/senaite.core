@@ -330,10 +330,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
                 " type to Sample Type '{}'"
                 .format(self.getId()))
             return
-        field = self.getField('AdmittedStickerTemplates')
-        new_value = field.get(self)
-        new_value[0][SMALL_DEFAULT_STICKER] = value
-        field.set(self, new_value)
+        self._set_sticker_subfield(SMALL_DEFAULT_STICKER, value)
 
     def setDefaultLargeSticker(self, value):
         """
@@ -353,10 +350,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
                 " type to Sample Type '{}'"
                 .format(self.getId()))
             return
-        field = self.getField('AdmittedStickerTemplates')
-        new_value = field.get(self)
-        new_value[0][LARGE_DEFAULT_STICKER] = value
-        field.set(self, new_value)
+        self._set_sticker_subfield(LARGE_DEFAULT_STICKER, value)
 
     def setAdmittedStickers(self, value):
         """
@@ -376,10 +370,13 @@ class SampleType(BaseContent, HistoryAwareMixin):
                 " type to Sample Type '{}'"
                 .format(self.getId()))
             return
+        self._set_sticker_subfield('admitted', value)
+
+    def _set_sticker_subfield(self, subfield, value):
         field = self.getField('AdmittedStickerTemplates')
-        new_value = field.get(self)
-        new_value[0]['admitted'] = value
-        field.set(self, new_value)
+        stickers = field.get(self)
+        stickers[0][subfield] = value
+        field.set(self, stickers)
 
 
 registerType(SampleType, PROJECTNAME)
