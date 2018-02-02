@@ -41,6 +41,7 @@
 <permission id="bika.lims.permissions.AddSamplingDeviation" title="BIKA: Add SamplingDeviation"/>
 <permission id="bika.lims.permissions.AddSRTemplate" title="BIKA: Add SRTemplate"/>
 <permission id="bika.lims.permissions.AddSubGroup" title="BIKA: Add Sub-group"/>
+<permission id="bika.lims.permissions.AddClientLicenceType" title="BIKA: Add ClientLicenceType"/>
 <permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
 <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
 

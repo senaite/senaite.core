@@ -328,4 +328,12 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Client Licence Types" action_id="bika_clientlicencetypes"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/clientlicencetype.png"
+    url_expr="string:$portal_url/bika_setup/bika_clientlicencetypes"
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
 </object>

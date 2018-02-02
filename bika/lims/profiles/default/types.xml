@@ -29,6 +29,8 @@
  <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ClientLicenceTypes" meta_type="Dexterity FTI" />
+ <object name="ClientLicenceType" meta_type="Dexterity FTI" />
  <object name="Contact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Container" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Containers" meta_type="Factory-based Type Information with dynamic views"/>

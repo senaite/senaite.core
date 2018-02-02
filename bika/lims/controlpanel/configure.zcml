@@ -302,4 +302,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IClientLicenceTypes"
+      name="folder_view"
+      class=".bika_clientlicencetypes.ClientLicenceTypesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
 </configure>

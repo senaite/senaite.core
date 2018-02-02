@@ -20,6 +20,11 @@ Changelog
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
 - #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
 
+
+- #555 Don't allow the deactivation Analysis Services with active dependencies
+- #555 Don't allow the activation of Analysis Services with inactive dependents
+- #540 Added ClientClicenceType content type, Licence field on Client and AR
+  
 **Removed**
 
 
