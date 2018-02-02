@@ -257,17 +257,20 @@ class SampleType(BaseContent, HistoryAwareMixin):
         from bika.lims.content.containertype import ContainerTypes
         return ContainerTypes(self, allow_blank=True)
 
+    def getDefaultSticker(self, size):
+        values = self.getField('AdmittedStickerTemplates').get(self)
+        if not values:
+            return ''
+        value = values[0].get(size)
+        return value
+
     def getDefaultSmallSticker(self):
         """
         Returns the small sticker ID defined as default.
 
         :return: A string as an sticker ID
         """
-        values = self.getField('AdmittedStickerTemplates').get(self)
-        if not values:
-            return ''
-        value = values[0].get(SMALL_DEFAULT_STICKER)
-        return value
+        return self.getDefaultSticker(SMALL_DEFAULT_STICKER)
 
     def getDefaultLargeSticker(self):
         """
@@ -275,11 +278,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :return: A string as an sticker ID
         """
-        values = self.getField('AdmittedStickerTemplates').get(self)
-        if not values:
-            return ''
-        value = values[0].get(LARGE_DEFAULT_STICKER)
-        return value
+        return self.getDefaultSticker(LARGE_DEFAULT_STICKER)
 
     def getAdmittedStickers(self):
         """
