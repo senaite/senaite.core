@@ -149,8 +149,8 @@ schema = BikaSchema.copy() + Schema((
                         },
         subfield_vocabularies={
             'admitted': sticker_templates(),
-            SMALL_DEFAULT_STICKER: '_small_default_voc',
-            LARGE_DEFAULT_STICKER: '_large_default_voc',
+            SMALL_DEFAULT_STICKER: '_sticker_templates_vocabularies',
+            LARGE_DEFAULT_STICKER: '_sticker_templates_vocabularies',
         },
         required_subfields={
             'admitted': 1,
@@ -293,33 +293,10 @@ class SampleType(BaseContent, HistoryAwareMixin):
         admitted = values[0].get('admitted')
         return admitted
 
-    def _small_default_voc(self):
+    def _sticker_templates_vocabularies(self):
         """
         Returns the vocabulary to be used in
         AdmittedStickerTemplates.small_default
-
-        If the object has saved not AdmittedStickerTemplates.admitted stickers,
-        this method will return an empty DisplayList. Otherwise it returns
-        the stickers selected in admitted.
-
-        :return: A DisplayList
-        """
-        admitted = self.getAdmittedStickers()
-        if not admitted:
-            return DisplayList()
-        voc = DisplayList()
-        stickers = getStickerTemplates()
-        for sticker in stickers:
-            if sticker.get('id') in admitted:
-                voc.add(sticker.get('id'), sticker.get('title'))
-        if voc.index > 0:
-            return voc
-        return DisplayList()
-
-    def _large_default_voc(self):
-        """
-        Returns the vocabulary to be used in
-        AdmittedStickerTemplates.large_default
 
         If the object has saved not AdmittedStickerTemplates.admitted stickers,
         this method will return an empty DisplayList. Otherwise it returns
