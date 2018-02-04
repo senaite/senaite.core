@@ -63,7 +63,8 @@ schema = BikaSchema.copy() + Schema((
         'Analyses',
         required=1,
         multiValued=1,
-        allowed_types=('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis', 'RejectAnalysis'),
+        allowed_types=('Analysis', 'DuplicateAnalysis',
+                       'ReferenceAnalysis', 'RejectAnalysis'),
         relationship='WorksheetAnalysis',
     ),
 
@@ -185,13 +186,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
-        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout]:
+        if analysis.aq_parent.UID() in [
+                slot['container_uid'] for slot in layout]:
             position = [int(slot['position']) for slot in layout if
                         slot['container_uid'] == analysis.aq_parent.UID()][0]
         else:
             # prefer supplied position parameter
             if not position:
-                used_positions = [0, ] + [int(slot['position']) for slot in layout]
+                used_positions = [0, ] + [
+                        int(slot['position']) for slot in layout]
                 position = [pos for pos in range(1, max(used_positions) + 2)
                             if pos not in used_positions][0]
         self.setLayout(layout + [{'position': position,
@@ -199,7 +202,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
 
-        doActionFor(analysis, 'assign')
+        doActionFor(analysis, 'assign', queue_it=True)
 
         # If a dependency of DryMatter service is added here, we need to
         # make sure that the dry matter analysis itself is also
@@ -228,7 +231,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
-        doActionFor(analysis, 'unassign')
+        doActionFor(analysis, 'unassign', queue_it=True)
 
         # remove analysis from context.Analyses *after* unassign,
         # (doActionFor requires worksheet in analysis.getBackReferences)
@@ -328,7 +331,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                                         refgid)
 
             if ref_analysis:
-                # All ref analyses from the same slot must have the same group id
+                # All ref analyses from the same slot must have the
+                # same group id
                 refgid = ref_analysis.getReferenceAnalysesGroupID()
                 ref_analyses.append(ref_analysis)
         return ref_analyses
@@ -514,10 +518,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
     def _set_referenceanalysis_groupid(self, analysis, refgid=None):
         """
-        Inferes and store the reference analysis group id to the analysis passed
-        in. If the analysis passed in is neither a reference analysis nor a
-        duplicate, does nothing. If no reference analyses group id (refgid) is
-        set, the value will be generated automatically.
+        Inferes and store the reference analysis group id to the analysis
+        passed in. If the analysis passed in is neither a reference analysis
+        nor a duplicate, does nothing. If no reference analyses group id
+        (refgid) is set, the value will be generated automatically.
         Reference analysis group id is used to differentiate multiple reference
         analyses for the same sample/analysis within a worksheet.
         :param analysis: analysis to set the reference analysis group id
@@ -558,7 +562,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Are the analyses from src_slot suitable for duplicates creation?
         container = self.get_container_at(slot_from)
         if not container or not IAnalysisRequest.providedBy(container):
-            # We cannot create duplicates from analyses other than routine ones,
+            # We cannot create duplicates from analyses other than routine ones
             # those that belong to an Analysis Request.
             return 0
 
@@ -616,7 +620,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             slot_to = max(occupied) + 1
             return slot_to
 
-        # If there is a match with the layout defined in the Worksheet Template,
+        # If there is a match with the layout defined in the Worksheet Template
         # use that slot instead of adding a new one at the end of the worksheet
         slot_type = reference.getBlank() and 'b' or 'c'
         layout = wst.getLayout()
@@ -629,8 +633,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 # Not an empty slot
                 continue
 
-            # This slot is empty, use it instead of adding a new slot at the end
-            # of the worksheet
+            # This slot is empty, use it instead of adding a new slot at the
+            # end of the worksheet
             return slot_to
 
         # Add a new slot at the end of the worksheet, but take into account
@@ -878,7 +882,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
                 if num_routine_analyses == 0:
                     # This worksheet is empty, but there are slots still
-                    # available, assign the next available slot to this analysis
+                    # available, assign the next available slot to this
+                    # analysis
                     slot = available_slots.pop()
                 else:
                     # This worksheet is not empty and there are slots still
@@ -1510,10 +1515,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 fieldname = field.getName()
                 if fieldname in ignore_fields:
                     continue
-                getter = getattr(src, 'get' + fieldname,
-                                 src.Schema().getField(fieldname).getAccessor(src))
-                setter = getattr(dst, 'set' + fieldname,
-                                 dst.Schema().getField(fieldname).getMutator(dst))
+                getter = getattr(
+                        src, 'get' + fieldname,
+                        src.Schema().getField(fieldname).getAccessor(src))
+                setter = getattr(
+                        dst, 'set' + fieldname,
+                        dst.Schema().getField(fieldname).getMutator(dst))
                 if getter is None or setter is None:
                     # ComputedField
                     continue
@@ -1537,7 +1544,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         )
 
         # Objects are being created inside other contexts, but we want their
-        # workflow handlers to be aware of which worksheet this is occurring in.
+        # workflow handlers to be aware of which worksheet this is occurring in
         # We save the worksheet in request['context_uid'].
         # We reset it again below....  be very sure that this is set to the
         # UID of the containing worksheet before invoking any transitions on
@@ -1594,8 +1601,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
                 reference_type = analysis.getReferenceType()
-                new_analysis_uid = reference.addReferenceAnalysis(service_uid,
-                                                                  reference_type)
+                new_analysis_uid = reference.addReferenceAnalysis(
+                        service_uid, reference_type)
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
@@ -1608,7 +1615,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                    'analysis_uid': new_analysis_uid,
                                    'container_uid': reference.UID()})
                 workflow.doActionFor(analysis, 'reject')
-                new_reference = reference.uid_catalog(UID=new_analysis_uid)[0].getObject()
+                new_reference = reference.uid_catalog(
+                        UID=new_analysis_uid)[0].getObject()
                 workflow.doActionFor(new_reference, 'assign')
                 analysis.reindexObject()
             # Duplicate analyses
@@ -1642,7 +1650,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in new_ws.getAnalyses():
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'to_be_verified':
-                changeWorkflowState(analysis, "bika_analysis_workflow", "sample_received")
+                changeWorkflowState(
+                        analysis, "bika_analysis_workflow", "sample_received")
         self.REQUEST['context_uid'] = self.UID()
         self.setLayout(old_layout)
         self.setAnalyses(old_ws_analyses)
