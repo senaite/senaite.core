@@ -30,7 +30,7 @@ from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from bika.lims.workflow import doAsyncActionFor
+from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import wasTransitionPerformed
 from email.Utils import formataddr
@@ -505,7 +505,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 submissable.append(analysis)
         # and then submit them.
         for analysis in submissable:
-            doAsyncActionFor(analysis, 'submit')
+            doActionFor(analysis, 'submit', queue_it=True)
 
         # LIMS-2366: Finally, when we are done processing all applicable
         # analyses, we must attempt to initiate the submit transition on the
@@ -519,7 +519,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             ar = self.context.aq_parent
         else:
             ar = self.context
-        doAsyncActionFor(ar, 'submit')
+        doActionFor(ar, 'submit', queue_it=True)
 
         message = PMF("Changes queued.")
         self.context.plone_utils.addPortalMessage(message, 'info')
