@@ -28,6 +28,7 @@ Changelog
 
 **Fixed**
 
+- #634 Fix undefined Symbols in Sample Transition Guards
 - #616 Fix character encodings in analysisservice duplication
 - #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
 - #530 Calculated results do not get updated when importing instrument results
