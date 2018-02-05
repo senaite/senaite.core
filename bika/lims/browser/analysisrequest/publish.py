@@ -42,7 +42,6 @@ from bika.lims.utils import formatDecimalMark, to_utf8
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.vocabularies import getARReportTemplates
 from bika.lims.workflow import wasTransitionPerformed
-from plone import api as ploneapi
 from plone.api.portal import get_registry_record
 from plone.api.portal import set_registry_record
 from plone.app.blob.interfaces import IBlobField
@@ -73,7 +72,8 @@ class AnalysisRequestPublishView(BrowserView):
     def _DEFAULT_TEMPLATE(self):
         registry = getUtility(IRegistry)
         return registry.get(
-            'bika.lims.analysisrequest.default_arreport_template', 'default.pt')
+            'bika.lims.analysisrequest.default_arreport_template',
+            'default.pt')
 
     def next_certificate_number(self):
         """Get a new certificate id.  These are throwaway IDs, until the
@@ -273,11 +273,11 @@ class AnalysisRequestPublishView(BrowserView):
         return self.request.form.get('landscape', '0').lower() in ['true', '1']
 
     def localise_images(self, htmlreport):
-        """WeasyPrint will attempt to retrieve attachments directly from the URL
-        referenced in the HTML report, which may refer back to a single-threaded
-        (and currently occupied) zeoclient, hanging it.  All "attachments"
-        using urls ending with at_download/AttachmentFile must be converted
-        to local files.
+        """WeasyPrint will attempt to retrieve attachments directly from
+        the URL referenced in the HTML report, which may refer back to
+        a single-threaded (and currently occupied) zeoclient, hanging it.
+        All "attachments" using urls ending with at_download/AttachmentFile
+        must be converted to local files.
 
         Returns a list of files which were created, and a modified copy
         of htmlreport.
@@ -714,9 +714,10 @@ class AnalysisRequestDigester:
         # dictionaries from the schemas of objects.
         self.SKIP_FIELDNAMES = [
             'allowDiscussion', 'subject', 'location', 'contributors',
-            'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
-            'relatedItems', 'modification_date', 'immediatelyAddableTypes',
-            'locallyAllowedTypes', 'nextPreviousEnabled', 'constrainTypesMode',
+            'creators', 'effectiveDate', 'expirationDate', 'language',
+            'rights', 'relatedItems', 'modification_date',
+            'immediatelyAddableTypes', 'locallyAllowedTypes',
+            'nextPreviousEnabled', 'constrainTypesMode',
             'RestrictedCategories', 'Digest',
         ]
 
@@ -942,10 +943,10 @@ class AnalysisRequestDigester:
                 'prepublish': False,
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None,
-                'resultsinterpretation':ar.getResultsInterpretation(),
+                'resultsinterpretation': ar.getResultsInterpretation(),
                 'ar_attachments': self._get_ar_attachments(ar),
                 'an_attachments': self._get_an_attachments(ar),
-        }
+                }
 
         # Sub-objects
         excludearuids.append(ar.UID())
@@ -960,8 +961,8 @@ class AnalysisRequestDigester:
 
         wf = ar.portal_workflow
         allowed_states = ['verified', 'published']
-        data['prepublish'] = wf.getInfoFor(ar,
-                                           'review_state') not in allowed_states
+        data['prepublish'] = wf.getInfoFor(
+                ar, 'review_state') not in allowed_states
 
         data['contact'] = self._contact_data(ar)
         data['client'] = self._client_data(ar)
@@ -981,8 +982,9 @@ class AnalysisRequestDigester:
              an['previous_results']]) > 0
         data['hasblanks'] = len([an['reftype'] for an in data['qcanalyses'] if
                                  an['reftype'] == 'b']) > 0
-        data['hascontrols'] = len([an['reftype'] for an in data['qcanalyses'] if
-                                   an['reftype'] == 'c']) > 0
+        data['hascontrols'] = len(
+                [an['reftype'] for an in data['qcanalyses']
+                    if an['reftype'] == 'c']) > 0
         data['hasduplicates'] = len(
             [an['reftype'] for an in data['qcanalyses'] if
              an['reftype'] == 'd']) > 0
@@ -1177,17 +1179,21 @@ class AnalysisRequestDigester:
             physical_address = _format_address(
                 contact.getPhysicalAddress()) if contact else ''
             postal_address =\
-                    _format_address(contact.getPostalAddress())\
+                _format_address(contact.getPostalAddress())\
                 if contact else ''
             data = {'id': member.id,
                     'fullname': to_utf8(cfullname) if cfullname else to_utf8(
                         mfullname),
                     'email': cemail if cemail else memail,
-                    'business_phone': contact.getBusinessPhone() if contact else '',
-                    'business_fax': contact.getBusinessFax() if contact else '',
+                    'business_phone':
+                        contact.getBusinessPhone() if contact else '',
+                    'business_fax':
+                        contact.getBusinessFax() if contact else '',
                     'home_phone': contact.getHomePhone() if contact else '',
-                    'mobile_phone': contact.getMobilePhone() if contact else '',
-                    'job_title': to_utf8(contact.getJobTitle()) if contact else '',
+                    'mobile_phone':
+                        contact.getMobilePhone() if contact else '',
+                    'job_title':
+                        to_utf8(contact.getJobTitle()) if contact else '',
                     'physical_address': physical_address,
                     'postal_address': postal_address,
                     'home_page': to_utf8(mhomepage)}
@@ -1316,15 +1322,14 @@ class AnalysisRequestDigester:
                 andict['previous_results'] = ", ".join(
                     [p['formatted_result'] for p in andict['previous'][-5:]])
 
-            #Append addition analysis dicts for each unit conversion
+            # Append addition analysis dicts for each unit conversion
             if andict.get('unit_conversions', False):
                 for uc_uid in andict['unit_conversions']:
                     analyses.append(_convert_unit_of(uc_uid, andict, an))
 
-            #Append primary analysis if appropriate
+            # Append primary analysis if appropriate
             if not andict.get('hide_primary_result'):
                 analyses.append(andict)
-
 
         return analyses
 
@@ -1336,8 +1341,8 @@ class AnalysisRequestDigester:
                   'keyword': analysis.getKeyword(),
                   'scientific_name': analysis.getScientificName(),
                   'accredited': analysis.getAccredited(),
-                  'point_of_capture': to_utf8(
-                      POINTS_OF_CAPTURE.getValue(analysis.getPointOfCapture())),
+                  'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(
+                      analysis.getPointOfCapture())),
                   'category': to_utf8(analysis.getCategoryTitle()),
                   'result': analysis.getResult(),
                   'isnumber': isnumber(analysis.getResult()),
@@ -1353,9 +1358,9 @@ class AnalysisRequestDigester:
                   'resultdm': to_utf8(analysis.getResultDM()),
                   'outofrange': False,
                   'type': analysis.portal_type,
-                  'reftype': analysis.getReferenceType() \
-                      if hasattr(analysis, 'getReferenceType') \
-                      else None,
+                  'reftype': analysis.getReferenceType()
+                  if hasattr(analysis, 'getReferenceType')
+                  else None,
                   'worksheet': None,
                   'specs': {},
                   'formatted_specs': '',
@@ -1372,7 +1377,8 @@ class AnalysisRequestDigester:
             if ws and len(ws) > 0 else None
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
-            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
+            else '%s - %s' % (
+                    analysis.aq_parent.id, analysis.aq_parent.Title())
 
         if analysis.portal_type == 'ReferenceAnalysis':
             # The analysis is a Control or Blank. We might use the
@@ -1396,8 +1402,8 @@ class AnalysisRequestDigester:
         # expressed in sci notation, that may include <sup></sup> html tags.
         # Please note the default value for the 'html' parameter from
         # getFormattedResult signature is set to True, so the service will
-        # already take into account LDLs and UDLs symbols '<' and '>' and escape
-        # them if necessary.
+        # already take into account LDLs and UDLs symbols '<' and '>'
+        # and escape# them if necessary.
         andict['formatted_result'] = fresult
 
         fs = ''
@@ -1613,7 +1619,7 @@ def _convert_unit_of(uc_uid, andict, context=None):
     """
     new = dict(andict)
     unit_conversion = api.get_object_by_uid(
-            uid=uc_uid, context=an)
+            uid=uc_uid, context=context)
     new['unit'] = unit_conversion.converted_unit
     new['formatted_unit'] = unit_conversion.converted_unit
     if andict.get('result'):
