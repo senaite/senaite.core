@@ -27,7 +27,9 @@ from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
 from plone.api.exc import InvalidParameterError
 
+
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
+FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
 
 
 def get_dashboard_registry_record():
@@ -93,7 +95,7 @@ def setup_dashboard_panels_visibility_registry(section_name):
     role_permissions = ','.join(role_permissions_list)
 
     # Set permissions string into dict
-    registry_info[section_name] = get_unicode(role_permissions)
+    registry_info[get_unicode(section_name)] = get_unicode(role_permissions)
     # Set new values to registry record
     set_dashboard_registry_record(registry_info)
     return registry_info
@@ -106,7 +108,6 @@ def get_dashboard_panels_visibility_by_section(section_name):
     :param section_name: the panels section id.
     :return: a list of tuples.
     """
-    result = []
     registry_info = get_dashboard_registry_record()
     if section_name not in registry_info:
         # Registry hasn't been set, do it at least for this section
@@ -327,6 +328,8 @@ class DashboardView(BrowserView):
             sections.append(self.get_analysisrequests_section())
         if is_panel_visible_for_user('worksheets', user):
             sections.append(self.get_worksheets_section())
+        if is_panel_visible_for_user('samples', user):
+            sections.append(self.get_samples_section())
         return sections
 
     def get_filter_options(self):
@@ -371,7 +374,7 @@ class DashboardView(BrowserView):
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query
@@ -441,9 +444,20 @@ class DashboardView(BrowserView):
         query['review_state'] = ['published', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
+        # Analysis Requests to be printed
+        if self.context.bika_setup.getPrintingWorkflowEnabled():
+            name = _('Analysis Requests to be printed')
+            desc = _("To be printed")
+            purl = 'analysisrequests?analysisrequests_getPrinted=0'
+            query['getPrinted'] = '0'
+            query['review_state'] = ['published', ]
+            out.append(
+                self._getStatistics(name, desc, purl, catalog, query, total))
+
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
-        del query['review_state']
+        if 'review_state' in query:
+            del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
         outevo = self._fill_dates_evo(catalog, query)
@@ -468,7 +482,7 @@ class DashboardView(BrowserView):
         query = {'portal_type':"Worksheet",}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query
@@ -532,7 +546,7 @@ class DashboardView(BrowserView):
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
             query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query elements by
@@ -585,6 +599,95 @@ class DashboardView(BrowserView):
                 'title': _('Analyses'),
                 'panels': out}
 
+    def get_samples_section(self):
+        out = []
+        catalog = getToolByName(self.context, 'portal_catalog')
+        query = {'portal_type': "Sample",
+                 'cancellation_state': ['active']}
+        filtering_allowed = \
+            self.context.bika_setup.getAllowDepartmentFiltering()
+        if filtering_allowed:
+            cookie_dep_uid = self.request\
+                .get(FILTER_BY_DEPT_COOKIE_ID, '')\
+                .split(',') if filtering_allowed else ''
+            query['getDepartmentUIDs'] = {"query": cookie_dep_uid,
+                                          "operator": "or"}
+
+        # Check if dashboard_cookie contains any values to query
+        # elements by
+        query = self._update_criteria_with_filters(query, 'samples')
+
+        # Active Samples (All)
+        total = len(catalog(query))
+
+        # Sampling workflow enabled?
+        if self.context.bika_setup.getSamplingWorkflowEnabled():
+            # Analysis Requests awaiting to be sampled or scheduled
+            name = _('Samples to be sampled')
+            desc = _("To be sampled")
+            purl = 'samples?samples_review_state=to_be_sampled'
+            query['review_state'] = ['to_be_sampled', ]
+            out.append(
+                self._getStatistics(name, desc, purl, catalog, query, total))
+
+            # Samples awaiting to be preserved
+            name = _('Samples to be preserved')
+            desc = _("To be preserved")
+            purl = 'samples?samples_review_state=to_be_preserved'
+            query['review_state'] = ['to_be_preserved', ]
+            out.append(
+                self._getStatistics(name, desc, purl, catalog, query, total))
+
+            # Samples scheduled for Sampling
+            name = _('Samples scheduled for sampling')
+            desc = _("Sampling scheduled")
+            purl = 'samples?samples_review_state=scheduled_sampling'
+            query['review_state'] = ['scheduled_sampling', ]
+            out.append(
+                self._getStatistics(name, desc, purl, catalog, query, total))
+
+        # Samples awaiting for reception
+        name = _('Samples to be received')
+        desc = _("Reception pending")
+        purl = 'samples?samples_review_state=sample_due'
+        query['review_state'] = ['sample_due', ]
+        out.append(
+            self._getStatistics(name, desc, purl, catalog, query, total))
+
+        # Samples under way
+        name = _('Samples received')
+        desc = _("Samples received")
+        purl = 'samples?samples_review_state=sample_received'
+        query['review_state'] = ['sample_received', ]
+        out.append(
+            self._getStatistics(name, desc, purl, catalog, query, total))
+
+        # Samples rejected
+        name = _('Samples rejected')
+        desc = _("Samples rejected")
+        purl = 'samples?samples_review_state=rejected'
+        query['review_state'] = ['rejected', ]
+        out.append(
+            self._getStatistics(name, desc, purl, catalog, query, total))
+
+        # Chart with the evolution of samples over a period, grouped by
+        # periodicity
+        if 'review_state' in query:
+            del query['review_state']
+        query['sort_on'] = 'created'
+        query['created'] = self.min_date_range
+        outevo = self._fill_dates_evo(catalog, query)
+        out.append({'type': 'bar-chart-panel',
+                    'name': _('Evolution of Samples'),
+                    'class': 'informative',
+                    'description': _('Evolution of Samples'),
+                    'data': json.dumps(outevo),
+                    'datacolors': json.dumps(self.get_colors_palette())})
+
+        return {'id': 'samples',
+                'title': _('Samples'),
+                'panels': out}
+
     def get_states_map(self, portal_type):
         if portal_type == 'Analysis':
             return {'to_be_sampled':   _('Sample reception pending'),
@@ -614,6 +717,14 @@ class DashboardView(BrowserView):
                     'attachment_due':  _('Results pending'),
                     'to_be_verified':  _('To be verified'),
                     'verified':        _('Verified')}
+
+        elif portal_type == 'Sample':
+            return {'to_be_sampled':       _('To be sampled'),
+                    'to_be_preserved':     _('To be preserved'),
+                    'scheduled_sampling':  _('Sampling scheduled'),
+                    'sample_due':          _('Reception pending'),
+                    'rejected':            _('Rejected'),
+                    'sample_received':     _('Sample received'), }
 
     def get_colors_palette(self):
         return {
