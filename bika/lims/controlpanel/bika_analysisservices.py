@@ -5,8 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from transaction import savepoint
-
 from Products.ATContentTypes.content.schemata import finalizeATCTSchema
 from Products.Archetypes import atapi
 from Products.CMFCore.utils import getToolByName
@@ -18,12 +16,12 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
-from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
+from transaction import savepoint
 from zope.interface.declarations import implements
 
 
@@ -58,7 +56,7 @@ class AnalysisServiceCopy(BrowserView):
         if res is not True:
             self.savepoint.rollback()
             self.created = []
-            self.context.plone_utils.addPortalMessage(res, 'info')
+            self.context.plone_utils.addPortalMessage(safe_unicode(res), 'info')
             return False
         return True
 
@@ -105,12 +103,14 @@ class AnalysisServiceCopy(BrowserView):
             for i, s in enumerate(sources):
                 if not titles[i]:
                     message = _('Validation failed: title is required')
+                    message = safe_unicode(message)
                     self.context.plone_utils.addPortalMessage(message, 'info')
                     self.savepoint.rollback()
                     self.created = []
                     break
                 if not keywords[i]:
                     message = _('Validation failed: keyword is required')
+                    message = safe_unicode(message)
                     self.context.plone_utils.addPortalMessage(message, 'info')
                     self.savepoint.rollback()
                     self.created = []
@@ -119,13 +119,13 @@ class AnalysisServiceCopy(BrowserView):
                 if title:
                     self.created.append(title)
             if len(self.created) > 1:
-                message = t(_(
-                    '${items} were successfully created.',
-                    mapping={'items': safe_unicode(', '.join(self.created))}))
+                message = _('${items} were successfully created.',
+                            mapping={
+                                'items': safe_unicode(', '.join(self.created))})
             elif len(self.created) == 1:
-                message = t(_(
-                    '${item} was successfully created.',
-                    mapping={'item': safe_unicode(self.created[0])}))
+                message = _('${item} was successfully created.',
+                            mapping={
+                                'item': safe_unicode(self.created[0])})
             else:
                 message = _('No new items were created.')
             self.context.plone_utils.addPortalMessage(message, 'info')

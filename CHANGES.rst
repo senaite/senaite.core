@@ -29,13 +29,15 @@ Changelog
 **Fixed**
 
 - #550 Wrong Listings of Analyses called from Dashboard
-
+- #634 Fix undefined Symbols in Sample Transition Guards
+- #616 Fix character encodings in analysisservice duplication
 - #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
 - #530 Calculated results do not get updated when importing instrument results
 - #614 Fix accreditation category titles
 - #611 Advanced filter bar: filter Analysis Requests by Service name not working
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
+- #628 Hide Department on lab contact inherited from Person
 
 **Security**
 
@@ -116,6 +118,7 @@ Changelog
 
 **Fixed**
 
+- #631 Traceback on stickers display
 - #494 Rejection reasons widget does not appear on rejection
 - #492 Fix AR Add Form: CC Contacts not set on Contact Change
 - #489 Worksheet Templates selection list is empty in Worksheets view
