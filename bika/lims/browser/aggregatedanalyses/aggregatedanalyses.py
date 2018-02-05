@@ -84,6 +84,7 @@ class AggregatedAnalysesView(AnalysesView):
                  'review_state': ['sample_received', 'attachment_due'],
                  'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
+                         'Worksheet',
                          'Service',
                          'Result',
                          'Uncertainty',
@@ -92,6 +93,7 @@ class AggregatedAnalysesView(AnalysesView):
                          'Instrument',
                          'DetectionLimit',
                          'Specification',
+                         'Analyst',
                          'state_title',
                          ]
              },
@@ -104,6 +106,7 @@ class AggregatedAnalysesView(AnalysesView):
                 'review_state': ['to_be_verified'],
                 'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
+                         'Worksheet',
                          'Service',
                          'Result',
                          'Uncertainty',
@@ -112,6 +115,7 @@ class AggregatedAnalysesView(AnalysesView):
                          'Instrument',
                          'DetectionLimit',
                          'Specification',
+                         'Analyst',
                          'state_title',
                          ]
              },
@@ -129,6 +133,8 @@ class AggregatedAnalysesView(AnalysesView):
                          'Partition',
                          'Method',
                          'Instrument',
+                         'DetectionLimit',
+                         'Specification',
                          'Analyst',
                          'state_title',
                          ]
