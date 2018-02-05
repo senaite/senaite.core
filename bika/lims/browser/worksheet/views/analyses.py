@@ -390,26 +390,23 @@ class AnalysesView(BaseView):
 
         pos_text += "<td class='pos_top_icons' rowspan='3'>"
         if obj.portal_type == 'DuplicateAnalysis':
-            pos_text += "<img title='%s'"
-            " src='%s/++resource++bika.lims.images/duplicate.png'/>" % (
-                _("Duplicate").encode('utf-8'), self.context.absolute_url())
+            pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (
+                    _("Duplicate").encode('utf-8'),
+                    self.context.absolute_url())
             pos_text += "<br/>"
         elif obj.portal_type == 'ReferenceAnalysis' and \
                 obj.ReferenceType == 'b':
-            pos_text += "<a href='%s'><img title='%s'"
-            " src='++resource++bika.lims.images/blank.png'></a>" % (
-                parent.absolute_url(), parent.Title())
+            pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/blank.png'></a>" % (
+                    parent.absolute_url(), parent.Title())
             pos_text += "<br/>"
         elif obj.portal_type == 'ReferenceAnalysis' and \
                 obj.ReferenceType == 'c':
-            pos_text += "<a href='%s'><img title='%s'"
-            " src='++resource++bika.lims.images/control.png'></a>" % (
-                parent.absolute_url(), parent.Title())
+            pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/control.png'></a>" % (
+                    parent.absolute_url(), parent.Title())
             pos_text += "<br/>"
         if parent.portal_type == 'AnalysisRequest':
             sample = parent.getSample()
-            pos_text += "<a href='{}'><img title='{}'"
-            " src='++resource++bika.lims.images/sample.png'></a>".format(
+            pos_text += "<a href='{}'><img title='{}' src='++resource++bika.lims.images/sample.png'></a>".format(
                 sample.absolute_url(), sample.Title())
         pos_text += "</td></tr>"
 
