@@ -56,7 +56,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # Call out to the workflow action method
         # Use default bika_listing.py/WorkflowAction for other transitions
         method_name = 'workflow_action_' + action if action else ''
-        import pdb; pdb.set_trace()
         method = getattr(self, method_name, False)
         if method:
             method()
@@ -653,7 +652,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         from bika.lims.utils.workflow import schedulesampling
         message = 'Not expected transition.'
         # In Samples Folder we have to get each selected item
-        import pdb; pdb.set_trace()
         if interfaces.ISamplesFolder.providedBy(self.context):
             select_objs = WorkflowAction._get_selected_items(self)
             message = _('Transition done.')
