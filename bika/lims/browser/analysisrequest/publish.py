@@ -1618,8 +1618,7 @@ def _convert_unit_of(uc_uid, andict, context=None):
     according to the given Unit Convsersion record
     """
     new = dict(andict)
-    unit_conversion = api.get_object_by_uid(
-            uid=uc_uid, context=context)
+    unit_conversion = api.get_object_by_uid(uid=uc_uid)
     new['unit'] = unit_conversion.converted_unit
     new['formatted_unit'] = unit_conversion.converted_unit
     if andict.get('result'):

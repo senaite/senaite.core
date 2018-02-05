@@ -5,6 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import Zope2
+
 from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
@@ -106,12 +108,30 @@ class BikaTransitionFailedEvent(BikaTransitionEvent):
     implements(IBikaTransitionFailedEvent)
 
 
+def get_app():
+    """ Get the zope root
+
+    : returns: Zope Root
+    """
+    return Zope2.app()
+
+
 def get_portal():
     """Get the portal object
 
     :returns: Portal object
     """
-    return ploneapi.portal.getSite()
+    try:
+        return ploneapi.portal.getSite()
+    except ploneapi.exc.CannotGetPortalError:
+        app = get_app()
+        portal_id = "senaitelims"
+        if portal_id in app.objectIds():
+            return app[portal_id]
+        sites = app.objectValues("Plone Site")
+        if len(sites) == 1:
+            return sites[0]
+        raise
 
 
 def get_bika_setup():
@@ -444,7 +464,7 @@ def get_icon(brain_or_object, html_tag=True):
     return tag
 
 
-def get_object_by_uid(uid, default=_marker, context=None):
+def get_object_by_uid(uid, default=_marker):
     """Find an object by a given UID
 
     :param uid: The UID of the object to find
@@ -461,11 +481,11 @@ def get_object_by_uid(uid, default=_marker, context=None):
 
     # we defined the portal object UID to be '0'::
     if uid == '0':
-        return get_portal(context=context)
+        return get_portal()
 
     # we try to find the object with both catalogs
-    pc = get_portal_catalog(context=context)
-    uc = get_tool("uid_catalog", context=context)
+    pc = get_portal_catalog()
+    uc = get_tool("uid_catalog")
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
@@ -671,12 +691,12 @@ def safe_getattr(brain_or_object, attr, default=_marker):
             attr, repr(brain_or_object)))
 
 
-def get_portal_catalog(context=None):
+def get_portal_catalog():
     """Get the portal catalog tool
 
     :returns: Portal Catalog Tool
     """
-    return get_tool("portal_catalog", context=context)
+    return get_tool("portal_catalog")
 
 
 def get_review_history(brain_or_object, rev=True):
