@@ -57,28 +57,34 @@ def sample_prep_complete(obj):
 
 def assign(obj):
     """Allow or disallow transition depending on our children's states
+    Returns True if all the analyses that belongs to the Analysis Request
+    passed in have been transitioned to the assigned state.
     """
-    # TODO Workflow Assign AR - To revisit. Is there any reason why we want an
-    # AR to be in an 'assigned' state?. If no, remove the transition from the
-    # workflow definition, as well as from here and from content.analysisrequest
-    return False
-
     if not isBasicTransitionAllowed(obj):
         return False
+
+    for analysis in obj.getAnalyses(full_objects=True):
+        state = getCurrentState(analysis, 'worksheetanalysis_review_state')
+        if state != 'assigned':
+            return False
+
     return True
 
 
 def unassign(obj):
     """Allow or disallow transition depending on our children's states
+    Returns true if at least one of the analyses that belongs to the Analysis
+    Request passed in has been unassigned already.
     """
-    # TODO Workflow UnAssign AR - To revisit. Is there any reason why we want an
-    # AR to be in an 'assigned' state?. If no, remove the transition from the
-    # workflow definition, as well as from here and from content.analysisrequest
-    return False
-
     if not isBasicTransitionAllowed(obj):
         return False
-    return True
+
+    for analysis in obj.getAnalyses(full_objects=True):
+        state = getCurrentState(analysis, 'worksheetanalysis_review_state')
+        if state == 'unassigned':
+            return True
+
+    return False
 
 
 def verify(obj):
