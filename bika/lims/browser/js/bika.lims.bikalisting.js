@@ -367,6 +367,9 @@
           load_transitions();
           show_more_clicked();
         });
+        $('[name="table_only"]').remove();
+        $(form).attr('action', stored_form_action);
+        return false;
       });
     };
     workflow_action_button_click = function() {

@@ -380,7 +380,9 @@ window.BikaListingTableView = ->
                 show_more_clicked()
                 return
             )
-            return
+            $('[name="table_only"]').remove()
+            $(form).attr 'action', stored_form_action
+            false
         return
 
     workflow_action_button_click = ->
