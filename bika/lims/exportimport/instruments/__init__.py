@@ -21,6 +21,7 @@ from thermoscientific.multiskan import go
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
 from lifetechnologies.qubit import qubit
+from metler.toledo import dl55
 from biodrop.ulite import ulite
 from tescan.tima import tima
 from sysmex.xs import i500, i1000
@@ -41,6 +42,7 @@ from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
 
+
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
            'agilent.masshunter.masshunter',
@@ -58,6 +60,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'genexpert.genexpert',
            'horiba.jobinyvon.icp',
            'lifetechnologies.qubit.qubit',
+           'metler.toledo.dl55',
            'myself.myinstrument',
            'nuclisens.easyq',
            'panalytical.omnia.axios_xrf',
@@ -99,6 +102,7 @@ PARSERS = [
            ['generic.two_dimension', 'TwoDimensionCSVParser'],
            # ['generic.xml', ''],
            ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
+           ['metler.toledo.dl55', 'MetlerToledoDL55Parser'],
            ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
            ['rochecobas.taqman.model48', 'RocheCobasTaqmanRSFParser'],
            ['rochecobas.taqman.model96', 'RocheCobasTaqmanRSFParser'],
