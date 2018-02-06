@@ -96,6 +96,7 @@ def Import(context, request):
     instrument = form.get('instrument', None)
     errors = []
     logs = []
+    warns = []
 
     # Load the most suitable parser according to file extension/options/etc...
     parser = None
