@@ -153,6 +153,7 @@ class AnalysisRequestPublishView(BrowserView):
         """Returns the dict for the Analysis Request specified. If no AR set,
         returns the current analysis request
         """
+        import pdb; pdb.set_trace()
         if analysisrequest:
             return self._digester(analysisrequest)
         else:
