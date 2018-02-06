@@ -24,7 +24,6 @@ Changelog
 
 **Changed**
 
-- #627 Changed Unassigned filter
 - #627 Unassigned filter on Analysis Requests view
 - #621 Change Errors to Warnings when importing instrument results
 
