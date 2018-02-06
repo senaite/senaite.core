@@ -7,6 +7,9 @@
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
+from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.browser.dashboard.dashboard import \
+    setup_dashboard_panels_visibility_registry
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -34,6 +37,16 @@ def upgrade(tool):
     # be reindexed, as thy now provide an accessor for getClientUID.
     reindex_batch_getClientUID(portal)
 
+    # The catalog where worksheets are stored (bika_catalog_worksheet_listing)
+    # had a FieldIndex "WorksheetTemplate" which was causing a TypeError (can't
+    # pickle acquisition wrappers) when reindexing worksheets with an associated
+    # Worksheet Template.
+    fix_worksheet_template_index(portal, ut)
+
+    # Adds an entry to the registry to store the roles that can see Samples
+    # section from Dashboard
+    add_sample_section_in_dashboard(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
@@ -45,3 +58,14 @@ def reindex_batch_getClientUID(portal):
     for brain in brains:
         batch = brain.getObject()
         batch.reindexObject(idxs=['getClientUID'])
+
+
+def fix_worksheet_template_index(portal, ut):
+    ut.delIndex(CATALOG_WORKSHEET_LISTING, 'getWorksheetTemplate')
+    ut.addIndex(CATALOG_WORKSHEET_LISTING, 'getWorksheetTemplateTitle',
+                'FieldIndex')
+    ut.refreshCatalogs()
+
+    
+def add_sample_section_in_dashboard(portal):
+    setup_dashboard_panels_visibility_registry('samples')
