@@ -24,7 +24,7 @@ Changelog
 
 **Changed**
 
-- Changed Unassigned filter
+- #627 Changed Unassigned filter
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
