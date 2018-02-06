@@ -24,6 +24,7 @@ Changelog
 
 **Changed**
 
+- #636 Do not display "Advanced..." item in object's workflow actions menu
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
