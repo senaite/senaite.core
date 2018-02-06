@@ -6,13 +6,16 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
+from bika.lims import logger, api
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.browser.dashboard.dashboard import \
     setup_dashboard_panels_visibility_registry
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.workflow import doActionFor, isTransitionAllowed
 
 version = '1.2.2'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -47,6 +50,9 @@ def upgrade(tool):
     # section from Dashboard
     add_sample_section_in_dashboard(portal)
 
+    # Fix assign/unassign states in Analysis Requests (#637)
+    fix_assign_analysis_requests(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
@@ -69,3 +75,14 @@ def fix_worksheet_template_index(portal, ut):
     
 def add_sample_section_in_dashboard(portal):
     setup_dashboard_panels_visibility_registry('samples')
+
+
+def fix_assign_analysis_requests(portal):
+    query = {'portal_type': 'AnalysisRequest',}
+    requests = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    for request in requests:
+        request = api.get_object(request)
+        # Try to transition to assign state. Note that because of guards, only
+        # those ARs with all analyses 'assigned' will be transitioned.
+        if isTransitionAllowed(request, 'assign'):
+            doActionFor(request, 'assign')
