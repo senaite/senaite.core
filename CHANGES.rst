@@ -25,7 +25,6 @@ Changelog
 **Changed**
 
 - #619 Changed listing tables search logic to operate on catalog metadata
-- #569 Minimalistic dashboard indicators
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
