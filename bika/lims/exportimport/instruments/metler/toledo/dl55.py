@@ -84,7 +84,7 @@ def Import(context, request):
     """ Import Form
     """
     form = request.form
-    # TODO form['file'] sometimes returns a list
+    # form['file'] sometimes returns a list
     infile = form['instrument_results_file'][0] if \
         isinstance(form['instrument_results_file'], list) \
         else form['instrument_results_file']
@@ -101,7 +101,7 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
 
-    parser = Parser(infile)
+    parser = MetlerToledoDL55Parser(infile)
     if parser:
         # Load the importer
         status = ['sample_received', 'attachment_due', 'to_be_verified']
