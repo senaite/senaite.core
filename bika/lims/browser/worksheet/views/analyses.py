@@ -311,13 +311,12 @@ class AnalysesView(BaseView):
                 'pos_sortkey': "{:010}:{:010}".format(pos, 1),
                 'Service': '',
                 'Attachments': '',
-                'state_title': 's',
-                }
+                'state_title': 's', }
 
             item['replace'] = {
-                'Pos': "<table width='100%' cellpadding='0' cellspacing='0'>" +
-                       "<tr><td class='pos'>%s</td>" % pos +
-                       "<td align='right'>&nbsp;</td></tr></table>",
+                'Pos': """<table width='100%' cellpadding='0' cellspacing='0'>
+                       <tr><td class='pos'>%s</td>""" % pos +
+                       """<td align='right'>&nbsp;</td></tr></table>""",
                 'select_column': '',
             }
 
@@ -370,14 +369,14 @@ class AnalysesView(BaseView):
             client = obj.getReferenceDefinition()
         else:
             client = parent.aq_parent
-        pos_text = "<table class='worksheet-position' width='100%%'"
-        " cellpadding='0' cellspacing='0'"
-        " style='padding-bottom:5px;'><tr>"
-        " <td class='pos' rowspan='3'>%s</td>" % item['Pos']
+        pos_text = """<table class='worksheet-position' width='100%%'
+            cellpadding='0' cellspacing='0'
+            style='padding-bottom:5px;'><tr>
+            <td class='pos' rowspan='3'>%s</td>""" % item['Pos']
 
         if obj.portal_type == 'ReferenceAnalysis':
-            pos_text += "<td class='pos_top'>{}</td>".format(
-                    obj.getReferenceAnalysesGroupID())
+            pos_text += "<td class='pos_top'>%s</td>" % \
+                    obj.getReferenceAnalysesGroupID()
         elif obj.portal_type == 'DuplicateAnalysis' and \
                 obj.getAnalysis().portal_type == 'ReferenceAnalysis':
             pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
@@ -390,24 +389,30 @@ class AnalysesView(BaseView):
 
         pos_text += "<td class='pos_top_icons' rowspan='3'>"
         if obj.portal_type == 'DuplicateAnalysis':
-            pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (
-                    _("Duplicate").encode('utf-8'),
-                    self.context.absolute_url())
+            pos_text += """<img title='%s'
+            src='%s/++resource++bika.lims.images/duplicate.png'/>""" % (
+                _("Duplicate").encode('utf-8'), self.context.absolute_url())
             pos_text += "<br/>"
-        elif obj.portal_type == 'ReferenceAnalysis' and \
-                obj.ReferenceType == 'b':
-            pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/blank.png'></a>" % (
+        elif obj.portal_type == 'ReferenceAnalysis' \
+                and obj.ReferenceType == 'b':
+            pos_text += """<a href='%s'>
+                <img title='%s'
+                src='++resource++bika.lims.images/blank.png'></a>""" % (
                     parent.absolute_url(), parent.Title())
             pos_text += "<br/>"
-        elif obj.portal_type == 'ReferenceAnalysis' and \
-                obj.ReferenceType == 'c':
-            pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/control.png'></a>" % (
+        elif obj.portal_type == 'ReferenceAnalysis' \
+                and obj.ReferenceType == 'c':
+            pos_text += """<a href='%s'>
+                <img title='%s'
+                src='++resource++bika.lims.images/control.png'></a>""" % (
                     parent.absolute_url(), parent.Title())
             pos_text += "<br/>"
         if parent.portal_type == 'AnalysisRequest':
             sample = parent.getSample()
-            pos_text += "<a href='{}'><img title='{}' src='++resource++bika.lims.images/sample.png'></a>".format(
-                sample.absolute_url(), sample.Title())
+            pos_text += """<a href='%s'>
+                <img title='%s'
+                src='++resource++bika.lims.images/sample.png'></a>""" % (
+                    sample.absolute_url(), sample.Title())
         pos_text += "</td></tr>"
 
         pos_text += "<tr><td>"
@@ -433,7 +438,7 @@ class AnalysesView(BaseView):
             pos_text += obj.aq_parent.getSample().getSampleType().Title()
         elif obj.portal_type == 'ReferenceAnalysis' or \
                 (obj.portal_type == 'DuplicateAnalysis' and
-                 obj.getAnalysis().portal_type == 'ReferenceAnalysis'):
+                    obj.getAnalysis().portal_type == 'ReferenceAnalysis'):
             pos_text += ""  # obj.aq_parent.getReferenceDefinition().Title()
         elif obj.portal_type == 'DuplicateAnalysis':
             pos_text += \
@@ -448,6 +453,20 @@ class AnalysesView(BaseView):
                 pos_text += "<td colspan='2'>"
                 pos_text += deviation.Title()
                 pos_text += "</td></tr>"
+
+                # #            # barcode
+                # #            barcode = parent.id.replace("-", "")
+                # #            if obj.portal_type == 'DuplicateAnalysis':
+                # #                barcode += "D"
+                # #            pos_text += """<tr>
+                # <td class='barcode' colspan='3'>
+                # <div id='barcode_%s'></div>""" % barcode +
+                # #                """<script type='text/javascript'>
+                # $('#barcode_%s').barcode('%s',
+                # 'code128',
+                # {'barHeight':15, addQuietZone:false, showHRI: false })
+                # </script>" % (barcode, barcode)""" + \
+                # #                "</td></tr>"
 
         pos_text += "</table>"
         return pos_text

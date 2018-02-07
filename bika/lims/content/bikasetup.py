@@ -148,7 +148,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default=0,
         widget=IntegerWidget(
             label=_("Password lifetime"),
-            description=_("The number of days before a password expires. 0 disables password expiry"),
+            description=_("The number of days before a password"
+                          " expires. 0 disables password expiry"),
         )
     ),
     IntegerField(
@@ -159,8 +160,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=IntegerWidget(
             label=_("Automatic log-off"),
             description=_(
-                "The number of minutes before a user is automatically logged off. "
-                "0 disables automatic log-off"),
+                "The number of minutes before a user is automatically"
+                " logged off. 0 disables automatic log-off"),
         )
     ),
     BooleanField(
@@ -177,7 +178,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Allow access to worksheets only to assigned analysts"),
-            description=_("If unchecked, analysts will have access to all worksheets.")
+            description=_("If unchecked, analysts will have access"
+                          " to all worksheets.")
         )
     ),
     BooleanField(
@@ -217,7 +219,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default='ZAR',
         widget=SelectionWidget(
             label=_("Currency"),
-            description=_("Select the currency the site will use to display prices."),
+            description=_("Select the currency the site will use"
+                          " to display prices."),
             format='select',
         )
     ),
@@ -240,8 +243,9 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=DecimalWidget(
             label=_("Member discount %"),
             description=_(
-                "The discount percentage entered here, is applied to the prices for clients "
-                "flagged as 'members', normally co-operative members or associates deserving "
+                "The discount percentage entered here, is applied to"
+                " the prices for clients flagged as 'members', normally"
+                " co-operative members or associates deserving "
                 "of this discount"),
         )
     ),
@@ -252,7 +256,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=DecimalWidget(
             label=_("VAT %"),
             description=_(
-                "Enter percentage value eg. 14.0. This percentage is applied system wide "
+                "Enter percentage value eg. 14.0. This percentage is "
+                "applied system wide "
                 "but can be overwrittem on individual items"),
         )
     ),
@@ -287,8 +292,8 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Minimum number of results for QC stats calculations"),
             description=_(
                 "Using too few data points does not make statistical sense. "
-                "Set an acceptable minimum number of results before QC statistics "
-                "will be calculated and plotted"),
+                "Set an acceptable minimum number of results before QC"
+                " statistics will be calculated and plotted"),
         )
     ),
     BooleanField(
@@ -311,8 +316,9 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=IntegerWidget(
             label=_("Maximum columns per results email"),
             description=_(
-                "Set the maximum number of analysis requests per results email. "
-                "Too many columns per email are difficult to read for some clients "
+                "Set the maximum number of analysis requests per"
+                " results email. Too many columns per email are"
+                " difficult to read for some clients "
                 "who prefer fewer results per email"),
         )
     ),
@@ -335,7 +341,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("Categorise analysis services"),
-            description=_("Group analysis services by category in the LIMS tables, helpful when the list is long")
+            description=_("Group analysis services by category in the"
+                          "LIMS tables, helpful when the list is long")
         ),
     ),
     BooleanField(
@@ -428,8 +435,8 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Multi Verification type"),
             description=_(
                 "Choose type of multiple verification for the same user."
-                "This setting can enable/disable verifying/consecutively verifying"
-                "more than once for the same user."),
+                "This setting can enable/disable verifying/consecutively"
+                " verifying more than once for the same user."),
             format='select',
         )
     ),
@@ -444,7 +451,8 @@ schema = BikaFolderSchema.copy() + Schema((
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
             label=_("Dry matter analysis"),
-            description=_("The analysis to be used for determining dry matter."),
+            description=_("The analysis to be used for determining dry"
+                          "matter."),
         )
     ),
     LinesField(
@@ -455,8 +463,9 @@ schema = BikaFolderSchema.copy() + Schema((
             visible=False,
             label=_("AR Import options"),
             description=_(
-                "'Classic' indicates importing analysis requests per sample and "
-                "analysis service selection. With 'Profiles', analysis profile keywords "
+                "'Classic' indicates importing analysis requests per"
+                " sample and analysis service selection."
+                " With 'Profiles', analysis profile keywords "
                 "are used to select multiple analysis services together"),
         )
     ),
@@ -483,8 +492,8 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
             label=_("Analysis Attachment Option"),
             description=_(
-                "Same as the above, but sets the default on analysis services. "
-                "This setting can be set per individual analysis on its "
+                "Same as the above, but sets the default on analysis services."
+                " This setting can be set per individual analysis on its "
                 "own configuration"),
         )
     ),
@@ -544,7 +553,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Use Dashboard as default front page"),
-            description=_("Select this to activate the dashboard as a default front page.")
+            description=_("Select this to activate the dashboard as a"
+                          " default front page.")
         ),
     ),
     ReferenceField(
@@ -555,9 +565,12 @@ schema = BikaFolderSchema.copy() + Schema((
         relationship='SetupLandingPage',
         widget=ReferenceBrowserWidget(
             label=_("Landing Page"),
-            description=_("The selected landing page is displayed for non-authenticated users "
-                          "and if the Dashboard is not selected as the default front page. "
-                          "If no landing page is selected, the default Bika frontpage is displayed."),
+            description=_(
+                "The selected landing page is displayed for"
+                " non-authenticated users and if the Dashboard is not"
+                " selected as the default front page. If no landing"
+                " page is selected, the default Bika frontpage is"
+                " displayed."),
             allow_search=1,
             allow_browse=1,
             startup_directory='/',
@@ -584,7 +597,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sampling"),
-            description=_("Select this to activate the sample collection workflow steps.")
+            description=_("Select this to activate the sample"
+                          " collection workflow steps.")
         ),
     ),
     BooleanField(
@@ -605,7 +619,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Display individual sample partitions "),
-            description=_("Turn this on if you want to work with sample partitions")
+            description=_("Turn this on if you want to work with sample"
+                          " partitions")
         ),
     ),
     BooleanField(
@@ -638,9 +653,9 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=DurationWidget(
             label=_("Default sample retention period"),
             description=_(
-                "The number of days before a sample expires and cannot be analysed "
-                "any more. This setting can be overwritten per individual sample type "
-                "in the sample types setup"),
+                "The number of days before a sample expires and cannot"
+                " be analysed any more. This setting can be overwritten"
+                " per individual sample type in the sample types setup"),
         )
     ),
     RecordsField(
@@ -672,8 +687,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Email notification on AR retract"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client and Lab Managers when an Analysis "
-                          "Request is retracted.")
+                          "via email to the Client and Lab Managers when"
+                          " an Analysis Request is retracted.")
         ),
     ),
     TextField(
@@ -690,6 +705,16 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("COC Footer"),
         )
     ),
+    BooleanField(
+        'RegisterAsReceivd',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable the registering of ARs in Received state"),
+            description=_("Select this to allow ARs to be created and"
+                          "transitioned directly to Received state.")
+        ),
+    ),
     StringField(
         'AutoPrintStickers',
         schemata="Sticker",
@@ -698,9 +723,11 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
             label=_("Automatic sticker printing"),
             description=_(
-                "Select 'Register' if you want stickers to be automatically printed when "
-                "new ARs or sample records are created. Select 'Receive' to print stickers "
-                "when ARs or Samples are received. Select 'None' to disable automatic printing"),
+                "Select 'Register' if you want stickers to be"
+                "automatically printed when new ARs or sample records"
+                " are created. Select 'Receive' to print stickers "
+                "when ARs or Samples are received. Select 'None' to"
+                " disable automatic printing"),
         )
     ),
     StringField(
@@ -710,7 +737,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Sticker templates"),
-            description=_("Select which sticker to print when automatic sticker printing is enabled"),
+            description=_("Select which sticker to print when automatic"
+                          " sticker printing is enabled"),
         )
     ),
     StringField(
@@ -721,7 +749,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Small sticker"),
-            description=_("Select which sticker should be used as the 'small' sticker by default")
+            description=_("Select which sticker should be used as the"
+                          " 'small' sticker by default")
         )
     ),
     StringField(
@@ -732,7 +761,18 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Large sticker"),
-            description=_("Select which sticker should be used as the 'large' sticker by default")
+            description=_("Select which sticker should be used as the"
+                          " 'large' sticker by default")
+        )
+    ),
+    IntegerField(
+        'DefaultNumberOfCopies',
+        schemata="Sticker",
+        required="1",
+        default="1",
+        widget=IntegerWidget(
+            label=_("Number of copies"),
+            description=_("Set the default number of copies to be printed for each sticker")
         )
     ),
     IDFormattingField(
@@ -806,47 +846,47 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Formatting Configuration"),
             allowDelete=True,
             description=_(
-                " <p>The Bika LIMS ID Server provides unique sequential IDs " 
-                "for objects such as Samples and Worksheets etc, based on a " 
-                "format specified for each content type.</p>" 
-                "<p>The format is constructed similarly to the Python format" 
-                " syntax, using predefined variables per content type, and" 
-                " advancing the IDs through a sequence number, 'seq' and its" 
-                " padding as a number of digits, e.g. '03d' for a sequence of" 
-                " IDs from 001 to 999.</p>" 
-                "<p>Alphanumeric prefixes for IDs are included as is in the" 
-                " formats, e.g. WS for Worksheet in WS-{seq:03d} produces" 
-                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>" 
-                "<p>Variables that can be used include:" 
-                "<table>" 
+                " <p>The Bika LIMS ID Server provides unique sequential IDs "
+                "for objects such as Samples and Worksheets etc, based on a "
+                "format specified for each content type.</p>"
+                "<p>The format is constructed similarly to the Python format"
+                " syntax, using predefined variables per content type, and"
+                " advancing the IDs through a sequence number, 'seq' and its"
+                " padding as a number of digits, e.g. '03d' for a sequence of"
+                " IDs from 001 to 999.</p>"
+                "<p>Alphanumeric prefixes for IDs are included as is in the"
+                " formats, e.g. WS for Worksheet n WS-{seq:03d} produces"
+                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>"
+                "<p>Variables that can be used include:"
+                "<table>"
                 "<tr>"
-                "<th style='width:150px'>Content Type</th><th>Variables</th>" 
-                "</tr>" 
-                "<tr><td>Client</td><td>{client}</td></tr>" 
-                "<tr><td>Year</td><td>{year}</td></tr>" 
-                "<tr><td>Sample ID</td><td>{sampleId}</td></tr>" 
-                "<tr><td>Sample Type</td><td>{sampleType}</td></tr>" 
-                "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>" 
-                "<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>" 
-                "</table>" 
-                "</p>" 
-                "<p>Configuration Settings:" 
-                "<ul>" 
-                "<li>format:" 
-                "<ul><li>a python format string constructed from predefined" 
-                " variables like sampleId, client, sampleType.</li>" 
-                "<li>special variable 'seq' must be positioned last in the"  
-                "format string</li></ul></li>" 
-                "<li>sequence type: [generated|counter]</li>" 
-                "<li>context: if type counter, provides context the counting" 
-                " function</li>" 
-                "<li>counter type: [backreference|contained]</li>" 
-                "<li>counter reference: a parameter to the counting" 
-                " function</li>" 
-                "<li>prefix: default prefix if none provided in format" 
-                " string</li>" 
-                "<li>split length: the number of parts to be included in the" 
-                " prefix</li>" 
+                "<th style='width:150px'>Content Type</th><th>Variables</th>"
+                "</tr>"
+                "<tr><td>Client</td><td>{client}</td></tr>"
+                "<tr><td>Year</td><td>{year}</td></tr>"
+                "<tr><td>Sample ID</td><td>{sampleId}</td></tr>"
+                "<tr><td>Sample Type</td><td>{sampleType}</td></tr>"
+                "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>"
+                "<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>"
+                "</table>"
+                "</p>"
+                "<p>Configuration Settings:"
+                "<ul>"
+                "<li>format:"
+                "<ul><li>a python format string constructed from predefined"
+                " variables like sampleId, client, sampleType.</li>"
+                "<li>special variable 'seq' must be positioned last in the"
+                "format string</li></ul></li>"
+                "<li>sequence type: [generated|counter]</li>"
+                "<li>context: if type counter, provides context the counting"
+                " function</li>"
+                "<li>counter type: [backreference|contained]</li>"
+                "<li>counter reference: a parameter to the counting"
+                " function</li>"
+                "<li>prefix: deault prefix if none provided in format"
+                " string</li>"
+                "<li>split length: the number of parts to be included in the"
+                " prefix</li>"
                 "</ul></p>")
         )
     ),
@@ -962,7 +1002,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default=4,
         widget=IntegerWidget(
             label=_("Default count of AR to add."),
-            description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
+            description=_("Default value of the 'AR count' when users click"
+                          " 'ADD' button to create new Analysis Requests"),
         )
     ),
     TextField(
@@ -977,6 +1018,16 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         widget=StringWidget(
             label=_("COC Footer"),
+        )
+    ),
+    IntegerField(
+        'MaxARsBeforeAsync',
+        schemata="Analyses",
+        required=0,
+        default=1,
+        widget=IntegerWidget(
+            label=_("Maximum number of ARs before Async."),
+            description=_("If a user initiates the creation of more ARs than this number, they will be created in the background and an email will notify them when they are all created"),
         )
     ),
 ))
@@ -1033,7 +1084,8 @@ class BikaSetup(folder.ATFolder):
 
     def getAnalysisServicesVocabulary(self):
         """
-        Get all active Analysis Services from Bika Setup and return them as Display List.
+        Get all active Analysis Services from Bika Setup and return
+        them as Display List.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService',
@@ -1047,7 +1099,8 @@ class BikaSetup(folder.ATFolder):
         """Return the prefix for a portal_type.
            If not found, simply uses the portal_type itself
         """
-        prefix = [p for p in self.getIDFormatting() if p['portal_type'] == portal_type]
+        prefix = [p for p in self.getIDFormatting()
+                  if p['portal_type'] == portal_type]
         if prefix:
             return prefix[0]['prefix']
         else:
@@ -1063,7 +1116,8 @@ class BikaSetup(folder.ATFolder):
         """
         widget = self.getRejectionReasons()
         # widget will be something like:
-        # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
+        # [{'checkbox': u'on', 'textfield-2': u'b',
+        # 'textfield-1': u'c', 'textfield-0': u'a'}]
         if len(widget) > 0:
             checkbox = widget[0].get('checkbox', False)
             return True if checkbox == 'on' and len(widget[0]) > 1 else False

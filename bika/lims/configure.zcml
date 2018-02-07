@@ -101,4 +101,31 @@
         provides="bika.lims.interfaces.IGenerateID"
         />
 
+  <browser:page
+    for="*"
+    name="async_sample_and_receive"
+    class="bika.lims.api.AsyncView"
+    attribute="async_sample_and_receive"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+    for="*"
+    name="async_sample"
+    class="bika.lims.api.AsyncView"
+    attribute="async_sample"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
+    for="*"
+    name="async_transition_object"
+    class="bika.lims.api.AsyncView"
+    attribute="async_transition_object"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
 </configure>

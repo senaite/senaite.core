@@ -2286,3 +2286,15 @@ class Unit_Conversions(WorksheetImporter):
                         description=row['description'])
                 renameAfterCreation(obj)
                 obj.reindexObject()
+
+class Client_Licence_Types(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_clientlicencetypes
+        for row in self.get_rows(3):
+            if row['title']:
+                obj = _createObjectByType(
+                        "ClientLicenceType", folder, tmpID())
+                obj.title = row['title']
+                obj.description = row['description']
+                renameAfterCreation(obj)

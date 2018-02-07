@@ -84,6 +84,8 @@ class LogView(BikaListingView):
             # so we create items from scratch
             review_state = entry.get('review_state')
             state_title = wf.getTitleForStateOnType(review_state, self.context.portal_type)
+            #date_time = self.ulocalized_time(entry.get('time'))
+            date_time = str(entry.get('time'))[:16]
             item = {
                 'obj': self.context,
                 'id': self.context.id,
@@ -103,7 +105,7 @@ class LogView(BikaListingView):
                 'allow_edit': [],
                 'required': [],
                 'Version': isVersionable and self.context.get('version_id', '') or '0',
-                'Date': self.ulocalized_time(entry.get('time')),
+                'Date': date_time,
                 'sortable_date': entry.get('time'),
                 'User': entry.get('actor'),
                 'Action': entry.get('action') and entry.get('action') or 'Create',

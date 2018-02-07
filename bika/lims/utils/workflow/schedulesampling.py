@@ -22,6 +22,7 @@ def doTransition(obj):
     :returns: bool, 'an error message'
     """
     errmsg = ''
+    import pdb; pdb.set_trace()
     if interfaces.ISample.providedBy(obj)\
             or interfaces.IAnalysisRequest.providedBy(obj):
         if obj.getScheduledSamplingSampler() and\
