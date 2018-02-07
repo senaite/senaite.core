@@ -85,11 +85,10 @@ def Import(context, request):
     """ Import Form
     """
     form = request.form
-    # TODO form['file'] sometimes returns a list
+    # form['file'] sometimes returns a list
     infile = form['instrument_results_file'][0] if \
         isinstance(form['instrument_results_file'], list) \
         else form['instrument_results_file']
-    fileformat = form['instrument_results_file_format']
     override = form['results_override']
     artoapply = form['artoapply']
     sample = form.get('sample', 'requestid')
