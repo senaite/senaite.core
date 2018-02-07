@@ -925,9 +925,13 @@ def convert_unit(result, formula, precision):
 
 
 def resolve_unit(analysis, result):
-    """ calculate the converted result
+    """ calculate the converted result of the given analysis
         note if more than one can be resolved, only the first is returned
     """
+    if analysis.portal_type == 'ReferenceAnalysis':
+        # Ignore because ReferenceAnalysis has no sample type
+        return ''
+
     if result == '':
         return ''
 
