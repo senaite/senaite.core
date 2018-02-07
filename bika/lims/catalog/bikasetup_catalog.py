@@ -31,30 +31,26 @@ class BikaSetupCatalog(BikaCatalogTool):
         Override parent method to handle dexterity objects by passing
         ALL oject ids to ZopeFindAndApply
         """
-        def getObjectIds(obj):
-            obj_ids = [obj.getId()]
+        def getObjects(obj):
+            objs = [obj]
             if hasattr(obj, 'objectItems'):
                 for item in obj.objectItems():
-                    obj_ids.extend(getObjectIds(item[1]))
-            return obj_ids
+                    objs.extend(getObjects(item[1]))
+            return objs
 
-        def indexObject(obj, path):
-            self.reindexObject(obj)
+        self.manage_catalogClear()
+        portal = api.get_portal()
 
-        try:
-            self.manage_catalogClear()
-            portal = api.get_portal()
-
-            object_ids = getObjectIds(portal['bika_setup'])
-            portal.ZopeFindAndApply(portal,
-                                    obj_ids=object_ids,
-                                    search_sub=True,
-                                    apply_func=indexObject)
-        except:
-            logger.error(traceback.format_exc())
-            e = sys.exc_info()
-            logger.error(
-                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
+        start_obj = portal['bika_setup']
+        objects = getObjects(start_obj)
+        for obj in objects:
+            try:
+                self.reindexObject(obj)
+            except:
+                logger.error(traceback.format_exc())
+                e = sys.exc_info()
+                logger.error(
+                    "Unable to clean and rebuild %s due to: %s" % (self.id, e))
 
         logger.info('%s cleaned and rebuilt' % self.id)
 
