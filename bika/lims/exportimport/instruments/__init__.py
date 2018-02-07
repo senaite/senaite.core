@@ -20,6 +20,7 @@ from thermoscientific.arena import xt20
 from thermoscientific.multiskan import go
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
+from lachat import quickchem
 from lifetechnologies.qubit import qubit
 from biodrop.ulite import ulite
 from tescan.tima import tima
@@ -57,6 +58,7 @@ __all__ = ['abaxis.vetscan.vs2',
            # 'generic.xml',
            'genexpert.genexpert',
            'horiba.jobinyvon.icp',
+           'lachat.quickchem',
            'lifetechnologies.qubit.qubit',
            'myself.myinstrument',
            'nuclisens.easyq',
@@ -105,6 +107,7 @@ PARSERS = [
            ['thermoscientific.arena.xt20', 'ThermoArena20XTRPRCSVParser'],
            ['thermoscientific.gallery.Ts9861x', 'ThermoGallery9861xTSVParser'],
            ['panalytical.omnia.axios_xrf', 'AxiosXrfCSVParser'],
+           ['lachat.quickchem', 'LaChatQuickCheckFIAParser'],
            ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
            ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
            ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],

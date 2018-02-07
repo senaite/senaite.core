@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 title = "LaChat QuickChem FIA"
 
 
-class Parser(InstrumentResultsFileParser):
+class LaChatQuickCheckFIAParser(InstrumentResultsFileParser):
     """ Instrument Parser
     """
 
@@ -88,12 +88,16 @@ class Importer(AnalysisResultsImporter):
 def Import(context, request):
     """ Import Form
     """
-    infile = request.form['lachat_quickchem_fia_file']
-    fileformat = request.form['lachat_quickchem_fia_format']
-    artoapply = request.form['lachat_quickchem_fia_artoapply']
-    override = request.form['lachat_quickchem_fia_override']
-    sample = request.form.get('lachat_quickchem_fia_sample', 'requestid')
-    instrument = request.form.get('lachat_quickchem_fia_instrument', None)
+    form = request.form
+    # form['file'] sometimes returns a list
+    infile = form['instrument_results_file'][0] if \
+        isinstance(form['instrument_results_file'], list) \
+        else form['instrument_results_file']
+    fileformat = form['instrument_results_file_format']
+    override = form['results_override']
+    artoapply = form['artoapply']
+    sample = form.get('sample', 'requestid')
+    instrument = form.get('instrument', None)
     errors = []
     logs = []
     warns = []
@@ -102,12 +106,8 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    if fileformat == 'csv':
-        parser = Parser(infile)
-    else:
-        errors.append(t(_("Unrecognized file format ${fileformat}",
-                          mapping={"fileformat": fileformat})))
 
+    parser = LaChatQuickCheckFIAParser(infile)
     if parser:
         # Load the importer
         status = ['sample_received', 'attachment_due', 'to_be_verified']
