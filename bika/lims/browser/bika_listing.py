@@ -1200,13 +1200,13 @@ class BikaListingView(BrowserView):
         :returns: Searchable and translated value or None
         """
         if not value:
-            return None
+            return ""
         if value is Missing.Value:
-            return None
+            return ""
         if api.is_uid(value):
-            return None
+            return ""
         if isinstance(value, (bool)):
-            return None
+            return ""
         if isinstance(value, (list, tuple)):
             for v in value:
                 return self.metadata_to_searchable_text(brain, key, v)
@@ -1289,11 +1289,24 @@ class BikaListingView(BrowserView):
         regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
 
         # If the user entered a search term, filter the results by their metadata
-        out = []
-        for brain in brains:
-            metadata = self.get_metadata_dump_for(brain)
-            if regex.search(metadata):
-                out.append(brain)
+        # out = []
+        # for brain in brains:
+        #     metadata = self.get_metadata_dump_for(brain)
+        #     if regex.search(metadata):
+        #         out.append(brain)
+
+        # Improved version which cuts down runtime ~50%
+        columns = self.get_metadata_columns()
+
+        def match(brain):
+            for column in columns:
+                value = getattr(brain, column, None)
+                parsed = self.metadata_to_searchable_text(brain, column, value)
+                if parsed and regex.search(parsed):
+                    return True
+            return False
+
+        out = filter(match, brains)
 
         end = time.time()
         logger.info(u"ListingView::search: Search for '{}' executed in {:.2f}s ({} matches)"
