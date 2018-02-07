@@ -124,19 +124,15 @@ def after_verify(obj):
 def after_assign(obj):
     """Function triggered after an 'assign' transition for the analysis passed
     in is performed."""
-    if IRequestAnalysis.providedBy(obj):
-        # Note that because of analysisrequest.guard.assign, only those ARs
-        # with all analyses 'assigned' will be transitioned.
-        doActionFor(obj.getRequest(), 'assign')
+    # Reindex the entire request to ensure the FieldIndex `assigned_state` is
+    # updated, as well as the metadata column `getObjectWorkflowStates`
+    _reindex_request(obj, idxs=['assigned_state',])
 
 
 def after_unassign(obj):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed."""
-    if IRequestAnalysis.providedBy(obj):
-        # Note that because of analysisrequest.guard.unassign, only those ARs
-        # that at least have one analysis unassigned will be transitioned.
-        doActionFor(obj.getRequest(), 'unassign')
+    _reindex_request(obj, idxs=['assigned_state',])
 
 
 def after_cancel(obj):
@@ -205,8 +201,11 @@ def after_attach(obj):
     _reindex_request(obj)
 
 
-def _reindex_request(obj):
-    if IRoutineAnalysis.providedBy(obj):
-        request = obj.getRequest()
-        if request:
-            request.reindexObject()
+def _reindex_request(obj, idxs=None):
+    if not IRequestAnalysis.providedBy(obj):
+        return
+    request = obj.getRequest()
+    if idxs is None:
+        request.reindexObject()
+    else:
+        request.reindexObject(idxs=idxs)

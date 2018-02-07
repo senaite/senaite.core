@@ -674,7 +674,7 @@ class AnalysisRequestsView(BikaListingView):
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/assigned.png'/>" % (
                        t(_("Assigned")), self.portal_url),
-             'contentFilter': {'worksheetanalysis_review_state': 'assigned',
+             'contentFilter': {'assigned_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
@@ -724,7 +724,7 @@ class AnalysisRequestsView(BikaListingView):
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
                        t(_("Unassigned")), self.portal_url),
-             'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
+             'contentFilter': {'assigned_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
@@ -940,7 +940,7 @@ class AnalysisRequestsView(BikaListingView):
         after_icons = ""
         # Getting a dictionary with each workflow id and current state in it
         states_dict = obj.getObjectWorkflowStates
-        if states_dict.get('worksheetanalysis_review_state', '') == 'assigned':
+        if obj.assigned_state == 'assigned':
             after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                 (self.portal_url, t(_("All analyses assigned")))
         if states_dict.get('review_state', '') == 'invalid':

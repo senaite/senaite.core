@@ -55,38 +55,6 @@ def sample_prep_complete(obj):
     return sample.guard_sample_prep_complete_transition()
 
 
-def assign(obj):
-    """Allow or disallow transition depending on our children's states
-    Returns True if all the analyses that belongs to the Analysis Request
-    passed in have been transitioned to the assigned state.
-    """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
-    for analysis in obj.getAnalyses(full_objects=True):
-        state = getCurrentState(analysis, 'worksheetanalysis_review_state')
-        if state != 'assigned':
-            return False
-
-    return True
-
-
-def unassign(obj):
-    """Allow or disallow transition depending on our children's states
-    Returns true if at least one of the analyses that belongs to the Analysis
-    Request passed in has been unassigned already.
-    """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
-    for analysis in obj.getAnalyses(full_objects=True):
-        state = getCurrentState(analysis, 'worksheetanalysis_review_state')
-        if state == 'unassigned':
-            return True
-
-    return False
-
-
 def verify(obj):
     """Returns True if 'verify' transition can be applied to the Analysis
     Request passed in. This is, returns true if all the analyses that contains
