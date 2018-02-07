@@ -1143,16 +1143,6 @@ class BikaListingView(BrowserView):
         catalog = self.get_catalog()
         return catalog.schema()
 
-    def get_metadata_for(self, brain):
-        """Fetch all metadata columns for the given ZCatalog brain
-
-        :param brain: ZCatalog Brain
-        :returns: Dictionary of metadata column name -> metadata mapping
-        """
-        keys = self.get_metadata_columns()
-        values = map(lambda k: getattr(brain, k, None), keys)
-        return dict(zip(keys, values))
-
     def is_date(self, thing):
         """checks if the passed in value is a date
 
@@ -1219,25 +1209,6 @@ class BikaListingView(BrowserView):
             return self.translate_review_state(value, api.get_portal_type(brain))
         return str(value)
 
-    @viewcache.memoize
-    def get_metadata_dump_for(self, brain):
-        """Extract the values of the metadata columns into a searchable text dump
-
-        :param brain: ZCatalog Brain
-        :returns: Comma separated text dump of all metadata columns
-        """
-        metadata = self.get_metadata_for(brain)
-        dump = []
-
-        # extract text-based values from the metadata columns
-        for key, value in metadata.items():
-            parsed = self.metadata_to_searchable_text(brain, key, value)
-            if parsed is None:
-                continue
-            # Append the metadata value
-            dump.append(parsed)
-        return ",".join(map(safe_unicode, dump))
-
     def make_regex_for(self, searchterm, ignorecase=True):
         """Make a regular expression for the given searchterm
 
@@ -1288,24 +1259,19 @@ class BikaListingView(BrowserView):
         # Build a regular expression for the given searchterm
         regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
 
-        # If the user entered a search term, filter the results by their metadata
-        # out = []
-        # for brain in brains:
-        #     metadata = self.get_metadata_dump_for(brain)
-        #     if regex.search(metadata):
-        #         out.append(brain)
-
-        # Improved version which cuts down runtime ~50%
+        # Get the catalog metadata columns
         columns = self.get_metadata_columns()
 
+        # Filter predicate to match each metadata value against the searchterm
         def match(brain):
             for column in columns:
                 value = getattr(brain, column, None)
                 parsed = self.metadata_to_searchable_text(brain, column, value)
-                if parsed and regex.search(parsed):
+                if regex.search(parsed):
                     return True
             return False
 
+        # Filtered brains by searchterm -> metadata match
         out = filter(match, brains)
 
         end = time.time()
