@@ -88,7 +88,6 @@ def Import(context, request):
     infile = form['instrument_results_file'][0] if \
         isinstance(form['instrument_results_file'], list) \
         else form['instrument_results_file']
-    fileformat = form['instrument_results_file_format']
     override = form['results_override']
     artoapply = form['artoapply']
     sample = form.get('sample', 'requestid')
@@ -101,12 +100,8 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    if fileformat == 'xlsx':
-        parser = Parser(infile)
-    else:
-        errors.append(t(_("Unrecognized file format ${fileformat}",
-                          mapping={"fileformat": fileformat})))
 
+    parser = Parser(infile)
     if parser:
         # Load the importer
         status = ['sample_received', 'attachment_due', 'to_be_verified']
