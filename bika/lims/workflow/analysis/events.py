@@ -124,14 +124,14 @@ def after_verify(obj):
 def after_assign(obj):
     """Function triggered after an 'assign' transition for the analysis passed
     in is performed."""
-    # Reindex the entire request to ensure the FieldIndex `assigned_state` is
-    # updated, as well as the metadata column `getObjectWorkflowStates`
+    # Reindex the entire request to update the FieldIndex `assigned_state`
     _reindex_request(obj, idxs=['assigned_state',])
 
 
 def after_unassign(obj):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed."""
+    # Reindex the entire request to update the FieldIndex `assigned_state`
     _reindex_request(obj, idxs=['assigned_state',])
 
 
