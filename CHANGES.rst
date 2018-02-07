@@ -24,6 +24,7 @@ Changelog
 
 **Changed**
 
+- #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
