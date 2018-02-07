@@ -55,7 +55,7 @@
             </tr>
             <tr>
               <th i18n:translate="" class="label">Address</th>
-              <td tal:content="structure python:view.get_client_address(client)"/>
+              <td tal:content="structure python:view._client_address(client)"/>
             </tr>
           </table>
         </td>
