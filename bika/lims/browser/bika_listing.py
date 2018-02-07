@@ -1219,6 +1219,7 @@ class BikaListingView(BrowserView):
             return self.translate_review_state(value, api.get_portal_type(brain))
         return str(value)
 
+    @viewcache.memoize
     def get_metadata_dump_for(self, brain):
         """Extract the values of the metadata columns into a searchable text dump
 
