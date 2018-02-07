@@ -102,12 +102,8 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    if fileformat == 'csv':
-        parser = VistaPROICPParser(infile)
-    else:
-        errors.append(t(_("Unrecognized file format ${fileformat}",
-                          mapping={"fileformat": fileformat})))
 
+    parser = VistaPROICPParser(infile)
     if parser:
         # Load the importer
         status = ['sample_received', 'attachment_due', 'to_be_verified']
