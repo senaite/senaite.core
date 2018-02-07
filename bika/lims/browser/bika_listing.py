@@ -1207,7 +1207,7 @@ class BikaListingView(BrowserView):
             return self.to_str_date(value)
         if "state" in key.lower():
             return self.translate_review_state(value, api.get_portal_type(brain))
-        return str(value)
+        return safe_unicode(str(value))
 
     def make_regex_for(self, searchterm, ignorecase=True):
         """Make a regular expression for the given searchterm
