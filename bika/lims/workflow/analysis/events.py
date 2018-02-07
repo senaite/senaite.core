@@ -9,6 +9,7 @@ import transaction
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
@@ -119,6 +120,23 @@ def after_verify(obj):
         doActionFor(ws, 'verify')
     _reindex_request(obj)
 
+
+def after_assign(obj):
+    """Function triggered after an 'assign' transition for the analysis passed
+    in is performed."""
+    if IRequestAnalysis.providedBy(obj):
+        # Note that because of analysisrequest.guard.assign, only those ARs
+        # with all analyses 'assigned' will be transitioned.
+        doActionFor(obj.getRequest(), 'assign')
+
+
+def after_unassign(obj):
+    """Function triggered after an 'unassign' transition for the analysis passed
+    in is performed."""
+    if IRequestAnalysis.providedBy(obj):
+        # Note that because of analysisrequest.guard.unassign, only those ARs
+        # that at least have one analysis unassigned will be transitioned.
+        doActionFor(obj.getRequest(), 'unassign')
 
 
 def after_cancel(obj):

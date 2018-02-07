@@ -1309,3 +1309,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def workflow_script_attach(self):
         events.after_attach(self)
+
+    @security.public
+    def workflow_script_assign(self):
+        events.after_assign(self)
+
+    @security.public
+    def workflow_script_unassign(self):
+        events.after_unassign(self)

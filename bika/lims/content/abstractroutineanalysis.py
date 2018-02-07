@@ -661,13 +661,3 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
         super(AbstractRoutineAnalysis, self).workflow_script_submit()
-
-    @security.public
-    def workflow_script_assign(self):
-        # Try to transition the parent Analysis Request
-        doActionFor(self.getRequest(), 'assign')
-
-    @security.public
-    def workflow_script_unassign(self):
-        # Try to transition the parent Analysis Request
-        doActionFor(self.getRequest(), 'unassign')
