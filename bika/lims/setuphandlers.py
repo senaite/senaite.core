@@ -66,9 +66,10 @@ class BikaGenerator(object):
                        'bika_attachmenttypes',
                        'bika_batchlabels',
                        'bika_calculations',
-                       'bika_departments',
+                       'bika_clientlicencetypes',
                        'bika_containers',
                        'bika_containertypes',
+                       'bika_departments',
                        'bika_preservations',
                        'bika_identifiertypes',
                        'bika_instruments',
@@ -91,6 +92,7 @@ class BikaGenerator(object):
                        'bika_subgroups',
                        'bika_suppliers',
                        'bika_referencedefinitions',
+                       'bika_unitconversions',
                        'bika_worksheettemplates'):
             try:
                 obj = portal.bika_setup[obj_id]

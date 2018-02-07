@@ -6,6 +6,7 @@ bika_analysisspecs,AnalysisSpecs
 bika_attachmenttypes,AttachmentTypes
 bika_batchlabels,BatchLabels
 bika_calculations,Calculations
+bika_clientlicencetypes,ClientLicenceTypes
 bika_identifiertypes,IdentifierTypes
 bika_instruments,Instruments
 bika_instrumenttypes,InstrumentTypes
@@ -30,4 +31,5 @@ bika_samplingrounds,SamplingRounds
 bika_srtemplates,SRTemplates
 bika_subgroups,SubGroups
 bika_suppliers,Suppliers
+bika_unitconversions,UnitConversions
 bika_worksheettemplates,WorksheetTemplates

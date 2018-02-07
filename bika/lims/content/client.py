@@ -7,25 +7,31 @@
 
 """Client - the main organisational entity in bika.
 """
+import json
+import sys
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.Archetypes.utils import DisplayList
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims.config import *
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient
 from bika.lims.utils import isActive
+from bika.lims.vocabularies import CatalogVocabulary
+from bika.lims.workflow import getCurrentState, StateFlow, InactiveState
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
+from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.DataGridField import Column
+from Products.DataGridField import DataGridField
+from Products.DataGridField import DataGridWidget
+from Products.DataGridField import DatetimeColumn
+from Products.DataGridField import SelectColumn
 from zope.component import getUtility
 from zope.interface import implements
 from zope.interface.declarations import alsoProvides
-import json
-import sys
-from bika.lims.workflow import getCurrentState, StateFlow, InactiveState
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
@@ -130,6 +136,34 @@ schema = Organisation.schema.copy() + atapi.Schema((
             format = 'select',
         )
     ),
+    DataGridField('Licences',
+        schemata = "Licences",
+        allow_insert=True,
+        allow_delete=True,
+        allow_reorder=True,
+        allow_empty_rows=False,
+        columns=('LicenceType',
+                 'LicenceID',
+                 'LicenceNumber',
+                 'Authority'),
+        default=[{'LicenceType': '',
+                  'LicenceID': '',
+                  'LicenceNumber': '',
+                  'Authority': ''
+                  }],
+        widget=DataGridWidget(
+            description=_("Details of client licences that authorise them to operate, sometimes to be included on documentation."),
+            columns={
+                'LicenceType': SelectColumn(
+                    'Licence Type',
+                    vocabulary='Vocabulary_LicenceType'),
+                'LicenceID': Column('Licence ID'),
+                'LicenceNumber': Column('Registation Number'),
+                'Authority': Column('Issuing Authority')
+            }
+        )
+    ),
+
 ))
 
 schema['AccountNumber'].write_permission = ManageClients
@@ -249,6 +283,10 @@ class Client(Organisation):
 
         return True
 
+    def Vocabulary_LicenceType(self):
+        vocabulary = CatalogVocabulary(self)
+        vocabulary.catalog = 'portal_catalog'
+        return vocabulary(allow_blank=True, portal_type='ClientLicenceType')
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

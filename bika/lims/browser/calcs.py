@@ -21,6 +21,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.utils import resolve_unit
 from bika.lims.utils import t, isnumber
 from bika.lims.utils.analysis import format_numeric_result
 
@@ -86,12 +87,15 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         mapping = {}
 
         # values to be returned to form for this UID
-        Result = {'uid': uid, 'result': form_result}
-        try:
-            Result['result'] = float(form_result)
-        except:
-            if form_result == "0/0":
-                Result['result'] = ""
+        result = ""
+        if form_result != "0/0":
+            try:
+                result = float(form_result)
+            except:
+                result = form_result
+        Result = {"uid": uid, "result": result}
+        if result:
+            Result['converted_result'] = resolve_unit(analysis, result)
 
         if calculation:
             """We need first to create the map of available parameters
@@ -139,11 +143,16 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 # All result mappings must be float, or they are ignored.
                 try:
                     mapping[key] = float(analysisvalues.get('result'))
-                    mapping['%s.%s' % (key, 'RESULT')] = float(analysisvalues.get('result'))
-                    mapping['%s.%s' % (key, 'LDL')] = float(analysisvalues.get('ldl'))
-                    mapping['%s.%s' % (key, 'UDL')] = float(analysisvalues.get('udl'))
-                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(analysisvalues.get('belowldl'))
-                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(analysisvalues.get('aboveudl'))
+                    mapping['%s.%s' % (key, 'RESULT')] = float(
+                            analysisvalues.get('result'))
+                    mapping['%s.%s' % (key, 'LDL')] = float(
+                            analysisvalues.get('ldl'))
+                    mapping['%s.%s' % (key, 'UDL')] = float(
+                            analysisvalues.get('udl'))
+                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(
+                            analysisvalues.get('belowldl'))
+                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(
+                            analysisvalues.get('aboveudl'))
                 except:
                     # If not floatable, then abort!
                     unsatisfied = True
@@ -183,9 +192,9 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     if uid == i_uid:
                         mapping[i['keyword']] = i['value']
 
-            # Grab values for hidden InterimFields for only for current calculation
-            # we can't allow non-floats through here till we change the eval's
-            # interpolation
+            # Grab values for hidden InterimFields for only for current
+            # calculation we can't allow non-floats through here till
+            # we change the eval's interpolation
             hidden_fields = []
             c_fields = calculation.getInterimFields()
             s_fields = analysis.getInterimFields()
@@ -259,8 +268,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
 
         # format result
         try:
-            Result['formatted_result'] = format_numeric_result(analysis,
-                                                               Result['result'])
+            Result['formatted_result'] = format_numeric_result(
+                    analysis, Result['result'])
         except ValueError:
             # non-float
             Result['formatted_result'] = Result['result']
@@ -315,10 +324,11 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             udl = float(udl) if isnumber(udl) else 10000000
             belowldl = (isldl or flres < ldl)
             aboveudl = (isudl or flres > udl)
-            unc = '' if (belowldl or aboveudl) else analysis.getUncertainty(Result.get('result'))
-            if not (belowldl or aboveudl):
-                self.uncertainties.append({'uid': uid, 'uncertainty': unc})
 
+            unc = ''
+            if not (belowldl or aboveudl):
+                analysis.getUncertainty(Result.get('result'))
+                self.uncertainties.append({'uid': uid, 'uncertainty': unc})
         # maybe a service who depends on us must be recalculated.
         if analysis.portal_type == 'ReferenceAnalysis':
             dependents = []
@@ -337,7 +347,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         # we're placing the entire form's results in kwargs.
         adapters = getAdapters((analysis, ), IFieldIcons)
         for name, adapter in adapters:
-            alerts = adapter(result=Result['result'], form_results=self.current_results)
+            alerts = adapter(
+                result=Result['result'], form_results=self.current_results)
             if alerts:
                 if analysis.UID() in self.alerts:
                     self.alerts[analysis.UID()].extend(alerts[analysis.UID()])

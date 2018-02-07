@@ -45,6 +45,12 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
+      name="Client_Licence_Types"
+      factory="bika.lims.exportimport.setupdata.Client_Licence_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
       name="Container_Types"
       factory="bika.lims.exportimport.setupdata.Container_Types"
       provides="bika.lims.interfaces.ISetupDataImporter"
@@ -271,5 +277,11 @@
       factory="bika.lims.exportimport.setupdata.Storage_Locations"
       provides="bika.lims.interfaces.ISetupDataImporter"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+  
+   <adapter
+     name="Unit_Conversions"
+     factory="bika.lims.exportimport.setupdata.Unit_Conversions"
+     provides="bika.lims.interfaces.ISetupDataImporter"
+     for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
 </configure>

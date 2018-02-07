@@ -1839,7 +1839,40 @@ schema = BikaSchema.copy() + Schema((
     # are made to verified objects.
     StringField(
         'Digest'
-    )
+    ),
+
+    StringField(
+        'ClientLicenceID',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getClientLicences',
+        acquire=True,
+        widget=SelectionWidget(
+            format="select",
+            label=_("Client's Licence"),
+            description=_("Client's Licence appropriate to this AR"),
+            visible={
+                'edit': 'visible',
+                'view': 'visible',
+                'add': 'edit',
+                'header_table': 'visible',
+                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
+                'sampled': {'view': 'visible', 'edit': 'visible'},
+                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
+                'sample_due': {'view': 'visible', 'edit': 'visible'},
+                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
+                'sample_received': {'view': 'visible', 'edit': 'invisible'},
+                'attachment_due': {'view': 'visible', 'edit': 'invisible'},
+                'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
+                'verified': {'view': 'visible', 'edit': 'invisible'},
+                'published': {'view': 'visible', 'edit': 'invisible'},
+                'invalid': {'view': 'visible', 'edit': 'invisible'},
+            },
+            render_own_label=True,
+        ),
+    ),
 )
 )
 
@@ -3117,6 +3150,23 @@ class AnalysisRequest(BaseFolder):
 
         # Concatenate all strings to one text blob
         return " ".join(entries)
+
+    def getClientLicences(self):
+        """ Return a list of Client Licence Types
+        """
+        bsc = getToolByName(self, 'portal_catalog')
+        licences = [['', ''], ]
+        client = self.getClient()
+        for licence in client.getLicences():
+            licence_types = bsc(
+                    portal_type='ClientLicenceType',
+                    UID=licence['LicenceType'])
+            if len(licence_types) == 1:
+                licence_type = licence_types[0].Title
+                id_value = '{},{LicenceID},{LicenceNumber},{Authority}'.format(licence_type, **licence)
+                value = licence_type
+                licences.append([id_value, value])
+        return DisplayList(licences)
 
     def getPriorityText(self):
         """

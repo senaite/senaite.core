@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 **Added**
+- Unit Conversions to allow results to be reported in alternative units
 
 - #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV
@@ -19,11 +20,22 @@ Changelog
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
 - #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
 
+
+- #555 Don't allow the deactivation Analysis Services with active dependencies
+- #555 Don't allow the activation of Analysis Services with inactive dependents
+- #540 Added ClientClicenceType content type, Licence field on Client and AR
+  
+
+- #587 Use TaskQueue to Process AR Creation in the background
+- #555 Don't allow the deactivation Analysis Services with active dependencies
+- #555 Don't allow the activation of Analysis Services with inactive dependents
+
 **Removed**
 
 
 **Changed**
 
+- #627 Unassigned filter on Analysis Requests view
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
@@ -69,7 +81,10 @@ Changelog
 - #559 Fix numeric field event handler in bika.lims.site.js
 - #553 Fixed that images and barcodes were not printed in reports
 - #551 Traceback in Worksheet Templates list when there are Instruments assigned
+- #591 Fixed workflow publish recursion error that reached max depth
 - #571 Added try/except around id-template format function to log key errors in ID generation
+- #591 Fixed workflow publish recursion error that reached max depth
+
 
 
 1.2.0 (2018-01-03)

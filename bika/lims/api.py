@@ -5,6 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import Zope2
+
 from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
@@ -38,6 +40,7 @@ from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 
 from bika.lims import logger
+from bika.lims.browser import BrowserView
 
 """Bika LIMS Framework API
 
@@ -106,12 +109,30 @@ class BikaTransitionFailedEvent(BikaTransitionEvent):
     implements(IBikaTransitionFailedEvent)
 
 
+def get_app():
+    """ Get the zope root
+
+    : returns: Zope Root
+    """
+    return Zope2.app()
+
+
 def get_portal():
     """Get the portal object
 
     :returns: Portal object
     """
-    return ploneapi.portal.getSite()
+    try:
+        return ploneapi.portal.getSite()
+    except ploneapi.exc.CannotGetPortalError:
+        app = get_app()
+        portal_id = "senaitelims"
+        if portal_id in app.objectIds():
+            return app[portal_id]
+        sites = app.objectValues("Plone Site")
+        if len(sites) == 1:
+            return sites[0]
+        raise
 
 
 def get_bika_setup():
@@ -147,26 +168,23 @@ def create(container, portal_type, *args, **kwargs):
     fti = types_tool.getTypeInfo(portal_type)
 
     if fti.product:
+        # AT content type
         obj = _createObjectByType(portal_type, container, tmp_id)
+        obj.processForm()
+        obj.edit(**kwargs)
     else:
-        # newstyle factory
+        # dexterity content type
         factory = getUtility(IFactory, fti.factory)
         obj = factory(tmp_id, *args, **kwargs)
         if hasattr(obj, '_setPortalTypeName'):
             obj._setPortalTypeName(fti.getId())
         notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and ContainerModifiedEvent
+        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
+        # ContainerModifiedEvent
         container._setObject(tmp_id, obj)
-        # we get the object here with the current object id, as it might be renamed
-        # already by an event handler
+        # we get the object here with the current object id,
+        # as it might be renamed already by an event handler
         obj = container._getOb(obj.getId())
-
-    # handle AT Content
-    if is_at_content(obj):
-        obj.processForm()
-
-    # Edit after processForm; processForm does AT unmarkCreationFlag.
-    obj.edit(**kwargs)
 
     # explicit notification
     modified(obj)
@@ -642,7 +660,8 @@ def search(query, catalog=_marker):
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
-        fail("Multi Catalog Queries are not supported, please specify a catalog.")
+        fail("Multi Catalog Queries are not supported,"
+             "please specify a catalog.")
 
     return catalogs[0](query)
 
@@ -1123,7 +1142,8 @@ def normalize_id(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'".format(
+            type(string)))
     # get the id nomalizer utility
     normalizer = getUtility(IIDNormalizer).normalize
     return normalizer(string)
@@ -1138,10 +1158,12 @@ def normalize_filename(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'".format(
+            type(string)))
     # get the file nomalizer utility
     normalizer = getUtility(IFileNameNormalizer).normalize
     return normalizer(string)
+
 
 def is_uid(uid, validate=False):
     """Checks if the passed in uid is a valid UID
@@ -1166,3 +1188,61 @@ def is_uid(uid, validate=False):
     if brains:
         assert (len(brains) == 1)
     return len(brains) > 0
+
+class AsyncView(BrowserView):
+
+    def async_sample_and_receive(self):
+
+        logger.info('async_sample_and_receive server entered')
+        form = self.request.form
+        obj_uid = form.get('obj_uid')
+        if obj_uid is None:
+            raise RuntimeError('async_sample_and_receive requires obj_uid')
+        obj = ploneapi.content.get(UID=obj_uid)
+        dateSampled = form.get('dateSampled')
+        sampler = form.get('sampler')
+
+        obj.setDateSampled(dateSampled)
+        obj.setSampler(sampler)
+        ploneapi.content.transition(obj, 'sample')
+        ploneapi.content.transition(obj, 'receive')
+        logger.info('async_sample_and_receive server complete')
+
+    def async_sample(self):
+
+        logger.info('async_sample_ar server')
+        form = self.request.form
+        sample_uid = form.get('sample_uid')
+        if sample_uid is None:
+            raise RuntimeError('async_sample sample_uid')
+        sample = ploneapi.content.get(UID=sample_uid)
+        ar_uid = form.get('ar_uid')
+        if ar_uid is None:
+            raise RuntimeError('async_sample ar_uid')
+        ar = ploneapi.content.get(UID=ar_uid)
+        dateSampled = form.get('dateSampled')
+        sampler = form.get('sampler')
+
+        ar.setDateSampled(dateSampled)
+        ar.setSampler(sampler)
+        import pdb; pdb.set_trace()
+        ploneapi.content.transition(ar, 'sample')
+        logger.info('async_sample server complete')
+
+    def async_transition_object(self):
+
+        logger.info('async_transition_object server entered')
+        form = self.request.form
+        obj_uid = form.get('obj_uid')
+        if obj_uid is None:
+            raise RuntimeError('async_transition_object requires obj_uid')
+        obj = get_object_by_uid(uid=obj_uid)
+        if obj is None:
+            raise RuntimeError('async_transition_object unknown obj_uid')
+
+        action_id = form.get('action_id')
+        if action_id is None:
+            raise RuntimeError('async_transition_object requires action_id')
+
+        do_transition_for(obj, action_id)
+        logger.info('async_transition_object server complete')

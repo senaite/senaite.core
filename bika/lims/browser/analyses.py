@@ -11,8 +11,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims.utils import t, dicts_to_dict, format_supsub
-from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IFieldIcons
@@ -21,8 +19,11 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import isActive
+from bika.lims.utils import resolve_unit
 from bika.lims.utils import getUsers
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import t, dicts_to_dict, format_supsub
+from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -115,6 +116,11 @@ class AnalysesView(BikaListingView):
                 'input_width': '6',
                 'input_class': 'ajax_calculate numeric',
                 'sortable': False},
+            'ConvertedResult': {
+                'title': _('Converted Result'),
+                'input_width': '6',
+                'input_class': 'ajax_calculate numeric',
+                'sortable': False},
             'Specification': {
                 'title': _('Specification'),
                 'sortable': False},
@@ -158,6 +164,7 @@ class AnalysesView(BikaListingView):
                          'Partition',
                          'DetectionLimit',
                          'Result',
+                         'ConvertedResult',
                          'Specification',
                          'Method',
                          'Instrument',
@@ -434,6 +441,7 @@ class AnalysesView(BikaListingView):
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(unit) if unit else ''
         item['Result'] = ''
+        item['ConvertedResult'] = ''
         item['formatted_result'] = ''
         item['interim_fields'] = interim_fields
         item['Remarks'] = obj.getRemarks
@@ -900,6 +908,7 @@ class AnalysesView(BikaListingView):
                          t(_("Assigned to: ${worksheet_id}",
                              mapping={'worksheet_id': safe_unicode(ws.id)}))))
         item['after']['state_title'] = '&nbsp;'.join(after_icons)
+
         after_icons = []
         if obj.getIsReflexAnalysis:
             after_icons.append("<img\
@@ -910,6 +919,13 @@ class AnalysesView(BikaListingView):
             ))
         item['after']['Service'] = '&nbsp;'.join(after_icons)
 
+        # add unit conversion information
+        if item['review_state'] not in (
+                'retracted', 'sample_due', 'sampled', 'sample_received') and \
+           item['Result'] != '':
+            # calculate the converted result
+            # note if more than one can be resolved, only the last is used
+            item['ConvertedResult'] = resolve_unit(full_obj, item['Result'])
 
         # Users that can Add Analyses to an Analysis Request must be able to
         # set the visibility of the analysis in results report, also if the

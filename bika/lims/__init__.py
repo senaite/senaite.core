@@ -76,6 +76,7 @@ def initialize(context):
     from content.calculation import Calculation
     from content.client import Client
     from content.clientfolder import ClientFolder
+    from content.clientlicencetype import ClientLicenceType
     from content.contact import Contact
     from content.container import Container
     from content.containertype import ContainerType
@@ -127,6 +128,7 @@ def initialize(context):
     from content.suppliercontact import SupplierContact
     from content.supplyorderfolder import SupplyOrderFolder
     from content.supplyorder import SupplyOrder
+    from content.unitconversion import UnitConversion
     from content.worksheet import Worksheet
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate
@@ -143,6 +145,7 @@ def initialize(context):
     from controlpanel.bika_calculations import Calculations
     from controlpanel.bika_containers import Containers
     from controlpanel.bika_containertypes import ContainerTypes
+    from controlpanel.bika_clientlicencetypes import ClientLicenceTypes
     from controlpanel.bika_departments import Departments
     from controlpanel.bika_identifiertypes import IdentifierTypes
     from controlpanel.bika_instruments import Instruments
@@ -162,6 +165,7 @@ def initialize(context):
     from controlpanel.bika_srtemplates import SRTemplates
     from controlpanel.bika_subgroups import SubGroups
     from controlpanel.bika_suppliers import Suppliers
+    from controlpanel.bika_unitconversions import UnitConversions
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
     from controlpanel.bika_reflexrulefolder import ReflexRuleFolder
 

@@ -22,7 +22,7 @@ from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor, getCurrentState
+from bika.lims.workflow import doActionFor, getCurrentState, doAsyncActionFor
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import skip
 from bika.lims.workflow import wasTransitionPerformed
@@ -645,7 +645,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             if len(deps) == len(dsub):
                 # The statuses of all dependencies of this dependent are ok
                 # (at least, all of them have been submitted already)
-                doActionFor(dependent, 'submit')
+                doAsyncActionFor(dependent, 'submit')
 
         # Do all the reflex rules process
         self._reflex_rule_process('submit')
@@ -657,7 +657,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         ans = [an.getObject() for an in ar.getAnalyses()]
         anssub = [an for an in ans if wasTransitionPerformed(an, 'submit')]
         if len(ans) == len(anssub):
-            doActionFor(ar, 'submit')
+            doAsyncActionFor(ar, 'submit')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
         super(AbstractRoutineAnalysis, self).workflow_script_submit()

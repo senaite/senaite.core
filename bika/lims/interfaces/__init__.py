@@ -24,14 +24,21 @@ class IHaveNoBreadCrumbs(Interface):
     """Items which do not display breadcrumbs"""
 
 
+class IClient(Interface):
+
+    """Client"""
+
 class IClientFolder(Interface):
 
     """Client folder"""
 
+class IClientLicenceTypes(Interface):
 
-class IClient(Interface):
+    """ A Client Licence Types container.  """
 
-    """Client"""
+class IClientLicenceType(Interface):
+
+    """ A Client Licence Type  """
 
 
 class IBatchFolder(Interface):
@@ -823,3 +830,8 @@ class ITopWideHTMLComponentsHook(Interface):
     """
     Marker interface to hook html components in bikalisting
     """
+
+class IUnitConversions(Interface):
+    """ A Unit Conversion container.
+    """
+

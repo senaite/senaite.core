@@ -173,10 +173,10 @@
     </type>
 
     <!-- Client Types -->
-    <type type_id="ClientTypes">
+    <type type_id="ClientLicenceTypes">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
     </type>
-    <type type_id="ClientType">
+    <type type_id="ClientLicenceType">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
@@ -546,5 +546,13 @@
       <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
+    <!-- Unit Conversions -->
+    <type type_id="UnitConversions">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
+    </type>
+    <type type_id="UnitConversion">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="bika_inactive_workflow"/>
+    </type>
   </bindings>
 </object>

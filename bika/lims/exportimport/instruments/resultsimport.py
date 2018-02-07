@@ -655,8 +655,8 @@ class AnalysisResultsImporter(Logger):
         if attuid and infile:
             attachment = _createObjectByType("Attachment", ws, tmpID())
             logger.info("Creating %s in %s" % (attachment, ws))
+            attachment.setAttachmentFile(infile.read())
             attachment.edit(
-                AttachmentFile=infile,
                 AttachmentType=attuid,
                 AttachmentKeys='Results, Automatic import')
             attachment.reindexObject()
