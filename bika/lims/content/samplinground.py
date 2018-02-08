@@ -259,6 +259,12 @@ class SamplingRound(Item):
     implements(ISamplingRound)
     # Add your class methods and properties here
 
+    # Bika catalog multiplex for Dexterity contents
+    # please see event handlers in bika.lims.subscribers.catalogobject
+    _bika_catalogs = [
+        "bika_setup_catalog"
+    ]
+
     @property
     def num_sample_points(self):
         ar_brains = self.getAnalysisRequests()
