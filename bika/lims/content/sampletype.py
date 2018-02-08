@@ -318,18 +318,6 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :param value: A sticker ID
         """
-        if value is None:
-            logger.error(
-                "Setting wrong 'AdmittedStickerTemplates/small_default' value"
-                " to Sample Type '{}'"
-                .format(self.getId()))
-            return
-        if not isinstance(value, str):
-            logger.error(
-                "Setting wrong 'AdmittedStickerTemplates/small_default' value"
-                " type to Sample Type '{}'"
-                .format(self.getId()))
-            return
         self._set_sticker_subfield(SMALL_DEFAULT_STICKER, value)
 
     def setDefaultLargeSticker(self, value):
@@ -338,18 +326,6 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :param value: A sticker ID
         """
-        if value is None:
-            logger.error(
-                "Setting wrong 'AdmittedStickerTemplates/large_default' value"
-                " to Sample Type '{}'"
-                .format(self.getId()))
-            return
-        if not isinstance(value, str):
-            logger.error(
-                "Setting wrong 'AdmittedStickerTemplates/large_default' value"
-                " type to Sample Type '{}'"
-                .format(self.getId()))
-            return
         self._set_sticker_subfield(LARGE_DEFAULT_STICKER, value)
 
     def setAdmittedStickers(self, value):
@@ -358,6 +334,9 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
         :param value: An array of sticker IDs
         """
+        self._set_sticker_subfield('admitted', value)
+
+    def _set_sticker_subfield(self, subfield, value):
         if value is None:
             logger.error(
                 "Setting wrong 'AdmittedStickerTemplates/admitted' value"
@@ -370,9 +349,6 @@ class SampleType(BaseContent, HistoryAwareMixin):
                 " type to Sample Type '{}'"
                 .format(self.getId()))
             return
-        self._set_sticker_subfield('admitted', value)
-
-    def _set_sticker_subfield(self, subfield, value):
         field = self.getField('AdmittedStickerTemplates')
         stickers = field.get(self)
         stickers[0][subfield] = value
