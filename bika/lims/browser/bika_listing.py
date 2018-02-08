@@ -1220,16 +1220,16 @@ class BikaListingView(BrowserView):
         :param brain: ZCatalog Brain
         :param key: The name of the metadata column
         :param value: The raw value of the metadata column
-        :returns: Searchable and translated value or None
+        :returns: Searchable and translated unicode value or None
         """
         if not value:
-            return ""
+            return u""
         if value is Missing.Value:
-            return ""
+            return u""
         if api.is_uid(value):
-            return ""
+            return u""
         if isinstance(value, (bool)):
-            return ""
+            return u""
         if isinstance(value, (list, tuple)):
             for v in value:
                 return self.metadata_to_searchable_text(brain, key, v)
@@ -1240,7 +1240,9 @@ class BikaListingView(BrowserView):
             return self.to_str_date(value)
         if "state" in key.lower():
             return self.translate_review_state(value, api.get_portal_type(brain))
-        return safe_unicode(str(value))
+        if not isinstance(value, basestring):
+            value = str(value)
+        return safe_unicode(value)
 
     def make_regex_for(self, searchterm, ignorecase=True):
         """Make a regular expression for the given searchterm
