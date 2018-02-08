@@ -6,10 +6,7 @@ Changelog
 
 **Added**
 
-- #555 Don't allow the deactivation Analysis Services with active dependencies
-- #555 Don't allow the activation of Analysis Services with inactive dependents
-- #607 Choose the template in the preview and in accordance with the
-sample type
+- #607 Ability to choose sticker template based on sample type
 - #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV
 - #617 Instrument import interface: Agilent Masshunter
