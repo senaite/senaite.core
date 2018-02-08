@@ -1312,9 +1312,6 @@ class BikaListingView(BrowserView):
         catalog = api.get_tool(self.catalog)
         brains = catalog(query)
 
-        # Always expand all categories on search
-        self.expand_all_categories = True
-
         # Sort manually?
         if self.manual_sort_on is not None:
             brains = self.sort_brains(brains, sort_on=self.manual_sort_on)
@@ -1323,6 +1320,9 @@ class BikaListingView(BrowserView):
         if not searchterm:
             logger.info(u"ListingView::search: return {} results".format(len(brains)))
             return brains
+
+        # Always expand all categories if we have a searchterm
+        self.expand_all_categories = True
 
         # Build a regular expression for the given searchterm
         regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
