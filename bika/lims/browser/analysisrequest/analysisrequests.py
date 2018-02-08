@@ -193,7 +193,7 @@ class AnalysisRequestsView(BikaListingView):
                 'toggle': False},
             'state_title': {
                 'title': _('State'),
-                'sortable': False,
+                'sortable': True,
                 'index': 'review_state'},
             'getProfilesTitle': {
                 'title': _('Profile'),
