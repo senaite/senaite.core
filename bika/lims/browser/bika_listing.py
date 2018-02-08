@@ -1069,17 +1069,13 @@ class BikaListingView(BrowserView):
             self.sort_on,
         ]
 
-        sort_on_index = None
         for sort_on in sort_ons:
             # The value refers to a column name, try to get the associated index
             if sort_on in self.columns:
-                sort_on_index = self.columns[sort_on].get("index", None)
-            # The value refers to a column index, just use it
-            if sort_on in self.get_columns_indexes():
-                sort_on_index = sort_on
-            # check if we have a known index for the catalog
-            if sort_on_index in self.get_catalog_indexes():
-                return sort_on_index
+                sort_on = self.columns[sort_on].get("index", sort_on)
+            # check if the catalog knows the sort_on_index index
+            if sort_on in self.get_catalog_indexes():
+                return sort_on
 
         # The value for sort_on is not an index, force manual sorting
         self.manual_sort_on = self.sort_on
