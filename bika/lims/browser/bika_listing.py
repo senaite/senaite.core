@@ -1063,22 +1063,36 @@ class BikaListingView(BrowserView):
         form_id = self.get_form_id()
         key = "{}_sort_on".format(form_id)
 
-        sort_ons = [
-            self.request.get(key, None),
-            self.contentFilter.get("sort_on", None),
-            self.sort_on,
-        ]
+        # List of known catalog indexes
+        catalog_indexes = self.get_catalog_indexes()
+        # List of known catalog columns
+        catalog_columns = self.get_metadata_columns()
 
-        for sort_on in sort_ons:
-            # The value refers to a column name, try to get the associated index
-            if sort_on in self.columns:
-                sort_on = self.columns[sort_on].get("index", sort_on)
-            # check if the catalog knows the sort_on_index index
-            if sort_on in self.get_catalog_indexes():
-                return sort_on
+        # The sort_on parameter from the request
+        sort_on = self.request.get(key, None)
+        # Use the index specified in the columns config
+        if sort_on in self.columns:
+            sort_on = self.columns[sort_on].get("index", sort_on)
 
-        # The value for sort_on is not an index, force manual sorting
-        self.manual_sort_on = self.sort_on
+        # Return immediately if the request sort_on parameter is found in the
+        # catalog indexes
+        if sort_on in catalog_indexes:
+            return sort_on
+
+        # Flag manual sorting if the request sort_on parameter is found in the
+        # catalog metadata columns
+        if sort_on in catalog_columns:
+            self.manual_sort_on = sort_on
+
+        # The sort_on parameter from the catalog query
+        content_filter_sort_on = self.contentFilter.get("sort_on", None)
+        if content_filter_sort_on in catalog_indexes:
+            return content_filter_sort_on
+
+        # The sort_on attribute from the instance
+        instance_sort_on = self.sort_on
+        if instance_sort_on in catalog_indexes:
+            return instance_sort_on
 
         return default
 
@@ -1114,7 +1128,9 @@ class BikaListingView(BrowserView):
             query[k] = v
 
         # set the sort_on criteria
-        query["sort_on"] = self.get_sort_on()
+        sort_on = self.get_sort_on()
+        if sort_on is not None:
+            query["sort_on"] = sort_on
 
         # set the sort_order criteria
         query["sort_order"] = self.get_sort_order()
@@ -1219,6 +1235,32 @@ class BikaListingView(BrowserView):
             return re.compile(searchterm, re.IGNORECASE)
         return re.compile(searchterm)
 
+    def sort_brains(self, brains, sort_on=None):
+        """Sort the brains
+
+        :param brains: List of catalog brains
+        :param sort_on: The metadata column name to sort on
+        :returns: Manually sorted list of brains
+        """
+        if sort_on not in self.get_metadata_columns():
+            logger.warn("ListingView::sort_brains: '{}' not in metadata columns."
+                        .format(sort_on))
+            return brains
+
+        logger.warn("ListingView::sort_brains: Manual sorting on metadata column '{}'. "
+                    "Consider to add an explicit catalog index to speed up filtering."
+                    .format(self.manual_sort_on))
+
+        # calculate the sort_order
+        reverse = self.get_sort_order() == "descending"
+
+        def metadata_sort(a, b):
+            a = getattr(a, self.manual_sort_on, "")
+            b = getattr(b, self.manual_sort_on, "")
+            return cmp(safe_unicode(a), safe_unicode(b))
+
+        return sorted(brains, cmp=metadata_sort, reverse=reverse)
+
     def search(self, searchterm="", ignorecase=True):
         """Search the catalog tool
 
@@ -1246,6 +1288,10 @@ class BikaListingView(BrowserView):
         # search the catalog
         catalog = api.get_tool(self.catalog)
         brains = catalog(query)
+
+        # Sort manually?
+        if self.manual_sort_on is not None:
+            brains = self.sort_brains(brains, sort_on=self.manual_sort_on)
 
         # return the unfiltered catalog results
         if not searchterm:
@@ -1494,13 +1540,6 @@ class BikaListingView(BrowserView):
             if item:
                 results.append(item)
                 idx += 1
-
-        # Need manual_sort?
-        # Note that the order has already been set in contentFilter, so
-        # there is no need to reverse
-        if self.manual_sort_on:
-            results.sort(lambda x, y: cmp(x.get(self.manual_sort_on, ''),
-                                          y.get(self.manual_sort_on, '')))
 
         return results
 
