@@ -6,9 +6,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 
 from bika.lims import logger
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
 
 
@@ -65,7 +65,7 @@ def sample_prep_complete(obj):
         return False
     except AssertionError:
         logger.warn("'%s': cannot get 'sampleprep_review_state'" %
-                    sampleprep_wf_name)
+                    sp_wf_name)
         return False
 
     # get state from workflow - error = allow transition

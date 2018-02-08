@@ -66,6 +66,6 @@ def fix_worksheet_template_index(portal, ut):
                 'FieldIndex')
     ut.refreshCatalogs()
 
+    
 def add_sample_section_in_dashboard(portal):
-    setup_dashboard_pane
-    egistry('samples')
+    setup_dashboard_panels_visibility_registry('samples')

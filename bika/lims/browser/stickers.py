@@ -10,8 +10,8 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
-from bika.lims.utils import createPdf
 from zope.component.interfaces import ComponentLookupError
+from bika.lims.utils import createPdf, to_int
 from bika.lims.vocabularies import getStickerTemplates
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -373,11 +373,6 @@ class Sticker(BrowserView):
         in the request
         :rtype: int
         """
-        try:
-            copies_count = int(self.request.form.get("copies_count"))
-        except (TypeError, ValueError):
-            # default number of copies is a mandatory integer field in senaite setup
-            # so theoretically this should never fail
-            copies_count = self.context.bika_setup.getDefaultNumberOfCopies()
-
-        return copies_count
+        default_num = self.context.bika_setup.getDefaultNumberOfCopies()
+        request_num = self.request.form.get("copies_count")
+        return to_int(request_num, default_num)
