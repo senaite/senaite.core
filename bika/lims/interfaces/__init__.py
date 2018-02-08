@@ -826,6 +826,7 @@ class ITopWideHTMLComponentsHook(Interface):
 
 class IGetDefaultFieldValueARAddHook(Interface):
     """Marker interface to hook default
+    """
 
 class IGetStickerTemplates(Interface):
     """
