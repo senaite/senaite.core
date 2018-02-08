@@ -1057,14 +1057,31 @@ class BikaListingView(BrowserView):
 
         return sort_order
 
+    def is_valid_sort_index(self, sort_on):
+        """Checks if the sort_on index is capable for a sort_
+
+        :param sort_on: The name of the sort index
+        :returns: True if the sort index is capable for sorting
+        """
+        # List of known catalog indexes
+        catalog_indexes = self.get_catalog_indexes()
+        if sort_on not in catalog_indexes:
+            return False
+        catalog = self.get_catalog()
+        sort_index = catalog.Indexes.get(sort_on)
+        if not hasattr(sort_index, 'documentToKeyMap'):
+            return False
+        return True
+
     def get_sort_on(self, default="created"):
-        """Get the sort_on criteria from the request or view
+        """Get the sort_on criteria to be used
+
+        :param default: The default sort_on index to be used
+        :returns: valid sort_on index or None
         """
         form_id = self.get_form_id()
         key = "{}_sort_on".format(form_id)
 
-        # List of known catalog indexes
-        catalog_indexes = self.get_catalog_indexes()
         # List of known catalog columns
         catalog_columns = self.get_metadata_columns()
 
@@ -1076,7 +1093,7 @@ class BikaListingView(BrowserView):
 
         # Return immediately if the request sort_on parameter is found in the
         # catalog indexes
-        if sort_on in catalog_indexes:
+        if self.is_valid_sort_index(sort_on):
             return sort_on
 
         # Flag manual sorting if the request sort_on parameter is found in the
@@ -1086,15 +1103,19 @@ class BikaListingView(BrowserView):
 
         # The sort_on parameter from the catalog query
         content_filter_sort_on = self.contentFilter.get("sort_on", None)
-        if content_filter_sort_on in catalog_indexes:
+        if self.is_valid_sort_index(content_filter_sort_on):
             return content_filter_sort_on
 
         # The sort_on attribute from the instance
         instance_sort_on = self.sort_on
-        if instance_sort_on in catalog_indexes:
+        if self.is_valid_sort_index(instance_sort_on):
             return instance_sort_on
 
-        return default
+        # The default sort_on
+        if self.is_valid_sort_index(default):
+            return default
+
+        return None
 
     def get_path_query(self, context=None, level=0):
         """Return a path query
