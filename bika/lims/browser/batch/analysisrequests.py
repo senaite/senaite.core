@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from operator import itemgetter
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.analysisrequest import AnalysisRequestAddView as _ARAV
@@ -25,13 +26,11 @@ class AnalysisRequestsView(_ARV, _ARAV):
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
-
-    def contentsMethod(self, contentFilter):
-        """
-        Using batch's 'getAnalysisRequests' method in order to get the
-        analysisrequests assigned to it.
-        """
-        return self.context.getAnalysisRequestsBrains(**contentFilter)
+        self.contentFilter = {'portal_type': 'AnalysisRequest',
+                              'getBatchUID': api.get_uid(self.context),
+                              'sort_on': 'Created',
+                              'sort_order': 'reverse',
+                              'cancellation_state':'active'}
 
     def __call__(self):
         self.context_actions = {}
