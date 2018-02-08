@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #594 Add button in Sample View for the createion of Analysis Requests
 - #607 Ability to choose sticker template based on sample type
 - #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV

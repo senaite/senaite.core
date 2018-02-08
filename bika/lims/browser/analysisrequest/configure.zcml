@@ -69,6 +69,14 @@
   />
 
   <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="ar_add"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <browser:page
       for="*"
       name="ajax_ar_add"
       class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestAddView"

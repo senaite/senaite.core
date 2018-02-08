@@ -824,6 +824,9 @@ class ITopWideHTMLComponentsHook(Interface):
     Marker interface to hook html components in bikalisting
     """
 
+class IGetDefaultFieldValueARAddHook(Interface):
+    """Marker interface to hook default
+    """
 
 class IGetStickerTemplates(Interface):
     """
