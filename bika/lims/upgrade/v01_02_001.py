@@ -11,8 +11,6 @@ from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.vocabularies import getStickerTemplates
-
 from bika.lims.workflow import changeWorkflowState
 from bika.lims.workflow import isActive
 from DateTime import DateTime
@@ -38,7 +36,6 @@ def upgrade(tool):
     set_guards_to_inactive_workflow()
     fix_service_status_inconsistences()
     fix_service_profile_template_inconsistences()
-    set_sample_type_default_stickers(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 
@@ -110,27 +107,3 @@ def _change_inactive_state(service, new_state):
     wtool.setStatusOf('bika_inactive_workflow', service, wf_state)
     workflow.updateRoleMappingsFor(service)
     service.reindexObject(idxs=['allowedRolesAndUsers', 'inactive_state'])
-
-
-def set_sample_type_default_stickers(portal):
-    """
-    Fills the admitted stickers and their default stickers to every sample
-    type.
-    """
-    # Getting all sticker templates
-    stickers = getStickerTemplates()
-    sticker_ids = []
-    for sticker in stickers:
-        sticker_ids.append(sticker.get('id'))
-    def_small_template = portal.bika_setup.getSmallStickerTemplate()
-    def_large_template = portal.bika_setup.getLargeStickerTemplate()
-    # Getting all Sample Type objects
-    catalog = api.get_tool('bika_setup_catalog')
-    brains = catalog(portal_type='SampleType')
-    for brain in brains:
-        obj = api.get_object(brain)
-        if obj.getAdmittedStickers() is not None:
-            continue
-        obj.setAdmittedStickers(sticker_ids)
-        obj.setDefaultLargeSticker(def_large_template)
-        obj.setDefaultSmallSticker(def_small_template)
