@@ -27,6 +27,7 @@ Changelog
 
 **Changed**
 
+- #619 Changed listing tables search logic to operate on catalog metadata
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
