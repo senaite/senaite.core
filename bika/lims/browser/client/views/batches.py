@@ -6,9 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims.browser.batchfolder import BatchFolderContentsView
-from Products.CMFCore.utils import getToolByName
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
 
 
 class ClientBatchesView(BatchFolderContentsView):
@@ -17,15 +14,5 @@ class ClientBatchesView(BatchFolderContentsView):
         self.view_url = self.context.absolute_url() + "/batches"
 
     def __call__(self):
+        self.contentFilter['getClientUID'] = self.context.UID()
         return BatchFolderContentsView.__call__(self)
-
-    def contentsMethod(self, contentFilter):
-        bc = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
-        batches = {}
-        for ar in bc(portal_type='AnalysisRequest',
-                     getClientUID=self.context.UID()):
-            ar = ar.getObject()
-            batch = ar.getBatch()
-            if batch is not None:
-                batches[batch.UID()] = batch
-        return batches.values()
