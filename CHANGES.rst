@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.2 (unreleased)
+1.2.2 (2018-02-09)
 ------------------
 
 **Added**
@@ -22,9 +22,6 @@ Changelog
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
 - #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
 
-**Removed**
-
-
 **Changed**
 
 - #619 Changed listing tables search logic to operate on catalog metadata
@@ -44,9 +41,6 @@ Changelog
 - #620 Client batch list is not filtered by state
 - #628 Hide Department on lab contact inherited from Person
 - #631 Traceback on stickers display
-
-**Security**
-
 
 
 1.2.1 (2018-01-26)
