@@ -26,7 +26,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
         super(AnalysisRequestsView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'AnalysisRequest',
                               'getBatchUID': api.get_uid(self.context),
-                              'sort_on': 'Created',
+                              'sort_on': 'created',
                               'sort_order': 'reverse',
                               'cancellation_state':'active'}
 
