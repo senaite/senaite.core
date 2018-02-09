@@ -43,6 +43,7 @@ Changelog
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
 - #628 Hide Department on lab contact inherited from Person
+- #631 Traceback on stickers display
 
 **Security**
 
@@ -123,7 +124,6 @@ Changelog
 
 **Fixed**
 
-- #631 Traceback on stickers display
 - #494 Rejection reasons widget does not appear on rejection
 - #492 Fix AR Add Form: CC Contacts not set on Contact Change
 - #489 Worksheet Templates selection list is empty in Worksheets view
