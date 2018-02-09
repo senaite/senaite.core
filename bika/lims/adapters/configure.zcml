@@ -114,4 +114,17 @@
       preserveOriginal="True"
      />
 
+    <!-- Stickers -->
+    <!-- IGetStickerTemplates adapters -->
+    <adapter
+      factory="bika.lims.adapters.stickers.GetSampleStickers"
+      for="bika.lims.interfaces.ISample"
+      provides="bika.lims.interfaces.IGetStickerTemplates"
+    />
+    <adapter
+      factory="bika.lims.adapters.stickers.GetSampleStickers"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      provides="bika.lims.interfaces.IGetStickerTemplates"
+    />
+
 </configure>

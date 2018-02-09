@@ -7,36 +7,31 @@
 
 import collections
 import copy
+import DateTime
 import json
-import traceback
-
+import re
+import time
+import Missing
 from AccessControl import getSecurityManager
-from DateTime import DateTime
-from DateTime.DateTime import DateError, DateTimeError, SyntaxError, TimeError
-from Products.AdvancedQuery import And, Between, Eq, Generic, MatchRegexp, Or
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF, deprecated
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
-from bika.lims.api import get_tool, get_object_by_uid, get_current_user, \
-    get_object, get_transitions_for
+from bika.lims import PMF, api, deprecated, logger
+from bika.lims.api import (get_current_user, get_object, get_object_by_uid,
+                           get_tool, get_transitions_for)
 from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import ITopRightHTMLComponentsHook
-from bika.lims.interfaces import ITopLeftHTMLComponentsHook
-from bika.lims.interfaces import ITopWideHTMLComponentsHook
-from bika.lims.utils import getFromString
-from bika.lims.utils import getHiddenAttributesForClass, isActive
-from bika.lims.utils import t
-from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import skip
+from bika.lims.interfaces import (IFieldIcons, ITopLeftHTMLComponentsHook,
+                                  ITopRightHTMLComponentsHook,
+                                  ITopWideHTMLComponentsHook)
+from bika.lims.utils import (getFromString, getHiddenAttributesForClass,
+                             isActive, t, to_utf8)
+from bika.lims.workflow import doActionFor, skip
 from plone.app.content.browser import tableview
+from plone.memoize import view as viewcache
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters, getMultiAdapter
 
-DATETIME_EXCEPTIONS = (DateError, TimeError, DateTimeError, SyntaxError)
+COOKIE_LISTING_FILTER_BAR = "bika_listing_filter_bar"
 
 
 class WorkflowAction:
@@ -458,9 +453,8 @@ class BikaListingView(BrowserView):
         'state_title': {'title': _('State')},
     }
 
-    # Additional indexes to be searched
-    # any index name not specified in self.columns[] can be added here.
-    filter_indexes = ['title', 'SearchableText']
+    # BBB: Not used anymore
+    filter_indexes = []
 
     # The current or default review_state when one hasn't been selected.
     # With this setting, BikaListing instances must be careful to change it,
@@ -480,12 +474,14 @@ class BikaListingView(BrowserView):
     # They will need to be handled manually in the appropriate WorkflowAction
     # subclass.
     review_states = [
-        {'id': 'default',
-         'contentFilter': {},
-         'title': _('All'),
-         'columns': ['obj_type', 'title_or_id', 'modified', 'state_title']
-         },
+        {
+            'id': 'default',
+            'contentFilter': {},
+            'title': _('All'),
+            'columns': ['obj_type', 'title_or_id', 'modified', 'state_title']
+        },
     ]
+
     # The advanced filter bar instance, it is initialized using
     # getAdvancedFilterBar
     _advfilterbar = None
@@ -497,38 +493,33 @@ class BikaListingView(BrowserView):
     security_manager = None
 
     def __init__(self, context, request, **kwargs):
-        self.field_icons = {}
+        """View constructor
+        """
         super(BikaListingView, self).__init__(context, request)
-        path = hasattr(context, 'getPath') and context.getPath() \
-            or "/".join(context.getPhysicalPath())
-        if hasattr(self, 'contentFilter'):
-            if 'path' not in self.contentFilter:
-                self.contentFilter['path'] = {"query": path, "level": 0}
-        else:
-            if 'path' not in self.contentFilter:
-                self.contentFilter = {'path': {"query": path, "level": 0}}
+        logger.info(u"ListingView::__init__")
 
-        if 'show_categories' in kwargs:
-            self.show_categories = kwargs['show_categories']
-
-        if 'expand_all_categories' in kwargs:
-            self.expand_all_categories = kwargs['expand_all_categories']
-
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+        # set context and request for that view
+        self.context = context
+        self.request = request
 
         self.base_url = context.absolute_url()
-        self.view_url = self.base_url
-
-        self.translate = self.context.translate
+        self.field_icons = {}
+        self.items = []
+        self.limit_from = 0
+        self.member = None
+        self.mtool = None
         self.show_all = False
         self.show_more = False
-        self.limit_from = 0
-        self.mtool = None
         self.sort_on = None
         self.sort_order = 'ascending'
-        self.member = None
+        self.view_url = self.base_url
         self.workflow = None
-        self.items = []
+
+        # N.B. We set that here so that it can be overridden by subclasses,
+        #      e.g. by the worksheet add view
+        if "path" not in self.contentFilter:
+            self.contentFilter.update(self.get_path_query())
+
         # The listing object is bound to a class called BikaListingFilterBar
         # which can display an additional filter bar in the listing view in
         # order to filter the items by some terms. These terms should be
@@ -538,9 +529,105 @@ class BikaListingView(BrowserView):
         # Requests view checks bika_setup.getSamplingBarEnabledAnalysisRequests
         # to know if the functionality is activeated or not for its views.
         self.filter_bar_enabled = False
+
         # Stores the translations of the statuses from the items displayed in
         # this list. It value is set automatically in folderitems function.
         self.state_titles = {}
+
+        if 'show_categories' in kwargs:
+            self.show_categories = kwargs["show_categories"]
+
+        if 'expand_all_categories' in kwargs:
+            self.expand_all_categories = kwargs["expand_all_categories"]
+
+    def __call__(self):
+        """Handle request parameters and render the form
+        """
+        logger.info(u"ListingView::__call__")
+
+        # Always update on __call__
+        self.update()
+
+        form_id = self.get_form_id()
+
+        # If table_only specifies another form_id, then we abort.
+        # this way, a single table among many can request a redraw,
+        # and only it's content will be rendered.
+        if not self.get_table_only(form_id):
+            return ""
+        if not self.get_rows_only(form_id):
+            return ""
+
+        # ajax_categories, basic sanity.
+        # we do this here to allow subclasses time to define these things.
+        if self.ajax_categories and not self.category_index:
+            msg = "category_index must be defined when using ajax_categories."
+            raise AssertionError(msg)
+
+        # ajax_category_expand is included in the form if this form submission
+        # is an asynchronous one triggered by a category being expanded.
+        if self.request.get('ajax_category_expand', False):
+            # - get nice formatted category contents (tr rows only)
+            return self.rendered_items()
+
+        # render
+        self.before_render()
+
+        if self.get_table_only():
+            return self.contents_table(table_only=form_id)
+        if self.get_rows_only():
+            return self.contents_table(table_only=form_id)
+        else:
+            return self.template(self.context)
+
+    def update(self):
+        """Update the view state
+        """
+        logger.info(u"ListingView::update")
+
+        self.portal = api.get_portal()
+        self.mtool = api.get_tool("portal_membership")
+        self.workflow = api.get_tool("portal_workflow")
+        self.member = api.get_current_user()
+        self.translate = self.context.translate
+
+        # Sanitize the request form
+        # XXX When does this happen?
+        if self.request.form:
+            for key, value in self.request.form.items():
+                if isinstance(value, list):
+                    self.request.form[key] = self.request.form[key][0]
+
+        self.rows_only = self.get_rows_only()
+        self.limit_from = self.get_limit_from()
+
+        # setup filter bar
+        filter_bar_config = self.read_filter_bar_cookie()
+        self.set_filter_bar_config(filter_bar_config)
+
+        # pagesize
+        self.pagesize = self.get_pagesize()
+        # Plone's batching wants this variable:
+        self.request.set('pagesize', self.pagesize)
+        # and we want to make our choice remembered in bika_listing also
+        self.request.set(self.form_id + '_pagesize', self.pagesize)
+
+        # get toggle_cols cookie value
+        # and modify self.columns[]['toggle'] to match.
+        toggle_cols = self.get_toggle_cols()
+        for col in self.columns.keys():
+            self.columns[col]['toggle'] = col in toggle_cols
+
+    def before_render(self):
+        """Before render hook
+        """
+        logger.info(u"ListingView::before_render")
+
+    @deprecated("Please use BikaListingView.update()")
+    def _process_request(self):
+        """BBB
+        """
+        self.update()
 
     @property
     def review_state(self):
@@ -575,258 +662,103 @@ class BikaListingView(BrowserView):
         """
         return 'workflow_action'
 
-    def _process_request(self):
-        """Scan request for parameters and configure class attributes
-        accordingly.  Setup AdvancedQuery or catalog contentFilter.
+    def get_form_id(self):
+        """Return the form id
 
-        Request parameters:
-        <form_id>_limit_from:       index of the first item to display
-        <form_id>_rows_only:        returns only the rows
-        <form_id>_sort_on:          list items are sorted on this key
-        <form_id>_manual_sort_on:   no index - sort with python
-        <form_id>_pagesize:         number of items
-        <form_id>_filter:           A string, will be regex matched against
-                                    indexes in <form_id>_filter_indexes
-        <form_id>_filter_indexes:   list of index names which will be searched
-                                    for the value of <form_id>_filter
-
-        <form_id>_<index_name>:     Any index name can be used after <form_id>_.
-
-            any request variable named ${form_id}_{index_name} will pass it's
-            value to that index in self.contentFilter.
-
-            All conditions using ${form_id}_{index_name} are searched with AND.
-
-            The parameter value will be matched with regexp if a FieldIndex or
-            TextIndex.  Else, AdvancedQuery.Generic is used.
+        Note: The form_id must be unique when rendering multiple listing tables
         """
-        form_id = self.form_id
-        catalog = getToolByName(self.context, self.catalog)
+        return self.form_id
 
-        # Some ajax calls duplicate form values?  I have not figured out why!
-        if self.request.form:
-            for key, value in self.request.form.items():
-                if isinstance(value, list):
-                    self.request.form[key] = self.request.form[key][0]
-
-        # If table_only specifies another form_id, then we abort.
-        # this way, a single table among many can request a redraw,
-        # and only it's content will be rendered.
-        if form_id not in self.request.get('table_only', form_id) \
-                or form_id not in self.request.get('rows_only', form_id):
-            return ''
-
-        self.rows_only = self.request.get('rows_only', '') == form_id
-        self.limit_from = int(self.request.get(form_id + '_limit_from', 0))
-
-        # contentFilter is allowed in every self.review_state.
-        for k, v in self.review_state.get('contentFilter', {}).items():
-            self.contentFilter[k] = v
-
-        # Set the sort_on and sort_order criteria based on the params set in
-        # the request, the contentFilter and the sorting value set by default
-        self._set_sorting_criteria()
-
-        # pagesize
-        pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
-        if type(pagesize) in (list, tuple):
-            pagesize = pagesize[0]
+    def parse_json(self, data):
+        """Parses the given json data
+        """
         try:
-            pagesize = int(pagesize)
+            return json.loads(data)
         except (ValueError, TypeError):
-            pagesize = self.pagesize = 10
-        self.pagesize = pagesize
-        # Plone's batching wants this variable:
-        self.request.set('pagesize', self.pagesize)
-        # and we want to make our choice remembered in bika_listing also
-        self.request.set(self.form_id + '_pagesize', self.pagesize)
-
-        # index filters.
-        self.And = []
-        self.Or = []
-        for k, v in self.columns.items():
-            if 'index' not in v \
-                    or v['index'] == 'review_state' \
-                    or v['index'] in self.filter_indexes:
-                continue
-            self.filter_indexes.append(v['index'])
-
-        # any request variable named ${form_id}_{index_name}
-        # will pass it's value to that index in self.contentFilter.
-        # all conditions using ${form_id}_{index_name} are searched with AND
-        for index in self.filter_indexes:
-            idx = catalog.Indexes.get(index, None)
-            if idx is None:
-                logger.warn("index named '%s' not found in %s.  "
-                            "(Perhaps the index is still empty)." %
-                            (index, self.catalog))
-                continue
-            request_key = "%s_%s" % (form_id, index)
-            value = self.request.get(request_key, '')
-            if len(value) > 0:
-                if idx.meta_type in ('ZCTextIndex', 'FieldIndex'):
-                    self.And.append(MatchRegexp(index, value))
-                elif idx.meta_type == 'DateIndex':
-                    logger.info("Unhandled DateIndex search on '%s'" % index)
-                    continue
-                else:
-                    self.Or.append(Generic(index, value))
-
-        # if there's a ${form_id}_filter in request, then all indexes
-        # are are searched for it's value.
-        # ${form_id}_filter is searched with OR agains all indexes
-        request_key = "%s_filter" % form_id
-        value = self.request.get(request_key, '')
-        if type(value) in (list, tuple):
-            value = value[0]
-        if len(value) > 0:
-            for index in self.filter_indexes:
-                idx = catalog.Indexes.get(index, None)
-                if idx is None:
-                    logger.debug("index named '%s' not found in %s.  "
-                                 "(Perhaps the index is still empty)." %
-                                 (index, self.catalog))
-                    continue
-                if idx.meta_type in ('ZCTextIndex', 'FieldIndex'):
-                    # For SearchableText index, we search for any value
-                    # starting with keyword. Unfortunately for ZCTextIndexes
-                    # regex cannot start with special character like '*'
-                    if idx.meta_type == 'ZCTextIndex':
-                        value += '*'
-                    self.Or.append(MatchRegexp(index, value))
-                    self.expand_all_categories = True
-                    # https://github.com/bikalabs/Bika-LIMS/issues/1069
-                    vals = value.split('-')
-                    if len(vals) > 2:
-                        valroot = vals[0]
-                        for i in range(1, len(vals)):
-                            valroot = '%s-%s' % (valroot, vals[i])
-                            self.Or.append(MatchRegexp(index, valroot + '-*'))
-                            self.expand_all_categories = True
-                elif idx.meta_type == 'DateIndex':
-                    if type(value) in (list, tuple):
-                        value = value[0]
-                    if value.find(":") > -1:
-                        try:
-                            lohi = [DateTime(x) for x in value.split(":")]
-                        except DATETIME_EXCEPTIONS:
-                            logger.info("Error (And, DateIndex='%s')" % index)
-                        self.Or.append(Between(index, lohi[0], lohi[1]))
-                        self.expand_all_categories = True
-                    else:
-                        try:
-                            self.Or.append(Eq(index, DateTime(value)))
-                            self.expand_all_categories = True
-                        except DATETIME_EXCEPTIONS:
-                            logger.info("Error (Or, DateIndex='%s')" % index)
-                else:
-                    self.Or.append(Generic(index, value))
-                    self.expand_all_categories = True
-            self.Or.append(MatchRegexp('review_state', value))
-
-        # get toggle_cols cookie value
-        # and modify self.columns[]['toggle'] to match.
-        toggle_cols = self.get_toggle_cols()
-        for col in self.columns.keys():
-            self.columns[col]['toggle'] = col in toggle_cols
-
-    def _set_sorting_criteria(self):
-        """Sets the sorting criteria by resetting the value of sort_on,
-        sort_order and/or manual_sort in accordance with the values set in the
-        request, contentFilter and by default for this list
-        """
-        self.sort_on = self.get_sort_on()
-        self.manual_sort_on = None
-        if 'sort_on' in self.contentFilter:
-            del self.contentFilter['sort_on']
-
-        allowed_indexes = self.get_columns_indexes()
-        allowed_indexes.append('created')
-        if self.sort_on not in allowed_indexes:
-            # The value for sort_on is not an index, we need to force manual
-            # sorting so items will be sorted programmatically with python
-            self.manual_sort_on = self.sort_on
-
-        else:
-            # sort_on is an index, add it into the contentFilter so it can be
-            # used in the advanced query later
-            self.contentFilter['sort_on'] = self.sort_on
-
-        # By default, if sort_on is set, sort the items ASC
-        # Trick to allow 'descending' keyword instead of 'reverse'
-        sort_order = self.request.get(self.form_id + "_sort_order", None)
-        if not sort_order:
-            sort_order = self.contentFilter.get('sort_order', self.sort_order)
-        if sort_order != "ascending":
-            sort_order = "descending"
-        self.contentFilter['sort_order'] = sort_order
-        self.sort_order = sort_order
-
-    def get_sort_on(self):
-        """Returns the value by which this list must be sorted on.
-
-        Returns the name of the index to be used for sorting by using an
-        advancedQuery if defined in self.columns. Otherwise, returns the name
-        of the column the list must be sorted on.
-
-        :return: the sort_on index or column name
-        :rtype: str
-        """
-
-        def corrected_sort_value(value):
-            """Checks the value passed in against the columns and indexes.
-
-            If the value passed is a column name, will return the index of the
-            column if defined in self.columns. Otherwise, will return the
-            column name, but only if a column is defined in self.columns for
-            the value passed in. If non of both cases, returns None
-            """
-            if value in self.columns:
-                # The sort_on value refers to a column name. We try to get the index
-                # associated to this column name, if any
-                return self.columns[value].get('index', value)
-
-            if value in self.get_columns_indexes():
-                # The sort_on value refers to an index.
-                return value
-
-            # The sort_on value is neither an index nor a column. This should
-            # never happen
-            msg = "{}: sort_on is '{}', not a valid column/index".format(
-                self.__class__.__name__, value)
-            logger.warning(msg)
             return None
 
-        # Request sort_on value has priority over contentsFilter's sort value,
-        # as well as self.sort_on (default sort_on criteria set for this list).
-        request_sort_on = self.request.get(self.form_id + "_sort_on", None)
-        filter_sort_on = self.contentFilter.get("sort_on", None)
-        sort_on_values = [request_sort_on, filter_sort_on, self.sort_on]
-        for sort_value in sort_on_values:
-            if not sort_value:
-                continue
-            if type(sort_value) in (list, tuple):
-                sort_value = sort_value[0]
-            sort_on = corrected_sort_value(sort_value)
-            if sort_on:
-                # There is a colunm or index for this sort_on value
-                return sort_on
+    def read_filter_bar_cookie(self):
+        """Read the filter bar cookie
+        """
+        # get the cookie
+        cookie_value = self.request.get(COOKIE_LISTING_FILTER_BAR, [])
 
-        # None of the sort_on values set either in the request or in the content
-        # filter are valid (no column or index defined), so we return the
-        # sort_on value 'created', an index all catalogs has in common
-        return 'created'
+        # not sure why this is needed...
+        self.unset_cookie(COOKIE_LISTING_FILTER_BAR)
 
-    def get_columns_indexes(self):
-        indexes = [val['index'] for name, val in self.columns.items()
-                   if 'index' in val]
-        return indexes
+        config = self.parse_json(cookie_value)
+        if config is None:
+            config = []
+        logger.info(u"ListingView::read_filter_bar_cookie: config={}".format(config))
+        return config
+
+    def set_filter_bar_config(self, config):
+        """Set the filter bar values
+
+        :param config: list of dictionaries
+        """
+        cookie_data = {}
+        for k, v in config:
+            cookie_data[k] = v
+        self.save_filter_bar_values(cookie_data)
+
+    def set_cookie(self, cookie, value, **kw):
+        """Set cookie
+
+        :param cookie: The cookie name
+        :param value: The cookie value
+        :param kw: The keyword arguments to be set on the cookie
+        """
+        response = self.request.response
+        response.setCookie(cookie, value, **kw)
+
+    def unset_cookie(self, cookie):
+        """Unset cookie
+
+        :param cookie: The cookie name
+        """
+        self.set_cookie(cookie, value=None)
+        response = self.request.response
+        response.setCookie(cookie, None, path="/", max_age=0)
+
+    def get_pagesize(self):
+        """Return the pagesize request parameter
+        """
+        form_id = self.get_form_id()
+        pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
+        try:
+            return int(pagesize)
+        except (ValueError, TypeError):
+            return self.pagesize
+
+    def get_limit_from(self):
+        """Return the limit_from request parameter
+        """
+        form_id = self.get_form_id()
+        limit = self.request.get(form_id + '_limit_from', 0)
+        try:
+            return int(limit)
+        except (ValueError, TypeError):
+            return 0
+
+    def get_rows_only(self, default=""):
+        """Checks if the rows_only request parameter is equal to form_id
+        """
+        form_id = self.get_form_id()
+        rows_only = self.request.get("rows_only", default)
+        return rows_only == form_id
+
+    def get_table_only(self, default=""):
+        """Checks if the table_only request parameter is equal to form_id
+        """
+        form_id = self.get_form_id()
+        table_only = self.request.get("table_only", default)
+        return table_only == form_id
 
     def get_toggle_cols(self):
-        """
-        Returns the list of column ids to be displayed for the current list.
-        :return: list of column ids to be displayed
-        :rtype: list of str
+        """Returns the list of column ids to be displayed for the current list.
+
+        :returns: list of column ids to be displayed
         """
         # Get the toggle configuration from the cookie
         cookie_toggle = self.request.get('toggle_cols', '{}')
@@ -847,6 +779,9 @@ class BikaListingView(BrowserView):
         return list_toggle
 
     def GET_url(self, include_current=True, **kwargs):
+        """Handler for the "Show More" Button
+        """
+
         url = self.request['URL'].split("?")[0]
         # take values from form (both html form and GET request slurped here)
         query = {}
@@ -854,6 +789,7 @@ class BikaListingView(BrowserView):
             for k, v in self.request.form.items():
                 if k.startswith(self.form_id + "_") and "uids" not in k:
                     query[k] = v
+
         # override from self attributes
         for x in ["pagesize",
                   "review_state",
@@ -875,70 +811,20 @@ class BikaListingView(BrowserView):
                                         for x, y in query.items()])
         return url
 
-    def before_render(self):
-        """
-        This function should be overriden in order to set value that should be
-        loaded before the template being rendered.
-        """
-        pass
-
     def remove_column(self, column):
-        """Removes the column passed-in, if exists"""
-        if column in self.columns:
-            del self.columns[column]
-            for item in self.review_states:
-                if column in item.get('columns', []):
-                    item['columns'].remove(column)
+        """Removes the column passed-in, if exists
 
-    def __call__(self):
-        """Handle request parameters and render the form
+        :param column: Column key
+        :returns: True if the column was removed
         """
+        if column not in self.columns:
+            return False
 
-        # ajax_categories, basic sanity.
-        # we do this here to allow subclasses time to define these things.
-        if self.ajax_categories and not self.category_index:
-            msg = "category_index must be defined when using ajax_categories."
-            raise AssertionError(msg)
-        # Getting the bika_listing_filter_bar cookie
-        cookie_filter_bar = self.request.get('bika_listing_filter_bar', '')
-        self.request.response.setCookie(
-            'bika_listing_filter_bar', None, path='/', max_age=0)
-        # Saving the filter bar values
-        if cookie_filter_bar is not None and cookie_filter_bar != '':
-            try:
-                cookie_filter_bar = json.loads(cookie_filter_bar)
-            except ValueError:
-                err_msg = traceback.format_exc() + '\n'
-                logger.error(
-                    err_msg +
-                    "Error decoding JSON object 'bika_listing_filter_bar' "
-                    "with value {} in {}."
-                    .format(cookie_filter_bar, self.context))
-                cookie_filter_bar = []
-        else:
-            cookie_filter_bar = []
-        # Creating a dict from cookie data
-        cookie_data = {}
-        for k, v in cookie_filter_bar:
-            cookie_data[k] = v
-        self.save_filter_bar_values(cookie_data)
-        self._process_request()
-        self.mtool = getToolByName(self.context, 'portal_membership')
-        self.member = self.mtool.getAuthenticatedMember()
-        self.workflow = getToolByName(self.context, 'portal_workflow')
-
-        # ajax_category_expand is included in the form if this form submission
-        # is an asynchronous one triggered by a category being expanded.
-        if self.request.get('ajax_category_expand', False):
-            # - get nice formatted category contents (tr rows only)
-            return self.rendered_items()
-
-        self.before_render()
-        if self.request.get('table_only', '') == self.form_id \
-                or self.request.get('rows_only', '') == self.form_id:
-            return self.contents_table(table_only=self.form_id)
-        else:
-            return self.template(self.context)
+        del self.columns[column]
+        for item in self.review_states:
+            if column in item.get('columns', []):
+                item['columns'].remove(column)
+        return True
 
     def selected_cats(self, items):
         """Return a list of categories that will be expanded by default when
@@ -978,6 +864,19 @@ class BikaListingView(BrowserView):
         """
         return True
 
+    def get_item_info(self, brain_or_object):
+        """Return the data of this brain or object
+        """
+        return {
+            "obj": brain_or_object,
+            "uid": api.get_uid(brain_or_object),
+            "url": api.get_url(brain_or_object),
+            "id": api.get_id(brain_or_object),
+            "title": api.get_title(brain_or_object),
+            "portal_type": api.get_portal_type(brain_or_object),
+            "review_state": getattr(brain_or_object, "review_state", ""),
+        }
+
     # noinspection PyUnusedLocal
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -1012,8 +911,6 @@ class BikaListingView(BrowserView):
         # Getting a security manager instance for the current request
         self.security_manager = getSecurityManager()
         self.workflow = getToolByName(self.context, 'portal_workflow')
-        if not hasattr(self, 'contentsMethod'):
-            self.contentsMethod = getToolByName(self.context, self.catalog)
 
         if classic:
             return self._folderitems(full_objects)
@@ -1049,15 +946,8 @@ class BikaListingView(BrowserView):
 
             # Building the dictionary with basic items
             results_dict = dict(
-                # obj can be an object or a brain!!
-                obj=obj,
-                uid=obj.UID,
-                url=obj.getURL(),
-                id=obj.getId,
-                title=obj.Title,
                 # To colour the list items by state
                 state_class=state_class,
-                review_state=obj.review_state,
                 # a list of names of fields that may be edited on this item
                 allow_edit=[],
                 # a dict where the column name works as a key and the value is
@@ -1076,6 +966,10 @@ class BikaListingView(BrowserView):
                 replace={},
                 choices={},
             )
+
+            # update with the base item info
+            results_dict.update(self.get_item_info(obj))
+
             # Set states and state titles
             ptype = obj.portal_type
             workflow = get_tool('portal_workflow')
@@ -1125,48 +1019,350 @@ class BikaListingView(BrowserView):
                 idx += 1
         return results
 
-    def _fetch_brains(self, idxfrom=0):
-        """Returns the brains that must be displayed in the current list
+    def get_catalog(self, default="portal_catalog"):
+        """Get the catalog tool to be used in the listing
 
-        Uses the contentFilter and/or contentsMethod class variables (or
-        functions) to query against the database. Also takes into account if
-        only a subset of the results must be returned by using idxfrom and. If
-        the number of results is lower than idxfrom, will return an empty array
-
-        :param idxfrom: index to start to count for results
-        :return: the list of brains to be displayed in this list
+        :returns: ZCatalog tool
         """
-        # Creating a copy of the contentFilter dictionary in order to include
-        # the filter bar's filtering additions in the query. We don't want to
-        # modify contentFilter with those 'extra' filtering elements to be
-        # included in the.
-        contentFilterTemp = copy.deepcopy(self.contentFilter)
-        addition = self.get_filter_bar_queryaddition()
+        try:
+            return api.get_tool(self.catalog)
+        except api.BikaLIMSError:
+            return api.get_tool(default)
+
+    @viewcache.memoize
+    def get_catalog_indexes(self):
+        """Return a list of registered catalog indexes
+        """
+        return self.get_catalog().indexes()
+
+    @viewcache.memoize
+    def get_columns_indexes(self):
+        """Returns a list of allowed sorting indexeds
+        """
+        columns = self.columns
+        indexes = [v["index"] for k, v in columns.items() if "index" in v]
+        return indexes
+
+    def get_sort_order(self):
+        """Get the sort_order criteria from the request or view
+        """
+        form_id = self.get_form_id()
+        key = "{}_sort_order".format(form_id)
+        sort_order = self.request.get(key, None)
+
+        if sort_order is None:
+            sort_order = self.contentFilter.get("sort_order", self.sort_order)
+        if sort_order not in ["ascending", "descending"]:
+            sort_order = "descending"
+
+        return sort_order
+
+    def is_valid_sort_index(self, sort_on):
+        """Checks if the sort_on index is capable for a sort_
+
+        :param sort_on: The name of the sort index
+        :returns: True if the sort index is capable for sorting
+        """
+        # List of known catalog indexes
+        catalog_indexes = self.get_catalog_indexes()
+        if sort_on not in catalog_indexes:
+            return False
+        catalog = self.get_catalog()
+        sort_index = catalog.Indexes.get(sort_on)
+        if not hasattr(sort_index, 'documentToKeyMap'):
+            return False
+        return True
+
+    def get_sort_on(self, default="created"):
+        """Get the sort_on criteria to be used
+
+        :param default: The default sort_on index to be used
+        :returns: valid sort_on index or None
+        """
+        form_id = self.get_form_id()
+        key = "{}_sort_on".format(form_id)
+
+        # List of known catalog columns
+        catalog_columns = self.get_metadata_columns()
+
+        # The sort_on parameter from the request
+        sort_on = self.request.get(key, None)
+        # Use the index specified in the columns config
+        if sort_on in self.columns:
+            sort_on = self.columns[sort_on].get("index", sort_on)
+
+        # Return immediately if the request sort_on parameter is found in the
+        # catalog indexes
+        if self.is_valid_sort_index(sort_on):
+            return sort_on
+
+        # Flag manual sorting if the request sort_on parameter is found in the
+        # catalog metadata columns
+        if sort_on in catalog_columns:
+            self.manual_sort_on = sort_on
+
+        # The sort_on parameter from the catalog query
+        content_filter_sort_on = self.contentFilter.get("sort_on", None)
+        if self.is_valid_sort_index(content_filter_sort_on):
+            return content_filter_sort_on
+
+        # The sort_on attribute from the instance
+        instance_sort_on = self.sort_on
+        if self.is_valid_sort_index(instance_sort_on):
+            return instance_sort_on
+
+        # The default sort_on
+        if self.is_valid_sort_index(default):
+            return default
+
+        return None
+
+    def get_path_query(self, context=None, level=0):
+        """Return a path query
+
+        :param context: The context to get the physical path from
+        :param level: The depth level of the search
+        :returns: Catalog path query
+        """
+        if context is None:
+            context = self.context
+        path = api.get_path(context)
+        return {
+            "path": {
+                "query": path,
+                "level": level,
+            }
+        }
+
+    def get_catalog_query(self, searchterm=None):
+        """Return the catalog query
+
+        :param searchterm: Additional filter value to be added to the query
+        :returns: Catalog query dictionary
+        """
+
+        # avoid to change the original content filter
+        query = copy.deepcopy(self.contentFilter)
+
+        # contentFilter is allowed in every self.review_state.
+        for k, v in self.review_state.get("contentFilter", {}).items():
+            query[k] = v
+
+        # set the sort_on criteria
+        sort_on = self.get_sort_on()
+        if sort_on is not None:
+            query["sort_on"] = sort_on
+
+        # set the sort_order criteria
+        query["sort_order"] = self.get_sort_order()
+
+        # # Pass the searchterm as well to the Searchable Text index
+        # if searchterm and isinstance(searchterm, basestring):
+        #     query.update({"SearchableText": searchterm + "*"})
+
         # Adding the extra filtering elements
-        if addition:
-            contentFilterTemp.update(addition)
-        # Check for 'and'/'or' logic queries
-        if (hasattr(self, 'And') and self.And) \
-                or (hasattr(self, 'Or') and self.Or):
-            # if contentsMethod is capable, we do an AdvancedQuery.
-            if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
-                aq = self.contentsMethod.makeAdvancedQuery(contentFilterTemp)
-                if hasattr(self, 'And') and self.And:
-                    tmpAnd = And()
-                    for q in self.And:
-                        tmpAnd.addSubquery(q)
-                    aq &= tmpAnd
-                if hasattr(self, 'Or') and self.Or:
-                    tmpOr = Or()
-                    for q in self.Or:
-                        tmpOr.addSubquery(q)
-                    aq &= tmpOr
-                brains = self.contentsMethod.evalAdvancedQuery(aq)
-            else:
-                # otherwise, self.contentsMethod must handle contentFilter
-                brains = self.contentsMethod(contentFilterTemp)
-        else:
-            brains = self.contentsMethod(contentFilterTemp)
+        extra = self.get_filter_bar_queryaddition() or {}
+        query.update(extra)
+
+        logger.info(u"ListingView::get_catalog_query: query={}".format(query))
+        return query
+
+    @viewcache.memoize
+    def get_metadata_columns(self):
+        """Get a list of all metadata column names
+
+        :returns: List of catalog metadata column names
+        """
+        catalog = self.get_catalog()
+        return catalog.schema()
+
+    def is_date(self, thing):
+        """checks if the passed in value is a date
+
+        :param thing: an arbitrary object
+        :returns: True if it can be converted to a date time object
+        """
+        if isinstance(thing, DateTime.DateTime):
+            return True
+        return False
+
+    def to_str_date(self, date):
+        """Converts the date to a string
+
+        :param date: DateTime object or ISO date string
+        :returns: locale date string
+        """
+        date = DateTime.DateTime(date)
+        try:
+            return date.strftime(self.date_format_long)
+        except ValueError:
+            return str(date)
+
+    @viewcache.memoize
+    def translate_review_state(self, state, portal_type):
+        """Translates the review state to the current set language
+
+        :param state: Review state title
+        :type state: basestring
+        :returns: Translated review state title
+        """
+        ts = api.get_tool("translation_service")
+        wf = api.get_tool("portal_workflow")
+        state_title = wf.getTitleForStateOnType(state, portal_type)
+        translated_state = ts.translate(_(state_title or state), context=self.request)
+        logger.info(u"ListingView:translate_review_state: {} -> {} -> {}"
+                    .format(state, state_title, translated_state))
+        return translated_state
+
+    def metadata_to_searchable_text(self, brain, key, value):
+        """Parse the given metadata to text
+
+        :param brain: ZCatalog Brain
+        :param key: The name of the metadata column
+        :param value: The raw value of the metadata column
+        :returns: Searchable and translated unicode value or None
+        """
+        if not value:
+            return u""
+        if value is Missing.Value:
+            return u""
+        if api.is_uid(value):
+            return u""
+        if isinstance(value, (bool)):
+            return u""
+        if isinstance(value, (list, tuple)):
+            for v in value:
+                return self.metadata_to_searchable_text(brain, key, v)
+        if isinstance(value, (dict)):
+            for k, v in value.items():
+                return self.metadata_to_searchable_text(brain, k, v)
+        if self.is_date(value):
+            return self.to_str_date(value)
+        if "state" in key.lower():
+            return self.translate_review_state(value, api.get_portal_type(brain))
+        if not isinstance(value, basestring):
+            value = str(value)
+        return safe_unicode(value)
+
+    def make_regex_for(self, searchterm, ignorecase=True):
+        """Make a regular expression for the given searchterm
+
+        :param searchterm: The searchterm for the regular expression
+        :param ignorecase: Flag to compile with re.IGNORECASE
+        :returns: Compiled regular expression
+        """
+        # searchterm comes in as a 8-bit string, e.g. 'D\xc3\xa4'
+        # but must be a unicode u'D\xe4' to match the metadata
+        searchterm = safe_unicode(searchterm)
+        if ignorecase:
+            return re.compile(searchterm, re.IGNORECASE)
+        return re.compile(searchterm)
+
+    def sort_brains(self, brains, sort_on=None):
+        """Sort the brains
+
+        :param brains: List of catalog brains
+        :param sort_on: The metadata column name to sort on
+        :returns: Manually sorted list of brains
+        """
+        if sort_on not in self.get_metadata_columns():
+            logger.warn("ListingView::sort_brains: '{}' not in metadata columns."
+                        .format(sort_on))
+            return brains
+
+        logger.warn("ListingView::sort_brains: Manual sorting on metadata column '{}'. "
+                    "Consider to add an explicit catalog index to speed up filtering."
+                    .format(self.manual_sort_on))
+
+        # calculate the sort_order
+        reverse = self.get_sort_order() == "descending"
+
+        def metadata_sort(a, b):
+            a = getattr(a, self.manual_sort_on, "")
+            b = getattr(b, self.manual_sort_on, "")
+            return cmp(safe_unicode(a), safe_unicode(b))
+
+        return sorted(brains, cmp=metadata_sort, reverse=reverse)
+
+    def search(self, searchterm="", ignorecase=True):
+        """Search the catalog tool
+
+        :param searchterm: The searchterm for the regular expression
+        :param ignorecase: Flag to compile with re.IGNORECASE
+        :returns: List of catalog brains
+        """
+
+        # TODO Append start and pagesize to return just that slice of results
+
+        # start the timer for performance checks
+        start = time.time()
+
+        # strip whitespaces off the searchterm
+        searchterm = searchterm.strip()
+        # strip illegal characters off the searchterm
+        searchterm = searchterm.strip(u"*.!$%&/()=-+:'`´^")
+        logger.info(u"ListingView::search:searchterm='{}'".format(searchterm))
+
+        # create a catalog query
+        logger.info(u"ListingView::search: Prepare catalog query for '{}'"
+                    .format(self.catalog))
+        query = self.get_catalog_query(searchterm=searchterm)
+
+        # search the catalog
+        catalog = api.get_tool(self.catalog)
+        brains = catalog(query)
+
+        # Sort manually?
+        if self.manual_sort_on is not None:
+            brains = self.sort_brains(brains, sort_on=self.manual_sort_on)
+
+        # return the unfiltered catalog results
+        if not searchterm:
+            logger.info(u"ListingView::search: return {} results".format(len(brains)))
+            return brains
+
+        # Always expand all categories if we have a searchterm
+        self.expand_all_categories = True
+
+        # Build a regular expression for the given searchterm
+        regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
+
+        # Get the catalog metadata columns
+        columns = self.get_metadata_columns()
+
+        # Filter predicate to match each metadata value against the searchterm
+        def match(brain):
+            for column in columns:
+                value = getattr(brain, column, None)
+                parsed = self.metadata_to_searchable_text(brain, column, value)
+                if regex.search(parsed):
+                    return True
+            return False
+
+        # Filtered brains by searchterm -> metadata match
+        out = filter(match, brains)
+
+        end = time.time()
+        logger.info(u"ListingView::search: Search for '{}' executed in {:.2f}s ({} matches)"
+                    .format(searchterm, end - start, len(out)))
+        return out
+
+    def get_searchterm(self):
+        """Get the user entered search value from the request
+
+        :returns: Current search box value from the request
+        """
+        form_id = self.get_form_id()
+        key = "{}_filter".format(form_id)
+        # we need to ensure unicode here
+        return safe_unicode(self.request.get(key, ""))
+
+    def _fetch_brains(self, idxfrom=0):
+        """Fetch the catalog results for the current listing table state
+        """
+
+        searchterm = self.get_searchterm()
+        brains = self.search(searchterm=searchterm)
 
         # Return a subset of results, if necessary
         if idxfrom and len(brains) > idxfrom:
@@ -1178,9 +1374,6 @@ class BikaListingView(BrowserView):
     def _folderitems(self, full_objects=False):
         """WARNING: :full_objects: could create a big performance hit.
         """
-        logger.warn("")
-        if not hasattr(self, 'contentsMethod'):
-            self.contentsMethod = getToolByName(self.context, self.catalog)
         # Setting up some attributes
         plone_layout = getMultiAdapter((self.context.aq_inner, self.request),
                                        name=u'plone_layout')
@@ -1373,13 +1566,6 @@ class BikaListingView(BrowserView):
             if item:
                 results.append(item)
                 idx += 1
-
-        # Need manual_sort?
-        # Note that the order has already been set in contentFilter, so
-        # there is no need to reverse
-        if self.manual_sort_on:
-            results.sort(lambda x, y: cmp(x.get(self.manual_sort_on, ''),
-                                          y.get(self.manual_sort_on, '')))
 
         return results
 

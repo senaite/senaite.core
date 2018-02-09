@@ -81,7 +81,7 @@ class AnalysisRequestsView(BikaListingView):
             'Priority': {
                 'title': '',
                 'index': 'getPrioritySortkey',
-                'sortable': True,},
+                'sortable': True, },
             'Progress': {
                 'title': 'Progress',
                 'sortable': False,
@@ -93,11 +93,12 @@ class AnalysisRequestsView(BikaListingView):
                 'index': 'getId'},
             'getClientOrderNumber': {
                 'title': _('Client Order'),
-                'sortable': False,
+                'sortable': True,
                 'toggle': True},
             'Creator': {
                 'title': PMF('Creator'),
-                'sortable': False,
+                'index': 'getCreatorFullName',
+                'sortable': True,
                 'toggle': True},
             'Created': {
                 'title': PMF('Date Created'),
@@ -111,7 +112,8 @@ class AnalysisRequestsView(BikaListingView):
                 'toggle': True, },
             'BatchID': {
                 'title': _("Batch ID"),
-                'sortable': False,
+                'index': 'getBatchID',
+                'sortable': True,
                 'toggle': True},
             'Client': {
                 'title': _('Client'),
@@ -133,30 +135,35 @@ class AnalysisRequestsView(BikaListingView):
                 'toggle': True},
             'getClientReference': {
                 'title': _('Client Ref'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getClientReference',
                 'toggle': True},
             'getClientSampleID': {
                 'title': _('Client SID'),
                 'toggle': True},
             'ClientContact': {
                 'title': _('Contact'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getContactFullName',
                 'toggle': False},
             'getSampleTypeTitle': {
                 'title': _('Sample Type'),
-                'sortable': False,
+                'sortable': True,
                 'toggle': True},
             'getSamplePointTitle': {
                 'title': _('Sample Point'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getSamplePointTitle',
                 'toggle': False},
             'getStorageLocation': {
                 'title': _('Storage Location'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getStorageLocationTitle',
                 'toggle': False},
             'SamplingDeviation': {
                 'title': _('Sampling Deviation'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getSamplingDeviationTitle',
                 'toggle': False},
             # 'AdHoc': {'title': _('Ad-Hoc'),
             #           'toggle': False},
@@ -193,19 +200,22 @@ class AnalysisRequestsView(BikaListingView):
                 'toggle': False},
             'state_title': {
                 'title': _('State'),
-                'sortable': False,
+                'sortable': True,
                 'index': 'review_state'},
             'getProfilesTitle': {
                 'title': _('Profile'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getProfilesTitle',
                 'toggle': False},
             'getAnalysesNum': {
                 'title': _('Number of Analyses'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getAnalysesNum',
                 'toggle': False},
             'getTemplateTitle': {
                 'title': _('Template'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getTemplateTitle',
                 'toggle': False},
             'Printed': {
                 'title': _('Printed'),
