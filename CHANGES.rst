@@ -32,6 +32,7 @@ Changelog
 
 **Fixed**
 
+- #639 Analysis Requests from inside Batch are not filtered correctly
 - #591 Fixed workflow publish recursion error that reached max depth
 - #634 Fix undefined Symbols in Sample Transition Guards
 - #616 Fix character encodings in analysisservice duplication
