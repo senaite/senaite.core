@@ -10,6 +10,8 @@ Changelog
 
 **Changed**
 
+- #636 Do not display "Advanced..." item in object's workflow actions menu
+
 
 **Removed**
 
@@ -43,7 +45,6 @@ Changelog
 
 **Changed**
 
-- #636 Do not display "Advanced..." item in object's workflow actions menu
 - #619 Changed listing tables search logic to operate on catalog metadata
 - #621 Change Errors to Warnings when importing instrument results
 
