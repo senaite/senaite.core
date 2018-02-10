@@ -21,9 +21,9 @@ def assigned_state(instance):
     if not analyses:
         return 'unassigned'
 
+    state_var = 'worksheetanalysis_review_state'
     for analysis in analyses:
-        analysis = api.get_object(analysis)
-        state = getCurrentState(analysis, 'worksheetanalysis_review_state')
+        state = api.get_workflow_status_of(analysis, state_var)
         if state != 'assigned':
             return 'unassigned'
 
