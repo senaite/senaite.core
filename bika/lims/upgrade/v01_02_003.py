@@ -53,6 +53,3 @@ def fix_assign_analysis_requests(portal, ut):
     ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'assigned_state',
                 'FieldIndex')
     ut.refreshCatalogs()
-    logger.info("{0} upgraded to version {1}".format(product, version))
-
-    return True
