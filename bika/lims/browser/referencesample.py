@@ -13,6 +13,7 @@ from Products.ATContentTypes.utils import DT2dt
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
@@ -184,7 +185,7 @@ class ReferenceAnalysesView(AnalysesView):
         """ Adds an analysis item to the self.anjson dict that will be used
             after the page is rendered to generate a QC Chart
         """
-        parent = analysis.aq_parent
+        parent = api.get_parent(analysis)
         qcid = parent.id
         serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
         trows = self.anjson.get(serviceref, {})
