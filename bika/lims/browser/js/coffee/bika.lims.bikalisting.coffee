@@ -372,11 +372,14 @@ window.BikaListingTableView = ->
             stored_form_action = $(form).attr('action')
             $(form).attr 'action', window.location.href
             $(form).append '<input type=\'hidden\' name=\'table_only\' value=\'' + form_id + '\'>'
-            options = 
-                target: $(this).parents('table')
-                replaceTarget: true
-                data: form.formToArray()
-            form.ajaxSubmit options
+            table = $(this).parents('table')
+            url = window.location.href
+            $.post(url, form.formToArray()).done((data) ->
+                $(table).html(data)
+                load_transitions()
+                show_more_clicked()
+                return
+            )
             $('[name="table_only"]').remove()
             $(form).attr 'action', stored_form_action
             false

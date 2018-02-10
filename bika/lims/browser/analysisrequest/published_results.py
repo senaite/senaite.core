@@ -5,27 +5,20 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl import getSecurityManager
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
-from bika.lims.permissions import *
-from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
-from DateTime import DateTime
-from Products.Archetypes import PloneMessageFactory as PMF
+from bika.lims.utils import t
+# from bika.lims.permissions import *
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 
-import plone
 
 class AnalysisRequestPublishedResults(BikaListingView):
+    """View of published results
 
-    """ View of published results
-        Prints the list of pdf files with each publication dates, the user
-        responsible of that publication, the emails of the addressees (and/or)
-        client contact names with the publication mode used (pdf, email, etc.)
+    Prints the list of pdf files with each publication dates, the user
+    responsible of that publication, the emails of the addressees (and/or)
+    client contact names with the publication mode used (pdf, email, etc.)
     """
     # I took IViewView away, because transitions selected in the edit-bar
     # cause errors due to wrong context, when invoked from this view, and I
@@ -34,7 +27,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisRequestPublishedResults, self).__init__(context, request)
-        self.catalog = "bika_catalog"
+        self.catalog = "portal_catalog"
         self.contentFilter = {'portal_type': 'ARReport',
                               'sort_order': 'reverse'}
         self.context_actions = {}
@@ -69,7 +62,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
             childar = hasattr(ar, 'getChildAnalysisRequest') \
-                        and ar.getChildAnalysisRequest() or None
+                and ar.getChildAnalysisRequest() or None
             childid = childar and childar.getId() or None
             message = _('This Analysis Request has been withdrawn and is '
                         'shown for trace-ability purposes only. Retest: '
@@ -80,7 +73,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
         if hasattr(ar, 'getParentAnalysisRequest') \
-            and ar.getParentAnalysisRequest():
+           and ar.getParentAnalysisRequest():
             par = ar.getParentAnalysisRequest()
             message = _('This Analysis Request has been '
                         'generated automatically due to '
@@ -151,8 +144,8 @@ class AnalysisRequestPublishedResults(BikaListingView):
                 fmt_date = self.ulocalized_time(fmt_date, long_format=1)
                 item['DatePrinted'] = fmt_date
                 if obj.getDatePrinted() is None:
-                    item['after']['DatePrinted']=("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
-                                            (t(_("Has not been Printed."))))
+                    item['after']['DatePrinted'] = ("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                                                    (t(_("Has not been Printed."))))
 
         recip = []
         for recipient in obj.getRecipients():

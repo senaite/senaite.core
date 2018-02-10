@@ -354,18 +354,19 @@
     };
     filter_search_button_click = function() {
       $('.filter-search-button').live('click', function(event) {
-        var form, form_id, options, stored_form_action;
+        var form, form_id, stored_form_action, table, url;
         form = $(this).parents('form');
         form_id = $(form).attr('id');
         stored_form_action = $(form).attr('action');
         $(form).attr('action', window.location.href);
         $(form).append('<input type=\'hidden\' name=\'table_only\' value=\'' + form_id + '\'>');
-        options = {
-          target: $(this).parents('table'),
-          replaceTarget: true,
-          data: form.formToArray()
-        };
-        form.ajaxSubmit(options);
+        table = $(this).parents('table');
+        url = window.location.href;
+        $.post(url, form.formToArray()).done(function(data) {
+          $(table).html(data);
+          load_transitions();
+          show_more_clicked();
+        });
         $('[name="table_only"]').remove();
         $(form).attr('action', stored_form_action);
         return false;
@@ -639,8 +640,8 @@
           rows = $('<table>' + data + '</table>').find('tr');
           $('[form_id=\'' + form_id + '\'] tr[data-ajax_category=\'' + cat_title + '\']').replaceWith(rows);
           $(element).removeClass('collapsed').addClass('expanded');
-          load_transitions();
           def.resolve();
+          load_transitions();
         });
       } else {
         $(element).parent().nextAll('tr[cat=\'' + $(element).attr('cat') + '\']').toggle(true);

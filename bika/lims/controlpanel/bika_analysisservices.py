@@ -156,7 +156,7 @@ class AnalysisServicesView(BikaListingView):
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 25
-        self.sort_on = 'Title'
+        self.sort_on = 'sortable_title'
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
