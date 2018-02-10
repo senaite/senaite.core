@@ -15,7 +15,7 @@ Changelog
 
 
 **Fixed**
-
+- #641 Broken Analyses list on ReferenceSample in Supplier
 
 **Security**
 
