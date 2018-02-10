@@ -13,6 +13,7 @@ from Products.ATContentTypes.utils import DT2dt
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
@@ -30,11 +31,12 @@ class ViewView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url +\
+            "/++resource++bika.lims.images/referencesample_big.png"
 
     def __call__(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
-        self.results = {} # {category_title: listofdicts}
+        self.results = {}  # {category_title: listofdicts}
         for r in self.context.getReferenceResults():
             service = rc.lookupObject(r['uid'])
             cat = service.getCategoryTitle()
@@ -56,7 +58,8 @@ class ReferenceAnalysesViewView(BrowserView):
 
     def __init__(self, context, request):
         super(ReferenceAnalysesViewView, self).__init__(context, request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/referencesample_big.png"
         self.title = self.context.translate(_("Reference Analyses"))
         self.description = ""
         self._analysesview = None
@@ -72,8 +75,8 @@ class ReferenceAnalysesViewView(BrowserView):
     def get_analyses_view(self):
         if not self._analysesview:
             # Creates the Analyses View if not exists yet
-            self._analysesview = ReferenceAnalysesView(self.context,
-                                    self.request)
+            self._analysesview = ReferenceAnalysesView(
+                    self.context, self.request)
             self._analysesview.allow_edit = False
             self._analysesview.show_select_column = False
             self._analysesview.show_workflow_action_buttons = False
@@ -87,6 +90,7 @@ class ReferenceAnalysesViewView(BrowserView):
     def get_analyses_json(self):
         return self.get_analyses_view().get_analyses_json()
 
+
 class ReferenceAnalysesView(AnalysesView):
     """ Reference Analyses on this sample
     """
@@ -94,15 +98,17 @@ class ReferenceAnalysesView(AnalysesView):
 
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
-        self.contentFilter = {'portal_type':'ReferenceAnalysis',
-                              'path': {'query':"/".join(self.context.getPhysicalPath()),
-                                       'level':0}}
+        self.contentFilter = {
+                'portal_type': 'ReferenceAnalysis',
+                'path': {'query': "/".join(self.context.getPhysicalPath()),
+                         'level': 0}}
         self.columns = {
-            'id': {'title': _('ID'), 'toggle':False},
-            'getReferenceAnalysesGroupID': {'title': _('QC Sample ID'), 'toggle': True},
+            'id': {'title': _('ID'), 'toggle': False},
+            'getReferenceAnalysesGroupID': {
+                'title': _('QC Sample ID'), 'toggle': True},
             'Category': {'title': _('Category'), 'toggle': True},
-            'Service': {'title': _('Service'), 'toggle':True},
-            'Worksheet': {'title': _('Worksheet'), 'toggle':True},
+            'Service': {'title': _('Service'), 'toggle': True},
+            'Worksheet': {'title': _('Worksheet'), 'toggle': True},
             'Method': {
                 'title': _('Method'),
                 'sortable': False,
@@ -111,21 +117,23 @@ class ReferenceAnalysesView(AnalysesView):
                 'title': _('Instrument'),
                 'sortable': False,
                 'toggle': True},
-            'Result': {'title': _('Result'), 'toggle':True},
-            'CaptureDate': {'title': _('Captured'),
+            'Result': {'title': _('Result'), 'toggle': True},
+            'CaptureDate': {
+                'title': _('Captured'),
                 'index': 'getResultCaptureDate',
-                'toggle':True},
-            'Uncertainty': {'title': _('+-'), 'toggle':True},
+                'toggle': True},
+            'Uncertainty': {'title': _('+-'), 'toggle': True},
             'DueDate': {'title': _('Due Date'),
                         'index': 'getDueDate',
-                        'toggle':True},
-            'retested': {'title': _('Retested'), 'type':'boolean', 'toggle':True},
-            'state_title': {'title': _('State'), 'toggle':True},
+                        'toggle': True},
+            'retested': {'title': _('Retested'),
+                         'type': 'boolean', 'toggle': True},
+            'state_title': {'title': _('State'), 'toggle': True},
         }
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'transitions': [],
              'columns':['id',
                         'getReferenceAnalysesGroupID',
@@ -184,15 +192,13 @@ class ReferenceAnalysesView(AnalysesView):
         """ Adds an analysis item to the self.anjson dict that will be used
             after the page is rendered to generate a QC Chart
         """
-        parent = analysis.aq_parent
+        parent = api.get_parent(analysis)
         qcid = parent.id
         serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
         trows = self.anjson.get(serviceref, {})
         anrows = trows.get(qcid, [])
-        anid = '%s.%s' % (item['getReferenceAnalysesGroupID'], item['id'])
         rr = parent.getResultsRangeDict()
         cap_date = item.get('CaptureDate', None)
-        cap_date = cap_date and cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
         if service_uid in rr:
             specs = rr.get(service_uid, None)
             try:
@@ -230,18 +236,17 @@ class ReferenceResultsView(BikaListingView):
     """
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
         self.title = self.context.translate(_("Reference Values"))
         self.description = self.context.translate(_(
-                             "Click on Analysis Categories (against shaded background) "
-                             "to see Analysis Services in each category. Enter minimum "
-                             "and maximum values to indicate a valid results range. "
-                             "Any result outside this range will raise an alert. "
-                             "The % Error field allows for an % uncertainty to be "
-                             "considered when evaluating results against minimum and "
-                             "maximum values. A result out of range but still in range "
-                             "if the % error is taken into consideration, will raise a "
-                             "less severe alert."))
+             "Click on Analysis Categories (against shaded background) "
+             "to see Analysis Services in each category. Enter minimum "
+             "and maximum values to indicate a valid results range. "
+             "Any result outside this range will raise an alert. "
+             "The % Error field allows for an % uncertainty to be "
+             "considered when evaluating results against minimum and "
+             "maximum values. A result out of range but still in range "
+             "if the % error is taken into consideration, will raise a "
+             "less severe alert."))
         self.contentFilter = {}
         self.context_actions = {}
         self.show_sort_column = False
@@ -257,9 +262,9 @@ class ReferenceResultsView(BikaListingView):
             'max': {'title': _('Max')},
         }
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'columns': ['Service',
                          'result',
                          'min',
@@ -288,7 +293,7 @@ class ReferenceResultsView(BikaListingView):
                 'replace': {},
                 'before': {},
                 'after': {},
-                'choices':{},
+                'choices': {},
                 'class': {},
                 'state_class': 'state-active',
                 'allow_edit': [],
@@ -297,22 +302,23 @@ class ReferenceResultsView(BikaListingView):
                 (service.absolute_url(), service.Title())
             items.append(item)
 
-        items = sorted(items, key = itemgetter('Service'))
-        return items
+        items = sorted(items, key=itemgetter('Service'))
+        return item
+
 
 class ReferenceSamplesView(BikaListingView):
     """Main reference samples folder view
     """
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
-        portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/referencesample_big.png"
         self.title = self.context.translate(_("Reference Samples"))
         self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
-                              'sort_on':'id',
+                              'sort_on': 'id',
                               'sort_order': 'reverse',
-                              'path':{"query": ["/"], "level" : 0 }, }
+                              'path': {"query": ["/"], "level": 0}, }
         self.context_actions = {}
         self.show_select_column = True
         request.set('disable_border', 1)
@@ -324,10 +330,10 @@ class ReferenceSamplesView(BikaListingView):
             'Title': {
                 'title': _('Title'),
                 'index': 'sortable_title',
-                'toggle':True},
+                'toggle': True},
             'Supplier': {
                 'title': _('Supplier'),
-                'toggle':True,
+                'toggle': True,
                 'attr': 'aq_parent.Title',
                 'replace_url': 'aq_parent.absolute_url'},
             'Manufacturer': {
@@ -337,32 +343,32 @@ class ReferenceSamplesView(BikaListingView):
                 'replace_url': 'getManufacturer.absolute_url'},
             'Definition': {
                 'title': _('Reference Definition'),
-                'toggle':True,
+                'toggle': True,
                 'attr': 'getReferenceDefinition.Title',
                 'replace_url': 'getReferenceDefinition.absolute_url'},
             'DateSampled': {
                 'title': _('Date Sampled'),
                 'index': 'getDateSampled',
-                'toggle':True},
+                'toggle': True},
             'DateReceived': {
                 'title': _('Date Received'),
                 'index': 'getDateReceived',
-                'toggle':True},
+                'toggle': True},
             'DateOpened': {
                 'title': _('Date Opened'),
-                'toggle':True},
+                'toggle': True},
             'ExpiryDate': {
                 'title': _('Expiry Date'),
                 'index': 'getExpiryDate',
-                'toggle':True},
+                'toggle': True},
             'state_title': {
                 'title': _('State'),
-                'toggle':True},
+                'toggle': True},
         }
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('Current'),
-             'contentFilter':{'review_state':'current'},
+             'contentFilter': {'review_state': 'current'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -372,9 +378,9 @@ class ReferenceSamplesView(BikaListingView):
                          'DateReceived',
                          'DateOpened',
                          'ExpiryDate']},
-            {'id':'expired',
+            {'id': 'expired',
              'title': _('Expired'),
-             'contentFilter':{'review_state':'expired'},
+             'contentFilter': {'review_state': 'expired'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -384,9 +390,9 @@ class ReferenceSamplesView(BikaListingView):
                          'DateReceived',
                          'DateOpened',
                          'ExpiryDate']},
-            {'id':'disposed',
+            {'id': 'disposed',
              'title': _('Disposed'),
-             'contentFilter':{'review_state':'disposed'},
+             'contentFilter': {'review_state': 'disposed'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -396,9 +402,9 @@ class ReferenceSamplesView(BikaListingView):
                          'DateReceived',
                          'DateOpened',
                          'ExpiryDate']},
-            {'id':'all',
+            {'id': 'all',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -429,7 +435,8 @@ class ReferenceSamplesView(BikaListingView):
             return None
 
         item['ID'] = obj.id
-        item['DateSampled'] = self.ulocalized_time(obj.getDateSampled(), long_format=True)
+        item['DateSampled'] = self.ulocalized_time(
+                obj.getDateSampled(), long_format=True)
         item['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
         item['DateOpened'] = self.ulocalized_time(obj.getDateOpened())
         item['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
