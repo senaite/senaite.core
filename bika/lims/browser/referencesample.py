@@ -192,7 +192,6 @@ class ReferenceAnalysesView(AnalysesView):
         anid = '%s.%s' % (item['getReferenceAnalysesGroupID'], item['id'])
         rr = parent.getResultsRangeDict()
         cap_date = item.get('CaptureDate', None)
-        cap_date = cap_date and cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
         if service_uid in rr:
             specs = rr.get(service_uid, None)
             try:
