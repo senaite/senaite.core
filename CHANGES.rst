@@ -10,11 +10,14 @@ Changelog
 
 **Changed**
 
+- #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
 
 **Removed**
 
 
 **Fixed**
+
+- #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
 
 **Security**
@@ -43,13 +46,11 @@ Changelog
 
 **Changed**
 
-- #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
 - #619 Changed listing tables search logic to operate on catalog metadata
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
 
-- #637 Analysis Requests are never transitioned to assigned/unassigned
 - #639 Analysis Requests from inside Batch are not filtered correctly
 - #591 Fixed workflow publish recursion error that reached max depth
 - #634 Fix undefined Symbols in Sample Transition Guards
