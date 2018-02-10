@@ -1,11 +1,32 @@
 Changelog
 =========
 
-1.2.2 (unreleased)
+
+1.2.3 (unreleased)
 ------------------
 
 **Added**
 
+
+**Changed**
+
+
+**Removed**
+
+
+**Fixed**
+- #641 Broken Analyses list on ReferenceSample in Supplier
+
+**Security**
+
+
+1.2.2 (2018-02-09)
+------------------
+
+**Added**
+
+- #594 Add button in Sample View for the createion of Analysis Requests
+- #607 Ability to choose sticker template based on sample type
 - #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV
 - #617 Instrument import interface: Agilent Masshunter
@@ -16,20 +37,21 @@ Changelog
 - #617 Instrument import interface: Shimadzu LC MS/MS Nexera X2
 - #537 Instrument import interface: Sysmex XT-4000i
 - #536 Instrument import interface: Sysmex XT-1800i
+- #607 Barcode and labelling depending on Sample Type
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
 - #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
-
-**Removed**
-
 
 **Changed**
 
 - #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
+- #619 Changed listing tables search logic to operate on catalog metadata
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
 
 - #637 Analysis Requests are never transitioned to assigned/unassigned
+- #639 Analysis Requests from inside Batch are not filtered correctly
+- #591 Fixed workflow publish recursion error that reached max depth
 - #634 Fix undefined Symbols in Sample Transition Guards
 - #616 Fix character encodings in analysisservice duplication
 - #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
@@ -39,9 +61,7 @@ Changelog
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
 - #628 Hide Department on lab contact inherited from Person
-
-**Security**
-
+- #631 Traceback on stickers display
 
 
 1.2.1 (2018-01-26)
@@ -119,7 +139,6 @@ Changelog
 
 **Fixed**
 
-- #631 Traceback on stickers display
 - #494 Rejection reasons widget does not appear on rejection
 - #492 Fix AR Add Form: CC Contacts not set on Contact Change
 - #489 Worksheet Templates selection list is empty in Worksheets view

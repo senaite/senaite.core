@@ -13,15 +13,16 @@ contributions descending.
 - Ramon Bartl, rb@ridingbytes.com
 - Anneline Sweetname, anneline@bikalabs.com
 - Godfrey Leibbrandt, godfrey@bikalabs.com
+- Juan Gallostra, jgallostra@naralabs.com
 - Mike Metcalfe, mike@webtide.co.za
 - Jurie-Jan Botha, juriejanbotha@gmail.com
-- Juan Gallostra, jgallostra@naralabs.com
 - Inus Scheepers, inus@bikalabs.com
 - Oliver Roch, oliver.roch@d9t.de
 - Alexander Karlsson, ak.zylinx@gmail.com
 - Anton Feun, anton@satides.co.za
 - Jayadeep Karnati, karnatijayadeep@gmail.com
 - Lemoene, lemoene@bikalabs.com
+- Lunga Baliwe, lunga001@gmail.com
 - Dhruv Khattar, dhruv@khattarindia.com
 - Javis Sullivan, javissullivan@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au

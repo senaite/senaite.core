@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-11-03 11:38+0000\n"
+"POT-Creation-Date: 2018-02-09 12:39+0000\n"
 "PO-Revision-Date: 2017-08-03 11:39+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Persian (Iran) (http://www.transifex.com/bikalabs/bika-lims/language/fa_IR/)\n"
@@ -22,17 +22,17 @@ msgstr ""
 msgid "AR Imports"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/ARTemplates.xml
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ARReport.xml
+#: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
 msgstr ""
 
@@ -47,80 +47,80 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Administration"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika.lims/bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Analysis.xml
+#: bika/lims/profiles/default/types/Analysis.xml
 msgid "Analysis"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisCategories.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisCategory.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisProfiles.xml
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisProfiles.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Analysis Request"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
-#: bika.lims/bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
+#: bika/lims/profiles/default/types/Batch.xml
 msgid "Analysis Requests"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml
+#: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisServices.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisServices.xml
 msgid "Analysis Services"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisSpec.xml
+#: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisSpecs.xml
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisSpecs.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Specifications"
 msgstr ""
 
@@ -133,82 +133,82 @@ msgstr ""
 msgid "Attach"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Attachment.xml
+#: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AttachmentType.xml
+#: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/AttachmentTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
 msgstr ""
 
 msgid "Attachment due"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/BatchLabel.xml
+#: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/BatchLabels.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/BatchLabels.xml
 msgid "Batch Labels"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/BatchFolder.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/BikaSetup.xml
+#: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Bika Setup"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Calculation.xml
+#: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Calculations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Calculations.xml
 msgid "Calculations"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
 msgstr ""
 
 msgid "Cancel"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
-#: bika.lims/bika/lims/profiles/default/types/ClientFolder.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr ""
 
@@ -218,35 +218,35 @@ msgstr ""
 msgid "Complete"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Contact.xml
-#: bika.lims/bika/lims/profiles/default/types/SupplierContact.xml
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/SupplierContact.xml
 msgid "Contact"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
-#: bika.lims/bika/lims/profiles/default/types/Supplier.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Contacts"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Container.xml
+#: bika/lims/profiles/default/types/Container.xml
 msgid "Container"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ContainerType.xml
+#: bika/lims/profiles/default/types/ContainerType.xml
 msgid "Container Type"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/ContainerTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Containers.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice"
 msgstr ""
 
@@ -256,11 +256,11 @@ msgstr ""
 msgid "Deactivate"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Department.xml
+#: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Departments.xml
+#: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
 msgstr ""
 
@@ -276,24 +276,24 @@ msgstr ""
 msgid "Disposed"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
 msgstr ""
 
 msgid "Dormant"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml
+#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ARImport.xml
-#: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisCategory.xml
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Pricelist.xml
+#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
 msgstr ""
 
@@ -303,69 +303,69 @@ msgstr ""
 msgid "Expired"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/InvoiceBatch.xml
+#: bika/lims/profiles/default/types/InvoiceBatch.xml
 msgid "Export Batch To CSV"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/actions.xml
 msgid "Extracts"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/actions.xml
 msgid "Home"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/IdentifierType.xml
+#: bika/lims/profiles/default/types/IdentifierType.xml
 msgid "Identifier Type"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/IdentifierTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/IdentifierTypes.xml
 msgid "Identifier Types"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/actions.xml
 msgid "Import"
 msgstr ""
 
 msgid "Imported"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr ""
 
 msgid "Inactive"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml
+#: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml
-#: bika.lims/bika/lims/profiles/default/types/Instruments.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentType.xml
+#: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
 msgstr ""
 
@@ -375,83 +375,83 @@ msgstr ""
 msgid "Invalidate"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika.lims/bika/lims/profiles/default/types/Invoice.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/LabContact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Department.xml
-#: bika.lims/bika/lims/profiles/default/types/LabContacts.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Department.xml
+#: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/LabProducts.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/LabProducts.xml
 msgid "Lab Products"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Laboratory.xml
+#: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika.lims/bika/lims/profiles/default/types/Sample.xml
-#: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Log"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Contact.xml
-#: bika.lims/bika/lims/profiles/default/types/LabContact.xml
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Maintenance"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Manufacturer.xml
+#: bika/lims/profiles/default/types/Manufacturer.xml
 msgid "Manufacturer"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Manufacturers.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Method.xml
+#: bika/lims/profiles/default/types/Method.xml
 msgid "Method"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Methods.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
 msgstr ""
 
@@ -467,7 +467,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr ""
 
@@ -477,44 +477,44 @@ msgstr ""
 msgid "Prepublish"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Preservation.xml
+#: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
 msgstr ""
 
 msgid "Preservation required"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Preservations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
 msgstr ""
 
 msgid "Preserve"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Pricelist.xml
+#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/PricelistFolder.xml
+#: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/actions.xml
 msgid "Prices"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika.lims/bika/lims/profiles/default/types/Invoice.xml
-#: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
+#: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Pricelist.xml
+#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
 msgstr ""
 
@@ -524,15 +524,15 @@ msgstr ""
 msgid "Published"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr ""
 
@@ -545,42 +545,42 @@ msgstr ""
 msgid "Received"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml
+#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReferenceDefinition.xml
+#: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/ReferenceDefinitions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
-#: bika.lims/bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
-#: bika.lims/bika/lims/profiles/default/types/Supplier.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
+#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/controlpanel.xml
 msgid "Reflex Rules"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReflexRuleFolder.xml
+#: bika/lims/profiles/default/types/ReflexRuleFolder.xml
 msgid "Reflex Rules Folder"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReflexRule.xml
+#: bika/lims/profiles/default/types/ReflexRule.xml
 msgid "ReflexRule"
 msgstr ""
 
@@ -593,7 +593,7 @@ msgstr ""
 msgid "Reject"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml
+#: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
 msgstr ""
 
@@ -603,19 +603,19 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
-#: bika.lims/bika/lims/profiles/default/types/Report.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/Report.xml
 msgid "Report"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
 msgstr ""
 
 msgid "Republish"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
 msgstr ""
 
@@ -625,51 +625,51 @@ msgstr ""
 msgid "Retracted"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml
+#: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/SampleConditions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SampleMatrix.xml
+#: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml
+#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample Partitions"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SamplePoint.xml
+#: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/SamplePoints.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SampleType.xml
+#: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/SampleTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleTypes.xml
 msgid "Sample Types"
 msgstr ""
 
@@ -688,51 +688,51 @@ msgstr ""
 msgid "Sample registered"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr ""
 
 msgid "Sampled"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
-#: bika.lims/bika/lims/profiles/default/types/Batch.xml
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SamplesFolder.xml
+#: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SamplingDeviation.xml
+#: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/SamplingDeviations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "Sampling Round Template"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
-#: bika.lims/bika/lims/profiles/default/types/SRTemplates.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SRTemplates.xml
 msgid "Sampling Round Templates"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Sampling Rounds"
 msgstr ""
 
 msgid "Sampling workflow"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
 msgstr ""
 
@@ -742,47 +742,47 @@ msgstr ""
 msgid "Scheduled sampling"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/actions.xml
 msgid "Sharing"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika.lims/bika/lims/profiles/default/types/Sample.xml
-#: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
 msgid "Statements"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Batch.xml
-#: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Sticker"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika.lims/bika/lims/profiles/default/types/Batch.xml
-#: bika.lims/bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Sample.xml
 msgid "Stickers preview"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/StorageLocation.xml
+#: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/StorageLocations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SubGroup.xml
+#: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/SubGroups.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
 msgstr ""
 
@@ -792,21 +792,21 @@ msgstr ""
 msgid "Submit for verification"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Supplier.xml
+#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/Suppliers.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml
+#: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml
+#: bika/lims/profiles/default/types/SupplyOrderFolder.xml
 msgid "Supply Orders"
 msgstr ""
 
@@ -831,7 +831,7 @@ msgstr ""
 msgid "Validate"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
 msgstr ""
 
@@ -841,31 +841,31 @@ msgstr ""
 msgid "Verify"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/ARImport.xml
-#: bika.lims/bika/lims/profiles/default/types/ARReport.xml
-#: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARReport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "View"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "WINE-40: Do not move or remove this entry."
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/types/WorksheetTemplate.xml
+#: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: bika.lims/bika/lims/profiles/default/types/WorksheetTemplates.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
 msgstr ""
 
-#: bika.lims/bika/lims/profiles/default/actions.xml
-#: bika.lims/bika/lims/profiles/default/types/WorksheetFolder.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr ""
 
