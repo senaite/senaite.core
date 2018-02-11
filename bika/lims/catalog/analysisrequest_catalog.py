@@ -39,6 +39,7 @@ _indexes_dict = {
     # To sort in lists
     'getClientTitle': 'FieldIndex',
     'getPrioritySortkey': 'FieldIndex',
+    'assigned_state': 'FieldIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [

@@ -26,6 +26,7 @@ from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import ISamplePrepWorkflow, IDuplicateAnalysis
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
@@ -1311,14 +1312,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def workflow_script_assign(self):
-        # TODO Workflow Assign Analysis - Seems there is no reason to add an
-        # after/before event script for assign transition. In fact, transitions
-        # assign and unassign from AR and Worksheet would eventually be removed
-        pass
+        events.after_assign(self)
 
     @security.public
     def workflow_script_unassign(self):
-        # TODO Workflow UnAssign Analysis - Seems there is no reason to add an
-        # after/before event script for assign transition. In fact, transitions
-        # assign and unassign from AR and Worksheet would eventually be removed
-        pass
+        events.after_unassign(self)

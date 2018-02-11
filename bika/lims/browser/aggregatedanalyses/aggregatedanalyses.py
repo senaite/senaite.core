@@ -62,7 +62,6 @@ class AggregatedAnalysesView(AnalysesView):
              'transitions': [{'id': 'sample'},
                              {'id': 'submit'},
                              {'id': 'cancel'},
-                             # {'id': 'assign'}
                              ],
              'contentFilter': {'review_state': [
                 'sample_received', 'assigned', 'attachment_due'],

@@ -10,11 +10,14 @@ Changelog
 
 **Changed**
 
+- #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
 
 **Removed**
 
 
 **Fixed**
+
+- #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
 
 **Security**
