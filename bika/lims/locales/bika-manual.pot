@@ -109,3 +109,8 @@ msgstr ""
 
 msgid "Submit for verification"
 msgstr ""
+
+msgid "Display Columns"
+msgstr ""
+msgid "Display Columns"
+msgstr ""
