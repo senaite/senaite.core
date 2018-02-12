@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #647 Refactored bika.lims.bikalisting.js + several functional fixtures
 - #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
 
 **Removed**
