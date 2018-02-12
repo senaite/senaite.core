@@ -27,7 +27,6 @@ def ObjectInitializedEventHandler(instance, event):
 
     ar = instance.getRequest()
     ar_state = wf_tool.getInfoFor(ar, 'review_state')
-    ar_ws_state = wf_tool.getInfoFor(ar, 'worksheetanalysis_review_state')
 
     # Set the state of the analysis depending on the state of the AR.
     if ar_state in ('sample_registered',
