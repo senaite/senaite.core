@@ -749,7 +749,7 @@ def get_workflow_status_of(brain_or_object, state_var="review_state"):
     """
     workflow = get_tool("portal_workflow")
     obj = get_object(brain_or_object)
-    return workflow.getInfoFor(ob=obj, name=state_var)
+    return workflow.getInfoFor(ob=obj, name=state_var, default='')
 
 
 def get_creation_date(brain_or_object):
