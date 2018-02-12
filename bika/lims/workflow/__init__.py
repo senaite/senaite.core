@@ -370,7 +370,6 @@ def getReviewHistory(instance):
     review_history.reverse()
     return review_history
 
-@deprecated('Use api.get_workflow_status_of instead')
 def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
