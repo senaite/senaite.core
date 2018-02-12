@@ -100,6 +100,7 @@ _columns_list = [
     'getHazardous',
     'getSamplingWorkflowEnabled',
     'getDepartmentUIDs',
+    'assigned_state',
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()
