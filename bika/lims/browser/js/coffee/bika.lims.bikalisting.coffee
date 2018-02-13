@@ -40,41 +40,41 @@ class window.BikaListingTableView
     console.debug "ListingTableView::bind_eventhandler"
 
     # Table header clicked for sorting
-    $("form[name=bika_listing_form]").on "click", "th.sortable", @on_column_header_click
+    $("form").on "click", "th.sortable", @on_column_header_click
 
     # Show More clickd
-    $("form[name=bika_listing_form]").on "click", "a.bika_listing_show_more", @on_show_more_click
+    $("form").on "click", "a.bika_listing_show_more", @on_show_more_click
 
     # Single checkbox clicked
-    $("form[name=bika_listing_form]").on "click", "input[type='checkbox'][id*='_cb_']", @on_checkbox_click
+    $("form").on "click", "input[type='checkbox'][id*='_cb_']", @on_checkbox_click
 
     # Check all checkbox clicked
-    $("form[name=bika_listing_form]").on "click", "input[id*='select_all']", @on_select_all_click
+    $("form").on "click", "input[id*='select_all']", @on_select_all_click
 
     # Enter keypress in search field
-    $("form[name=bika_listing_form]").on "keypress", ".filter-search-input", @on_search_field_keypress
+    $("form").on "keypress", ".filter-search-input", @on_search_field_keypress
 
     # Search button clicked (magnifier in search field)
-    $("form[name=bika_listing_form]").on "click", ".filter-search-button", @on_search_button_click
+    $("form").on "click", ".filter-search-button", @on_search_button_click
 
     # Context menu
-    $("form[name=bika_listing_form]").on 'contextmenu', "th[id^='foldercontents-']", @on_contextmenu
+    $("form").on 'contextmenu', "th[id^='foldercontents-']", @on_contextmenu
 
     # Workflow Button
-    $("form[name=bika_listing_form]").on "click", "input.workflow_action_button", @on_workflow_button_click
+    $("form").on "click", "input.workflow_action_button", @on_workflow_button_click
 
     # Autosave – seems to be used by sample and analysis views
-    $("form[name=bika_listing_form]").on "change", "input.autosave, select.autsave", @on_autosave_field_change
+    $("form").on "change", "input.autosave, select.autsave", @on_autosave_field_change
 
     # Category headers
-    $("form[name=bika_listing_form]").on "click", "th.collapsed, th.expanded", @on_category_header_click
+    $("form").on "click", "th.collapsed, th.expanded", @on_category_header_click
 
     # Results entry
-    $("form[name=bika_listing_form]").on "change", ".listing_string_entry, .listing_select_entry", @on_listing_entry_change
-    $("form[name=bika_listing_form]").on "keypress", ".listing_string_entry, .listing_select_entry", @on_listing_entry_keypress
+    $("form").on "change", ".listing_string_entry, .listing_select_entry", @on_listing_entry_change
+    $("form").on "keypress", ".listing_string_entry, .listing_select_entry", @on_listing_entry_keypress
 
     # Review state filter buttons
-    $("form[name=bika_listing_form]").on "click", "td.review_state_selector a", @on_review_state_filter_click
+    $("form").on "click", "td.review_state_selector a", @on_review_state_filter_click
 
     # Document click
     $(document).on "click", @on_click

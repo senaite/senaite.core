@@ -71,19 +71,19 @@
        *
        */
       console.debug("ListingTableView::bind_eventhandler");
-      $("form[name=bika_listing_form]").on("click", "th.sortable", this.on_column_header_click);
-      $("form[name=bika_listing_form]").on("click", "a.bika_listing_show_more", this.on_show_more_click);
-      $("form[name=bika_listing_form]").on("click", "input[type='checkbox'][id*='_cb_']", this.on_checkbox_click);
-      $("form[name=bika_listing_form]").on("click", "input[id*='select_all']", this.on_select_all_click);
-      $("form[name=bika_listing_form]").on("keypress", ".filter-search-input", this.on_search_field_keypress);
-      $("form[name=bika_listing_form]").on("click", ".filter-search-button", this.on_search_button_click);
-      $("form[name=bika_listing_form]").on('contextmenu', "th[id^='foldercontents-']", this.on_contextmenu);
-      $("form[name=bika_listing_form]").on("click", "input.workflow_action_button", this.on_workflow_button_click);
-      $("form[name=bika_listing_form]").on("change", "input.autosave, select.autsave", this.on_autosave_field_change);
-      $("form[name=bika_listing_form]").on("click", "th.collapsed, th.expanded", this.on_category_header_click);
-      $("form[name=bika_listing_form]").on("change", ".listing_string_entry, .listing_select_entry", this.on_listing_entry_change);
-      $("form[name=bika_listing_form]").on("keypress", ".listing_string_entry, .listing_select_entry", this.on_listing_entry_keypress);
-      $("form[name=bika_listing_form]").on("click", "td.review_state_selector a", this.on_review_state_filter_click);
+      $("form").on("click", "th.sortable", this.on_column_header_click);
+      $("form").on("click", "a.bika_listing_show_more", this.on_show_more_click);
+      $("form").on("click", "input[type='checkbox'][id*='_cb_']", this.on_checkbox_click);
+      $("form").on("click", "input[id*='select_all']", this.on_select_all_click);
+      $("form").on("keypress", ".filter-search-input", this.on_search_field_keypress);
+      $("form").on("click", ".filter-search-button", this.on_search_button_click);
+      $("form").on('contextmenu', "th[id^='foldercontents-']", this.on_contextmenu);
+      $("form").on("click", "input.workflow_action_button", this.on_workflow_button_click);
+      $("form").on("change", "input.autosave, select.autsave", this.on_autosave_field_change);
+      $("form").on("click", "th.collapsed, th.expanded", this.on_category_header_click);
+      $("form").on("change", ".listing_string_entry, .listing_select_entry", this.on_listing_entry_change);
+      $("form").on("keypress", ".listing_string_entry, .listing_select_entry", this.on_listing_entry_keypress);
+      $("form").on("click", "td.review_state_selector a", this.on_review_state_filter_click);
       $(document).on("click", this.on_click);
       $(document).on("click", ".contextmenu tr", this.on_contextmenu_item_click);
       $(this).on("ajax:submit:start", this.on_ajax_submit_start);
@@ -310,7 +310,8 @@
         processData: false,
         contentType: false
       }).done(function(data) {
-        return $(table).replaceWith(data);
+        $(table).replaceWith(data);
+        return this.load_transitions();
       });
     };
 
@@ -319,6 +320,7 @@
       /*
        * Toggle category by form and category id
        */
+      debugger;
       var base_url, cat, cat_items, cat_url, expanded, form, form_data, placeholder, url;
       form = $("form#" + form_id);
       cat = $("th.cat_header[cat=" + cat_id + "]");
@@ -343,7 +345,9 @@
         processData: false,
         contentType: false
       }).done(function(data) {
-        placeholder.replaceWith(data);
+        var rows;
+        rows = $(data).find("tr");
+        placeholder.replaceWith(rows);
         return this.load_transitions();
       });
     };
