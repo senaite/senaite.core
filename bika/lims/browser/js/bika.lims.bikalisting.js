@@ -320,7 +320,6 @@
       /*
        * Toggle category by form and category id
        */
-      debugger;
       var base_url, cat, cat_items, cat_url, expanded, form, form_data, placeholder, url;
       form = $("form#" + form_id);
       cat = $("th.cat_header[cat=" + cat_id + "]");
@@ -341,13 +340,12 @@
       form_data.set("form_id", form_id);
       form_data.set("ajax_category_expand", 1);
       return this.ajax_submit({
+        url: url,
         data: form_data,
         processData: false,
         contentType: false
       }).done(function(data) {
-        var rows;
-        rows = $(data).find("tr");
-        placeholder.replaceWith(rows);
+        placeholder.replaceWith(data);
         return this.load_transitions();
       });
     };

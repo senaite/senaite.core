@@ -345,6 +345,7 @@ class window.BikaListingTableView
 
     # send the new data to the server
     @ajax_submit
+      url: url
       data: form_data
       processData: no  # do not transform to a query string
       contentType: no # do not set any content type header
