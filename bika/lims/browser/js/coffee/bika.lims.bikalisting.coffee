@@ -307,6 +307,7 @@ class window.BikaListingTableView
       contentType: no # do not set any content type header
     .done (data) ->
       $(table).replaceWith data
+      @load_transitions()
 
 
   toggle_category: (form_id, cat_id) =>
