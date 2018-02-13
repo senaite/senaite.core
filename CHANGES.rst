@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #649 Site JS: Bind event handlers on body element
 - #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
 
@@ -42,7 +43,7 @@ Changelog
 - #536 Instrument import interface: Sysmex XT-1800i
 - #607 Barcode and labelling depending on Sample Type
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
-- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
+- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.
 
 **Changed**
 
