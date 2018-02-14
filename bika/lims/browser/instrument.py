@@ -532,9 +532,10 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                     error_amount = ((target / 100) * error) if target > 0 else 0
                     upper = smax + error_amount
                     lower = smin - error_amount
-
+                    cap_date = obj.getResultCaptureDate()
+                    cap_date = cap_date and cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
                     anrow = {
-                        'date': item['CaptureDate'],
+                        'date': cap_date,
                         'min': smin,
                         'max': smax,
                         'target': target,
