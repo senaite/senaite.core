@@ -303,7 +303,7 @@ class ReferenceResultsView(BikaListingView):
             items.append(item)
 
         items = sorted(items, key=itemgetter('Service'))
-        return item
+        return items
 
 
 class ReferenceSamplesView(BikaListingView):
