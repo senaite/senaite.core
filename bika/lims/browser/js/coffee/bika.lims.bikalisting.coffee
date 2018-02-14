@@ -630,6 +630,7 @@ class window.BikaListingTableView
       table = $(table).replaceWith data
       # focus on the search field
       $(".filter-search-input", form).select()
+      @load_transitions()
 
 
   make_context_menu: (table) ->

@@ -600,7 +600,8 @@
         contentType: false
       }).done(function(data) {
         table = $(table).replaceWith(data);
-        return $(".filter-search-input", form).select();
+        $(".filter-search-input", form).select();
+        return this.load_transitions();
       });
     };
 
