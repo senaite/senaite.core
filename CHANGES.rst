@@ -17,7 +17,7 @@ Changelog
 
 **Fixed**
 
-- #649 Site JS: Bind event handlers on body element
+- #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
 
