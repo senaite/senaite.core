@@ -381,6 +381,7 @@ class window.BikaListingTableView
       contentType: no # do not set any content type header
     .done (data) ->
       $(table).replaceWith data
+      @load_transitions()
 
 
   show_more: (form_id, pagesize, limit_from) =>

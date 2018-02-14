@@ -372,7 +372,8 @@
         processData: false,
         contentType: false
       }).done(function(data) {
-        return $(table).replaceWith(data);
+        $(table).replaceWith(data);
+        return this.load_transitions();
       });
     };
 
