@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #653 Points in QC Charts are not displayed in accordance with capture date
 - #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
 - #640 Broken Reference Sample Results view
