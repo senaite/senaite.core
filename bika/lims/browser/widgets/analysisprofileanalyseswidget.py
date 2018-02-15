@@ -102,15 +102,19 @@ class AnalysisProfileAnalysesView(BikaListingView):
             }
             self.review_states[0]["columns"].insert(1, "Hidden")
 
-    def before_render(self):
+    def folderitems(self):
+        """Processed once for all analyses
+        """
+        items = super(AnalysisProfileAnalysesView, self).folderitems()
         mtool = getToolByName(self.context, "portal_membership")
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         self.allow_edit = "LabManager" in roles or "Manager" in roles
         self.categories.sort()
+        return items
 
     def folderitem(self, obj, item, index):
-        """Processed per Analysis
+        """Processed once per analysis
         """
         cat = obj.getCategoryTitle()
         # Category (upper C) is for display column value
