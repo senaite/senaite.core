@@ -12,7 +12,7 @@ import plone
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -533,7 +533,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                     upper = smax + error_amount
                     lower = smin - error_amount
                     cap_date = obj.getResultCaptureDate()
-                    cap_date = cap_date and cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
+                    cap_date = api.is_date(cap_date) and \
+                               cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
                     anrow = {
                         'date': cap_date,
                         'min': smin,
