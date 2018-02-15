@@ -93,7 +93,6 @@
     </type>
     <type type_id="AnalysisRequest">
       <bound-workflow workflow_id="bika_ar_workflow"/>
-      <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
       <bound-workflow workflow_id="bika_cancellation_workflow"/>
     </type>
 

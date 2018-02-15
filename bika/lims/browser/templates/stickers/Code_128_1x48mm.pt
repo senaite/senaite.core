@@ -39,13 +39,6 @@
     smart_id          python:part.getId() if show_partitions else sample.getId();
     hazardous         python:sample.getSampleType().getHazardous();">
 
-    <!-- Sample ID -->
-    <div class="sample-id">
-        <!--span tal:replace="string:${smart_id}"/-->
-        <img tal:condition="hazardous | nothing"
-             tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
-    </div>
-
     <!-- Barcode -->
     <div class="barcode"
         tal:attributes="data-id smart_id;"
@@ -59,7 +52,14 @@
     <div class="analysisrequest-info">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="client-sample-id" tal:content="python:'%s: %s' % ('CSID', client_sample_id if client_sample_id else '---')"/>
+                <td rowspan="2" tal:condition="hazardous | nothing">
+                    <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
+                </td>
+                <td colspan="2" class="client-sample-id" tal:content="python:smart_id"></td>
+            </tr>
+            <tr>
+                <td tal:content="python:sample_type"></td>
+                <td tal:content="python:date_sampled"></td>
             </tr>
         </table>
     </div>

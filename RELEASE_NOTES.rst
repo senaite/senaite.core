@@ -1,6 +1,16 @@
 Release notes
 =============
 
+Update from 1.2.2 to 1.2.3
+--------------------------
+
+- IMPORTANT: Plan the upgrade with enough time
+  This update might take long depending on the number of Analysis Requests
+  registered in the system because a new index and column 'assigned_state' has
+  been added in Analysis Requests catalog, that require the catalog to be
+  reindexed (see #637).
+
+
 Update from 1.2.1 to 1.2.2
 --------------------------
 

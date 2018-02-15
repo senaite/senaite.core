@@ -71,20 +71,23 @@
 
       /*
        * Binds callbacks on elements
+       *
+       * N.B. We attach all the events to the form and refine the selector to
+       * delegate the event: https://learn.jquery.com/events/event-delegation/
        */
       console.debug("SiteView::bind_eventhandler");
-      $('.service_title span:not(.before)').on('click', this.on_analysis_service_title_click);
-      $("#ReferenceDefinition\\:list").on("change", this.on_reference_definition_list_change);
-      $('.numeric').on('keypress', this.on_numeric_field_keypress);
-      $('.numeric').on('paste', this.on_numeric_field_paste);
-      $("input[name*='\\:int\'], .ArchetypesIntegerWidget input").on("keyup", this.on_at_integer_field_keyup);
-      $("input[name*='\\:float\'], .ArchetypesDecimalWidget input").on("keyup", this.on_at_float_field_keyup);
-      $("input.autocomplete").on("keydown", this.on_autocomplete_keydown);
-      $("#department_filter_submit").on("click", this.on_department_filter_submit);
-      $("#admin_dep_filter_enabled").on("change", this.on_admin_dep_filter_change);
-      $("select[name='Departments:list']").on("change", this.on_department_list_change);
-      $(".date_range_start").on("change", this.on_date_range_start_change);
-      $(".date_range_end").on("change", this.on_date_range_end_change);
+      $("body").on("click", ".service_title span:not(.before)", this.on_analysis_service_title_click);
+      $("body").on("change", "#ReferenceDefinition\\:list", this.on_reference_definition_list_change);
+      $("body").on("keypress", ".numeric", this.on_numeric_field_keypress);
+      $("body").on("paste", ".numeric", this.on_numeric_field_paste);
+      $("body").on("keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", this.on_at_integer_field_keyup);
+      $("body").on("keyup", "input[name*='\\:float\'], .ArchetypesDecimalWidget input", this.on_at_float_field_keyup);
+      $("body").on("keydown", "input.autocomplete", this.on_autocomplete_keydown);
+      $("body").on("click", "#department_filter_submit", this.on_department_filter_submit);
+      $("body").on("change", "#admin_dep_filter_enabled", this.on_admin_dep_filter_change);
+      $("body").on("change", "select[name='Departments:list']", this.on_department_list_change);
+      $("body").on("change", ".date_range_start", this.on_date_range_start_change);
+      $("body").on("change", ".date_range_end", this.on_date_range_end_change);
       $(document).on("ajaxStart", this.on_ajax_start);
       $(document).on("ajaxStop", this.on_ajax_end);
       return $(document).on("ajaxError", this.on_ajax_error);
