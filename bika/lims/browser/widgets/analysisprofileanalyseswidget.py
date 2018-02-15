@@ -173,6 +173,10 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
         """
         service_uids = form.get("uids", None)
 
+        # remember the context, because we need to pass that later to the
+        # listing view (see method `Analyses` below)
+        self.instance = instance
+
         if instance.portal_type == "AnalysisProfile":
             # Hidden analyses?
             outs = []
@@ -192,7 +196,11 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
         """ Print analyses table
         """
         fieldvalue = getattr(field, field.accessor)()
-        view = AnalysisProfileAnalysesView(self,
+
+        # N.B. we do not want to pass the field as the context to
+        # AnalysisProfileAnalysesView, but rather the holding instance
+        instance = getattr(self, "instance", field.aq_parent)
+        view = AnalysisProfileAnalysesView(instance,
                                            self.REQUEST,
                                            fieldvalue=fieldvalue,
                                            allow_edit=allow_edit)
