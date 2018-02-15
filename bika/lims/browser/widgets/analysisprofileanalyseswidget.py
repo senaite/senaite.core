@@ -105,11 +105,11 @@ class AnalysisProfileAnalysesView(BikaListingView):
     def folderitems(self):
         """Processed once for all analyses
         """
-        items = super(AnalysisProfileAnalysesView, self).folderitems()
         mtool = getToolByName(self.context, "portal_membership")
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         self.allow_edit = "LabManager" in roles or "Manager" in roles
+        items = super(AnalysisProfileAnalysesView, self).folderitems()
         self.categories.sort()
         return items
 
