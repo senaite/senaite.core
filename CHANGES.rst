@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #658 Worksheet listing view shows old- invalid Analysts
 - #654 Default's Multi Analysis Request report gives a Traceback
 - #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned
