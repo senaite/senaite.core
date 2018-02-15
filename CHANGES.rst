@@ -11,6 +11,8 @@ Changelog
 **Changed**
 
 - #659 Display the Unit in Profile Analyses Listing
+- #636 Do not display "Advanced..." item in object's workflow actions menu
+- #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
 - #655 Updated German Translations
 - #647 Refactored bika.lims.bikalisting.js + several functional fixtures
 - #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
@@ -20,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #654 Default's Multi Analysis Request report gives a Traceback
 - #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
