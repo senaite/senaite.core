@@ -96,68 +96,62 @@ class AnalysisProfileAnalysesView(BikaListingView):
             }
             self.review_states[0]["columns"].insert(1, "Hidden")
 
-    def folderitems(self):
-        self.categories = []
-
+    def before_render(self):
         mtool = getToolByName(self.context, "portal_membership")
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         self.allow_edit = "LabManager" in roles or "Manager" in roles
-
-        items = BikaListingView.folderitems(self)
-
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item["obj"]
-
-            cat = obj.getCategoryTitle()
-            # Category (upper C) is for display column value
-            item["Category"] = cat
-            if self.do_cats:
-                # category is for bika_listing to groups entries
-                item["category"] = cat
-                if cat not in self.categories:
-                    self.categories.append(cat)
-
-            analyses = [a.UID() for a in self.fieldvalue]
-
-            item["selected"] = item["uid"] in analyses
-            item["class"]["Title"] = "service_title"
-
-            calculation = obj.getCalculation()
-            item["Calculation"] = calculation and calculation.Title()
-
-            locale = locales.getLocale("en")
-            currency = self.context.bika_setup.getCurrency()
-            symbol = locale.numbers.currencies[currency].symbol
-            item["Price"] = "{} {}".format(symbol, obj.getPrice())
-            item["class"]["Price"] = "nowrap"
-
-            after_icons = ""
-            if obj.getAccredited():
-                after_icons += "<img src='{}/++resource++bika.lims.images/accredited.png' title='{}'>".format(
-                    self.context.absolute_url(), _("Accredited"))
-            if obj.getReportDryMatter():
-                after_icons += "<img src='{}/++resource++bika.lims.images/dry.png' title='{}'>".format(
-                    self.context.absolute_url(), _("Can be reported as dry matter"))
-            if obj.getAttachmentOption() == "r":
-                after_icons += "<img src='{}/++resource++bika.lims.images/attach_reqd.png' title='{}'>".format(
-                    self.context.absolute_url(), _("Attachment required"))
-            if obj.getAttachmentOption() == "n":
-                after_icons += "<img src='%s/++resource++bika.lims.images/attach_no.png' title='%s'>".format(
-                    self.context.absolute_url(), _('Attachment not permitted'))
-            if after_icons:
-                item["after"]["Title"] = after_icons
-
-            if self.profile:
-                # Display analyses for this Analysis Service in results?
-                ser = self.profile.getAnalysisServiceSettings(obj.UID())
-                item["allow_edit"] = ["Hidden", ]
-                item["Hidden"] = ser.get("hidden", obj.getHidden())
-
         self.categories.sort()
-        return items
+
+    def folderitem(self, obj, item, index):
+        """Processed per Analysis
+        """
+        cat = obj.getCategoryTitle()
+        # Category (upper C) is for display column value
+        item["Category"] = cat
+        if self.do_cats:
+            # category is for bika_listing to groups entries
+            item["category"] = cat
+            if cat not in self.categories:
+                self.categories.append(cat)
+
+        analyses = [a.UID() for a in self.fieldvalue]
+
+        item["selected"] = item["uid"] in analyses
+        item["class"]["Title"] = "service_title"
+
+        calculation = obj.getCalculation()
+        item["Calculation"] = calculation and calculation.Title()
+
+        locale = locales.getLocale("en")
+        currency = self.context.bika_setup.getCurrency()
+        symbol = locale.numbers.currencies[currency].symbol
+        item["Price"] = "{} {}".format(symbol, obj.getPrice())
+        item["class"]["Price"] = "nowrap"
+
+        after_icons = ""
+        if obj.getAccredited():
+            after_icons += "<img src='{}/++resource++bika.lims.images/accredited.png' title='{}'>".format(
+                self.context.absolute_url(), _("Accredited"))
+        if obj.getReportDryMatter():
+            after_icons += "<img src='{}/++resource++bika.lims.images/dry.png' title='{}'>".format(
+                self.context.absolute_url(), _("Can be reported as dry matter"))
+        if obj.getAttachmentOption() == "r":
+            after_icons += "<img src='{}/++resource++bika.lims.images/attach_reqd.png' title='{}'>".format(
+                self.context.absolute_url(), _("Attachment required"))
+        if obj.getAttachmentOption() == "n":
+            after_icons += "<img src='%s/++resource++bika.lims.images/attach_no.png' title='%s'>".format(
+                self.context.absolute_url(), _('Attachment not permitted'))
+        if after_icons:
+            item["after"]["Title"] = after_icons
+
+        if self.profile:
+            # Display analyses for this Analysis Service in results?
+            ser = self.profile.getAnalysisServiceSettings(obj.UID())
+            item["allow_edit"] = ["Hidden", ]
+            item["Hidden"] = ser.get("hidden", obj.getHidden())
+
+        return item
 
 
 class AnalysisProfileAnalysesWidget(TypesWidget):
