@@ -747,12 +747,8 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'receive'},
                              {'id': 'retract'},
-                             {'id': 'verify'},
                              {'id': 'prepublish'},
-                             {'id': 'publish'},
-                             {'id': 'republish'},
-                             {'id': 'cancel'},
-                             {'id': 'reinstate'}],
+                             {'id': 'cancel'},],
              'custom_transitions': [{
                  'id': 'print_stickers',
                  'title': _('Print stickers'),
