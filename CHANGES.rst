@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #627 Unassigned filter on Analysis Requests view does not work
 - #659 Display the Unit in Profile Analyses Listing
 - #636 Do not display "Advanced..." item in object's workflow actions menu
 - #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
