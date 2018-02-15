@@ -57,6 +57,11 @@ class AnalysisProfileAnalysesView(BikaListingView):
                 "index": "sortable_title",
                 "sortable": False,
             },
+            "Unit": {
+                "title": _("Unit"),
+                "index": "getUnit",
+                "sortable": False,
+            },
             "Price": {
                 "title": _("Price"),
                 "sortable": False,
@@ -70,6 +75,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
                 "contentFilter": {},
                 "columns": [
                     "Title",
+                    "Unit",
                     "Price",
                 ],
                 "transitions": [
@@ -97,6 +103,8 @@ class AnalysisProfileAnalysesView(BikaListingView):
             self.review_states[0]["columns"].insert(1, "Hidden")
 
     def before_render(self):
+        """Before render hook
+        """
         mtool = getToolByName(self.context, "portal_membership")
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
