@@ -10,11 +10,14 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from zope.component.interfaces import ComponentLookupError
 from bika.lims.utils import createPdf, to_int
 from bika.lims.vocabularies import getStickerTemplates
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 import glob, os, os.path, sys, traceback
+from bika.lims.interfaces import IGetStickerTemplates
+from zope.component import getAdapters
 
 import os
 import App
@@ -168,8 +171,22 @@ class Sticker(BrowserView):
                  'title': <teamplate_title>,
                  'selected: True/False'}
         """
-        seltemplate = self.getSelectedTemplate()
+        # Getting adapters for current context. those adapters will return
+        # the desired sticker templates for the current context:
+        try:
+            adapters = getAdapters((self.context, ), IGetStickerTemplates)
+        except ComponentLookupError:
+            logger.info('No IGetStickerTemplates adapters found.')
+            adapters = None
         templates = []
+        if adapters is not None:
+            # Gather all templates
+            for name, adapter in adapters:
+                templates += adapter(self.request)
+        if templates:
+            return templates
+        # If there are no adapters, get all sticker templates in the system
+        seltemplate = self.getSelectedTemplate()
         for temp in getStickerTemplates(filter_by_type=self.filter_by_type):
             out = temp
             out['selected'] = temp.get('id', '') == seltemplate

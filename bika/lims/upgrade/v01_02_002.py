@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.browser.dashboard.dashboard import \
@@ -13,6 +14,7 @@ from bika.lims.browser.dashboard.dashboard import \
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.vocabularies import getStickerTemplates
 
 version = '1.2.2'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -47,6 +49,9 @@ def upgrade(tool):
     # section from Dashboard
     add_sample_section_in_dashboard(portal)
 
+    # Ability to choose the sticker templates based on sample types (#607)
+    set_sample_type_default_stickers(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
@@ -69,3 +74,26 @@ def fix_worksheet_template_index(portal, ut):
     
 def add_sample_section_in_dashboard(portal):
     setup_dashboard_panels_visibility_registry('samples')
+
+def set_sample_type_default_stickers(portal):
+    """
+    Fills the admitted stickers and their default stickers to every sample
+    type.
+    """
+    # Getting all sticker templates
+    stickers = getStickerTemplates()
+    sticker_ids = []
+    for sticker in stickers:
+        sticker_ids.append(sticker.get('id'))
+    def_small_template = portal.bika_setup.getSmallStickerTemplate()
+    def_large_template = portal.bika_setup.getLargeStickerTemplate()
+    # Getting all Sample Type objects
+    catalog = api.get_tool('bika_setup_catalog')
+    brains = catalog(portal_type='SampleType')
+    for brain in brains:
+        obj = api.get_object(brain)
+        if obj.getAdmittedStickers() is not None:
+            continue
+        obj.setAdmittedStickers(sticker_ids)
+        obj.setDefaultLargeSticker(def_large_template)
+        obj.setDefaultSmallSticker(def_small_template)

@@ -510,6 +510,9 @@
       field = $("#SamplingDate-" + arnum);
       value = sample.sampling_date;
       field.val(value);
+      field = $("#DateSampled-" + arnum);
+      value = sample.date_sampled;
+      field.val(value);
       field = $("#SampleType-" + arnum);
       uid = sample.sample_type_uid;
       title = sample.sample_type_title;

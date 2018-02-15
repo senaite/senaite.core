@@ -27,7 +27,6 @@ def ObjectInitializedEventHandler(instance, event):
 
     ar = instance.getRequest()
     ar_state = wf_tool.getInfoFor(ar, 'review_state')
-    ar_ws_state = wf_tool.getInfoFor(ar, 'worksheetanalysis_review_state')
 
     # Set the state of the analysis depending on the state of the AR.
     if ar_state in ('sample_registered',
@@ -44,11 +43,6 @@ def ObjectInitializedEventHandler(instance, event):
         ar.REQUEST['workflow_skiplist'].append("retract all analyses")
         wf_tool.doActionFor(ar, 'retract')
         ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
-
-    if ar_ws_state == 'assigned':
-        # TODO workflow: analysis request can be 'assigned'?
-        wf_tool.doActionFor(ar, 'unassign')
-        skip(ar, 'unassign', unskip=True)
 
     return
 
@@ -117,15 +111,5 @@ def ObjectRemovedEventHandler(instance, event):
         except WorkflowException:
             pass
         skip(ar, 'publish', unskip=True)
-
-    ar_ws_state = workflow.getInfoFor(ar, 'worksheetanalysis_review_state')
-    if ar_ws_state == 'unassigned':
-        if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
-            if ar.getAnalyses(worksheetanalysis_review_state = 'assigned'):
-                try:
-                    workflow.doActionFor(ar, 'assign')
-                except WorkflowException:
-                    pass
-                skip(ar, 'assign', unskip=True)
 
     return

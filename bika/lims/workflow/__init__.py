@@ -5,7 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import enum
+from bika.lims import enum, api, deprecated
 from bika.lims import PMF
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
@@ -370,13 +370,11 @@ def getReviewHistory(instance):
     review_history.reverse()
     return review_history
 
-
 def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
     """
-    wf = getToolByName(obj, 'portal_workflow')
-    return wf.getInfoFor(obj, stateflowid, '')
+    return api.get_workflow_status_of(obj, stateflowid)
 
 def in_state(obj, states, stateflowid='review_state'):
     """ Returns if the object passed matches with the states passed in

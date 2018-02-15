@@ -1,11 +1,45 @@
 Changelog
 =========
 
-1.2.2 (unreleased)
+
+1.2.3 (unreleased)
 ------------------
 
 **Added**
 
+
+**Changed**
+
+- #627 Unassigned filter on Analysis Requests view does not work
+- #659 Display the Unit in Profile Analyses Listing
+- #636 Do not display "Advanced..." item in object's workflow actions menu
+- #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
+- #655 Updated German Translations
+- #647 Refactored bika.lims.bikalisting.js + several functional fixtures
+- #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
+
+**Removed**
+
+
+**Fixed**
+
+- #550 Wrong Listings of Analyses called from Dashboard
+- #654 Default's Multi Analysis Request report gives a Traceback
+- #649 Specification fields decimal-mark validator not working for new opened categories
+- #637 Analysis Requests are never transitioned to assigned/unassigned
+- #641 Broken Analyses list on ReferenceSample in Supplier
+- #640 Broken Reference Sample Results view
+
+**Security**
+
+
+1.2.2 (2018-02-09)
+------------------
+
+**Added**
+
+- #594 Add button in Sample View for the createion of Analysis Requests
+- #607 Ability to choose sticker template based on sample type
 - #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV
 - #617 Instrument import interface: Agilent Masshunter
@@ -16,19 +50,19 @@ Changelog
 - #617 Instrument import interface: Shimadzu LC MS/MS Nexera X2
 - #537 Instrument import interface: Sysmex XT-4000i
 - #536 Instrument import interface: Sysmex XT-1800i
+- #607 Barcode and labelling depending on Sample Type
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
-- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
-
-**Removed**
-
+- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.
 
 **Changed**
 
+- #619 Changed listing tables search logic to operate on catalog metadata
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
 
-- #550 Wrong Listings of Analyses called from Dashboard
+- #639 Analysis Requests from inside Batch are not filtered correctly
+- #591 Fixed workflow publish recursion error that reached max depth
 - #634 Fix undefined Symbols in Sample Transition Guards
 - #616 Fix character encodings in analysisservice duplication
 - #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
@@ -38,9 +72,7 @@ Changelog
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
 - #628 Hide Department on lab contact inherited from Person
-
-**Security**
-
+- #631 Traceback on stickers display
 
 
 1.2.1 (2018-01-26)
@@ -118,7 +150,6 @@ Changelog
 
 **Fixed**
 
-- #631 Traceback on stickers display
 - #494 Rejection reasons widget does not appear on rejection
 - #492 Fix AR Add Form: CC Contacts not set on Contact Change
 - #489 Worksheet Templates selection list is empty in Worksheets view

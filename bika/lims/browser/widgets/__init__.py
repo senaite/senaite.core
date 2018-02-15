@@ -29,3 +29,4 @@ from .reflexrulewidget import ReflexRuleWidget
 from .rejectionwidget import RejectionWidget
 from .priorityselectionwidget import  PrioritySelectionWidget
 from .comboboxwidget import ComboBoxWidget
+from .sampletypestickerswidget import SampleTypeStickersWidget
