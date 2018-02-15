@@ -132,21 +132,21 @@ class AnalysisProfileAnalysesView(BikaListingView):
         locale = locales.getLocale("en")
         currency = self.context.bika_setup.getCurrency()
         symbol = locale.numbers.currencies[currency].symbol
-        item["Price"] = "{} {}".format(symbol, obj.getPrice())
+        item["Price"] = u"{} {}".format(symbol, obj.getPrice())
         item["class"]["Price"] = "nowrap"
 
         after_icons = ""
         if obj.getAccredited():
-            after_icons += "<img src='{}/++resource++bika.lims.images/accredited.png' title='{}'>".format(
+            after_icons += u"<img src='{}/++resource++bika.lims.images/accredited.png' title='{}'>".format(
                 self.context.absolute_url(), _("Accredited"))
         if obj.getReportDryMatter():
-            after_icons += "<img src='{}/++resource++bika.lims.images/dry.png' title='{}'>".format(
+            after_icons += u"<img src='{}/++resource++bika.lims.images/dry.png' title='{}'>".format(
                 self.context.absolute_url(), _("Can be reported as dry matter"))
         if obj.getAttachmentOption() == "r":
-            after_icons += "<img src='{}/++resource++bika.lims.images/attach_reqd.png' title='{}'>".format(
+            after_icons += u"<img src='{}/++resource++bika.lims.images/attach_reqd.png' title='{}'>".format(
                 self.context.absolute_url(), _("Attachment required"))
         if obj.getAttachmentOption() == "n":
-            after_icons += "<img src='%s/++resource++bika.lims.images/attach_no.png' title='%s'>".format(
+            after_icons += u"<img src='%s/++resource++bika.lims.images/attach_no.png' title='%s'>".format(
                 self.context.absolute_url(), _('Attachment not permitted'))
         if after_icons:
             item["after"]["Title"] = after_icons
