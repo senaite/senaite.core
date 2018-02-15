@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #636 Do not display "Advanced..." item in object's workflow actions menu
 - #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
 - #655 Updated German Translations
 - #647 Refactored bika.lims.bikalisting.js + several functional fixtures
