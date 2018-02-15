@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
 - #655 Updated German Translations
 - #647 Refactored bika.lims.bikalisting.js + several functional fixtures
 - #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
