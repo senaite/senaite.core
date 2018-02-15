@@ -122,6 +122,7 @@ class SetAnalyst():
         if not mtool.getMemberById(value):
             return
         self.context.setAnalyst(value)
+        self.context.reindexObject()
 
 
 class SetInstrument():
