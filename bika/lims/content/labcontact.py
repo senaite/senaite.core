@@ -16,69 +16,67 @@ from Products.CMFPlone.utils import safe_unicode
 
 from Products.Archetypes import atapi
 from Products.Archetypes.public import StringField
-from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
 
-from plone import api
 from zope.interface import implements
 
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.content.contact import Contact
 from bika.lims.interfaces import ILabContact
-from bika.lims import deprecated
-from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 
 schema = Person.schema.copy() + atapi.Schema((
-    atapi.LinesField('PublicationPreference',
-                     vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
-                     default='email',
-                     schemata='Publication preference',
-                     widget=atapi.MultiSelectionWidget(
-                         label=_("Publication preference"),
-                     )),
-    atapi.ImageField('Signature',
-                     widget=atapi.ImageWidget(
-                         label=_("Signature"),
-                         description=_(
-                             "Upload a scanned signature to be used on printed analysis "
-                             "results reports. Ideal size is 250 pixels wide by 150 high"),
-                     )),
+    atapi.LinesField(
+        'PublicationPreference',
+        vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
+        default='email',
+        schemata='Publication preference',
+        widget=atapi.MultiSelectionWidget(
+            label=_("Publication preference"),
+        )),
+    atapi.ImageField(
+        'Signature',
+        widget=atapi.ImageWidget(
+            label=_("Signature"),
+            description=_(
+                "Upload a scanned signature to be used on printed"
+                " analysis results reports. Ideal size is 250 pixels"
+                " wide by 150 high"),
+        )),
     atapi.ReferenceField('Departments',
-        		required = 0,
-        		vocabulary_display_path_bound = sys.maxint,
-        		allowed_types = ('Department',),
-        		relationship = 'LabContactDepartment',
-        		vocabulary = '_departmentsVoc',
-        		referenceClass = HoldingReference,
-        		multiValued=1,
-        		widget = atapi.ReferenceWidget(
-            		checkbox_bound = 0,
-            		label=_("Departments"),
-            		description=_("The laboratory departments"),
-        ),
-    ),
+                         required=0,
+                         vocabulary_display_path_bound=sys.maxint,
+                         allowed_types=('Department',),
+                         relationship='LabContactDepartment',
+                         vocabulary='_departmentsVoc',
+                         referenceClass=HoldingReference,
+                         multiValued=1,
+                         widget=atapi.ReferenceWidget(
+                             checkbox_bound=0,
+                             label=_("Departments"),
+                             description=_("The laboratory departments"),
+                         )),
     StringField('DefaultDepartment',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = '_defaultDepsVoc',
-        widget = SelectionWidget(
-            visible=True,
-            format='select',
-            label=_("Default Department"),
-            description=_("Default Department"),
-        ),
-    ),
+                required=0,
+                vocabulary_display_path_bound=sys.maxint,
+                vocabulary='_defaultDepsVoc',
+                widget=SelectionWidget(
+                    visible=True,
+                    format='select',
+                    label=_("Default Department"),
+                    description=_("Default Department"),
+                )),
 ))
 
 schema['JobTitle'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname
 schema['title'].required = 0
 schema['title'].widget.visible = False
+schema['Department'].required = 0
+schema['Department'].widget.visible = False
 
 
 class LabContact(Contact):
@@ -90,6 +88,7 @@ class LabContact(Contact):
     displayContentsTab = False
     security = ClassSecurityInfo()
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -109,8 +108,8 @@ class LabContact(Contact):
         """
         bsc = getToolByName(self, 'portal_catalog')
         items = [(o.UID, o.Title) for o in
-                               bsc(portal_type='Department',
-                                   inactive_state = 'active')]
+                 bsc(portal_type='Department',
+                     inactive_state='active')]
         # Getting the departments uids
         deps_uids = [i[0] for i in items]
         # Getting the assigned departments
@@ -120,7 +119,7 @@ class LabContact(Contact):
         for o in objs:
             if o and o.UID() not in deps_uids:
                 items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def _departmentsVoc(self):
@@ -129,8 +128,8 @@ class LabContact(Contact):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
-                               bsc(portal_type='Department',
-                                   inactive_state = 'active')]
+                 bsc(portal_type='Department',
+                     inactive_state='active')]
         # Getting the departments uids
         deps_uids = [i[0] for i in items]
         # Getting the assigned departments
@@ -140,7 +139,7 @@ class LabContact(Contact):
         for o in objs:
             if o and o.UID() not in deps_uids:
                 items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def _defaultDepsVoc(self):
@@ -148,11 +147,11 @@ class LabContact(Contact):
         Returns a vocabulary object containing all its departments.
         """
         # Getting the assigned departments
-        deps=self.getDepartments()
-        items=[("","")]
+        deps = self.getDepartments()
+        items = [("", "")]
         for d in deps:
             items.append((d.UID(), d.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def addDepartment(self, dep):

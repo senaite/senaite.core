@@ -184,8 +184,7 @@
                   </tal:comment>
                   <td class="filter noborder" style="text-align:right;whitespace:nowrap;padding:0 0 0 5px;width: 160px;">
                     <tal:filters_enabled
-                      tal:define="term python:request.get(form_id+'_filter', '');"
-                      tal:condition="python:hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes">
+                      tal:define="term python:request.get(form_id+'_filter', '');">
                       <span class="filter-search-button">&nbsp;</span>
                       <input class="filter-search-input"
                              autocomplete="off"
@@ -318,6 +317,8 @@
                     </span>
 
                     <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
+                                          sort_on         python:view.bika_listing.get_sort_on();
+                                          sort_order      python:view.bika_listing.get_sort_order();
                                           limit_from      python:view.bika_listing.limit_from;
                                           limit_to        python:pagesize+limit_from-1;
                                           next_limit_from python:pagesize+limit_from;
@@ -325,7 +326,7 @@
                                           form_id         python:view.bika_listing.form_id;"
                                   condition="python:view.bika_listing.show_more">
                       &nbsp;&nbsp;
-                      <a tal:attributes="href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
+                      <a tal:attributes="href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from,sort_on=sort_on,sort_order=sort_order);
                                          data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize),form_id);
                                          data-pagesize  python:pagesize;
                                          data-limitfrom python:next_limit_from;

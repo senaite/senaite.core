@@ -21,7 +21,7 @@ _types_list = ['Worksheet', ]
 # Defining the indexes for this catalog
 _indexes_dict = {
     'getAnalyst': 'FieldIndex',
-    'getWorksheetTemplate': 'FieldIndex',
+    'getWorksheetTemplateTitle': 'FieldIndex',
     'getAnalysesUIDs': 'KeywordIndex',
 }
 # Defining the columns for this catalog
