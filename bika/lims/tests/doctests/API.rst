@@ -1177,3 +1177,56 @@ Checks if an UID is a valid 23 alphanumeric uid and with a brain:
     >>> uid = serv.UID()
     >>> api.is_uid(uid, validate=True)
     True
+
+Check if a Date is valid
+------------------------
+
+Do some imports first:
+
+    >>> from datetime import datetime
+    >>> from DateTime import DateTime
+
+Checks if a DateTime is valid:
+
+    >>> now = DateTime()
+    >>> api.is_date(now)
+    True
+
+    >>> now = datetime.now()
+    >>> api.is_date(now)
+    True
+
+    >>> now = DateTime(now)
+    >>> api.is_date(now)
+    True
+
+    >>> api.is_date(None)
+    False
+
+    >>> api.is_date('2018-04-23')
+    False
+
+Try to convert to DateTime:
+
+    >>> zpdt = api.get_date(DateTime())
+    >>> api.is_date(zpdt)
+    True
+
+    >>> pydt = datetime.now()
+    >>> zpdt = api.get_date(pydt)
+    >>> api.is_date(zpdt)
+    True
+
+    >>> strd = "2018-12-01 17:50:34"
+    >>> zpdt = api.get_date(strd)
+    >>> api.is_date(zpdt)
+    True
+
+    >>> strd = "2018-13-01 17:50:34"
+    >>> zpdt = api.get_date(strd)
+    >>> api.is_date(zpdt)
+    False
+
+    >>> zpdt = api.get_date(None)
+    >>> api.is_date(zpdt)
+    False
