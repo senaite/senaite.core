@@ -1696,6 +1696,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in self.getAnalyses():
             analysis.setAnalyst(analyst)
         self.Schema().getField('Analyst').set(self, analyst)
+        self.reindexObject()
 
     def getAnalysesUIDs(self):
         """
