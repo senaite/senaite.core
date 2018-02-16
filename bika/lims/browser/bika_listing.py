@@ -1145,7 +1145,8 @@ class BikaListingView(BrowserView):
         query = copy.deepcopy(self.contentFilter)
 
         # contentFilter is allowed in every self.review_state.
-        for k, v in self.review_state.get("contentFilter", {}).items():
+        review_state = getattr(self, "review_state", {})
+        for k, v in review_state.get("contentFilter", {}).items():
             query[k] = v
 
         # set the sort_on criteria
