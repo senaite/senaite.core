@@ -482,7 +482,7 @@ class window.BikaListingTableView
     $(checkall).hide()
 
     # Update valid transitions for elements which have not yet been updated:
-    wo_trans = $("input[data-valid_transitions='{}']")
+    wo_trans = $("input[id*='_cb_'][data-valid_transitions='{}']")
 
     $(wo_trans).prop "disabled", yes
     $(wo_trans).each (e) ->
@@ -510,6 +510,10 @@ class window.BikaListingTableView
           checkbox = $("input[id*='_cb_'][value='#{uid}']")
           checkbox.attr "data-valid_transitions", $.toJSON(trans)
           $(checkbox).prop "disabled", false
+
+      # re-render the transition buttons in case the user clicked the back
+      # button of the browser
+      @render_transition_buttons table
 
 
   render_transition_buttons: (table) ->
