@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #666 Added Unpublished filter in Analysis Requests list
 
 **Changed**
 
@@ -23,6 +24,10 @@ Changelog
 
 **Fixed**
 
+- #666 "Rejected" filter is displayed in AR lists regardless of Setup setting
+- #666 "To be preserved" filter is displayed in AR lists regardless of Setup setting
+- #666 "Scheduled sampling" is displayed in AR lists regardless of Setup setting
+- #666 "To be sampled" filter is displayed in AR lists regardless of Setup setting
 - #664 Improved async transition loading and workflow button rendering in listing tables
 - #658 Worksheet listing view shows old- invalid Analysts
 - #663 AR Report Listing shows all Reports
