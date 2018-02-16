@@ -361,7 +361,7 @@
       input_name = form_id + "_review_state";
       input = $("input[name=" + input_name + "]", form);
       if (input.length === 0) {
-        input = form.append("<input name='" + input_name + "' type='hidden'/>");
+        input = form.append("<input name='" + input_name + "' value='" + state_id + "' type='hidden'/>");
       }
       input.val(state_id);
       form_data = new FormData(form[0]);
