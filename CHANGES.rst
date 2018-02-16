@@ -23,6 +23,7 @@ Changelog
 
 **Fixed**
 
+- #663 Fix: AR Report Listing shows all Reports
 - #654 Default's Multi Analysis Request report gives a Traceback
 - #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned
