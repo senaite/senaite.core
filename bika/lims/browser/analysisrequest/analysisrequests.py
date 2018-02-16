@@ -228,13 +228,20 @@ class AnalysisRequestsView(BikaListingView):
                 'index': 'review_state'}),
         ))
 
+        # custom print transition
+        print_stickers = {
+            'id': 'print_stickers',
+            'title': _('Print stickers'),
+            'url': 'workflow_action?action=print_stickers'
+        }
+
         self.review_states = [
             {
                 'id': 'default',
                 'title': _('Active'),
                 'contentFilter': {
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'sample'},
@@ -248,72 +255,49 @@ class AnalysisRequestsView(BikaListingView):
                     {'id': 'cancel'},
                     {'id': 'reinstate'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers'
-                    }
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'to_be_sampled',
                 'title': _('To Be Sampled'),
                 'contentFilter': {
                     'review_state': ('to_be_sampled',),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse'},
+                    'sort_on': 'created',
+                    'sort_order': 'descending'},
                 'transitions': [
                     {'id': 'sample'},
                     {'id': 'submit'},
                     {'id': 'cancel'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers',
-                    }
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys()
             }, {
                 'id': 'to_be_preserved',
                 'title': _('To Be Preserved'),
                 'contentFilter': {
                     'review_state': ('to_be_preserved',),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'preserve'},
                     {'id': 'cancel'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers'},
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'scheduled_sampling',
                 'title': _('Scheduled sampling'),
                 'contentFilter': {
                     'review_state': ('scheduled_sampling',),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'sample'},
                     {'id': 'cancel'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers',
-                    }
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'sample_due',
@@ -323,8 +307,8 @@ class AnalysisRequestsView(BikaListingView):
                         'to_be_sampled',
                         'to_be_preserved',
                         'sample_due'),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse'},
+                    'sort_on': 'created',
+                    'sort_order': 'descending'},
                 'transitions': [
                     {'id': 'sample'},
                     {'id': 'preserve'},
@@ -332,40 +316,30 @@ class AnalysisRequestsView(BikaListingView):
                     {'id': 'cancel'},
                     {'id': 'reinstate'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers'},
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'sample_received',
                 'title': _('Received'),
                 'contentFilter': {
                     'review_state': 'sample_received',
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'prepublish'},
                     {'id': 'cancel'},
                     {'id': 'reinstate'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers'},
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'to_be_verified',
                 'title': _('To be verified'),
                 'contentFilter': {
                     'review_state': 'to_be_verified',
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'retract'},
@@ -374,42 +348,66 @@ class AnalysisRequestsView(BikaListingView):
                     {'id': 'cancel'},
                     {'id': 'reinstate'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers'},
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'verified',
                 'title': _('Verified'),
                 'contentFilter': {
                     'review_state': 'verified',
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'publish'},
                     {'id': 'cancel'},
                 ],
-                'custom_transitions': [{
-                    'id': 'print_stickers',
-                    'title': _('Print stickers'),
-                    'url': 'workflow_action?action=print_stickers'}],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'published',
                 'title': _('Published'),
                 'contentFilter': {
                     'review_state': ('published', 'invalid'),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'republish'},
                 ],
                 'custom_transitions': [],
+                'columns': self.columns.keys(),
+            }, {
+                'id': 'unpublished',
+                'title': t(_("Unpublished")),
+                'contentFilter': {
+                    'cancellation_state': 'active',
+                    'review_state': (
+                        'sample_registered',
+                        'to_be_sampled',
+                        'to_be_preserved',
+                        'sample_due',
+                        'sample_received',
+                        'to_be_verified',
+                        'attachment_due',
+                        'verified',
+                    ),
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
+                },
+                'transitions': [
+                    {'id': 'sample'},
+                    {'id': 'preserve'},
+                    {'id': 'receive'},
+                    {'id': 'retract'},
+                    {'id': 'verify'},
+                    {'id': 'prepublish'},
+                    {'id': 'publish'},
+                    {'id': 'republish'},
+                    {'id': 'cancel'},
+                    {'id': 'reinstate'},
+                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'cancelled',
@@ -427,8 +425,8 @@ class AnalysisRequestsView(BikaListingView):
                         'verified',
                         'published',
                     ),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'reinstate'},
@@ -440,8 +438,19 @@ class AnalysisRequestsView(BikaListingView):
                 'title': _('Invalid'),
                 'contentFilter': {
                     'review_state': 'invalid',
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse'
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
+                },
+                'transitions': [],
+                'custom_transitions': [print_stickers],
+                'columns': self.columns.keys(),
+            }, {
+                'id': 'rejected',
+                'title': _('Rejected'),
+                'contentFilter': {
+                    'review_state': 'rejected',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [],
                 'custom_transitions': [
@@ -460,8 +469,8 @@ class AnalysisRequestsView(BikaListingView):
                     'cancellation_state': 'active',
                     'review_state': ('sample_received',
                                      'attachment_due',),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'receive'},
@@ -469,12 +478,7 @@ class AnalysisRequestsView(BikaListingView):
                     {'id': 'prepublish'},
                     {'id': 'cancel'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers'},
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             }, {
                 'id': 'unassigned',
@@ -487,8 +491,8 @@ class AnalysisRequestsView(BikaListingView):
                         'sample_received',
                         'attachment_due',
                     ),
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
+                    'sort_on': 'created',
+                    'sort_order': 'descending',
                 },
                 'transitions': [
                     {'id': 'receive'},
@@ -496,29 +500,7 @@ class AnalysisRequestsView(BikaListingView):
                     {'id': 'prepublish'},
                     {'id': 'cancel'},
                 ],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers',
-                    }
-                ],
-                'columns': self.columns.keys(),
-            }, {
-                'id': 'rejected',
-                'title': _('Rejected'),
-                'contentFilter': {
-                    'review_state': 'rejected',
-                    'sort_on': 'Created',
-                    'sort_order': 'reverse',
-                },
-                'transitions': [],
-                'custom_transitions': [
-                    {
-                        'id': 'print_stickers',
-                        'title': _('Print stickers'),
-                        'url': 'workflow_action?action=print_stickers'},
-                ],
+                'custom_transitions': [print_stickers],
                 'columns': self.columns.keys(),
             },
         ]
