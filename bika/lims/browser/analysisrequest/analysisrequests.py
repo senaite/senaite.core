@@ -5,31 +5,30 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
 import json
 import traceback
-from plone.api import user
-
 from DateTime import DateTime
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
+    AnalysisRequestsBikaListingFilterBar
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.config import PRIORITIES
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.permissions import (AddAnalysisRequest, ManageAnalysisRequests,
+                                   SampleSample)
+from bika.lims.utils import getUsers, t
+from collective.taskqueue.interfaces import ITaskQueue
+from plone.api import user
+from plone.app.layout.globals.interfaces import IViewView
+from plone.protect import CheckAuthenticator, PostOnly
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
-from bika.lims.browser.analysisrequest.analysisrequests_filter_bar \
-    import AnalysisRequestsBikaListingFilterBar
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.config import PRIORITIES
-from bika.lims.permissions import SampleSample, ManageAnalysisRequests, \
-        AddAnalysisRequest
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import getUsers
-from bika.lims.utils import t
-from collective.taskqueue.interfaces import ITaskQueue
-from plone.app.layout.globals.interfaces import IViewView
-from plone.protect import CheckAuthenticator
-from plone.protect import PostOnly
 from zope.component import queryUtility
 from zope.interface import implements
 
