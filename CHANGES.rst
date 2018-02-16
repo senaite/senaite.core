@@ -23,6 +23,7 @@ Changelog
 
 **Fixed**
 
+- #664 Improved async transition loading and workflow button rendering in listing tables
 - #658 Worksheet listing view shows old- invalid Analysts
 - #663 AR Report Listing shows all Reports
 - #654 Default's Multi Analysis Request report gives a Traceback
