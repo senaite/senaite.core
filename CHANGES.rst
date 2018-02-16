@@ -7,9 +7,12 @@ Changelog
 
 **Added**
 
+- #666 Added Unpublished filter in Analysis Requests list
 
 **Changed**
 
+- #660 Better style for reference widgets
+- #627 Unassigned filter on Analysis Requests view does not work
 - #659 Display the Unit in Profile Analyses Listing
 - #636 Do not display "Advanced..." item in object's workflow actions menu
 - #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
@@ -23,6 +26,13 @@ Changelog
 **Fixed**
 
 - #653 Points in QC Charts are not displayed in accordance with capture date
+- #666 "Rejected" filter is displayed in AR lists regardless of Setup setting
+- #666 "To be preserved" filter is displayed in AR lists regardless of Setup setting
+- #666 "Scheduled sampling" is displayed in AR lists regardless of Setup setting
+- #666 "To be sampled" filter is displayed in AR lists regardless of Setup setting
+- #664 Improved async transition loading and workflow button rendering in listing tables
+- #658 Worksheet listing view shows old- invalid Analysts
+- #663 AR Report Listing shows all Reports
 - #654 Default's Multi Analysis Request report gives a Traceback
 - #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned

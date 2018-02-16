@@ -614,6 +614,18 @@ a.duplicate {
  color:#00B027 !important;
 }
 
+/* Reference Browser Widget */
+.cg-comboItem {
+    height: 45px;
+}
+#cg-divHeader,
+.ui-state-default {
+    background: #f5f5f5!important;
+    color: black!important;
+}
+.ui-icon {
+    background-image: url(++resource++bika.lims.css/images/ui-icons_72a7cf_256x240.png)!important;
+}
 
 
 /*
