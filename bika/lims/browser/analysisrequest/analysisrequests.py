@@ -699,9 +699,9 @@ class AnalysisRequestsView(BikaListingView):
                 """ % (self.portal_url, t(_("Late Analyses")))
         if obj.getSamplingDate and obj.getSamplingDate > DateTime():
             after_icons += \
-                    """<img src='%s/++resource++bika.lims.images/calendar.png'
-                        title='%s'>
-                    """ % (self.portal_url, t(_("Future dated sample")))
+                """<img src='%s/++resource++bika.lims.images/calendar.png'
+                    title='%s'>
+                """ % (self.portal_url, t(_("Future dated sample")))
         if obj.getInvoiceExclude:
             after_icons += \
                 """<img
@@ -765,8 +765,7 @@ class AnalysisRequestsView(BikaListingView):
                     username = self.member.getUserName()
                     users = [({
                         'ResultValue': u,
-                        'ResultText': samplers.getValue(u)})
-                            for u in samplers]
+                        'ResultText': samplers.getValue(u)}) for u in samplers]
                     item['choices'] = {'getSampler': users}
                     Sampler = sampler and sampler or \
                         (username in samplers.keys() and username) or ''
@@ -822,9 +821,9 @@ class AnalysisRequestsView(BikaListingView):
                 full_object = full_object if full_object else obj.getObject()
                 if not full_object.isUserAllowedToVerify(self.member):
                     item['after']['state_title'] = \
-                     """<img src='++resource++bika.lims.images/submitted-by-current-user.png'
-                         title='%s'/>
-                     """ % t(_("Cannot verify: Submitted by current user"))
+                        """<img src='++resource++bika.lims.images/submitted-by-current-user.png'
+                            title='%s'/>
+                        """ % t(_("Cannot verify: Submitted by current user"))
         return item
 
     def pending_tasks(self):
