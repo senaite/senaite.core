@@ -47,11 +47,14 @@ class AnalysisRequestsView(BikaListingView):
         request.set('disable_plone.rightcolumn', 1)
         # Setting up the catalog and query dictionary
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
-        self.contentFilter = {'sort_on': 'Created',
-                              'sort_order': 'reverse',
-                              'path': {"query": "/", "level": 0},
-                              'cancellation_state': 'active',
-                              }
+
+        # see: https://docs.plone.org/develop/plone/searching_and_indexing/query.html#searching-for-content-within-a-folder
+        self.contentFilter = {
+            "sort_on": "created",
+            "sort_order": "descending",
+            "path": {"query": "/", "depth": 2},
+            "cancellation_state": "active",
+        }
 
         self.context_actions = {}
 
