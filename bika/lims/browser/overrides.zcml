@@ -36,6 +36,12 @@
                  permission="zope2.View"
              />
 
+            <browser:menu
+                id="plone_contentmenu_workflow"
+                title="The workflow actions menu"
+                class="bika.lims.browser.contentmenu.WorkflowMenu"
+            />
+
         </unconfigure>
     </configure>
 

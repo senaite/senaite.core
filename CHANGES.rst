@@ -23,6 +23,7 @@ Changelog
 
 **Fixed**
 
+- #657 ConfigurationConflictError in "The workflow actions menu".
 - #654 Default's Multi Analysis Request report gives a Traceback
 - #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned
