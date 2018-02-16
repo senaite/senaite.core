@@ -379,7 +379,7 @@ class AnalysisRequestsView(BikaListingView):
                 'columns': self.columns.keys(),
             }, {
                 'id': 'unpublished',
-                'title': t(_("Unpublished")),
+                'title': _('Unpublished'),
                 'contentFilter': {
                     'cancellation_state': 'active',
                     'review_state': (
