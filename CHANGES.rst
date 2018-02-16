@@ -24,6 +24,7 @@ Changelog
 
 **Fixed**
 
+- #666 "Rejected" filter is displayed in AR lists regardless of Setup setting
 - #666 "To be preserved" filter is displayed in AR lists regardless of Setup setting
 - #666 "Scheduled sampling" is displayed in AR lists regardless of Setup setting
 - #666 "To be sampled" filter is displayed in AR lists regardless of Setup setting
