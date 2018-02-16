@@ -10,6 +10,8 @@ Changelog
 
 **Changed**
 
+- #627 Unassigned filter on Analysis Requests view does not work
+- #659 Display the Unit in Profile Analyses Listing
 - #636 Do not display "Advanced..." item in object's workflow actions menu
 - #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
 - #655 Updated German Translations
@@ -22,6 +24,7 @@ Changelog
 **Fixed**
 
 - #658 Worksheet listing view shows old- invalid Analysts
+- #663 AR Report Listing shows all Reports
 - #654 Default's Multi Analysis Request report gives a Traceback
 - #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned
