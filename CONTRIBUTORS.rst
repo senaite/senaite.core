@@ -28,6 +28,7 @@ contributions descending.
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
 - Anderson Smith, andersonsmith183@gmail.com
 - Jean Jordaan, jean.jordaan@gmail.com
+- Leonardo Rojas, leonardorojass@gmail.com
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
 - jpsinghgoud, jaipal.singh@research.iiit.ac.in
