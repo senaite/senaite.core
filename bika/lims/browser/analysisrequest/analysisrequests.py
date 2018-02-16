@@ -35,17 +35,24 @@ from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
-    """Base for all lists of ARs
+    """Listing View for all Analysis Requests in the System
     """
+    implements(IViewView)
+
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
     ar_add = ViewPageTemplateFile("templates/ar_add.pt")
-    implements(IViewView)
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
 
+        # hide the right column
         request.set('disable_plone.rightcolumn', 1)
-        # Setting up the catalog and query dictionary
+
+        # hide the editable border
+        if self.context.portal_type == "AnalysisRequestsFolder":
+            self.request.set('disable_border', 1)
+
+        # catalog used for the query
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
 
         # see: https://docs.plone.org/develop/plone/searching_and_indexing/query.html#searching-for-content-within-a-folder
@@ -57,9 +64,6 @@ class AnalysisRequestsView(BikaListingView):
         }
 
         self.context_actions = {}
-
-        if self.context.portal_type == "AnalysisRequestsFolder":
-            self.request.set('disable_border', 1)
 
         if self.view_url.find("analysisrequests") == -1:
             self.view_url = self.view_url + "/analysisrequests"
@@ -509,22 +513,106 @@ class AnalysisRequestsView(BikaListingView):
         """Called before the listing renders
         """
         super(AnalysisRequestsView, self).update()
+
+        self.workflow = getToolByName(self.context, "portal_workflow")
+        self.mtool = getToolByName(self.context, 'portal_membership')
+        self.member = self.mtool.getAuthenticatedMember()
+        self.roles = self.member.getRoles()
+
         setup = api.get_bika_setup()
 
         # remove `to_be_sampled` filter
         if not setup.getSamplingWorkflowEnabled():
             self.review_states = filter(
-                lambda x: x["id"] != "to_be_sampled", self.review_states)
+                lambda x: x.get("id") != "to_be_sampled", self.review_states)
 
         # remove `scheduled_sampling` filter
         if not setup.getScheduleSamplingEnabled():
             self.review_states = filter(
-                lambda x: x["id"] != "scheduled_sampling", self.review_states)
+                lambda x: x.get("id") != "scheduled_sampling", self.review_states)
 
         # remove `to_be_preserved` filter
         if not setup.getSamplePreservationEnabled():
             self.review_states = filter(
-                lambda x: x["id"] != "to_be_preserved", self.review_states)
+                lambda x: x.get("id") != "to_be_preserved", self.review_states)
+
+        # remove `rejected` filter
+        if not setup.getRejectionReasons():
+            self.review_states = filter(
+                lambda x: x.get("id") != "rejected", self.review_states)
+
+        self.hideclientlink = 'RegulatoryInspector' in self.roles \
+            and 'Manager' not in self.roles \
+            and 'LabManager' not in self.roles \
+            and 'LabClerk' not in self.roles
+
+        if self.context.portal_type == "AnalysisRequestsFolder" and \
+                (self.mtool.checkPermission(AddAnalysisRequest, self.context)):
+            self.context_actions[_('Add')] = \
+                {'url': "ar_add?ar_count=1",
+                 'icon': '++resource++bika.lims.images/add.png'}
+
+        self.editresults = -1
+        self.clients = {}
+        # self.user_is_preserver = 'Preserver' in self.roles
+        # Printing workflow enabled?
+        # If not, remove the Column
+        self.printwfenabled = \
+            self.context.bika_setup.getPrintingWorkflowEnabled()
+        printed_colname = 'Printed'
+        if not self.printwfenabled and printed_colname in self.columns:
+            # Remove "Printed" columns
+            del self.columns[printed_colname]
+            tmprvs = []
+            for rs in self.review_states:
+                tmprs = rs
+                tmprs['columns'] = [c for c in rs.get('columns', []) if
+                                    c != printed_colname]
+                tmprvs.append(tmprs)
+            self.review_states = tmprvs
+        elif self.printwfenabled:
+            # Print button to choose multiple ARs and print them.
+            review_states = []
+            for review_state in self.review_states:
+                review_state.get('custom_transitions', []).extend(
+                    [{'id': 'print',
+                      'title': _('Print'),
+                      'url': 'workflow_action?action=print'}, ])
+                review_states.append(review_state)
+            self.review_states = review_states
+
+        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
+        # elsewhere it is hacked in where required.
+        if self.copy_to_new_allowed:
+            review_states = []
+            for review_state in self.review_states:
+                review_state.get('custom_transitions', []).extend(
+                    [{'id': 'copy_to_new',
+                      'title': _('Copy to new'),
+                      'url': 'workflow_action?action=copy_to_new'}, ])
+                review_states.append(review_state)
+            self.review_states = review_states
+
+        # Hide Preservation/Sampling workflow actions if the edit columns
+        # are not displayed.
+        toggle_cols = self.get_toggle_cols()
+        new_states = []
+        for i, state in enumerate(self.review_states):
+            if state['id'] == self.review_state:
+                if 'getSampler' not in toggle_cols \
+                   or 'getDateSampled' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('sample')
+                    else:
+                        state['hide_transitions'] = ['sample', ]
+                if 'getPreserver' not in toggle_cols \
+                   or 'getDatePreserved' not in toggle_cols:
+                    if 'hide_transitions' in state:
+                        state['hide_transitions'].append('preserve')
+                    else:
+                        state['hide_transitions'] = ['preserve', ]
+            new_states.append(state)
+        self.review_states = new_states
 
     def isItemAllowed(self, obj):
         """
@@ -821,86 +909,6 @@ class AnalysisRequestsView(BikaListingView):
                 or mtool.checkPermission(ModifyPortalContent, self.context):
             return True
         return False
-
-    def __call__(self):
-        self.workflow = getToolByName(self.context, "portal_workflow")
-        self.mtool = getToolByName(self.context, 'portal_membership')
-        self.member = self.mtool.getAuthenticatedMember()
-        self.roles = self.member.getRoles()
-        self.hideclientlink = 'RegulatoryInspector' in self.roles \
-            and 'Manager' not in self.roles \
-            and 'LabManager' not in self.roles \
-            and 'LabClerk' not in self.roles
-
-        if self.context.portal_type == "AnalysisRequestsFolder" and \
-                (self.mtool.checkPermission(AddAnalysisRequest, self.context)):
-            self.context_actions[_('Add')] = \
-                {'url': "ar_add?ar_count=1",
-                 'icon': '++resource++bika.lims.images/add.png'}
-
-        self.editresults = -1
-        self.clients = {}
-        # self.user_is_preserver = 'Preserver' in self.roles
-        # Printing workflow enabled?
-        # If not, remove the Column
-        self.printwfenabled = \
-            self.context.bika_setup.getPrintingWorkflowEnabled()
-        printed_colname = 'Printed'
-        if not self.printwfenabled and printed_colname in self.columns:
-            # Remove "Printed" columns
-            del self.columns[printed_colname]
-            tmprvs = []
-            for rs in self.review_states:
-                tmprs = rs
-                tmprs['columns'] = [c for c in rs.get('columns', []) if
-                                    c != printed_colname]
-                tmprvs.append(tmprs)
-            self.review_states = tmprvs
-        elif self.printwfenabled:
-            # Print button to choose multiple ARs and print them.
-            review_states = []
-            for review_state in self.review_states:
-                review_state.get('custom_transitions', []).extend(
-                    [{'id': 'print',
-                      'title': _('Print'),
-                      'url': 'workflow_action?action=print'}, ])
-                review_states.append(review_state)
-            self.review_states = review_states
-
-        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
-        # elsewhere it is hacked in where required.
-        if self.copy_to_new_allowed:
-            review_states = []
-            for review_state in self.review_states:
-                review_state.get('custom_transitions', []).extend(
-                    [{'id': 'copy_to_new',
-                      'title': _('Copy to new'),
-                      'url': 'workflow_action?action=copy_to_new'}, ])
-                review_states.append(review_state)
-            self.review_states = review_states
-
-        # Hide Preservation/Sampling workflow actions if the edit columns
-        # are not displayed.
-        toggle_cols = self.get_toggle_cols()
-        new_states = []
-        for i, state in enumerate(self.review_states):
-            if state['id'] == self.review_state:
-                if 'getSampler' not in toggle_cols \
-                   or 'getDateSampled' not in toggle_cols:
-                    if 'hide_transitions' in state:
-                        state['hide_transitions'].append('sample')
-                    else:
-                        state['hide_transitions'] = ['sample', ]
-                if 'getPreserver' not in toggle_cols \
-                   or 'getDatePreserved' not in toggle_cols:
-                    if 'hide_transitions' in state:
-                        state['hide_transitions'].append('preserve')
-                    else:
-                        state['hide_transitions'] = ['preserve', ]
-            new_states.append(state)
-        self.review_states = new_states
-
-        return super(AnalysisRequestsView, self).__call__()
 
     def getFilterBar(self):
         """
