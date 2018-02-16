@@ -11,6 +11,7 @@ import traceback
 from DateTime import DateTime
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
     AnalysisRequestsBikaListingFilterBar
@@ -522,13 +523,26 @@ class AnalysisRequestsView(BikaListingView):
             },
         ]
 
-        # simple index to access the dictionaries by id
-        self.review_state_ids = map(lambda rs: rs["id"], self.review_states)
-
     def update(self):
         """Called before the listing renders
         """
         super(AnalysisRequestsView, self).update()
+        setup = api.get_bika_setup()
+
+        # remove `to_be_sampled` filter
+        if not setup.getSamplingWorkflowEnabled():
+            self.review_states = filter(
+                lambda x: x["id"] != "to_be_sampled", self.review_states)
+
+        # remove `scheduled_sampling` filter
+        if not setup.getScheduleSamplingEnabled():
+            self.review_states = filter(
+                lambda x: x["id"] != "scheduled_sampling", self.review_states)
+
+        # remove `to_be_preserved` filter
+        if not setup.getSamplePreservationEnabled():
+            self.review_states = filter(
+                lambda x: x["id"] != "to_be_preserved", self.review_states)
 
     def isItemAllowed(self, obj):
         """
