@@ -5,6 +5,7 @@
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    slice = [].slice,
     hasProp = {}.hasOwnProperty,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -54,6 +55,7 @@
       this.get_global_settings = bind(this.get_global_settings, this);
       this.render_template = bind(this.render_template, this);
       this.template_dialog = bind(this.template_dialog, this);
+      this.debounce = bind(this.debounce, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
@@ -110,12 +112,39 @@
       $("body").on("click", "img.copybutton", this.on_copy_button_click);
 
       /* internal events */
-      $(this).on("form:changed", this.recalculate_records);
-      $(this).on("data:updated", this.update_form);
-      $(this).on("data:updated", this.recalculate_prices);
-      $(this).on("data:updated", this.hide_all_service_info);
+      $(this).on("form:changed", this.debounce(this.recalculate_records, 500));
+      $(this).on("data:updated", this.debounce(this.recalculate_prices, 3000));
+      $(this).on("data:updated", this.debounce(this.update_form, 300));
+      $(this).on("data:updated", this.debounce(this.hide_all_service_info, 300));
       $(this).on("ajax:start", this.on_ajax_start);
       return $(this).on("ajax:end", this.on_ajax_end);
+    };
+
+    AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
+
+      /*
+       * Debounce a function call
+       * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+       */
+      var timeout;
+      timeout = null;
+      return function() {
+        var args, delayed, obj;
+        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        obj = this;
+        delayed = function() {
+          if (!execAsap) {
+            func.apply(obj, args);
+          }
+          return timeout = null;
+        };
+        if (timeout) {
+          clearTimeout(timeout);
+        } else if (execAsap) {
+          func.apply(obj, args);
+        }
+        return timeout = setTimeout(delayed, threshold || 100);
+      };
     };
 
     AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {

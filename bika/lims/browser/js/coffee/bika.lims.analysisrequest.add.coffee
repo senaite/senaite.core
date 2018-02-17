@@ -101,16 +101,35 @@ class window.AnalysisRequestAdd
     ### internal events ###
 
     # handle value changes in the form
-    $(this).on "form:changed", @recalculate_records
-    # update form from records
-    $(this).on "data:updated", @update_form
+    $(this).on "form:changed", @debounce @recalculate_records, 500
     # recalculate prices after data changed
-    $(this).on "data:updated", @recalculate_prices
+    $(this).on "data:updated", @debounce @recalculate_prices, 3000
+    # update form from records after the data changed
+    $(this).on "data:updated", @debounce @update_form, 300
     # hide open service info after data changed
-    $(this).on "data:updated", @hide_all_service_info
+    $(this).on "data:updated", @debounce @hide_all_service_info, 300
     # handle Ajax events
     $(this).on "ajax:start", @on_ajax_start
     $(this).on "ajax:end", @on_ajax_end
+
+
+  debounce: (func, threshold, execAsap) =>
+    ###
+     * Debounce a function call
+     * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+    ###
+    timeout = null
+
+    (args...) ->
+      obj = this
+      delayed = ->
+        func.apply(obj, args) unless execAsap
+        timeout = null
+      if timeout
+        clearTimeout(timeout)
+      else if (execAsap)
+        func.apply(obj, args)
+      timeout = setTimeout delayed, threshold || 100
 
 
   template_dialog: (template_id, context, buttons) =>
