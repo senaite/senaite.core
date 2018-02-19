@@ -279,15 +279,11 @@ class AnalysesView(BikaListingView):
             return True
         return instrument.isValid()
 
-    @viewcache.memoize
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
         :param analysis_brain: Brain that represents an analysis
         :return: Instrument object or None"""
-        instrument_uid = analysis_brain.getInstrumentUID
-        if not instrument_uid:
-            return None
-        return self.get_object_by_uid(instrument_uid)
+        return self.get_object_by_uid(analysis_brain.getInstrumentUID)
 
     @viewcache.memoize
     def get_object_by_uid(self, uid, default=None):
