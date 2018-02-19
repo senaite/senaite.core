@@ -172,10 +172,6 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        # This is used to cache the methods instead of retrieving them
-        # individually each time we folder an analysis item
-        self._methods_map = dict()
-
         # This is used to cache analysis keywords with Point of Capture to
         # reduce the number objects that need to be woken up
         # Is managed by `is_analysis_edition_allowed` function
