@@ -171,11 +171,6 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        # This is used to cache the instruments instead of retrieving them
-        # individually each time we folder an analysis item
-        # Is managed by `get_instrument`
-        self._instruments_map = dict()
-
         # This is used to cache the methods instead of retrieving them
         # individually each time we folder an analysis item
         self._methods_map = dict()
@@ -262,6 +257,7 @@ class AnalysesView(BikaListingView):
         instrument_valid = self.is_analysis_instrument_valid(analysis_brain)
         return instrument_valid
 
+    @viewcache.memoize
     def is_analysis_instrument_valid(self, analysis_brain):
         """Return if the analysis has a valid instrument. If the analysis passed
         in is from ReferenceAnalysis type or does not have an instrument
@@ -281,9 +277,9 @@ class AnalysesView(BikaListingView):
         instrument = self.get_instrument(analysis_brain)
         if not instrument:
             return True
-
         return instrument.isValid()
 
+    @viewcache.memoize
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
         :param analysis_brain: Brain that represents an analysis
@@ -291,14 +287,7 @@ class AnalysesView(BikaListingView):
         instrument_uid = analysis_brain.getInstrumentUID
         if not instrument_uid:
             return None
-
-        if instrument_uid not in self._instruments_map:
-            instrument = api.get_object_by_uid(instrument_uid, None)
-            if not instrument:
-                return None
-            self._instruments_map[instrument_uid] = instrument
-
-        return self._instruments_map[instrument_uid]
+        return api.get_object_by_uid(instrument_uid, None)
 
     def get_analysis_spec(self, analysis):
         """
