@@ -10,6 +10,7 @@ from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
@@ -57,10 +58,13 @@ class AnalysisRequestViewView(BrowserView):
             check_permission(EditFieldResults, self.context) and
             wasTransitionPerformed(self.context, 'receive') and
             not wasTransitionPerformed(self.context, 'verify')):
-            # Redirect to manage results view
-            manage_results_url = self.context.absolute_url() + '/manage_results'
-            self.request.response.redirect(manage_results_url)
-            return
+            # Redirect to manage results view if not cancelled
+            if api.get_workflow_status_of(ar, 'cancellation_state') != \
+                    "cancelled":
+                manage_results_url = "/".join([self.context.absolute_url(),
+                                               'manage_results'])
+                self.request.response.redirect(manage_results_url)
+                return
 
         # Contacts get expanded for view
         contact = self.context.getContact()
