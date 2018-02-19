@@ -264,20 +264,14 @@ class AnalysesView(BikaListingView):
         assigned, returns True
         :param analysis_brain: Brain that represents an analysis
         :return: True if the instrument assigned is valid or is None"""
-
-        # TODO: Workflow. All this logic will be considered in submit guard
-
         if analysis_brain.meta_type == 'ReferenceAnalysis':
             # If this is a ReferenceAnalysis, there is no need to check the
             # validity of the instrument, because this is a QC analysis and by
             # definition, it has the ability to promote an instrument to a
             # valid state if the result is correct.
             return True
-
         instrument = self.get_instrument(analysis_brain)
-        if not instrument:
-            return True
-        return instrument.isValid()
+        return not instrument or instrument.isValid()
 
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
@@ -288,8 +282,7 @@ class AnalysesView(BikaListingView):
     @viewcache.memoize
     def get_object_by_uid(self, uid, default=None):
         """Find an object by a given UID. Delegates the action to
-        api.get_object_by_uid, but caches the result of the function
-        """
+        api.get_object_by_uid, but caches the result of the function"""
         return api.get_object_by_uid(uid, default)
 
     def get_analysis_spec(self, analysis):
