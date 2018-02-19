@@ -287,7 +287,14 @@ class AnalysesView(BikaListingView):
         instrument_uid = analysis_brain.getInstrumentUID
         if not instrument_uid:
             return None
-        return api.get_object_by_uid(instrument_uid, None)
+        return self.get_object_by_uid(instrument_uid)
+
+    @viewcache.memoize
+    def get_object_by_uid(self, uid, default=None):
+        """Find an object by a given UID. Delegates the action to
+        api.get_object_by_uid, but caches the result of the function
+        """
+        return api.get_object_by_uid(uid, default)
 
     def get_analysis_spec(self, analysis):
         """
@@ -364,6 +371,7 @@ class AnalysesView(BikaListingView):
         :returns: A list of dicts
         """
         uids = analysis_brain.getAllowedMethodUIDs
+
         # Resolve those methods that we have stored in cache
         cached = filter(lambda uid: uid in self._methods_map, uids)
         brains = map(self._methods_map.get, cached)
