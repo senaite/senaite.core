@@ -551,7 +551,7 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
         query = {'portal_type': "Analysis",
-                 'cancellation_state': ['active']}
+                 'cancellation_state': 'active'}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
@@ -566,15 +566,17 @@ class DashboardView(BrowserView):
         # Analyses to be assigned
         name = _('Assignment pending')
         desc = _('Assignment pending')
-        purl = 'aggregatedanalyses?analyses_form_review_state=unassigned'
-        query['review_state'] = ['sample_received', ]
+        purl = 'aggregatedanalyses?analyses_form_review_state=default'
+        query['review_state'] = ['sample_received', 'attachment_due', ]
+        query['worksheetanalysis_review_state'] = ['unassigned']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
         name = _('Results pending')
         desc = _('Results pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
-        query['review_state'] = ['assigned','attachment_due']
+        query['review_state'] = ['sample_received', 'attachment_due', ]
+        del query['worksheetanalysis_review_state']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
