@@ -369,7 +369,7 @@ class AnalysesView(BikaListingView):
         query = {'portal_type': 'Method',
                  'inactive_state': 'active',
                  'UID': uids}
-        brains = api.search(query)
+        brains = api.search(query, 'bika_setup_catalog')
         return map(lambda brain: {'ResultValue': brain.UID,
                                   'ResultText': brain.Title}, brains)
 
