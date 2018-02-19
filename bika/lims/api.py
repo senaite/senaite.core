@@ -1182,7 +1182,7 @@ def is_date(date):
     """
     if not date:
         return False
-    return isinstance(date, DateTime) or isinstance(date, datetime)
+    return isinstance(date, (DateTime, datetime))
 
 
 def to_date(value, default=None):
