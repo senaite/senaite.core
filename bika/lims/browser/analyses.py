@@ -182,7 +182,8 @@ class AnalysesView(BikaListingView):
         # and/or instrument
         self.show_methodinstr_columns = False
 
-    _count_calls = dict()
+        self._count_calls = dict()
+
     def count_calls(self, msg):
         if msg not in self._count_calls:
             self._count_calls[msg] = 0
