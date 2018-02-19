@@ -1185,18 +1185,23 @@ def is_date(date):
     return isinstance(date, DateTime) or isinstance(date, datetime)
 
 
-def get_date(value):
+def to_date(value, default=None):
     """Tries to convert the passed in value to Zope's DateTime
 
     :param value: The value to be converted to a valid DateTime
     :type value: str, DateTime or datetime
-    :return: The DateTime representation of the value passed in or None
+    :return: The DateTime representation of the value passed in or default
     """
     if isinstance(value, DateTime):
         return value
     if not value:
-        return None
+        if default is None:
+            return None
+        return to_date(default)
     try:
+        if isinstance(value, str) and '.' in value:
+            # https://docs.plone.org/develop/plone/misc/datetime.html#datetime-problems-and-pitfalls
+            return DateTime(value, datefmt='international')
         return DateTime(value)
     except:
-        return None
+        return to_date(default)
