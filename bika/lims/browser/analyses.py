@@ -24,6 +24,7 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
+from plone.memoize import ram
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.workflow import wasTransitionPerformed, isActive
@@ -402,13 +403,14 @@ class AnalysesView(BikaListingView):
             base_analysis_type = analysis_brain.getAnalysisPortalType
             uncalibrated = base_analysis_type == 'ReferenceAnalysis'
 
-        vocab = [{'ResultValue': '', 'ResultText': _('None')}]
+        uids = analysis_brain.getAllowedInstrumentUIDs
         query = {'portal_type': 'Instrument',
-                 'UID': analysis_brain.getAllowedInstrumentUIDs,
-                 'inactive_state': 'active'}
-        instruments = api.search(query, 'bika_setup_catalog')
-        for instrument in instruments:
-            instrument = api.get_object(instrument)
+                 'inactive_state': 'active',
+                 'UID': uids}
+        brains = api.search(query, 'bika_setup_catalog')
+        vocab = [{'ResultValue': '', 'ResultText': _('None')}]
+        for brain in brains:
+            instrument = self.get_object(brain)
             if uncalibrated and not instrument.isOutOfDate():
                 # Is a QC analysis, include instrument also if is not valid
                 vocab.append({'ResultValue': instrument.UID(),
