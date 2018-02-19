@@ -6,26 +6,44 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.browser import BrowserView
+from magnitude import mg
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import PROJECTNAME
-from bika.lims.browser.widgets import DurationWidget
+from bika.lims import logger
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import SampleTypeStickersWidget
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISampleType
-from magnitude import mg, MagnitudeError
-from zope.interface import implements
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
-import json
-import plone
-import sys
+from bika.lims.vocabularies import getStickerTemplates
+
+SMALL_DEFAULT_STICKER = 'small_default'
+LARGE_DEFAULT_STICKER = 'large_default'
+
+
+def sticker_templates():
+    """
+    It returns the registered stickers in the system.
+    :return: a DisplayList object
+    """
+    voc = DisplayList()
+    stickers = getStickerTemplates()
+    for sticker in stickers:
+        voc.add(sticker.get('id'), sticker.get('title'))
+    if voc.index == 0:
+        logger.warning('Sampletype: getStickerTemplates is empty!')
+    return voc
+
 
 schema = BikaSchema.copy() + Schema((
     DurationField('RetentionPeriod',
@@ -105,6 +123,47 @@ schema = BikaSchema.copy() + Schema((
         widget = ComputedWidget(
             visibile=False,
         )
+    ),
+    RecordsField(
+        'AdmittedStickerTemplates',
+        subfields=(
+            'admitted',
+            SMALL_DEFAULT_STICKER,
+            LARGE_DEFAULT_STICKER,
+            ),
+        subfield_labels={
+            'admitted': _(
+                'Admitted stickers for the sample type'),
+            SMALL_DEFAULT_STICKER: _(
+                'Default small sticker'),
+            LARGE_DEFAULT_STICKER: _(
+                'Default large sticker')},
+        subfield_sizes={
+            'admitted': 6,
+            SMALL_DEFAULT_STICKER: 1,
+            LARGE_DEFAULT_STICKER: 1},
+        subfield_types={
+            'admitted': 'selection',
+            SMALL_DEFAULT_STICKER: 'selection',
+            LARGE_DEFAULT_STICKER: 'selection'
+                        },
+        subfield_vocabularies={
+            'admitted': sticker_templates(),
+            SMALL_DEFAULT_STICKER: '_sticker_templates_vocabularies',
+            LARGE_DEFAULT_STICKER: '_sticker_templates_vocabularies',
+        },
+        required_subfields={
+            'admitted': 1,
+            SMALL_DEFAULT_STICKER: 1,
+            LARGE_DEFAULT_STICKER: 1},
+        default=[{}],
+        fixedSize=1,
+        widget=SampleTypeStickersWidget(
+            label=_("Admitted sticker templates"),
+            description=_(
+                "Defines the stickers to use for this sample type."),
+            allowDelete=False,
+        ),
     ),
 ))
 
@@ -197,6 +256,104 @@ class SampleType(BaseContent, HistoryAwareMixin):
     def ContainerTypesVocabulary(self):
         from bika.lims.content.containertype import ContainerTypes
         return ContainerTypes(self, allow_blank=True)
+
+    def _get_sticker_subfield(self, subfield):
+        values = self.getField('AdmittedStickerTemplates').get(self)
+        if not values:
+            return ''
+        value = values[0].get(subfield)
+        return value
+
+    def getDefaultSmallSticker(self):
+        """
+        Returns the small sticker ID defined as default.
+
+        :return: A string as an sticker ID
+        """
+        return self._get_sticker_subfield(SMALL_DEFAULT_STICKER)
+
+    def getDefaultLargeSticker(self):
+        """
+        Returns the large sticker ID defined as default.
+
+        :return: A string as an sticker ID
+        """
+        return self._get_sticker_subfield(LARGE_DEFAULT_STICKER)
+
+    def getAdmittedStickers(self):
+        """
+        Returns the admitted sticker IDs defined.
+
+        :return: An array of sticker IDs
+        """
+        admitted = self._get_sticker_subfield('admitted')
+        if admitted:
+            return admitted
+        return []
+
+    def _sticker_templates_vocabularies(self):
+        """
+        Returns the vocabulary to be used in
+        AdmittedStickerTemplates.small_default
+
+        If the object has saved not AdmittedStickerTemplates.admitted stickers,
+        this method will return an empty DisplayList. Otherwise it returns
+        the stickers selected in admitted.
+
+        :return: A DisplayList
+        """
+        admitted = self.getAdmittedStickers()
+        if not admitted:
+            return DisplayList()
+        voc = DisplayList()
+        stickers = getStickerTemplates()
+        for sticker in stickers:
+            if sticker.get('id') in admitted:
+                voc.add(sticker.get('id'), sticker.get('title'))
+        return voc
+
+    def setDefaultSmallSticker(self, value):
+        """
+        Sets the small sticker ID defined as default.
+
+        :param value: A sticker ID
+        """
+        self._set_sticker_subfield(SMALL_DEFAULT_STICKER, value)
+
+    def setDefaultLargeSticker(self, value):
+        """
+        Sets the large sticker ID defined as default.
+
+        :param value: A sticker ID
+        """
+        self._set_sticker_subfield(LARGE_DEFAULT_STICKER, value)
+
+    def setAdmittedStickers(self, value):
+        """
+        Sets the admitted sticker IDs.
+
+        :param value: An array of sticker IDs
+        """
+        self._set_sticker_subfield('admitted', value)
+
+    def _set_sticker_subfield(self, subfield, value):
+        if value is None:
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/admitted' value"
+                " to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        if not isinstance(value, list):
+            logger.error(
+                "Setting wrong 'AdmittedStickerTemplates/admitted' value"
+                " type to Sample Type '{}'"
+                .format(self.getId()))
+            return
+        field = self.getField('AdmittedStickerTemplates')
+        stickers = field.get(self)
+        stickers[0][subfield] = value
+        field.set(self, stickers)
+
 
 registerType(SampleType, PROJECTNAME)
 

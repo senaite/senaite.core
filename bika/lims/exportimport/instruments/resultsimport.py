@@ -5,19 +5,20 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims.utils import t
-from bika.lims.exportimport.instruments.logger import Logger
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import tmpID
-from Products.Archetypes.config import REFERENCE_CATALOG
+import codecs
 from datetime import datetime
 from DateTime import DateTime
-from bika.lims.workflow import doActionFor
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-import os
+from bika.lims.exportimport.instruments.logger import Logger
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import t
+from bika.lims.utils import tmpID
+from bika.lims.workflow import doActionFor
+
 
 class InstrumentResultsFileParser(Logger):
 
@@ -93,7 +94,7 @@ class InstrumentResultsFileParser(Logger):
                        'Accuracy':      '98.19' }
                 }
         """
-        if override == True or resid not in self._rawresults.keys():
+        if override or resid not in self._rawresults.keys():
             self._rawresults[resid] = [values]
         else:
             self._rawresults[resid].append(values)
@@ -113,8 +114,7 @@ class InstrumentResultsFileParser(Logger):
         """
         count = 0
         for val in self.getRawResults().values():
-            for row in val:
-                count += len(val)
+            count += len(val)
         return count
 
     def getAnalysesTotalCount(self):
@@ -187,7 +187,7 @@ class InstrumentResultsFileParser(Logger):
             Called by the Results Importer after parse() call
         """
         if len(self.getRawResults()) == 0:
-            self.err("No results found")
+            self.warn("No results found")
             return False
         return True
 
@@ -202,12 +202,12 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
     def parse(self):
         infile = self.getInputFile()
-        self.log("Parsing file ${file_name}", mapping={"file_name":infile.filename})
+        self.log("Parsing file ${file_name}",
+                 mapping={"file_name": infile.filename})
         jump = 0
         # We test in import functions if the file was uploaded
         try:
             if self._encoding:
-                import codecs
                 f = codecs.open(infile.name, 'r', encoding=self._encoding)
             else:
                 f = open(infile.name, 'rU')
@@ -237,12 +237,85 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
             "${total_analyses} analyses, ${total_results} results",
             mapping={"total_objects": self.getObjectsTotalCount(),
                      "total_analyses": self.getAnalysesTotalCount(),
-                     "total_results":self.getResultsTotalCount()}
+                     "total_results": self.getResultsTotalCount()}
         )
         return True
 
     def splitLine(self, line):
         sline = line.split(',')
+        return [token.strip() for token in sline]
+
+    def _parseline(self, line):
+        """ Parses a line from the input CSV file and populates rawresults
+            (look at getRawResults comment)
+            returns -1 if critical error found and parser must end
+            returns the number of lines to be jumped in next read. If 0, the
+            parser reads the next line as usual
+        """
+        raise NotImplementedError
+
+
+class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
+
+    def __init__(self, infile, separator, encoding=None,):
+        InstrumentResultsFileParser.__init__(self, infile, 'TXT')
+        # Some Instruments can generate files with different encodings, so we
+        # may need this parameter
+        self._separator = separator
+        self._encoding = encoding
+
+    def parse(self):
+        infile = self.getInputFile()
+        self.log("Parsing file ${file_name}", mapping={"file_name": infile.filename})
+        jump = 0
+        lines = self.read_file(infile)
+        for line in lines:
+            self._numline += 1
+            if jump == -1:
+                # Something went wrong. Finish
+                self.err("File processing finished due to critical errors")
+                return False
+            if jump > 0:
+                # Jump some lines
+                jump -= 1
+                continue
+
+            if not line:
+                continue
+
+            jump = 0
+            if line:
+                jump = self._parseline(line)
+
+        self.log(
+            "End of file reached successfully: ${total_objects} objects, "
+            "${total_analyses} analyses, ${total_results} results",
+            mapping={"total_objects": self.getObjectsTotalCount(),
+                     "total_analyses": self.getAnalysesTotalCount(),
+                     "total_results": self.getResultsTotalCount()}
+        )
+        return True
+
+    def read_file(self, infile):
+        """Given an input file read its contents, strip whitespace from the
+         beginning and end of each line and return a list of the preprocessed
+         lines read.
+
+        :param infile: file that contains the data to be read
+        :return: list of the read lines with stripped whitespace
+        """
+        try:
+            encoding = self._encoding if self._encoding else None
+            mode = 'r' if self._encoding else 'rU'
+            with codecs.open(infile.name, mode, encoding=encoding) as f:
+                lines = f.readlines()
+        except AttributeError:
+            lines = infile.readlines()
+        lines = [line.strip() for line in lines]
+        return lines
+
+    def split_line(self, line):
+        sline = line.split(self._separator)
         return [token.strip() for token in sline]
 
     def _parseline(self, line):
@@ -279,17 +352,17 @@ class AnalysisResultsImporter(Logger):
         self.bc = getToolByName(self.context, 'bika_catalog')
         self.wf = getToolByName(self.context, 'portal_workflow')
         if not self._allowed_ar_states:
-            self._allowed_ar_states=['sample_received',
-                                     'attachment_due',
-                                     'to_be_verified']
+            self._allowed_ar_states = ['sample_received',
+                                       'attachment_due',
+                                       'to_be_verified']
         if not self._allowed_analysis_states:
-            self._allowed_analysis_states=['sampled',
-                                           'sample_received',
-                                           'attachment_due',
-                                           'to_be_verified']
+            self._allowed_analysis_states = ['sampled',
+                                             'sample_received',
+                                             'attachment_due',
+                                             'to_be_verified']
         if not self._idsearch:
-            self._idsearch=['getId']
-        self.instrument_uid=instrument_uid
+            self._idsearch = ['getId']
+        self.instrument_uid = instrument_uid
 
     def getParser(self):
         """ Returns the parser that will be used for the importer
@@ -342,12 +415,13 @@ class AnalysisResultsImporter(Logger):
         self._logs = self._parser.logs
         self._priorizedsearchcriteria = ''
 
-        if parsed == False:
+        if parsed is False:
             return False
 
         # Allowed analysis states
         allowed_ar_states_msg = [t(_(s)) for s in self.getAllowedARStates()]
-        allowed_an_states_msg = [t(_(s)) for s in self.getAllowedAnalysisStates()]
+        allowed_an_states_msg = [
+                t(_(s)) for s in self.getAllowedAnalysisStates()]
         self.log("Allowed Analysis Request states: ${allowed_states}",
                  mapping={'allowed_states': ', '.join(allowed_ar_states_msg)})
         self.log("Allowed analysis states: ${allowed_states}",
@@ -367,19 +441,19 @@ class AnalysisResultsImporter(Logger):
             service = self.bsc(getKeyword=acode)
             if not service:
                 self.warn('Service keyword ${analysis_keyword} not found',
-                            mapping={"analysis_keyword": acode})
+                          mapping={"analysis_keyword": acode})
             else:
                 acodes.append(acode)
         if len(acodes) == 0:
-            self.err("Service keywords: no matches found")
+            self.warn("Service keywords: no matches found")
 
         # Attachments will be created in any worksheet that contains
         # analyses that are updated by this import
         attachments = {}
         infile = self._parser.getInputFile()
 
-        searchcriteria = self.getIdSearchCriteria()
-        #self.log(_("Search criterias: %s") % (', '.join(searchcriteria)))
+        # searchcriteria = self.getIdSearchCriteria()
+        # self.log(_("Search criterias: %s") % (', '.join(searchcriteria)))
         for objid, results in self._parser.getRawResults().iteritems():
             # Allowed more than one result for the same sample and analysis.
             # Needed for calibration tests
@@ -389,61 +463,70 @@ class AnalysisResultsImporter(Logger):
                 if len(analyses) == 0 and self.instrument_uid:
                     # No registered analyses found, but maybe we need to
                     # create them first if an instruemnt id has been set in
-                    insts = self.bsc(portal_type='Instrument', UID=self.instrument_uid)
+                    insts = self.bsc(portal_type='Instrument',
+                                     UID=self.instrument_uid)
                     if len(insts) == 0:
                         # No instrument found
-                        self.err("No Analysis Request with '${allowed_ar_states}' "
-                                 "states found, And no QC analyses found for ${object_id}",
-                                 mapping={"allowed_ar_states": ', '.join(allowed_ar_states_msg),
+                        self.warn("No Analysis Request with "
+                                  "'${allowed_ar_states}' "
+                                  "states found, And no QC"
+                                  "analyses found for ${object_id}",
+                                  mapping={"allowed_ar_states": ', '.join(
+                                      allowed_ar_states_msg),
                                           "object_id": objid})
-                        self.err("Instrument not found")
+                        self.warn("Instrument not found")
                         continue
 
                     inst = insts[0].getObject()
 
-                    # Create a new ReferenceAnalysis and link it to the Instrument
+                    # Create a new ReferenceAnalysis and link it to
+                    # the Instrument
                     # Here we have an objid (i.e. R01200012) and
                     # a dict with results (the key is the AS keyword).
                     # How can we create a ReferenceAnalysis if we don't know
                     # which ReferenceSample we might use?
                     # Ok. The objid HAS to be the ReferenceSample code.
-                    refsample = self.bc(portal_type='ReferenceSample', id=objid)
+                    refsample = self.bc(portal_type='ReferenceSample',
+                                        id=objid)
                     if refsample and len(refsample) == 1:
                         refsample = refsample[0].getObject()
 
                     elif refsample and len(refsample) > 1:
                         # More than one reference sample found!
-                        self.err(
-                            "More than one reference sample found for '${object_id}'",
+                        self.warn(
+                            "More than one reference sample found for"
+                            "'${object_id}'",
                             mapping={"object_id": objid})
                         continue
 
                     else:
                         # No reference sample found!
-                        self.err("No Reference Sample found for ${object_id}",
-                                 mapping={"object_id": objid})
+                        self.warn("No Reference Sample found for ${object_id}",
+                                  mapping={"object_id": objid})
                         continue
 
                     # For each acode, create a ReferenceAnalysis and attach it
                     # to the Reference Sample
-                    service_uids = []
-                    reference_type = 'b' if refsample.getBlank() == True else 'c'
                     services = self.bsc(portal_type='AnalysisService')
-                    service_uids = [service.UID for service in services \
-                                    if service.getObject().getKeyword() in result.keys()]
+                    service_uids = [service.UID for service in services
+                                    if service.getObject().getKeyword()
+                                    in result.keys()]
                     analyses = inst.addReferences(refsample, service_uids)
 
                 elif len(analyses) == 0:
                     # No analyses found
-                    self.err("No Analysis Request with '${allowed_ar_states}' "
-                             "states neither QC analyses found for ${object_id}",
-                             mapping={
-                                 "allowed_ar_states":', '.join(allowed_ar_states_msg),
+                    self.warn("No Analysis Request with "
+                              "'${allowed_ar_states}' "
+                              "states neither QC analyses found "
+                              "for ${object_id}",
+                              mapping={
+                                 "allowed_ar_states": ', '.join(
+                                     allowed_ar_states_msg),
                                  "object_id": objid})
                     continue
 
                 # Look for timestamp
-                capturedate = result.get('DateTime',{}).get('DateTime',None)
+                capturedate = result.get('DateTime', {}).get('DateTime', None)
                 if capturedate:
                     del result['DateTime']
                 for acode, values in result.iteritems():
@@ -451,28 +534,31 @@ class AnalysisResultsImporter(Logger):
                         # Analysis keyword doesn't exist
                         continue
 
-                    ans = [analysis for analysis in analyses \
+                    ans = [analysis for analysis in analyses
                            if analysis.getKeyword() == acode]
 
                     if len(ans) > 1:
-                        self.err("More than one analysis found for ${object_id} and ${analysis_keyword}",
-                                 mapping={"object_id": objid,
-                                          "analysis_keyword": acode})
+                        self.warn("More than one analysis found for "
+                                  "${object_id} and ${analysis_keyword}",
+                                  mapping={"object_id": objid,
+                                           "analysis_keyword": acode})
                         continue
 
                     elif len(ans) == 0:
-                        self.err("No analyses found for ${object_id} and ${analysis_keyword}",
-                                 mapping={"object_id": objid,
-                                          "analysis_keyword": acode})
+                        self.warn("No analyses found for ${object_id} "
+                                  "and ${analysis_keyword}",
+                                  mapping={"object_id": objid,
+                                           "analysis_keyword": acode})
                         continue
 
                     analysis = ans[0]
 
                     # Create attachment in worksheet linked to this analysis.
-                    # Only if this import has not already created the attachment
+                    # Only if this import has not already created the
+                    # attachment
                     # And only if the filename of the attachment is unique in
-                    # this worksheet.  Otherwise we will attempt to use existing
-                    # attachment.
+                    # this worksheet.  Otherwise we will attempt to use
+                    # existing attachment.
                     wss = analysis.getBackReferences('WorksheetAnalysis')
                     ws = wss[0] if wss else None
                     if ws:
@@ -494,12 +580,13 @@ class AnalysisResultsImporter(Logger):
                             # Calibration Test (import to Instrument)
                             instprocessed.append(inst.UID())
                             importedinst = inst.title in importedinsts.keys() \
-                                        and importedinsts[inst.title] or []
+                                and importedinsts[inst.title] or []
                             if acode not in importedinst:
                                 importedinst.append(acode)
                             importedinsts[inst.title] = importedinst
                         else:
-                            ar = analysis.portal_type == 'Analysis' and analysis.aq_parent or None
+                            ar = analysis.portal_type == 'Analysis' \
+                                and analysis.aq_parent or None
                             if ar and ar.UID:
                                 importedar = ar.getId() in importedars.keys() \
                                             and importedars[ar.getId()] or []
@@ -518,19 +605,23 @@ class AnalysisResultsImporter(Logger):
 
         for arid, acodes in importedars.iteritems():
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
-            self.log("${request_id}: ${analysis_keywords} imported sucessfully",
-                     mapping={"request_id": arid,
-                              "analysis_keywords": acodesmsg})
+            self.log(
+                    "${request_id}: ${analysis_keywords} imported sucessfully",
+                    mapping={"request_id": arid,
+                             "analysis_keywords": acodesmsg})
 
         for instid, acodes in importedinsts.iteritems():
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
-            msg = "%s: %s %s" % (instid, ", ".join(acodesmsg), "imported sucessfully")
+            msg = "%s: %s %s" % (instid,
+                                 ", ".join(acodesmsg),
+                                 "imported sucessfully")
             self.log(msg)
 
         if self.instrument_uid:
             self.log(
                 "Import finished successfully: ${nr_updated_ars} ARs, "
-                "${nr_updated_instruments} Instruments and ${nr_updated_results} "
+                "${nr_updated_instruments} Instruments and "
+                "${nr_updated_results} "
                 "results updated",
                 mapping={"nr_updated_ars": str(len(importedars)),
                          "nr_updated_instruments": str(len(importedinsts)),
@@ -578,7 +669,8 @@ class AnalysisResultsImporter(Logger):
             for an_att in an_atts:
                 if an_att.getAttachmentFile().filename != \
                         attachment.getAttachmentFile().filename:
-                    logger.info("Attaching %s to %s" % (an_att.UID(), analysis))
+                    logger.info(
+                            "Attaching %s to %s" % (an_att.UID(), analysis))
                     attachments.append(attachment.UID())
                     analysis.setAttachment(attachments)
                     break
@@ -596,34 +688,34 @@ class AnalysisResultsImporter(Logger):
         return fn_attachments
 
     def _getObjects(self, objid, criteria, states):
-        #self.log("Criteria: %s %s") % (criteria, obji))
+        # self.log("Criteria: %s %s") % (criteria, obji))
         obj = []
-        if (criteria == 'arid'):
+        if criteria == 'arid':
             obj = self.ar_catalog(
                            getId=objid,
                            review_state=states)
-        elif (criteria == 'sid'):
+        elif criteria == 'sid':
             obj = self.ar_catalog(
                            getSampleID=objid,
                            review_state=states)
-        elif (criteria == 'csid'):
+        elif criteria == 'csid':
             obj = self.ar_catalog(
                            getClientSampleID=objid,
                            review_state=states)
-        elif (criteria == 'aruid'):
+        elif criteria == 'aruid':
             obj = self.ar_catalog(
                            UID=objid,
                            review_state=states)
-        elif (criteria == 'rgid'):
+        elif criteria == 'rgid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
-                                         'DuplicateAnalysis'],
-                                         getReferenceAnalysesGroupID=objid)
-        elif (criteria == 'rid'):
+                                        'DuplicateAnalysis'],
+                           getReferenceAnalysesGroupID=objid)
+        elif criteria == 'rid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
-                                         'DuplicateAnalysis'], id=objid)
-        elif (criteria == 'ruid'):
+                                        'DuplicateAnalysis'], id=objid)
+        elif criteria == 'ruid':
             obj = self.bac(portal_type=['ReferenceAnalysis',
-                                          'DuplicateAnalysis'], UID=objid)
+                                        'DuplicateAnalysis'], UID=objid)
         if obj and len(obj) > 0:
             self._priorizedsearchcriteria = criteria
         return obj
@@ -637,57 +729,61 @@ class AnalysisResultsImporter(Logger):
             also checked.
             Returns empty array if no analyses found
         """
-        ars = []
+        # ars = []
         analyses = []
         # HACK: Use always the full search workflow
-        #searchcriteria = self.getIdSearchCriteria()
+        # searchcriteria = self.getIdSearchCriteria()
         searchcriteria = ['getId', 'getSampleID', 'getClientSampleID']
         allowed_ar_states = self.getAllowedARStates()
         allowed_an_states = self.getAllowedAnalysisStates()
-        allowed_ar_states_msg = [_(s) for s in allowed_ar_states]
+        # allowed_ar_states_msg = [_(s) for s in allowed_ar_states]
         allowed_an_states_msg = [_(s) for s in allowed_an_states]
 
         # Acceleration of searches using priorization
-        if (self._priorizedsearchcriteria in ['rgid','rid','ruid']):
+        if self._priorizedsearchcriteria in ['rgid', 'rid', 'ruid']:
             # Look from reference analyses
-            analyses = self._getZODBAnalysesFromReferenceAnalyses(objid,
-                        self._priorizedsearchcriteria)
-        if (len(analyses) == 0):
+            analyses = self._getZODBAnalysesFromReferenceAnalyses(
+                    objid, self._priorizedsearchcriteria)
+        if len(analyses) == 0:
             # Look from ar and derived
             analyses = self._getZODBAnalysesFromAR(objid,
-                        '',
-                        searchcriteria,
-                        allowed_ar_states)
+                                                   '',
+                                                   searchcriteria,
+                                                   allowed_ar_states)
 
         # Discard analyses that don't match with allowed_an_states
-        analyses = [analysis for analysis in analyses \
-                    if analysis.portal_type != 'Analysis' \
-                        or self.wf.getInfoFor(analysis, 'review_state') \
-                        in allowed_an_states]
+        analyses = [analysis for analysis in analyses
+                    if analysis.portal_type != 'Analysis' or
+                    self.wf.getInfoFor(analysis, 'review_state')
+                    in allowed_an_states]
 
         if len(analyses) == 0:
-            self.err(
-                "No analyses '${allowed_analysis_states}' states found for ${object_id}",
-                mapping={"allowed_analysis_states": ', '.join(allowed_an_states_msg),
+            self.warn(
+                "No analyses '${allowed_analysis_states}' "
+                "states found for ${object_id}",
+                mapping={"allowed_analysis_states": ', '.join(
+                    allowed_an_states_msg),
                          "object_id": objid})
 
         return analyses
 
-    def _getZODBAnalysesFromAR(self, objid, criteria, allowedsearches, arstates):
+    def _getZODBAnalysesFromAR(self, objid, criteria,
+                               allowedsearches, arstates):
         ars = []
         analyses = []
         if criteria:
             ars = self._getObjects(objid, criteria, arstates)
             if not ars or len(ars) == 0:
                 return self._getZODBAnalysesFromAR(objid, None,
-                            allowedsearches, arstates)
+                                                   allowedsearches, arstates)
         else:
-            sortorder = ['arid', 'sid', 'csid', 'aruid'];
+            sortorder = ['arid', 'sid', 'csid', 'aruid']
             for crit in sortorder:
                 if (crit == 'arid' and 'getId' in allowedsearches) \
                     or (crit == 'sid' and 'getSampleID' in allowedsearches) \
-                    or (crit == 'csid' and 'getClientSampleID' in allowedsearches) \
-                    or (crit == 'aruid' and 'getId' in allowedsearches):
+                    or (crit == 'csid' and 'getClientSampleID'
+                                in allowedsearches) \
+                        or (crit == 'aruid' and 'getId' in allowedsearches):
                     ars = self._getObjects(objid, crit, arstates)
                     if ars and len(ars) > 0:
                         break
@@ -704,7 +800,6 @@ class AnalysisResultsImporter(Logger):
         analyses = [analysis.getObject() for analysis in ar.getAnalyses()]
 
         return analyses
-
 
     def _getZODBAnalysesFromReferenceAnalyses(self, objid, criteria):
         analyses = []
@@ -723,10 +818,10 @@ class AnalysisResultsImporter(Logger):
                 wss = an.getBackReferences('WorksheetAnalysis')
                 if wss and len(wss) > 0:
                     # A regular QC test (assigned to a Worksheet)
-                    return [an,]
+                    return [an, ]
                 elif an.getInstrument():
                     # An Internal Calibration Test
-                    return [an,]
+                    return [an, ]
                 else:
                     # Oops. This should never happen!
                     # A ReferenceAnalysis must be always assigned to
@@ -734,24 +829,64 @@ class AnalysisResultsImporter(Logger):
                     # (Internal Calibration Test)
                     self.err("The Reference Analysis ${object_id} has neither "
                              "instrument nor worksheet assigned",
-                             mapping={"object_id":objid})
+                             mapping={"object_id": objid})
                     return []
             else:
                 # This should never happen!
                 # Fetching ReferenceAnalysis for its id or uid should
                 # *always* return a unique result
-                self.err("More than one Reference Analysis found for ${obect_id}",
-                         mapping={"object_id": objid})
+                self.err(
+                    "More than one Reference Analysis found for ${obect_id}",
+                    mapping={"object_id": objid})
                 return []
 
         else:
-            sortorder = ['rgid', 'rid', 'ruid'];
+            sortorder = ['rgid', 'rid', 'ruid']
             for crit in sortorder:
-                analyses = self._getZODBAnalysesFromReferenceAnalyses(objid, crit)
+                analyses = self._getZODBAnalysesFromReferenceAnalyses(objid,
+                                                                      crit)
                 if len(analyses) > 0:
                     return analyses
 
         return analyses
+
+    def calculateTotalResults(self, objid, analysis):
+        """ If an AR(objid) has an analysis that has a calculation
+        then check if param analysis is used on the calculations formula.
+        Here we are dealing with two types of analysis.
+        1. Calculated Analysis - Results are calculated.
+        2. Analysis - Results are captured and not calculated
+        :param objid: AR ID or Worksheet's Reference Sample IDs
+        :param analysis: Analysis Object
+        """
+        analyses = self._getZODBAnalyses(objid)
+        # Filter Analyses With Calculation
+        analyses_with_calculation = filter(
+                                        lambda an: an.getCalculation(),
+                                        analyses)
+        for analysis_with_calc in analyses_with_calculation:
+            # Get the calculation to get the formula so that we can check
+            # if param analysis keyword is used on the calculation formula
+            calcultion = analysis_with_calc.getCalculation()
+            formula = calcultion.getMinifiedFormula()
+            # The analysis that we are currenly on
+            analysis_keyword = analysis.getKeyword()
+            if analysis_keyword not in formula:
+                continue
+
+            # If the analysis_keyword is in the formula, it means that this
+            # analysis is a dependent on that calculated analysis
+            calc_passed = analysis_with_calc.calculateResult(override=self._override[1])
+            if calc_passed:
+                api.do_transition_for(analysis_with_calc, "submit")
+                self.log(
+                    "${request_id}: calculated result for "
+                    "'${analysis_keyword}': '${analysis_result}'",
+                    mapping={"request_id": objid,
+                             "analysis_keyword": analysis_with_calc.getKeyword(),
+                             "analysis_result": str(analysis_with_calc.getResult())}
+                )
+
 
     def _process_analysis(self, objid, analysis, values):
         resultsaved = False
@@ -762,80 +897,74 @@ class AnalysisResultsImporter(Logger):
         if "DateTime" in values.keys():
             try:
                 dt = values.get('DateTime')
-                capturedate = DateTime(datetime.strptime(dt, '%Y%m%d %H:%M:%S'))
+                capturedate = DateTime(datetime.strptime(dt,
+                                                         '%Y%m%d %H:%M:%S'))
             except:
                 capturedate = None
                 pass
             del values['DateTime']
+
+        fields_to_reindex = []
+        # get interims
         interimsout = []
         interims = hasattr(analysis, 'getInterimFields') \
-                    and analysis.getInterimFields() or []
+                   and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interim['keyword']
             title = interim['title']
             if values.get(keyword, '') or values.get(keyword, '') == 0:
                 res = values.get(keyword)
-                self.log("${request_id} result for '${analysis_keyword}:${interim_keyword}': '${result}'",
+                self.log("${request_id} result for "
+                         "'${analysis_keyword}:${interim_keyword}': "
+                         "'${result}'",
                          mapping={"request_id": objid,
                                   "analysis_keyword": acode,
                                   "interim_keyword": keyword,
-                                  "result": str(res)
-                         })
+                                  "result": str(res)}
+                         )
                 ninterim = interim.copy()
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             elif values.get(title, '') or values.get(title, '') == 0:
                 res = values.get(title)
-                self.log("%s/'%s:%s': '%s'"%(objid, acode, title, str(res)))
+                self.log("%s/'%s:%s': '%s'" % (objid, acode, title, str(res)))
                 ninterim = interim.copy()
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
-#                interimsout.append({'keyword': interim['keyword'],
-#                                    'value': res})
-#                if keyword == defresultkey:
-#                    resultsaved = True
             else:
                 interimsout.append(interim)
-
-        fields_to_reindex = []
+        # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-            # won't be doing setResult below, so manually calculate result.
-            analysis.calculateResult(override=self._override[1])
-            fields_to_reindex.append('Result')
 
-        if resultsaved == False and (values.get(defresultkey, '')
-                                     or values.get(defresultkey, '') == 0
-                                     or self._override[1] == True):
-            # set the result
-            res = values.get(defresultkey, '')
+        # Set result if present.
+        res = values.get(defresultkey, '')
+        if res or res == 0 or self._override[1] == True:
             # self.log("${object_id} result for '${analysis_keyword}': '${result}'",
             #          mapping={"obect_id": obid,
             #                   "analysis_keyword": acode,
             #                   "result": str(res)})
-            #TODO incorporar per veure detall d'importacio
+            # TODO incorporar per veure detall d'importacio
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)
             resultsaved = True
 
-        elif resultsaved == False:
-            self.log("${request_id} result for '${analysis_keyword}': '${result}'",
-                     mapping={"request_id": objid,
-                              "analysis_keyword": acode,
-                              "result":""
-                     })
+        if resultsaved == False:
+            self.log(
+                "${request_id} result for '${analysis_keyword}': '${result}'",
+                mapping={"request_id": objid,
+                         "analysis_keyword": acode,
+                         "result": ""})
 
-        if resultsaved or len(interimsout) > 0:
+        if resultsaved:
             doActionFor(analysis, 'submit')
+            self.calculateTotalResults(objid, analysis)
+            fields_to_reindex.append('Result')
 
-        if (resultsaved or len(interimsout) > 0) \
+        if (resultsaved) \
             and values.get('Remarks', '') \
             and analysis.portal_type == 'Analysis' \
             and (analysis.getRemarks() != '' or self._override[1] == True):
@@ -844,4 +973,4 @@ class AnalysisResultsImporter(Logger):
 
         if len(fields_to_reindex):
             analysis.reindexObject(idxs=fields_to_reindex)
-        return resultsaved or len(interimsout) > 0
+        return resultsaved

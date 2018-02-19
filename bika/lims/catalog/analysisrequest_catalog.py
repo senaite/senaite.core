@@ -39,6 +39,7 @@ _indexes_dict = {
     # To sort in lists
     'getClientTitle': 'FieldIndex',
     'getPrioritySortkey': 'FieldIndex',
+    'assigned_state': 'FieldIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
@@ -99,6 +100,7 @@ _columns_list = [
     'getHazardous',
     'getSamplingWorkflowEnabled',
     'getDepartmentUIDs',
+    'assigned_state',
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()

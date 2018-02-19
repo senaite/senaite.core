@@ -823,3 +823,18 @@ class ITopWideHTMLComponentsHook(Interface):
     """
     Marker interface to hook html components in bikalisting
     """
+
+class IGetDefaultFieldValueARAddHook(Interface):
+    """Marker interface to hook default
+    """
+
+class IGetStickerTemplates(Interface):
+    """
+    Marker interface to get stickers for a specific content type.
+
+    An IGetStickerTemplates adapter should return a result with the
+    following format:
+
+    :return: [{'id': <template_id>,
+             'title': <template_title>}, ...]
+    """

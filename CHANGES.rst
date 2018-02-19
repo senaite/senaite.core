@@ -1,25 +1,90 @@
 Changelog
 =========
 
-1.2.2 (unreleased)
+
+1.2.3 (unreleased)
 ------------------
 
 **Added**
 
-
-**Removed**
-
+- #666 Added Unpublished filter in Analysis Requests list
 
 **Changed**
+
+- #660 Better style for reference widgets
+- #627 Unassigned filter on Analysis Requests view does not work
+- #659 Display the Unit in Profile Analyses Listing
+- #636 Do not display "Advanced..." item in object's workflow actions menu
+- #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
+- #655 Updated German Translations
+- #647 Refactored bika.lims.bikalisting.js + several functional fixtures
+- #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
+
+**Removed**
 
 - #621 AnalysesView code refactoring
 
 **Fixed**
 
-- #620 Client batch list is not filtered by state
+- #653 Points in QC Charts are not displayed in accordance with capture date
+- #662 Viewing Cancelled AR's fails
+- #550 Wrong Listings of Analyses called from Dashboard
+- #666 "Rejected" filter is displayed in AR lists regardless of Setup setting
+- #666 "To be preserved" filter is displayed in AR lists regardless of Setup setting
+- #666 "Scheduled sampling" is displayed in AR lists regardless of Setup setting
+- #666 "To be sampled" filter is displayed in AR lists regardless of Setup setting
+- #664 Improved async transition loading and workflow button rendering in listing tables
+- #658 Worksheet listing view shows old- invalid Analysts
+- #663 AR Report Listing shows all Reports
+- #654 Default's Multi Analysis Request report gives a Traceback
+- #649 Specification fields decimal-mark validator not working for new opened categories
+- #637 Analysis Requests are never transitioned to assigned/unassigned
+- #641 Broken Analyses list on ReferenceSample in Supplier
+- #640 Broken Reference Sample Results view
 
 **Security**
 
+
+1.2.2 (2018-02-09)
+------------------
+
+**Added**
+
+- #594 Add button in Sample View for the createion of Analysis Requests
+- #607 Ability to choose sticker template based on sample type
+- #480 Sample panel in dashboard
+- #617 Instrument import interface: 2-Dimensional-CSV
+- #617 Instrument import interface: Agilent Masshunter
+- #617 Instrument import interface: Shimadzu GCMS-QP2010 SE
+- #617 Instrument import interface: Shimadzu GCMS-TQ8030 GC/MS/MS
+- #617 Instrument import interface: Shimadzu ICPE-9000 Multitype
+- #617 Instrument import interface: Shimadzu HPLC-PDA Nexera-I
+- #617 Instrument import interface: Shimadzu LC MS/MS Nexera X2
+- #537 Instrument import interface: Sysmex XT-4000i
+- #536 Instrument import interface: Sysmex XT-1800i
+- #607 Barcode and labelling depending on Sample Type
+- #618 When previewing stickers the number of copies to print for each sticker can be modified.
+- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.
+
+**Changed**
+
+- #619 Changed listing tables search logic to operate on catalog metadata
+- #621 Change Errors to Warnings when importing instrument results
+
+**Fixed**
+
+- #639 Analysis Requests from inside Batch are not filtered correctly
+- #591 Fixed workflow publish recursion error that reached max depth
+- #634 Fix undefined Symbols in Sample Transition Guards
+- #616 Fix character encodings in analysisservice duplication
+- #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
+- #530 Calculated results do not get updated when importing instrument results
+- #614 Fix accreditation category titles
+- #611 Advanced filter bar: filter Analysis Requests by Service name not working
+- #622 (Re-)Installation always adds another identifier type
+- #620 Client batch list is not filtered by state
+- #628 Hide Department on lab contact inherited from Person
+- #631 Traceback on stickers display
 
 
 1.2.1 (2018-01-26)
@@ -979,13 +1044,12 @@ Changelog
 - LIMS-1328: Instrument calibration test graphs do not work on multiple samples
 - LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 - LIMS-1353: Analyses don't sort in Attachment look-up
-
-- #eview for Results reports
-    - Single/Multi-AR preview
-    - Allows to cancel the pre-publish/publish process
-    - Allows to make visible/invisible the QC analyses
-    - Allows to add new custom-made templates
-    - JS machinery allowed for pdf reporting
+- Preview for Results reports
+- Single/Multi-AR preview
+- Allows to cancel the pre-publish/publish process
+- Results reports. Allows to make visible/invisible the QC analyses
+- Results reports. Allows to add new custom-made templates
+- Results reports. JS machinery allowed for pdf reporting
 
 
 3.1.4 (2014-07-23)
@@ -1040,16 +1104,11 @@ Changelog
 - LIMS-1245: off-by-one in part indicators in ar_add
 - LIMS-1240: Hide "copy to new" from Analyst users
 - LIMS-1059: Added worksheet rejection workflow
-
-    RejectAnalysis (Analysis subclass (has IAnalysis!)) workflow transition.
-
-    Does not retract individual Analysis objects - instead, forces their state
-        back to "Received", and assigns them onto newly created WS.
-
-    Sets attributes on src and dst worksheets:
-        WS instance rejected worksheet attribute: .replaced_by = UID
-        WS instance replacement worksheet attribute: .replaces_rejected_worksheet:UID
-
+- RejectAnalysis (Analysis subclass (has IAnalysis!)) workflow transition.
+- Does not retract individual Analysis objects
+- Sets attributes on src and dst worksheets:
+- WS instance rejected worksheet attribute: .replaced_by = UID
+- WS instance replacement worksheet attribute: .replaces_rejected_worksheet:UID
 - Fixed some i18n and encoding snags, and updated translations.
 
 
@@ -1084,19 +1143,17 @@ Changelog
 - Enhancements to AR Batching
 - Enhancements to Results Reports
 - Instrument management module
-    - Calibration certificates, maintenance, Instrument QC
-    - Method, Instrument and Analysis integrity
-- Instrument interfaces
-   - Agilent MS 'Masshunter Quant'
-   - Thermo Gallery
-   - Foss Winescan FT 120, Auto
-- Invoices
-   - Per AR, Analysis per Invoice line.
-   - Per Supply Order, inventory item per Invoice line
-   - Invoices by email
-   - Invoice 'batches' for selected time period, ARs aand Orders per Invoice line
-   - Invoice batch export to accounts systems
-   - #ice lists. Analysis Services and Supplies
+- Calibration certificates, maintenance, Instrument QC
+- Method, Instrument and Analysis integrity
+- Instrument import interface: Agilent MS 'Masshunter Quant'
+- Instrument import interface: Thermo Gallery
+- Instrument import interface: Foss Winescan FT 120, Auto
+- Invoices per AR, Analysis per Invoice line.
+- Invoices per Supply Order, inventory item per Invoice line
+- Invoices by email
+- Invoice 'batches' for selected time period, ARs aand Orders per Invoice line
+- Invoice batch export to accounts systems
+- Price lists. Analysis Services and Supplies
 
 
 3.1.3036 (2014-05-30)
@@ -1118,8 +1175,8 @@ assigned. These defaults can be changed in BikaSetup > Security.
 ----------------
 
 - Fix some out-dated dependencies that prevented the app from loading.
-- Development of the current bika 3.0 code has slowed, and our efforts have been focused on
-  the 3.01a branch for some time.
+- Development of the current bika 3.0 code has slowed, and our efforts have been
+  focused on the 3.01a branch for some time.
 
 
 3.0rc3.5.1 (2013-10-25)
@@ -1132,8 +1189,7 @@ assigned. These defaults can be changed in BikaSetup > Security.
 3.0rc3.5 (2013-10-24)
 ---------------------
 
-- Requires Plone 4.3.  For information on upgrading Plone, visit
-  http://plone.org/documentation/manual/upgrade-guide
+- Requires Plone 4.3.
 - Fix a serious error saving Analysis results.
 - Improve upgrade handling in genericsetup profile
 - Fix errors in setupdata loader
@@ -1171,7 +1227,7 @@ assigned. These defaults can be changed in BikaSetup > Security.
 - Removed ReferenceManufacturer (use of generic Manufacturer instead)
 - Removed ReferenceSupplier (use Supplier instead)
 - Improve service/calculation interim field widgets
-  Allows service to include custom fields (without calculation selected)
+- Allows service to include custom fields (without calculation selected)
 - Fix services display table categorisation in Analysis Specification views
 - Stop focusing the search gadget input when page load completes. (revert)
 - Limit access to Import tab (BIKA: Manage Bika)
@@ -1219,12 +1275,11 @@ assigned. These defaults can be changed in BikaSetup > Security.
 - Added remarks for individual analyses
 - Improved Javascript i18n handling
 - Improved default permissions
-- New reports
-    - Added 'Analysis summary per department' (merge of 'Analyses lab department weekly' and 'Analyses request summary by date range'
-    - Added 'Analyses performed as % of total' report
-    - Added Analyses per lab department report
-    - Added 'Samples received vs. samples reported' report
-    - Added Daily Samples Received report
+- Added 'Analysis summary per department' (merge of 'Analyses lab department weekly' and 'Analyses request summary by date range'
+- Added 'Analyses performed as % of total' report
+- Added Analyses per lab department report
+- Added 'Samples received vs. samples reported' report
+- Added Daily Samples Received report
 - Many many bugfixes.
 
 
@@ -1339,8 +1394,8 @@ assigned. These defaults can be changed in BikaSetup > Security.
 2.3.3 Bug fix release
 ---------------------
 
- - Inclusion of BikaMembers 0.0.3. No changes to bika code, version bumped
-   to facilitate release of new BikaMembers version.
+- Inclusion of BikaMembers 0.0.3. No changes to bika code, version bumped to
+  facilitate release of new BikaMembers version.
 
 
 2.3
@@ -1458,8 +1513,8 @@ assigned. These defaults can be changed in BikaSetup > Security.
 - Implement generic instrument data import tool
 - Login portlet added
 - Modifications required to support interlab
-  Permit analysis parent (sample) to be in 'released' state.
-  Reference SampleID on AnalysisRequest-
+- Permit analysis parent (sample) to be in 'released' state.
+- Reference SampleID on AnalysisRequest-
 - 1566324: Logged in page redirected to welcome page.
 - 1573299: LiveSearch - Added permissions to InvoiceLineItem.
 - 1573083: Status Drop Down - Invoicing
@@ -1482,7 +1537,6 @@ Please note that AnalysisRequest now has a custom mutator that expects the
 title of the Cultivar, not the UID. This will impact anybode that customised
 the *analysisrequed_add.cpy* controller script and the
 *validate_analysisrequest_add_form.vpy* validation script.
-
 
 - 1423182: IndexError on surfing to LIMS pages without being logged on
 - 1423238: Orders - Dispatch date

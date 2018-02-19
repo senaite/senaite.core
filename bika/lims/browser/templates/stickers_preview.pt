@@ -61,6 +61,23 @@
               background-color: #bbb;
               text-shadow: 1px 1px 1px #aaa;
         }
+        #sticker-preview-header #sticker-copies input {
+            text-align:center;
+            width:15mm;
+            margin:0 0 10px 0;
+            background-color: #aaa;
+            border-radius: 5px;
+            color: #fff;
+            font-family: Helvetica,Arial;
+            font-size: 9pt;
+            font-weight: bold;
+            padding: 4px 2px;
+            text-decoration: none;
+            text-shadow: 1px 1px 1px #999;
+            text-transform: uppercase;
+            border:none;
+            cursor:pointer;
+        }
         #sticker-rule {
             color: rgb(51, 51, 51);
             height: 10mm;
@@ -142,7 +159,10 @@
                 window.location = $(this).attr('data-url');
             });
             $('select#template').change(function(e) {
-                reload($('select#template').val());
+                reload($('select#template').val(), $('#copies_count').val());
+            });
+            $('#copies_count').change(function(e) {
+                reload($('select#template').val(), $('#copies_count').val());
             });
             var stickwidth = $('.sticker').first().width();
             $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
@@ -151,14 +171,14 @@
             /**
              * Re-loads the stickers preview by using the template specified
              */
-            function reload(template) {
+            function reload(template, copies_count) {
                 var baseurl = $('body').attr('data-itemsurl');
                 $('#stickers-wrapper').fadeTo('fast', 0.4);
                 $.ajax({
                     url: baseurl,
                     type: 'POST',
                     async: true,
-                    data: {"template": template}
+                    data: {"template": template, "copies_count": copies_count}
                 })
                 .always(function(data) {
                     var htmldata = data;
@@ -221,6 +241,13 @@
                     </tal:formats>
                     </select>
                 </div>
+                <div id='sticker-copies'>
+                    <label for="copies_count" i18n:translate="">Number of copies</label>
+                    <input name="copies_count" id="copies_count"
+                        type="number"
+                        min="1"
+                        tal:attributes="value view/copies_count"/>
+                </div>
             </div>
             <div id='sticker-buttons'>
                 <input type="button" id='cancel-button' value="Go back"
@@ -241,11 +268,11 @@
               </tal:tick>
             </div>
             <tal:stickers repeat="sticker view/items">
-            <tal:sticker define="item_id python:sticker[2].getId() if sticker else None;"
-                         condition="python:not item_id or item_id not in view.rendered_items">
-            <div class='sticker'
-                 tal:content='structure python:view.renderItem()'></div>
-            </tal:sticker>
+                    <tal:sticker define="item_id python:sticker[2].getId() if sticker else None;">
+                    <div class='sticker'
+                         tal:condition="python:item_id is not None"
+                         tal:content='structure python:view.renderItem()'></div>
+                    </tal:sticker>
             </tal:stickers>
         </div>
     </div>
