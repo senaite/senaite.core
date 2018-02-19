@@ -181,10 +181,6 @@ class AnalysesView(BikaListingView):
         # Is managed by `is_analysis_edition_allowed` function
         self._keywords_poc_map = dict()
 
-        # This is used to cache the objects that have been woken up.
-        # Is managed by `_get_object` function
-        self._objects_map = dict()
-
         # This is used to display method and instrument columns if there is at
         # least one analysis to be rendered that allows the assignment of method
         # and/or instrument
@@ -480,17 +476,6 @@ class AnalysesView(BikaListingView):
             return
         item['after'][element] = glue.join([original, html])
 
-    def _get_object(self, brain_object):
-        """Returns the ATContent object associated to the brain_object
-        :param brain_object: instance for which the object must be woken up
-        :returns: the object associated to the brain_object
-        """
-        uid = api.get_uid(brain_object)
-        if uid not in self._objects_map:
-            obj = api.get_object(brain_object)
-            self._objects_map[uid] = obj
-        return self._objects_map[uid]
-
     def folderitem(self, obj, item, index):
         """
         Obj should be a brain
@@ -779,7 +764,7 @@ class AnalysesView(BikaListingView):
             return
 
         # TODO: Performance, we wake-up the full object here
-        full_obj = self._get_object(analysis_brain)
+        full_obj = self.get_object(analysis_brain)
         formatted_result = full_obj.getFormattedResult(
                             sciformat=int(self.scinot), decimalmark=self.dmk)
         item['formatted_result'] = formatted_result
@@ -946,7 +931,7 @@ class AnalysesView(BikaListingView):
         result = obj.getResult
 
         # TODO: Performance, we wake-up the full object here
-        full_obj = self._get_object(obj)
+        full_obj = self.get_object(obj)
         formatted = format_uncertainty(full_obj, result, decimalmark=self.dmk,
                                        sciformat=int(self.scinot))
         if formatted:
@@ -976,7 +961,7 @@ class AnalysesView(BikaListingView):
             return
 
         # TODO: Performance, we wake-up the full object here
-        full_obj = self._get_object(obj)
+        full_obj = self.get_object(obj)
         uid = api.get_uid(obj)
 
         is_below_ldl = full_obj.isBelowLowerDetectionLimit()
@@ -1152,7 +1137,7 @@ class AnalysesView(BikaListingView):
             return
 
         # TODO: Performance. Waking-up object here
-        analysis_obj = self._get_object(analysis_brain)
+        analysis_obj = self.get_object(analysis_brain)
         worksheet = analysis_obj.getBackReferences('WorksheetAnalysis')
         if not worksheet:
             # No worksheet assigned. Do nothing
@@ -1195,7 +1180,7 @@ class AnalysesView(BikaListingView):
             return
 
         # TODO Performance. Use brain instead
-        full_obj = self._get_object(analysis_brain)
+        full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
         if IRoutineAnalysis.providedBy(full_obj):
             item['allow_edit'].append('Hidden')
