@@ -182,6 +182,20 @@ class AnalysesView(BikaListingView):
         # and/or instrument
         self.show_methodinstr_columns = False
 
+    _count_calls = dict()
+    def count_calls(self, msg):
+        if msg not in self._count_calls:
+            self._count_calls[msg] = 0
+        self._count_calls[msg] += 1
+
+    def print_count_calls(self):
+        keys = self._count_calls.keys()
+        keys.sort()
+        for key in keys:
+            num_calls = self._count_calls[key]
+            msg = "{0}: {1}".format(key, num_calls)
+            logger.warning(msg)
+
     @viewcache.memoize
     def has_permission(self, permission, obj=None):
         """Returns if the current user has rights for the permission passed in
@@ -189,6 +203,7 @@ class AnalysesView(BikaListingView):
         :param obj: object to check the permission against
         :return: True if the user has rights for the permission passed in
         """
+        self.count_calls('has_permission')
         if not permission:
             logger.warn("None permission is not allowed")
             return False
@@ -201,11 +216,11 @@ class AnalysesView(BikaListingView):
         """Returns if the analysis passed in can be edited by the current user
         :param analysis_brain: Brain that represents an analysis
         :return: True if the user can edit the analysis, otherwise False"""
+        self.count_calls('is_analysis_edition_allowed')
 
         # TODO: Workflow. This function will be replaced by
         # `isTransitionAllowed(submit)` as soon as all this logic gets moved
         # into analysis' submit guard.... Very soon
-
         if not self.context_active:
             # The current context must be active. We cannot edit analyses from
             # inside a deactivated Analysis Request, for instance
@@ -254,6 +269,7 @@ class AnalysesView(BikaListingView):
         assigned, returns True
         :param analysis_brain: Brain that represents an analysis
         :return: True if the instrument assigned is valid or is None"""
+        self.count_calls('is_analysis_instrument_valid')
         if analysis_brain.meta_type == 'ReferenceAnalysis':
             # If this is a ReferenceAnalysis, there is no need to check the
             # validity of the instrument, because this is a QC analysis and by
@@ -267,6 +283,7 @@ class AnalysesView(BikaListingView):
         """Returns the instrument assigned to the analysis passed in, if any
         :param analysis_brain: Brain that represents an analysis
         :return: Instrument object or None"""
+        self.count_calls('get_instrument')
         instrument_uid = analysis_brain.getInstrumentUID
         # Note we look for the instrument by using its UID, case we want the
         # instrument to be cached by UID so if same instrument is assigned to
@@ -275,6 +292,7 @@ class AnalysesView(BikaListingView):
 
     @viewcache.memoize
     def get_object(self, brain_or_object_or_uid):
+        self.count_calls('get_object')
         """Get the full content object. Returns None if the param passed in
         is not a valid, not a valid object or not found"""
         if api.is_uid(brain_or_object_or_uid):
@@ -416,6 +434,7 @@ class AnalysesView(BikaListingView):
 
     @viewcache.memoize
     def getAnalysts(self):
+        self.count_calls('getAnalysts')
         analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
         analysts = analysts.sortedByKey()
         results = list()
@@ -664,6 +683,9 @@ class AnalysesView(BikaListingView):
         # by different instruments)
         self.columns['Method']['toggle'] = self.show_methodinstr_columns
         self.columns['Instrument']['toggle'] = self.show_methodinstr_columns
+
+        # TODO Remove!
+        self.print_count_calls()
         return items
 
     def _folder_item_category(self, analysis_brain, item):
