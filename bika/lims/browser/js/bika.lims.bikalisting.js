@@ -361,7 +361,7 @@
       input_name = form_id + "_review_state";
       input = $("input[name=" + input_name + "]", form);
       if (input.length === 0) {
-        input = form.append("<input name='" + input_name + "' type='hidden'/>");
+        input = form.append("<input name='" + input_name + "' value='" + state_id + "' type='hidden'/>");
       }
       input.val(state_id);
       form_data = new FormData(form[0]);
@@ -467,7 +467,7 @@
       uids = [];
       checkall = $("input[id*='select_all']", $table);
       $(checkall).hide();
-      wo_trans = $("input[data-valid_transitions='{}']");
+      wo_trans = $("input[id*='_cb_'][data-valid_transitions='{}']");
       $(wo_trans).prop("disabled", true);
       $(wo_trans).each(function(e) {
         return uids.push($(this).val());
@@ -486,7 +486,7 @@
         this.loading_transitions = false;
         $("input[id*='select_all']").fadeIn();
         if ("transitions" in data) {
-          return $.each(data.transitions, function(index, record) {
+          $.each(data.transitions, function(index, record) {
             var checkbox, trans, uid;
             uid = record.uid;
             trans = record.transitions;
@@ -495,6 +495,7 @@
             return $(checkbox).prop("disabled", false);
           });
         }
+        return this.render_transition_buttons(table);
       });
     };
 

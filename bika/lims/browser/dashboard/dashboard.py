@@ -391,6 +391,7 @@ class DashboardView(BrowserView):
             desc = _("To be sampled")
             purl = 'samples?samples_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
+            query['cancellation_state'] = ['active',]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests awaiting to be preserved
@@ -398,6 +399,7 @@ class DashboardView(BrowserView):
             desc = _("To be preserved")
             purl = 'samples?samples_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
+            query['cancellation_state'] = ['active',]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests scheduled for Sampling
@@ -405,6 +407,7 @@ class DashboardView(BrowserView):
             desc = _("Sampling scheduled")
             purl = 'samples?samples_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
+            query['cancellation_state'] = ['active',]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests awaiting for reception
@@ -412,6 +415,7 @@ class DashboardView(BrowserView):
         desc = _("Reception pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
+        query['cancellation_state'] = ['active',]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests under way
@@ -419,8 +423,8 @@ class DashboardView(BrowserView):
         desc = _("Results pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_received'
         query['review_state'] = ['attachment_due',
-                                 'sample_received',
-                                 'assigned']
+                                 'sample_received',]
+        query['cancellation_state'] = ['active',]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests to be verified
@@ -428,6 +432,7 @@ class DashboardView(BrowserView):
         desc = _("To be verified")
         purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
+        query['cancellation_state'] = ['active',]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests verified (to be published)
@@ -435,6 +440,7 @@ class DashboardView(BrowserView):
         desc = _("Verified")
         purl = 'analysisrequests?analysisrequests_review_state=verified'
         query['review_state'] = ['verified', ]
+        query['cancellation_state'] = ['active',]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests published
@@ -442,6 +448,7 @@ class DashboardView(BrowserView):
         desc = _("Published")
         purl = 'analysisrequests?analysisrequests_review_state=published'
         query['review_state'] = ['published', ]
+        query['cancellation_state'] = ['active',]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests to be printed
@@ -451,6 +458,7 @@ class DashboardView(BrowserView):
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
             query['getPrinted'] = '0'
             query['review_state'] = ['published', ]
+            query['cancellation_state'] = ['active',]
             out.append(
                 self._getStatistics(name, desc, purl, catalog, query, total))
 
@@ -543,7 +551,7 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
         query = {'portal_type': "Analysis",
-                 'cancellation_state': ['active']}
+                 'cancellation_state': 'active'}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
@@ -558,28 +566,30 @@ class DashboardView(BrowserView):
         # Analyses to be assigned
         name = _('Assignment pending')
         desc = _('Assignment pending')
-        purl = 'aggregatedanalyses'
-        query['review_state'] = ['sample_received', ]
+        purl = 'aggregatedanalyses?analyses_form_review_state=default'
+        query['review_state'] = ['sample_received', 'attachment_due', ]
+        query['worksheetanalysis_review_state'] = ['unassigned']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
         name = _('Results pending')
         desc = _('Results pending')
-        purl = 'aggregatedanalyses'
-        query['review_state'] = ['assigned','attachment_due']
+        purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
+        query['review_state'] = ['sample_received', 'attachment_due', ]
+        del query['worksheetanalysis_review_state']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
         name = _('To be verified')
         desc = _('To be verified')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses verified
         name = _('Verified')
         desc = _('Verified')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
