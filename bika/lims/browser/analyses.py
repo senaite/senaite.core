@@ -24,6 +24,7 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
+from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.workflow import wasTransitionPerformed, isActive
 from zope.component import getAdapters
@@ -170,11 +171,6 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        # This is used to cache the permissions for the current user, to avoid
-        # the need of asking for the same permission now and then.
-        # Is managed by `has_permission` function
-        self._permissions_map = dict()
-
         # This is used to cache the instruments instead of retrieving them
         # individually each time we folder an analysis item
         # Is managed by `get_instrument`
@@ -204,29 +200,21 @@ class AnalysesView(BikaListingView):
         # and/or instrument
         self.show_methodinstr_columns = False
 
+    @viewcache.memoize
     def has_permission(self, permission, obj=None):
         """Returns if the current user has rights for the permission passed in
         :param permission: permission identifier
         :param obj: object to check the permission against
         :return: True if the user has rights for the permission passed in
         """
-        if permission is None:
+        if not permission:
             logger.warn("None permission is not allowed")
             return False
 
         if obj is None:
-            obj = self.context
+            return check_permission(self.context)
 
-        obj_uid = api.get_uid(obj)
-        if obj_uid not in self._permissions_map:
-            self._permissions_map[obj_uid] = dict()
-
-        obj_permissions = self._permissions_map[obj_uid]
-        if permission not in obj_permissions:
-            allowed = check_permission(permission, obj)
-            self._permissions_map[obj_uid][permission] = allowed
-
-        return self._permissions_map[obj_uid][permission]
+        return check_permission(permission, obj)
 
     def is_analysis_edition_allowed(self, analysis_brain):
         """Returns if the analysis passed in can be edited by the current user
