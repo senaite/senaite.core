@@ -62,35 +62,38 @@ class window.SiteView
   bind_eventhandler: =>
     ###
      * Binds callbacks on elements
+     *
+     * N.B. We attach all the events to the form and refine the selector to
+     * delegate the event: https://learn.jquery.com/events/event-delegation/
     ###
     console.debug "SiteView::bind_eventhandler"
 
     # Analysis service popup
-    $('.service_title span:not(.before)').on 'click', @on_analysis_service_title_click
+    $("body").on "click", ".service_title span:not(.before)", @on_analysis_service_title_click
 
     # ReferenceSample selection changed
-    $("#ReferenceDefinition\\:list").on "change", @on_reference_definition_list_change
+    $("body").on "change", "#ReferenceDefinition\\:list", @on_reference_definition_list_change
 
     # Numeric field events
-    $('.numeric').on 'keypress', @on_numeric_field_keypress
-    $('.numeric').on 'paste', @on_numeric_field_paste
+    $("body").on "keypress", ".numeric", @on_numeric_field_keypress
+    $("body").on "paste", ".numeric", @on_numeric_field_paste
 
     # AT field events
-    $("input[name*='\\:int\'], .ArchetypesIntegerWidget input").on "keyup", @on_at_integer_field_keyup
-    $("input[name*='\\:float\'], .ArchetypesDecimalWidget input").on "keyup", @on_at_float_field_keyup
+    $("body").on "keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", @on_at_integer_field_keyup
+    $("body").on "keyup","input[name*='\\:float\'], .ArchetypesDecimalWidget input", @on_at_float_field_keyup
 
     # Autocomplete events
     # XXX Where is this used?
-    $("input.autocomplete").on "keydown", @on_autocomplete_keydown
+    $("body").on "keydown", "input.autocomplete", @on_autocomplete_keydown
 
     # Department filtering events
-    $("#department_filter_submit").on "click", @on_department_filter_submit
-    $("#admin_dep_filter_enabled").on "change", @on_admin_dep_filter_change
-    $("select[name='Departments:list']").on "change", @on_department_list_change
+    $("body").on "click", "#department_filter_submit", @on_department_filter_submit
+    $("body").on "change","#admin_dep_filter_enabled", @on_admin_dep_filter_change
+    $("body").on "change", "select[name='Departments:list']", @on_department_list_change
 
     # Date Range Filtering
-    $(".date_range_start").on "change", @on_date_range_start_change
-    $(".date_range_end").on "change", @on_date_range_end_change
+    $("body").on "change", ".date_range_start", @on_date_range_start_change
+    $("body").on "change", ".date_range_end", @on_date_range_end_change
 
     # handle Ajax events
     $(document).on "ajaxStart", @on_ajax_start
