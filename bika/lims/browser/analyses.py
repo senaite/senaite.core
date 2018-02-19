@@ -274,13 +274,15 @@ class AnalysesView(BikaListingView):
         """Returns the instrument assigned to the analysis passed in, if any
         :param analysis_brain: Brain that represents an analysis
         :return: Instrument object or None"""
-        return self.get_object_by_uid(analysis_brain.getInstrumentUID)
+        return self.get_object(analysis_brain.getInstrumentUID)
 
     @viewcache.memoize
-    def get_object_by_uid(self, uid, default=None):
-        """Find an object by a given UID. Delegates the action to
-        api.get_object_by_uid, but caches the result of the function"""
-        return api.get_object_by_uid(uid, default)
+    def get_object(self, brain_or_object_or_uid):
+        """Get the full content object. Delegates the action to api.get_object,
+        but caches the result of the function"""
+        if api.is_uid(brain_or_object_or_uid):
+            return api.get_object_by_uid(brain_or_object_or_uid)
+        return api.get_object(brain_or_object_or_uid)
 
     def get_analysis_spec(self, analysis):
         """
