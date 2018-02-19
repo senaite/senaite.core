@@ -198,7 +198,9 @@ class ReferenceAnalysesView(AnalysesView):
         trows = self.anjson.get(serviceref, {})
         anrows = trows.get(qcid, [])
         rr = parent.getResultsRangeDict()
-        cap_date = item.get('CaptureDate', None)
+        cap_date = item['obj'].getResultCaptureDate
+        cap_date = api.is_date(cap_date) and \
+                   cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
         if service_uid in rr:
             specs = rr.get(service_uid, None)
             try:
