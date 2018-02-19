@@ -180,12 +180,6 @@ class AnalysesView(BikaListingView):
         # individually each time we folder an analysis item
         self._methods_map = dict()
 
-        # This is used to cache if the analyses are editable or not, cause
-        # retrieving this information for same analysis multiple times is to
-        # expensive in terms of performance.
-        # Is managed by `is_analysis_edition_allowed` function
-        self._analysis_edit_map = dict()
-
         # This is used to cache analysis keywords with Point of Capture to
         # reduce the number objects that need to be woken up
         # Is managed by `is_analysis_edition_allowed` function
@@ -212,10 +206,11 @@ class AnalysesView(BikaListingView):
             return False
 
         if obj is None:
-            return check_permission(self.context)
+            return check_permission(permission, self.context)
 
         return check_permission(permission, obj)
 
+    @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
         """Returns if the analysis passed in can be edited by the current user
         :param analysis_brain: Brain that represents an analysis
@@ -234,11 +229,6 @@ class AnalysesView(BikaListingView):
             # Retracted analyses cannot be edited
             return False
 
-        analysis_uid = analysis_brain.UID
-        if analysis_uid in self._analysis_edit_map:
-            # This analysis has been checked before, no need to go further
-            return self._analysis_edit_map[analysis_uid]
-
         analysis_obj = None
         analysis_keyword = analysis_brain.getKeyword
         if analysis_keyword not in self._keywords_poc_map:
@@ -253,31 +243,23 @@ class AnalysesView(BikaListingView):
             # This analysis must be captured on field, during sampling.
             if not self.has_permission(EditFieldResults):
                 # Current user cannot edit field analyses.
-                # Cache the value, so further checks for edition for this
-                # specific analysis and user will be resolved rapidly
-                self._analysis_edit_map[analysis_uid] = False
                 return False
 
         elif not self.has_permission(EditResults):
             # The Point of Capture is 'lab' and the current user cannot edit
-            # lab analyses. Cache the value, so further checks for edition for
-            # this specific analysis and user will be resolved rapidly
-            self._analysis_edit_map[analysis_uid] = False
+            # lab analyses.
             return False
 
         analysis_obj = analysis_obj or api.get_object(analysis_brain)
         if wasTransitionPerformed(analysis_obj, 'submit'):
             # Analysis has been already submitted. This analysis cannot be
-            # edited anymore. Cache the value, so further checks for edition for
-            # this specific analysis and user will be resolved rapidly
-            self._analysis_edit_map[analysis_uid] = False
+            # edited anymore.
             return False
 
         # Is the instrument out of date?
         # The user can assign a result to the analysis if it does not have any
         # instrument assigned or the instrument assigned is valid.
         instrument_valid = self.is_analysis_instrument_valid(analysis_brain)
-        self._analysis_edit_map[analysis_uid] = instrument_valid
         return instrument_valid
 
     def is_analysis_instrument_valid(self, analysis_brain):
