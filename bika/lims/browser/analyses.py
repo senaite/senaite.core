@@ -422,14 +422,15 @@ class AnalysesView(BikaListingView):
                               'ResultText': instrument.Title()})
         return vocab
 
+    @viewcache.memoize
     def getAnalysts(self):
         analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
         analysts = analysts.sortedByKey()
-        ret = []
-        for a in analysts:
-            ret.append({'ResultValue': a,
-                        'ResultText': analysts.getValue(a)})
-        return ret
+        results = list()
+        for analyst_id, analyst_name in analysts.items():
+            results.append({'ResultValue': analyst_id,
+                            'ResultText': analyst_name})
+        return results
 
     def isItemAllowed(self, obj):
         """
