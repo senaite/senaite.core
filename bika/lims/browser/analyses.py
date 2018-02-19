@@ -199,10 +199,8 @@ class AnalysesView(BikaListingView):
         if not permission:
             logger.warn("None permission is not allowed")
             return False
-
         if obj is None:
             return check_permission(permission, self.context)
-
         return check_permission(permission, obj)
 
     @viewcache.memoize
