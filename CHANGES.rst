@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #674 Dashboard with slightly better performance
 - #668 AR Add: Debounce expensive XHR calls
 - #660 Better style for reference widgets
 - #627 Unassigned filter on Analysis Requests view does not work
