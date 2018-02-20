@@ -29,7 +29,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.workflow import wasTransitionPerformed, isActive
 from zope.component import getAdapters
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from plone.api.user import has_permission
 import json
 
 
