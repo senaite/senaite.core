@@ -645,7 +645,7 @@ class AnalysesView(BikaListingView):
         # The Dry Matter column is never enabled for reference sample contexts
         # and refers to getReportDryMatter in ARs.
         if items and \
-                (hasattr(self.context, 'getReportDryMatter') and \
+                (hasattr(self.context, 'getReportDryMatter') and
                          self.context.getReportDryMatter()):
 
             # look through all items
