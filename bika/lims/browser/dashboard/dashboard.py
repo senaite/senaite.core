@@ -833,12 +833,7 @@ class DashboardView(BrowserView):
                 outevoidx[currstr] = len(outevo)-1
             curr = curr + datetime.timedelta(days=days)
         for brain in catalog(query):
-            # Check if we can use the brain
-            if query.get('portal_type', '') in ['AnalysisRequest', 'Analysis']:
-                created = brain.created
-            # I not, get the object
-            else:
-                created = brain.getObject().created()
+            created = brain.created
             state = brain.review_state
             if state not in statesmap:
                 logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
