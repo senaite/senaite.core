@@ -5,6 +5,7 @@
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    slice = [].slice,
     hasProp = {}.hasOwnProperty,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -54,6 +55,7 @@
       this.get_global_settings = bind(this.get_global_settings, this);
       this.render_template = bind(this.render_template, this);
       this.template_dialog = bind(this.template_dialog, this);
+      this.debounce = bind(this.debounce, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
@@ -80,38 +82,69 @@
 
       /*
        * Binds callbacks on elements
+       *
+       * N.B. We attach all the events to the body and refine the selector to
+       * delegate the event: https://learn.jquery.com/events/event-delegation/
+       *
        */
       console.debug("AnalysisRequestAdd::bind_eventhandler");
-      $(".service-listing-header").on("click", this.on_service_listing_header_click);
-      $("tr.category").on("click", this.on_service_category_click);
-      $("[name='save_button']").on("click", this.on_form_submit);
-      $("tr[fieldname=AdHoc] input[type='checkbox']").on("click", this.recalculate_records);
-      $("tr[fieldname=Composite] input[type='checkbox']").on("click", this.recalculate_records);
-      $("tr[fieldname=InvoiceExclude] input[type='checkbox']").on("click", this.recalculate_records);
-      $("tr[fieldname=Analyses] input[type='checkbox']").on("click", this.on_analysis_checkbox_click);
-      $("tr[fieldname=Client] input[type='text']").on("selected change", this.on_client_changed);
-      $("tr[fieldname=Contact] input[type='text']").on("selected change", this.on_contact_changed);
-      $("tr[fieldname=ReportDryMatter] input[type='checkbox']").on("click", this.on_reportdrymatter_click);
-      $("input.min").on("change", this.on_analysis_specification_changed);
-      $("input.max").on("change", this.on_analysis_specification_changed);
-      $("input.err").on("change", this.on_analysis_specification_changed);
-      $(".service-lockbtn").on("click", this.on_analysis_lock_button_click);
-      $(".service-infobtn").on("click", this.on_analysis_details_click);
-      $("tr[fieldname=Sample] input[type='text']").on("selected change", this.on_sample_changed);
-      $("tr[fieldname=SampleType] input[type='text']").on("selected change", this.on_sampletype_changed);
-      $("tr[fieldname=Specification] input[type='text']").on("selected change", this.on_specification_changed);
-      $("tr[fieldname=Template] input[type='text']").on("selected change", this.on_analysis_template_changed);
-      $("tr[fieldname=Profiles] input[type='text']").on("selected", this.on_analysis_profile_selected);
-      $("tr[fieldname=Profiles] img.deletebtn").live("click", this.on_analysis_profile_removed);
-      $("img.copybutton").on("click", this.on_copy_button_click);
+      $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
+      $("body").on("click", "tr.category", this.on_service_category_click);
+      $("body").on("click", "[name='save_button']", this.on_form_submit);
+      $("body").on("click", "tr[fieldname=AdHoc] input[type='checkbox']", this.recalculate_records);
+      $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
+      $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
+      $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
+      $("body").on("selected change", "tr[fieldname=Client] input[type='text']", this.on_client_changed);
+      $("body").on("selected change", "tr[fieldname=Contact] input[type='text']", this.on_contact_changed);
+      $("body").on("click", "tr[fieldname=ReportDryMatter] input[type='checkbox']", this.on_reportdrymatter_click);
+      $("body").on("change", "input.min", this.on_analysis_specification_changed);
+      $("body").on("change", "input.max", this.on_analysis_specification_changed);
+      $("body").on("change", "input.err", this.on_analysis_specification_changed);
+      $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
+      $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
+      $("body").on("selected change", "tr[fieldname=Sample] input[type='text']", this.on_sample_changed);
+      $("body").on("selected change", "tr[fieldname=SampleType] input[type='text']", this.on_sampletype_changed);
+      $("body").on("selected change", "tr[fieldname=Specification] input[type='text']", this.on_specification_changed);
+      $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
+      $("body").on("selected", "tr[fieldname=Profiles] input[type='text']", this.on_analysis_profile_selected);
+      $("body").on("click", "tr[fieldname=Profiles] img.deletebtn", this.on_analysis_profile_removed);
+      $("body").on("click", "img.copybutton", this.on_copy_button_click);
 
       /* internal events */
-      $(this).on("form:changed", this.recalculate_records);
-      $(this).on("data:updated", this.update_form);
-      $(this).on("data:updated", this.recalculate_prices);
-      $(this).on("data:updated", this.hide_all_service_info);
+      $(this).on("form:changed", this.debounce(this.recalculate_records, 500));
+      $(this).on("data:updated", this.debounce(this.recalculate_prices, 3000));
+      $(this).on("data:updated", this.debounce(this.update_form, 300));
+      $(this).on("data:updated", this.debounce(this.hide_all_service_info, 300));
       $(this).on("ajax:start", this.on_ajax_start);
       return $(this).on("ajax:end", this.on_ajax_end);
+    };
+
+    AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
+
+      /*
+       * Debounce a function call
+       * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+       */
+      var timeout;
+      timeout = null;
+      return function() {
+        var args, delayed, obj;
+        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        obj = this;
+        delayed = function() {
+          if (!execAsap) {
+            func.apply(obj, args);
+          }
+          return timeout = null;
+        };
+        if (timeout) {
+          clearTimeout(timeout);
+        } else if (execAsap) {
+          func.apply(obj, args);
+        }
+        return timeout = setTimeout(delayed, threshold || 100);
+      };
     };
 
     AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
