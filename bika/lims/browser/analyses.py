@@ -340,25 +340,6 @@ class AnalysesView(BikaListingView):
             results_range = results_range.get(keyword, None) or default
         return results_range
 
-    def ResultOutOfRange(self, analysis):
-        """ Template wants to know, is this analysis out of range?
-        We scan IResultOutOfRange adapters, and return True if any IAnalysis
-        adapters trigger a result.
-        """
-        spec = self.get_analysis_spec(analysis)
-        # The function get_analysis_spec ALWAYS return a dict. If no specs
-        # are found for the analysis, returns a dict with empty values for
-        # min and max keys.
-        if not spec or (not spec.get('min') and not spec.get('max')):
-            return False
-        # The analysis has specs defined, evaluate if is out of range
-        adapters = getAdapters((analysis,), IResultOutOfRange)
-        for name, adapter in adapters:
-            if adapter(specification=spec):
-                return True
-        # By default, not out of range
-        return False
-
     @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
         """
@@ -446,6 +427,59 @@ class AnalysesView(BikaListingView):
                             'ResultText': analyst_name})
         return results
 
+    def ResultOutOfRange(self, analysis):
+        """ Template wants to know, is this analysis out of range?
+        We scan IResultOutOfRange adapters, and return True if any IAnalysis
+        adapters trigger a result.
+        """
+        spec = self.get_analysis_spec(analysis)
+        # The function get_analysis_spec ALWAYS return a dict. If no specs
+        # are found for the analysis, returns a dict with empty values for
+        # min and max keys.
+        if not spec or (not spec.get('min') and not spec.get('max')):
+            return False
+        # The analysis has specs defined, evaluate if is out of range
+        adapters = getAdapters((analysis,), IResultOutOfRange)
+        for name, adapter in adapters:
+            if adapter(specification=spec):
+                return True
+        # By default, not out of range
+        return False
+
+    def load_analysis_categories(self):
+        # Getting analysis categories
+        bsc = api.get_tool('bika_setup_catalog')
+        analysis_categories = bsc(portal_type="AnalysisCategory",
+                                  sort_on="sortable_title")
+        # Sorting analysis categories
+        self.analysis_categories_order = dict([
+            (b.Title, "{:04}".format(a)) for a, b in
+            enumerate(analysis_categories)])
+
+    def before_render(self):
+        # Load analysis categories available in the system
+        self.load_analysis_categories()
+
+        # Can the user edit?
+        if self.allow_edit:
+            if self.contentFilter.get('getPointOfCapture', '') == 'field':
+                # This is only loaded for Field' analyses list
+                self.allow_edit = self.has_permission(EditFieldResults)
+            else:
+                self.allow_edit = self.has_permission(EditResults)
+        self.show_select_column = self.allow_edit
+
+        # Users that can Add Analyses to an Analysis Request must be able to
+        # set the visibility of the analysis in results report, also if the
+        # current state of the Analysis Request (e.g. verified) does not allow
+        # the edition of other fields. Note that an analyst has no privileges
+        # by default to edit this value, cause this "visibility" field is
+        # related with results reporting and/or visibility from the client side.
+        # This behavior only applies to routine analyses, the visibility of QC
+        # analyses is managed in publish and are not visible to clients.
+        if not self.has_permission(AddAnalysis):
+            self.remove_column('Hidden')
+
     def isItemAllowed(self, obj):
         """
         Checks if the passed in Analysis must be displayed in the list. If the
@@ -480,19 +514,6 @@ class AnalysesView(BikaListingView):
         dep_uid = obj.getDepartmentUID
         departments = self.request.get('filter_by_department_info', '')
         return not dep_uid or dep_uid in departments.split(',')
-
-    def _append_after_element(self, item, element, html, glue="&nbsp;"):
-        """Appends html value after element in the item dict
-        :param item: dictionary that represents an analysis row
-        :element: id of the element the html must be added thereafter
-        :html: element to append
-        :glue: glue to use for appending"""
-        item['after'] = item.get('after', {})
-        original = item['after'].get(element, '')
-        if not original:
-            item['after'][element] = html
-            return
-        item['after'][element] = glue.join([original, html])
 
     def folderitem(self, obj, item, index):
         """
@@ -552,40 +573,6 @@ class AnalysesView(BikaListingView):
         self._folder_item_dry_matter(obj, item)
 
         return item
-
-    def load_analysis_categories(self):
-        # Getting analysis categories
-        bsc = api.get_tool('bika_setup_catalog')
-        analysis_categories = bsc(portal_type="AnalysisCategory",
-                                  sort_on="sortable_title")
-        # Sorting analysis categories
-        self.analysis_categories_order = dict([
-            (b.Title, "{:04}".format(a)) for a, b in
-            enumerate(analysis_categories)])
-
-    def before_render(self):
-        # Load analysis categories available in the system
-        self.load_analysis_categories()
-
-        # Can the user edit?
-        if self.allow_edit:
-            if self.contentFilter.get('getPointOfCapture', '') == 'field':
-                # This is only loaded for Field' analyses list
-                self.allow_edit = self.has_permission(EditFieldResults)
-            else:
-                self.allow_edit = self.has_permission(EditResults)
-        self.show_select_column = self.allow_edit
-
-        # Users that can Add Analyses to an Analysis Request must be able to
-        # set the visibility of the analysis in results report, also if the
-        # current state of the Analysis Request (e.g. verified) does not allow
-        # the edition of other fields. Note that an analyst has no privileges
-        # by default to edit this value, cause this "visibility" field is
-        # related with results reporting and/or visibility from the client side.
-        # This behavior only applies to routine analyses, the visibility of QC
-        # analyses is managed in publish and are not visible to clients.
-        if not self.has_permission(AddAnalysis):
-            self.remove_column('Hidden')
 
     def folderitems(self):
         # Gettin all the items
@@ -1199,6 +1186,19 @@ class AnalysesView(BikaListingView):
             item['ResultDM'] = analysis.getResultDM()
             item['after']['ResultDM'] = "<em class='discreet'>%</em>"
         item['ResultDM'] = ''
+
+    def _append_after_element(self, item, element, html, glue="&nbsp;"):
+        """Appends html value after element in the item dict
+        :param item: dictionary that represents an analysis row
+        :element: id of the element the html must be added thereafter
+        :html: element to append
+        :glue: glue to use for appending"""
+        item['after'] = item.get('after', {})
+        original = item['after'].get(element, '')
+        if not original:
+            item['after'][element] = html
+            return
+        item['after'][element] = glue.join([original, html])
 
 
 class QCAnalysesView(AnalysesView):
