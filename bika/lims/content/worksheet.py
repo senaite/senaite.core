@@ -389,6 +389,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Add the duplicate in the worksheet
         self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
         doActionFor(ref_analysis, 'assign')
+        self.reindexObject()
         return ref_analysis
 
     def nextReferenceAnalysesGroupID(self, reference):
@@ -509,6 +510,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Add the duplicate in the worksheet
         self.setAnalyses(self.getAnalyses() + [duplicate, ])
         doActionFor(duplicate, 'assign')
+        self.reindexObject()
 
         return duplicate
 
