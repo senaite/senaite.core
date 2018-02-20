@@ -574,9 +574,6 @@ class AnalysesView(BikaListingView):
                 self.allow_edit = self.has_permission(EditResults)
         self.show_select_column = self.allow_edit
 
-    def folderitems(self):
-
-
         # Users that can Add Analyses to an Analysis Request must be able to
         # set the visibility of the analysis in results report, also if the
         # current state of the Analysis Request (e.g. verified) does not allow
@@ -588,9 +585,11 @@ class AnalysesView(BikaListingView):
         if not self.has_permission(AddAnalysis):
             self.remove_column('Hidden')
 
+    def folderitems(self):
+
         self.categories = []
         # Getting the multi-verification type of bika_setup
-        self.mv_type = self.context.bika_setup.getTypeOfmultiVerification()
+        #self.mv_type = self.context.bika_setup.getTypeOfmultiVerification()
         self.show_methodinstr_columns = False
         self.dmk = self.context.bika_setup.getResultsDecimalMark()
         self.scinot = self.context.bika_setup.getScientificNotationResults()
@@ -1119,8 +1118,8 @@ class AnalysesView(BikaListingView):
             return
 
         # This user verified this analysis before
-        self_multi_verification = self.mv_type == 'self_multi_not_cons'
-        if not self_multi_verification:
+        multi_verif = self.context.bika_setup.getTypeOfmultiVerification()
+        if multi_verif != 'self_multi_not_cons':
             # Multi verification by same user is not allowed
             title = t(_("Cannot verify, was verified by current user"))
             html = get_image('submitted-by-current-user.png', title=title)
