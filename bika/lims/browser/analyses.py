@@ -68,6 +68,7 @@ class AnalysesView(BikaListingView):
         self.rc = getToolByName(context, REFERENCE_CATALOG)
         self.dmk = context.bika_setup.getResultsDecimalMark()
         self.scinot = context.bika_setup.getScientificNotationResults()
+        self.categories = []
         request.set('disable_plone.rightcolumn', 1)
 
         # each editable item needs it's own allow_edit
@@ -586,10 +587,6 @@ class AnalysesView(BikaListingView):
 
     def folderitems(self):
 
-        self.categories = []
-        # Getting the multi-verification type of bika_setup
-        #self.mv_type = self.context.bika_setup.getTypeOfmultiVerification()
-        #self.show_methodinstr_columns = False
         # Gettin all the items
         items = super(AnalysesView, self).folderitems(classic=False)
 
@@ -612,7 +609,7 @@ class AnalysesView(BikaListingView):
                                         'input_class': 'ajax_calculate numeric',
                                         'sortable': False}
 
-        if can_edit_analyses:
+        if self.allow_edit:
             new_states = []
             for state in self.review_states:
                 # InterimFields are displayed in review_state
@@ -635,6 +632,7 @@ class AnalysesView(BikaListingView):
             # Allow selecting individual analyses
             self.show_select_column = True
 
+        # TODO Remove Dry Matter!
         # Dry Matter.
         # The Dry Matter column is never enabled for reference sample contexts
         # and refers to getReportDryMatter in ARs.
