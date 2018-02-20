@@ -417,8 +417,8 @@ class AnalysesView(BikaListingView):
         return vocab
 
     @viewcache.memoize
-    def getAnalysts(self):
-        self.count_calls('getAnalysts')
+    def get_analysts(self):
+        self.count_calls('get_analysts')
         analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
         analysts = analysts.sortedByKey()
         results = list()
@@ -845,7 +845,7 @@ class AnalysesView(BikaListingView):
 
         # Analyst is editable
         item['Analyst'] = obj.getAnalyst or api.get_current_user().id
-        item['choices']['Analyst'] = self.getAnalysts()
+        item['choices']['Analyst'] = self.get_analysts()
         item['allow_edit'].append('Analyst')
 
     def _folder_item_attachments(self, obj, item):
