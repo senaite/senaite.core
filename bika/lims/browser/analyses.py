@@ -565,20 +565,17 @@ class AnalysesView(BikaListingView):
         # Load analysis categories available in the system
         self.load_analysis_categories()
 
+        # Can the user edit?
+        if self.allow_edit:
+            if self.contentFilter.get('getPointOfCapture', '') == 'field':
+                # This is only loaded for Field' analyses list
+                self.allow_edit = self.has_permission(EditFieldResults)
+            else:
+                self.allow_edit = self.has_permission(EditResults)
+        self.show_select_column = self.allow_edit
+
     def folderitems(self):
 
-        # Can the user edit?
-        if not self.allow_edit:
-            can_edit_analyses = False
-        else:
-            checkPermission = self.mtool.checkPermission
-            if self.contentFilter.get('getPointOfCapture', '') == 'field':
-                can_edit_analyses = checkPermission(
-                    EditFieldResults, self.context)
-            else:
-                can_edit_analyses = checkPermission(EditResults, self.context)
-            self.allow_edit = can_edit_analyses
-        self.show_select_column = self.allow_edit
 
         # Users that can Add Analyses to an Analysis Request must be able to
         # set the visibility of the analysis in results report, also if the
