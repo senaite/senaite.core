@@ -86,12 +86,12 @@
     <input type="hidden"
            tal:omit-tag="python:table_only"
            tal:attributes="name python:form_id+'_sort_on';
-                           value python:request.get(form_id+'_sort_on', 'id')"/>
+                           value python:request.get(form_id+'_sort_on', '')"/>
 
     <input type="hidden"
            tal:omit-tag="python:table_only"
            tal:attributes="name python:form_id+'_sort_order';
-                           value python:request.get(form_id+'_sort_order', 'ascending')"/>
+                           value python:request.get(form_id+'_sort_order', '')"/>
 
     <input type="hidden"
            name="ajax_categories"
