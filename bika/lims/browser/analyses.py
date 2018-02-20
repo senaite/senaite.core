@@ -381,6 +381,9 @@ class AnalysesView(BikaListingView):
                  'inactive_state': 'active',
                  'UID': uids}
         brains = api.search(query, 'bika_setup_catalog')
+        if not brains:
+            return [{'ResultValue': '',
+                     'ResultText': _('None')}]
         return map(lambda brain: {'ResultValue': brain.UID,
                                   'ResultText': brain.Title}, brains)
 
