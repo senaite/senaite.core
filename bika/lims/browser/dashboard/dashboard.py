@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
 import datetime
 import json
 from calendar import monthrange
@@ -16,6 +17,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone import api
 from plone import protect
 
+from bika.lims.api import search
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import get_tool
@@ -26,7 +28,7 @@ from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
 from plone.api.exc import InvalidParameterError
-
+from plone.memoize import view as viewcache
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
@@ -354,7 +356,7 @@ class DashboardView(BrowserView):
         results = 0
         ratio = 0
         if total > 0:
-            results = len(catalog(criterias))
+            results = self.search_count(criterias, catalog.id)
             results = results if total >= results else total
             ratio = (float(results)/float(total))*100 if results > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
@@ -382,7 +384,7 @@ class DashboardView(BrowserView):
         query = self._update_criteria_with_filters(query, 'analysisrequests')
 
         # Active Analysis Requests (All)
-        total = len(catalog(query))
+        total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
         if (self.context.bika_setup.getSamplingWorkflowEnabled()):
@@ -498,7 +500,7 @@ class DashboardView(BrowserView):
         query = self._update_criteria_with_filters(query, 'worksheets')
 
         # Active Worksheets (all)
-        total = len(bc(query))
+        total = self.search_count(query, bc.id)
 
         # Open worksheets
         name = _('Results pending')
@@ -561,7 +563,7 @@ class DashboardView(BrowserView):
         query = self._update_criteria_with_filters(query, 'analyses')
 
         # Active Analyses (All)
-        total = len(bc(query))
+        total = self.search_count(query, bc.id)
 
         # Analyses to be assigned
         name = _('Assignment pending')
@@ -628,7 +630,7 @@ class DashboardView(BrowserView):
         query = self._update_criteria_with_filters(query, 'samples')
 
         # Active Samples (All)
-        total = len(catalog(query))
+        total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
         if self.context.bika_setup.getSamplingWorkflowEnabled():
@@ -860,6 +862,17 @@ class DashboardView(BrowserView):
                     del o[r]
 
         return outevo
+
+    def search_count(self, query, catalog_name):
+        sorted_query = collections.OrderedDict(sorted(query.items()))
+        query_json = json.dumps(sorted_query)
+        return self._search_count(query_json, catalog_name)
+
+    @viewcache.memoize
+    def _search_count(self, query_json, catalog_name):
+        query = json.loads(query_json)
+        brains = search(query, catalog_name)
+        return len(brains)
 
     def _update_criteria_with_filters(self, query, section_name):
         """
