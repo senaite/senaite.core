@@ -548,6 +548,8 @@ class AnalysesView(BikaListingView):
         self._folder_item_report_visibility(obj, item)
         # Renders additional icons to be displayed
         self._folder_item_fieldicons(obj)
+        # Renders DryMatter if necessary
+        self._folder_item_dry_matter(obj, item)
 
         return item
 
@@ -586,7 +588,6 @@ class AnalysesView(BikaListingView):
             self.remove_column('Hidden')
 
     def folderitems(self):
-
         # Gettin all the items
         items = super(AnalysesView, self).folderitems(classic=False)
 
@@ -631,36 +632,6 @@ class AnalysesView(BikaListingView):
             self.review_states = new_states
             # Allow selecting individual analyses
             self.show_select_column = True
-
-        # TODO Remove Dry Matter!
-        # Dry Matter.
-        # The Dry Matter column is never enabled for reference sample contexts
-        # and refers to getReportDryMatter in ARs.
-        if items and \
-                (hasattr(self.context, 'getReportDryMatter') and
-                         self.context.getReportDryMatter()):
-
-            # look through all items
-            # if the item's Service supports ReportDryMatter, add getResultDM().
-            for item in items:
-                full_object = item['obj'].getObject()
-                if full_object.getReportDryMatter():
-                    dry_matter = full_object.getResultDM()
-                    item['ResultDM'] = dry_matter
-                else:
-                    item['ResultDM'] = ''
-                if item['ResultDM']:
-                    item['after']['ResultDM'] = "<em class='discreet'>%</em>"
-
-            # modify the review_states list to include the ResultDM column
-            new_states = []
-            for state in self.review_states:
-                pos = 'Result' in state['columns'] and \
-                      state['columns'].index('Uncertainty') + 1 or len(
-                    state['columns'])
-                state['columns'].insert(pos, 'ResultDM')
-                new_states.append(state)
-            self.review_states = new_states
 
         if self.show_categories:
             self.categories = map(lambda x: x[0],
@@ -1214,6 +1185,24 @@ class AnalysesView(BikaListingView):
                 self.field_icons[uid] = alerts
                 continue
             self.field_icons[uid].extend(alerts)
+
+    def _folder_item_dry_matter(self, analysis_brain, item):
+        """Renders the result for Dry Matter if allowed for the current context
+        and analysis_brain passed in.
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
+        if not hasattr(self.context, 'getReportDryMatter'):
+            return
+        if not callable(self.context.getReportDryMatter):
+            return
+        if not self.context.getReportDryMatter():
+            return False
+        analysis = self.get_object(analysis_brain)
+        if analysis.getReportDryMatter():
+            item['ResultDM'] = analysis.getResultDM()
+            item['after']['ResultDM'] = "<em class='discreet'>%</em>"
+        item['ResultDM'] = ''
 
 
 class QCAnalysesView(AnalysesView):
