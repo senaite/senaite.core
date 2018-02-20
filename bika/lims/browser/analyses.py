@@ -24,7 +24,6 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
-from plone.memoize import ram
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.workflow import wasTransitionPerformed, isActive
