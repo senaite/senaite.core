@@ -457,6 +457,7 @@ class AnalysesView(BikaListingView):
             enumerate(analysis_categories)])
 
     def before_render(self):
+        logger.warning("before_Render")
         # Load analysis categories available in the system
         self.load_analysis_categories()
 
@@ -575,6 +576,11 @@ class AnalysesView(BikaListingView):
         return item
 
     def folderitems(self):
+        # This shouldn't be required here, but there are some views that
+        # calls directly contents_table() instead of __call__, so  before_render
+        # is never called. :(
+        self.before_render()
+
         # Gettin all the items
         items = super(AnalysesView, self).folderitems(classic=False)
 
