@@ -551,21 +551,22 @@ class AnalysesView(BikaListingView):
 
         return item
 
-    def folderitems(self):
-        # Check if mtool has been initialized
-        self.mtool = self.mtool if self.mtool \
-            else getToolByName(self.context, 'portal_membership')
-        # Getting the current user
-        self.member = self.member if self.member \
-            else self.mtool.getAuthenticatedMember()
+    def load_analysis_categories(self):
         # Getting analysis categories
-        analysis_categories = self.bsc(
-            portal_type="AnalysisCategory",
-            sort_on="sortable_title")
+        bsc = api.get_tool('bika_setup_catalog')
+        analysis_categories = bsc(portal_type="AnalysisCategory",
+                                  sort_on="sortable_title")
         # Sorting analysis categories
         self.analysis_categories_order = dict([
             (b.Title, "{:04}".format(a)) for a, b in
             enumerate(analysis_categories)])
+
+    def before_render(self):
+        # Load analysis categories available in the system
+        self.load_analysis_categories()
+
+    def folderitems(self):
+
         # Can the user edit?
         if not self.allow_edit:
             can_edit_analyses = False
@@ -587,7 +588,7 @@ class AnalysesView(BikaListingView):
         # related with results reporting and/or visibility from the client side.
         # This behavior only applies to routine analyses, the visibility of QC
         # analyses is managed in publish and are not visible to clients.
-        if not self.mtool.checkPermission(AddAnalysis, self.context):
+        if not self.has_permission(AddAnalysis):
             self.remove_column('Hidden')
 
         self.categories = []
