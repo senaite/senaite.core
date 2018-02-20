@@ -12,6 +12,7 @@ Changelog
 **Changed**
 
 - #621 AnalysesView code refactoring
+- #668 AR Add: Debounce expensive XHR calls
 - #660 Better style for reference widgets
 - #627 Unassigned filter on Analysis Requests view does not work
 - #659 Display the Unit in Profile Analyses Listing
