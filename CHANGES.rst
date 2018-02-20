@@ -26,6 +26,7 @@ Changelog
 
 **Fixed**
 
+- #672 Traceback on automatic sticker printing in batch context
 - #670 Listings: Fix sort_on change on Show More click
 - #653 Points in QC Charts are not displayed in accordance with capture date
 - #662 Viewing Cancelled AR's fails
