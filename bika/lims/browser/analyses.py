@@ -292,9 +292,9 @@ class AnalysesView(BikaListingView):
 
     @viewcache.memoize
     def get_object(self, brain_or_object_or_uid):
-        self.count_calls('get_object')
         """Get the full content object. Returns None if the param passed in
         is not a valid, not a valid object or not found"""
+        self.count_calls('get_object')
         if api.is_uid(brain_or_object_or_uid):
             return api.get_object_by_uid(brain_or_object_or_uid, default=None)
         if api.is_object(brain_or_object_or_uid):
@@ -360,6 +360,7 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
+    @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
         """
         Returns a vocabulary with all the methods available for the passed in
@@ -385,6 +386,7 @@ class AnalysesView(BikaListingView):
         return map(lambda brain: {'ResultValue': brain.UID,
                                   'ResultText': brain.Title}, brains)
 
+    @viewcache.memoize
     def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
@@ -466,7 +468,7 @@ class AnalysesView(BikaListingView):
 
         # Does the user has enough privileges to see retracted analyses?
         if obj.review_state == 'retracted' and \
-                not has_permission(ViewRetractedAnalyses):
+                not self.has_permission(ViewRetractedAnalyses):
             return False
 
         if not self.context.bika_setup.getAllowDepartmentFiltering():
@@ -1056,12 +1058,11 @@ class AnalysesView(BikaListingView):
             return
 
         # Check if the user has "Bika: Verify" privileges
-        username = self.member.getUserName()
-        verify_permission = has_permission(VerifyPermission, username=username)
-        if not verify_permission:
+        if not self.has_permission(VerifyPermission):
             # User cannot verify, do nothing
             return
 
+        username = api.get_current_user().id
         if username not in verifiers:
             # Current user has not verified this analysis
             if submitter != username:
@@ -1119,7 +1120,6 @@ class AnalysesView(BikaListingView):
             # No need to go further. This analysis is not assigned to any WS
             return
 
-        # TODO: Performance. Waking-up object here
         analysis_obj = self.get_object(analysis_brain)
         worksheet = analysis_obj.getBackReferences('WorksheetAnalysis')
         if not worksheet:
@@ -1142,7 +1142,6 @@ class AnalysesView(BikaListingView):
         if not analysis_brain.getIsReflexAnalysis:
             # Do nothing
             return
-
         img = get_image('reflexrule.png',
                         title=t(_('It comes form a reflex rule')))
         self._append_after_element(item, 'Service', img)
@@ -1162,7 +1161,6 @@ class AnalysesView(BikaListingView):
         if 'Hidden' not in self.columns:
             return
 
-        # TODO Performance. Use brain instead
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
         if IRoutineAnalysis.providedBy(full_obj):
@@ -1173,8 +1171,8 @@ class AnalysesView(BikaListingView):
         passed in.
         :param analysis_brain: Brain that represents an analysis
         """
-        uid = api.get_uid(analysis_brain)
-        full_obj = api.get_object(analysis_brain)
+        full_obj = self.get_object(analysis_brain)
+        uid = api.get_uid(full_obj)
         for name, adapter in getAdapters((full_obj,), IFieldIcons):
             alerts = adapter()
             if not alerts or uid not in alerts:
