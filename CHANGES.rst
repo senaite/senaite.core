@@ -26,6 +26,7 @@ Changelog
 
 **Fixed**
 
+- #670 Listings: Fix sort_on change on Show More click
 - #653 Points in QC Charts are not displayed in accordance with capture date
 - #662 Viewing Cancelled AR's fails
 - #550 Wrong Listings of Analyses called from Dashboard
