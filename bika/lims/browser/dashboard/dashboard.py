@@ -14,19 +14,18 @@ from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone import api
-from plone import protect
-
-from bika.lims.api import search
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import get_tool
+from bika.lims.api import search
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
+from plone import api
+from plone import protect
 from plone.api.exc import InvalidParameterError
 from plone.memoize import view as viewcache
 
