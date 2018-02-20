@@ -66,8 +66,8 @@ class AnalysesView(BikaListingView):
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
         self.rc = getToolByName(context, REFERENCE_CATALOG)
-        self.dmk = self.context.bika_setup.getResultsDecimalMark()
-        self.scinot = self.context.bika_setup.getScientificNotationResults()
+        self.dmk = context.bika_setup.getResultsDecimalMark()
+        self.scinot = context.bika_setup.getScientificNotationResults()
         request.set('disable_plone.rightcolumn', 1)
 
         # each editable item needs it's own allow_edit
