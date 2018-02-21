@@ -11,6 +11,10 @@ class window.BikaListingTableView
   load: =>
     console.debug "ListingTableView::load"
 
+    # load translations
+    jarn.i18n.loadCatalog 'bika'
+    @_ = window.jarn.i18n.MessageFactory('bika')
+
     # bind the event handler to the elements
     @bind_eventhandler()
 
@@ -812,9 +816,41 @@ class window.BikaListingTableView
      * This function looks for the column defined as 'autosave' and if its value
      * is true, the result of this input will be saved after each change via
      * ajax.
+     *
+     * Used in Analysis Listing when the "Hidden" checkbox is clicked
     ###
-    console.warn "BBB: Autosave is deprecated and not supported anymore"
-    return false
+    console.debug "°°° ListingTableView::on_autosave_field_change °°°"
+
+    el = event.currentTarget
+    $el = $(el)
+
+    url = "#{@get_portal_url()}/@@API/update"
+
+    tr = $el.closest "tr"
+    rowname = tr.attr "title"
+    uid = $el.attr "uid"
+    fieldname = $el.attr "field"
+    fieldvalue = $el.val()
+    if $el.is ":checkbox"
+      # note: only the element has the checked property
+      fieldvalue = $el[0].checked
+
+    form_data = {}
+    form_data[fieldname] = fieldvalue
+    form_data["obj_uid"] = uid
+
+    # send the new data to the server
+    @ajax_submit
+      url: url
+      data: form_data
+    .done (data) ->
+      success = if data and data.success is true then true else false
+      if success
+        message = @_ "#{rowname} saved"
+      else
+        message = @_ "Failed to update #{rowname}"
+      level = if success then "succeed" else "error"
+      bika.lims.SiteView.notify_in_panel message, level
 
 
   on_workflow_button_click: (event) =>

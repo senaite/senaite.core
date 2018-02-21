@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #679 Analysis could not set to "Hidden" in results view
 - #677 Fix category toggling when the category name contains spaces
 - #672 Traceback on automatic sticker printing in batch context
 - #673 QC Analyses and Samples not totaled correctly in Worksheets list
