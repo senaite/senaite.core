@@ -267,7 +267,7 @@ class AnalysesView(BikaListingView):
         # Note we look for the instrument by using its UID, case we want the
         # instrument to be cached by UID so if same instrument is assigned to
         # several analyses, a single search for instrument will be required
-        return self.get_object(instrument_uid)
+        return self.get_object_by_uid(instrument_uid)
 
     @viewcache.memoize
     def get_object(self, brain_or_object_or_uid):
