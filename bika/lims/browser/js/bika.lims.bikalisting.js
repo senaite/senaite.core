@@ -322,10 +322,10 @@
        */
       var base_url, cat, cat_items, cat_url, expanded, form, form_data, placeholder, url;
       form = $("form#" + form_id);
-      cat = $("th.cat_header[cat=" + cat_id + "]");
-      placeholder = $("tr[data-ajax_category=" + cat_id);
+      cat = $("th.cat_header[cat='" + cat_id + "']");
+      placeholder = $("tr[data-ajax_category='" + cat_id + "']");
       expanded = cat.hasClass("expanded");
-      cat_items = $("tr[cat=" + cat_id + "]");
+      cat_items = $("tr[cat='" + cat_id + "']");
       cat.toggleClass("expanded collapsed");
       if (cat_items.length > 0) {
         console.debug("ListingTableView::toggle_category: Category " + cat_id + " is already expanded -> Toggle only");
