@@ -699,6 +699,7 @@ class DashboardView(BrowserView):
                     'scheduled_sampling':  _('Sampling scheduled'),
                     'sample_due':          _('Reception pending'),
                     'rejected':            _('Rejected'),
+                    'invalid':             _('Invalid'),
                     'sample_received':     _('Results pending'),
                     'assigned':            _('Results pending'),
                     'attachment_due':      _('Results pending'),
@@ -746,6 +747,9 @@ class DashboardView(BrowserView):
             'retracted':                    '#FF6B6B',
             _('Rejected'):                  '#FF6B6B',
             _('Retracted'):                 '#FF6B6B',
+
+            'invalid':                      '#C44D58',
+            _('Invalid'):                   '#C44D58',
 
             'to_be_verified':               '#A7DBD8',
             _('To be verified'):            '#A7DBD8',
