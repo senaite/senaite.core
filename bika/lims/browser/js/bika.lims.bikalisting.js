@@ -51,6 +51,8 @@
 
     BikaListingTableView.prototype.load = function() {
       console.debug("ListingTableView::load");
+      jarn.i18n.loadCatalog('bika');
+      this._ = window.jarn.i18n.MessageFactory('bika');
       this.bind_eventhandler();
       this.loading_transitions = false;
       this.toggle_cols_cookie = "toggle_cols";
@@ -744,9 +746,42 @@
        * This function looks for the column defined as 'autosave' and if its value
        * is true, the result of this input will be saved after each change via
        * ajax.
+       *
+       * Used in Analysis Listing when the "Hidden" checkbox is clicked
        */
-      console.warn("BBB: Autosave is deprecated and not supported anymore");
-      return false;
+      var $el, el, fieldname, fieldvalue, form_data, obj, rowname, tr, uid, url;
+      console.debug("°°° ListingTableView::on_autosave_field_change °°°");
+      el = event.currentTarget;
+      $el = $(el);
+      url = (this.get_portal_url()) + "/@@API/update";
+      tr = $el.closest("tr");
+      rowname = tr.attr("title");
+      uid = $el.attr("uid");
+      fieldname = $el.attr("field");
+      fieldvalue = $el.val();
+      if ($el.is(":checkbox")) {
+        fieldvalue = $el[0].checked;
+      }
+      form_data = (
+        obj = {},
+        obj["" + fieldname] = fieldvalue,
+        obj["obj_uid"] = uid,
+        obj
+      );
+      return this.ajax_submit({
+        url: url,
+        data: form_data
+      }).done(function(data) {
+        var level, message, success;
+        success = data && data.success === true ? true : false;
+        if (success) {
+          message = this._(rowname + " saved");
+        } else {
+          message = this._("Failed to update " + rowname);
+        }
+        level = success ? "succeed" : "error";
+        return bika.lims.SiteView.notify_in_panel(message, level);
+      });
     };
 
     BikaListingTableView.prototype.on_workflow_button_click = function(event) {
