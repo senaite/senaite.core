@@ -28,6 +28,8 @@ from plone import api
 from plone import protect
 from plone.api.exc import InvalidParameterError
 from plone.memoize import view as viewcache
+from plone.memoize import ram
+from time import time
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
@@ -170,8 +172,9 @@ class DashboardView(BrowserView):
             return
 
         self.member = mtool.getAuthenticatedMember()
-        self._init_date_range()
         self.dashboard_cookie = self.check_dashboard_cookie()
+        self.periodicity =  self.request.get('p', 'w')
+        self.date_from, self.date_to = self.get_date_range(self.periodicity)
         return self.template()
 
     def check_dashboard_cookie(self):
@@ -234,85 +237,56 @@ class DashboardView(BrowserView):
             result[section.get('id')] = 'all'
         return result
 
-    def _init_date_range(self):
-        """ Sets the date range from which the data must be retrieved.
-            Sets the values to the class parameters 'date_from',
-            'date_to', 'date_range', and self.periodicity
-            Calculates the date range according to the value of the
-            request's 'p' parameter:
-            - 'd' (daily)
-            - 'w' (weekly)
-            - 'm' (monthly)
-            - 'q' (quarterly)
-            - 'b' (biannual)
-            - 'y' (yearly)
-            - 'a' (all-time)
-        """
-        # By default, weekly
-        self.periodicity = self.request.get('p', 'w')
-        if (self.periodicity == 'd'):
-            # Daily
-            self.date_from = DateTime()
-            self.date_to = DateTime() + 1
-            # For time-evolution data, load last 30 days
-            self.min_date = self.date_from - 30
-        elif (self.periodicity == 'm'):
-            # Monthly
-            today = datetime.date.today()
-            self.date_from = DateTime(today.year, today.month, 1)
-            self.date_to = DateTime(today.year, today.month, monthrange(today.year, today.month)[1], 23, 59, 59)
-            # For time-evolution data, load last two years
+    def get_date_range(self, periodicity):
+        date_from = None
+        date_to = None
+        today = datetime.date.today()
+        if (periodicity == 'd'):
+            # Daily, load last 30 days
+            date_from = DateTime() - 30
+            date_to = DateTime() + 1
+
+        elif (periodicity == 'm'):
+            # Monthly, load last 2 years
             min_year = today.year - 1 if today.month == 12 else today.year - 2
             min_month = 1 if today.month == 12 else today.month
-            self.min_date = DateTime(min_year, min_month, 1)
-        elif (self.periodicity == 'q'):
-            # Quarterly
-            today = datetime.date.today()
-            m = (((today.month-1)/3)*3)+1
-            self.date_from = DateTime(today.year, m, 1)
-            self.date_to = DateTime(today.year, m+2, monthrange(today.year, m+2)[1], 23, 59, 59)
-            # For time-evolution data, load last four years
-            min_year = today.year - 4 if today.month == 12 else today.year - 5
-            self.min_date = DateTime(min_year, m, 1)
-        elif (self.periodicity == 'b'):
-            # Biannual
-            today = datetime.date.today()
-            m = (((today.month-1)/6)*6)+1
-            self.date_from = DateTime(today.year, m, 1)
-            self.date_to = DateTime(today.year, m+5, monthrange(today.year, m+5)[1], 23, 59, 59)
-            # For time-evolution data, load last ten years
-            min_year = today.year - 10 if today.month == 12 else today.year - 11
-            self.min_date = DateTime(min_year, m, 1)
-        elif (self.periodicity == 'y'):
-            # Yearly
-            today = datetime.date.today()
-            self.date_from = DateTime(today.year, 1, 1)
-            self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
-            # For time-evolution data, load last 15 years
-            min_year = today.year - 15 if today.month == 12 else today.year - 16
-            self.min_date = DateTime(min_year, 1, 1)
-        elif (self.periodicity == 'a'):
-            # All time
-            today = datetime.date.today()
-            self.date_from = DateTime('1990-01-01 00:00:00')
-            self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
-            # For time-evolution data, load last 15 years
-            min_year = today.year - 15 if today.month == 12 else today.year - 16
-            self.min_date = DateTime(min_year, 1, 1)
-        else:
-            # weekly
-            today = datetime.date.today()
-            year, weeknum, dow = today.isocalendar()
-            self.date_from = DateTime() - dow
-            self.date_to = self.date_from + 7
-            # For time-evolution data, load last six months
-            min_year = today.year if today.month > 6 else today.year - 1
-            min_month = today.month - 6 if today.month > 6 else (today.month - 6)+12
-            self.min_date = DateTime(min_year, min_month, 1)
+            date_from = DateTime(min_year, min_month, 1)
+            date_to = DateTime(today.year, today.month,
+                               monthrange(today.year, today.month)[1],
+                               23, 59, 59)
 
-        self.date_range = {'query': (self.date_from, self.date_to), 'range': 'min:max'}
-        self.base_date_range = {'query': (DateTime('1990-01-01 00:00:00'), DateTime()+1), 'range':'min:max'}
-        self.min_date_range = {'query': (self.min_date, self.date_to), 'range': 'min:max'}
+        elif (periodicity == 'q'):
+            # Quarterly, load last 4 years
+            m = (((today.month - 1) / 3) * 3) + 1
+            min_year = today.year - 4 if today.month == 12 else today.year - 5
+            date_from = DateTime(min_year, m, 1)
+            date_to = DateTime(today.year, m + 2,
+                                    monthrange(today.year, m + 2)[1], 23, 59,
+                                    59)
+        elif (periodicity == 'b'):
+            # Biannual, load last 10 years
+            m = (((today.month - 1) / 6) * 6) + 1
+            min_year = today.year - 10 if today.month == 12 else today.year - 11
+            date_from = DateTime(min_year, m, 1)
+            date_to = DateTime(today.year, m + 5,
+                                    monthrange(today.year, m + 5)[1], 23, 59,
+                                    59)
+
+        elif (periodicity in ['y', 'a']):
+            # Yearly or All time, load last 15 years
+            min_year = today.year - 15 if today.month == 12 else today.year - 16
+            date_from = DateTime(min_year, 1, 1)
+            date_to = DateTime(today.year, 12, 31, 23, 59, 59)
+
+        else:
+            # Default Weekly, load last six months
+            min_year = today.year if today.month > 6 else today.year - 1
+            min_month = today.month - 6 if today.month > 6 \
+                else (today.month - 6) + 12
+            date_from = DateTime(min_year, min_month, 1)
+            date_to = date_from + 7
+
+        return (date_from, date_to)
 
     def get_sections(self):
         """ Returns an array with the sections to be displayed.
@@ -465,11 +439,7 @@ class DashboardView(BrowserView):
 
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
-        if 'review_state' in query:
-            del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(catalog, query)
+        outevo = self.fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analysis Requests'),
                     'class':        'informative',
@@ -524,10 +494,7 @@ class DashboardView(BrowserView):
 
         # Chart with the evolution of WSs over a period, grouped by
         # periodicity
-        del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(bc, query)
+        outevo = self.fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Worksheets'),
                     'class':        'informative',
@@ -596,10 +563,7 @@ class DashboardView(BrowserView):
 
         # Chart with the evolution of Analyses over a period, grouped by
         # periodicity
-        del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(bc, query)
+        outevo = self.fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analyses'),
                     'class':        'informative',
@@ -683,11 +647,7 @@ class DashboardView(BrowserView):
 
         # Chart with the evolution of samples over a period, grouped by
         # periodicity
-        if 'review_state' in query:
-            del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(catalog, query)
+        outevo = self.fill_dates_evo(catalog, query)
         out.append({'type': 'bar-chart-panel',
                     'name': _('Evolution of Samples'),
                     'class': 'informative',
@@ -798,22 +758,50 @@ class DashboardView(BrowserView):
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
         return created
 
-    def _fill_dates_evo(self, catalog, query):
+    def fill_dates_evo(self, catalog, query):
+        sorted_query = collections.OrderedDict(sorted(query.items()))
+        query_json = json.dumps(sorted_query)
+        # By default, weekly
+        return self._fill_dates_evo(query_json, catalog.id, self.periodicity)
+
+    def _fill_dates_evo_cachekey(method, self, query_json, catalog_name,
+                                 periodicity):
+        hour = time() // (60 * 60 * 2)
+        return (hour, catalog_name, query_json, periodicity)
+
+    @ram.cache(_fill_dates_evo_cachekey)
+    def _fill_dates_evo(self, query_json, catalog_name, periodicity):
+        """Returns an array of dictionaries, where each dictionary contains the
+        amount of items created at a given date and grouped by review_state,
+        based on the passed in periodicity.
+
+        This is an expensive function that will not be called more than once
+        every 2 hours (note cache decorator with `time() // (60 * 60 * 2)
+        """
         outevoidx = {}
         outevo = []
         days = 1
-        if self.periodicity == 'y':
+        if periodicity == 'y':
             days = 336
-        elif self.periodicity == 'b':
+        elif periodicity == 'b':
             days = 168
-        elif self.periodicity == 'q':
+        elif periodicity == 'q':
             days = 84
-        elif self.periodicity == 'm':
+        elif periodicity == 'm':
             days = 28
-        elif self.periodicity == 'w':
+        elif periodicity == 'w':
             days = 7
-        elif self.periodicity == 'a':
+        elif periodicity == 'a':
             days = 336
+
+        # Get the date range
+        date_from, date_to = self.get_date_range(periodicity)
+        query = json.loads(query_json)
+        if 'review_state' in query:
+            del query['review_state']
+        query['sort_on'] = 'created'
+        query['created'] = {'query': (date_from, date_to),
+                            'range': 'min:max'}
 
         otherstate = _('Other status')
         statesmap = self.get_states_map(query['portal_type'])
@@ -822,10 +810,10 @@ class DashboardView(BrowserView):
         stats.append(otherstate)
         statscount = {s:0 for s in stats}
         # Add first all periods, cause we want all segments to be displayed
-        curr = self.min_date.asdatetime()
-        end = self.date_to.asdatetime()
+        curr = date_from.asdatetime()
+        end = date_to.asdatetime()
         while curr < end:
-            currstr = self._getDateStr(self.periodicity, DateTime(curr))
+            currstr = self._getDateStr(periodicity, DateTime(curr))
             if currstr not in outevoidx:
                 outdict = {'date':currstr}
                 for k in stats:
@@ -833,13 +821,16 @@ class DashboardView(BrowserView):
                 outevo.append(outdict)
                 outevoidx[currstr] = len(outevo)-1
             curr = curr + datetime.timedelta(days=days)
-        for brain in catalog(query):
+
+        brains = search(query, catalog_name)
+        logger.warning('{} records from {}'.format(len(brains), repr(query)))
+        for brain in brains:
             created = brain.created
             state = brain.review_state
             if state not in statesmap:
                 logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
             state = statesmap[state] if state in statesmap else otherstate
-            created = self._getDateStr(self.periodicity, created)
+            created = self._getDateStr(periodicity, created)
             if created in outevoidx:
                 oidx = outevoidx[created]
                 statscount[state] += 1
@@ -872,6 +863,7 @@ class DashboardView(BrowserView):
         query = json.loads(query_json)
         brains = search(query, catalog_name)
         return len(brains)
+
 
     def _update_criteria_with_filters(self, query, section_name):
         """
