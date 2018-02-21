@@ -9,6 +9,7 @@ import collections
 import datetime
 import json
 from calendar import monthrange
+from operator import itemgetter
 from time import time
 
 from DateTime import DateTime
@@ -855,9 +856,9 @@ class DashboardView(BrowserView):
                 logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
             state = statesmap[state] if state in statesmap else otherstate
             created = self._getDateStr(periodicity, created)
+            statscount[state] += 1
             if created in outevoidx:
                 oidx = outevoidx[created]
-                statscount[state] += 1
                 if state in outevo[oidx]:
                     outevo[oidx][state] += 1
                 else:
@@ -875,7 +876,11 @@ class DashboardView(BrowserView):
                 if r in o:
                     del o[r]
 
-        return outevo
+        # Sort available status by number of occurences descending
+        sorted_states = sorted(statscount.items(), key=itemgetter(1))
+        sorted_states = map(lambda item: item[0], sorted_states)
+        sorted_states.reverse()
+        return {'data': outevo, 'states': sorted_states}
 
     def search_count(self, query, catalog_name):
         sorted_query = collections.OrderedDict(sorted(query.items()))
