@@ -181,8 +181,8 @@ class DashboardView(BrowserView):
             return
 
         self.member = mtool.getAuthenticatedMember()
-        self.dashboard_cookie = self.check_dashboard_cookie()
         self.periodicity =  self.request.get('p', PERIODICITY_WEEKLY)
+        self.dashboard_cookie = self.check_dashboard_cookie()
         date_range = self.get_date_range(self.periodicity)
         self.date_from = date_range[0]
         self.date_to = date_range[1]

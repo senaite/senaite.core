@@ -28,6 +28,7 @@ Changelog
 
 **Fixed**
 
+- #680 Fix Traceback with periodicity in DashboardView
 - #679 Analysis could not set to "Hidden" in results view
 - #677 Fix category toggling when the category name contains spaces
 - #672 Traceback on automatic sticker printing in batch context
