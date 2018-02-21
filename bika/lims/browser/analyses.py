@@ -1218,8 +1218,17 @@ class AnalysesView(BikaListingView):
         item['ResultDM'] = ''
 
     def _folder_item_remarks(self, analysis_brain, item):
+        """Renders the Remarks field for the passed in analysis and if the
+        edition of the analysis is permitted, adds a button to toggle the
+        visibility of remarks field
+
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row"""
         item['Remarks'] = analysis_brain.getRemarks
+
         if not self.is_analysis_edition_allowed(analysis_brain):
+            # Edition not allowed, do not add the remarks toggle button, the
+            # remarks field will be displayed without the option to hide it
             return
 
         # Analysis can be edited. Add the remarks toggle button
