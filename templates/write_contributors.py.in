@@ -54,6 +54,10 @@ REPLACEMENTS = {
     'zylinx':                    'Alexander Karlsson',
 }
 
+COLLABORATORS = [
+    ("Leonardo Rojas", "leonardorojass@gmail.com"),
+
+}
 
 def resolve_contributor(contributor):
     if not contributor:
@@ -111,6 +115,18 @@ def get_git_contributors_section():
         name = contributor[1]['name']
         email = contributor[1]['email']
         commits = contributor[1]['commits']
+        line = "- {}, {}\n".format(name, email)
+        lines.append(line)
+    return lines
+
+def get_collaborators_section():
+    # Adds Collaborators that have not coded but have given advice, expertise or collaborated somehow to the project.
+
+    lines = ['Collaborators\n',
+             '=============\n\n',]
+    for collaborators in COLLABORATORS:
+        name = collaborators[0]
+        email = collaborators[1]
         line = "- {}, {}\n".format(name, email)
         lines.append(line)
     return lines
@@ -216,10 +232,12 @@ def get_translators_section():
 if __name__ == "__main__":
 
     contributors = get_git_contributors_section()
+    collaborators = get_collaborators_section()
     translators = get_translators_section()
 
     lines = list()
     lines.extend(contributors)
+    lines.extend(collaborators)
     lines.extend(translators)
     outfile = open(OUTFILE, "w")
     outfile.writelines(lines)
