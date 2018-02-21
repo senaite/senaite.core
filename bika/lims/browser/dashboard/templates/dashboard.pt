@@ -546,9 +546,10 @@
                 <h3 tal:content="python:panel.get('name', '')"></h3>
                 <div class='h2-legend'>
                     <span i18n:translate="">From</span>&nbsp;
-                    <span tal:content="python:here.toLocalizedTime(view.min_date)"></span>
+                    <span tal:content="python:here.toLocalizedTime(view.date_from)"></span>
                     &nbsp;<span i18n:translate="">to</span>&nbsp;
                     <span tal:content="python:here.toLocalizedTime(view.date_to)"></span>
+                    (<span i18n:translate="">updated every 2 hours</span>)
                 </div>
                 <ul class='dashboard-time-selector'>
                     <li tal:attributes="class python:'selected' if view.periodicity == 'd' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=d' i18n:translate="">Daily</a></li>
