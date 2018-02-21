@@ -749,7 +749,7 @@
        *
        * Used in Analysis Listing when the "Hidden" checkbox is clicked
        */
-      var $el, el, fieldname, fieldvalue, form_data, obj, rowname, tr, uid, url;
+      var $el, el, fieldname, fieldvalue, form_data, rowname, tr, uid, url;
       console.debug("°°° ListingTableView::on_autosave_field_change °°°");
       el = event.currentTarget;
       $el = $(el);
@@ -762,12 +762,9 @@
       if ($el.is(":checkbox")) {
         fieldvalue = $el[0].checked;
       }
-      form_data = (
-        obj = {},
-        obj["" + fieldname] = fieldvalue,
-        obj["obj_uid"] = uid,
-        obj
-      );
+      form_data = {};
+      form_data[fieldname] = fieldvalue;
+      form_data["obj_uid"] = uid;
       return this.ajax_submit({
         url: url,
         data: form_data

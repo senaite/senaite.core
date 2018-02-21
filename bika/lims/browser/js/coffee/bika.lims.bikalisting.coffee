@@ -834,9 +834,10 @@ class window.BikaListingTableView
     if $el.is ":checkbox"
       # note: only the element has the checked property
       fieldvalue = $el[0].checked
-    form_data =
-      "#{fieldname}": fieldvalue
-      "obj_uid": uid
+
+    form_data = {}
+    form_data[fieldname] = fieldvalue
+    form_data["obj_uid"] = uid
 
     # send the new data to the server
     @ajax_submit
