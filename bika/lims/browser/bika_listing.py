@@ -158,6 +158,7 @@ class WorkflowAction:
             self.portal.bika_setup.getAutoStickerTemplate(),
             ','.join(uids)
         )
+        self.destination_url = url
         self.request.response.redirect(url)
 
     def __call__(self):
@@ -246,20 +247,16 @@ class WorkflowAction:
                     else:
                         success, message = doActionFor(item, action)
                     if success:
-                        transitioned.append(item.id)
+                        transitioned.append(item.UID())
                     else:
                         self.addPortalMessage(message, 'error')
 
         # automatic label printing
-        if transitioned \
-                and action == 'receive' \
-                and 'receive' in self.portal.bika_setup.getAutoPrintStickers():
-            q = "/sticker?template=%s&items=" % \
-                (self.portal.bika_setup.getAutoStickerTemplate())
-            # selected_items is a list of UIDs (stickers for AR_add use IDs)
-            q += ",".join(transitioned)
-            dest = self.context.absolute_url() + q
-            self.destination_url = dest
+        auto_stickers_action = self.portal.bika_setup.getAutoPrintStickers()
+        if transitioned and action == auto_stickers_action:
+            self.request.form['uids'] = transitioned
+            self.workflow_action_print_stickers()
+            dest = self.destination_url
 
         return len(transitioned), dest
 

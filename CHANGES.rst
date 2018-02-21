@@ -12,6 +12,7 @@ Changelog
 **Changed**
 
 - #674 Dashboard with slightly better performance
+- #621 AnalysesView code refactoring
 - #668 AR Add: Debounce expensive XHR calls
 - #660 Better style for reference widgets
 - #627 Unassigned filter on Analysis Requests view does not work
@@ -27,6 +28,9 @@ Changelog
 
 **Fixed**
 
+- #677 Fix category toggling when the category name contains spaces
+- #672 Traceback on automatic sticker printing in batch context
+- #673 QC Analyses and Samples not totaled correctly in Worksheets list
 - #670 Listings: Fix sort_on change on Show More click
 - #653 Points in QC Charts are not displayed in accordance with capture date
 - #662 Viewing Cancelled AR's fails
