@@ -32,9 +32,10 @@ from zope.component import getAdapters
 
 
 class AnalysesView(BikaListingView):
-    """ Displays a list of Analyses in a table.
-        Visible InterimFields from all analyses are added to self.columns[].
-        Keyword arguments are passed directly to bika_analysis_catalog.
+    """Displays a list of Analyses in a table.
+
+    Visible InterimFields from all analyses are added to self.columns[].
+    Keyword arguments are passed directly to bika_analysis_catalog.
     """
 
     def __init__(self, context, request, **kwargs):
@@ -182,6 +183,7 @@ class AnalysesView(BikaListingView):
     @viewcache.memoize
     def has_permission(self, permission, obj=None):
         """Returns if the current user has rights for the permission passed in
+
         :param permission: permission identifier
         :param obj: object to check the permission against
         :return: True if the user has rights for the permission passed in
@@ -196,8 +198,10 @@ class AnalysesView(BikaListingView):
     @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
         """Returns if the analysis passed in can be edited by the current user
+
         :param analysis_brain: Brain that represents an analysis
-        :return: True if the user can edit the analysis, otherwise False"""
+        :return: True if the user can edit the analysis, otherwise False
+        """
 
         # TODO: Workflow. This function will be replaced by
         # `isTransitionAllowed(submit)` as soon as all this logic gets moved
@@ -245,9 +249,11 @@ class AnalysesView(BikaListingView):
 
     @viewcache.memoize
     def is_analysis_instrument_valid(self, analysis_brain):
-        """Return if the analysis has a valid instrument. If the analysis passed
-        in is from ReferenceAnalysis type or does not have an instrument
-        assigned, returns True
+        """Return if the analysis has a valid instrument.
+
+        If the analysis passed in is from ReferenceAnalysis type or does not
+        have an instrument assigned, returns True
+
         :param analysis_brain: Brain that represents an analysis
         :return: True if the instrument assigned is valid or is None"""
         if analysis_brain.meta_type == 'ReferenceAnalysis':
@@ -261,6 +267,7 @@ class AnalysesView(BikaListingView):
 
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
+
         :param analysis_brain: Brain that represents an analysis
         :return: Instrument object or None"""
         instrument_uid = analysis_brain.getInstrumentUID
@@ -271,8 +278,12 @@ class AnalysesView(BikaListingView):
 
     @viewcache.memoize
     def get_object(self, brain_or_object_or_uid):
-        """Get the full content object. Returns None if the param passed in
-        is not a valid, not a valid object or not found"""
+        """Get the full content object. Returns None if the param passed in is
+        not a valid, not a valid object or not found
+
+        :param brain_or_object_or_uid: UID/Catalog brain/content object
+        :returns: content object
+        """
         if api.is_uid(brain_or_object_or_uid):
             return api.get_object_by_uid(brain_or_object_or_uid, default=None)
         if api.is_object(brain_or_object_or_uid):
@@ -280,11 +291,12 @@ class AnalysesView(BikaListingView):
         return None
 
     def get_analysis_spec(self, analysis):
-        """
-        Returns the dictionary with the result specifications (min, max,
+        """Returns the dictionary with the result specifications (min, max,
         error, etc.) that apply to the passed in Analysis or ReferenceAnalysis.
+
         If no specifications are found, returns a basic specifications dict
         with the following structure:
+
             {'keyword': <analysis_service_keyword,
              'uid': <analysis_uid>,
              'min': ''
@@ -321,13 +333,14 @@ class AnalysesView(BikaListingView):
 
     @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
-        """
-        Returns a vocabulary with all the methods available for the passed in
+        """Returns a vocabulary with all the methods available for the passed in
         analysis, either those assigned to an instrument that are capable to
         perform the test (option "Allow Entry of Results") and those assigned
         manually in the associated Analysis Service.
+
         The vocabulary is a list of dictionaries. Each dictionary has the
         following structure:
+
             {'ResultValue': <method_UID>,
              'ResultText': <method_Title>}
 
@@ -349,13 +362,17 @@ class AnalysesView(BikaListingView):
     def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
+
         If the option "Allow instrument entry of results" for the Analysis
         is disabled, the function returns an empty vocabulary.
+
         If the analysis passed in is a Reference Analysis (Blank or Control),
-        the voculabury, the invalid instruments will be included in the
+        the vocabulary, the invalid instruments will be included in the
         vocabulary too.
+
         The vocabulary is a list of dictionaries. Each dictionary has the
         following structure:
+
             {'ResultValue': <instrument_UID>,
              'ResultText': <instrument_Title>}
 
@@ -406,9 +423,13 @@ class AnalysesView(BikaListingView):
         return results
 
     def ResultOutOfRange(self, analysis):
-        """ Template wants to know, is this analysis out of range?
+        """Template wants to know, is this analysis out of range?
+
         We scan IResultOutOfRange adapters, and return True if any IAnalysis
         adapters trigger a result.
+
+        :param analysis: A single Analysis brain or Content object
+        :returns: True/False
         """
         spec = self.get_analysis_spec(analysis)
         # The function get_analysis_spec ALWAYS return a dict. If no specs
@@ -460,14 +481,16 @@ class AnalysesView(BikaListingView):
             self.remove_column('Hidden')
 
     def isItemAllowed(self, obj):
-        """
-        Checks if the passed in Analysis must be displayed in the list. If the
-        'filtering by department' option is enabled in Bika Setup, this
-        function checks if the Analysis Service associated to the Analysis
-        is assigned to any of the currently selected departments (information
+        """Checks if the passed in Analysis must be displayed in the list.
+
+        If the 'filtering by department' option is enabled in Bika Setup, this
+        function checks if the Analysis Service associated to the Analysis is
+        assigned to any of the currently selected departments (information
         stored in a cookie).
-        If department filtering is disabled in bika_setup, returns True.
-        If the obj is None or empty, returns False.
+
+        If department filtering is disabled in bika_setup, returns True. If the
+        obj is None or empty, returns False.
+
         If the obj has no department assigned, returns True
 
         :param obj: A single Analysis brain or content object
@@ -495,9 +518,14 @@ class AnalysesView(BikaListingView):
         return not dep_uid or dep_uid in departments.split(',')
 
     def folderitem(self, obj, item, index):
+        """Prepare a data item for the listing.
+
+        :param obj: The catalog brain or content object
+        :param item: Listing item (dictionary)
+        :param index: Index of the listing item
+        :returns: Augmented listing data item
         """
-        Obj should be a brain
-        """
+
         item['Service'] = obj.Title
         item['class']['service'] = 'service_title'
         item['service_uid'] = obj.getServiceUID
@@ -625,6 +653,7 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_category(self, analysis_brain, item):
         """Sets the category to the item passed in
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -640,6 +669,7 @@ class AnalysesView(BikaListingView):
     def _folder_item_css_class(self, analysis_brain, item):
         """Sets the suitable css class name(s) to `table_row_class` from the
         item passed in, depending on the properties of the analysis object
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -660,7 +690,8 @@ class AnalysesView(BikaListingView):
         item['table_row_class'] = ' '.join(css_names)
 
     def _folder_item_duedate(self, analysis_brain, item):
-        """Sets the analysis' due date to the item passed in.
+        """Set the analysis' due date to the item passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -682,7 +713,8 @@ class AnalysesView(BikaListingView):
             item['replace']['DueDate'] = '{} {}'.format(due_date_str, img)
 
     def _folder_item_result(self, analysis_brain, item):
-        """Sets the analysis' result to the item passed in.
+        """Set the analysis' result to the item passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -723,7 +755,8 @@ class AnalysesView(BikaListingView):
         item['formatted_result'] = formatted_result
 
     def _folder_item_calculation(self, analysis_brain, item):
-        """Sets the analysis' calculation and interims to the item passed in.
+        """Set the analysis' calculation and interims to the item passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -764,6 +797,7 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -785,6 +819,7 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_instrument(self, analysis_brain, item):
         """Fills the analysis' instrument to the item passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -979,7 +1014,8 @@ class AnalysesView(BikaListingView):
         item['Specification'] = rngstr
 
     def _folder_item_verify_icons(self, analysis_brain, item):
-        """Sets the analysis' verification icons to the item passed in.
+        """Set the analysis' verification icons to the item passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -1077,6 +1113,7 @@ class AnalysesView(BikaListingView):
     def _folder_item_assigned_worksheet(self, analysis_brain, item):
         """Adds an icon to the item dict if the analysis is assigned to a
         worksheet and if the icon is suitable for the current context
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -1104,6 +1141,7 @@ class AnalysesView(BikaListingView):
     def _folder_item_reflex_icons(self, analysis_brain, item):
         """Adds an icon to the item dictionary if the analysis has been
         automatically generated due to a reflex rule
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -1115,7 +1153,8 @@ class AnalysesView(BikaListingView):
         self._append_after_element(item, 'Service', img)
 
     def _folder_item_report_visibility(self, analysis_brain, item):
-        """Sets if the hidden field can be edited (enabled/disabled)
+        """Set if the hidden field can be edited (enabled/disabled)
+
         :analysis_brain: Brain that represents an analysis
         :item: analysis' dictionary counterpart to be represented as a row"""
         # Users that can Add Analyses to an Analysis Request must be able to
@@ -1137,6 +1176,7 @@ class AnalysesView(BikaListingView):
     def _folder_item_fieldicons(self, analysis_brain):
         """Resolves if field-specific icons must be displayed for the object
         passed in.
+
         :param analysis_brain: Brain that represents an analysis
         """
         full_obj = self.get_object(analysis_brain)
@@ -1154,6 +1194,7 @@ class AnalysesView(BikaListingView):
     def _folder_item_dry_matter(self, analysis_brain, item):
         """Renders the result for Dry Matter if allowed for the current context
         and analysis_brain passed in.
+
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
@@ -1171,6 +1212,7 @@ class AnalysesView(BikaListingView):
 
     def _append_after_element(self, item, element, html, glue="&nbsp;"):
         """Appends html value after element in the item dict
+
         :param item: dictionary that represents an analysis row
         :element: id of the element the html must be added thereafter
         :html: element to append
@@ -1184,12 +1226,13 @@ class AnalysesView(BikaListingView):
 
 
 class QCAnalysesView(AnalysesView):
-    """ Renders the table of QC Analyses performed related to an AR. Different
-        AR analyses can be achieved inside different worksheets, and each one
-        of these can have different QC Analyses. This table only lists the QC
-        Analyses performed in those worksheets in which the current AR has, at
-        least, one analysis assigned and if the QC analysis services match with
-        those from the current AR.
+    """Renders the table of QC Analyses performed related to an AR.
+
+    Different AR analyses can be achieved inside different worksheets, and each
+    one of these can have different QC Analyses. This table only lists the QC
+    Analyses performed in those worksheets in which the current AR has, at
+    least, one analysis assigned and if the QC analysis services match with
+    those from the current AR.
     """
 
     def __init__(self, context, request, **kwargs):
@@ -1221,9 +1264,14 @@ class QCAnalysesView(AnalysesView):
     # TODO-performance: Do not use object. Using brain, use meta_type in
     # order to get the object's type
     def folderitem(self, obj, item, index):
+        """Prepare a data item for the listing.
+
+        :param obj: The catalog brain or content object
+        :param item: Listing item (dictionary)
+        :param index: Index of the listing item
+        :returns: Augmented listing data item
         """
-        obj should be a brain
-        """
+
         obj = obj.getObject()
         # Group items by RefSample - Worksheet - Position
         wss = obj.getBackReferences('WorksheetAnalysis')
