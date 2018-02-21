@@ -5,31 +5,30 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims import api
-from bika.lims import logger
-from bika.lims.utils import t, dicts_to_dict, format_supsub, check_permission, \
-    get_link, get_image
-from bika.lims.utils.analysis import format_uncertainty
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.interfaces import IFieldIcons, IAnalysisRequest
-from bika.lims.interfaces import IResultOutOfRange
-from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import getUsers
-from bika.lims.utils import formatDecimalMark
+import json
 from DateTime import DateTime
 from operator import itemgetter
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims import api, logger
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.interfaces import (IAnalysisRequest, IFieldIcons,
+                                  IResultOutOfRange, IRoutineAnalysis)
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.permissions import (AddAnalysis, EditFieldResults, EditResults,
+                                   ViewResults, ViewRetractedAnalyses)
+from bika.lims.utils import (check_permission, dicts_to_dict, format_supsub,
+                             formatDecimalMark, get_image, get_link, getUsers,
+                             t)
+from bika.lims.utils.analysis import format_uncertainty
+from bika.lims.workflow import isActive, wasTransitionPerformed
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
-from bika.lims.workflow import wasTransitionPerformed, isActive
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapters
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-import json
 
 
 class AnalysesView(BikaListingView):
