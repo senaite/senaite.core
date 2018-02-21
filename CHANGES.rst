@@ -7,9 +7,20 @@ Changelog
 
 **Added**
 
+- #666 Added Unpublished filter in Analysis Requests list
 
 **Changed**
 
+- #674 Dashboard with slightly better performance
+- #621 AnalysesView code refactoring
+- #668 AR Add: Debounce expensive XHR calls
+- #660 Better style for reference widgets
+- #627 Unassigned filter on Analysis Requests view does not work
+- #659 Display the Unit in Profile Analyses Listing
+- #636 Do not display "Advanced..." item in object's workflow actions menu
+- #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
+- #655 Updated German Translations
+- #647 Refactored bika.lims.bikalisting.js + several functional fixtures
 - #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
 
 **Removed**
@@ -17,8 +28,27 @@ Changelog
 
 **Fixed**
 
+- #680 Fix Traceback with periodicity in DashboardView
+- #679 Analysis could not set to "Hidden" in results view
+- #677 Fix category toggling when the category name contains spaces
+- #672 Traceback on automatic sticker printing in batch context
+- #673 QC Analyses and Samples not totaled correctly in Worksheets list
+- #670 Listings: Fix sort_on change on Show More click
+- #653 Points in QC Charts are not displayed in accordance with capture date
+- #662 Viewing Cancelled AR's fails
+- #550 Wrong Listings of Analyses called from Dashboard
+- #666 "Rejected" filter is displayed in AR lists regardless of Setup setting
+- #666 "To be preserved" filter is displayed in AR lists regardless of Setup setting
+- #666 "Scheduled sampling" is displayed in AR lists regardless of Setup setting
+- #666 "To be sampled" filter is displayed in AR lists regardless of Setup setting
+- #664 Improved async transition loading and workflow button rendering in listing tables
+- #658 Worksheet listing view shows old- invalid Analysts
+- #663 AR Report Listing shows all Reports
+- #654 Default's Multi Analysis Request report gives a Traceback
+- #649 Specification fields decimal-mark validator not working for new opened categories
 - #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
+- #640 Broken Reference Sample Results view
 
 **Security**
 
@@ -42,7 +72,7 @@ Changelog
 - #536 Instrument import interface: Sysmex XT-1800i
 - #607 Barcode and labelling depending on Sample Type
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
-- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
+- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.
 
 **Changed**
 

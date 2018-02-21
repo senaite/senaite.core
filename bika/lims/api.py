@@ -8,6 +8,9 @@
 from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
+from datetime import datetime
+from DateTime import DateTime
+
 from Products.CMFPlone.utils import base_hasattr
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.interfaces import IFolderish
@@ -1143,6 +1146,7 @@ def normalize_filename(string):
     normalizer = getUtility(IFileNameNormalizer).normalize
     return normalizer(string)
 
+
 def is_uid(uid, validate=False):
     """Checks if the passed in uid is a valid UID
 
@@ -1166,3 +1170,38 @@ def is_uid(uid, validate=False):
     if brains:
         assert (len(brains) == 1)
     return len(brains) > 0
+
+
+def is_date(date):
+    """Checks if the passed in value is a valid Zope's DateTime
+
+    :param date: The date to check
+    :type date: DateTime
+    :return: True if a valid date
+    :rtype: bool
+    """
+    if not date:
+        return False
+    return isinstance(date, (DateTime, datetime))
+
+
+def to_date(value, default=None):
+    """Tries to convert the passed in value to Zope's DateTime
+
+    :param value: The value to be converted to a valid DateTime
+    :type value: str, DateTime or datetime
+    :return: The DateTime representation of the value passed in or default
+    """
+    if isinstance(value, DateTime):
+        return value
+    if not value:
+        if default is None:
+            return None
+        return to_date(default)
+    try:
+        if isinstance(value, str) and '.' in value:
+            # https://docs.plone.org/develop/plone/misc/datetime.html#datetime-problems-and-pitfalls
+            return DateTime(value, datefmt='international')
+        return DateTime(value)
+    except:
+        return to_date(default)

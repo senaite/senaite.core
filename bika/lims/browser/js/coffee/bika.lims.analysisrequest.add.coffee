@@ -49,64 +49,87 @@ class window.AnalysisRequestAdd
   bind_eventhandler: =>
     ###
      * Binds callbacks on elements
+     *
+     * N.B. We attach all the events to the body and refine the selector to
+     * delegate the event: https://learn.jquery.com/events/event-delegation/
+     *
     ###
     console.debug "AnalysisRequestAdd::bind_eventhandler"
     # Categories header clicked
-    $(".service-listing-header").on "click", @on_service_listing_header_click
+    $("body").on "click", ".service-listing-header", @on_service_listing_header_click
     # Category toggle button clicked
-    $("tr.category").on "click", @on_service_category_click
+    $("body").on "click", "tr.category", @on_service_category_click
     # Save button clicked
-    $("[name='save_button']").on "click", @on_form_submit
+    $("body").on "click", "[name='save_button']", @on_form_submit
     # AdHoc Checkbox clicked
-    $("tr[fieldname=AdHoc] input[type='checkbox']").on "click", @recalculate_records
+    $("body").on "click", "tr[fieldname=AdHoc] input[type='checkbox']", @recalculate_records
     # Composite Checkbox clicked
-    $("tr[fieldname=Composite] input[type='checkbox']").on "click", @recalculate_records
+    $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
-    $("tr[fieldname=InvoiceExclude] input[type='checkbox']").on "click", @recalculate_records
+    $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
-    $("tr[fieldname=Analyses] input[type='checkbox']").on "click", @on_analysis_checkbox_click
+    $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox']", @on_analysis_checkbox_click
     # Client changed
-    $("tr[fieldname=Client] input[type='text']").on "selected change", @on_client_changed
+    $("body").on "selected change", "tr[fieldname=Client] input[type='text']", @on_client_changed
     # Contact changed
-    $("tr[fieldname=Contact] input[type='text']").on "selected change", @on_contact_changed
+    $("body").on "selected change", "tr[fieldname=Contact] input[type='text']", @on_contact_changed
     # ReportDryMatter Checkbox clicked
-    $("tr[fieldname=ReportDryMatter] input[type='checkbox']").on "click", @on_reportdrymatter_click
+    $("body").on "click", "tr[fieldname=ReportDryMatter] input[type='checkbox']", @on_reportdrymatter_click
     # Analysis Specification changed
-    $("input.min").on "change", @on_analysis_specification_changed
-    $("input.max").on "change", @on_analysis_specification_changed
-    $("input.err").on "change", @on_analysis_specification_changed
+    $("body").on "change", "input.min", @on_analysis_specification_changed
+    $("body").on "change", "input.max", @on_analysis_specification_changed
+    $("body").on "change", "input.err", @on_analysis_specification_changed
     # Analysis lock button clicked
-    $(".service-lockbtn").on "click", @on_analysis_lock_button_click
+    $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
-    $(".service-infobtn").on "click", @on_analysis_details_click
+    $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Sample changed
-    $("tr[fieldname=Sample] input[type='text']").on "selected change", @on_sample_changed
+    $("body").on "selected change", "tr[fieldname=Sample] input[type='text']", @on_sample_changed
     # SampleType changed
-    $("tr[fieldname=SampleType] input[type='text']").on "selected change", @on_sampletype_changed
+    $("body").on "selected change", "tr[fieldname=SampleType] input[type='text']", @on_sampletype_changed
     # Specification changed
-    $("tr[fieldname=Specification] input[type='text']").on "selected change", @on_specification_changed
+    $("body").on "selected change", "tr[fieldname=Specification] input[type='text']", @on_specification_changed
     # Analysis Template changed
-    $("tr[fieldname=Template] input[type='text']").on "selected change", @on_analysis_template_changed
+    $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
     # Analysis Profile selected
-    $("tr[fieldname=Profiles] input[type='text']").on "selected", @on_analysis_profile_selected
+    $("body").on "selected", "tr[fieldname=Profiles] input[type='text']", @on_analysis_profile_selected
     # Analysis Profile deselected
-    $("tr[fieldname=Profiles] img.deletebtn").live "click", @on_analysis_profile_removed
+    $("body").on "click", "tr[fieldname=Profiles] img.deletebtn", @on_analysis_profile_removed
     # Copy button clicked
-    $("img.copybutton").on "click", @on_copy_button_click
+    $("body").on "click", "img.copybutton", @on_copy_button_click
 
     ### internal events ###
 
     # handle value changes in the form
-    $(this).on "form:changed", @recalculate_records
-    # update form from records
-    $(this).on "data:updated", @update_form
+    $(this).on "form:changed", @debounce @recalculate_records, 500
     # recalculate prices after data changed
-    $(this).on "data:updated", @recalculate_prices
+    $(this).on "data:updated", @debounce @recalculate_prices, 3000
+    # update form from records after the data changed
+    $(this).on "data:updated", @debounce @update_form, 300
     # hide open service info after data changed
-    $(this).on "data:updated", @hide_all_service_info
+    $(this).on "data:updated", @debounce @hide_all_service_info, 300
     # handle Ajax events
     $(this).on "ajax:start", @on_ajax_start
     $(this).on "ajax:end", @on_ajax_end
+
+
+  debounce: (func, threshold, execAsap) =>
+    ###
+     * Debounce a function call
+     * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+    ###
+    timeout = null
+
+    (args...) ->
+      obj = this
+      delayed = ->
+        func.apply(obj, args) unless execAsap
+        timeout = null
+      if timeout
+        clearTimeout(timeout)
+      else if (execAsap)
+        func.apply(obj, args)
+      timeout = setTimeout delayed, threshold || 100
 
 
   template_dialog: (template_id, context, buttons) =>

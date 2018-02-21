@@ -1177,3 +1177,127 @@ Checks if an UID is a valid 23 alphanumeric uid and with a brain:
     >>> uid = serv.UID()
     >>> api.is_uid(uid, validate=True)
     True
+
+Check if a Date is valid
+------------------------
+
+Do some imports first:
+
+    >>> from datetime import datetime
+    >>> from DateTime import DateTime
+
+Checks if a DateTime is valid:
+
+    >>> now = DateTime()
+    >>> api.is_date(now)
+    True
+
+    >>> now = datetime.now()
+    >>> api.is_date(now)
+    True
+
+    >>> now = DateTime(now)
+    >>> api.is_date(now)
+    True
+
+    >>> api.is_date(None)
+    False
+
+    >>> api.is_date('2018-04-23')
+    False
+
+Try conversions to Date
+-----------------------
+
+Try to convert to DateTime:
+
+    >>> now = DateTime()
+    >>> zpdt = api.to_date(now)
+    >>> zpdt.ISO8601() == now.ISO8601()
+    True
+
+    >>> now = datetime.now()
+    >>> zpdt = api.to_date(now)
+    >>> pydt = zpdt.asdatetime()
+
+Note that here, for the comparison between dates, we convert DateTime to python
+datetime, cause DateTime.strftime() is broken for timezones (always looks at
+system time zone, ignores the timezone and offset of the DateTime instance
+itself):
+
+    >>> pydt.strftime('%Y-%m-%dT%H:%M:%S') == now.strftime('%Y-%m-%dT%H:%M:%S')
+    True
+
+Try the same, but with utcnow() instead:
+
+    >>> now = datetime.utcnow()
+    >>> zpdt = api.to_date(now)
+    >>> pydt = zpdt.asdatetime()
+    >>> pydt.strftime('%Y-%m-%dT%H:%M:%S') == now.strftime('%Y-%m-%dT%H:%M:%S')
+    True
+
+Now we convert just a string formatted date:
+
+    >>> strd = "2018-12-01 17:50:34"
+    >>> zpdt = api.to_date(strd)
+    >>> zpdt.ISO8601()
+    '2018-12-01T17:50:34'
+
+Now we convert just a string formatted date, but with timezone:
+
+    >>> strd = "2018-12-01 17:50:34 GMT+1"
+    >>> zpdt = api.to_date(strd)
+    >>> zpdt.ISO8601()
+    '2018-12-01T17:50:34+01:00'
+
+We also check a bad date here (note the month is 13):
+
+    >>> strd = "2018-13-01 17:50:34"
+    >>> zpdt = api.to_date(strd)
+    >>> api.is_date(zpdt)
+    False
+
+And with European format:
+
+    >>> strd = "01.12.2018 17:50:34"
+    >>> zpdt = api.to_date(strd)
+    >>> zpdt.ISO8601()
+    '2018-12-01T17:50:34'
+
+    >>> zpdt = api.to_date(None)
+    >>> zpdt is None
+    True
+
+Use a string formatted date as fallback:
+
+    >>> strd = "2018-13-01 17:50:34"
+    >>> default_date = "2018-01-01 19:30:30"
+    >>> zpdt = api.to_date(strd, default_date)
+    >>> zpdt.ISO8601()
+    '2018-01-01T19:30:30'
+
+Use a DateTime object as fallback:
+
+    >>> strd = "2018-13-01 17:50:34"
+    >>> default_date = "2018-01-01 19:30:30"
+    >>> default_date = api.to_date(default_date)
+    >>> zpdt = api.to_date(strd, default_date)
+    >>> zpdt.ISO8601() == default_date.ISO8601()
+    True
+
+Use a datetime object as fallback:
+
+    >>> strd = "2018-13-01 17:50:34"
+    >>> default_date = datetime.now()
+    >>> zpdt = api.to_date(strd, default_date)
+    >>> dzpdt = api.to_date(default_date)
+    >>> zpdt.ISO8601() == dzpdt.ISO8601()
+    True
+
+Use a non-conversionable value as fallback:
+
+    >>> strd = "2018-13-01 17:50:34"
+    >>> default_date = "something wrong here"
+    >>> zpdt = api.to_date(strd, default_date)
+    >>> zpdt is None
+    True
