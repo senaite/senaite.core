@@ -537,7 +537,6 @@ class AnalysesView(BikaListingView):
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
-        item['Remarks'] = obj.getRemarks
         item['retested'] = obj.getRetested
         item['class']['retested'] = 'center'
 
@@ -584,6 +583,8 @@ class AnalysesView(BikaListingView):
         self._folder_item_fieldicons(obj)
         # Renders DryMatter if necessary
         self._folder_item_dry_matter(obj, item)
+        # Renders remarks toggle button
+        self._folder_item_remarks(obj, item)
 
         return item
 
@@ -1041,7 +1042,7 @@ class AnalysesView(BikaListingView):
             # display a warning icon
             msg = t(_("Submitted and verified by the same user: {}"))
             icon = get_image('warning.png', title=msg.format(submitter))
-            self._append_after_element(item, 'state_title', icon)
+            self._append_html_element(item, 'state_title', icon)
 
         num_verifications = analysis_brain.getNumberOfRequiredVerifications
         if num_verifications > 1:
@@ -1060,7 +1061,7 @@ class AnalysesView(BikaListingView):
                                    str(scale),
                                    str(done),
                                    str(num_verifications))
-            self._append_after_element(item, 'state_title', anchor)
+            self._append_html_element(item, 'state_title', anchor)
 
         if analysis_brain.review_state != 'to_be_verified':
             # The verification of analysis has already been done or first
@@ -1084,13 +1085,13 @@ class AnalysesView(BikaListingView):
                 # Same user who submitted can verify
                 title = t(_("Can verify, but submitted by current user"))
                 html = get_image('warning.png', title=title)
-                self._append_after_element(item, 'state_title', html)
+                self._append_html_element(item, 'state_title', html)
                 return
 
             # User who submitted cannot verify
             title = t(_("Cannot verify, submitted by current user"))
             html = get_image('submitted-by-current-user.png', title=title)
-            self._append_after_element(item, 'state_title', html)
+            self._append_html_element(item, 'state_title', html)
             return
 
         # This user verified this analysis before
@@ -1099,7 +1100,7 @@ class AnalysesView(BikaListingView):
             # Multi verification by same user is not allowed
             title = t(_("Cannot verify, was verified by current user"))
             html = get_image('submitted-by-current-user.png', title=title)
-            self._append_after_element(item, 'state_title', html)
+            self._append_html_element(item, 'state_title', html)
             return
 
         # Multi-verification by same user, but non-consecutively, is allowed
@@ -1107,13 +1108,13 @@ class AnalysesView(BikaListingView):
             # Current user was not the last user to verify
             title = t(_("Can verify, but was already verified by current user"))
             html = get_image('warning.png', title=title)
-            self._append_after_element(item, 'state_title', html)
+            self._append_html_element(item, 'state_title', html)
             return
 
         # Last user who verified is the same as current user
         title = t(_("Cannot verify, last verified by current user"))
         html = get_image('submitted-by-current-user.png', title=title)
-        self._append_after_element(item, 'state_title', html)
+        self._append_html_element(item, 'state_title', html)
         return
 
     def _folder_item_assigned_worksheet(self, analysis_brain, item):
@@ -1142,7 +1143,7 @@ class AnalysesView(BikaListingView):
                     mapping={'worksheet_id': safe_unicode(worksheet.id)}))
         img = get_image('worksheet.png', title=title)
         anchor = get_link(worksheet.absolute_url(), img)
-        self._append_after_element(item, 'state_title', anchor)
+        self._append_html_element(item, 'state_title', anchor)
 
     def _folder_item_reflex_icons(self, analysis_brain, item):
         """Adds an icon to the item dictionary if the analysis has been
@@ -1156,7 +1157,7 @@ class AnalysesView(BikaListingView):
             return
         img = get_image('reflexrule.png',
                         title=t(_('It comes form a reflex rule')))
-        self._append_after_element(item, 'Service', img)
+        self._append_html_element(item, 'Service', img)
 
     def _folder_item_report_visibility(self, analysis_brain, item):
         """Set if the hidden field can be edited (enabled/disabled)
@@ -1216,19 +1217,33 @@ class AnalysesView(BikaListingView):
             item['after']['ResultDM'] = "<em class='discreet'>%</em>"
         item['ResultDM'] = ''
 
-    def _append_after_element(self, item, element, html, glue="&nbsp;"):
-        """Appends html value after element in the item dict
+    def _folder_item_remarks(self, analysis_brain, item):
+        item['Remarks'] = analysis_brain.getRemarks
+        if not self.is_analysis_edition_allowed(analysis_brain):
+            return
+
+        # Analysis can be edited. Add the remarks toggle button
+        title = t(_("Add Remark"))
+        img = get_image('comment_ico.png', title=title)
+        kwargs = {'class': "add-remark"}
+        anchor = get_link('#', img, **kwargs)
+        self._append_html_element(item, 'Service', anchor, after=False)
+
+    def _append_html_element(self, item, element, html, glue="&nbsp;", after=True):
+        """Appends an html value after or before the element in the item dict
 
         :param item: dictionary that represents an analysis row
-        :element: id of the element the html must be added thereafter
-        :html: element to append
-        :glue: glue to use for appending"""
-        item['after'] = item.get('after', {})
-        original = item['after'].get(element, '')
+        :param element: id of the element the html must be added thereafter
+        :param html: element to append
+        :param glue: glue to use for appending
+        :param after: if the html content must be added after or before"""
+        position = after and 'after' or 'before'
+        item[position] = item.get(position, {})
+        original = item[position].get(element, '')
         if not original:
-            item['after'][element] = html
+            item[position][element] = html
             return
-        item['after'][element] = glue.join([original, html])
+        item[position][element] = glue.join([original, html])
 
 
 class QCAnalysesView(AnalysesView):
