@@ -322,10 +322,10 @@ class window.BikaListingTableView
     # get the form object
     form = $("form##{form_id}")
 
-    cat = $("th.cat_header[cat=#{cat_id}]")
-    placeholder = $("tr[data-ajax_category=#{cat_id}")
+    cat = $("th.cat_header[cat='#{cat_id}']")
+    placeholder = $("tr[data-ajax_category='#{cat_id}']")
     expanded = cat.hasClass "expanded"
-    cat_items = $("tr[cat=#{cat_id}]")
+    cat_items = $("tr[cat='#{cat_id}']")
 
     # Toggle expand/collapsed class
     cat.toggleClass "expanded collapsed"
