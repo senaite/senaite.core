@@ -57,7 +57,7 @@ REPLACEMENTS = {
 COLLABORATORS = [
     ("Leonardo Rojas", "leonardorojass@gmail.com"),
 
-}
+]
 
 def resolve_contributor(contributor):
     if not contributor:
@@ -122,7 +122,8 @@ def get_git_contributors_section():
 def get_collaborators_section():
     # Adds Collaborators that have not coded but have given advice, expertise or collaborated somehow to the project.
 
-    lines = ['Collaborators\n',
+    lines = ['\n\n',
+             'Collaborators\n',
              '=============\n\n',]
     for collaborators in COLLABORATORS:
         name = collaborators[0]
