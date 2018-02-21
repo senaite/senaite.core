@@ -256,6 +256,7 @@ class WorkflowAction:
         if transitioned and action == auto_stickers_action:
             self.request.form['uids'] = transitioned
             self.workflow_action_print_stickers()
+            dest = self.destination_url
 
         return len(transitioned), dest
 
