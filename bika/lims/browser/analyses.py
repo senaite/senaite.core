@@ -719,7 +719,7 @@ class AnalysesView(BikaListingView):
         # TODO: Performance, we wake-up the full object here
         full_obj = self.get_object(analysis_brain)
         formatted_result = full_obj.getFormattedResult(
-                            sciformat=int(self.scinot), decimalmark=self.dmk)
+            sciformat=int(self.scinot), decimalmark=self.dmk)
         item['formatted_result'] = formatted_result
 
     def _folder_item_calculation(self, analysis_brain, item):
@@ -951,8 +951,8 @@ class AnalysesView(BikaListingView):
         item['allow_edit'].append('DetectionLimit')
         item['DetectionLimit'] = dl_operator
         item['choices']['DetectionLimit'] = [
-                {'ResultValue': '<', 'ResultText': '<'},
-                {'ResultValue': '>', 'ResultText': '>'}
+            {'ResultValue': '<', 'ResultText': '<'},
+            {'ResultValue': '>', 'ResultText': '>'}
         ]
         self.columns['DetectionLimit']['toggle'] = True
         defaults = {'min': full_obj.getLowerDetectionLimit(),
@@ -1008,8 +1008,8 @@ class AnalysesView(BikaListingView):
             done = analysis_brain.getNumberOfVerifications
             pending = num_verifications - done
             ratio = float(done) / float(num_verifications) if done > 0 else 0
-            ratio = int(ratio*100)
-            scale = ratio == 0 and 0 or (ratio/25)*25
+            ratio = int(ratio * 100)
+            scale = ratio == 0 and 0 or (ratio / 25) * 25
             anchor = "<a href='#' title='{} &#13;{} {}' " \
                      "class='multi-verification scale-{}'>{}/{}</a>"
             anchor = anchor.format(t(_("Multi-verification required")),
@@ -1216,7 +1216,7 @@ class QCAnalysesView(AnalysesView):
         self.contentFilter = {'UID': asuids,
                               'sort_on': 'getId'}
         self.icon = self.portal_url + \
-                    "/++resource++bika.lims.images/referencesample.png"
+            "/++resource++bika.lims.images/referencesample.png"
 
     # TODO-performance: Do not use object. Using brain, use meta_type in
     # order to get the object's type
