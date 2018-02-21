@@ -9,6 +9,7 @@ import collections
 import datetime
 import json
 from calendar import monthrange
+from time import time
 
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
@@ -27,12 +28,20 @@ from bika.lims.utils import get_unicode
 from plone import api
 from plone import protect
 from plone.api.exc import InvalidParameterError
-from plone.memoize import view as viewcache
 from plone.memoize import ram
-from time import time
+from plone.memoize import view as viewcache
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
+
+# Supported periodicities for evolution charts
+PERIODICITY_DAILY = "d"
+PERIODICITY_WEEKLY = "w"
+PERIODICITY_MONTHLY= "m"
+PERIODICITY_QUARTERLY= "q"
+PERIODICITY_BIANNUAL = "b"
+PERIODICITY_YEARLY = "y"
+PERIODICITY_ALL = "a"
 
 
 def get_dashboard_registry_record():
@@ -173,8 +182,11 @@ class DashboardView(BrowserView):
 
         self.member = mtool.getAuthenticatedMember()
         self.dashboard_cookie = self.check_dashboard_cookie()
-        self.periodicity =  self.request.get('p', 'w')
-        self.date_from, self.date_to = self.get_date_range(self.periodicity)
+        self.periodicity =  self.request.get('p', PERIODICITY_WEEKLY)
+        date_range = self.get_date_range(self.periodicity)
+        self.date_from = date_range[0]
+        self.date_to = date_range[1]
+
         return self.template()
 
     def check_dashboard_cookie(self):
@@ -237,16 +249,23 @@ class DashboardView(BrowserView):
             result[section.get('id')] = 'all'
         return result
 
-    def get_date_range(self, periodicity):
-        date_from = None
-        date_to = None
+    def get_date_range(self, periodicity=PERIODICITY_WEEKLY):
+        """Returns a date range (date from, date to) that suits with the passed
+        in periodicity.
+
+        :param periodicity: string that represents the periodicity
+        :type periodicity: str
+        :return: A date range
+        :rtype: [(DateTime, DateTime)]
+        """
         today = datetime.date.today()
-        if (periodicity == 'd'):
+        if (periodicity == PERIODICITY_DAILY):
             # Daily, load last 30 days
             date_from = DateTime() - 30
             date_to = DateTime() + 1
+            return (date_from, date_to)
 
-        elif (periodicity == 'm'):
+        if (periodicity == PERIODICITY_MONTHLY):
             # Monthly, load last 2 years
             min_year = today.year - 1 if today.month == 12 else today.year - 2
             min_month = 1 if today.month == 12 else today.month
@@ -254,38 +273,41 @@ class DashboardView(BrowserView):
             date_to = DateTime(today.year, today.month,
                                monthrange(today.year, today.month)[1],
                                23, 59, 59)
+            return (date_from, date_to)
 
-        elif (periodicity == 'q'):
+        if (periodicity == PERIODICITY_QUARTERLY):
             # Quarterly, load last 4 years
             m = (((today.month - 1) / 3) * 3) + 1
             min_year = today.year - 4 if today.month == 12 else today.year - 5
             date_from = DateTime(min_year, m, 1)
             date_to = DateTime(today.year, m + 2,
-                                    monthrange(today.year, m + 2)[1], 23, 59,
-                                    59)
-        elif (periodicity == 'b'):
+                               monthrange(today.year, m + 2)[1], 23, 59,
+                               59)
+            return (date_from, date_to)
+        if (periodicity == PERIODICITY_BIANNUAL):
             # Biannual, load last 10 years
             m = (((today.month - 1) / 6) * 6) + 1
             min_year = today.year - 10 if today.month == 12 else today.year - 11
             date_from = DateTime(min_year, m, 1)
             date_to = DateTime(today.year, m + 5,
-                                    monthrange(today.year, m + 5)[1], 23, 59,
-                                    59)
+                               monthrange(today.year, m + 5)[1], 23, 59,
+                               59)
+            return (date_from, date_to)
 
-        elif (periodicity in ['y', 'a']):
+        if (periodicity in [PERIODICITY_YEARLY, PERIODICITY_ALL]):
             # Yearly or All time, load last 15 years
             min_year = today.year - 15 if today.month == 12 else today.year - 16
             date_from = DateTime(min_year, 1, 1)
             date_to = DateTime(today.year, 12, 31, 23, 59, 59)
+            return (date_from, date_to)
 
-        else:
-            # Default Weekly, load last six months
-            min_year = today.year if today.month > 6 else today.year - 1
-            min_month = today.month - 6 if today.month > 6 \
-                else (today.month - 6) + 12
-            date_from = DateTime(min_year, min_month, 1)
-            date_to = date_from + 7
-
+        # Default Weekly, load last six months
+        year, weeknum, dow = today.isocalendar()
+        min_year = today.year if today.month > 6 else today.year - 1
+        min_month = today.month - 6 if today.month > 6 \
+            else (today.month - 6) + 12
+        date_from = DateTime(min_year, min_month, 1)
+        date_to = DateTime() - dow + 7
         return (date_from, date_to)
 
     def get_sections(self):
@@ -736,22 +758,22 @@ class DashboardView(BrowserView):
         }
 
     def _getDateStr(self, period, created):
-        if period == 'y':
+        if period == PERIODICITY_YEARLY:
             created = created.year()
-        elif period == 'b':
+        elif period == PERIODICITY_BIANNUAL:
             m = (((created.month()-1)/6)*6)+1
             created = '%s-%s' % (str(created.year())[2:], str(m).zfill(2))
-        elif period == 'q':
+        elif period == PERIODICITY_QUARTERLY:
             m = (((created.month()-1)/3)*3)+1
             created = '%s-%s' % (str(created.year())[2:], str(m).zfill(2))
-        elif period == 'm':
+        elif period == PERIODICITY_MONTHLY:
             created = '%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2))
-        elif period == 'w':
+        elif period == PERIODICITY_WEEKLY:
             d = (((created.day()-1)/7)*7)+1
             year, weeknum, dow = created.asdatetime().isocalendar()
             created = created - dow
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
-        elif period == 'a':
+        elif period == PERIODICITY_ALL:
             # All time, but evolution chart grouped by year
             created = created.year()
         else:
@@ -761,7 +783,6 @@ class DashboardView(BrowserView):
     def fill_dates_evo(self, catalog, query):
         sorted_query = collections.OrderedDict(sorted(query.items()))
         query_json = json.dumps(sorted_query)
-        # By default, weekly
         return self._fill_dates_evo(query_json, catalog.id, self.periodicity)
 
     def _fill_dates_evo_cachekey(method, self, query_json, catalog_name,
@@ -781,17 +802,17 @@ class DashboardView(BrowserView):
         outevoidx = {}
         outevo = []
         days = 1
-        if periodicity == 'y':
+        if periodicity == PERIODICITY_YEARLY:
             days = 336
-        elif periodicity == 'b':
+        elif periodicity == PERIODICITY_BIANNUAL:
             days = 168
-        elif periodicity == 'q':
+        elif periodicity == PERIODICITY_QUARTERLY:
             days = 84
-        elif periodicity == 'm':
+        elif periodicity == PERIODICITY_MONTHLY:
             days = 28
-        elif periodicity == 'w':
+        elif periodicity == PERIODICITY_WEEKLY:
             days = 7
-        elif periodicity == 'a':
+        elif periodicity == PERIODICITY_ALL:
             days = 336
 
         # Get the date range
@@ -823,7 +844,6 @@ class DashboardView(BrowserView):
             curr = curr + datetime.timedelta(days=days)
 
         brains = search(query, catalog_name)
-        logger.warning('{} records from {}'.format(len(brains), repr(query)))
         for brain in brains:
             created = brain.created
             state = brain.review_state
@@ -863,7 +883,6 @@ class DashboardView(BrowserView):
         query = json.loads(query_json)
         brains = search(query, catalog_name)
         return len(brains)
-
 
     def _update_criteria_with_filters(self, query, section_name):
         """
