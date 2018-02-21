@@ -43,11 +43,17 @@ class AnalysesView(BikaListingView):
             self, context, request,
             show_categories=context.bika_setup.getCategoriseAnalysisServices(),
             expand_all_categories=True)
-        self.catalog = CATALOG_ANALYSIS_LISTING
+
+        # prepare the content filter of this listing
         self.contentFilter = dict(kwargs)
-        self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'sortable_title'
-        self.contentFilter['sort_order'] = 'ascending'
+        self.contentFilter.update({
+            "portal_type": "Analysis",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        })
+
+        # set the listing view config
+        self.catalog = CATALOG_ANALYSIS_LISTING
         self.sort_order = 'ascending'
         self.context_actions = {}
         self.show_sort_column = False
