@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #677 Fix category toggling when the category name contains spaces
 - #672 Traceback on automatic sticker printing in batch context
 - #673 QC Analyses and Samples not totaled correctly in Worksheets list
 - #670 Listings: Fix sort_on change on Show More click
