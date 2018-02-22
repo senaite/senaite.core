@@ -81,8 +81,8 @@ table.bika-listing-table {
 }
 
 .bika-listing-table .listing_remarks {
+  color:#444;
   width:99%;
-  border:1px solid #ababab;
   margin:2px 0px;
 }
 

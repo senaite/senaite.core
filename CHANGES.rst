@@ -13,6 +13,7 @@ Changelog
 
 - #685 Display the stacked bars in evo charts sorted by number of occurrences
 - #685 Small changes in colours palette for evo charts from Dashboard
+- #684 Aggregated lists of analyses set to read-only mode
 - #674 Dashboard with slightly better performance
 - #621 AnalysesView code refactoring
 - #668 AR Add: Debounce expensive XHR calls
