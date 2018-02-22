@@ -9,6 +9,7 @@ import collections
 import datetime
 import json
 from calendar import monthrange
+from operator import itemgetter
 from time import time
 
 from DateTime import DateTime
@@ -683,8 +684,8 @@ class DashboardView(BrowserView):
 
     def get_states_map(self, portal_type):
         if portal_type == 'Analysis':
-            return {'to_be_sampled':   _('Sample reception pending'),
-                    'sample_due':      _('Sample reception pending'),
+            return {'to_be_sampled':   _('Reception pending'),
+                    'sample_due':      _('Reception pending'),
                     'sample_received': _('Assignment pending'),
                     'assigned':        _('Results pending'),
                     'attachment_due':  _('Results pending'),
@@ -699,6 +700,7 @@ class DashboardView(BrowserView):
                     'scheduled_sampling':  _('Sampling scheduled'),
                     'sample_due':          _('Reception pending'),
                     'rejected':            _('Rejected'),
+                    'invalid':             _('Invalid'),
                     'sample_received':     _('Results pending'),
                     'assigned':            _('Results pending'),
                     'attachment_due':      _('Results pending'),
@@ -721,21 +723,21 @@ class DashboardView(BrowserView):
 
     def get_colors_palette(self):
         return {
-            'to_be_sampled':                '#FA6900',
-            _('To be sampled'):             '#FA6900',
+            'to_be_sampled':                '#917A4C',
+            _('To be sampled'):             '#917A4C',
 
-            'to_be_preserved':              '#C44D58',
-            _('To be preserved'):           '#C44D58',
+            'to_be_preserved':              '#C2803E',
+            _('To be preserved'):           '#C2803E',
 
-            'scheduled_sampling':           '#FA6900',
-            _('Sampling scheduled'):        '#FA6900',
+            'scheduled_sampling':           '#F38630',
+            _('Sampling scheduled'):        '#F38630',
 
-            'sample_due':                   '#F38630',
-            _('Sample reception pending'):  '#F38630',
-            _('Reception pending'):         '#F38630',
+            'sample_due':                   '#FA6900',
+            _('Reception pending'):         '#FA6900',
 
             'sample_received':              '#E0E4CC',
             _('Assignment pending'):        '#E0E4CC',
+            _('Sample received'):           '#E0E4CC',
 
             'assigned':                     '#dcdcdc',
             'attachment_due':               '#dcdcdc',
@@ -746,6 +748,9 @@ class DashboardView(BrowserView):
             'retracted':                    '#FF6B6B',
             _('Rejected'):                  '#FF6B6B',
             _('Retracted'):                 '#FF6B6B',
+
+            'invalid':                      '#C44D58',
+            _('Invalid'):                   '#C44D58',
 
             'to_be_verified':               '#A7DBD8',
             _('To be verified'):            '#A7DBD8',
@@ -851,9 +856,9 @@ class DashboardView(BrowserView):
                 logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
             state = statesmap[state] if state in statesmap else otherstate
             created = self._getDateStr(periodicity, created)
+            statscount[state] += 1
             if created in outevoidx:
                 oidx = outevoidx[created]
-                statscount[state] += 1
                 if state in outevo[oidx]:
                     outevo[oidx][state] += 1
                 else:
@@ -871,7 +876,11 @@ class DashboardView(BrowserView):
                 if r in o:
                     del o[r]
 
-        return outevo
+        # Sort available status by number of occurences descending
+        sorted_states = sorted(statscount.items(), key=itemgetter(1))
+        sorted_states = map(lambda item: item[0], sorted_states)
+        sorted_states.reverse()
+        return {'data': outevo, 'states': sorted_states}
 
     def search_count(self, query, catalog_name):
         sorted_query = collections.OrderedDict(sorted(query.items()))
