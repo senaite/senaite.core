@@ -452,8 +452,7 @@
                   isanalysis python:'obj' in item and item['obj'].meta_type in ['Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis'];
                   hasremarks python:True if item.get('Remarks','') else False;
                   remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
-                  isforaggregatedlist python: True if review_state_id=='to_be_verified' else False;
-                  showremarks python:isanalysis and (hasremarks or remarksedit or isforaggregatedlist)">
+                  showremarks python:isanalysis and (hasremarks or remarksedit)">
 
       <tr tal:condition="showremarks"
           tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
@@ -467,6 +466,8 @@
         <td tal:attributes="colspan python:int(nr_cols)-1;
                             class string:${item/state_class} result remarks"
             style="padding-right:10px;padding-bottom:5px;">
+          <div class="remarks-placeholder"
+               tal:attributes="style python:'' if hasremarks else 'display:none'">
           <span i18n:translate="">Remarks:</span>&nbsp;
           <textarea style="width:100%;display:block;"
                     autocomplete="off"
@@ -485,6 +486,7 @@
                 tal:attributes="class python:'listing_remarks';
                                 name string:Remarks.${item/uid}:records;"
                 tal:content="python:item.get('Remarks', '') if hasremarks else 'No Remarks.'"/>
+          </div>
         </td>
       </tr>
     </tal:remarks_condition>

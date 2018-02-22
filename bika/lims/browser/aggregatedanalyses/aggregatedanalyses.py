@@ -44,7 +44,7 @@ class AggregatedAnalysesView(AnalysesView):
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
-        self.allow_edit = True
+        self.allow_edit = False
 
         self.columns['AnalysisRequest'] = {
             'title': _('Analysis Request'),
@@ -143,6 +143,12 @@ class AggregatedAnalysesView(AnalysesView):
 
     def getPOSTAction(self):
         return 'aggregatedanalyses_workflow_action'
+
+    def is_analysis_edition_allowed(self, analysis_brain):
+        """Overrides the function from the parent, cause we don't want in any
+        case the analyses displayed in aggregated list to be editable. The
+        correct way to introduce results is by using Worksheets!"""
+        return False
 
     def isItemAllowed(self, obj):
         """

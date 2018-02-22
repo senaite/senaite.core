@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #684 Aggregated lists of analyses set to read-only mode
 - #674 Dashboard with slightly better performance
 - #621 AnalysesView code refactoring
 - #668 AR Add: Debounce expensive XHR calls
