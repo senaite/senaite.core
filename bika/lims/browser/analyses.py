@@ -1231,6 +1231,10 @@ class AnalysesView(BikaListingView):
             # remarks field will be displayed without the option to hide it
             return
 
+        if not self.context.bika_setup.getEnableAnalysisRemarks():
+            # Remarks not enabled in Setup, so don't display the balloon button
+            return
+
         # Analysis can be edited. Add the remarks toggle button
         title = t(_("Add Remark"))
         img = get_image('comment_ico.png', title=title)

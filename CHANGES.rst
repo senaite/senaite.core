@@ -31,6 +31,7 @@ Changelog
 
 **Fixed**
 
+- #686 Balloon button for adding Remarks is displayed while disabled in Setup
 - #681 Invalidated Analysis Requests do not appear on Dashboard's evo chart
 - #680 Fix Traceback with periodicity in DashboardView
 - #679 Analysis could not set to "Hidden" in results view
