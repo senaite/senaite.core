@@ -32,6 +32,7 @@ Changelog
 
 **Fixed**
 
+- #688 A traceback was appearing when navigating to rejected samples
 - #686 Balloon button for adding Remarks is displayed while disabled in Setup
 - #681 Invalidated Analysis Requests do not appear on Dashboard's evo chart
 - #680 Fix Traceback with periodicity in DashboardView
