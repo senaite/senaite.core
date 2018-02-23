@@ -462,29 +462,10 @@ class AnalysesView(BikaListingView):
             enumerate(analysis_categories)])
 
     def before_render(self):
-        logger.warning("before_Render")
+        """Called before the template is rendered
+        """
         # Load analysis categories available in the system
         self.load_analysis_categories()
-
-        # Can the user edit?
-        if self.allow_edit:
-            if self.contentFilter.get('getPointOfCapture', '') == 'field':
-                # This is only loaded for Field' analyses list
-                self.allow_edit = self.has_permission(EditFieldResults)
-            else:
-                self.allow_edit = self.has_permission(EditResults)
-        self.show_select_column = self.allow_edit
-
-        # Users that can Add Analyses to an Analysis Request must be able to
-        # set the visibility of the analysis in results report, also if the
-        # current state of the Analysis Request (e.g. verified) does not allow
-        # the edition of other fields. Note that an analyst has no privileges
-        # by default to edit this value, cause this "visibility" field is
-        # related with results reporting and/or visibility from the client side.
-        # This behavior only applies to routine analyses, the visibility of QC
-        # analyses is managed in publish and are not visible to clients.
-        if not self.has_permission(AddAnalysis):
-            self.remove_column('Hidden')
 
     def isItemAllowed(self, obj):
         """Checks if the passed in Analysis must be displayed in the list.
