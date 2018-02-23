@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #690 Refactored and improved client folder listing view
 - #689 Allow to hide Analyses in any AR state
 - #685 Display the stacked bars in evo charts sorted by number of occurrences
 - #685 Small changes in colours palette for evo charts from Dashboard
