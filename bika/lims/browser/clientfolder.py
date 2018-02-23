@@ -64,18 +64,24 @@ class ClientFolderContentsView(BikaListingView):
             ("EmailAddress", {
                 "title": _("Email Address")}),
             ("getCountry", {
+                "toggle": False,
                 "title": _("Country")}),
             ("getProvince", {
+                "toggle": False,
                 "title": _("Province")}),
             ("getDistrict", {
+                "toggle": False,
                 "title": _("District")}),
             ("Phone", {
                 "title": _("Phone")}),
             ("Fax", {
+                "toggle": False,
                 "title": _("Fax")}),
             ("BulkDiscount", {
+                "toggle": False,
                 "title": _("Bulk Discount")}),
             ("MemberDiscountApplies", {
+                "toggle": False,
                 "title": _("Member Discount")}),
         ))
 
