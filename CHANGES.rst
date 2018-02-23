@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.3 (unreleased)
+1.2.3 (2018-02-23)
 ------------------
 
 **Added**
@@ -27,9 +27,6 @@ Changelog
 - #655 Updated German Translations
 - #647 Refactored bika.lims.bikalisting.js + several functional fixtures
 - #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
-
-**Removed**
-
 
 **Fixed**
 
@@ -57,8 +54,6 @@ Changelog
 - #637 Analysis Requests are never transitioned to assigned/unassigned
 - #641 Broken Analyses list on ReferenceSample in Supplier
 - #640 Broken Reference Sample Results view
-
-**Security**
 
 
 1.2.2 (2018-02-09)
