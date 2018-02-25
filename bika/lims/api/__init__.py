@@ -4,6 +4,12 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
