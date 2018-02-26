@@ -1211,3 +1211,33 @@ def to_date(value, default=None):
         return DateTime(value)
     except:
         return to_date(default)
+
+
+def is_floatable(value):
+    """Checks if the passed in value is a valid floatable number
+
+    :param value: The value to be evaluated as a float number
+    :type value: str, float, int
+    :returns: True if is a valid float number
+    :rtype: bool"""
+    try:
+        float(value)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
+def to_float(value, default=0.0):
+    """Converts the passed in value to a float number
+
+    :param value: The value to be converted to a floatable number
+    :type value: str, float, int
+    :returns: The float number representation of the passed in value
+    :rtype: float
+    """
+    if not is_floatable(default):
+        fail("Param default needs to be floatable, got '%s'" % type(default))
+    try:
+        return float(value)
+    except:
+        return float(default)
