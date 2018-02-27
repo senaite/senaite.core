@@ -64,6 +64,8 @@ schema = Schema((
             'keyword',
             'min',
             'max',
+            'warn_min',
+            'warn_max',
             'error',
             'hidemin',
             'hidemax',
