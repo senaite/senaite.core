@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #695 Instrument validity not updated in accordance with latest QC tests
+
 
 **Security**
 
