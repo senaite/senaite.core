@@ -8,6 +8,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema, registerType
 from Products.Archetypes.public import StringField
+from bika.lims import api
 from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
@@ -130,6 +131,39 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             val = analysis.getField(key).get(analysis)
             self.getField(key).set(self, val)
         self.getField('Analysis').set(self, analysis)
+
+    @security.public
+    def getResultsRange(self, specification=None):
+        """Returns the valid result range for this analysis duplicate, based on
+        both on the result and duplicate variation set in the original analysis
+
+        A Duplicate will be considered out of range if its result does not match
+        with the result set to the analysis that was duplicated from, with the
+        Duplicate Variation in % as the margin error, that will be used to set
+        the range's min and max values
+        :return: A dictionary with the keys min and max
+        :rtype: dict
+        """
+        specs = {'min': '', 'max': '', 'warn_min': '', 'warn_max': ''}
+        analysis = self.getAnalysis()
+        if not analysis:
+            return specs
+
+        result = analysis.getResult()
+        if not api.is_floatable(result):
+            return specs
+
+        specs['min'] = specs['max'] = result
+        result = api.to_float(result)
+        dup_variation = analysis.getDuplicateVariation()
+        dup_variation = api.to_float(dup_variation)
+        if not dup_variation:
+            return specs
+
+        margin = abs(result) * (dup_variation / 100.0)
+        specs['min'] = result - margin
+        specs['max'] = result + margin
+        return specs
 
     def workflow_script_attach(self):
         events.after_attach(self)
