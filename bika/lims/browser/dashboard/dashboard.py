@@ -38,8 +38,8 @@ FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
 # Supported periodicities for evolution charts
 PERIODICITY_DAILY = "d"
 PERIODICITY_WEEKLY = "w"
-PERIODICITY_MONTHLY= "m"
-PERIODICITY_QUARTERLY= "q"
+PERIODICITY_MONTHLY = "m"
+PERIODICITY_QUARTERLY = "q"
 PERIODICITY_BIANNUAL = "b"
 PERIODICITY_YEARLY = "y"
 PERIODICITY_ALL = "a"
@@ -182,7 +182,7 @@ class DashboardView(BrowserView):
             return
 
         self.member = mtool.getAuthenticatedMember()
-        self.periodicity =  self.request.get('p', PERIODICITY_WEEKLY)
+        self.periodicity = self.request.get('p', PERIODICITY_WEEKLY)
         self.dashboard_cookie = self.check_dashboard_cookie()
         date_range = self.get_date_range(self.periodicity)
         self.date_from = date_range[0]
@@ -260,13 +260,13 @@ class DashboardView(BrowserView):
         :rtype: [(DateTime, DateTime)]
         """
         today = datetime.date.today()
-        if (periodicity == PERIODICITY_DAILY):
+        if periodicity == PERIODICITY_DAILY:
             # Daily, load last 30 days
             date_from = DateTime() - 30
             date_to = DateTime() + 1
-            return (date_from, date_to)
+            return date_from, date_to
 
-        if (periodicity == PERIODICITY_MONTHLY):
+        if periodicity == PERIODICITY_MONTHLY:
             # Monthly, load last 2 years
             min_year = today.year - 1 if today.month == 12 else today.year - 2
             min_month = 1 if today.month == 12 else today.month
@@ -274,9 +274,9 @@ class DashboardView(BrowserView):
             date_to = DateTime(today.year, today.month,
                                monthrange(today.year, today.month)[1],
                                23, 59, 59)
-            return (date_from, date_to)
+            return date_from, date_to
 
-        if (periodicity == PERIODICITY_QUARTERLY):
+        if periodicity == PERIODICITY_QUARTERLY:
             # Quarterly, load last 4 years
             m = (((today.month - 1) / 3) * 3) + 1
             min_year = today.year - 4 if today.month == 12 else today.year - 5
@@ -284,8 +284,8 @@ class DashboardView(BrowserView):
             date_to = DateTime(today.year, m + 2,
                                monthrange(today.year, m + 2)[1], 23, 59,
                                59)
-            return (date_from, date_to)
-        if (periodicity == PERIODICITY_BIANNUAL):
+            return date_from, date_to
+        if periodicity == PERIODICITY_BIANNUAL:
             # Biannual, load last 10 years
             m = (((today.month - 1) / 6) * 6) + 1
             min_year = today.year - 10 if today.month == 12 else today.year - 11
@@ -293,14 +293,14 @@ class DashboardView(BrowserView):
             date_to = DateTime(today.year, m + 5,
                                monthrange(today.year, m + 5)[1], 23, 59,
                                59)
-            return (date_from, date_to)
+            return date_from, date_to
 
-        if (periodicity in [PERIODICITY_YEARLY, PERIODICITY_ALL]):
+        if periodicity in [PERIODICITY_YEARLY, PERIODICITY_ALL]:
             # Yearly or All time, load last 15 years
             min_year = today.year - 15 if today.month == 12 else today.year - 16
             date_from = DateTime(min_year, 1, 1)
             date_to = DateTime(today.year, 12, 31, 23, 59, 59)
-            return (date_from, date_to)
+            return date_from, date_to
 
         # Default Weekly, load last six months
         year, weeknum, dow = today.isocalendar()
@@ -309,7 +309,7 @@ class DashboardView(BrowserView):
             else (today.month - 6) + 12
         date_from = DateTime(min_year, min_month, 1)
         date_to = DateTime() - dow + 7
-        return (date_from, date_to)
+        return date_from, date_to
 
     def get_sections(self):
         """ Returns an array with the sections to be displayed.
@@ -356,7 +356,7 @@ class DashboardView(BrowserView):
             results = results if total >= results else total
             ratio = (float(results)/float(total))*100 if results > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
-        out['legend'] = _('of') + " " + str(total) + ' (' + ratio +'%)'
+        out['legend'] = _('of') + " " + str(total) + ' (' + ratio + '%)'
         out['number'] = results
         out['percentage'] = float(ratio)
         return out
@@ -373,7 +373,7 @@ class DashboardView(BrowserView):
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
+            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -383,13 +383,13 @@ class DashboardView(BrowserView):
         total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
-        if (self.context.bika_setup.getSamplingWorkflowEnabled()):
+        if self.context.bika_setup.getSamplingWorkflowEnabled():
             # Analysis Requests awaiting to be sampled or scheduled
             name = _('Analysis Requests to be sampled')
             desc = _("To be sampled")
             purl = 'samples?samples_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
-            query['cancellation_state'] = ['active',]
+            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests awaiting to be preserved
@@ -397,7 +397,7 @@ class DashboardView(BrowserView):
             desc = _("To be preserved")
             purl = 'samples?samples_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
-            query['cancellation_state'] = ['active',]
+            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests scheduled for Sampling
@@ -405,7 +405,7 @@ class DashboardView(BrowserView):
             desc = _("Sampling scheduled")
             purl = 'samples?samples_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
-            query['cancellation_state'] = ['active',]
+            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests awaiting for reception
@@ -413,7 +413,7 @@ class DashboardView(BrowserView):
         desc = _("Reception pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
-        query['cancellation_state'] = ['active',]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests under way
@@ -421,8 +421,8 @@ class DashboardView(BrowserView):
         desc = _("Results pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_received'
         query['review_state'] = ['attachment_due',
-                                 'sample_received',]
-        query['cancellation_state'] = ['active',]
+                                 'sample_received', ]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests to be verified
@@ -430,7 +430,7 @@ class DashboardView(BrowserView):
         desc = _("To be verified")
         purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
-        query['cancellation_state'] = ['active',]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests verified (to be published)
@@ -438,7 +438,7 @@ class DashboardView(BrowserView):
         desc = _("Verified")
         purl = 'analysisrequests?analysisrequests_review_state=verified'
         query['review_state'] = ['verified', ]
-        query['cancellation_state'] = ['active',]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests published
@@ -446,7 +446,7 @@ class DashboardView(BrowserView):
         desc = _("Published")
         purl = 'analysisrequests?analysisrequests_review_state=published'
         query['review_state'] = ['published', ]
-        query['cancellation_state'] = ['active',]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests to be printed
@@ -456,7 +456,7 @@ class DashboardView(BrowserView):
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
             query['getPrinted'] = '0'
             query['review_state'] = ['published', ]
-            query['cancellation_state'] = ['active',]
+            query['cancellation_state'] = ['active', ]
             out.append(
                 self._getStatistics(name, desc, purl, catalog, query, total))
 
@@ -481,11 +481,11 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
-        query = {'portal_type':"Worksheet",}
+        query = {'portal_type': "Worksheet", }
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
+            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -503,14 +503,14 @@ class DashboardView(BrowserView):
 
         # Worksheets to be verified
         name = _('To be verified')
-        desc =_('To be verified')
+        desc = _('To be verified')
         purl = 'worksheets?list_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Worksheets verified
         name = _('Verified')
-        desc =_('Verified')
+        desc = _('Verified')
         purl = 'worksheets?list_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
@@ -793,7 +793,7 @@ class DashboardView(BrowserView):
     def _fill_dates_evo_cachekey(method, self, query_json, catalog_name,
                                  periodicity):
         hour = time() // (60 * 60 * 2)
-        return (hour, catalog_name, query_json, periodicity)
+        return hour, catalog_name, query_json, periodicity
 
     @ram.cache(_fill_dates_evo_cachekey)
     def _fill_dates_evo(self, query_json, catalog_name, periodicity):
@@ -834,14 +834,14 @@ class DashboardView(BrowserView):
         stats = statesmap.values()
         stats.sort()
         stats.append(otherstate)
-        statscount = {s:0 for s in stats}
+        statscount = {s: 0 for s in stats}
         # Add first all periods, cause we want all segments to be displayed
         curr = date_from.asdatetime()
         end = date_to.asdatetime()
         while curr < end:
             currstr = self._getDateStr(periodicity, DateTime(curr))
             if currstr not in outevoidx:
-                outdict = {'date':currstr}
+                outdict = {'date': currstr}
                 for k in stats:
                     outdict[k] = 0
                 outevo.append(outdict)
@@ -866,11 +866,11 @@ class DashboardView(BrowserView):
             else:
                 # Create new row
                 currow = {'date': created,
-                          state: 1 }
+                          state: 1}
                 outevo.append(currow)
 
         # Remove all those states for which there is no data
-        rstates = [k for k,v in statscount.items() if v==0]
+        rstates = [k for k, v in statscount.items() if v == 0]
         for o in outevo:
             for r in rstates:
                 if r in o:
