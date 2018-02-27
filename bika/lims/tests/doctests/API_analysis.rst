@@ -1,4 +1,4 @@
-> api_analysis
+API Analysis
 ============
 
 Th> api_analysis provides single functions for single purposes especifically
@@ -57,19 +57,19 @@ We need to create some basic objects for the test:
     >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
     >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
-    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
-    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
-    >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-    >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
+    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), DuplicateVariation="0.5")
+    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID(), DuplicateVariation="0.5")
+    >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID(), DuplicateVariation="0.5")
+    >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID(), DuplicateVariation="0.5")
     >>> service_uids = [api.get_uid(an) for an in [Cu, Fe, Au, Mg]]
 
 Create an Analysis Specification for `Water`:
 
     >>> sampletype_uid = api.get_uid(sampletype)
-    >>> rr1 = {"keyword": "Au", "min": "-5", "max":  "5", "error": "10", "hidemin": "", "hidemax": "", "rangecomment": "Lab Au Spec"}
-    >>> rr2 = {"keyword": "Cu", "min": "10", "max": "20", "error": "10", "hidemin": "", "hidemax": "", "rangecomment": "Lab Cu Spec"}
-    >>> rr3 = {"keyword": "Fe", "min":  "0", "max": "10", "error": "10", "hidemin": "", "hidemax": "", "rangecomment": "Lab Fe Spec"}
-    >>> rr4 = {"keyword": "Mg", "min": "10", "max": "10", "error":  "0", "hidemin": "", "hidemax": "", "rangecomment": "Lab Mg Spec"}
+    >>> rr1 = {"keyword": "Au", "min": "-5", "max":  "5", "warn_min": "-5.5", "warn_max": "5.5"}
+    >>> rr2 = {"keyword": "Cu", "min": "10", "max": "20", "warn_min":  "9.5", "warn_max": "20.5"}
+    >>> rr3 = {"keyword": "Fe", "min":  "0", "max": "10", "warn_min": "-0.5", "warn_max": "10.5"}
+    >>> rr4 = {"keyword": "Mg", "min": "10", "max": "10"}
     >>> rr = [rr1, rr2, rr3, rr4]
     >>> specification = api.create(bikasetup.bika_analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype_uid, ResultsRange=rr)
     >>> spec_uid = api.get_uid(specification)
@@ -126,11 +126,14 @@ Add a duplicate for `Cu`:
 
     >>> position = worksheet.get_slot_position(ar, 'a')
     >>> duplicates = worksheet.addDuplicateAnalyses(position)
+    >>> duplicates.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
 
 Add a blank and a control:
 
     >>> blanks = worksheet.addReferenceAnalyses(blank, service_uids)
+    >>> blanks.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
     >>> controls = worksheet.addReferenceAnalyses(control, service_uids)
+    >>> controls.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
 
 
 Check if results are out of range
@@ -141,7 +144,7 @@ First, get the analyses from slot 1 and sort them asc:
     >>> analyses = worksheet.get_analyses_at(1)
     >>> analyses.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
 
-Set results for analysis `Au` (min: -5, max: 5, error: 10):
+Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
 
     >>> au_analysis = analyses[0]
     >>> au_analysis.setResult(2)
@@ -168,32 +171,139 @@ Set results for analysis `Au` (min: -5, max: 5, error: 10):
     >>> is_out_of_range(au_analysis)
     (True, True)
 
-    >>> au_analysis.setResult(10)
-    >>> is_out_of_range(au_analysis)
-    (True, True)
+Results in shoulders?:
 
-Results in shoulders?
+    >>> au_analysis.setResult(-5.2)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
 
     >>> au_analysis.setResult(-5.5)
     >>> is_out_of_range(au_analysis)
     (True, False)
 
-    >>> au_analysis.setResult(-6)
-    >>> is_out_of_range(au_analysis)
-    (True, False)
-
-    >>> au_analysis.setResult(-6.1)
+    >>> au_analysis.setResult(-5.6)
     >>> is_out_of_range(au_analysis)
     (True, True)
+
+    >>> au_analysis.setResult(5.2)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
 
     >>> au_analysis.setResult(5.5)
     >>> is_out_of_range(au_analysis)
     (True, False)
 
-    >>> au_analysis.setResult(6)
+    >>> au_analysis.setResult(5.6)
+    >>> is_out_of_range(au_analysis)
+    (True, True)
+
+
+Check if results for duplicates are out of range
+------------------------------------------------
+
+Get the first duplicate analysis that comes from from `Au`:
+
+    >>> duplicate = duplicates[0]
+
+A Duplicate will be considered out of range if its result does not match with
+the result set to the analysis that was duplicated from, with the Duplicate
+Variation in % as the margin error. The Duplicate Variation assigned in the
+Analysis Service `Au` is 0.5%:
+
+    >>> dup_variation = au_analysis.getDuplicateVariation()
+    >>> dup_variation = api.to_float(dup_variation)
+    >>> dup_variation
+    0.5
+
+Set an in-range result (between -5 and 5) for routine analysis and check all
+variants on it's duplicate. Given that the duplicate variation is 0.5, the
+valid range for the duplicate must be `Au +-0.5%`:
+
+    >>> result = 2.0
+    >>> au_analysis.setResult(result)
+    >>> is_out_of_range(au_analysis)
+    (False, False)
+
+    >>> duplicate.setResult(result)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> dup_min_range = result - (result*(dup_variation/100))
+    >>> duplicate.setResult(dup_min_range)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> duplicate.setResult(dup_min_range - 0.5)
+    >>> is_out_of_range(duplicate)
+    (True, True)
+
+    >>> dup_max_range = result + (result*(dup_variation/100))
+    >>> duplicate.setResult(dup_max_range)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> duplicate.setResult(dup_max_range + 0.5)
+    >>> is_out_of_range(duplicate)
+    (True, True)
+
+Set an out-of-range result, but within shoulders, for routine analysis and check
+all variants on it's duplicate. Given that the duplicate variation is 0.5, the
+valid range for the duplicate must be `Au +-0.5%`:
+
+    >>> result = 5.5
+    >>> au_analysis.setResult(result)
     >>> is_out_of_range(au_analysis)
     (True, False)
 
-    >>> au_analysis.setResult(6.1)
+    >>> duplicate.setResult(result)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> dup_min_range = result - (result*(dup_variation/100))
+    >>> duplicate.setResult(dup_min_range)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> duplicate.setResult(dup_min_range - 0.5)
+    >>> is_out_of_range(duplicate)
+    (True, True)
+
+    >>> dup_max_range = result + (result*(dup_variation/100))
+    >>> duplicate.setResult(dup_max_range)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> duplicate.setResult(dup_max_range + 0.5)
+    >>> is_out_of_range(duplicate)
+    (True, True)
+
+Set an out-of-range and out-of-shoulders result, for routine analysis and check
+all variants on it's duplicate. Given that the duplicate variation is 0.5, the
+valid range for the duplicate must be `Au +-0.5%`:
+
+    >>> result = -7.0
+    >>> au_analysis.setResult(result)
     >>> is_out_of_range(au_analysis)
+    (True, True)
+
+    >>> duplicate.setResult(result)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> dup_min_range = result - (abs(result)*(dup_variation/100))
+    >>> duplicate.setResult(dup_min_range)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> duplicate.setResult(dup_min_range - 0.5)
+    >>> is_out_of_range(duplicate)
+    (True, True)
+
+    >>> dup_max_range = result + (abs(result)*(dup_variation/100))
+    >>> duplicate.setResult(dup_max_range)
+    >>> is_out_of_range(duplicate)
+    (False, False)
+
+    >>> duplicate.setResult(dup_max_range + 0.5)
+    >>> is_out_of_range(duplicate)
     (True, True)
