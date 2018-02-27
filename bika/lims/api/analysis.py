@@ -65,4 +65,5 @@ def is_out_of_range(brain_or_object):
     # specs' min and max as default fallback values
     warn_min = api.to_float(result_range.get('warn_min', specs_min), specs_min)
     warn_max = api.to_float(result_range.get('warn_max', specs_max), specs_max)
-    return True, warn_min <= result <= warn_max
+    in_shoulder = warn_min <= result <= warn_max
+    return True, not in_shoulder
