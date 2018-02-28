@@ -35,6 +35,12 @@ contributions descending.
 - Manav Batra, manavbatra@outlook.com
 
 
+Collaborators
+=============
+
+- Leonardo Rojas, leonardorojass@gmail.com
+
+
 Translators
 ===========
 
