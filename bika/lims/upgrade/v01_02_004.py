@@ -8,6 +8,7 @@ from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 
 version = '1.2.4'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -26,7 +27,9 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
-    # -------- ADD YOUR STUFF HERE --------
+    # Required to make filtering by department in worksheets work
+    ut.addIndex(CATALOG_WORKSHEET_LISTING, 'getDepartmentUIDs', 'KeywordIndex')
+    ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 
