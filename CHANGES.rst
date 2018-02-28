@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #698 Fix Publish Actions for Batches
+
 
 **Security**
 
