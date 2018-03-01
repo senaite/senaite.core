@@ -323,11 +323,6 @@ shoulders are built based on % error.
 Blank Analyses
 ..............
 
-First, get the blanks from slot 2 and sort them asc:
-
-    >>> blanks = worksheet.get_analyses_at(2)
-    >>> blanks.sort(key=lambda blanks: blank.getKeyword(), reverse=False)
-
 The first blank analysis corresponds to `Au`:
 
     >>> au_blank = blanks[0]
@@ -364,19 +359,12 @@ when out of range.
 Control Analyses
 ................
 
-Now, get the controls from slot 2 and sort them asc:
-
-    >>> controls = worksheet.get_analyses_at(3)
-    >>> controls.sort(key=lambda controls: controls.getKeyword(), reverse=False)
-
 The first control analysis corresponds to `Au`:
 
     >>> au_control = controls[0]
 
 For `Au` control, as per the reference definition used above, the expected
-result is 10 +/- 0.1% = 10 +/- 0.01. Note that with reference analyses we expect
-a discrete result, so no ranges are used. Rather, the %error defines the
-shoulders, that in this case are (9.99 <= r < 10) and (10 < r <= 10.01).
+result is 10 +/- 0.1% = 10 +/- 0.01
 
 First, check for in-range values:
 
@@ -396,41 +384,39 @@ First, check for in-range values:
     >>> is_out_of_range(au_control)
     (False, False)
 
-Secondly, check for out-of-range but within-shoulders:
-
     >>> au_control.setResult(9.995)
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
     >>> au_control.setResult("9.995")
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
     >>> au_control.setResult(10.005)
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
     >>> au_control.setResult("10.005")
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
     >>> au_control.setResult(9.99)
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
     >>> au_control.setResult("9.99")
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
     >>> au_control.setResult(10.01)
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
     >>> au_control.setResult("10.01")
     >>> is_out_of_range(au_control)
-    (True, False)
+    (False, False)
 
-Now, check for both out-of-range and out-of-shoulders:
+Now, check for out-of-range results:
 
     >>> au_control.setResult(9.98)
     >>> is_out_of_range(au_control)
@@ -448,12 +434,9 @@ Now, check for both out-of-range and out-of-shoulders:
     >>> is_out_of_range(au_control)
     (True, True)
 
-And do the same with the control for `Cu` that expects -0.9 +/- 20%, with the
-following shoulders: (-1.08 <= r < -0.9) and (-0.9 < r <= -0.01).
+And do the same with the control for `Cu` that expects -0.9 +/- 20%:
 
-The second control analysis corresponds to `Cu`:
-
-    >>> cu_control = controls[0]
+    >>> cu_control = controls[1]
 
 First, check for in-range values:
 
@@ -465,41 +448,39 @@ First, check for in-range values:
     >>> is_out_of_range(cu_control)
     (False, False)
 
-Secondly, check for out-of-range but within-shoulders:
-
     >>> cu_control.setResult(-1.08)
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
     >>> cu_control.setResult("-1.08")
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
     >>> cu_control.setResult(-1.07)
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
     >>> cu_control.setResult("-1.07")
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
-    >>> cu_control.setResult(-0.01)
+    >>> cu_control.setResult(-0.72)
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
-    >>> cu_control.setResult("-0.01")
+    >>> cu_control.setResult("-0.72")
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
-    >>> cu_control.setResult(-0.05)
+    >>> cu_control.setResult(-0.73)
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
-    >>> cu_control.setResult("-0.05")
+    >>> cu_control.setResult("-0.73")
     >>> is_out_of_range(cu_control)
-    (True, False)
+    (False, False)
 
-Now, check for both out-of-range and out-of-shoulders:
+Now, check for out-of-range results:
 
     >>> cu_control.setResult(0)
     >>> is_out_of_range(cu_control)
@@ -509,26 +490,18 @@ Now, check for both out-of-range and out-of-shoulders:
     >>> is_out_of_range(cu_control)
     (True, True)
 
-    >>> cu_control.setResult(0.1)
+    >>> cu_control.setResult(-0.71)
     >>> is_out_of_range(cu_control)
     (True, True)
 
-    >>> cu_control.setResult("0.1")
+    >>> cu_control.setResult("-0.71")
     >>> is_out_of_range(cu_control)
     (True, True)
 
-    >>> cu_control.setResult(-2)
+    >>> cu_control.setResult(-1.09)
     >>> is_out_of_range(cu_control)
     (True, True)
 
-    >>> cu_control.setResult("-2")
-    >>> is_out_of_range(cu_control)
-    (True, True)
-
-    >>> cu_control.setResult(-2.1)
-    >>> is_out_of_range(cu_control)
-    (True, True)
-
-    >>> cu_control.setResult("-2.1")
+    >>> cu_control.setResult("-1.09")
     >>> is_out_of_range(cu_control)
     (True, True)
