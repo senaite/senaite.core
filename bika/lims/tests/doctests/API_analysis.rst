@@ -77,19 +77,19 @@ Create an Analysis Specification for `Water`:
 Create a Reference Definition for blank:
 
     >>> blankdef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
-    >>> blank_refs = [{'uid': Au.UID(), 'result': '0', 'min': '0', 'max': '0', 'error': '0'},
-    ...               {'uid': Cu.UID(), 'result': '0', 'min': '0', 'max': '0', 'error': '0'},
-    ...               {'uid': Fe.UID(), 'result': '0', 'min': '0', 'max': '0', 'error': '0'},
-    ...               {'uid': Mg.UID(), 'result': '0', 'min': '0', 'max': '0', 'error': '0'},]
+    >>> blank_refs = [{'uid': Au.UID(), 'result': '0', 'error': '0.1'},
+    ...               {'uid': Cu.UID(), 'result': '0', 'error': '0.1'},
+    ...               {'uid': Fe.UID(), 'result': '0', 'error': '0.1'},
+    ...               {'uid': Mg.UID(), 'result': '0', 'error': '0.1'},]
     >>> blankdef.setReferenceResults(blank_refs)
 
 And for control:
 
     >>> controldef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Control definition")
-    >>> control_refs = [{'uid': Au.UID(), 'result': '10', 'min': '0.9', 'max': '10.1', 'error': '0.1'},
-    ...                 {'uid': Cu.UID(), 'result': '10', 'min': '0.9', 'max': '10.1', 'error': '0.1'},
-    ...                 {'uid': Fe.UID(), 'result': '10', 'min': '0.9', 'max': '10.1', 'error': '0.1'},
-    ...                 {'uid': Mg.UID(), 'result': '10', 'min': '0.9', 'max': '10.1', 'error': '0.1'}]
+    >>> control_refs = [{'uid': Au.UID(), 'result': '10', 'error': '0.1'},
+    ...                 {'uid': Cu.UID(), 'result': '-0.9', 'error': '20'},
+    ...                 {'uid': Fe.UID(), 'result': '10', 'error': '0.1'},
+    ...                 {'uid': Mg.UID(), 'result': '10', 'error': '0.1'}]
     >>> controldef.setReferenceResults(control_refs)
 
     >>> blank = api.create(supplier, "ReferenceSample", title="Blank",
@@ -306,4 +306,229 @@ valid range for the duplicate must be `Au +-0.5%`:
 
     >>> duplicate.setResult(dup_max_range + 0.5)
     >>> is_out_of_range(duplicate)
+    (True, True)
+
+
+Check if results for Reference Analyses (blanks + controls) are out of range
+----------------------------------------------------------------------------
+
+Reference Analyses (controls and blanks) do not use the result ranges defined in
+the specifications, rather they use the result range defined in the Reference
+Sample they have been generated from. In turn, the result ranges defined in
+Reference Samples can be set manually or acquired from the Reference Definition
+they might be associated with. Another difference from routine analyses is that
+reference analyses don't expect a valid range, rather a discrete value, so
+shoulders are built based on % error.
+
+Blank Analyses
+..............
+
+First, get the blanks from slot 2 and sort them asc:
+
+    >>> blanks = worksheet.get_analyses_at(2)
+    >>> blanks.sort(key=lambda blanks: blank.getKeyword(), reverse=False)
+
+The first blank analysis corresponds to `Au`:
+
+    >>> au_blank = blanks[0]
+
+For `Au` blank, as per the reference definition used above, the expected result
+is 0 +/- 0.1%. Since the expected result is 0, no shoulders will be considered
+regardless of the % of error. Thus, result will always be "out-of-shoulders"
+when out of range.
+
+    >>> au_blank.setResult(0.0)
+    >>> is_out_of_range(au_blank)
+    (False, False)
+
+    >>> au_blank.setResult("0")
+    >>> is_out_of_range(au_blank)
+    (False, False)
+
+    >>> au_blank.setResult(0.0001)
+    >>> is_out_of_range(au_blank)
+    (True, True)
+
+    >>> au_blank.setResult("0.0001")
+    >>> is_out_of_range(au_blank)
+    (True, True)
+
+    >>> au_blank.setResult(-0.0001)
+    >>> is_out_of_range(au_blank)
+    (True, True)
+
+    >>> au_blank.setResult("-0.0001")
+    >>> is_out_of_range(au_blank)
+    (True, True)
+
+Control Analyses
+................
+
+Now, get the controls from slot 2 and sort them asc:
+
+    >>> controls = worksheet.get_analyses_at(3)
+    >>> controls.sort(key=lambda controls: controls.getKeyword(), reverse=False)
+
+The first control analysis corresponds to `Au`:
+
+    >>> au_control = controls[0]
+
+For `Au` control, as per the reference definition used above, the expected
+result is 10 +/- 0.1% = 10 +/- 0.01. Note that with reference analyses we expect
+a discrete result, so no ranges are used. Rather, the %error defines the
+shoulders, that in this case are (9.99 <= r < 10) and (10 < r <= 10.01).
+
+First, check for in-range values:
+
+    >>> au_control.setResult(10)
+    >>> is_out_of_range(au_control)
+    (False, False)
+
+    >>> au_control.setResult(10.0)
+    >>> is_out_of_range(au_control)
+    (False, False)
+
+    >>> au_control.setResult("10")
+    >>> is_out_of_range(au_control)
+    (False, False)
+
+    >>> au_control.setResult("10.0")
+    >>> is_out_of_range(au_control)
+    (False, False)
+
+Secondly, check for out-of-range but within-shoulders:
+
+    >>> au_control.setResult(9.995)
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+    >>> au_control.setResult("9.995")
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+    >>> au_control.setResult(10.005)
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+    >>> au_control.setResult("10.005")
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+    >>> au_control.setResult(9.99)
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+    >>> au_control.setResult("9.99")
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+    >>> au_control.setResult(10.01)
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+    >>> au_control.setResult("10.01")
+    >>> is_out_of_range(au_control)
+    (True, False)
+
+Now, check for both out-of-range and out-of-shoulders:
+
+    >>> au_control.setResult(9.98)
+    >>> is_out_of_range(au_control)
+    (True, True)
+
+    >>> au_control.setResult("9.98")
+    >>> is_out_of_range(au_control)
+    (True, True)
+
+    >>> au_control.setResult(10.011)
+    >>> is_out_of_range(au_control)
+    (True, True)
+
+    >>> au_control.setResult("10.011")
+    >>> is_out_of_range(au_control)
+    (True, True)
+
+And do the same with the control for `Cu` that expects -0.9 +/- 20%, with the
+following shoulders: (-1.08 <= r < -0.9) and (-0.9 < r <= -0.01).
+
+The second control analysis corresponds to `Cu`:
+
+    >>> cu_control = controls[0]
+
+First, check for in-range values:
+
+    >>> cu_control.setResult(-0.9)
+    >>> is_out_of_range(cu_control)
+    (False, False)
+
+    >>> cu_control.setResult("-0.9")
+    >>> is_out_of_range(cu_control)
+    (False, False)
+
+Secondly, check for out-of-range but within-shoulders:
+
+    >>> cu_control.setResult(-1.08)
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+    >>> cu_control.setResult("-1.08")
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+    >>> cu_control.setResult(-1.07)
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+    >>> cu_control.setResult("-1.07")
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+    >>> cu_control.setResult(-0.01)
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+    >>> cu_control.setResult("-0.01")
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+    >>> cu_control.setResult(-0.05)
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+    >>> cu_control.setResult("-0.05")
+    >>> is_out_of_range(cu_control)
+    (True, False)
+
+Now, check for both out-of-range and out-of-shoulders:
+
+    >>> cu_control.setResult(0)
+    >>> is_out_of_range(cu_control)
+    (True, True)
+
+    >>> cu_control.setResult("0")
+    >>> is_out_of_range(cu_control)
+    (True, True)
+
+    >>> cu_control.setResult(0.1)
+    >>> is_out_of_range(cu_control)
+    (True, True)
+
+    >>> cu_control.setResult("0.1")
+    >>> is_out_of_range(cu_control)
+    (True, True)
+
+    >>> cu_control.setResult(-2)
+    >>> is_out_of_range(cu_control)
+    (True, True)
+
+    >>> cu_control.setResult("-2")
+    >>> is_out_of_range(cu_control)
+    (True, True)
+
+    >>> cu_control.setResult(-2.1)
+    >>> is_out_of_range(cu_control)
+    (True, True)
+
+    >>> cu_control.setResult("-2.1")
+    >>> is_out_of_range(cu_control)
     (True, True)
