@@ -161,8 +161,8 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             return specs
 
         margin = abs(result) * (dup_variation / 100.0)
-        specs['min'] = result - margin
-        specs['max'] = result + margin
+        specs['min'] = str(result - margin)
+        specs['max'] = str(result + margin)
         return specs
 
     def workflow_script_attach(self):
