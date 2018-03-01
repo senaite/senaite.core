@@ -370,6 +370,7 @@
       form_data.set("table_only", form_id);
       form_data.set(form_id + "_review_state", state_id);
       return this.ajax_submit({
+        url: window.location.href.split("?")[0],
         data: form_data,
         processData: false,
         contentType: false
