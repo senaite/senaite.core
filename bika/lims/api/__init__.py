@@ -1234,4 +1234,4 @@ def to_float(value, default=0.0):
     try:
         return float(value)
     except:
-        return float(default)
+        return to_float(default, default=0.0)
