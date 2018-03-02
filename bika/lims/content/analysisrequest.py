@@ -2561,31 +2561,34 @@ class AnalysisRequest(BaseFolder):
         `ResultsRange` field for any given analysis keyword have priority over
         the result ranges defined in "Specification" field.
 
-        :return: A dictionary where the keys are Analysis Keywords and each
-                 value is a dictionary with at least "min", "max", "warn_min"
-                 "warn_max" keys that represents the result range for the
-                 analysis with matching keyword
+        :return: A list of dictionaries, where each dictionary defines the
+            result range to use for any analysis contained in this Analysis
+            Request for the keyword specified. Each dictionary has, at least,
+                the following keys: "keyword", "min", "max"
         :rtype: dict
         """
-        specs_range = {}
+        specs_range = []
         specification = self.getSpecification()
         if specification:
             specs_range = specification.getResultsRange()
-            specs_range = specs_range and specs_range or {}
+            specs_range = specs_range and specs_range or []
 
         # Override with AR's custom ranges
         ar_range = self.Schema().getField("ResultsRange").get(self)
         if not ar_range:
             return specs_range
 
-        for keyword, an_specs in ar_range:
-            min = an_specs.get('min')
-            max = an_specs.get('max')
-            if not api.is_floatable(min) and not api.is_floatable(max):
-                # Result range for this analysis is not set
-                continue
-            specs_range[keyword] = an_specs
-        return specs_range
+        # Remove those analysis ranges that neither min nor max are floatable
+        an_specs = [an for an in ar_range if \
+                    api.is_floatable(an.get('min', None)) or \
+                    api.is_floatable(an.get('max', None))]
+        # Want to know which are the analyses that needs to be overriden
+        keywords = map(lambda item: item.get('keyword'), an_specs)
+        # Get rid of those analyses to be overriden
+        out_specs = [sp for sp in specs_range if sp['keyword'] not in keywords]
+        # Add manually set ranges
+        out_specs.extend(an_specs)
+        return out_specs
 
     def getDatePublished(self):
         """

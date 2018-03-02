@@ -409,6 +409,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
         keyword = self.getKeyword()
         ar_ranges = analysis_request.getResultsRange()
+        # Get the result range that corresponds to this specific analysis
         an_range = [rr for rr in ar_ranges if rr.get('keyword', '') == keyword]
         return an_range and an_range[0] or specs
 
