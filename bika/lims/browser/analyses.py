@@ -6,28 +6,28 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
-from DateTime import DateTime
 from operator import itemgetter
 
-from bika.lims import bikaMessageFactory as _
+from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api, logger
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import (IAnalysisRequest, IFieldIcons,
-                                  IResultOutOfRange, IRoutineAnalysis)
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.permissions import (AddAnalysis, EditFieldResults, EditResults,
+                                  IRoutineAnalysis)
+from bika.lims.permissions import (EditFieldResults, EditResults,
                                    ViewResults, ViewRetractedAnalyses)
-from bika.lims.utils import (check_permission, dicts_to_dict, format_supsub,
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import (check_permission, format_supsub,
                              formatDecimalMark, get_image, get_link, getUsers,
                              t)
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import isActive, wasTransitionPerformed
 from plone.memoize import view as viewcache
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapters
 
 

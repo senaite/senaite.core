@@ -7,59 +7,17 @@
 
 import json
 import math
+
 import plone
-
-from zope.component import adapts
-from zope.component import getAdapters
-from zope.interface import implements
-
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import t, isnumber
 from bika.lims.utils.analysis import format_numeric_result
-
-
-class CalculationResultAlerts(object):
-    """This uses IAnalysis.ResultOutOfRange on values in request.
-
-    To validate results at ajax calculation time, make more adapters like this
-    one, from IFieldIcons.  Any existing IAnalysis/IFieldIcon adapters
-    (AnalysisOutOfRange) have already been called.
-    """
-    adapts(IAnalysis)
-    implements(IFieldIcons)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self, result=None, specification=None, **kwargs):
-        workflow = getToolByName(self.context, 'portal_workflow')
-        astate = workflow.getInfoFor(self.context, 'review_state')
-        if astate == 'retracted':
-            return {}
-        result = self.context.getResult() if result is None else result
-        alerts = {}
-        path = '++resource++bika.lims.images'
-        uid = self.context.UID()
-        try:
-            indet = result.startswith("<") or result.startswith(">")
-        except AttributeError:
-            indet = False
-        if indet:
-            alert = {'field': 'Result',
-                     'icon': path + '/exclamation.png',
-                     'msg': t(_("Indeterminate result"))}
-            if uid in alerts:
-                alerts[uid].append(alert)
-            else:
-                alerts[uid] = [alert, ]
-        return alerts
+from zope.component import getAdapters
 
 
 class ajaxCalculateAnalysisEntry(BrowserView):
