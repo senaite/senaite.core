@@ -390,31 +390,27 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
     @security.public
     def getResultsRange(self, specification=None):
-        """Returns the valid results range for this analysis, a dictionary
-        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error',
-        'hidemin', 'hidemax', 'rangecomment' Allowed values for
-        specification='ar', 'client', 'lab', None If specification is None,
-        the following is the priority to get the results range: AR > Client >
-        Lab If no specification available for this analysis, returns {}
-        """
-        rr = {}
-        an = self
+        """Returns the valid result range for this routine analysis based on the
+        results ranges defined in the Analysis Request this routine analysis is
+        assigned to.
 
-        if specification == 'ar' or specification is None:
-            if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
-                rr = an.aq_parent.getResultsRange()
-                rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
-                rr = rr[0] if rr and len(rr) > 0 else {}
-                if rr:
-                    rr['uid'] = self.UID()
-        if not rr:
-            # Let's try to retrieve the specs from client and/or lab
-            specs = an.getAnalysisSpecs(specification)
-            rr = specs.getResultsRangeDict() if specs else {}
-            rr = rr.get(an.getKeyword(), {}) if rr else {}
-            if rr:
-                rr['uid'] = self.UID()
-        return rr
+        A routine analysis will be considered out of range if it result falls
+        out of the range defined in "min" and "max". If there are values set for
+        "warn_min" and "warn_max", these are used to compute the shoulders in
+        both ends of the range. Thus, an analysis can be out of range, but be
+        within shoulders still.
+        :return: A dictionary with keys "min", "max", "warn_min" and "warn_max"
+        :rtype: dict
+        """
+        specs = {'min': '', 'max': '', 'warn_min': '', 'warn_max': ''}
+        analysis_request = self.getRequest()
+        if not analysis_request:
+            return specs
+
+        keyword = self.getKeyword()
+        ar_ranges = analysis_request.getResultsRange()
+        an_range = [rr for rr in ar_ranges if rr.get('keyword', '') == keyword]
+        return an_range and an_range[0] or specs
 
     @security.public
     def getSiblings(self, retracted=False):
