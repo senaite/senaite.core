@@ -736,6 +736,8 @@ validation.register(StandardIDValidator())
 
 class AnalysisSpecificationsValidator:
     """Min value must be below max value
+       Warn min value must be below min value or empty
+       Warn max value must above max value or empty
        Percentage value must be between 0 and 100
        Values must be numbers
     """
@@ -749,66 +751,96 @@ class AnalysisSpecificationsValidator:
         request = kwargs.get('REQUEST', {})
         fieldname = kwargs['field'].getName()
 
-        translate = getToolByName(instance, 'translation_service').translate
-
-        mins = request.get('min', {})[0]
-        maxs = request.get('max', {})[0]
-        errors = request.get('error', {})[0]
-
-        # We run through the validator once per form submit, and check all
-        # values
-        # this value in request prevents running once per subfield value.
-        key = instance.id + fieldname
+        # This value in request prevents running once per subfield value.
+        key = '{}{}'.format(instance.id, fieldname)
         if instance.REQUEST.get(key, False):
             return True
 
-        # Retrieve all AS uids
-        for uid in mins.keys():
+        # For each parameter (e.g. 'min'), get the dict where the key is the
+        # uid of the Analysis Service and the value is the parameter value
+        mins = request.get('min', [{}])[0]
+        maxs = request.get('max', [{}])[0]
+        warn_mins = request.get('warn_min', [{}])[0]
+        warn_maxs = request.get('warn_max', [{}])[0]
+        errors = request.get('error', [{}])[0]
+        services = request.get('service', [{}])[0]
 
-            # Foreach AS, check spec. input values
-            minv = mins.get(uid, '') == '' and '0' or mins[uid]
-            maxv = maxs.get(uid, '') == '' and '0' or maxs[uid]
-            err = errors.get(uid, '') == '' and '0' or errors[uid]
+        # Walkthrough all AS UIDs and validate each parameter for that AS
+        err_msg = None
+        for uid, service_name in services.items():
+            spec_min = mins.get(uid, '0')
+            if spec_min and not api.is_floatable(spec_min):
+                err_msg = _("Validation for '{}' failed: Min value must be "
+                            "numeric").format(service_name)
+                break
 
-            # Values must be numbers
-            try:
-                minv = float(minv)
-            except ValueError:
-                instance.REQUEST[key] = to_utf8(
-                    translate(
-                        _("Validation failed: Min values must be numeric")))
-                return instance.REQUEST[key]
-            try:
-                maxv = float(maxv)
-            except ValueError:
-                instance.REQUEST[key] = to_utf8(
-                    translate(
-                        _("Validation failed: Max values must be numeric")))
-                return instance.REQUEST[key]
-            try:
-                err = float(err)
-            except ValueError:
-                instance.REQUEST[key] = to_utf8(
-                    translate(
-                        _("Validation failed: Percentage error values must be "
-                          "numeric")))
-                return instance.REQUEST[key]
+            spec_max = maxs.get(uid, '0')
+            if spec_max and not api.is_floatable(spec_max):
+                err_msg = _("Validation for '{}' failed: Max value must be "
+                            "numeric").format(service_name)
+                break
 
-            # Min value must be < max
-            if minv > maxv:
-                instance.REQUEST[key] = to_utf8(
-                    translate(
-                        _("Validation failed: Max values must be greater than Min "
-                          "values")))
-                return instance.REQUEST[key]
+            if spec_min and spec_max \
+                and api.to_float(spec_min) > api.to_float(spec_max):
+                err_msg = _("Validation for '{}' failed: Max value must be"
+                            "greater than Min value").format(service_name)
+                break
 
-            # Error percentage must be between 0 and 100
-            if err < 0 or err > 100:
-                instance.REQUEST[key] = to_utf8(
-                    translate(
-                        _("Validation failed: Error percentage must be between 0 "
-                          "and 100")))
-                return instance.REQUEST[key]
+            warn_min = warn_mins.get(uid, '')
+            if warn_min:
+                if not api.is_floatable(warn_min):
+                    err_msg = _("Validation for '{}' failed: Warning for "
+                                "Min value must be numeric or empty").format(
+                        service_name)
+                    break
+                if not spec_min:
+                    err_msg = _("Validation for '{}' failed: Cannot set a "
+                                "Warning for Min value without having a Min "
+                                "value set").format(service_name)
+                    break
+                if api.to_float(warn_min) > api.to_float(spec_min):
+                    err_msg = _("Validation for '{}' failed: Warning for Min "
+                                "value must be below Min value").format(
+                        service_name)
+                    break
+
+            warn_max = warn_maxs.get(uid, '')
+            if warn_max:
+                if not api.is_floatable(warn_max):
+                    err_msg = _("Validation for '{}' failed: Warning for "
+                                "Max value must be numeric or empty").format(
+                        service_name)
+                    break
+                if not spec_max:
+                    err_msg = _("Validation for '{}' failed: Cannot set a "
+                                "Warning for Max value without having a Max "
+                                "value set").format(service_name)
+                    break
+                if api.to_float(warn_max) < api.to_float(spec_max):
+                    err_msg = _("Validation for '{}' failed: Warning for Max "
+                                "value must above Max value").format(
+                        service_name)
+                    break
+
+            if warn_min and warn_max \
+                    and api.to_float(warn_min) > api.to_float(warn_max):
+                err_msg = _("Validation for '{}' failed: Warning for Max must "
+                            "be greater than Warning for Min")
+                break
+
+            error = errors.get(uid, '')
+            if error and (not api.is_floatable(error)
+                        or api.to_float(error) < 0.0
+                        or api.to_float(error) > 100):
+                err_msg = _("Validation for '{}' failed: % Error must be a "
+                            "value between 0 and 100 or empty")
+                break
+
+        if err_msg:
+            # Something went wrong!
+            translate = api.get_tool('translation_service').translate
+            instance.REQUEST[key] = to_utf8(translate(err_msg))
+            return instance.REQUEST[key]
 
         instance.REQUEST[key] = True
         return True
