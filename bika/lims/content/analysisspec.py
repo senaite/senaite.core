@@ -66,16 +66,14 @@ schema = Schema((
             'max',
             'warn_min',
             'warn_max',
-            'error',
             'hidemin',
             'hidemax',
             'rangecomment'
         ),
-        required_subfields=('keyword', 'error'),
+        required_subfields=('keyword','min','max'),
         subfield_validators={
             'min': 'analysisspecs_validator',
             'max': 'analysisspecs_validator',
-            'error': 'analysisspecs_validator',
         },
         subfield_labels={
             'keyword': _('Analysis Service'),
@@ -83,7 +81,6 @@ schema = Schema((
             'max': _('Max'),
             'warn_min': _('Min warn'),
             'warn_max': _('Max warn'),
-            'error': _('% Error'),
             'hidemin': _('< Min'),
             'hidemax': _('> Max'),
             'rangecomment': _('Range Comment'),
@@ -219,7 +216,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
                 'uid': spec['uid'],
                 'min': spec['min'],
                 'max': spec['max'],
-                'error': spec['error']
+                'error': spec.get('error','0'),
             }
             for key in subfields:
                 if key not in ['uid', 'keyword']:
