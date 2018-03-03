@@ -4,19 +4,14 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
+import collections
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.Registry import registerWidget, registerPropertyType
+from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
-from zope.i18n.locales import locales
-from operator import itemgetter
-import json
-from bika.lims.utils import isnumber
 
 class AnalysisSpecificationView(BikaListingView):
     """ bika listing to display Analysis Services (AS) table for an
@@ -47,23 +42,44 @@ class AnalysisSpecificationView(BikaListingView):
         for specresults in fieldvalue:
             self.specsresults[specresults['keyword']] = specresults
 
-        self.columns = {
-            'service': {'title': _('Service'), 'index': 'sortable_title', 'sortable': False},
-            'min': {'title': _('Min'), 'sortable': False,},
-            'max': {'title': _('Max'), 'sortable': False,},
-            'error': {'title': _('Permitted Error %'), 'sortable': False},
-            'hidemin': {'title': _('< Min'), 'sortable': False},
-            'hidemax': {'title': _('> Max'), 'sortable': False},
-            'rangecomment': {'title': _('Range comment'), 'sortable': False, 'toggle': False}
-        }
+        self.columns = collections.OrderedDict((
+            ('service', {
+                'title': _('Service'),
+                'index': 'sortable_title',
+                'sortable': False}),
+            ('warn_min', {
+                'title': _('Min warn'),
+                'sortable': False}),
+            ('min', {
+                'title': _('Min'),
+                'sortable': False}),
+            ('max', {
+                'title': _('Max'),
+                'sortable': False}),
+            ('warn_max', {
+                'title': _('Max warn'),
+                'sortable': False}),
+            #('error', {
+            #    'title': _('Permitted Error %'),
+            #    'sortable': False}),
+            ('hidemin', {
+                'title': _('< Min'),
+                'sortable': False}),
+            ('hidemax', {
+                'title': _('> Max'),
+                'sortable': False}),
+            ('rangecomment', {
+                'title': _('Range comment'),
+                'sortable': False,
+                'toggle': False}),
+        ))
 
         self.review_states = [
             {'id':'default',
              'title': _('All'),
              'contentFilter':{},
              'transitions': [],
-             'columns': ['service', 'min', 'max', 'error',
-                         'hidemin', 'hidemax', 'rangecomment'],
+             'columns': self.columns.keys(),
              },
         ]
 
@@ -84,7 +100,7 @@ class AnalysisSpecificationView(BikaListingView):
         self.contentFilter['portal_type'] = 'AnalysisService'
         services = bsc(self.contentFilter)
         for service in services:
-            service = service.getObject();
+            service = service.getObject()
             cat = service.getCategoryTitle()
             if cat not in self.categories:
                 self.categories.append(cat)
@@ -94,6 +110,8 @@ class AnalysisSpecificationView(BikaListingView):
                 specresults = {'keyword': service.getKeyword(),
                         'min': '',
                         'max': '',
+                        'warn_min': '',
+                        'warn_max': '',
                         'error': '',
                         'hidemin': '',
                         'hidemax': '',
@@ -147,6 +165,8 @@ class AnalysisSpecificationView(BikaListingView):
                 'error': specresults.get('error', ''),
                 'min': specresults.get('min', ''),
                 'max': specresults.get('max', ''),
+                'warn_min': specresults.get('warn_min', ''),
+                'warn_max': specresults.get('warn_max', ''),
                 'hidemin': specresults.get('hidemin',''),
                 'hidemax': specresults.get('hidemax',''),
                 'rangecomment': specresults.get('rangecomment', ''),
@@ -155,12 +175,14 @@ class AnalysisSpecificationView(BikaListingView):
                 'after': {'service':after_icons,
                           'min':unitspan,
                           'max':unitspan,
+                          'warn_min':unitspan,
+                          'warn_max':unitspan,
                           'error': percspan},
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
-                'allow_edit': ['min', 'max', 'error', 'hidemin', 'hidemax',
-                               'rangecomment'],
+                'allow_edit': ['min', 'max', 'warn_min', 'warn_max', 'hidemin',
+                               'hidemax', 'rangecomment'],
             }
             items.append(item)
 
@@ -191,27 +213,32 @@ class AnalysisSpecificationWidget(TypesWidget):
         value = []
         if 'service' in form:
             for uid, keyword in form['keyword'][0].items():
+                mins = form.get('min', [{}]).get(uid, '')
+                maxs = form.get('max', [{}]).get(uid, '')
+                w_min = form.get('warn_min', [{}]).get(uid, '')
+                w_max = form.get('warn_max', [{}]).get(uid, '')
+                hidemin = form.get('hidemin', [{}]).get(uid, '')
+                hidemax = form.get('hidemax', [{}]).get(uid, '')
+                err = form.get('error', [{}]).get(uid, '')
+                rangecomment = form.get('rangecomment', [{}]).get(uid, '')
 
-                hidemin = form['hidemin'][0].get(uid, '') if 'hidemin' in form else ''
-                hidemax = form['hidemax'][0].get(uid, '') if 'hidemax' in form else ''
-                mins = form['min'][0].get(uid, '') if 'min' in form else ''
-                maxs = form['max'][0].get(uid, '') if 'max' in form else ''
-                err = form['error'][0].get(uid, '') if 'error' in form else ''
-                rangecomment = form['rangecomment'][0].get(uid, '') if 'rangecomment' in form else ''
-
-                if not isnumber(hidemin) and not isnumber(hidemax) and \
-                   (not isnumber(mins) or not isnumber(maxs)):
-                    # If neither hidemin nor hidemax have been specified,
-                    # min and max values are mandatory.
-                    continue
+                if not api.is_floatable(mins) or not api.is_floatable(maxs):
+                    # If no values have been entered neither for min nor max,
+                    # then, only store the value if at least a value has been
+                    # entered for hidemin or hidemax
+                    if not api.is_floatable(hidemin) \
+                        or not api.is_floatable(hidemax):
+                        continue
 
                 value.append({'keyword': keyword,
                               'uid': uid,
-                              'min': mins if isnumber(mins) else '',
-                              'max': maxs if isnumber(maxs) else '',
-                              'hidemin': hidemin if isnumber(hidemin) else '',
-                              'hidemax': hidemax if isnumber(hidemax) else '',
-                              'error': err if isnumber(err) else '0',
+                              'min': api.is_floatable(mins) and mins or '',
+                              'max': api.is_floatable(maxs) and maxs or '',
+                              'warn_min': api.is_floatable(w_min) and w_min or '',
+                              'warn_max': api.is_floatable(w_max) and w_max or '',
+                              'hidemin': api.is_floatable(hidemin) and hidemin or '',
+                              'hidemax': api.is_floatable(hidemax) and hidemax or '',
+                              'error': api.is_floatable(err) and err or '0',
                               'rangecomment': rangecomment})
         return value, {}
 
