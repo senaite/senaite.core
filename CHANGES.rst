@@ -6,12 +6,18 @@ Changelog
 
 **Added**
 
+#694 Added "Warn Min" and "Warn Max" in Analysis Specifications
 
 **Changed**
 
+#694 Out of range/shoulders logic redux, ported to api.analysis
+#694 Make getResultRange functions from Analysis-types consistent
+#694 Out of range/shoulders icons are rendered in AnalysesView
 
 **Removed**
 
+#694 Removal of "Permitted % Error" subfield in Analysis Specifications
+#694 Removal of Adapters for out of range icons
 
 **Fixed**
 
