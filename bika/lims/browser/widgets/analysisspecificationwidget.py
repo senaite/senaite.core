@@ -210,37 +210,49 @@ class AnalysisSpecificationWidget(TypesWidget):
             will be included. If hidemin and/or hidemax specified, results
             might contain empty min and/or max fields.
         """
+        if 'service' not in form:
+            return list()
+
         value = []
-        if 'service' in form:
-            for uid, keyword in form['keyword'][0].items():
-                mins = form.get('min', [{}]).get(uid, '')
-                maxs = form.get('max', [{}]).get(uid, '')
-                w_min = form.get('warn_min', [{}]).get(uid, '')
-                w_max = form.get('warn_max', [{}]).get(uid, '')
-                hidemin = form.get('hidemin', [{}]).get(uid, '')
-                hidemax = form.get('hidemax', [{}]).get(uid, '')
-                err = form.get('error', [{}]).get(uid, '')
-                rangecomment = form.get('rangecomment', [{}]).get(uid, '')
+        for uid, keyword in form['keyword'][0].items():
+            mins = self._get_spec_value(form, uid, 'min')
+            maxs = self._get_spec_value(form, uid, 'max')
+            w_min = self._get_spec_value(form, uid, 'warn_min')
+            w_max = self._get_spec_value(form, uid, 'warn_max')
+            hidemin = self._get_spec_value(form, uid, 'hidemin')
+            hidemax = self._get_spec_value(form, uid, 'hidemax')
+            err = self._get_spec_value(form, uid, 'error')
+            rangecomment = self._get_spec_value(form, uid, 'rangecomment')
 
-                if not api.is_floatable(mins) or not api.is_floatable(maxs):
-                    # If no values have been entered neither for min nor max,
-                    # then, only store the value if at least a value has been
-                    # entered for hidemin or hidemax
-                    if not api.is_floatable(hidemin) \
-                        or not api.is_floatable(hidemax):
-                        continue
+            if not api.is_floatable(mins) or not api.is_floatable(maxs):
+                # If no values have been entered neither for min nor max,
+                # then, only store the value if at least a value has been
+                # entered for hidemin or hidemax
+                if not api.is_floatable(hidemin) \
+                    or not api.is_floatable(hidemax):
+                    continue
 
-                value.append({'keyword': keyword,
-                              'uid': uid,
-                              'min': api.is_floatable(mins) and mins or '',
-                              'max': api.is_floatable(maxs) and maxs or '',
-                              'warn_min': api.is_floatable(w_min) and w_min or '',
-                              'warn_max': api.is_floatable(w_max) and w_max or '',
-                              'hidemin': api.is_floatable(hidemin) and hidemin or '',
-                              'hidemax': api.is_floatable(hidemax) and hidemax or '',
-                              'error': api.is_floatable(err) and err or '0',
-                              'rangecomment': rangecomment})
+            value.append({
+                'keyword': keyword,
+                'uid': uid,
+                'min': api.is_floatable(mins) and mins or '',
+                'max': api.is_floatable(maxs) and maxs or '',
+                'warn_min': api.is_floatable(w_min) and w_min or '',
+                'warn_max': api.is_floatable(w_max) and w_max or '',
+                'hidemin': api.is_floatable(hidemin) and hidemin or '',
+                'hidemax': api.is_floatable(hidemax) and hidemax or '',
+                'error': api.is_floatable(err) and err or '0',
+                'rangecomment': rangecomment})
         return value, {}
+
+    def _get_spec_value(self, form, uid, key, default=''):
+        if not form or not uid:
+            return default
+        values = form.get(key, None)
+        if not values or len(values) == 0:
+            return default
+        return values[0].get(uid, default)
+
 
     security.declarePublic('AnalysisSpecificationResults')
     def AnalysisSpecificationResults(self, field, allow_edit = False):
