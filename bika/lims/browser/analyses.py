@@ -14,6 +14,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api, logger
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import QCANALYSIS_TYPES
@@ -937,6 +938,16 @@ class AnalysesView(BikaListingView):
         if not specs:
             return
         item["Specification"] = "[{}]".format(specs)
+
+        # Show an icon if out of range
+        out_range, out_shoulders = is_out_of_range(analysis_brain)
+        if not out_range:
+            return
+        # At least is out of range
+        img = get_image("exclamation.png", title=_("Result out of range"))
+        if not out_shoulders:
+            img = get_image("warning.png", title=_("Result in shoulder range"))
+        self._append_html_element(item, "Result", img)
 
     def _folder_item_verify_icons(self, analysis_brain, item):
         """Set the analysis' verification icons to the item passed in.
