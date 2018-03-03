@@ -59,9 +59,6 @@ class AnalysisSpecificationView(BikaListingView):
             ('warn_max', {
                 'title': _('Max warn'),
                 'sortable': False}),
-            #('error', {
-            #    'title': _('Permitted Error %'),
-            #    'sortable': False}),
             ('hidemin', {
                 'title': _('< Min'),
                 'sortable': False}),
@@ -147,7 +144,7 @@ class AnalysisSpecificationView(BikaListingView):
             unit = service.getUnit()
             unitspan = unit and \
                 "<span class='discreet'>%s</span>" % service.getUnit() or ''
-            percspan = "<span class='discreet'>%</span>";
+            percspan = "<span class='discreet'>%</span>"
 
             item = {
                 'obj': service,
@@ -196,8 +193,6 @@ class AnalysisSpecificationWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
         'macro': "bika_widgets/analysisspecificationwidget",
-        #'helper_js': ("bika_widgets/analysisspecificationwidget.js",),
-        #'helper_css': ("bika_widgets/analysisspecificationwidget.css",),
     })
 
     security = ClassSecurityInfo()
@@ -210,49 +205,56 @@ class AnalysisSpecificationWidget(TypesWidget):
             will be included. If hidemin and/or hidemax specified, results
             might contain empty min and/or max fields.
         """
+        values = []
         if 'service' not in form:
-            return list()
+            return values, {}
 
-        value = []
         for uid, keyword in form['keyword'][0].items():
-            mins = self._get_spec_value(form, uid, 'min')
-            maxs = self._get_spec_value(form, uid, 'max')
-            w_min = self._get_spec_value(form, uid, 'warn_min')
-            w_max = self._get_spec_value(form, uid, 'warn_max')
-            hidemin = self._get_spec_value(form, uid, 'hidemin')
-            hidemax = self._get_spec_value(form, uid, 'hidemax')
-            err = self._get_spec_value(form, uid, 'error')
-            rangecomment = self._get_spec_value(form, uid, 'rangecomment')
+            s_min = self._get_spec_value(form, uid, 'min')
+            s_max = self._get_spec_value(form, uid, 'max')
+            if not s_min and not s_max:
+                # If user has not set value neither for min nor max, omit this
+                # record. Otherwise, since 'min' and 'max' are defined as
+                # mandatory subfields, the following message will appear after
+                # submission: "Specifications is required, please correct."
+                continue
 
-            if not api.is_floatable(mins) or not api.is_floatable(maxs):
-                # If no values have been entered neither for min nor max,
-                # then, only store the value if at least a value has been
-                # entered for hidemin or hidemax
-                if not api.is_floatable(hidemin) \
-                    or not api.is_floatable(hidemax):
-                    continue
-
-            value.append({
+            values.append({
                 'keyword': keyword,
                 'uid': uid,
-                'min': api.is_floatable(mins) and mins or '',
-                'max': api.is_floatable(maxs) and maxs or '',
-                'warn_min': api.is_floatable(w_min) and w_min or '',
-                'warn_max': api.is_floatable(w_max) and w_max or '',
-                'hidemin': api.is_floatable(hidemin) and hidemin or '',
-                'hidemax': api.is_floatable(hidemax) and hidemax or '',
-                'error': api.is_floatable(err) and err or '0',
-                'rangecomment': rangecomment})
-        return value, {}
+                'min': s_min,
+                'max': s_max,
+                'warn_min': self._get_spec_value(form, uid, 'warn_min'),
+                'warn_max': self._get_spec_value(form, uid, 'warn_max'),
+                'hidemin': self._get_spec_value(form, uid, 'hidemin'),
+                'hidemax': self._get_spec_value(form, uid, 'hidemax'),
+                'error': self._get_spec_value(form, uid, 'error', default='0'),
+                'rangecomment': self._get_spec_value(form, uid, 'rangecomment',
+                                                     check_floatable=False)})
+        return values, {}
 
-    def _get_spec_value(self, form, uid, key, default=''):
+    def _get_spec_value(self, form, uid, key, check_floatable=True, default=''):
+        """Returns the value assigned to the passed in key for the analysis
+        service uid from the passed in form.
+
+        If check_floatable is true, will return the passed in default if the
+        obtained value is not floatable
+        :param form: form being submitted
+        :param uid: uid of the Analysis Service the specification relates
+        :param key: id of the specs param to get (e.g. 'min')
+        :param check_floatable: check if the value is floatable
+        :param default: fallback value that will be returned by default
+        :type default: str, None
+        """
         if not form or not uid:
             return default
         values = form.get(key, None)
         if not values or len(values) == 0:
             return default
-        return values[0].get(uid, default)
-
+        value = values[0].get(uid, default)
+        if not check_floatable:
+            return value
+        return api.is_floatable(value) and value or default
 
     security.declarePublic('AnalysisSpecificationResults')
     def AnalysisSpecificationResults(self, field, allow_edit = False):
