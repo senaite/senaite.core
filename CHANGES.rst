@@ -6,11 +6,11 @@ Changelog
 
 **Added**
 
-#694 Added "Warn Min" and "Warn Max" in Analysis Specifications
+#694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 
 **Changed**
 
-#694 Out of range/shoulders logic redux, ported to api.analysis
+#694 Out of range/shoulders logic redux, ported to `api.analysis`
 #694 Make getResultRange functions from Analysis-types consistent
 #694 Out of range/shoulders icons are rendered in AnalysesView
 
@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+#694 Result range shoulders computed badly on full/partial negative specs
 
 **Security**
 
