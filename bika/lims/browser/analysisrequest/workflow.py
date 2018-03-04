@@ -214,7 +214,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 specs[service_uid] = {
                     "min": form["min"][0][service_uid],
                     "max": form["max"][0][service_uid],
-                    "error": form["error"][0][service_uid],
+                    "warn_min": form["warn_min"][0][service_uid],
+                    "warn_max": form["warn_max"][0][service_uid],
                     "keyword": keyword,
                     "uid": service_uid,
                 }
@@ -222,8 +223,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             for service_uid in Analyses:
                 service = objects[service_uid]
                 keyword = service.getKeyword()
-                specs[service_uid] = {"min": "", "max": "", "error": "",
-                                      "keyword": keyword, "uid": service_uid}
+                specs[service_uid] = {"min": "", "max": "", "warn_min": "",
+                                      "warn_max": "", "keyword": keyword,
+                                      "uid": service_uid}
         new = ar.setAnalyses(Analyses, prices=prices, specs=specs.values())
         # link analyses and partitions
         # If Bika Setup > Analyses > 'Display individual sample
