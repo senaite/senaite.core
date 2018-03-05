@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #703 Containers of Duplicated Analyses are not found
 - #698 Fix Publish Actions for Batches
 - #696 Filter worksheets by department. The worksheet count in the dashboard is now properly updated accordingly to the selected departments
 
