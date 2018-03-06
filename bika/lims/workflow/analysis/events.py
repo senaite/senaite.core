@@ -9,6 +9,7 @@ import transaction
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
@@ -120,6 +121,19 @@ def after_verify(obj):
     _reindex_request(obj)
 
 
+def after_assign(obj):
+    """Function triggered after an 'assign' transition for the analysis passed
+    in is performed."""
+    # Reindex the entire request to update the FieldIndex `assigned_state`
+    _reindex_request(obj, idxs=['assigned_state',])
+
+
+def after_unassign(obj):
+    """Function triggered after an 'unassign' transition for the analysis passed
+    in is performed."""
+    # Reindex the entire request to update the FieldIndex `assigned_state`
+    _reindex_request(obj, idxs=['assigned_state',])
+
 
 def after_cancel(obj):
     if skip(obj, "cancel"):
@@ -187,8 +201,11 @@ def after_attach(obj):
     _reindex_request(obj)
 
 
-def _reindex_request(obj):
-    if IRoutineAnalysis.providedBy(obj):
-        request = obj.getRequest()
-        if request:
-            request.reindexObject()
+def _reindex_request(obj, idxs=None):
+    if not IRequestAnalysis.providedBy(obj):
+        return
+    request = obj.getRequest()
+    if idxs is None:
+        request.reindexObject()
+    else:
+        request.reindexObject(idxs=idxs)

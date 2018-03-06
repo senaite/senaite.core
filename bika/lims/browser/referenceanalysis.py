@@ -32,7 +32,6 @@ class ResultOutOfRangeIcons(object):
         self.context = context
 
     def __call__(self, result=None, specification=None, **kwargs):
-        translate = self.context.translate
         path = '++resource++bika.lims.images'
         alerts = {}
         # We look for IResultOutOfRange adapters for this object
@@ -83,7 +82,8 @@ class ResultOutOfRange(object):
         if astate == 'retracted':
             return None
         # We don't care about analyses with no results
-        result = str(result) if result is not None else self.context.getResult()
+        result = str(result) \
+            if result is not None else self.context.getResult()
         try:
             result = float(str(result))
         except ValueError:
@@ -101,7 +101,6 @@ class ResultOutOfRange(object):
             'acceptable': acceptable,
             'spec_values': o_spec
         }
-
 
     def isOutOfRange(self, result=None, specification=None):
         try:
@@ -153,8 +152,8 @@ class AnalysesRetractedListReport(BrowserView):
     """
     template = ViewPageTemplateFile("templates/analyses_retractedlist.pt")
 
-    def __init__(self, context, request, portal_url, title='Retracted analyses',
-                 analyses=()):
+    def __init__(self, context, request, portal_url,
+                 title='Retracted analyses', analyses=()):
         super(AnalysesRetractedListReport, self).__init__(context, request)
         self.analyses = analyses
         self.title = title
@@ -189,7 +188,7 @@ class AnalysesRetractedListReport(BrowserView):
 
                 ws = an.getBackReferences("WorksheetAnalysis")
                 if ws and len(ws) > 0:
-                    wss = ws[0]
+                    ws = ws[0]
                     item['ws'] = ws
                     item['ws_url'] = ws.absolute_url()
                     item['ws_id'] = ws.id
@@ -242,5 +241,3 @@ class AnalysesRetractedListReport(BrowserView):
             raise SMTPServerDisconnected(msg)
         except SMTPRecipientsRefused as msg:
             raise WorkflowException(str(msg))
-
-
