@@ -87,8 +87,7 @@
       // get the global settings on load
       this.get_global_settings();
       // recalculate records on load (needed for AR copies)
-      this.recalculate_records();
-      return window.av = this;
+      return this.recalculate_records();
     }
 
     bind_eventhandler() {
@@ -560,12 +559,14 @@
       field = $(`#Contact-${arnum}`);
       query = client.filter_queries.contact;
       this.set_reference_field_query(field, query);
-      // auto-fill contact if the client only has one
+      // handle default contact for /analysisrequests listing
       // https://github.com/senaite/senaite.core/issues/705
-      contact_title = client.default_contact.title;
-      contact_uid = client.default_contact.uid;
-      if (contact_title && contact_uid) {
-        this.set_reference_field(field, contact_uid, contact_title);
+      if (indexOf.call(document.URL, "analysisrequests") >= 0) {
+        contact_title = client.default_contact.title;
+        contact_uid = client.default_contact.uid;
+        if (contact_title && contact_uid) {
+          this.set_reference_field(field, contact_uid, contact_title);
+        }
       }
       // filter CCContacts
       field = $(`#CCContact-${arnum}`);

@@ -504,12 +504,13 @@ class window.AnalysisRequestAdd
     query = client.filter_queries.contact
     @set_reference_field_query field, query
 
-    # auto-fill contact if the client only has one
+    # handle default contact for /analysisrequests listing
     # https://github.com/senaite/senaite.core/issues/705
-    contact_title = client.default_contact.title
-    contact_uid = client.default_contact.uid
-    if contact_title and contact_uid
-      @set_reference_field field, contact_uid, contact_title
+    if "analysisrequests" in document.URL
+      contact_title = client.default_contact.title
+      contact_uid = client.default_contact.uid
+      if contact_title and contact_uid
+        @set_reference_field field, contact_uid, contact_title
 
     # filter CCContacts
     field = $("#CCContact-#{arnum}")
