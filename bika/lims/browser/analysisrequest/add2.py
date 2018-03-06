@@ -413,7 +413,7 @@ class AnalysisRequestAddView(BrowserView):
 
         return out
 
-    def get_default_contact(self):
+    def get_default_contact(self, client=None):
         """Logic refactored from JavaScript:
 
         * If client only has one contact, and the analysis request comes from
@@ -425,7 +425,7 @@ class AnalysisRequestAddView(BrowserView):
         :rtype: Client object or None
         """
         catalog = api.get_tool("portal_catalog")
-        client = self.get_client()
+        client = client or self.get_client()
         path = api.get_path(self.context)
         if client:
             path = api.get_path(client)
@@ -937,7 +937,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns the client info of an object
         """
         info = self.get_base_info(obj)
-        info.update({})
+
+        default_contact_info = {}
+        default_contact = self.get_default_contact(client=obj)
+        if default_contact:
+            default_contact_info = self.get_contact_info(default_contact)
+
+        info.update({
+            "default_contact": default_contact_info
+        })
 
         # UID of the client
         uid = api.get_uid(obj)
