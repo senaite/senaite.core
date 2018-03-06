@@ -14,7 +14,7 @@
 from bika.lims import api
 
 
-def is_out_of_range(brain_or_object):
+def is_out_of_range(brain_or_object, result=None):
     """Checks if the result for the analysis passed in is out of range and/or
     out of shoulders range.
 
@@ -25,6 +25,7 @@ def is_out_of_range(brain_or_object):
              <-- shoulder --><----- in-range ------><-- shoulder -->
 
     :param brain_or_object: A single catalog brain or content object
+    :param result: Tentative result. If None, use the analysis result
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
     :returns: A tuple of a size of two where the first value is True or False
     whether if the passed in object is out of range and the second value is
@@ -32,7 +33,8 @@ def is_out_of_range(brain_or_object):
     :rtype: (bool, bool)
     """
     analysis = api.get_object(brain_or_object)
-    result = api.safe_getattr(analysis, "getResult", None)
+    if result is None:
+        result = api.safe_getattr(analysis, "getResult", None)
     if not api.is_floatable(result):
         # Result is empty/None or not a valid number
         return False, False
