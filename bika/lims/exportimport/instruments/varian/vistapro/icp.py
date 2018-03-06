@@ -3,7 +3,7 @@
 """
 import csv
 import logging
-from cStringIO import StringIO
+import re
 
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
@@ -14,7 +14,6 @@ from bika.lims.browser import BrowserView
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 import json
 import traceback
 
@@ -33,10 +32,16 @@ class VistaPROICPParser(InstrumentResultsFileParser):
         """ CSV Parser
         """
 
-        reader = csv.DictReader(self.getInputFile(), delimiter=',')
+        try:
+            reader = csv.DictReader(self.getInputFile(), delimiter=',')
+        except TypeError:
+            # TypeError('argument 1 must be an iterator',)
+            reader = csv.DictReader(self.getInputFile().readlines(), delimiter=',')
 
+        cnt = 0
         for n, row in enumerate(reader):
 
+            cnt += 1
             resid = row['Solution Label'].split('*')[0].strip()
 
             # Service Keyword
@@ -50,7 +55,17 @@ class VistaPROICPParser(InstrumentResultsFileParser):
             rawdict['DateTime'] = date_time
             rawdict['DefaultResult'] = 'Soln Conc'
 
-            self._addRawResult(resid, values={element: rawdict}, override=False)
+            # Set DefaultResult to 0.0 if result is "0" or "--" or '' or 'ND'
+            result = rawdict[rawdict['DefaultResult']]
+            column_name = rawdict['DefaultResult']
+            result = self.zeroValueDefaultInstrumentResults(column_name,
+                                                            result,
+                                                            cnt)
+            rawdict[rawdict['DefaultResult']] = result
+            #
+
+            val = re.sub(r"\W", "", element)
+            self._addRawResult(resid, values={val: rawdict}, override=False)
 
         self.log(
             "End of file reached successfully: ${total_objects} objects, "
@@ -61,6 +76,24 @@ class VistaPROICPParser(InstrumentResultsFileParser):
         )
 
         return True
+
+    def zeroValueDefaultInstrumentResults(self, column_name, result, line):
+        result = str(result)
+        if result.startswith('--') or result == '' or result == 'ND':
+            return 0.0
+
+        try:
+            result = float(result)
+            if result < 0.0:
+                result = 0.0
+        except ValueError:
+            self.err(
+                "No valid number ${result} in column (${column_name})",
+                mapping={"result": result,
+                         "column_name": column_name},
+                numline=self._numline, line=line)
+            return
+        return result
 
 
 class VistaPROICPImporter(AnalysisResultsImporter):
