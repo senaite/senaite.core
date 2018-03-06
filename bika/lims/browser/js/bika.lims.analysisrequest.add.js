@@ -561,7 +561,7 @@
       this.set_reference_field_query(field, query);
       // handle default contact for /analysisrequests listing
       // https://github.com/senaite/senaite.core/issues/705
-      if (indexOf.call(document.URL, "analysisrequests") >= 0) {
+      if (document.URL.indexOf("analysisrequests" > -1)) {
         contact_title = client.default_contact.title;
         contact_uid = client.default_contact.uid;
         if (contact_title && contact_uid) {
