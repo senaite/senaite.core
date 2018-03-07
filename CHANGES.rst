@@ -9,6 +9,7 @@ Changelog
 
 **Changed**
 
+#710 Added more builtin functions for Calculations
 
 **Removed**
 
