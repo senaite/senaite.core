@@ -184,54 +184,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
                     specs[keyword][key] = spec.get(key, '')
         return specs
 
-    security.declarePublic('getResultsRangeSorted')
-
-    def getResultsRangeSorted(self):
-        """Return an array of dictionaries, sorted by AS title:
-
-            [{'category': <title of AS category>
-              'service': <title of AS>,
-              'id': <ID of AS>
-              'uid': <UID of AS>
-              'min': <min range spec value>
-              'max': <max range spec value>
-              'error': <error spec value>
-              ...}]
-        """
-        tool = getToolByName(self, REFERENCE_CATALOG)
-
-        cats = {}
-        subfields = self.Schema()['ResultsRange'].subfields
-        for spec in self.getResultsRange():
-            service = tool.lookupObject(spec['uid'])
-            service_title = service.Title()
-            category_title = service.getCategoryTitle()
-            if category_title not in cats:
-                cats[category_title] = {}
-            cat = cats[category_title]
-            cat[service_title] = {
-                'category': category_title,
-                'service': service_title,
-                'id': service.getId(),
-                'uid': spec['uid'],
-                'min': spec['min'],
-                'max': spec['max'],
-                'error': spec.get('error','0'),
-            }
-            for key in subfields:
-                if key not in ['uid', 'keyword']:
-                    cat[service_title][key] = spec.get(key, '')
-        cat_keys = cats.keys()
-        cat_keys.sort(lambda x, y: cmp(x.lower(), y.lower()))
-        sorted_specs = []
-        for cat in cat_keys:
-            services = cats[cat]
-            service_keys = services.keys()
-            service_keys.sort(lambda x, y: cmp(x.lower(), y.lower()))
-            for service_key in service_keys:
-                sorted_specs.append(services[service_key])
-        return sorted_specs
-
     security.declarePublic('getRemainingSampleTypes')
 
     def getSampleTypes(self):
