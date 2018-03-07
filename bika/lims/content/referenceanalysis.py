@@ -99,7 +99,11 @@ class ReferenceAnalysis(AbstractAnalysis):
         :return: A dictionary with the keys min and max
         :rtype: dict
         """
-        specs = {'min': '', 'max': '', 'warn_min': '', 'warn_max': ''}
+        specs = {'result': '',
+                 'min': '',
+                 'max': '',
+                 'warn_min': '',
+                 'warn_max': ''}
         sample = self.getSample()
         if not sample:
             return specs
@@ -111,6 +115,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         if not api.is_floatable(result):
             return specs
 
+        specs['result'] = result
         specs['min'] = specs['max'] = result
         result = api.to_float(result)
         error = api.to_float(sample_range.get('error', 0.0), 0.0)

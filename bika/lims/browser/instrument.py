@@ -511,50 +511,52 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             item['Retractions'] = title
             item['replace']['Retractions'] = anchor
 
-            # Create json
-            qcid = obj.aq_parent.getId()
-            serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
-            trows = self.anjson.get(serviceref, {})
-            anrows = trows.get(qcid, [])
-            # anid = '%s.%s' % (item['getReferenceAnalysesGroupID'],
-            #                   item['id'])
-
-            rr = obj.aq_parent.getResultsRangeDict()
-            uid = obj.getServiceUID()
-            if uid in rr:
-                specs = rr[uid]
-                try:
-                    smin = float(specs.get('min', 0))
-                    smax = float(specs.get('max', 0))
-                    error = float(specs.get('error', 0))
-                    target = float(specs.get('result', 0))
-                    result = float(item['Result'])
-                    error_amount = ((target / 100) * error) if target > 0 else 0
-                    upper = smax + error_amount
-                    lower = smin - error_amount
-                    cap_date = obj.getResultCaptureDate()
-                    cap_date = api.is_date(cap_date) and \
-                               cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
-                    anrow = {
-                        'date': cap_date,
-                        'min': smin,
-                        'max': smax,
-                        'target': target,
-                        'error': error,
-                        'erroramount': error_amount,
-                        'upper': upper,
-                        'lower': lower,
-                        'result': result,
-                        'unit': item['Unit'],
-                        'id': item['uid']
-                    }
-                    anrows.append(anrow)
-                    trows[qcid] = anrows
-                    self.anjson[serviceref] = trows
-                except:
-                    pass
+            # Process results range information for this analysis to make it
+            # available for the QC Chart
+            self._folder_results_range(obj)
 
         return items
+
+    def _folder_results_range(self, analysis_object):
+        """
+        Performs the conversion of the results range associated to the passed
+        in reference analysis to a proper format to be consumed by the QC Chart
+        machinery (js). Updates `self.anjson` variable with this data.
+        :param analysis_object: analysis the results range to be processed
+        """
+        result = analysis_object.getResult()
+        results_range = analysis_object.getResultsRange()
+        range_result = results_range.get('result', None)
+        range_min = results_range.get('min', None)
+        range_max = results_range.get('max', None)
+        # All them must be floatable
+        for value in [result, range_result, range_min, range_max]:
+            if not api.is_floatable(value):
+                return
+        cap_date = analysis_object.getResultCaptureDate()
+        cap_date = api.is_date(cap_date) and \
+                   cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
+        if not cap_date:
+            return
+
+        # Create json
+        ref_sample_id = analysis_object.getSample().getId()
+        as_keyword = analysis_object.getKeyword()
+        as_name = analysis_object.Title()
+        as_ref = '{} ({})'.format(as_name, as_keyword)
+        as_rows = self.anjson.get(as_ref, {})
+        an_rows = as_rows.get(ref_sample_id, [])
+        an_rows.append({
+            'date': cap_date,
+            'target': api.to_float(range_result),
+            'upper': api.to_float(range_max),
+            'lower': api.to_float(range_min),
+            'result': api.to_float(result),
+            'unit': analysis_object.getUnit(),
+            'id': api.get_uid(analysis_object)
+            })
+        as_rows[ref_sample_id] = an_rows
+        self.anjson[as_ref] = as_rows
 
     def get_analyses_json(self):
         return json.dumps(self.anjson)
