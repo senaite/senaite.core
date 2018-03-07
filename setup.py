@@ -61,6 +61,7 @@ setup(
         'plone.resource',
         'CairoSVG==1.0.20',
         'collective.taskqueue',
+        'Pango',
     ],
     extras_require={
         'test': [
