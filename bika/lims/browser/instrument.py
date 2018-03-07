@@ -513,11 +513,11 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
             # Process results range information for this analysis to make it
             # available for the QC Chart
-            self._folder_results_range(obj)
+            self.addToResultsRangeJSON(obj)
 
         return items
 
-    def _folder_results_range(self, analysis_object):
+    def addToResultsRangeJSON(self, analysis_object):
         """
         Performs the conversion of the results range associated to the passed
         in reference analysis to a proper format to be consumed by the QC Chart

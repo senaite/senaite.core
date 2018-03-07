@@ -183,51 +183,53 @@ class ReferenceAnalysesView(AnalysesView):
             logger.warn(
                 'More than one Worksheet found for ReferenceAnalysis {}'
                 .format(obj.getId))
-        service_uid = obj.getServiceUID
-        self.addToJSON(obj, service_uid, item)
+
+        # Process results range information for this analysis to make it
+        # available for the QC Chart
+        self.addToResultsRangeJSON(obj)
         return item
 
-    # TODO-catalog: memoize here?
-    def addToJSON(self, analysis, service_uid, item):
-        """ Adds an analysis item to the self.anjson dict that will be used
-            after the page is rendered to generate a QC Chart
+    def addToResultsRangeJSON(self, analysis_brain):
         """
-        parent = api.get_parent(analysis)
-        qcid = parent.id
-        serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
-        trows = self.anjson.get(serviceref, {})
-        anrows = trows.get(qcid, [])
-        rr = parent.getResultsRangeDict()
-        cap_date = item['obj'].getResultCaptureDate
+        Performs the conversion of the results range associated to the passed
+        in reference analysis to a proper format to be consumed by the QC Chart
+        machinery (js). Updates `self.anjson` variable with this data.
+        :param analysis_object: analysis the results range to be processed
+        """
+        result = analysis_brain.getResult
+        results_range = analysis_brain.getResultsRange
+        range_result = results_range.get('result', None)
+        range_min = results_range.get('min', None)
+        range_max = results_range.get('max', None)
+        # All them must be floatable
+        for value in [result, range_result, range_min, range_max]:
+            if not api.is_floatable(value):
+                return
+        cap_date = analysis_brain.getResultCaptureDate
         cap_date = api.is_date(cap_date) and \
                    cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
-        if service_uid in rr:
-            specs = rr.get(service_uid, None)
-            try:
-                smin = float(specs.get('min', 0))
-                smax = float(specs.get('max', 0))
-                error = float(specs.get('error', 0))
-                target = float(specs.get('result', 0))
-                result = float(item['Result'])
-                error_amount = ((target / 100) * error) if target > 0 else 0
-                upper = smax + error_amount
-                lower = smin - error_amount
-                anrow = {'date': cap_date,
-                         'min': smin,
-                         'max': smax,
-                         'target': target,
-                         'error': error,
-                         'erroramount': error_amount,
-                         'upper': upper,
-                         'lower': lower,
-                         'result': result,
-                         'unit': item['Unit'],
-                         'id': item['uid']}
-                anrows.append(anrow)
-                trows[qcid] = anrows
-                self.anjson[serviceref] = trows
-            except:
-                pass
+        if not cap_date:
+            return
+
+        # Create json
+        parent = api.get_parent(analysis_brain)
+        ref_sample_id = parent.id
+        as_keyword = analysis_brain.getKeyword
+        as_name = analysis_brain.Title
+        as_ref = '{} ({})'.format(as_name, as_keyword)
+        as_rows = self.anjson.get(as_ref, {})
+        an_rows = as_rows.get(ref_sample_id, [])
+        an_rows.append({
+            'date': cap_date,
+            'target': api.to_float(range_result),
+            'upper': api.to_float(range_max),
+            'lower': api.to_float(range_min),
+            'result': api.to_float(result),
+            'unit': analysis_brain.getUnit,
+            'id': api.get_uid(analysis_brain)
+        })
+        as_rows[ref_sample_id] = an_rows
+        self.anjson[as_ref] = as_rows
 
     def get_analyses_json(self):
         return json.dumps(self.anjson)
