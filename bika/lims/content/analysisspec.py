@@ -149,19 +149,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         else:
             return self.title + " (" + translate(_("Client")) + ")"
 
-    security.declarePublic('getSpecCategories')
-
-    def getSpecCategories(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        categories = []
-        for spec in self.getResultsRange():
-            keyword = spec['keyword']
-            service = bsc(portal_type="AnalysisService",
-                          getKeyword=keyword)
-            if service.getCategoryUID() not in categories:
-                categories.append(service.getCategoryUID())
-        return categories
-
     security.declarePublic('getResultsRangeDict')
 
     def getResultsRangeDict(self):

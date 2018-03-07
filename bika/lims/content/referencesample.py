@@ -218,16 +218,6 @@ class ReferenceSample(BaseFolder):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    security.declarePublic('getSpecCategories')
-    def getSpecCategories(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        categories = []
-        for spec in self.getReferenceResults():
-            service = tool.lookupObject(spec['uid'])
-            if service.getCategoryUID() not in categories:
-                categories.append(service.getCategoryUID())
-        return categories
-
     security.declarePublic('getResultsRangeDict')
     def getResultsRangeDict(self):
         specs = {}
