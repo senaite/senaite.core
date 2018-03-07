@@ -346,7 +346,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return request.getPrinted()
 
     @security.public
-    def getResultsRange(self, specification=None):
+    def getResultsRange(self):
         """Returns the valid result range for this routine analysis based on the
         results ranges defined in the Analysis Request this routine analysis is
         assigned to.

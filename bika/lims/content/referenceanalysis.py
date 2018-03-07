@@ -87,7 +87,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         return self.getSample().getReferenceResults()
 
     @security.public
-    def getResultsRange(self, specification=None):
+    def getResultsRange(self):
         """Returns the valid result range for this reference analysis based on
         the results ranges defined in the Reference Sample from which this
         analysis has been created.

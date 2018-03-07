@@ -477,7 +477,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return sample.UID()
 
     @security.public
-    def getResultsRange(self, specification=None):
+    def getResultsRange(self):
         raise NotImplementedError("getResultsRange is not implemented.")
 
     @security.public

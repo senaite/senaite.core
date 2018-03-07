@@ -133,7 +133,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         self.getField('Analysis').set(self, analysis)
 
     @security.public
-    def getResultsRange(self, specification=None):
+    def getResultsRange(self):
         """Returns the valid result range for this analysis duplicate, based on
         both on the result and duplicate variation set in the original analysis
 
