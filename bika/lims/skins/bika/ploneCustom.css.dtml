@@ -1438,8 +1438,4 @@ div.bika-listing-table-top-hooks div.listing-hook-top-wide {
     display:block;
 }
 
-
-
-
-
 </dtml-with>
