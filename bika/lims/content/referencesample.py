@@ -240,40 +240,6 @@ class ReferenceSample(BaseFolder):
             specs[uid]['error'] = 'error' in spec and spec['error'] or 0
         return specs
 
-    security.declarePublic('getResultsRangeSorted')
-    def getResultsRangeSorted(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-
-        cats = {}
-        for spec in self.getReferenceResults():
-            service = tool.lookupObject(spec['uid'])
-            service_title = service.Title()
-            category = service.getCategoryTitle()
-            if not cats.has_key(category):
-                cats[category] = {}
-
-            cat = cats[category]
-            cat[service_title] = {'category': category,
-                                  'service': service_title,
-                                  'id': service.getId(),
-                                  'unit': service.getUnit(),
-                                  'result': spec['result'],
-                                  'min': spec.get('min', ''),
-                                  'max': spec.get('max', ''),
-                                  'error': spec['error']}
-
-        cat_keys = cats.keys()
-        cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-        sorted_specs = []
-        for cat in cat_keys:
-            services = cats[cat]
-            service_keys = services.keys()
-            service_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-            for service_key in service_keys:
-                sorted_specs.append(services[service_key])
-
-        return sorted_specs
-
     security.declarePublic('getReferenceAnalyses')
     def getReferenceAnalyses(self):
         """ return all analyses linked to this reference sample """
