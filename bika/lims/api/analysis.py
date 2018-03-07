@@ -12,6 +12,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims.interfaces import IAnalysis, IReferenceAnalysis
 
 
 def is_out_of_range(brain_or_object, result=None):
@@ -33,6 +34,11 @@ def is_out_of_range(brain_or_object, result=None):
     :rtype: (bool, bool)
     """
     analysis = api.get_object(brain_or_object)
+    if not IAnalysis.providedBy(analysis) and \
+            not IReferenceAnalysis.providedBy(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+
     if result is None:
         result = api.safe_getattr(analysis, "getResult", None)
     if not api.is_floatable(result):
