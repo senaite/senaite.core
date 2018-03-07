@@ -481,12 +481,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         raise NotImplementedError("getResultsRange is not implemented.")
 
     @security.public
-    def getResultsRangeNoSpecs(self):
-        """This method is used to populate catalog values
-        """
-        return self.getResultsRange()
-
-    @security.public
     def calculateResult(self, override=False, cascade=False):
         """Calculates the result for the current analysis if it depends of
         other analysis/interim fields. Otherwise, do nothing
