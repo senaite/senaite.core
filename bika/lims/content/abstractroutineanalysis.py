@@ -346,49 +346,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return request.getPrinted()
 
     @security.public
-    def getAnalysisSpecs(self, specification=None):
-        """Retrieves the analysis specs to be applied to this analysis.
-        Allowed values for specification= 'client', 'lab', None If
-        specification is None, client specification gets priority from lab
-        specification. If no specification available for this analysis,
-        returns None
-        """
-        sample = self.getSample()
-        client_uid = self.getClientUID()
-        if not sample or not client_uid:
-            return None
-
-        sampletype = sample.getSampleType()
-        sampletype_uid = sampletype and sampletype.UID() or ''
-        bsc = getToolByName(self, 'bika_setup_catalog')
-
-        # retrieves the desired specs if None specs defined
-        if not specification:
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getClientUID=client_uid,
-                          getSampleTypeUID=sampletype_uid)
-
-            if len(proxies) == 0:
-                # No client specs available, retrieve lab specs
-                proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid)
-        else:
-            specuid = self.bika_setup.bika_analysisspecs.UID()
-            if specification == 'client':
-                specuid = client_uid
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getSampleTypeUID=sampletype_uid,
-                          getClientUID=specuid)
-
-        outspecs = None
-        for spec in (p.getObject() for p in proxies):
-            if self.getKeyword() in spec.getResultsRangeDict():
-                outspecs = spec
-                break
-
-        return outspecs
-
-    @security.public
     def getResultsRange(self, specification=None):
         """Returns the valid result range for this routine analysis based on the
         results ranges defined in the Analysis Request this routine analysis is

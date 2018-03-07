@@ -122,11 +122,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         specs['max'] = str(result + margin)
         return specs
 
-    def getAnalysisSpecs(self, specification=None):
-        specs = self.getResultsRange()
-        if specs and self.getKeyword() in specs:
-            return specs
-
     def getInstrumentUID(self):
         """
         It is a metacolumn.
