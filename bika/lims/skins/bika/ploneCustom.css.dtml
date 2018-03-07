@@ -618,6 +618,9 @@ a.duplicate {
 .cg-comboItem {
     height: 45px;
 }
+/*
+ * Overwriting collective.js.jqueryui.custom.min.css white color
+ */
 #cg-divHeader,
 .ui-state-default,
 .ui-widget-content .ui-state-default,
