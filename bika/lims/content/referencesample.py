@@ -288,34 +288,6 @@ class ReferenceSample(BaseFolder):
                 analyses.append(analysis)
         return analyses
 
-    security.declarePublic('getReferenceResult')
-    def getReferenceResult(self, service_uid):
-        """ Return an array [result, min, max, error] with the desired result
-            for a specific service.
-            If any reference result found, returns None.
-            If no value found for result, min, max, error found returns None
-            If floatable value, sets the value in array as floatable, otherwise
-            sets the raw value for that spec key
-            in its array position
-        """
-        for spec in self.getReferenceResults():
-            if spec['uid'] == service_uid:
-                found = False
-                outrefs = []
-                specitems = ['result', 'min', 'max', 'error']
-                for item in specitems:
-                    if item in spec:
-                        try:
-                            floatitem = spec[item]
-                            outrefs.append(floatitem)
-                        except:
-                            outrefs.append(spec[item])
-                        found = True
-                    else:
-                        outrefs.append(None)
-                return found == True and outrefs or None
-        return None
-
     security.declarePublic('addReferenceAnalysis')
     def addReferenceAnalysis(self, service_uid, reference_type):
         """
@@ -374,26 +346,6 @@ class ReferenceSample(BaseFolder):
             service = tool.lookupObject(spec['uid'])
             services.append(service)
         return services
-
-    security.declarePublic('getReferenceResultStr')
-    def getReferenceResultStr(self, service_uid):
-        specstr = ''
-        specs = self.getReferenceResult(service_uid)
-        if specs:
-            # [result, min, max, error]
-            if not specs[0]:
-                if specs[1] and specs[2]:
-                    specstr = '%s - %s' % (specs[1], specs[2])
-                elif specs[1]:
-                    specstr = '> %s' % (specs[1])
-                elif specs[2]:
-                    specstr = '< %s' % (specs[2])
-            elif specs[0]:
-                if specs[3] and specs[3] != 0:
-                    specstr = '%s (%s%)' % (specs[0], specs[3])
-                else:
-                    specstr = specs[0]
-        return specstr
 
     def isValid(self):
         """
