@@ -77,19 +77,14 @@ Create an Analysis Specification for `Water`:
 Create a Reference Definition for blank:
 
     >>> blankdef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
-    >>> blank_refs = [{'uid': Au.UID(), 'result': '0', 'error': '0.1'},
-    ...               {'uid': Cu.UID(), 'result': '0', 'error': '0.1'},
-    ...               {'uid': Fe.UID(), 'result': '0', 'error': '0.1'},
-    ...               {'uid': Mg.UID(), 'result': '0', 'error': '0.1'},]
+    >>> blank_refs = [{'uid': Au.UID(), 'result': '0', 'min': '0', 'max': '0'},]
     >>> blankdef.setReferenceResults(blank_refs)
 
 And for control:
 
     >>> controldef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Control definition")
-    >>> control_refs = [{'uid': Au.UID(), 'result': '10', 'error': '0.1'},
-    ...                 {'uid': Cu.UID(), 'result': '-0.9', 'error': '20'},
-    ...                 {'uid': Fe.UID(), 'result': '10', 'error': '0.1'},
-    ...                 {'uid': Mg.UID(), 'result': '10', 'error': '0.1'}]
+    >>> control_refs = [{'uid': Au.UID(), 'result': '10', 'min': '9.99', 'max': '10.01'},
+    ...                 {'uid': Cu.UID(), 'result': '-0.9','min': '-1.08', 'max': '-0.72'},]
     >>> controldef.setReferenceResults(control_refs)
 
     >>> blank = api.create(supplier, "ReferenceSample", title="Blank",
