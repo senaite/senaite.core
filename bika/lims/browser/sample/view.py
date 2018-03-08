@@ -384,7 +384,7 @@ class SamplesView(BikaListingView):
                          'AdHoc',
                          'SamplingDate',
                          'DateReceived',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',

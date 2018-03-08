@@ -63,5 +63,13 @@ class Analysis(AbstractRoutineAnalysis):
 
         return siblings
 
+    def workflow_script_publish(self):
+        """
+        If this is not here, acquisition causes recursion into
+        AR workflow_script_publish method and, if there are enough
+        analyses, it will result in "RuntimeError: maximum recursion
+        depth exceeded"
+        """ 
+        pass
 
 registerType(Analysis, PROJECTNAME)

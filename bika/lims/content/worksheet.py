@@ -389,6 +389,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Add the duplicate in the worksheet
         self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
         doActionFor(ref_analysis, 'assign')
+        self.reindexObject()
         return ref_analysis
 
     def nextReferenceAnalysesGroupID(self, reference):
@@ -501,7 +502,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         layout = self.getLayout()
         dup_pos = {'position': destination_slot,
                    'type': 'd',
-                   'container_uid': duplicate.getRequestID(),
+                   'container_uid': duplicate.getRequestUID(),
                    'analysis_uid': api.get_uid(duplicate)}
         layout.append(dup_pos)
         self.setLayout(layout)
@@ -509,6 +510,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Add the duplicate in the worksheet
         self.setAnalyses(self.getAnalyses() + [duplicate, ])
         doActionFor(duplicate, 'assign')
+        self.reindexObject()
 
         return duplicate
 
@@ -1696,6 +1698,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in self.getAnalyses():
             analysis.setAnalyst(analyst)
         self.Schema().getField('Analyst').set(self, analyst)
+        self.reindexObject()
 
     def getAnalysesUIDs(self):
         """

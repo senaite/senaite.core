@@ -70,4 +70,17 @@
         permission="zope2.View"
     />
 
+    <!--
+    Overrides the workflow actions menu displayed top right in the object's
+    view. Displays the current state of the object, as well as a list with the
+    actions that can be performed.
+    With this override, the option "Advanced.." is not displayed and the list
+    is populated with all allowed transitions for the object.
+    -->
+    <browser:menu
+        id="plone_contentmenu_workflow"
+        title="The workflow actions menu"
+        class="bika.lims.browser.contentmenu.WorkflowMenu"
+    />
+
 </configure>

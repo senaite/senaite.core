@@ -775,10 +775,7 @@ def get_link(href, value=None, **kwargs):
     if not href:
         return ""
     anchor_value = value and value or href
-    attr = list()
-    if kwargs:
-        attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
-    attr = " ".join(attr)
+    attr = render_html_attributes(**kwargs)
     return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
 
@@ -795,6 +792,30 @@ def get_email_link(email, value=None):
     mailto = 'mailto:{}'.format(email)
     link_value = value and value or email
     return get_link(mailto, link_value)
+
+
+def get_image(name, **kwargs):
+    """Returns a well-formed image
+    :param name: file name of the image
+    :param kwargs: additional attributes and values
+    :return: a well-formed html img
+    """
+    if not name:
+        return ""
+    portal_url = api.get_url(api.get_portal())
+    attr = render_html_attributes(**kwargs)
+    html = '<img src="{}/++resource++bika.lims.images/{}" {}/>'
+    return html.format(portal_url, name, attr)
+
+
+def render_html_attributes(**kwargs):
+    """Returns a string representation of attributes for html entities
+    :param kwargs: attributes and values
+    :return: a well-formed string representation of attributes"""
+    attr = list()
+    if kwargs:
+        attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
+    return " ".join(attr)
 
 
 def get_registry_value(key, default=None):

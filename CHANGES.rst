@@ -1,11 +1,93 @@
 Changelog
 =========
 
-1.2.2 (unreleased)
+1.2.4 (unreleased)
 ------------------
 
 **Added**
 
+- #710 Added more builtin functions for Calculations
+
+**Changed**
+
+
+**Removed**
+
+
+**Fixed**
+
+- #715 AR Rejection Fails when e-mail Notification is enabled
+- #709 Fix removal not possible of last non-verified Analysis in Manage Analysis View
+- #706 Filtering by Department is not working
+- #712 Dates in date picker are visible again
+- #703 Containers of Duplicated Analyses are not found
+- #698 Fix Publish Actions for Batches
+- #696 Filter worksheets by department. The worksheet count in the dashboard is now properly updated accordingly to the selected departments
+
+**Security**
+
+
+1.2.3 (2018-02-23)
+------------------
+
+**Added**
+
+- #666 Added Unpublished filter in Analysis Requests list
+
+**Changed**
+
+- #690 Refactored and improved client folder listing view
+- #689 Allow to hide Analyses in any AR state
+- #685 Display the stacked bars in evo charts sorted by number of occurrences
+- #685 Small changes in colours palette for evo charts from Dashboard
+- #684 Aggregated lists of analyses set to read-only mode
+- #674 Dashboard with slightly better performance
+- #621 AnalysesView code refactoring
+- #668 AR Add: Debounce expensive XHR calls
+- #660 Better style for reference widgets
+- #627 Unassigned filter on Analysis Requests view does not work
+- #659 Display the Unit in Profile Analyses Listing
+- #636 Do not display "Advanced..." item in object's workflow actions menu
+- #652 Added Sample Type, Partition ID and Date Sampled in Code_128_1x48mm sticker
+- #655 Updated German Translations
+- #647 Refactored bika.lims.bikalisting.js + several functional fixtures
+- #637 Deassociate Analysis Request portal type from `worksheetanalysis_workflow`
+
+**Fixed**
+
+- #688 A traceback was appearing when navigating to rejected samples
+- #686 Balloon button for adding Remarks is displayed while disabled in Setup
+- #681 Invalidated Analysis Requests do not appear on Dashboard's evo chart
+- #680 Fix Traceback with periodicity in DashboardView
+- #679 Analysis could not set to "Hidden" in results view
+- #677 Fix category toggling when the category name contains spaces
+- #672 Traceback on automatic sticker printing in batch context
+- #673 QC Analyses and Samples not totaled correctly in Worksheets list
+- #670 Listings: Fix sort_on change on Show More click
+- #653 Points in QC Charts are not displayed in accordance with capture date
+- #662 Viewing Cancelled AR's fails
+- #550 Wrong Listings of Analyses called from Dashboard
+- #666 "Rejected" filter is displayed in AR lists regardless of Setup setting
+- #666 "To be preserved" filter is displayed in AR lists regardless of Setup setting
+- #666 "Scheduled sampling" is displayed in AR lists regardless of Setup setting
+- #666 "To be sampled" filter is displayed in AR lists regardless of Setup setting
+- #664 Improved async transition loading and workflow button rendering in listing tables
+- #658 Worksheet listing view shows old- invalid Analysts
+- #663 AR Report Listing shows all Reports
+- #654 Default's Multi Analysis Request report gives a Traceback
+- #649 Specification fields decimal-mark validator not working for new opened categories
+- #637 Analysis Requests are never transitioned to assigned/unassigned
+- #641 Broken Analyses list on ReferenceSample in Supplier
+- #640 Broken Reference Sample Results view
+
+
+1.2.2 (2018-02-09)
+------------------
+
+**Added**
+
+- #594 Add button in Sample View for the createion of Analysis Requests
+- #607 Ability to choose sticker template based on sample type
 - #480 Sample panel in dashboard
 - #617 Instrument import interface: 2-Dimensional-CSV
 - #617 Instrument import interface: Agilent Masshunter
@@ -16,18 +98,19 @@ Changelog
 - #617 Instrument import interface: Shimadzu LC MS/MS Nexera X2
 - #537 Instrument import interface: Sysmex XT-4000i
 - #536 Instrument import interface: Sysmex XT-1800i
+- #607 Barcode and labelling depending on Sample Type
 - #618 When previewing stickers the number of copies to print for each sticker can be modified.
-- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.  
-
-**Removed**
-
+- #618 The default number of sticker copies can be set and edited in the setup Sticker's tab.
 
 **Changed**
 
+- #619 Changed listing tables search logic to operate on catalog metadata
 - #621 Change Errors to Warnings when importing instrument results
 
 **Fixed**
 
+- #639 Analysis Requests from inside Batch are not filtered correctly
+- #591 Fixed workflow publish recursion error that reached max depth
 - #634 Fix undefined Symbols in Sample Transition Guards
 - #616 Fix character encodings in analysisservice duplication
 - #624 TypeError: "Can't pickle objects in acquisition wrappers" (WorksheetTemplate)
@@ -37,9 +120,7 @@ Changelog
 - #622 (Re-)Installation always adds another identifier type
 - #620 Client batch list is not filtered by state
 - #628 Hide Department on lab contact inherited from Person
-
-**Security**
-
+- #631 Traceback on stickers display
 
 
 1.2.1 (2018-01-26)
@@ -117,7 +198,6 @@ Changelog
 
 **Fixed**
 
-- #631 Traceback on stickers display
 - #494 Rejection reasons widget does not appear on rejection
 - #492 Fix AR Add Form: CC Contacts not set on Contact Change
 - #489 Worksheet Templates selection list is empty in Worksheets view

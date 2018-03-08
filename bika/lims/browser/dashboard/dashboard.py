@@ -5,31 +5,44 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
 import datetime
 import json
 from calendar import monthrange
+from operator import itemgetter
+from time import time
 
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone import api
-from plone import protect
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import get_tool
+from bika.lims.api import search
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
+from plone import api
+from plone import protect
 from plone.api.exc import InvalidParameterError
-
+from plone.memoize import ram
+from plone.memoize import view as viewcache
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
+
+# Supported periodicities for evolution charts
+PERIODICITY_DAILY = "d"
+PERIODICITY_WEEKLY = "w"
+PERIODICITY_MONTHLY = "m"
+PERIODICITY_QUARTERLY = "q"
+PERIODICITY_BIANNUAL = "b"
+PERIODICITY_YEARLY = "y"
+PERIODICITY_ALL = "a"
 
 
 def get_dashboard_registry_record():
@@ -169,8 +182,12 @@ class DashboardView(BrowserView):
             return
 
         self.member = mtool.getAuthenticatedMember()
-        self._init_date_range()
+        self.periodicity = self.request.get('p', PERIODICITY_WEEKLY)
         self.dashboard_cookie = self.check_dashboard_cookie()
+        date_range = self.get_date_range(self.periodicity)
+        self.date_from = date_range[0]
+        self.date_to = date_range[1]
+
         return self.template()
 
     def check_dashboard_cookie(self):
@@ -233,85 +250,66 @@ class DashboardView(BrowserView):
             result[section.get('id')] = 'all'
         return result
 
-    def _init_date_range(self):
-        """ Sets the date range from which the data must be retrieved.
-            Sets the values to the class parameters 'date_from',
-            'date_to', 'date_range', and self.periodicity
-            Calculates the date range according to the value of the
-            request's 'p' parameter:
-            - 'd' (daily)
-            - 'w' (weekly)
-            - 'm' (monthly)
-            - 'q' (quarterly)
-            - 'b' (biannual)
-            - 'y' (yearly)
-            - 'a' (all-time)
+    def get_date_range(self, periodicity=PERIODICITY_WEEKLY):
+        """Returns a date range (date from, date to) that suits with the passed
+        in periodicity.
+
+        :param periodicity: string that represents the periodicity
+        :type periodicity: str
+        :return: A date range
+        :rtype: [(DateTime, DateTime)]
         """
-        # By default, weekly
-        self.periodicity = self.request.get('p', 'w')
-        if (self.periodicity == 'd'):
-            # Daily
-            self.date_from = DateTime()
-            self.date_to = DateTime() + 1
-            # For time-evolution data, load last 30 days
-            self.min_date = self.date_from - 30
-        elif (self.periodicity == 'm'):
-            # Monthly
-            today = datetime.date.today()
-            self.date_from = DateTime(today.year, today.month, 1)
-            self.date_to = DateTime(today.year, today.month, monthrange(today.year, today.month)[1], 23, 59, 59)
-            # For time-evolution data, load last two years
+        today = datetime.date.today()
+        if periodicity == PERIODICITY_DAILY:
+            # Daily, load last 30 days
+            date_from = DateTime() - 30
+            date_to = DateTime() + 1
+            return date_from, date_to
+
+        if periodicity == PERIODICITY_MONTHLY:
+            # Monthly, load last 2 years
             min_year = today.year - 1 if today.month == 12 else today.year - 2
             min_month = 1 if today.month == 12 else today.month
-            self.min_date = DateTime(min_year, min_month, 1)
-        elif (self.periodicity == 'q'):
-            # Quarterly
-            today = datetime.date.today()
-            m = (((today.month-1)/3)*3)+1
-            self.date_from = DateTime(today.year, m, 1)
-            self.date_to = DateTime(today.year, m+2, monthrange(today.year, m+2)[1], 23, 59, 59)
-            # For time-evolution data, load last four years
-            min_year = today.year - 4 if today.month == 12 else today.year - 5
-            self.min_date = DateTime(min_year, m, 1)
-        elif (self.periodicity == 'b'):
-            # Biannual
-            today = datetime.date.today()
-            m = (((today.month-1)/6)*6)+1
-            self.date_from = DateTime(today.year, m, 1)
-            self.date_to = DateTime(today.year, m+5, monthrange(today.year, m+5)[1], 23, 59, 59)
-            # For time-evolution data, load last ten years
-            min_year = today.year - 10 if today.month == 12 else today.year - 11
-            self.min_date = DateTime(min_year, m, 1)
-        elif (self.periodicity == 'y'):
-            # Yearly
-            today = datetime.date.today()
-            self.date_from = DateTime(today.year, 1, 1)
-            self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
-            # For time-evolution data, load last 15 years
-            min_year = today.year - 15 if today.month == 12 else today.year - 16
-            self.min_date = DateTime(min_year, 1, 1)
-        elif (self.periodicity == 'a'):
-            # All time
-            today = datetime.date.today()
-            self.date_from = DateTime('1990-01-01 00:00:00')
-            self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
-            # For time-evolution data, load last 15 years
-            min_year = today.year - 15 if today.month == 12 else today.year - 16
-            self.min_date = DateTime(min_year, 1, 1)
-        else:
-            # weekly
-            today = datetime.date.today()
-            year, weeknum, dow = today.isocalendar()
-            self.date_from = DateTime() - dow
-            self.date_to = self.date_from + 7
-            # For time-evolution data, load last six months
-            min_year = today.year if today.month > 6 else today.year - 1
-            min_month = today.month - 6 if today.month > 6 else (today.month - 6)+12
-            self.min_date = DateTime(min_year, min_month, 1)
+            date_from = DateTime(min_year, min_month, 1)
+            date_to = DateTime(today.year, today.month,
+                               monthrange(today.year, today.month)[1],
+                               23, 59, 59)
+            return date_from, date_to
 
-        self.date_range = {'query': (self.date_from, self.date_to), 'range': 'min:max'}
-        self.base_date_range = {'query': (DateTime('1990-01-01 00:00:00'), DateTime()+1), 'range':'min:max'}
-        self.min_date_range = {'query': (self.min_date, self.date_to), 'range': 'min:max'}
+        if periodicity == PERIODICITY_QUARTERLY:
+            # Quarterly, load last 4 years
+            m = (((today.month - 1) / 3) * 3) + 1
+            min_year = today.year - 4 if today.month == 12 else today.year - 5
+            date_from = DateTime(min_year, m, 1)
+            date_to = DateTime(today.year, m + 2,
+                               monthrange(today.year, m + 2)[1], 23, 59,
+                               59)
+            return date_from, date_to
+        if periodicity == PERIODICITY_BIANNUAL:
+            # Biannual, load last 10 years
+            m = (((today.month - 1) / 6) * 6) + 1
+            min_year = today.year - 10 if today.month == 12 else today.year - 11
+            date_from = DateTime(min_year, m, 1)
+            date_to = DateTime(today.year, m + 5,
+                               monthrange(today.year, m + 5)[1], 23, 59,
+                               59)
+            return date_from, date_to
+
+        if periodicity in [PERIODICITY_YEARLY, PERIODICITY_ALL]:
+            # Yearly or All time, load last 15 years
+            min_year = today.year - 15 if today.month == 12 else today.year - 16
+            date_from = DateTime(min_year, 1, 1)
+            date_to = DateTime(today.year, 12, 31, 23, 59, 59)
+            return date_from, date_to
+
+        # Default Weekly, load last six months
+        year, weeknum, dow = today.isocalendar()
+        min_year = today.year if today.month > 6 else today.year - 1
+        min_month = today.month - 6 if today.month > 6 \
+            else (today.month - 6) + 12
+        date_from = DateTime(min_year, min_month, 1)
+        date_to = DateTime() - dow + 7
+        return date_from, date_to
 
     def get_sections(self):
         """ Returns an array with the sections to be displayed.
@@ -354,11 +352,11 @@ class DashboardView(BrowserView):
         results = 0
         ratio = 0
         if total > 0:
-            results = len(catalog(criterias))
+            results = self.search_count(criterias, catalog.id)
             results = results if total >= results else total
             ratio = (float(results)/float(total))*100 if results > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
-        out['legend'] = _('of') + " " + str(total) + ' (' + ratio +'%)'
+        out['legend'] = _('of') + " " + str(total) + ' (' + ratio + '%)'
         out['number'] = results
         out['percentage'] = float(ratio)
         return out
@@ -375,22 +373,23 @@ class DashboardView(BrowserView):
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
+            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
         query = self._update_criteria_with_filters(query, 'analysisrequests')
 
         # Active Analysis Requests (All)
-        total = len(catalog(query))
+        total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
-        if (self.context.bika_setup.getSamplingWorkflowEnabled()):
+        if self.context.bika_setup.getSamplingWorkflowEnabled():
             # Analysis Requests awaiting to be sampled or scheduled
             name = _('Analysis Requests to be sampled')
             desc = _("To be sampled")
             purl = 'samples?samples_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
+            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests awaiting to be preserved
@@ -398,6 +397,7 @@ class DashboardView(BrowserView):
             desc = _("To be preserved")
             purl = 'samples?samples_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
+            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests scheduled for Sampling
@@ -405,6 +405,7 @@ class DashboardView(BrowserView):
             desc = _("Sampling scheduled")
             purl = 'samples?samples_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
+            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests awaiting for reception
@@ -412,6 +413,7 @@ class DashboardView(BrowserView):
         desc = _("Reception pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests under way
@@ -419,8 +421,8 @@ class DashboardView(BrowserView):
         desc = _("Results pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_received'
         query['review_state'] = ['attachment_due',
-                                 'sample_received',
-                                 'assigned']
+                                 'sample_received', ]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests to be verified
@@ -428,6 +430,7 @@ class DashboardView(BrowserView):
         desc = _("To be verified")
         purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests verified (to be published)
@@ -435,6 +438,7 @@ class DashboardView(BrowserView):
         desc = _("Verified")
         purl = 'analysisrequests?analysisrequests_review_state=verified'
         query['review_state'] = ['verified', ]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests published
@@ -442,6 +446,7 @@ class DashboardView(BrowserView):
         desc = _("Published")
         purl = 'analysisrequests?analysisrequests_review_state=published'
         query['review_state'] = ['published', ]
+        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests to be printed
@@ -451,16 +456,13 @@ class DashboardView(BrowserView):
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
             query['getPrinted'] = '0'
             query['review_state'] = ['published', ]
+            query['cancellation_state'] = ['active', ]
             out.append(
                 self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
-        if 'review_state' in query:
-            del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(catalog, query)
+        outevo = self.fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analysis Requests'),
                     'class':        'informative',
@@ -479,18 +481,18 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
-        query = {'portal_type':"Worksheet",}
+        query = {'portal_type': "Worksheet", }
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
+            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
         query = self._update_criteria_with_filters(query, 'worksheets')
 
         # Active Worksheets (all)
-        total = len(bc(query))
+        total = self.search_count(query, bc.id)
 
         # Open worksheets
         name = _('Results pending')
@@ -501,24 +503,21 @@ class DashboardView(BrowserView):
 
         # Worksheets to be verified
         name = _('To be verified')
-        desc =_('To be verified')
+        desc = _('To be verified')
         purl = 'worksheets?list_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Worksheets verified
         name = _('Verified')
-        desc =_('Verified')
+        desc = _('Verified')
         purl = 'worksheets?list_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Chart with the evolution of WSs over a period, grouped by
         # periodicity
-        del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(bc, query)
+        outevo = self.fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Worksheets'),
                     'class':        'informative',
@@ -543,7 +542,7 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
         query = {'portal_type': "Analysis",
-                 'cancellation_state': ['active']}
+                 'cancellation_state': 'active'}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
@@ -553,42 +552,41 @@ class DashboardView(BrowserView):
         query = self._update_criteria_with_filters(query, 'analyses')
 
         # Active Analyses (All)
-        total = len(bc(query))
+        total = self.search_count(query, bc.id)
 
         # Analyses to be assigned
         name = _('Assignment pending')
         desc = _('Assignment pending')
-        purl = 'aggregatedanalyses'
-        query['review_state'] = ['sample_received', ]
+        purl = 'aggregatedanalyses?analyses_form_review_state=default'
+        query['review_state'] = ['sample_received', 'attachment_due', ]
+        query['worksheetanalysis_review_state'] = ['unassigned']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
         name = _('Results pending')
         desc = _('Results pending')
-        purl = 'aggregatedanalyses'
-        query['review_state'] = ['assigned','attachment_due']
+        purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
+        query['review_state'] = ['sample_received', 'attachment_due', ]
+        del query['worksheetanalysis_review_state']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
         name = _('To be verified')
         desc = _('To be verified')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses verified
         name = _('Verified')
         desc = _('Verified')
-        purl = 'aggregatedanalyses'
+        purl = 'aggregatedanalyses?analyses_form_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Chart with the evolution of Analyses over a period, grouped by
         # periodicity
-        del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(bc, query)
+        outevo = self.fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analyses'),
                     'class':        'informative',
@@ -618,7 +616,7 @@ class DashboardView(BrowserView):
         query = self._update_criteria_with_filters(query, 'samples')
 
         # Active Samples (All)
-        total = len(catalog(query))
+        total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
         if self.context.bika_setup.getSamplingWorkflowEnabled():
@@ -672,11 +670,7 @@ class DashboardView(BrowserView):
 
         # Chart with the evolution of samples over a period, grouped by
         # periodicity
-        if 'review_state' in query:
-            del query['review_state']
-        query['sort_on'] = 'created'
-        query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(catalog, query)
+        outevo = self.fill_dates_evo(catalog, query)
         out.append({'type': 'bar-chart-panel',
                     'name': _('Evolution of Samples'),
                     'class': 'informative',
@@ -690,8 +684,8 @@ class DashboardView(BrowserView):
 
     def get_states_map(self, portal_type):
         if portal_type == 'Analysis':
-            return {'to_be_sampled':   _('Sample reception pending'),
-                    'sample_due':      _('Sample reception pending'),
+            return {'to_be_sampled':   _('Reception pending'),
+                    'sample_due':      _('Reception pending'),
                     'sample_received': _('Assignment pending'),
                     'assigned':        _('Results pending'),
                     'attachment_due':  _('Results pending'),
@@ -706,6 +700,7 @@ class DashboardView(BrowserView):
                     'scheduled_sampling':  _('Sampling scheduled'),
                     'sample_due':          _('Reception pending'),
                     'rejected':            _('Rejected'),
+                    'invalid':             _('Invalid'),
                     'sample_received':     _('Results pending'),
                     'assigned':            _('Results pending'),
                     'attachment_due':      _('Results pending'),
@@ -728,21 +723,21 @@ class DashboardView(BrowserView):
 
     def get_colors_palette(self):
         return {
-            'to_be_sampled':                '#FA6900',
-            _('To be sampled'):             '#FA6900',
+            'to_be_sampled':                '#917A4C',
+            _('To be sampled'):             '#917A4C',
 
-            'to_be_preserved':              '#C44D58',
-            _('To be preserved'):           '#C44D58',
+            'to_be_preserved':              '#C2803E',
+            _('To be preserved'):           '#C2803E',
 
-            'scheduled_sampling':           '#FA6900',
-            _('Sampling scheduled'):        '#FA6900',
+            'scheduled_sampling':           '#F38630',
+            _('Sampling scheduled'):        '#F38630',
 
-            'sample_due':                   '#F38630',
-            _('Sample reception pending'):  '#F38630',
-            _('Reception pending'):         '#F38630',
+            'sample_due':                   '#FA6900',
+            _('Reception pending'):         '#FA6900',
 
             'sample_received':              '#E0E4CC',
             _('Assignment pending'):        '#E0E4CC',
+            _('Sample received'):           '#E0E4CC',
 
             'assigned':                     '#dcdcdc',
             'attachment_due':               '#dcdcdc',
@@ -753,6 +748,9 @@ class DashboardView(BrowserView):
             'retracted':                    '#FF6B6B',
             _('Rejected'):                  '#FF6B6B',
             _('Retracted'):                 '#FF6B6B',
+
+            'invalid':                      '#C44D58',
+            _('Invalid'):                   '#C44D58',
 
             'to_be_verified':               '#A7DBD8',
             _('To be verified'):            '#A7DBD8',
@@ -765,78 +763,102 @@ class DashboardView(BrowserView):
         }
 
     def _getDateStr(self, period, created):
-        if period == 'y':
+        if period == PERIODICITY_YEARLY:
             created = created.year()
-        elif period == 'b':
+        elif period == PERIODICITY_BIANNUAL:
             m = (((created.month()-1)/6)*6)+1
             created = '%s-%s' % (str(created.year())[2:], str(m).zfill(2))
-        elif period == 'q':
+        elif period == PERIODICITY_QUARTERLY:
             m = (((created.month()-1)/3)*3)+1
             created = '%s-%s' % (str(created.year())[2:], str(m).zfill(2))
-        elif period == 'm':
+        elif period == PERIODICITY_MONTHLY:
             created = '%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2))
-        elif period == 'w':
+        elif period == PERIODICITY_WEEKLY:
             d = (((created.day()-1)/7)*7)+1
             year, weeknum, dow = created.asdatetime().isocalendar()
             created = created - dow
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
-        elif period == 'a':
+        elif period == PERIODICITY_ALL:
             # All time, but evolution chart grouped by year
             created = created.year()
         else:
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
         return created
 
-    def _fill_dates_evo(self, catalog, query):
+    def fill_dates_evo(self, catalog, query):
+        sorted_query = collections.OrderedDict(sorted(query.items()))
+        query_json = json.dumps(sorted_query)
+        return self._fill_dates_evo(query_json, catalog.id, self.periodicity)
+
+    def _fill_dates_evo_cachekey(method, self, query_json, catalog_name,
+                                 periodicity):
+        hour = time() // (60 * 60 * 2)
+        return hour, catalog_name, query_json, periodicity
+
+    @ram.cache(_fill_dates_evo_cachekey)
+    def _fill_dates_evo(self, query_json, catalog_name, periodicity):
+        """Returns an array of dictionaries, where each dictionary contains the
+        amount of items created at a given date and grouped by review_state,
+        based on the passed in periodicity.
+
+        This is an expensive function that will not be called more than once
+        every 2 hours (note cache decorator with `time() // (60 * 60 * 2)
+        """
         outevoidx = {}
         outevo = []
         days = 1
-        if self.periodicity == 'y':
+        if periodicity == PERIODICITY_YEARLY:
             days = 336
-        elif self.periodicity == 'b':
+        elif periodicity == PERIODICITY_BIANNUAL:
             days = 168
-        elif self.periodicity == 'q':
+        elif periodicity == PERIODICITY_QUARTERLY:
             days = 84
-        elif self.periodicity == 'm':
+        elif periodicity == PERIODICITY_MONTHLY:
             days = 28
-        elif self.periodicity == 'w':
+        elif periodicity == PERIODICITY_WEEKLY:
             days = 7
-        elif self.periodicity == 'a':
+        elif periodicity == PERIODICITY_ALL:
             days = 336
+
+        # Get the date range
+        date_from, date_to = self.get_date_range(periodicity)
+        query = json.loads(query_json)
+        if 'review_state' in query:
+            del query['review_state']
+        query['sort_on'] = 'created'
+        query['created'] = {'query': (date_from, date_to),
+                            'range': 'min:max'}
 
         otherstate = _('Other status')
         statesmap = self.get_states_map(query['portal_type'])
         stats = statesmap.values()
         stats.sort()
         stats.append(otherstate)
-        statscount = {s:0 for s in stats}
+        statscount = {s: 0 for s in stats}
         # Add first all periods, cause we want all segments to be displayed
-        curr = self.min_date.asdatetime()
-        end = self.date_to.asdatetime()
+        curr = date_from.asdatetime()
+        end = date_to.asdatetime()
         while curr < end:
-            currstr = self._getDateStr(self.periodicity, DateTime(curr))
+            currstr = self._getDateStr(periodicity, DateTime(curr))
             if currstr not in outevoidx:
-                outdict = {'date':currstr}
+                outdict = {'date': currstr}
                 for k in stats:
                     outdict[k] = 0
                 outevo.append(outdict)
                 outevoidx[currstr] = len(outevo)-1
             curr = curr + datetime.timedelta(days=days)
-        for brain in catalog(query):
-            # Check if we can use the brain
-            if query.get('portal_type', '') in ['AnalysisRequest', 'Analysis']:
-                created = brain.created
-            # I not, get the object
-            else:
-                created = brain.getObject().created()
+
+        brains = search(query, catalog_name)
+        for brain in brains:
+            created = brain.created
             state = brain.review_state
             if state not in statesmap:
                 logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
             state = statesmap[state] if state in statesmap else otherstate
-            created = self._getDateStr(self.periodicity, created)
+            created = self._getDateStr(periodicity, created)
+            statscount[state] += 1
             if created in outevoidx:
                 oidx = outevoidx[created]
-                statscount[state] += 1
                 if state in outevo[oidx]:
                     outevo[oidx][state] += 1
                 else:
@@ -844,17 +866,32 @@ class DashboardView(BrowserView):
             else:
                 # Create new row
                 currow = {'date': created,
-                          state: 1 }
+                          state: 1}
                 outevo.append(currow)
 
         # Remove all those states for which there is no data
-        rstates = [k for k,v in statscount.items() if v==0]
+        rstates = [k for k, v in statscount.items() if v == 0]
         for o in outevo:
             for r in rstates:
                 if r in o:
                     del o[r]
 
-        return outevo
+        # Sort available status by number of occurences descending
+        sorted_states = sorted(statscount.items(), key=itemgetter(1))
+        sorted_states = map(lambda item: item[0], sorted_states)
+        sorted_states.reverse()
+        return {'data': outevo, 'states': sorted_states}
+
+    def search_count(self, query, catalog_name):
+        sorted_query = collections.OrderedDict(sorted(query.items()))
+        query_json = json.dumps(sorted_query)
+        return self._search_count(query_json, catalog_name)
+
+    @viewcache.memoize
+    def _search_count(self, query_json, catalog_name):
+        query = json.loads(query_json)
+        brains = search(query, catalog_name)
+        return len(brains)
 
     def _update_criteria_with_filters(self, query, section_name):
         """
