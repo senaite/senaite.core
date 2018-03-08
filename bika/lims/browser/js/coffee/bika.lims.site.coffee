@@ -27,7 +27,12 @@ class window.SiteView
     # initialze reference definition selection
     @init_referencedefinition()
 
-    # initialze department filtering
+    # Department Filtering
+    # The name of the department filter cookies
+    @department_filter_cookie = "filter_by_department_info"
+    @department_filter_disabled_cookie = "dep_filter_disabled"
+
+    # initialize department filtering
     @init_department_filtering()
 
     # bind the event handler to the elements
@@ -51,11 +56,6 @@ class window.SiteView
       101,  # e,
       61    # =
     ]
-
-    # The name of the department filter cookies
-    @department_filter_cookie = "filter_by_department_info"
-    @department_filter_disabled_cookie = "dep_filter_disabled"
-
 
   ### INITIALIZERS ###
 
