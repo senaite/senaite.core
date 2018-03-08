@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #709 Fix removal not possible of last non-verified Analysis in Manage Analysis View
 - #706 Filtering by Department is not working
 - #712 Dates in date picker are visible again
 - #703 Containers of Duplicated Analyses are not found
