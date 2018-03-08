@@ -4,14 +4,9 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from bika.lims import api
 from bika.lims.browser.sample import SamplesView as _SV
-from bika.lims.permissions import *
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
-from Products.CMFPlone.utils import safe_unicode
-
-import plone
 
 
 class SamplesView(_SV):
