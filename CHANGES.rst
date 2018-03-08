@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #700 Fix filtering by review state in aggregated list of analyses
 - #715 AR Rejection Fails when e-mail Notification is enabled
 - #709 Fix removal not possible of last non-verified Analysis in Manage Analysis View
 - #706 Filtering by Department is not working
