@@ -14,9 +14,6 @@ class window.WorksheetFolderView
     # bind the event handler to the elements
     @bind_eventhandler()
 
-    # dev only
-    window.wfv = @
-
 
   ### INITIALIZERS ###
 
@@ -102,106 +99,167 @@ class window.WorksheetFolderView
       bika.lims.SiteView.notify_in_panel message, "error"
 
 
+
+class window.WorksheetAddAnalysesView
+  ###
+   * Controller class for Worksheet's add analyses view
+  ###
+
+  load: =>
+    console.debug "WorksheetAddanalysesview::load"
+
+    # bind the event handler to the elements
+    @bind_eventhandler()
+
+    # dev only
+    window.ws = @
+
+
+  ### METHODS ###
+
+  ajax_submit: (options={}) =>
+    ###
+     * Ajax Submit with automatic event triggering and some sane defaults
+    ###
+    console.debug "°°° ajax_submit °°°"
+
+    # some sane option defaults
+    options.type ?= "POST"
+    options.url ?= window.location.href
+    options.context ?= this
+
+    console.debug ">>> ajax_submit::options=", options
+
+    $(this).trigger "ajax:submit:start"
+    done = =>
+        $(this).trigger "ajax:submit:end"
+    return $.ajax(options).done done
+
+
+  get_listing_form_id: () =>
+    ###
+     * Returns the CSS ID of the analyses listing
+    ###
+    return "list"
+
+
+  get_listing_form: () =>
+    ###
+     * Returns the analyses listing form element
+    ###
+    form_id = @get_listing_form_id()
+    return $("form[id='#{form_id}']")
+
+
+  ### INITIALIZERS ###
+
+  bind_eventhandler: =>
+    ###
+     * Binds callbacks on elements
+     *
+     * N.B. We attach all the events to the form and refine the selector to
+     * delegate the event: https://learn.jquery.com/events/event-delegation/
+     *
+    ###
+    console.debug "WorksheetAddanalysesview::bind_eventhandler"
+
+    # Category filter changed
+    $("body").on "change", "[name='list_FilterByCategory']", @on_category_change
+
+    # Search button clicked
+    $("body").on "click", ".ws-analyses-search-button", @on_search_click
+
+
+  ### EVENT HANDLER ###
+
+  on_category_change: (event) =>
+    ###
+     * Eventhandler for category change
+    ###
+    console.debug "°°° WorksheetAddanalysesview::on_category_change °°°"
+
+
+  on_search_click: (event) =>
+    ###
+     * Eventhandler for the search button
+    ###
+    console.debug "°°° WorksheetAddanalysesview::on_search_click °°°"
+
+    # Prevent form submit
+    event.preventDefault()
+
+    form = @get_listing_form()
+    form_id = @get_listing_form_id()
+
+    filter_indexes = [
+      "FilterByCategory"
+      "FilterByService"
+      "FilterByClient"
+    ]
+
+    # The filter elements (Category/Service/Client) belong to another form.
+    # Therefore, we need to inject these values into the listing form as hidden
+    # input fields.
+    $.each filter_indexes, (index, filter) ->
+      name = "#{form_id}_#{filter}"
+      $el = $("select[name='#{name}']")
+      value = $el.val()
+
+      # get the corresponding input element of the listing form
+      input = $("input[name='#{name}']", form)
+      if input.length == 0
+        form.append "<input name='#{name}' value='#{value}' type='hidden'/>"
+        input = $("input[name='#{name}']", form)
+      input.val value
+
+      # omit the field if the value is set to any
+      if value == "any"
+         input.remove()
+
+    # extract the data of the listing form and post it to the AddAnalysesView
+    form_data = new FormData form[0]
+    form_data.set "table_only", form_id
+
+    @ajax_submit
+      data: form_data
+      processData: no  # do not transform to a query string
+      contentType: no # do not set any content type header
+    .done (data) ->
+      $("div.bika-listing-table-container", form).html data
+
+
+#     # search form - selecting a category fills up the service selector
+#     $('[name="list_FilterByCategory"]').live 'change', ->
+#       val = $('[name="list_FilterByCategory"]').find(':selected').val()
+#       if val == 'any'
+#         $('[name="list_FilterByService"]').empty()
+#         $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
+#         return
+#       $.ajax
+#         url: window.location.href.split('?')[0].replace('/add_analyses', '') + '/getServies'
+#         type: 'POST'
+#         data:
+#           '_authenticator': $('input[name="_authenticator"]').val()
+#           'getCategoryUID': val
+#         dataType: 'json'
+#         success: (data, textStatus, $XHR) ->
+#           current_service_selection = $('[name="list_FilterByService"]').val()
+#           $('[name="list_FilterByService"]').empty()
+#           $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
+#           i = 0
+#           while i < data.length
+#             if data[i] == current_service_selection
+#               selected = 'selected="selected" '
+#             else
+#               selected = ''
+#             $('[name="list_FilterByService"]').append '<option ' + selected + 'value=\'' + data[i][0] + '\'>' + data[i][1] + '</option>'
+#             i++
+#           return
+#       return
+#     $('[name="list_FilterByCategory"]').trigger 'change'
+
 ################ REFACTOR FROM HERE ##############################
 
-
-###*
-# Controller class for Worksheet's add analyses view
-###
-
-window.WorksheetAddAnalysesView = ->
-  that = this
-
-  that.load = ->
-    # search form - selecting a category fills up the service selector
-    $('[name="list_FilterByCategory"]').live 'change', ->
-      val = $('[name="list_FilterByCategory"]').find(':selected').val()
-      if val == 'any'
-        $('[name="list_FilterByService"]').empty()
-        $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
-        return
-      $.ajax
-        url: window.location.href.split('?')[0].replace('/add_analyses', '') + '/getServices'
-        type: 'POST'
-        data:
-          '_authenticator': $('input[name="_authenticator"]').val()
-          'getCategoryUID': val
-        dataType: 'json'
-        success: (data, textStatus, $XHR) ->
-          current_service_selection = $('[name="list_FilterByService"]').val()
-          $('[name="list_FilterByService"]').empty()
-          $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
-          i = 0
-          while i < data.length
-            if data[i] == current_service_selection
-              selected = 'selected="selected" '
-            else
-              selected = ''
-            $('[name="list_FilterByService"]').append '<option ' + selected + 'value=\'' + data[i][0] + '\'>' + data[i][1] + '</option>'
-            i++
-          return
-      return
-    $('[name="list_FilterByCategory"]').trigger 'change'
-    # add_analyses analysis search is handled by
-    # worksheet/views/add_analyses/AddAnalysesView/__call__
-    $('.ws-analyses-search-button').live 'click', (event) ->
-      `var i`
-      `var field_name`
-      `var value`
-      # in this context we already know there is only one bika-listing-form
-      form_id = 'list'
-      form = $('form[id="' + form_id + '"]')
-      params = {}
-      # dropdowns are printed in ../templates/worksheet_add_analyses.pt
-      # We add <formid>_<filterby_index>=<value>, which are checked in
-      # worksheet/view/add_analyses.py/__call__, that are different
-      # from listing or catalog filters
-      filter_indexes = [
-        'FilterByCategory'
-        'FilterByService'
-        'FilterByClient'
-      ]
-      field_set = $(this).parent('fieldset')
-      i = 0
-      while i < filter_indexes.length
-        idx_name = filter_indexes[i]
-        field_name = form_id + '_' + idx_name
-        element = $(field_set).find('[name="' + field_name + '"]')
-        value = $(element).val()
-        if value == undefined or value == null or value == 'any'
-          i++
-          continue
-        params[idx_name] = value
-        i++
-      # Add other fields required from bikalisting form
-      params['form_id'] = form_id
-      params['table_only'] = form_id
-      params['portal_type'] = 'Analysis'
-      params['submitted'] = '1'
-      base_fields = [
-        '_authenticator'
-        'view_url'
-        'list_sort_on'
-        'list_sort_order'
-      ]
-      i = 0
-      while i < base_fields.length
-        field_name = base_fields[i]
-        field = $(form).find('input[name="' + field_name + '"]')
-        value = $(field).val()
-        if value == undefined or value == null
-          i++
-          continue
-        params[field_name] = value
-        i++
-      $.post(window.location.href, params).done (data) ->
-        $(form).find('.bika-listing-table-container').html data
-        window.bika.lims.BikaListingTableView.load()
-        return
-      false
-    return
-
-  return
 
 ###*
 # Controller class for Worksheet's add blank/control views
