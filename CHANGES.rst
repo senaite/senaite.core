@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #716 Samples from inside Batch are not filtered correctly
 - #709 Fix removal not possible of last non-verified Analysis in Manage Analysis View
 - #706 Filtering by Department is not working
 - #712 Dates in date picker are visible again

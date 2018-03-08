@@ -29,6 +29,8 @@ def upgrade(tool):
 
     # Required to make filtering by department in worksheets work
     ut.addIndex(CATALOG_WORKSHEET_LISTING, 'getDepartmentUIDs', 'KeywordIndex')
+    # Required by https://github.com/senaite/senaite.core/issues/683
+    ut.addIndexAndColumn('bika_catalog', 'getBatchUIDs', 'KeywordIndex')
     ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))

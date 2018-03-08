@@ -857,6 +857,18 @@ class Sample(BaseFolder, HistoryAwareMixin):
         partitions = self.objectValues('SamplePartition')
         return partitions
 
+    def getBatchUIDs(self):
+        """Returns the UIDs of the Batches to which this Sample is assigned
+        through Analysis Requests
+        """
+        batch_uids = list()
+        for analysis_request in self.getAnalysisRequests():
+            batch_uid = analysis_request.getBatchUID()
+            if not batch_uid or batch_uid in batch_uids:
+                continue
+            batch_uids.append(batch_uid)
+        return batch_uids
+
     @security.public
     def workflow_script_no_sampling_workflow(self):
         events.after_no_sampling_workflow(self)
