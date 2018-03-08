@@ -56,7 +56,7 @@ def is_out_of_range(brain_or_object, result=None):
     # - For reference analyses, getResultRange returns the valid range as
     #   indicated in the Reference Sample from which the analysis was created.
     result_range = api.safe_getattr(analysis, "getResultsRange", None)
-    if not result_range or not isinstance(result_range, dict):
+    if not result_range:
         # No result range defined or the passed in object does not suit
         return False, False
 
