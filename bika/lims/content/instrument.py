@@ -13,6 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.atapi import DisplayList, PicklistWidget
 from Products.Archetypes.atapi import registerType
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from zope.component._api import getAdapters
 
@@ -52,7 +53,7 @@ from bika.lims import logger
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IInstrument, IResultOutOfRange
+from bika.lims.interfaces import IInstrument
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -619,12 +620,9 @@ class Instrument(ATFolder):
             if not results_range:
                 continue
             # Is out of range?
-            analysis = api.get_object(brain)
-            adapters = getAdapters((analysis,), IResultOutOfRange)
-            for name, adapter in adapters:
-                if adapter(specification=results_range):
-                    # Out of range, no need to go further
-                    return False
+            out_of_range = is_out_of_range(brain)[0]
+            if out_of_range:
+                return False
 
         # By default, in range
         return True
