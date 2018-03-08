@@ -109,7 +109,6 @@ class AnalysisSpecificationView(BikaListingView):
                         'max': '',
                         'warn_min': '',
                         'warn_max': '',
-                        'error': '',
                         'hidemin': '',
                         'hidemax': '',
                         'rangecomment': ''}
@@ -159,7 +158,6 @@ class AnalysisSpecificationView(BikaListingView):
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
                 'service': service.Title(),
-                'error': specresults.get('error', ''),
                 'min': specresults.get('min', ''),
                 'max': specresults.get('max', ''),
                 'warn_min': specresults.get('warn_min', ''),
@@ -173,8 +171,7 @@ class AnalysisSpecificationView(BikaListingView):
                           'min':unitspan,
                           'max':unitspan,
                           'warn_min':unitspan,
-                          'warn_max':unitspan,
-                          'error': percspan},
+                          'warn_max':unitspan},
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
@@ -228,7 +225,6 @@ class AnalysisSpecificationWidget(TypesWidget):
                 'warn_max': self._get_spec_value(form, uid, 'warn_max'),
                 'hidemin': self._get_spec_value(form, uid, 'hidemin'),
                 'hidemax': self._get_spec_value(form, uid, 'hidemax'),
-                'error': self._get_spec_value(form, uid, 'error', default='0'),
                 'rangecomment': self._get_spec_value(form, uid, 'rangecomment',
                                                      check_floatable=False)})
         return values, {}

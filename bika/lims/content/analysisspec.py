@@ -158,7 +158,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
            each key is the name of the spec field:
            specs['keyword'] = {'min': value,
                                'max': value,
-                               'error': value,
+                               'warnmin': value,
                                ... }
         """
         specs = {}
