@@ -99,33 +99,14 @@ class ReferenceAnalysis(AbstractAnalysis):
         :return: A dictionary with the keys min and max
         :rtype: dict
         """
-        specs = {'result': '',
-                 'min': '',
-                 'max': '',
-                 'warn_min': '',
-                 'warn_max': ''}
+        specs = {'result': '', 'min': '', 'max': '',}
         sample = self.getSample()
         if not sample:
             return specs
 
         service_uid = self.getServiceUID()
         sample_range = sample.getResultsRangeDict()
-        sample_range = sample_range.get(service_uid, specs)
-        result = sample_range.get('result', None)
-        if not api.is_floatable(result):
-            return specs
-
-        specs['result'] = result
-        specs['min'] = specs['max'] = result
-        result = api.to_float(result)
-        error = api.to_float(sample_range.get('error', 0.0), 0.0)
-        if not error:
-            return specs
-
-        margin = abs(result) * (error / 100.0)
-        specs['min'] = str(result - margin)
-        specs['max'] = str(result + margin)
-        return specs
+        return sample_range.get(service_uid, specs)
 
     def getInstrumentUID(self):
         """
