@@ -288,7 +288,14 @@
         processData: false, // do not transform to a query string
         contentType: false // do not set any content type header
       }).done(function(data) {
-        return $("div.bika-listing-table-container", form).html(data);
+        var $container, $data;
+        $container = $("div.bika-listing-table-container", form);
+        $data = $(data);
+        if ($data.find("tbody").length === 0) {
+          return $container.html(`<div class='discreet info'>0 ${_('Results')}</div>`);
+        } else {
+          return $container.html(data);
+        }
       });
     }
 

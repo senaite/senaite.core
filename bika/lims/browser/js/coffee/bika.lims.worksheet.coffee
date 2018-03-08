@@ -280,7 +280,12 @@ class window.WorksheetAddAnalysesView
       processData: no  # do not transform to a query string
       contentType: no # do not set any content type header
     .done (data) ->
-      $("div.bika-listing-table-container", form).html data
+      $container = $("div.bika-listing-table-container", form)
+      $data = $(data)
+      if $data.find("tbody").length == 0
+        $container.html "<div class='discreet info'>0 #{_('Results')}</div>"
+      else
+        $container.html data
 
 
 ################ REFACTOR FROM HERE ##############################

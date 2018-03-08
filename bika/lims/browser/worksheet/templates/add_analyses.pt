@@ -62,53 +62,63 @@
 
         <!-- Searchform -->
         <fieldset class="criteria" name="criteria">
-          <label tal:attributes="for string:${form_id}_FilterByCategory"
-                 i18n:translate="">Category</label>
-          <select id="CategorySelector"
-                  tal:attributes="name string:${form_id}_FilterByCategory"
-                  tal:define="categories_list view/getCategories"
-                  class="listing-filter">
-            <option value="any" i18n:translate="">Any</option>
-            <tal:options repeat="category categories_list">
-              <option
+          <legend i18n:translate="">Filter Analyses</legend>
+          <div class="field">
+            <label tal:attributes="for string:${form_id}_FilterByCategory"
+                   i18n:translate="">Category</label>
+            <select id="CategorySelector"
+                    tal:attributes="name string:${form_id}_FilterByCategory"
+                    tal:define="categories_list view/getCategories"
+                    class="listing-filter">
+              <option value="any" i18n:translate="">Any</option>
+              <tal:options repeat="category categories_list">
+                <option
                   tal:attributes="value python:category;
                                   selected python: view.request.form.get(form_id+'_getCategoryTitle', '') == category and 'selected' or ''"
                   tal:content="python:categories_list.getValue(category)"/>
-            </tal:options>
-          </select>
+              </tal:options>
+            </select>
+          </div>
 
-          <label tal:attributes="for string:${form_id}_FilterByService"
-                 i18n:translate="">Service</label>
-          <select id="ServiceSelector"
-                  tal:attributes="name string:${form_id}_FilterByService"
-                  tal:define="services_list view/getServices"
-                  class="listing-filter">
-            <option value="any" i18n:translate="">Any</option>
-            <tal:options repeat="service services_list">
-              <option
+          <div class="field">
+            <label tal:attributes="for string:${form_id}_FilterByService"
+                   i18n:translate="">Service</label>
+            <select id="ServiceSelector"
+                    tal:attributes="name string:${form_id}_FilterByService"
+                    tal:define="services_list view/getServices"
+                    class="listing-filter">
+              <option value="any" i18n:translate="">Any</option>
+              <tal:options repeat="service services_list">
+                <option
                   tal:attributes="value python:service;
                                   selected python: view.request.form.get(form_id+'_Title', '') == service and 'selected' or ''"
                   tal:content="python:services_list.getValue(service)"/>
-            </tal:options>
-          </select>
+              </tal:options>
+            </select>
+          </div>
 
-          <label tal:attributes="for string:${form_id}_FilterByClient"
-                 i18n:translate="">Client</label>
-          <select id="ClientSelector"
-                  tal:attributes="name string:${form_id}_FilterByClient"
-                  tal:define="clients_list view/getClients"
-                  class="listing-filter">
-            <option value="any" i18n:translate="">Any</option>
-            <tal:options repeat="client clients_list">
-              <option
+          <div class="field">
+            <label tal:attributes="for string:${form_id}_FilterByClient"
+                   i18n:translate="">Client</label>
+            <select id="ClientSelector"
+                    tal:attributes="name string:${form_id}_FilterByClient"
+                    tal:define="clients_list view/getClients"
+                    class="listing-filter">
+              <option value="any" i18n:translate="">Any</option>
+              <tal:options repeat="client clients_list">
+                <option
                   tal:attributes="value python:client;
                                   selected python: view.request.form.get(form_id+'_getClientTitle', '') == client and 'selected' or ''"
                   tal:content="python:clients_list.getValue(client)"/>
-            </tal:options>
-          </select>
+              </tal:options>
+            </select>
+          </div>
+
+          <!-- Search Button -->
           <a tal:attributes="href view/view_url"
              class="ws-analyses-search-button"
              i18n:translate="">Search</a>
+
         </fieldset>
       </tal:searchform>
 
