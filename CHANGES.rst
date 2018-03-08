@@ -16,6 +16,8 @@ Changelog
 **Fixed**
 
 - #706 Filtering by Department is not working
+- #712 Dates in date picker are visible again
+- #703 Containers of Duplicated Analyses are not found
 - #698 Fix Publish Actions for Batches
 - #696 Filter worksheets by department. The worksheet count in the dashboard is now properly updated accordingly to the selected departments
 
