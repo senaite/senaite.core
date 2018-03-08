@@ -976,74 +976,61 @@ class ReferenceValuesValidator:
     def __call__(self, value, *args, **kwargs):
 
         instance = kwargs['instance']
-        # fieldname = kwargs['field'].getName()
         request = kwargs.get('REQUEST', {})
 
         translate = getToolByName(instance, 'translation_service').translate
 
-        ress = request.get('result', {})[0]
-        mins = request.get('min', {})[0]
-        maxs = request.get('max', {})[0]
-        errs = request.get('error', {})[0]
+        ress = request.get('result', [{}])[0]
+        mins = request.get('min', [{}])[0]
+        maxs = request.get('max', [{}])[0]
+        errs = request.get('error', [{}])[0]
+        services = request.get('service', [{}])[0]
 
         # Retrieve all AS uids
-        uids = ress.keys()
-        for uid in uids:
+        for uid, service_name in services.items():
 
             # Foreach AS, check spec. input values
-            res = ress[uid] if ress[uid] else '0'
-            min = mins[uid] if mins[uid] else '0'
-            max = maxs[uid] if maxs[uid] else '0'
-            err = errs[uid] if errs[uid] else '0'
+            res = ress.get(uid, None)
+            if not res:
+                # No result entered for this service, will be dismissed
+                continue
 
-            # Values must be numbers
-            try:
-                res = float(res)
-            except ValueError:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Expected values must be numeric")
-                    ))
-            try:
-                min = float(min)
-            except ValueError:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Min values must be numeric")))
-            try:
-                max = float(max)
-            except ValueError:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Max values must be numeric")))
-            try:
-                err = float(err)
-            except ValueError:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Percentage error values must be "
-                          "numeric")))
+            err = errs.get(uid, None) or '0'
+            min = mins.get(uid, None) or res
+            max = maxs.get(uid, None) or res
+            if not api.is_floatable(res):
+                return to_utf8(translate(_("Validation for {} failed: "
+                                           "Expected result value must be "
+                                           "numeric".
+                                           format(service_name))))
 
-            # Min value must be < max
-            if min > max:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Max values must be greater than Min "
-                          "values")))
+            if not api.is_floatable(err):
+                return to_utf8(translate(_("Validation for {} failed: "
+                                           "% Error must be a value between 0"
+                                           "and 100 or empty".
+                                           format(service_name))))
 
-            # Expected result must be between min and max
-            if res < min or res > max:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Expected values must be between Min "
-                          "and Max values")))
+            if not api.is_floatable(min):
+                return to_utf8(translate(_("Validation for {} failed: "
+                                           "Min value must be numeric or empty".
+                                           format(service_name))))
 
-            # Error percentage must be between 0 and 100
-            if err < 0 or err > 100:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Percentage error values must be "
-                          "between 0 and 100")))
+            if not api.is_floatable(max):
+                return to_utf8(translate(_("Validation for {} failed: "
+                                           "Max value must be numeric or empty".
+                                           format(service_name))))
+
+            if api.to_float(min) > api.to_float(res):
+                return to_utf8(translate(_("Validation for {} failed: "
+                                           "Min value must be below the "
+                                           "expected result".
+                                           format(service_name))))
+
+            if api.to_float(max) < api.to_float(res):
+                return to_utf8(translate(_("Validation for {} failed: "
+                                           "Max value must be above the "
+                                           "expected result".
+                                           format(service_name))))
 
         return True
 

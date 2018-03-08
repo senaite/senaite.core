@@ -140,10 +140,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Reference Values',
         required = 1,
         subfield_validators = {
-                    'result':'referencevalues_validator',
-                    'min':'referencevalues_validator',
-                    'max':'referencevalues_validator',
-                    'error':'referencevalues_validator'},
+                    'result':'referencevalues_validator',},
         widget = ReferenceResultsWidget(
             label=_("Expected Values"),
         ),
@@ -227,7 +224,6 @@ class ReferenceSample(BaseFolder):
             specs[uid]['result'] = spec['result']
             specs[uid]['min'] = spec.get('min', '')
             specs[uid]['max'] = spec.get('max', '')
-            specs[uid]['error'] = 'error' in spec and spec['error'] or 0
         return specs
 
     security.declarePublic('getReferenceAnalyses')
