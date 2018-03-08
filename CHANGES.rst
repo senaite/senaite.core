@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+#694 Bad calculation of min and max in ReferenceResults on negative result
 #694 Instrument validity not updated in accordance with latest QC tests
 #694 Result range shoulders computed badly on full/partial negative specs
 
