@@ -125,7 +125,7 @@ class window.WorksheetAddAnalysesView
 
     # some sane option defaults
     options.type ?= "POST"
-    options.url ?= window.location.href
+    options.url ?= @get_base_url()
     options.context ?= this
 
     console.debug ">>> ajax_submit::options=", options
@@ -134,6 +134,21 @@ class window.WorksheetAddAnalysesView
     done = =>
         $(this).trigger "ajax:submit:end"
     return $.ajax(options).done done
+
+
+  get_base_url: =>
+    ###
+     * Return the current base url
+    ###
+    url = window.location.href
+    return url.split('?')[0]
+
+
+  get_authenticator: =>
+    ###
+     * Get the authenticator value
+    ###
+    return $("input[name='_authenticator']").val()
 
 
   get_listing_form_id: () =>
@@ -149,6 +164,40 @@ class window.WorksheetAddAnalysesView
     ###
     form_id = @get_listing_form_id()
     return $("form[id='#{form_id}']")
+
+
+  filter_service_selector_by_category_uid: (category_uid) =>
+    ###
+     * Filters the service selector by category
+    ###
+    console.debug "WorksheetAddanalysesview::filter_service_selector_by_category_uid:#{category_uid}"
+
+    form_id = @get_listing_form_id()
+    select_name = "#{form_id}_FilterByService"
+    $select = $("[name='#{select_name}']")
+
+    base_url = @get_base_url()
+    url = base_url.replace "/add_analyses", "/getServices"
+
+    data =
+      _authenticator: @get_authenticator()
+
+    if category_uid isnt "any"
+      data["getCategoryUID"] = category_uid
+
+    @ajax_submit
+      url: url
+      data: data
+      dataType: "json"
+    .done (data) ->
+      $select.empty()
+      any_option = "<option value='any'>#{_('Any')}</option>"
+      $select.append any_option
+      $.each data, (index, item) ->
+        uid = item[0]
+        name = item[1]
+        option = "<option value='#{uid}'>#{name}</option>"
+        $select.append option
 
 
   ### INITIALIZERS ###
@@ -178,6 +227,12 @@ class window.WorksheetAddAnalysesView
     ###
     console.debug "°°° WorksheetAddanalysesview::on_category_change °°°"
 
+    # The select element for WS Template
+    $el = $(event.target)
+
+    # extract the category UID and filter the services box
+    category_uid = $el.val()
+    @filter_service_selector_by_category_uid category_uid
 
   on_search_click: (event) =>
     ###
@@ -227,36 +282,6 @@ class window.WorksheetAddAnalysesView
     .done (data) ->
       $("div.bika-listing-table-container", form).html data
 
-
-#     # search form - selecting a category fills up the service selector
-#     $('[name="list_FilterByCategory"]').live 'change', ->
-#       val = $('[name="list_FilterByCategory"]').find(':selected').val()
-#       if val == 'any'
-#         $('[name="list_FilterByService"]').empty()
-#         $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
-#         return
-#       $.ajax
-#         url: window.location.href.split('?')[0].replace('/add_analyses', '') + '/getServies'
-#         type: 'POST'
-#         data:
-#           '_authenticator': $('input[name="_authenticator"]').val()
-#           'getCategoryUID': val
-#         dataType: 'json'
-#         success: (data, textStatus, $XHR) ->
-#           current_service_selection = $('[name="list_FilterByService"]').val()
-#           $('[name="list_FilterByService"]').empty()
-#           $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
-#           i = 0
-#           while i < data.length
-#             if data[i] == current_service_selection
-#               selected = 'selected="selected" '
-#             else
-#               selected = ''
-#             $('[name="list_FilterByService"]').append '<option ' + selected + 'value=\'' + data[i][0] + '\'>' + data[i][1] + '</option>'
-#             i++
-#           return
-#       return
-#     $('[name="list_FilterByCategory"]').trigger 'change'
 
 ################ REFACTOR FROM HERE ##############################
 

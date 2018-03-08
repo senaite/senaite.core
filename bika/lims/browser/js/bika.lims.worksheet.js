@@ -109,8 +109,11 @@
       this.load = this.load.bind(this);
       /* METHODS */
       this.ajax_submit = this.ajax_submit.bind(this);
+      this.get_base_url = this.get_base_url.bind(this);
+      this.get_authenticator = this.get_authenticator.bind(this);
       this.get_listing_form_id = this.get_listing_form_id.bind(this);
       this.get_listing_form = this.get_listing_form.bind(this);
+      this.filter_service_selector_by_category_uid = this.filter_service_selector_by_category_uid.bind(this);
       /* INITIALIZERS */
       this.bind_eventhandler = this.bind_eventhandler.bind(this);
       /* EVENT HANDLER */
@@ -137,7 +140,7 @@
         options.type = "POST";
       }
       if (options.url == null) {
-        options.url = window.location.href;
+        options.url = this.get_base_url();
       }
       if (options.context == null) {
         options.context = this;
@@ -148,6 +151,22 @@
         return $(this).trigger("ajax:submit:end");
       };
       return $.ajax(options).done(done);
+    }
+
+    get_base_url() {
+      /*
+       * Return the current base url
+       */
+      var url;
+      url = window.location.href;
+      return url.split('?')[0];
+    }
+
+    get_authenticator() {
+      /*
+       * Get the authenticator value
+       */
+      return $("input[name='_authenticator']").val();
     }
 
     get_listing_form_id() {
@@ -166,6 +185,42 @@
       return $(`form[id='${form_id}']`);
     }
 
+    filter_service_selector_by_category_uid(category_uid) {
+      var $select, base_url, data, form_id, select_name, url;
+      /*
+       * Filters the service selector by category
+       */
+      console.debug(`WorksheetAddanalysesview::filter_service_selector_by_category_uid:${category_uid}`);
+      form_id = this.get_listing_form_id();
+      select_name = `${form_id}_FilterByService`;
+      $select = $(`[name='${select_name}']`);
+      base_url = this.get_base_url();
+      url = base_url.replace("/add_analyses", "/getServices");
+      data = {
+        _authenticator: this.get_authenticator()
+      };
+      if (category_uid !== "any") {
+        data["getCategoryUID"] = category_uid;
+      }
+      return this.ajax_submit({
+        url: url,
+        data: data,
+        dataType: "json"
+      }).done(function(data) {
+        var any_option;
+        $select.empty();
+        any_option = `<option value='any'>${_('Any')}</option>`;
+        $select.append(any_option);
+        return $.each(data, function(index, item) {
+          var name, option, uid;
+          uid = item[0];
+          name = item[1];
+          option = `<option value='${uid}'>${name}</option>`;
+          return $select.append(option);
+        });
+      });
+    }
+
     bind_eventhandler() {
       /*
        * Binds callbacks on elements
@@ -182,10 +237,16 @@
     }
 
     on_category_change(event) {
+      var $el, category_uid;
       /*
        * Eventhandler for category change
        */
-      return console.debug("°°° WorksheetAddanalysesview::on_category_change °°°");
+      console.debug("°°° WorksheetAddanalysesview::on_category_change °°°");
+      // The select element for WS Template
+      $el = $(event.target);
+      // extract the category UID and filter the services box
+      category_uid = $el.val();
+      return this.filter_service_selector_by_category_uid(category_uid);
     }
 
     on_search_click(event) {
@@ -232,36 +293,6 @@
     }
 
   };
-
-  //     # search form - selecting a category fills up the service selector
-  //     $('[name="list_FilterByCategory"]').live 'change', ->
-  //       val = $('[name="list_FilterByCategory"]').find(':selected').val()
-  //       if val == 'any'
-  //         $('[name="list_FilterByService"]').empty()
-  //         $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
-  //         return
-  //       $.ajax
-  //         url: window.location.href.split('?')[0].replace('/add_analyses', '') + '/getServies'
-  //         type: 'POST'
-  //         data:
-  //           '_authenticator': $('input[name="_authenticator"]').val()
-  //           'getCategoryUID': val
-  //         dataType: 'json'
-  //         success: (data, textStatus, $XHR) ->
-  //           current_service_selection = $('[name="list_FilterByService"]').val()
-  //           $('[name="list_FilterByService"]').empty()
-  //           $('[name="list_FilterByService"]').append '<option value=\'any\'>' + _('Any') + '</option>'
-  //           i = 0
-  //           while i < data.length
-  //             if data[i] == current_service_selection
-  //               selected = 'selected="selected" '
-  //             else
-  //               selected = ''
-  //             $('[name="list_FilterByService"]').append '<option ' + selected + 'value=\'' + data[i][0] + '\'>' + data[i][1] + '</option>'
-  //             i++
-  //           return
-  //       return
-  //     $('[name="list_FilterByCategory"]').trigger 'change'
 
   //############### REFACTOR FROM HERE ##############################
   /**
