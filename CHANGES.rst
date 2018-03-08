@@ -6,24 +6,28 @@ Changelog
 
 **Added**
 
-#694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
+- #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 
 **Changed**
 
-#694 Out of range/shoulders logic redux, ported to `api.analysis`
-#694 Make getResultRange functions from Analysis-types consistent
-#694 Out of range/shoulders icons are rendered in AnalysesView
+- #694 Out of range/shoulders logic redux, ported to `api.analysis`
+- #694 Make getResultRange functions from Analysis-types consistent
+- #694 Out of range/shoulders icons are rendered in AnalysesView
 
 **Removed**
 
-#694 Removal of "Permitted % Error" subfield in Analysis Specifications
-#694 Removal of Adapters for out of range icons
+- #694 Removal of "Permitted % Error" subfield in Analysis Specifications
+- #694 Removal of Adapters for out of range icons
 
 **Fixed**
 
-#694 Bad calculation of min and max in ReferenceResults on negative result
-#694 Instrument validity not updated in accordance with latest QC tests
-#694 Result range shoulders computed badly on full/partial negative specs
+- #694 Bad calculation of min and max in ReferenceResults on negative result
+- #694 Instrument validity not updated in accordance with latest QC tests
+- #694 Result range shoulders computed badly on full/partial negative specs
+- #712 Dates in date picker are visible again
+- #703 Containers of Duplicated Analyses are not found
+- #698 Fix Publish Actions for Batches
+- #696 Filter worksheets by department. The worksheet count in the dashboard is now properly updated accordingly to the selected departments
 
 **Security**
 

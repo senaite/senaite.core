@@ -502,7 +502,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         layout = self.getLayout()
         dup_pos = {'position': destination_slot,
                    'type': 'd',
-                   'container_uid': duplicate.getRequestID(),
+                   'container_uid': duplicate.getRequestUID(),
                    'analysis_uid': api.get_uid(duplicate)}
         layout.append(dup_pos)
         self.setLayout(layout)
