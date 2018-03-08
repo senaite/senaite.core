@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Varian Vista-PRO ICP
 """
-import csv
 import logging
 import re
 
@@ -12,7 +11,7 @@ from zope.component import getUtility
 
 from bika.lims.browser import BrowserView
 from bika.lims.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentResultsFileParser
+    InstrumentCSVResultsFileParser, AnalysisResultsImporter
 from bika.lims import bikaMessageFactory as _
 import json
 import traceback
@@ -22,50 +21,59 @@ logger = logging.getLogger(__name__)
 title = "Varian Vista-PRO ICP"
 
 
-class VistaPROICPParser(InstrumentResultsFileParser):
+class VistaPROICPParser(InstrumentCSVResultsFileParser):
     """ Vista-PRO Parser
     """
-    def __init__(self, rsf):
-        InstrumentResultsFileParser.__init__(self, rsf, 'CSV')
+    def __init__(self, csv):
+        InstrumentCSVResultsFileParser.__init__(self, csv)
+        self._end_header = False
+        self._resultsheader = []
+        self._numline = 0
 
-    def parse(self):
+    def _parseline(self, line):
+        if self._end_header is False:
+            return self.parse_headerline(line)
+        else:
+            return self.parse_resultsline(line)
+
+    def parse_headerline(self, line):
+        """ Parses header lines
+        """
+        if self._end_header is True:
+            # Header already processed
+            return 0
+
+        splitted = [token.strip() for token in line.split(',')]
+        if splitted[0] == 'Solution Label':
+            self._resultsheader = splitted
+            self._end_header = True
+        return 0
+
+    def parse_resultsline(self, line):
         """ CSV Parser
         """
 
-        try:
-            reader = csv.DictReader(self.getInputFile(), delimiter=',')
-        except TypeError:
-            # TypeError('argument 1 must be an iterator',)
-            reader = csv.DictReader(self.getInputFile().readlines(), delimiter=',')
+        splitted = [token.strip() for token in line.split(',')]
+        if self._end_header:
+            resid = splitted[0]
+        rawdict = {'DefaultResult': 'Soln Conc'}
+        rawdict.update(dict(zip(self._resultsheader, splitted)))
+        date_string = "{Date} {Time}".format(**rawdict)
+        date_time = DateTime(date_string)
+        rawdict['DateTime'] = date_time
+        element = rawdict.get("Element", "").replace(" ", "").replace(".", "")
 
-        cnt = 0
-        for n, row in enumerate(reader):
+        # Set DefaultResult to 0.0 if result is "0" or "--" or '' or 'ND'
+        result = rawdict[rawdict['DefaultResult']]
+        column_name = rawdict['DefaultResult']
+        result = self.zeroValueDefaultInstrumentResults(column_name,
+                                                        result,
+                                                        line)
+        rawdict[rawdict['DefaultResult']] = result
+        #
 
-            cnt += 1
-            resid = row['Solution Label'].split('*')[0].strip()
-
-            # Service Keyword
-            element = row.get("Element", "").replace(" ", "").replace(".", "")
-
-            # Date and Time parsing
-            date_string = "{Date} {Time}".format(**row)
-            date_time = DateTime(date_string)
-
-            rawdict = row
-            rawdict['DateTime'] = date_time
-            rawdict['DefaultResult'] = 'Soln Conc'
-
-            # Set DefaultResult to 0.0 if result is "0" or "--" or '' or 'ND'
-            result = rawdict[rawdict['DefaultResult']]
-            column_name = rawdict['DefaultResult']
-            result = self.zeroValueDefaultInstrumentResults(column_name,
-                                                            result,
-                                                            cnt)
-            rawdict[rawdict['DefaultResult']] = result
-            #
-
-            val = re.sub(r"\W", "", element)
-            self._addRawResult(resid, values={val: rawdict}, override=False)
+        val = re.sub(r"\W", "", element)
+        self._addRawResult(resid, values={val: rawdict}, override=False)
 
         self.log(
             "End of file reached successfully: ${total_objects} objects, "
@@ -74,8 +82,6 @@ class VistaPROICPParser(InstrumentResultsFileParser):
                      "total_analyses": self.getAnalysesTotalCount(),
                      "total_results": self.getResultsTotalCount()}
         )
-
-        return True
 
     def zeroValueDefaultInstrumentResults(self, column_name, result, line):
         result = str(result)
