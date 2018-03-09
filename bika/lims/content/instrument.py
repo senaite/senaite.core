@@ -561,8 +561,6 @@ class Instrument(ATFolder):
             [1]: RefAnalysis for Ethanol, QC-002 (Control)
             [2]: RefAnalysis for Methanol, QC-001 (Blank)
         """
-        ref_analyses = self.getReferenceAnalyses()
-
         field = self.getField('_LatestReferenceAnalyses')
         refs = field and field.get(self) or []
         if len(refs) == 0:
