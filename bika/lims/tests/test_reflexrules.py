@@ -6,8 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.workflow import doActionFor
@@ -23,8 +22,8 @@ except ImportError:  # Python 2.7
 
 
 # Tests related with reflex testing
-class TestReflexRules(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestReflexRules(DataTestCase):
+
     # A list with the created rules
     rules_list = []
     # A list with the created methods
@@ -197,7 +196,6 @@ class TestReflexRules(BikaFunctionalTestCase):
     def setUp(self):
         super(TestReflexRules, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
     def tearDown(self):
@@ -903,5 +901,4 @@ class TestReflexRules(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestReflexRules))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

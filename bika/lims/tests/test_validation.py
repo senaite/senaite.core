@@ -13,18 +13,14 @@ from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
 
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 
 
-class Tests(BikaFunctionalTestCase):
-
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class Tests(DataTestCase):
 
     def setUp(self):
         super(Tests, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
     def test_UniqueFieldValidator(self):
@@ -459,5 +455,4 @@ class Tests(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Tests))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

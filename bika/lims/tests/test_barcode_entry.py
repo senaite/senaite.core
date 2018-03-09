@@ -17,8 +17,7 @@ from plone.app.testing import login
 from plone.app.testing import setRoles
 
 from bika.lims.barcode import barcode_entry
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import BaseTestCase
 from bika.lims.utils import tmpID, changeWorkflowState
 from bika.lims.workflow import doActionFor
 
@@ -28,8 +27,7 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class TestBarcodeEntry(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestBarcodeEntry(BaseTestCase):
 
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
@@ -145,5 +143,4 @@ def test_sample_with_single_ar_redirects_to_AR(self):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBarcodeEntry))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

@@ -11,21 +11,18 @@ from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login, logout
 from plone.app.testing import setRoles
 
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 
 try:
     import unittest2 as unittest
-except ImportError: # Python 2.7
+except ImportError:  # Python 2.7
     import unittest
 
 
-class TestAnalysisRequestRetract(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestAnalysisRequestRetract(DataTestCase):
 
     def setUp(self):
         super(TestAnalysisRequestRetract, self).setUp()
-        self.setup_data_load()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
         login(self.portal, TEST_USER_NAME)
 
@@ -80,5 +77,4 @@ class TestAnalysisRequestRetract(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestAnalysisRequestRetract))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

@@ -6,8 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysis import create_analysis
 from plone.app.testing import TEST_USER_ID
@@ -21,17 +20,15 @@ except ImportError:
     import unittest
 
 
-class TestMultiVerificationType(BikaFunctionalTestCase):
+class TestMultiVerificationType(DataTestCase):
     """
     In Bika Setup, When Multi verification is enabled, one of 3 types of Multi Verification
     option should be chosen. Functional Testing of this new feature.
     """
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(TestMultiVerificationType, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
     def tearDown(self):
@@ -76,5 +73,4 @@ class TestMultiVerificationType(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestMultiVerificationType))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

@@ -6,8 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
@@ -20,13 +19,11 @@ except ImportError: # Python 2.7
     import unittest
 
 
-class TestDecimalMarkWithSciNotation(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestDecimalMarkWithSciNotation(DataTestCase):
 
     def setUp(self):
         super(TestDecimalMarkWithSciNotation, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
         # analysis-service-3: Calcium (Ca)
@@ -133,5 +130,4 @@ class TestDecimalMarkWithSciNotation(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestDecimalMarkWithSciNotation))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

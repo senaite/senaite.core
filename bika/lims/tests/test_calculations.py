@@ -10,22 +10,19 @@ from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
 from bika.lims.workflow import doActionFor
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 
 try:
     import unittest2 as unittest
-except ImportError: # Python 2.7
+except ImportError:  # Python 2.7
     import unittest
 
 
-class TestCalculations(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestCalculations(DataTestCase):
 
     def setUp(self):
         super(TestCalculations, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
         # Calculation: Total Hardness
@@ -532,5 +529,4 @@ class TestCalculations(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestCalculations))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

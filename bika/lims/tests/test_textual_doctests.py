@@ -11,7 +11,7 @@ from os.path import join
 import unittest2 as unittest
 from Testing import ZopeTestCase as ztc
 from bika.lims.config import PROJECTNAME
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import BaseTestCase
 from pkg_resources import resource_listdir
 
 rst_filenames = [f for f in resource_listdir(PROJECTNAME, "tests/doctests")
@@ -28,7 +28,7 @@ def test_suite():
         suite.addTests([
             ztc.ZopeDocFileSuite(
                 doctestfile,
-                test_class=BikaFunctionalTestCase,
+                test_class=BaseTestCase,
                 optionflags=flags
             )
         ])
