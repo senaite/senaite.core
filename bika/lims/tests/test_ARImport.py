@@ -8,20 +8,15 @@
 import re
 
 import transaction
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import TEST_USER_PASSWORD
-from plone.app.testing import login
-from plone.app.testing import setRoles
-
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import (CATALOG_ANALYSIS_LISTING,
+                               CATALOG_ANALYSIS_REQUEST_LISTING)
 from bika.lims.tests.base import BaseTestCase
 from bika.lims.utils import tmpID
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import doActionFor, getCurrentState
+from plone.app.testing import (TEST_USER_ID, TEST_USER_NAME,
+                               TEST_USER_PASSWORD, login, setRoles)
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 
 try:
     import unittest2 as unittest

@@ -10,10 +10,7 @@ from bika.lims.tests.base import DataTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.workflow import doActionFor
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 
 try:
     import unittest2 as unittest
@@ -179,7 +176,6 @@ class TestReflexRules(DataTestCase):
 
         """
         # Creating a rule
-        rules_list = []
         folder = self.portal.bika_setup.bika_reflexrulefolder
         _id = folder.invokeFactory('ReflexRule', id=tmpID())
         rule = folder[_id]

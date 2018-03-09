@@ -5,12 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
-from bika.lims.workflow import doActionFor
 from bika.lims.tests.base import DataTestCase
+from bika.lims.workflow import doActionFor
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 
 try:
     import unittest2 as unittest
@@ -28,16 +25,19 @@ class TestCalculations(DataTestCase):
         # Calculation: Total Hardness
         # Initial formula: [Ca] + [Mg]
         calcs = self.portal.bika_setup.bika_calculations
-        self.calculation = [calcs[k] for k in calcs if calcs[k].title=='Total Hardness'][0]
+        self.calculation = [calcs[k] for k in calcs
+                            if calcs[k].title == 'Total Hardness'][0]
 
         # Service with calculation: Tot. Hardness (THCaCO3)
         servs = self.portal.bika_setup.bika_analysisservices
-        self.calcservice = [servs[k] for k in servs if servs[k].title=='Tot. Hardness (THCaCO3)'][0]
+        self.calcservice = [servs[k] for k in servs
+                            if servs[k].title == 'Tot. Hardness (THCaCO3)'][0]
         self.assertEqual(self.calcservice.getCalculation(), self.calculation)
         self.calcservice.setUseDefaultCalculation(False)
 
         # Analysis Services: Ca and Mg
-        self.services = [servs[k] for k in servs if servs[k].getKeyword() in ('Ca', 'Mg')]
+        self.services = [servs[k] for k in servs
+                         if servs[k].getKeyword() in ('Ca', 'Mg')]
 
         # Allow Manual DLs
         for s in self.services:
@@ -314,7 +314,7 @@ class TestCalculations(DataTestCase):
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
             for k,v in f['interims'].items():
-                interims.append({'keyword': k, 'title':k, 'value': v,
+                interims.append({'keyword': k, 'title': k, 'value': v,
                                  'hidden': False, 'type': 'int',
                                  'unit': ''})
             self.calculation.setInterimFields(interims)
@@ -432,11 +432,11 @@ class TestCalculations(DataTestCase):
                         if i['keyword'] in f['interims']:
                             ival = float(f['interims'][i['keyword']])
                             intermap.append({'keyword': i['keyword'],
-                                            'value': ival,
-                                            'title': i['title'],
-                                            'hidden': i['hidden'],
-                                            'type': i['type'],
-                                            'unit': i['unit']})
+                                             'value': ival,
+                                             'title': i['title'],
+                                             'hidden': i['hidden'],
+                                             'type': i['type'],
+                                             'unit': i['unit']})
                         else:
                             intermap.append(i)
                     an.setInterimFields(intermap)
@@ -457,10 +457,10 @@ class TestCalculations(DataTestCase):
             self.calculation.setFormula(f['formula'])
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
-            for k,v in f['interims'].items():
-                interims.append({'keyword': k, 'title':k, 'value': v,
+            for k, v in f['interims'].items():
+                interims.append({'keyword': k, 'title': k, 'value': v,
                                  'hidden': False, 'type': 'int',
-                                 'unit': ''});
+                                 'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
 
@@ -508,11 +508,11 @@ class TestCalculations(DataTestCase):
                         if i['keyword'] in f['interims']:
                             ival = float(f['interims'][i['keyword']])
                             intermap.append({'keyword': i['keyword'],
-                                            'value': ival,
-                                            'title': i['title'],
-                                            'hidden': i['hidden'],
-                                            'type': i['type'],
-                                            'unit': i['unit']})
+                                             'value': ival,
+                                             'title': i['title'],
+                                             'hidden': i['hidden'],
+                                             'type': i['type'],
+                                             'unit': i['unit']})
                         else:
                             intermap.append(i)
                     an.setInterimFields(intermap)

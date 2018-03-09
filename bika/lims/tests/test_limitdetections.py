@@ -5,17 +5,14 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
 from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
+from Products.CMFCore.utils import getToolByName
 
 try:
     import unittest2 as unittest
-except ImportError: # Python 2.7
+except ImportError:  # Python 2.7
     import unittest
 
 
@@ -41,7 +38,7 @@ class TestLimitDetections(DataTestCase):
             s.setAllowManualDetectionLimit(self.lds[idx]['manual'])
             s.setLowerDetectionLimit(self.lds[idx]['min'])
             s.setUpperDetectionLimit(self.lds[idx]['max'])
-            idx+=1
+            idx += 1
 
     def tearDown(self):
         for s in self.services:

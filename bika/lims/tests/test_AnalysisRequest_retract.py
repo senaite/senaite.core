@@ -5,13 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login, logout
-from plone.app.testing import setRoles
-
 from bika.lims.tests.base import DataTestCase
+from plone.app.testing import (TEST_USER_ID, TEST_USER_NAME, login, logout,
+                               setRoles)
+from Products.CMFCore.utils import getToolByName
 
 try:
     import unittest2 as unittest
@@ -38,8 +35,8 @@ class TestAnalysisRequestRetract(DataTestCase):
                   'SamplingDate': '2015-01-01',
                   'SampleType': sampletype.UID()}
         # Getting some services
-        services = catalog(portal_type = 'AnalysisService',
-                            inactive_state = 'active')[:3]
+        services = catalog(portal_type='AnalysisService',
+                            inactive_state='active')[:3]
         service_uids = [service.getObject().UID() for service in services]
         request = {}
         ar = create_analysisrequest(client, request, values, service_uids)
@@ -48,26 +45,27 @@ class TestAnalysisRequestRetract(DataTestCase):
 
         # Cheking if everything is going OK
         self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
-                                                        'sample_received')
+                          'sample_received')
         for analysis in ar.getAnalyses(full_objects=True):
             analysis.setResult('12')
             wf.doActionFor(analysis, 'submit')
-            self.assertEquals(analysis.portal_workflow.getInfoFor(analysis,
-                            'review_state'),'to_be_verified')
+            self.assertEquals(analysis.portal_workflow.getInfoFor(
+                analysis, 'review_state'), 'to_be_verified')
             # retracting results
             wf.doActionFor(analysis, 'retract')
-            self.assertEquals(analysis.portal_workflow.getInfoFor(analysis,
-                            'review_state'),'retracted')
+            self.assertEquals(analysis.portal_workflow.getInfoFor(
+                analysis, 'review_state'), 'retracted')
         for analysis in ar.getAnalyses(full_objects=True):
-            if analysis.portal_workflow.getInfoFor(analysis,
-                'review_state') == 'retracted':
+            if analysis.portal_workflow.getInfoFor(
+                    analysis, 'review_state') == 'retracted':
                 continue
             wf.doActionFor(analysis, 'submit')
-            self.assertEquals(analysis.portal_workflow.getInfoFor(analysis,
-                            'review_state'),'to_be_verified')
+            self.assertEquals(
+                analysis.portal_workflow.getInfoFor(analysis, 'review_state'),
+                'to_be_verified')
         wf.doActionFor(ar, 'retract')
         self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
-                                                        'sample_received')
+                          'sample_received')
 
     def tearDown(self):
         logout()

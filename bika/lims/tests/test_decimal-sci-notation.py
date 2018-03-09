@@ -5,13 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
 from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
+from Products.CMFCore.utils import getToolByName
 
 try:
     import unittest2 as unittest
@@ -32,7 +29,7 @@ class TestDecimalSciNotation(DataTestCase):
         # Original values
         self.orig_as_prec = self.service.getPrecision()
         self.orig_as_expf = self.service.getExponentialFormatPrecision()
-        self.orig_as_ldl  = self.service.getLowerDetectionLimit()
+        self.orig_as_ldl = self.service.getLowerDetectionLimit()
         self.orig_bs_expf = self.service.getExponentialFormatThreshold()
         self.orig_bs_scin = self.service.getScientificNotationResults()
 
@@ -338,8 +335,9 @@ class TestDecimalSciNotation(DataTestCase):
             self.assertEqual(an.getResult(), m[3])
             self.assertEqual(an.Schema().getField('Result').get(an), m[3])
             fr = an.getFormattedResult(sciformat=m[2])
-            #print '%s   %s   %s   %s  =>  \'%s\' ?= \'%s\'' % (m[0],m[1],m[2],m[3],m[4],fr)
+            # print '%s   %s   %s   %s  =>  \'%s\' ?= \'%s\'' % (m[0],m[1],m[2],m[3],m[4],fr)
             self.assertEqual(fr, m[4])
+
 
 def test_suite():
     suite = unittest.TestSuite()

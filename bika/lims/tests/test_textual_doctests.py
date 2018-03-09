@@ -8,11 +8,12 @@
 import doctest
 from os.path import join
 
+from pkg_resources import resource_listdir
+
 import unittest2 as unittest
-from Testing import ZopeTestCase as ztc
 from bika.lims.config import PROJECTNAME
 from bika.lims.tests.base import BaseTestCase
-from pkg_resources import resource_listdir
+from Testing import ZopeTestCase as ztc
 
 rst_filenames = [f for f in resource_listdir(PROJECTNAME, "tests/doctests")
                  if f.endswith('.rst')]

@@ -7,10 +7,7 @@
 
 from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 
 try:
     import unittest2 as unittest
@@ -60,7 +57,6 @@ class TestHiddenAnalyses(DataTestCase):
 
     def test_service_hidden_service(self):
         service = self.services[1]
-        uid = service.UID()
         self.assertFalse(service.getHidden())
         self.assertFalse(service.Schema().getField('Hidden').get(service))
 
@@ -77,7 +73,7 @@ class TestHiddenAnalyses(DataTestCase):
     def test_service_hidden_profile(self):
         # Profile
         # For Calcium (unset)
-        uid = self.services[0].UID();
+        uid = self.services[0].UID()
         self.assertFalse(self.services[0].getHidden())
         self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
@@ -341,9 +337,9 @@ class TestHiddenAnalyses(DataTestCase):
         # AR with template, with changes
         values['Template'] = self.artemplate.UID()
         del values['Profiles']
-        matrix = [[2, 1,-2],  # AS = Not set
-                  [2, 1,-2],  # AS = False
-                  [2, 1,-1]]
+        matrix = [[2, 1, -2],  # AS = Not set
+                  [2, 1, -2],  # AS = False
+                  [2, 1, -1]]
         for i in range(len(matrix)):
             sets = {'uid': services[i]}
             opts = [0, 1, 2]
@@ -369,6 +365,7 @@ class TestHiddenAnalyses(DataTestCase):
 
         # Restore
         self.artemplate.setAnalysisServicesSettings([])
+
 
 def test_suite():
     suite = unittest.TestSuite()

@@ -5,15 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from plone.app.testing import FunctionalTesting
-from plone.app.testing import PLONE_FIXTURE
-from plone.app.testing import PloneSandboxLayer
-from plone.testing import z2
-
-from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import login
-from plone.app.testing import logout
 from bika.lims.exportimport.load_setup_data import LoadSetupData
+from plone.app.testing import (PLONE_FIXTURE, SITE_OWNER_NAME,
+                               FunctionalTesting, PloneSandboxLayer, login,
+                               logout)
+from plone.testing import z2
 
 
 class BaseLayer(PloneSandboxLayer):

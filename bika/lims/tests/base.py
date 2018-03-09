@@ -8,20 +8,9 @@
 import os
 from re import match
 
-import transaction
-from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import TEST_USER_PASSWORD
-from plone.app.testing import login
-from plone.app.testing import logout
-from plone.protect.authenticator import AuthenticatorView
-from plone.testing.z2 import Browser
-
-from bika.lims import logger
-from bika.lims.exportimport.load_setup_data import LoadSetupData
-from bika.lims.testing import BASE_TESTING
-from bika.lims.testing import DATA_TESTING
+from bika.lims.testing import BASE_TESTING, DATA_TESTING
 from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
+from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
 
 try:
