@@ -5,12 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import BaseTestCase
 
 
-class InstallationSuccessful(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class InstallationSuccessful(BaseTestCase):
 
     def test_Installation_Success(self):
         """Let's see if bika is correctly installed.

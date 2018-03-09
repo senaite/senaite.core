@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #710 Added more builtin functions for Calculations
 
 **Changed**
 
@@ -16,6 +17,12 @@ Changelog
 **Fixed**
 
 - #707 AR Add: Set default contact on client change
+- #700 Fix filtering by review state in aggregated list of analyses
+- #715 AR Rejection Fails when e-mail Notification is enabled
+- #709 Fix removal not possible of last non-verified Analysis in Manage Analysis View
+- #706 Filtering by Department is not working
+- #712 Dates in date picker are visible again
+- #703 Containers of Duplicated Analyses are not found
 - #698 Fix Publish Actions for Batches
 - #696 Filter worksheets by department. The worksheet count in the dashboard is now properly updated accordingly to the selected departments
 
