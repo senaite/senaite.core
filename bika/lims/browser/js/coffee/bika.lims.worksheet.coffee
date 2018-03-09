@@ -76,7 +76,7 @@ class window.WorksheetFolderView
     template_instrument = @get_template_instrument()
 
     # The UID of the assigned instrument in the template
-    instrument_uid = template_instruments[template_uid]
+    instrument_uid = template_instrument[template_uid]
 
     # Select the instrument from the selection
     @select_instrument instrument_uid
@@ -111,6 +111,25 @@ class window.WorksheetAddAnalysesView
 
     # bind the event handler to the elements
     @bind_eventhandler()
+
+
+  ### INITIALIZERS ###
+
+  bind_eventhandler: =>
+    ###
+     * Binds callbacks on elements
+     *
+     * N.B. We attach all the events to the form and refine the selector to
+     * delegate the event: https://learn.jquery.com/events/event-delegation/
+     *
+    ###
+    console.debug "WorksheetAddanalysesview::bind_eventhandler"
+
+    # Category filter changed
+    $("body").on "change", "[name='list_FilterByCategory']", @on_category_change
+
+    # Search button clicked
+    $("body").on "click", ".ws-analyses-search-button", @on_search_click
 
 
   ### METHODS ###
@@ -196,25 +215,6 @@ class window.WorksheetAddAnalysesView
         name = item[1]
         option = "<option value='#{uid}'>#{name}</option>"
         $select.append option
-
-
-  ### INITIALIZERS ###
-
-  bind_eventhandler: =>
-    ###
-     * Binds callbacks on elements
-     *
-     * N.B. We attach all the events to the form and refine the selector to
-     * delegate the event: https://learn.jquery.com/events/event-delegation/
-     *
-    ###
-    console.debug "WorksheetAddanalysesview::bind_eventhandler"
-
-    # Category filter changed
-    $("body").on "change", "[name='list_FilterByCategory']", @on_category_change
-
-    # Search button clicked
-    $("body").on "click", ".ws-analyses-search-button", @on_search_click
 
 
   ### EVENT HANDLER ###
@@ -724,6 +724,8 @@ class window.WorksheetManageResultsView
      * the specified analysis
     ###
 
+    console.debug "WorksheetManageResultsView::load_analysis_method_constraint:analysis_uid=#{analysis_uid} method_uid=#{method_uid}"
+
     # reference to this object for $.each calls
     me = @
 
@@ -731,7 +733,17 @@ class window.WorksheetManageResultsView
       method_uid = @get_method_by_analysis_uid analysis_uid
 
     analysis_constraints = @constraints[analysis_uid]
+
+    if not analysis_constraints
+      return
+
     method_constraints = analysis_constraints[method_uid]
+
+    if not method_constraints
+      return
+
+    if method_constraints.length < 7
+      return
 
     # method selector
     m_selector = $("select.listing_select_entry[field='Method'][uid='#{analysis_uid}']")

@@ -77,7 +77,7 @@
       // Assigned instrument of this worksheet
       template_instrument = this.get_template_instrument();
       // The UID of the assigned instrument in the template
-      instrument_uid = template_instruments[template_uid];
+      instrument_uid = template_instrument[template_uid];
       // Select the instrument from the selection
       return this.select_instrument(instrument_uid);
     }
@@ -107,6 +107,8 @@
        * Controller class for Worksheet's add analyses view
        */
       this.load = this.load.bind(this);
+      /* INITIALIZERS */
+      this.bind_eventhandler = this.bind_eventhandler.bind(this);
       /* METHODS */
       this.ajax_submit = this.ajax_submit.bind(this);
       this.get_base_url = this.get_base_url.bind(this);
@@ -114,8 +116,6 @@
       this.get_listing_form_id = this.get_listing_form_id.bind(this);
       this.get_listing_form = this.get_listing_form.bind(this);
       this.filter_service_selector_by_category_uid = this.filter_service_selector_by_category_uid.bind(this);
-      /* INITIALIZERS */
-      this.bind_eventhandler = this.bind_eventhandler.bind(this);
       /* EVENT HANDLER */
       this.on_category_change = this.on_category_change.bind(this);
       this.on_search_click = this.on_search_click.bind(this);
@@ -125,6 +125,21 @@
       console.debug("WorksheetAddanalysesview::load");
       // bind the event handler to the elements
       return this.bind_eventhandler();
+    }
+
+    bind_eventhandler() {
+      /*
+       * Binds callbacks on elements
+       *
+       * N.B. We attach all the events to the form and refine the selector to
+       * delegate the event: https://learn.jquery.com/events/event-delegation/
+       *
+       */
+      console.debug("WorksheetAddanalysesview::bind_eventhandler");
+      // Category filter changed
+      $("body").on("change", "[name='list_FilterByCategory']", this.on_category_change);
+      // Search button clicked
+      return $("body").on("click", ".ws-analyses-search-button", this.on_search_click);
     }
 
     ajax_submit(options = {}) {
@@ -217,21 +232,6 @@
           return $select.append(option);
         });
       });
-    }
-
-    bind_eventhandler() {
-      /*
-       * Binds callbacks on elements
-       *
-       * N.B. We attach all the events to the form and refine the selector to
-       * delegate the event: https://learn.jquery.com/events/event-delegation/
-       *
-       */
-      console.debug("WorksheetAddanalysesview::bind_eventhandler");
-      // Category filter changed
-      $("body").on("change", "[name='list_FilterByCategory']", this.on_category_change);
-      // Search button clicked
-      return $("body").on("click", ".ws-analyses-search-button", this.on_search_click);
     }
 
     on_category_change(event) {
@@ -773,13 +773,23 @@
        * If `method_uid` is null, uses the method that is currently selected for
        * the specified analysis
        */
+      console.debug(`WorksheetManageResultsView::load_analysis_method_constraint:analysis_uid=${analysis_uid} method_uid=${method_uid}`);
       // reference to this object for $.each calls
       me = this;
       if (!method_uid) {
         method_uid = this.get_method_by_analysis_uid(analysis_uid);
       }
       analysis_constraints = this.constraints[analysis_uid];
+      if (!analysis_constraints) {
+        return;
+      }
       method_constraints = analysis_constraints[method_uid];
+      if (!method_constraints) {
+        return;
+      }
+      if (method_constraints.length < 7) {
+        return;
+      }
       // method selector
       m_selector = $(`select.listing_select_entry[field='Method'][uid='${analysis_uid}']`);
       // instrument selector
