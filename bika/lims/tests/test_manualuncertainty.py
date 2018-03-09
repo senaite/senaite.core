@@ -5,27 +5,21 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 
 try:
     import unittest2 as unittest
-except ImportError: # Python 2.7
+except ImportError:  # Python 2.7
     import unittest
 
 
-class TestManualUncertainty(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestManualUncertainty(DataTestCase):
 
     def setUp(self):
         super(TestManualUncertainty, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
         servs = self.portal.bika_setup.bika_analysisservices
@@ -38,10 +32,10 @@ class TestManualUncertainty(BikaFunctionalTestCase):
         for s in self.services:
             s.setAllowManualUncertainty(True)
         uncs = [{'intercept_min': 0, 'intercept_max': 5, 'errorvalue': 0.0015},
-                {'intercept_min': 5, 'intercept_max':10, 'errorvalue': 0.02},
-                {'intercept_min':10, 'intercept_max':20, 'errorvalue': 0.4}]
-        self.services[1].setUncertainties(uncs);
-        self.services[2].setUncertainties(uncs);
+                {'intercept_min': 5, 'intercept_max': 10, 'errorvalue': 0.02},
+                {'intercept_min':10, 'intercept_max': 20, 'errorvalue': 0.4}]
+        self.services[1].setUncertainties(uncs)
+        self.services[2].setUncertainties(uncs)
         self.services[2].setPrecisionFromUncertainty(True)
 
     def tearDown(self):
@@ -95,7 +89,7 @@ class TestManualUncertainty(BikaFunctionalTestCase):
             self.assertFalse(an.getUncertainty())
 
         # Copper (advanced uncertainty)
-        cu = [a.getObject() for a in ar.getAnalyses() \
+        cu = [a.getObject() for a in ar.getAnalyses()
               if a.getObject().getServiceUID() == self.services[1].UID()][0]
         self.assertFalse(cu.getUncertainty())
 
@@ -127,7 +121,7 @@ class TestManualUncertainty(BikaFunctionalTestCase):
         self.assertFalse(cu.getUncertainty())
 
         # Iron (advanced uncertainty with precision)
-        fe = [a.getObject() for a in ar.getAnalyses() \
+        fe = [a.getObject() for a in ar.getAnalyses()
               if a.getObject().getServiceUID() == self.services[2].UID()][0]
         self.assertFalse(cu.getUncertainty())
 
@@ -203,13 +197,13 @@ class TestManualUncertainty(BikaFunctionalTestCase):
         self.assertEqual(formatDecimalMark(1), '1')
         self.assertEqual(formatDecimalMark(1.2), '1.2')
         self.assertEqual(formatDecimalMark('1.34'), '1.34')
-        self.assertEqual(formatDecimalMark('0.0021',decimalmark=','), '0,0021')
+        self.assertEqual(formatDecimalMark('0.0021', decimalmark=','), '0,0021')
         self.assertEqual(formatDecimalMark('2'), '2')
-        self.assertEqual(formatDecimalMark('< 2.1', decimalmark=','),'< 2,1')
-        self.assertEqual(formatDecimalMark('> 2.1', decimalmark=','),'> 2,1')
+        self.assertEqual(formatDecimalMark('< 2.1', decimalmark=','), '< 2,1')
+        self.assertEqual(formatDecimalMark('> 2.1', decimalmark=','), '> 2,1')
+
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestManualUncertainty))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

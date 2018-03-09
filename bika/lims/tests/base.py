@@ -8,20 +8,9 @@
 import os
 from re import match
 
-import transaction
-from plone.app.testing import DEFAULT_LANGUAGE
-from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import TEST_USER_PASSWORD
-from plone.app.testing import login
-from plone.app.testing import logout
-from plone.protect.authenticator import AuthenticatorView
-from plone.testing.z2 import Browser
-
-from bika.lims import logger
-from bika.lims.exportimport.load_setup_data import LoadSetupData
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from bika.lims.testing import BASE_TESTING, DATA_TESTING
 from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
+from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
 
 try:
@@ -30,11 +19,13 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class BikaFunctionalTestCase(unittest.TestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class BaseTestCase(unittest.TestCase):
+    """Use for test cases which do not rely on the demo data
+    """
+    layer = BASE_TESTING
 
     def setUp(self):
-        super(BikaFunctionalTestCase, self).setUp()
+        super(BaseTestCase, self).setUp()
 
         self.app = self.layer['app']
         self.portal = self.layer['portal']
@@ -45,10 +36,11 @@ class BikaFunctionalTestCase(unittest.TestCase):
         os.environ["PLONE_CSRF_DISABLED"] = "true"
 
     def getBrowser(self,
-            username=TEST_USER_NAME,
-            password=TEST_USER_PASSWORD,
-            loggedIn=True):
-        """ instantiate and return a testbrowser for convenience """
+                   username=TEST_USER_NAME,
+                   password=TEST_USER_PASSWORD,
+                   loggedIn=True):
+
+        # Instantiate and return a testbrowser for convenience
         browser = Browser(self.portal)
         browser.addHeader('Accept-Language', 'en-US')
         browser.handleErrors = False
@@ -60,20 +52,13 @@ class BikaFunctionalTestCase(unittest.TestCase):
             self.assertTrue('You are now logged in' in browser.contents)
         return browser
 
-    def setup_data_load(self):
-        transaction.commit()
-        login(self.portal.aq_parent, SITE_OWNER_NAME)  # again
-
-        # load test data
-        self.request.form['setupexisting'] = 1
-        self.request.form['existing'] = "bika.lims:test"
-        lsd = LoadSetupData(self.portal, self.request)
-        logger.info('Loading datas...')
-        lsd()
-        logger.info('Loading data finished...')
-        logout()
-
     def getAuthenticator(self):
         tag = AuthenticatorView('context', 'request').authenticator()
         pattern = '<input .*name="(\w+)".*value="(\w+)"'
         return match(pattern, tag).groups()[1]
+
+
+class DataTestCase(BaseTestCase):
+    """Use for test cases which rely on the demo data
+    """
+    layer = DATA_TESTING

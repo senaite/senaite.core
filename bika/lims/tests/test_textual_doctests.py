@@ -8,11 +8,12 @@
 import doctest
 from os.path import join
 
-import unittest2 as unittest
-from Testing import ZopeTestCase as ztc
-from bika.lims.config import PROJECTNAME
-from bika.lims.tests.base import BikaFunctionalTestCase
 from pkg_resources import resource_listdir
+
+import unittest2 as unittest
+from bika.lims.config import PROJECTNAME
+from bika.lims.tests.base import BaseTestCase
+from Testing import ZopeTestCase as ztc
 
 rst_filenames = [f for f in resource_listdir(PROJECTNAME, "tests/doctests")
                  if f.endswith('.rst')]
@@ -28,7 +29,7 @@ def test_suite():
         suite.addTests([
             ztc.ZopeDocFileSuite(
                 doctestfile,
-                test_class=BikaFunctionalTestCase,
+                test_class=BaseTestCase,
                 optionflags=flags
             )
         ])
