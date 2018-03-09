@@ -33,6 +33,7 @@ class window.WorksheetFolderView
     # Instrument changed
     $("body").on "change", "select.instrument", @on_instrument_change
 
+
   ### METHODS ###
 
   get_template_instrument: () =>
@@ -66,7 +67,7 @@ class window.WorksheetFolderView
     console.debug "°°° WorksheetFolderView::on_template_change °°°"
 
     # The select element for WS Template
-    $el = $(event.target)
+    $el = $(event.currentTarget)
 
     # The option value is the worksheettemplate UID
     template_uid = $el.val()
@@ -88,7 +89,7 @@ class window.WorksheetFolderView
     console.debug "°°° WorksheetFolderView::on_instrument_change °°°"
 
     # The select element for WS Instrument
-    $el = $(event.target)
+    $el = $(event.currentTarget)
 
     # The option value is the nstrument UID
     instrument_uid = $el.val()
@@ -110,9 +111,6 @@ class window.WorksheetAddAnalysesView
 
     # bind the event handler to the elements
     @bind_eventhandler()
-
-    # dev only
-    window.ws = @
 
 
   ### METHODS ###
@@ -228,11 +226,12 @@ class window.WorksheetAddAnalysesView
     console.debug "°°° WorksheetAddanalysesview::on_category_change °°°"
 
     # The select element for WS Template
-    $el = $(event.target)
+    $el = $(event.currentTarget)
 
     # extract the category UID and filter the services box
     category_uid = $el.val()
     @filter_service_selector_by_category_uid category_uid
+
 
   on_search_click: (event) =>
     ###
