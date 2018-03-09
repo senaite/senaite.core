@@ -292,7 +292,8 @@
         if ($data.find("tbody").length === 0) {
           return $container.html(`<div class='discreet info'>0 ${_('Results')}</div>`);
         } else {
-          return $container.html(data);
+          $container.html(data);
+          return window.bika.lims.BikaListingTableView.load_transitions();
         }
       });
     }
@@ -543,384 +544,565 @@
 
   };
 
-  //############### REFACTOR FROM HERE ##############################
-  /**
-   * Controller class for Worksheet's manage results view
-   */
-  window.WorksheetManageResultsView = function() {
-    /**
-     * Applies the rules and constraints to each analysis displayed in the
-     * manage results view regarding to methods, instruments and results.
-     * For example, this service is responsible of disabling the results field
-     * if the analysis has no valid instrument available for the selected
-     * method if the service don't allow manual entry of results. Another
-     * example is that this service is responsible of populating the list of
-     * instruments avialable for an analysis service when the user changes the
-     * method to be used.
-     * See docs/imm_results_entry_behavior.png for detailed information.
-     */
-    /**
-     * Check if the Instrument is allowed to appear in Instrument list of Analysis.
-     * Returns true if multiple use of an Instrument is enabled for assigned Worksheet Template or UID is not in selected Instruments
-     * @param {uid} ins_uid - UID of Instrument.
-     */
-    /**
-     * If a new instrument is chosen for the analysis, disable this Instrument for the other analyses. Also, remove
-     * the restriction of previous Instrument of this analysis to be chosen in the other analyses.
-     */
-    /**
-     * Change the instruments to be shown for an analysis when the method selected changes
-     */
-    /**
-     * Applies the constraints and rules to the specified analysis regarding to
-     * the method specified. If method is null, the function assumes the rules
-     * must apply for the currently selected method.
-     * The function uses the variable mi_constraints to find out which is the
-     * rule to be applied to the analysis and method specified.
-     * See initializeInstrumentsAndMethods() function for further information
-     * about the constraints and rules retrieval and assignment.
-     * @param {string} analysis_uid - The Analysis UID
-     * @param {string} method_uid - The Method UID. If null, uses the method
-     *  that is currently selected for the specified analysis.
-     */
-    /**
-     * Stores the constraints regarding to methods and instrument assignments to
-     * each analysis. The variable is filled in initializeInstrumentsAndMethods
-     * and is used inside loadMethodEventHandlers.
-     */
-    var initializeInstrumentsAndMethods, is_ins_allowed, loadDetectionLimitsEventHandlers, loadHeaderEventsHandlers, loadInstrumentEventHandlers, loadMethodEventHandlers, loadRemarksEventHandlers, loadWideInterimsEventHandlers, load_analysis_method_constraint, mi_constraints, portalMessage, that;
-    that = this;
-    portalMessage = function(message) {
-      var _, str;
-      window.jarn.i18n.loadCatalog('bika');
-      _ = jarn.i18n.MessageFactory('bika');
-      str = '<dl class=\'portalMessage info\'>' + '<dt>' + _('Info') + '</dt>' + '<dd><ul>' + message + '</ul></dd></dl>';
-      $('.portalMessage').remove();
-      $(str).appendTo('#viewlet-above-content');
-    };
-    loadRemarksEventHandlers = function() {
-      // On click, toggle the remarks field
-      $('a.add-remark').click(function(e) {
-        var rmks;
-        e.preventDefault();
-        rmks = $(this).closest('tr').next('tr').find('td.remarks');
-        $(rmks).find('div.remarks-placeholder').toggle();
-      });
-    };
-    loadDetectionLimitsEventHandlers = function() {
-      $('select[name^="DetectionLimit."]').change(function() {
-        var defdls, resfld, uncfld;
-        defdls = $(this).closest('td').find('input[id^="DefaultDLS."]').first().val();
-        resfld = $(this).closest('tr').find('input[name^="Result."]')[0];
-        uncfld = $(this).closest('tr').find('input[name^="Uncertainty."]');
-        defdls = $.parseJSON(defdls);
-        $(resfld).prop('readonly', !defdls.manual);
-        if ($(this).val() === '<') {
-          $(resfld).val(defdls['min']);
-          // Inactivate uncertainty?
-          if (uncfld.length > 0) {
-            $(uncfld).val('');
-            $(uncfld).prop('readonly', true);
-            $(uncfld).closest('td').children().hide();
-          }
-        } else if ($(this).val() === '>') {
-          $(resfld).val(defdls['max']);
-          // Inactivate uncertainty?
-          if (uncfld.length > 0) {
-            $(uncfld).val('');
-            $(uncfld).prop('readonly', true);
-            $(uncfld).closest('td').children().hide();
-          }
-        } else {
-          $(resfld).val('');
-          $(resfld).prop('readonly', false);
-          // Activate uncertainty?
-          if (uncfld.length > 0) {
-            $(uncfld).val('');
-            $(uncfld).prop('readonly', false);
-            $(uncfld).closest('td').children().show();
-          }
-        }
-        // Maybe the result is used in calculations...
-        $(resfld).change();
-      });
-      $('select[name^="DetectionLimit."]').change();
-    };
-    loadWideInterimsEventHandlers = function() {
-      $('#wideinterims_analyses').change(function() {
-        $('#wideinterims_interims').html('');
-        $('input[id^="wideinterim_' + $(this).val() + '"]').each(function(i, obj) {
-          var itemval;
-          itemval = '<option value="' + $(obj).attr('keyword') + '">' + $(obj).attr('name') + '</option>';
-          $('#wideinterims_interims').append(itemval);
-        });
-      });
-      $('#wideinterims_interims').change(function() {
-        var analysis, idinter, interim;
-        analysis = $('#wideinterims_analyses').val();
-        interim = $(this).val();
-        idinter = '#wideinterim_' + analysis + '_' + interim;
-        $('#wideinterims_value').val($(idinter).val());
-      });
-      $('#wideinterims_apply').click(function(event) {
-        var analysis, interim;
-        event.preventDefault();
-        analysis = $('#wideinterims_analyses').val();
-        interim = $('#wideinterims_interims').val();
-        $('tr[keyword="' + analysis + '"] input[field="' + interim + '"]').each(function(i, obj) {
-          if ($('#wideinterims_empty').is(':checked')) {
-            if ($(this).val() === '' || $(this).val().match(/\d+/) === '0') {
-              $(this).val($('#wideinterims_value').val());
-              $(this).change();
-            }
-          } else {
-            $(this).val($('#wideinterims_value').val());
-            $(this).change();
-          }
-        });
-      });
-    };
-    initializeInstrumentsAndMethods = function() {
-      var auids, dictuids;
-      auids = [];
-      /// Get all the analysis UIDs from this manage results table, cause
-      // we'll need them to retrieve all the IMM constraints/rules to be
-      // applied later.
-      dictuids = $.parseJSON($('#item_data').val());
-      $.each(dictuids, function(key, value) {
-        auids.push(key);
-      });
-      // Retrieve all the rules/constraints to be applied for each analysis
-      // by using an ajax call. The json dictionary returned is assigned to
-      // the variable mi_constraints for further use.
-      // FUTURE: instead of an ajax call to retrieve the dictionary, embed
-      //  the dictionary in a div when the bika_listing template is rendered.
-      $.ajax({
-        url: window.portal_url + '/get_method_instrument_constraints',
-        type: 'POST',
+  window.WorksheetManageResultsView = class WorksheetManageResultsView {
+    constructor() {
+      /*
+       * Controller class for Worksheet's manage results view
+       */
+      this.load = this.load.bind(this);
+      /* INITIALIZERS */
+      this.bind_eventhandler = this.bind_eventhandler.bind(this);
+      this.init_instruments_and_methods = this.init_instruments_and_methods.bind(this);
+      /* METHODS */
+      this.ajax_submit = this.ajax_submit.bind(this);
+      this.get_portal_url = this.get_portal_url.bind(this);
+      this.get_base_url = this.get_base_url.bind(this);
+      this.get_authenticator = this.get_authenticator.bind(this);
+      this.get_analysis_uids = this.get_analysis_uids.bind(this);
+      this.get_method_by_analysis_uid = this.get_method_by_analysis_uid.bind(this);
+      this.is_instrument_allowed = this.is_instrument_allowed.bind(this);
+      this.load_analysis_method_constraint = this.load_analysis_method_constraint.bind(this);
+      /* EVENT HANDLER */
+      this.on_constraints_loaded = this.on_constraints_loaded.bind(this);
+      this.on_analyst_change = this.on_analyst_change.bind(this);
+      this.on_layout_change = this.on_layout_change.bind(this);
+      this.on_instrument_change = this.on_instrument_change.bind(this);
+      this.on_method_change = this.on_method_change.bind(this);
+      this.on_analysis_instrument_focus = this.on_analysis_instrument_focus.bind(this);
+      this.on_analysis_instrument_change = this.on_analysis_instrument_change.bind(this);
+      this.on_detection_limit_change = this.on_detection_limit_change.bind(this);
+      this.on_remarks_balloon_clicked = this.on_remarks_balloon_clicked.bind(this);
+      this.on_wideiterims_analyses_change = this.on_wideiterims_analyses_change.bind(this);
+      this.on_wideiterims_interims_change = this.on_wideiterims_interims_change.bind(this);
+      this.on_wideinterims_apply_click = this.on_wideinterims_apply_click.bind(this);
+    }
+
+    load() {
+      console.debug("WorksheetManageResultsView::load");
+      // load translations
+      jarn.i18n.loadCatalog('bika');
+      this._ = window.jarn.i18n.MessageFactory('bika');
+      this._pmf = window.jarn.i18n.MessageFactory('plone');
+      // bind the event handler to the elements
+      this.bind_eventhandler();
+      // method instrument constraints
+      this.constraints = null;
+      // initialize
+      this.init_instruments_and_methods();
+      // dev only
+      return window.ws = this;
+    }
+
+    bind_eventhandler() {
+      /*
+       * Binds callbacks on elements
+       *
+       * N.B. We attach all the events to the form and refine the selector to
+       * delegate the event: https://learn.jquery.com/events/event-delegation/
+       *
+       */
+      console.debug("WorksheetManageResultsView::bind_eventhandler");
+      // Analyst changed
+      $("body").on("change", ".manage_results_header .analyst", this.on_analyst_change);
+      // Layout changed
+      $("body").on("change", "#resultslayout_form #resultslayout", this.on_layout_change);
+      // Instrument changed
+      $("body").on("change", ".manage_results_header .instrument", this.on_instrument_change);
+      // Method changed
+      $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Method']", this.on_method_change);
+      // Analysis instrument focused
+      $("body").on("focus", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_focus);
+      // Analysis instrument changed
+      $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_change);
+      // Detection limit changed
+      $("body").on("change", "select[name^='DetectionLimit.']", this.on_detection_limit_change);
+      // Remarks balloon clicked
+      $("body").on("click", "a.add-remark", this.on_remarks_balloon_clicked);
+      // Wide interims changed
+      $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
+      $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
+      $("body").on("click", "#wideinterims_apply", this.on_wideinterims_apply_click);
+      /* internal events */
+      // handle value changes in the form
+      return $(this).on("constraints:loaded", this.on_constraints_loaded);
+    }
+
+    init_instruments_and_methods() {
+      /*
+       * Applies the rules and constraints to each analysis displayed in the
+       * manage results view regarding to methods, instruments and results.
+       *
+       * For example, this service is responsible for disabling the results field
+       * if the analysis has no valid instrument available for the selected method,
+       * if the service don't allow manual entry of results.
+       *
+       * Another example is that this service is responsible of populating the
+       * list of instruments avialable for an analysis service when the user
+       * changes the method to be used.
+       *
+       * See docs/imm_results_entry_behavior.png for detailed information.
+       */
+      var analysis_uids;
+      analysis_uids = this.get_analysis_uids();
+      return this.ajax_submit({
+        url: `${this.get_portal_url()}/get_method_instrument_constraints`,
         data: {
-          '_authenticator': $('input[name="_authenticator"]').val(),
-          'uids': $.toJSON(auids)
+          _authenticator: this.get_authenticator,
+          uids: $.toJSON(analysis_uids)
         },
-        dataType: 'json'
+        dataType: "json"
       }).done(function(data) {
-        var mi_constraints;
-        // Save the constraints in the m_constraints variable
-        mi_constraints = data;
-        $.each(auids, function(index, value) {
-          // Apply the constraints/rules to each analysis.
-          load_analysis_method_constraint(value, null);
-        });
-      }).fail(function() {
-        window.bika.lims.log('bika.lims.worksheet: Something went wrong while retrieving analysis-method-instrument constraints');
+        this.constraints = data;
+        return $(this).trigger("constraints:loaded", data);
       });
-    };
-    load_analysis_method_constraint = function(analysis_uid, method_uid) {
-      var andict, constraints, i_selector, ins_old_val, m_selector, method_name, muid;
-      if (method_uid === null) {
-        // Assume to load the constraints for the currently selected method
-        muid = $('select.listing_select_entry[field="Method"][uid="' + analysis_uid + '"]').val();
-        muid = muid ? muid : '';
-        load_analysis_method_constraint(analysis_uid, muid);
-        return;
+    }
+
+    ajax_submit(options = {}) {
+      var done;
+      /*
+       * Ajax Submit with automatic event triggering and some sane defaults
+       */
+      console.debug("°°° ajax_submit °°°");
+      // some sane option defaults
+      if (options.type == null) {
+        options.type = "POST";
       }
-      andict = mi_constraints[analysis_uid];
-      if (!andict) {
-        return;
+      if (options.url == null) {
+        options.url = this.get_base_url();
       }
-      constraints = andict[method_uid];
-      if (!constraints || constraints.length < 7) {
-        return;
+      if (options.context == null) {
+        options.context = this;
       }
-      m_selector = $('select.listing_select_entry[field="Method"][uid="' + analysis_uid + '"]');
-      i_selector = $('select.listing_select_entry[field="Instrument"][uid="' + analysis_uid + '"]');
-      // None option in method selector?
+      console.debug(">>> ajax_submit::options=", options);
+      $(this).trigger("ajax:submit:start");
+      done = () => {
+        return $(this).trigger("ajax:submit:end");
+      };
+      return $.ajax(options).done(done);
+    }
+
+    get_portal_url() {
+      /*
+       * Return the portal url (calculated in code)
+       */
+      var url;
+      url = $("input[name=portal_url]").val();
+      return url || window.portal_url;
+    }
+
+    get_base_url() {
+      /*
+       * Return the current base url
+       */
+      var url;
+      url = window.location.href;
+      return url.split('?')[0];
+    }
+
+    get_authenticator() {
+      /*
+       * Get the authenticator value
+       */
+      return $("input[name='_authenticator']").val();
+    }
+
+    get_analysis_uids() {
+      /*
+       * Returns a list of analysis UIDs
+       */
+      var analysis_uids, data;
+      analysis_uids = [];
+      data = $.parseJSON($("#item_data").val());
+      $.each(data, function(uid, value) {
+        return analysis_uids.push(uid);
+      });
+      return analysis_uids;
+    }
+
+    get_method_by_analysis_uid(analysis_uid) {
+      /*
+       * Return the method UID of the analysis identified by analysis_uid
+       */
+      var $method_field, method_uid;
+      $method_field = $(`select.listing_select_entry[field='Method'][uid='${analysis_uid}']`);
+      method_uid = $method_field.val();
+      return method_uid || "";
+    }
+
+    is_instrument_allowed(instrument_uid) {
+      /*
+       * Check if the Instrument is allowed to appear in Instrument list of Analysis.
+       *
+       * Returns true if multiple use of an Instrument is enabled for assigned
+       * Worksheet Template or UID is not in selected Instruments
+       *
+       * @param {uid} instrument_uid - UID of Instrument.
+       */
+      var allowed, i_selectors, multiple_enabled;
+      allowed = true;
+      multiple_enabled = $("#instrument_multiple_use").attr("value");
+      if (multiple_enabled !== "True") {
+        i_selectors = $("select.listing_select_entry[field='Instrument']");
+        $.each(i_selectors, function(index, element) {
+          if (element.value === instrument_uid) {
+            return allowed = false;
+          }
+        });
+      }
+      return allowed;
+    }
+
+    load_analysis_method_constraint(analysis_uid, method_uid) {
+      var analysis_constraints, i_selector, ins_old_val, m_selector, me, method_constraints, method_name;
+      /*
+       * Applies the constraints and rules to the specified analysis regarding to
+       * the method specified.
+       *
+       * If method is null, the function assumes the rules must apply for the
+       * currently selected method.
+       *
+       * The function uses the variable mi_constraints to find out which is the
+       * rule to be applied to the analysis and method specified.
+       *
+       * See init_instruments_and_methods() function for further information
+       * about the constraints and rules retrieval and assignment.
+       *
+       * @param {string} analysis_uid: Analysis UID
+       * @param {string} method_uid: Method UID
+       *
+       * If `method_uid` is null, uses the method that is currently selected for
+       * the specified analysis
+       */
+      // reference to this object for $.each calls
+      me = this;
+      if (!method_uid) {
+        method_uid = this.get_method_by_analysis_uid(analysis_uid);
+      }
+      analysis_constraints = this.constraints[analysis_uid];
+      method_constraints = analysis_constraints[method_uid];
+      // method selector
+      m_selector = $(`select.listing_select_entry[field='Method'][uid='${analysis_uid}']`);
+      // instrument selector
+      i_selector = $(`select.listing_select_entry[field='Instrument'][uid='${analysis_uid}']`);
+      // Remove None option in method selector
       $(m_selector).find('option[value=""]').remove();
-      if (constraints[1] === 1) {
-        $(m_selector).prepend('<option value="">' + _('Not defined') + '</option>');
+      if (method_constraints[1] === 1) {
+        $(m_selector).prepend(`<option value=''>${_('Not defined')}</option>`);
       }
       // Select the method
       $(m_selector).val(method_uid);
       // Method selector visible?
       // 0: no, 1: yes, 2: label, 3: readonly
-      $(m_selector).prop('disabled', false);
-      $('.method-label[uid="' + analysis_uid + '"]').remove();
-      if (constraints[0] === 0) {
+      $(m_selector).prop("disabled", false);
+      $(`.method-label[uid='${analysis_uid}']`).remove();
+      if (method_constraints[0] === 0) {
         $(m_selector).hide();
-      } else if (constraints[0] === 1) {
+      } else if (method_constraints[0] === 1) {
         $(m_selector).show();
-      } else if (constraints[0] === 2) {
-        if (andict.length > 1) {
+      } else if (method_constraints[0] === 2) {
+        // XXX length check of an object??
+        if (analysis_constraints.length > 1) {
           $(m_selector).hide();
-          method_name = $(m_selector).find('option[value="' + method_uid + '"]').innerHtml();
-          $(m_selector).after('<span class="method-label" uid="' + analysis_uid + '" href="#">' + method_name + '</span>');
+          method_name = $(m_selector).find(`option[value='${method_uid}']`).innerHtml();
+          $(m_selector).after(`<span class='method-label' uid='${analysis_uid}' href='#'>${method_name}</span>`);
         }
-      } else if (constraints[0] === 3) {
-        //$(m_selector).prop('disabled', true);
+      } else if (method_constraints[0] === 3) {
         $(m_selector).show();
       }
-      // We are going to reload Instrument list.. Enable all disabled options from other Instrument lists which has the
-      // same value as old value of this Instrument Selectbox.
+      // We are going to reload the instrument list.
+      // Enable all disabled options from other Instrument lists which has the same
+      // value as old value of this instrument selectbox.
       ins_old_val = $(i_selector).val();
       if (ins_old_val && ins_old_val !== '') {
-        $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="' + ins_old_val + '"] option[value="' + ins_old_val + '"]').prop('disabled', false);
+        $(`table.bika-listing-table select.listing_select_entry[field='Instrument'][value!='${ins_old_val}'] option[value='${ins_old_val}']`).prop("disabled", false);
       }
       // Populate instruments list
-      $(i_selector).find('option').remove();
-      if (constraints[7]) {
-        $.each(constraints[7], function(key, value) {
-          if (is_ins_allowed(key)) {
-            $(i_selector).append('<option value="' + key + '">' + value + '</option>');
+      $(i_selector).find("option").remove();
+      if (method_constraints[7]) {
+        $.each(method_constraints[7], function(key, value) {
+          if (me.is_instrument_allowed(key)) {
+            return $(i_selector).append(`<option value='${key}'>${value}</option>`);
           } else {
-            $(i_selector).append('<option value="' + key + '" disabled="true">' + value + '</option>');
+            return $(i_selector).append(`<option value='${key}' disabled='disabled'>${value}</option>`);
           }
         });
       }
       // None option in instrument selector?
-      if (constraints[3] === 1) {
-        $(i_selector).prepend('<option selected="selected" value="">' + _('None') + '</option>');
+      if (method_constraints[3] === 1) {
+        $(i_selector).prepend(`<option selected='selected' value=''>${_('None')}</option>`);
       }
       // Select the default instrument
-      if (is_ins_allowed(constraints[4])) {
-        $(i_selector).val(constraints[4]);
+      if (me.is_instrument_allowed(method_constraints[4])) {
+        $(i_selector).val(method_constraints[4]);
         // Disable this Instrument in the other Instrument SelectBoxes
-        $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="' + constraints[4] + '"] option[value="' + constraints[4] + '"]').prop('disabled', true);
+        $(`table.bika-listing-table select.listing_select_entry[field='Instrument'][value!='${method_constraints[4]}'] option[value='${method_constraints[4]}']`).prop("disabled", true);
       }
       // Instrument selector visible?
-      if (constraints[2] === 0) {
+      if (method_constraints[2] === 0) {
         $(i_selector).hide();
-      } else if (constraints[2] === 1) {
+      } else if (method_constraints[2] === 1) {
         $(i_selector).show();
       }
       // Allow to edit results?
-      if (constraints[5] === 0) {
-        $('.interim input[uid="' + analysis_uid + '"]').val('');
-        $('input[field="Result"][uid="' + analysis_uid + '"]').val('');
-        $('.interim input[uid="' + analysis_uid + '"]').prop('disabled', true);
-        $('input[field="Result"][uid="' + analysis_uid + '"]').prop('disabled', true);
-      } else if (constraints[5] === 1) {
-        $('.interim input[uid="' + analysis_uid + '"]').prop('disabled', false);
-        $('input[field="Result"][uid="' + analysis_uid + '"]').prop('disabled', false);
+      if (method_constraints[5] === 0) {
+        $(`.interim input[uid='${analysis_uid}']`).val("");
+        $(`input[field='Result'][uid='${analysis_uid}']`).val("");
+        $(`.interim input[uid='${analysis_uid}']`).prop("disabled", true);
+        $(`input[field='Result'][uid='${analysis_uid}']`).prop("disabled", true);
+      } else if (method_constraints[5] === 1) {
+        $(`.interim input[uid='${analysis_uid}']`).prop("disabled", false);
+        $(`input[field='Result'][uid='${analysis_uid}']`).prop("disabled", false);
       }
       // Info/Warn message?
-      $('.alert-instruments-invalid[uid="' + analysis_uid + '"]').remove();
-      if (constraints[6] && constraints[6] !== '') {
-        $(i_selector).after('<img uid="' + analysis_uid + '" class="alert-instruments-invalid" src="' + window.portal_url + '/++resource++bika.lims.images/warning.png" title="' + constraints[6] + '")">');
+      $(`.alert-instruments-invalid[uid='${analysis_uid}']`).remove();
+      if (method_constraints[6] && method_constraints[6] !== "") {
+        $(i_selector).after(`<img uid='${analysis_uid}' class='alert-instruments-invalid' src='${this.get_portal_url()}/++resource++bika.lims.images/warning.png' title='${method_constraints[6]}'>`);
       }
-      $('.amconstr[uid="' + analysis_uid + '"]').remove();
-    };
-    //$(m_selector).before("<span style='font-weight:bold;font-family:courier;font-size:1.4em;' class='amconstr' uid='"+analysis_uid+"'>"+constraints[10]+"&nbsp;&nbsp;</span>");
-    loadHeaderEventsHandlers = function() {
-      $('.manage_results_header .analyst').change(function() {
-        if ($(this).val() === '') {
-          return false;
+      return $(`.amconstr[uid='${analysis_uid}']`).remove();
+    }
+
+    on_constraints_loaded(event) {
+      var me;
+      /*
+       * Eventhandler when the instrument and method constraints were loaded from the server
+       */
+      console.debug("°°° WorksheetManageResultsView::on_constraints_loaded °°°");
+      me = this;
+      return $.each(this.get_analysis_uids(), function(index, uid) {
+        return me.load_analysis_method_constraint(uid, null);
+      });
+    }
+
+    on_analyst_change(event) {
+      var $el, analyst, base_url, url;
+      /*
+       * Eventhandler when the analyst select changed
+       */
+      console.debug("°°° WorksheetManageResultsView::on_analyst_change °°°");
+      $el = $(event.currentTarget);
+      analyst = $el.val();
+      if (analyst === "") {
+        return false;
+      }
+      base_url = this.get_base_url();
+      url = base_url.replace("/manage_results", "") + "/set_analyst";
+      return this.ajax_submit({
+        url: url,
+        data: {
+          value: analyst,
+          _authenticator: this.get_authenticator()
+        },
+        dataType: "json"
+      }).done(function(data) {
+        return bika.lims.SiteView.notify_in_panel(this._pmf("Changes saved."), "succeed");
+      }).fail(function() {
+        return bika.lims.SiteView.notify_in_panel(this._("Could not set the selected analyst"), "error");
+      });
+    }
+
+    on_layout_change(event) {
+      var $el;
+      /*
+       * Eventhandler when the analyst changed
+       */
+      console.debug("°°° WorksheetManageResultsView::on_layout_change °°°");
+      return $el = $(event.currentTarget);
+    }
+
+    on_instrument_change(event) {
+      var $el, base_url, instrument_uid, url;
+      /*
+       * Eventhandler when the instrument changed
+       */
+      console.debug("°°° WorksheetManageResultsView::on_instrument_change °°°");
+      $el = $(event.currentTarget);
+      instrument_uid = $el.val();
+      if (instrument_uid === "") {
+        return false;
+      }
+      base_url = this.get_base_url();
+      url = base_url.replace("/manage_results", "") + "/set_instrument";
+      return this.ajax_submit({
+        url: url,
+        data: {
+          value: instrument_uid,
+          _authenticator: this.get_authenticator()
+        },
+        dataType: "json"
+      }).done(function(data) {
+        bika.lims.SiteView.notify_in_panel(this._pmf("Changes saved."), "succeed");
+        // Set the selected instrument to all the analyses which that can be done
+        // using that instrument. The rest of of the instrument picklist will not
+        // be changed
+        $(`select.listing_select_entry[field='Instrument'] option[value='${instrument_uid}']`).parent().find(`option[value='${instrument_uid}']`).prop("selected", false);
+        return $(`select.listing_select_entry[field='Instrument'] option[value='${instrument_uid}']`).prop("selected", true);
+      }).fail(function() {
+        return bika.lims.SiteView.notify_in_panel(this._("Unable to apply the selected instrument"), "error");
+      });
+    }
+
+    on_method_change(event) {
+      var $el, analysis_uid, method_uid;
+      /*
+       * Eventhandler when the method changed
+       *
+       */
+      console.debug("°°° WorksheetManageResultsView::on_method_change °°°");
+      $el = $(event.currentTarget);
+      analysis_uid = $el.attr("uid");
+      method_uid = $el.val();
+      // Change the instruments to be shown for an analysis when the method selected changes
+      return this.load_analysis_method_constraint(analysis_uid, method_uid);
+    }
+
+    on_analysis_instrument_focus(event) {
+      var $el;
+      /*
+       * Eventhandler when the instrument of an analysis is focused
+       *
+       * Only needed to remember the last value
+       */
+      console.debug("°°° WorksheetManageResultsView::on_analysis_instrument_focus °°°");
+      $el = $(event.currentTarget);
+      this.previous_instrument = $el.val();
+      return console.info(this.previous_instrument);
+    }
+
+    on_analysis_instrument_change(event) {
+      var $el, analysis_uid, instrument_uid;
+      /*
+       * Eventhandler when the instrument of an analysis changed
+       *
+       * If a new instrument is chosen for the analysis, disable this Instrument
+       * for the other analyses. Also, remove the restriction of previous
+       * Instrument of this analysis to be chosen in the other analyses.
+       */
+      console.debug("°°° WorksheetManageResultsView::on_analysis_instrument_change °°°");
+      $el = $(event.currentTarget);
+      analysis_uid = $el.attr("uid");
+      instrument_uid = $el.val();
+      // Disable New Instrument for rest of the analyses
+      $(`table.bika-listing-table select.listing_select_entry[field='Instrument'][value!='${instrument_uid}'] option[value='${instrument_uid}']`).prop("disabled", true);
+      // Enable previous Instrument everywhere
+      $(`table.bika-listing-table select.listing_select_entry[field='Instrument'] option[value='${this.previous_instrument}']`).prop("disabled", false);
+      // Enable 'None' option as well.
+      return $("table.bika-listing-table select.listing_select_entry[field='Instrument'] option[value='']").prop("disabled", false);
+    }
+
+    on_detection_limit_change(event) {
+      var $el, defdls, resfld, uncfld;
+      /*
+       * Eventhandler when the detection limit changed
+       */
+      console.debug("°°° WorksheetManageResultsView::on_detection_limit_change °°°");
+      $el = $(event.currentTarget);
+      defdls = $el.closest("td").find("input[id^='DefaultDLS.']").first().val();
+      resfld = $el.closest("tr").find("input[name^='Result.']")[0];
+      uncfld = $el.closest("tr").find("input[name^='Uncertainty.']");
+      defdls = $.parseJSON(defdls);
+      $(resfld).prop("readonly", !defdls.manual);
+      if ($el.val() === "<") {
+        $(resfld).val(defdls['min']);
+        // Inactivate uncertainty?
+        if (uncfld.length > 0) {
+          $(uncfld).val("");
+          $(uncfld).prop("readonly", true);
+          $(uncfld).closest("td").children().hide();
         }
-        $.ajax({
-          type: 'POST',
-          url: window.location.href.replace('/manage_results', '') + '/set_analyst',
-          data: {
-            'value': $(this).val(),
-            '_authenticator': $('input[name="_authenticator"]').val()
-          },
-          success: function(data, textStatus, jqXHR) {
-            var _p;
-            window.jarn.i18n.loadCatalog('plone');
-            _p = jarn.i18n.MessageFactory('plone');
-            portalMessage(_p('Changes saved.'));
-          }
-        });
-      });
-      // Change the results layout
-      $('#resultslayout_form #resultslayout_button').hide();
-      $('#resultslayout_form #resultslayout').change(function() {
-        $('#resultslayout_form #resultslayout_button').click();
-      });
-      $('.manage_results_header .instrument').change(function() {
-        var instruid;
-        $('#content-core .instrument-error').remove();
-        instruid = $(this).val();
-        if (instruid === '') {
-          return false;
+      } else if ($el.val() === ">") {
+        $(resfld).val(defdls["max"]);
+        // Inactivate uncertainty?
+        if (uncfld.length > 0) {
+          $(uncfld).val("");
+          $(uncfld).prop("readonly", true);
+          $(uncfld).closest("td").children().hide();
         }
-        $.ajax({
-          type: 'POST',
-          url: window.location.href.replace('/manage_results', '') + '/set_instrument',
-          data: {
-            'value': instruid,
-            '_authenticator': $('input[name="_authenticator"]').val()
-          },
-          success: function(data, textStatus, jqXHR) {
-            var _p;
-            window.jarn.i18n.loadCatalog('plone');
-            _p = jarn.i18n.MessageFactory('plone');
-            portalMessage(_p('Changes saved.'));
-            // Set the selected instrument to all the analyses which
-            // that can be done using that instrument. The rest of
-            // of the instrument picklist will not be changed
-            $('select.listing_select_entry[field="Instrument"] option[value="' + instruid + '"]').parent().find('option[value="' + instruid + '"]').prop('selected', false);
-            $('select.listing_select_entry[field="Instrument"] option[value="' + instruid + '"]').prop('selected', true);
-          },
-          error: function(data, jqXHR, textStatus, errorThrown) {
-            $('.manage_results_header .instrument').closest('table').after('<div class=\'alert instrument-error\'>' + _('Unable to apply the selected instrument') + '</div>');
-            return false;
-          }
-        });
-      });
-    };
-    loadMethodEventHandlers = function() {
-      $('table.bika-listing-table select.listing_select_entry[field="Method"]').change(function() {
-        var auid, muid;
-        auid = $(this).attr('uid');
-        muid = $(this).val();
-        load_analysis_method_constraint(auid, muid);
-      });
-    };
-    loadInstrumentEventHandlers = function() {
-      $('table.bika-listing-table select.listing_select_entry[field="Instrument"]').on('focus', function() {
-        var previous;
-        // First, getting the previous value
-        previous = this.value;
-      }).change(function() {
-        var auid, iuid;
-        auid = $(this).attr('uid');
-        iuid = $(this).val();
-        // Disable New Instrument for rest of the analyses
-        $('table.bika-listing-table select.listing_select_entry[field="Instrument"][value!="' + iuid + '"] option[value="' + iuid + '"]').prop('disabled', true);
-        // Enable previous Instrument everywhere
-        $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value="' + previous + '"]').prop('disabled', false);
-        // Enable 'None' option as well.
-        $('table.bika-listing-table select.listing_select_entry[field="Instrument"] option[value=""]').prop('disabled', false);
-      });
-    };
-    is_ins_allowed = function(uid) {
-      var i, i_selectors, multiple_enabled;
-      multiple_enabled = $('#instrument_multiple_use').attr('value');
-      if (multiple_enabled === 'True') {
-        return true;
       } else {
-        i_selectors = $('select.listing_select_entry[field="Instrument"]');
-        i = 0;
-        while (i < i_selectors.length) {
-          if (i_selectors[i].value === uid) {
-            return false;
-          }
-          i++;
+        $(resfld).val("");
+        $(resfld).prop("readonly", false);
+        // Activate uncertainty?
+        if (uncfld.length > 0) {
+          $(uncfld).val("");
+          $(uncfld).prop("readonly", false);
+          $(uncfld).closest("td").children().show();
         }
       }
-      return true;
-    };
-    that.load = function() {
-      // Remove empty options
-      initializeInstrumentsAndMethods();
-      loadHeaderEventsHandlers();
-      loadMethodEventHandlers();
-      // Manage the upper selection form for spread wide interim results values
-      loadWideInterimsEventHandlers();
-      loadRemarksEventHandlers();
-      loadDetectionLimitsEventHandlers();
-      loadInstrumentEventHandlers();
-    };
-    mi_constraints = null;
+      // Maybe the result is used in calculations...
+      return $(resfld).change();
+    }
+
+    on_remarks_balloon_clicked(event) {
+      var $el, remarks;
+      /*
+       * Eventhandler when the remarks balloon was clicked
+       */
+      console.debug("°°° WorksheetManageResultsView::on_remarks_balloon_clicked °°°");
+      $el = $(event.currentTarget);
+      event.preventDefault();
+      remarks = $el.closest("tr").next("tr").find("td.remarks");
+      return $(remarks).find("div.remarks-placeholder").toggle();
+    }
+
+    on_wideiterims_analyses_change(event) {
+      var $el, category;
+      /*
+       * Eventhandler when the wide interims analysis selector changed
+       *
+       * Search all interim fields which begin with the selected category and fill
+       *  the analyses interim fields to the selection
+       */
+      console.debug("°°° WorksheetManageResultsView::on_wideiterims_analyses_change °°°");
+      $el = $(event.currentTarget);
+      // Empty the wideinterim analysis field
+      $("#wideinterims_interims").html("");
+      category = $el.val();
+      return $(`input[id^='wideinterim_${category}']`).each(function(index, element) {
+        var itemval, keyword, name;
+        name = $(element).attr("name");
+        keyword = $(element).attr("keyword");
+        itemval = `<option value='${keyword}'>${name}</option>`;
+        return $("#wideinterims_interims").append(itemval);
+      });
+    }
+
+    on_wideiterims_interims_change(event) {
+      var $el, analysis, idinter, interim;
+      /*
+       * Eventhandler when the wide interims selector changed
+       */
+      console.debug("°°° WorksheetManageResultsView::on_wideiterims_interims_change °°°");
+      $el = $(event.currentTarget);
+      analysis = $("#wideinterims_analyses").val();
+      interim = $el.val();
+      idinter = `#wideinterim_${analysis}_${interim}`;
+      return $("#wideinterims_value").val($(idinter).val());
+    }
+
+    on_wideinterims_apply_click(event) {
+      var $el, analysis, empty_only, interim;
+      /*
+       * Eventhandler when the wide interim apply button was clicked
+       */
+      console.debug("°°° WorksheetManageResultsView::on_wideinterims_apply_click °°°");
+      // prevent form submission
+      event.preventDefault();
+      $el = $(event.currentTarget);
+      analysis = $("#wideinterims_analyses").val();
+      interim = $("#wideinterims_interims").val();
+      empty_only = $("#wideinterims_empty").is(":checked");
+      return $(`tr[keyword='${analysis}'] input[field='${interim}']`).each(function(index, element) {
+        if (empty_only) {
+          if ($(this).val() === "" || $(this).val().match(/\d+/) === "0") {
+            $(this).val($("#wideinterims_value").val());
+            return $(this).change();
+          }
+        } else {
+          $(this).val($("#wideinterims_value").val());
+          return $(this).change();
+        }
+      });
+    }
+
   };
 
 }).call(this);
