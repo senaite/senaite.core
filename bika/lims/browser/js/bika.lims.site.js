@@ -57,11 +57,11 @@
       this.init_client_combogrid();
       this.init_datepickers();
       this.init_referencedefinition();
+      this.department_filter_cookie = "filter_by_department_info";
+      this.department_filter_disabled_cookie = "dep_filter_disabled";
       this.init_department_filtering();
       this.bind_eventhandler();
-      this.allowed_keys = [8, 9, 13, 35, 36, 37, 39, 46, 44, 60, 62, 45, 69, 101, 61];
-      this.department_filter_cookie = "filter_by_department_info";
-      return this.department_filter_disabled_cookie = "dep_filter_disabled";
+      return this.allowed_keys = [8, 9, 13, 35, 36, 37, 39, 46, 44, 60, 62, 45, 69, 101, 61];
     };
 
 
