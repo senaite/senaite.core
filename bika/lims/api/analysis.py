@@ -12,7 +12,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims.interfaces import IAnalysis, IReferenceAnalysis
+from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
+    IResultOutOfRange
+from zope.component._api import getAdapters
 
 
 def is_out_of_range(brain_or_object, result=None):
@@ -59,6 +61,18 @@ def is_out_of_range(brain_or_object, result=None):
     if not result_range:
         # No result range defined or the passed in object does not suit
         return False, False
+
+    # Maybe there is a custom adapter
+    adapters = getAdapters((analysis,), IResultOutOfRange)
+    for name, adapter in adapters:
+        ret = adapter(result=result, specification=result_range)
+        if not ret or not ret.get('out_of_range', False):
+            continue
+        if not ret.get('acceptable', True):
+            # Out of range + out of shoulders
+            return True, True
+        # Out of range, but in shoulders
+        return True, False
 
     # The assignment of result as default fallback for min and max guarantees
     # the result will be in range also if no min/max values are defined
