@@ -302,9 +302,6 @@ class window.WorksheetAddQCAnalysesView
     # initially load the references
     @load_controls()
 
-    # dev only
-    window.ws = @
-
 
   ### INITIALIZERS ###
 
@@ -459,27 +456,68 @@ class window.WorksheetAddQCAnalysesView
     $form.submit()
 
 
+
+class window.WorksheetAddDuplicateAnalysesView
+  ###
+   * Controller class for Worksheet's add blank/control views
+  ###
+
+  load: =>
+    console.debug "WorksheetAddDuplicateAnalysesView::load"
+
+    # bind the event handler to the elements
+    @bind_eventhandler()
+
+
+  ### INITIALIZERS ###
+
+  bind_eventhandler: =>
+    ###
+     * Binds callbacks on elements
+     *
+     * N.B. We attach all the events to the form and refine the selector to
+     * delegate the event: https://learn.jquery.com/events/event-delegation/
+     *
+    ###
+    console.debug "WorksheetAddDuplicateAnalysesView::bind_eventhandler"
+
+    # Service checkbox clicked
+    $("body").on "click", "#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr", @on_duplicate_row_click
+
+
+  ### METHODS ###
+
+  get_postion: =>
+    ###
+     * Returns the postition
+    ###
+    position = $("#position").val()
+    return position or "new"
+
+
+  ### EVENT HANDLER ###
+
+  on_duplicate_row_click: (event) =>
+    ###
+     * Eventhandler for a click on a row of the loaded dduplicate listing
+    ###
+    console.debug "°°° WorksheetAddDuplicateAnalysesView::on_duplicate_row_click °°°"
+
+    $el = $(event.currentTarget)
+    uid = $el.attr "uid"
+
+    # we want to submit to the worksheet.py/add_duplicate view.
+    $form = $el.parents("form")
+    $form.attr "action", "add_duplicate"
+
+    # add the position dropdown's value to the form before submitting.
+    $form.append "<input type='hidden' value='#{uid}' name='ar_uid'/>"
+    $form.append "<input type='hidden' value='#{@get_postion()}' name='position'/>"
+    $form.submit()
+
+
 ################ REFACTOR FROM HERE ##############################
 
-###*
-# Controller class for Worksheet's add blank/control views
-###
-
-window.WorksheetAddDuplicateAnalysesView = ->
-  that = this
-
-  that.load = ->
-    # click an AR in add_duplicate
-    $('#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr').live 'click', ->
-      # we want to submit to the worksheet.py/add_duplicate view.
-      $(this).parents('form').attr 'action', 'add_duplicate'
-      # add the position dropdown's value to the form before submitting.
-      $(this).parents('form').append('<input type=\'hidden\' value=\'' + $(this).attr('uid') + '\' name=\'ar_uid\'/>').append '<input type=\'hidden\' value=\'' + $('#position').val() + '\' name=\'position\'/>'
-      $(this).parents('form').submit()
-      return
-    return
-
-  return
 
 ###*
 # Controller class for Worksheet's manage results view

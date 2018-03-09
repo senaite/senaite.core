@@ -325,9 +325,7 @@
       // bind the event handler to the elements
       this.bind_eventhandler();
       // initially load the references
-      this.load_controls();
-      // dev only
-      return window.ws = this;
+      return this.load_controls();
     }
 
     bind_eventhandler() {
@@ -484,25 +482,68 @@
 
   };
 
-  //############### REFACTOR FROM HERE ##############################
-  /**
-   * Controller class for Worksheet's add blank/control views
-   */
-  window.WorksheetAddDuplicateAnalysesView = function() {
-    var that;
-    that = this;
-    that.load = function() {
-      // click an AR in add_duplicate
-      $('#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr').live('click', function() {
-        // we want to submit to the worksheet.py/add_duplicate view.
-        $(this).parents('form').attr('action', 'add_duplicate');
-        // add the position dropdown's value to the form before submitting.
-        $(this).parents('form').append('<input type=\'hidden\' value=\'' + $(this).attr('uid') + '\' name=\'ar_uid\'/>').append('<input type=\'hidden\' value=\'' + $('#position').val() + '\' name=\'position\'/>');
-        $(this).parents('form').submit();
-      });
-    };
+  window.WorksheetAddDuplicateAnalysesView = class WorksheetAddDuplicateAnalysesView {
+    constructor() {
+      /*
+       * Controller class for Worksheet's add blank/control views
+       */
+      this.load = this.load.bind(this);
+      /* INITIALIZERS */
+      this.bind_eventhandler = this.bind_eventhandler.bind(this);
+      /* METHODS */
+      this.get_postion = this.get_postion.bind(this);
+      /* EVENT HANDLER */
+      this.on_duplicate_row_click = this.on_duplicate_row_click.bind(this);
+    }
+
+    load() {
+      console.debug("WorksheetAddDuplicateAnalysesView::load");
+      // bind the event handler to the elements
+      return this.bind_eventhandler();
+    }
+
+    bind_eventhandler() {
+      /*
+       * Binds callbacks on elements
+       *
+       * N.B. We attach all the events to the form and refine the selector to
+       * delegate the event: https://learn.jquery.com/events/event-delegation/
+       *
+       */
+      console.debug("WorksheetAddDuplicateAnalysesView::bind_eventhandler");
+      // Service checkbox clicked
+      return $("body").on("click", "#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr", this.on_duplicate_row_click);
+    }
+
+    get_postion() {
+      /*
+       * Returns the postition
+       */
+      var position;
+      position = $("#position").val();
+      return position || "new";
+    }
+
+    on_duplicate_row_click(event) {
+      var $el, $form, uid;
+      /*
+       * Eventhandler for a click on a row of the loaded dduplicate listing
+       */
+      console.debug("°°° WorksheetAddDuplicateAnalysesView::on_duplicate_row_click °°°");
+      $el = $(event.currentTarget);
+      uid = $el.attr("uid");
+      // we want to submit to the worksheet.py/add_duplicate view.
+      $form = $el.parents("form");
+      $form.attr("action", "add_duplicate");
+      // add the position dropdown's value to the form before submitting.
+      $form.append(`<input type='hidden' value='${uid}' name='ar_uid'/>`);
+      $form.append(`<input type='hidden' value='${this.get_postion()}' name='position'/>`);
+      return $form.submit();
+    }
+
   };
 
+  //############### REFACTOR FROM HERE ##############################
   /**
    * Controller class for Worksheet's manage results view
    */
