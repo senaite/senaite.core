@@ -25,6 +25,7 @@ Changelog
 - #694 Bad calculation of min and max in ReferenceResults on negative result
 - #694 Instrument validity not updated in accordance with latest QC tests
 - #694 Result range shoulders computed badly on full/partial negative specs
+- #707 AR Add: Set default contact on client change
 - #700 Fix filtering by review state in aggregated list of analyses
 - #715 AR Rejection Fails when e-mail Notification is enabled
 - #709 Fix removal not possible of last non-verified Analysis in Manage Analysis View
