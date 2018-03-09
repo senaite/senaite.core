@@ -287,68 +287,179 @@ class window.WorksheetAddAnalysesView
         $container.html data
 
 
-################ REFACTOR FROM HERE ##############################
+
+class window.WorksheetAddQCAnalysesView
+  ###
+   * Controller class for Worksheet's add blank/control views
+  ###
+
+  load: =>
+    console.debug "WorksheetAddQCAnalysesView::load"
+
+    # bind the event handler to the elements
+    @bind_eventhandler()
+
+    # initially load the references
+    @load_controls()
+
+    # dev only
+    window.ws = @
 
 
-###*
-# Controller class for Worksheet's add blank/control views
-###
+  ### INITIALIZERS ###
 
-window.WorksheetAddQCAnalysesView = ->
-  that = this
-  # adding Controls and Blanks - selecting services re-renders the list
-  # of applicable reference samples
+  bind_eventhandler: =>
+    ###
+     * Binds callbacks on elements
+     *
+     * N.B. We attach all the events to the form and refine the selector to
+     * delegate the event: https://learn.jquery.com/events/event-delegation/
+     *
+    ###
+    console.debug "WorksheetAddQCAnalysesView::bind_eventhandler"
 
-  get_updated_controls = ->
-    selected_service_uids = []
-    $.each $('input:checked'), (i, e) ->
-      selected_service_uids.push $(e).val()
-      return
-    if window.location.href.search('add_control') > -1
-      control_type = 'c'
-    else
-      control_type = 'b'
-    url = window.location.href.split('?')[0].replace('/add_blank', '').replace('/add_control', '') + '/getWorksheetReferences'
-    element = $('#worksheet_add_references')
-    if element.length > 0
-      $(element).load url, {
-        'service_uids': selected_service_uids.join(',')
-        'control_type': control_type
-        '_authenticator': $('input[name="_authenticator"]').val()
-      }, (responseText, statusText, xhr, $form) ->
-    return
+    # Service checkbox clicked
+    $("body").on "click", "#worksheet_services input[id*='_cb_']", @on_service_click
 
-  that.load = ->
-    $('#worksheet_services input[id*=\'_cb_\']').live 'click', ->
-      get_updated_controls()
-      return
-    # get references for selected services on first load
-    get_updated_controls()
     # click a Reference Sample in add_control or add_blank
-    $('#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr').live 'click', (e) ->
-      # we want to submit to the worksheet.py/add_control or add_blank views.
-      if e.target.src != undefined
-        return
-      if window.location.href.search('add_control') > -1
-        $(this).parents('form').attr 'action', 'add_control'
-      else
-        $(this).parents('form').attr 'action', 'add_blank'
-      # tell the form handler which services were selected
-      selected_service_uids = []
-      $.each $('.worksheet_add_control_services .bika-listing-table input:checked'), (i, e) ->
-        selected_service_uids.push $(e).val()
-        return
-      ssuids = selected_service_uids.join(',')
-      $(this).parents('form').append '<input type=\'hidden\' value=\'' + ssuids + '\' name=\'selected_service_uids\'/>'
-      # tell the form handler which reference UID was clicked
-      $(this).parents('form').append '<input type=\'hidden\' value=\'' + $(this).attr('uid') + '\' name=\'reference_uid\'/>'
-      # add the position dropdown's value to the form before submitting.
-      $(this).parents('form').append '<input type=\'hidden\' value=\'' + $('#position').val() + '\' name=\'position\'/>'
-      $(this).parents('form').submit()
-      return
-    return
+    $("body").on "click", "#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr", @on_referencesample_row_click
 
-  return
+
+  ### METHODS ###
+
+  ajax_submit: (options={}) =>
+    ###
+     * Ajax Submit with automatic event triggering and some sane defaults
+    ###
+    console.debug "°°° ajax_submit °°°"
+
+    # some sane option defaults
+    options.type ?= "POST"
+    options.url ?= @get_base_url()
+    options.context ?= this
+
+    console.debug ">>> ajax_submit::options=", options
+
+    $(this).trigger "ajax:submit:start"
+    done = =>
+        $(this).trigger "ajax:submit:end"
+    return $.ajax(options).done done
+
+
+  get_base_url: =>
+    ###
+     * Return the current base url
+    ###
+    url = window.location.href
+    return url.split('?')[0]
+
+
+  get_authenticator: =>
+    ###
+     * Get the authenticator value
+    ###
+    return $("input[name='_authenticator']").val()
+
+
+  get_selected_services: =>
+    ###
+     * Returns a list of selected service uids
+    ###
+
+    $table = $("table.bika-listing-table")
+
+    services = []
+    $("input:checked", $table).each (index, element) ->
+      services.push element.value
+    return services
+
+
+  get_control_type: =>
+    ###
+     * Returns the control type
+    ###
+    control_type = "b"
+    if window.location.href.search("add_control") > -1
+      control_type = "c"
+    return control_type
+
+
+  get_postion: =>
+    ###
+     * Returns the postition
+    ###
+    position = $("#position").val()
+    return position or "new"
+
+
+  load_controls: =>
+    ###
+     * Load the controls
+    ###
+    base_url = @get_base_url()
+    base_url = base_url.replace("/add_blank", "").replace("/add_control", "")
+    url = "#{base_url}/getWorksheetReferences"
+
+    element = $("#worksheet_add_references")
+    if element.length == 0
+      console.warn "Element with id='#worksheet_add_references' missing!"
+      return
+
+    @ajax_submit
+      url: url
+      data:
+        service_uids: @get_selected_services().join ","
+        control_type: @get_control_type()
+        _authenticator: @get_authenticator()
+    .done (data) ->
+      element.html data
+
+
+  ### EVENT HANDLER ###
+
+  on_service_click: (event) =>
+    ###
+     * Eventhandler when a service checkbox was clicked
+    ###
+    console.debug "°°° WorksheetAddQCAnalysesView::on_category_change °°°"
+    @load_controls()
+
+
+  on_referencesample_row_click: (event) =>
+    ###
+     * Eventhandler for a click on the loaded referencesample listing
+     *
+     * A reference sample for the service need to be added via
+     * Setup -> Supplier -> Referene Samples
+    ###
+    console.debug "°°° WorksheetAddQCAnalysesView::on_referencesample_row_click °°°"
+
+    # The clicked element is a row from the referencesample listing
+    $el = $(event.currentTarget)
+    uid = $el.attr "uid"
+
+    # we want to submit to the worksheet.py/add_control or add_blank views.
+    $form = $el.parents("form")
+
+    control_type = @get_control_type()
+    action = "add_blank"
+    if control_type == "c"
+      action = "add_control"
+
+    $form.attr "action", action
+
+    selected_services = @get_selected_services().join ","
+    $form.append "<input type='hidden' value='#{selected_services}' name='selected_service_uids'/>"
+
+    # tell the form handler which reference UID was clicked
+    $form.append "<input type='hidden' value='#{uid}' name='reference_uid'/>"
+    # add the position dropdown's value to the form before submitting.
+    $form.append "<input type='hidden' value='#{@get_postion()}' name='position'/>"
+    # submit the referencesample listing form
+    $form.submit()
+
+
+################ REFACTOR FROM HERE ##############################
 
 ###*
 # Controller class for Worksheet's add blank/control views

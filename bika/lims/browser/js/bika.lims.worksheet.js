@@ -71,7 +71,7 @@
        */
       console.debug("°°° WorksheetFolderView::on_template_change °°°");
       // The select element for WS Template
-      $el = $(event.target);
+      $el = $(event.currentTarget);
       // The option value is the worksheettemplate UID
       template_uid = $el.val();
       // Assigned instrument of this worksheet
@@ -89,7 +89,7 @@
        */
       console.debug("°°° WorksheetFolderView::on_instrument_change °°°");
       // The select element for WS Instrument
-      $el = $(event.target);
+      $el = $(event.currentTarget);
       // The option value is the nstrument UID
       instrument_uid = $el.val();
       if (instrument_uid) {
@@ -124,9 +124,7 @@
     load() {
       console.debug("WorksheetAddanalysesview::load");
       // bind the event handler to the elements
-      this.bind_eventhandler();
-      // dev only
-      return window.ws = this;
+      return this.bind_eventhandler();
     }
 
     ajax_submit(options = {}) {
@@ -243,7 +241,7 @@
        */
       console.debug("°°° WorksheetAddanalysesview::on_category_change °°°");
       // The select element for WS Template
-      $el = $(event.target);
+      $el = $(event.currentTarget);
       // extract the category UID and filter the services box
       category_uid = $el.val();
       return this.filter_service_selector_by_category_uid(category_uid);
@@ -301,70 +299,192 @@
 
   };
 
-  //############### REFACTOR FROM HERE ##############################
-  /**
-   * Controller class for Worksheet's add blank/control views
-   */
-  window.WorksheetAddQCAnalysesView = function() {
-    var get_updated_controls, that;
-    that = this;
-    // adding Controls and Blanks - selecting services re-renders the list
-    // of applicable reference samples
-    get_updated_controls = function() {
-      var control_type, element, selected_service_uids, url;
-      selected_service_uids = [];
-      $.each($('input:checked'), function(i, e) {
-        selected_service_uids.push($(e).val());
-      });
-      if (window.location.href.search('add_control') > -1) {
-        control_type = 'c';
-      } else {
-        control_type = 'b';
-      }
-      url = window.location.href.split('?')[0].replace('/add_blank', '').replace('/add_control', '') + '/getWorksheetReferences';
-      element = $('#worksheet_add_references');
-      if (element.length > 0) {
-        $(element).load(url, {
-          'service_uids': selected_service_uids.join(','),
-          'control_type': control_type,
-          '_authenticator': $('input[name="_authenticator"]').val()
-        }, function(responseText, statusText, xhr, $form) {});
-      }
-    };
-    that.load = function() {
-      $('#worksheet_services input[id*=\'_cb_\']').live('click', function() {
-        get_updated_controls();
-      });
-      // get references for selected services on first load
-      get_updated_controls();
+  window.WorksheetAddQCAnalysesView = class WorksheetAddQCAnalysesView {
+    constructor() {
+      /*
+       * Controller class for Worksheet's add blank/control views
+       */
+      this.load = this.load.bind(this);
+      /* INITIALIZERS */
+      this.bind_eventhandler = this.bind_eventhandler.bind(this);
+      /* METHODS */
+      this.ajax_submit = this.ajax_submit.bind(this);
+      this.get_base_url = this.get_base_url.bind(this);
+      this.get_authenticator = this.get_authenticator.bind(this);
+      this.get_selected_services = this.get_selected_services.bind(this);
+      this.get_control_type = this.get_control_type.bind(this);
+      this.get_postion = this.get_postion.bind(this);
+      this.load_controls = this.load_controls.bind(this);
+      /* EVENT HANDLER */
+      this.on_service_click = this.on_service_click.bind(this);
+      this.on_referencesample_row_click = this.on_referencesample_row_click.bind(this);
+    }
+
+    load() {
+      console.debug("WorksheetAddQCAnalysesView::load");
+      // bind the event handler to the elements
+      this.bind_eventhandler();
+      // initially load the references
+      this.load_controls();
+      // dev only
+      return window.ws = this;
+    }
+
+    bind_eventhandler() {
+      /*
+       * Binds callbacks on elements
+       *
+       * N.B. We attach all the events to the form and refine the selector to
+       * delegate the event: https://learn.jquery.com/events/event-delegation/
+       *
+       */
+      console.debug("WorksheetAddQCAnalysesView::bind_eventhandler");
+      // Service checkbox clicked
+      $("body").on("click", "#worksheet_services input[id*='_cb_']", this.on_service_click);
       // click a Reference Sample in add_control or add_blank
-      $('#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr').live('click', function(e) {
-        var selected_service_uids, ssuids;
-        // we want to submit to the worksheet.py/add_control or add_blank views.
-        if (e.target.src !== void 0) {
-          return;
-        }
-        if (window.location.href.search('add_control') > -1) {
-          $(this).parents('form').attr('action', 'add_control');
-        } else {
-          $(this).parents('form').attr('action', 'add_blank');
-        }
-        // tell the form handler which services were selected
-        selected_service_uids = [];
-        $.each($('.worksheet_add_control_services .bika-listing-table input:checked'), function(i, e) {
-          selected_service_uids.push($(e).val());
-        });
-        ssuids = selected_service_uids.join(',');
-        $(this).parents('form').append('<input type=\'hidden\' value=\'' + ssuids + '\' name=\'selected_service_uids\'/>');
-        // tell the form handler which reference UID was clicked
-        $(this).parents('form').append('<input type=\'hidden\' value=\'' + $(this).attr('uid') + '\' name=\'reference_uid\'/>');
-        // add the position dropdown's value to the form before submitting.
-        $(this).parents('form').append('<input type=\'hidden\' value=\'' + $('#position').val() + '\' name=\'position\'/>');
-        $(this).parents('form').submit();
+      return $("body").on("click", "#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr", this.on_referencesample_row_click);
+    }
+
+    ajax_submit(options = {}) {
+      var done;
+      /*
+       * Ajax Submit with automatic event triggering and some sane defaults
+       */
+      console.debug("°°° ajax_submit °°°");
+      // some sane option defaults
+      if (options.type == null) {
+        options.type = "POST";
+      }
+      if (options.url == null) {
+        options.url = this.get_base_url();
+      }
+      if (options.context == null) {
+        options.context = this;
+      }
+      console.debug(">>> ajax_submit::options=", options);
+      $(this).trigger("ajax:submit:start");
+      done = () => {
+        return $(this).trigger("ajax:submit:end");
+      };
+      return $.ajax(options).done(done);
+    }
+
+    get_base_url() {
+      /*
+       * Return the current base url
+       */
+      var url;
+      url = window.location.href;
+      return url.split('?')[0];
+    }
+
+    get_authenticator() {
+      /*
+       * Get the authenticator value
+       */
+      return $("input[name='_authenticator']").val();
+    }
+
+    get_selected_services() {
+      /*
+       * Returns a list of selected service uids
+       */
+      var $table, services;
+      $table = $("table.bika-listing-table");
+      services = [];
+      $("input:checked", $table).each(function(index, element) {
+        return services.push(element.value);
       });
-    };
+      return services;
+    }
+
+    get_control_type() {
+      /*
+       * Returns the control type
+       */
+      var control_type;
+      control_type = "b";
+      if (window.location.href.search("add_control") > -1) {
+        control_type = "c";
+      }
+      return control_type;
+    }
+
+    get_postion() {
+      /*
+       * Returns the postition
+       */
+      var position;
+      position = $("#position").val();
+      return position || "new";
+    }
+
+    load_controls() {
+      /*
+       * Load the controls
+       */
+      var base_url, element, url;
+      base_url = this.get_base_url();
+      base_url = base_url.replace("/add_blank", "").replace("/add_control", "");
+      url = `${base_url}/getWorksheetReferences`;
+      element = $("#worksheet_add_references");
+      if (element.length === 0) {
+        console.warn("Element with id='#worksheet_add_references' missing!");
+        return;
+      }
+      return this.ajax_submit({
+        url: url,
+        data: {
+          service_uids: this.get_selected_services().join(","),
+          control_type: this.get_control_type(),
+          _authenticator: this.get_authenticator()
+        }
+      }).done(function(data) {
+        return element.html(data);
+      });
+    }
+
+    on_service_click(event) {
+      /*
+       * Eventhandler when a service checkbox was clicked
+       */
+      console.debug("°°° WorksheetAddQCAnalysesView::on_category_change °°°");
+      return this.load_controls();
+    }
+
+    on_referencesample_row_click(event) {
+      var $el, $form, action, control_type, selected_services, uid;
+      /*
+       * Eventhandler for a click on the loaded referencesample listing
+       *
+       * A reference sample for the service need to be added via
+       * Setup -> Supplier -> Referene Samples
+       */
+      console.debug("°°° WorksheetAddQCAnalysesView::on_referencesample_row_click °°°");
+      // The clicked element is a row from the referencesample listing
+      $el = $(event.currentTarget);
+      uid = $el.attr("uid");
+      // we want to submit to the worksheet.py/add_control or add_blank views.
+      $form = $el.parents("form");
+      control_type = this.get_control_type();
+      action = "add_blank";
+      if (control_type === "c") {
+        action = "add_control";
+      }
+      $form.attr("action", action);
+      selected_services = this.get_selected_services().join(",");
+      $form.append(`<input type='hidden' value='${selected_services}' name='selected_service_uids'/>`);
+      // tell the form handler which reference UID was clicked
+      $form.append(`<input type='hidden' value='${uid}' name='reference_uid'/>`);
+      // add the position dropdown's value to the form before submitting.
+      $form.append(`<input type='hidden' value='${this.get_postion()}' name='position'/>`);
+      // submit the referencesample listing form
+      return $form.submit();
+    }
+
   };
 
+  //############### REFACTOR FROM HERE ##############################
   /**
    * Controller class for Worksheet's add blank/control views
    */
