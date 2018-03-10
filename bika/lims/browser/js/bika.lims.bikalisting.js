@@ -399,7 +399,7 @@
       form_data.set("table_only", form_id);
       form_data.set(`${form_id}_review_state`, state_id);
       return this.ajax_submit({
-        url: window.location.href.split("?")[0],
+        url: this.get_base_url(),
         data: form_data,
         processData: false, // do not transform to a query string
         contentType: false // do not set any content type header
