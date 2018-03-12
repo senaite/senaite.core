@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #719 Fix interim fields result and calculation updating on the 2-Dimensional-CSV instrument
 - #716 Samples from inside Batch are not filtered correctly
 - #707 AR Add: Set default contact on client change
 - #700 Fix filtering by review state in aggregated list of analyses
