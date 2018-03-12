@@ -614,10 +614,6 @@ a.duplicate {
  color:#00B027 !important;
 }
 
-/* Reference Browser Widget */
-.cg-comboItem {
-    height: 45px;
-}
 
 
 /*

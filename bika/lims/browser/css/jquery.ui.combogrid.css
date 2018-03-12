@@ -200,6 +200,12 @@
   display: inline-block;
   margin-left: 3px;
 }
+
+/* Reference Browser Widget */
+.cg-comboItem {
+    height: 45px;
+}
+
 /*
  * Overwriting collective.js.jqueryui.custom.min.css white color
  */
