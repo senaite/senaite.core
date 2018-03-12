@@ -59,7 +59,7 @@ class SamplesPrint(BrowserView):
     _avoid_filter_by_date = False
 
     def __call__(self):
-        if self.context.portal_type == 'SamplesFolder':
+        if self.context.portal_type in ['SamplesFolder', 'Client']:
             if self.request.get('items', ''):
                 uids = self.request.get('items').split(',')
                 uc = getToolByName(self.context, 'uid_catalog')
@@ -73,6 +73,8 @@ class SamplesPrint(BrowserView):
                     'review_state': ['to_be_sampled', 'scheduled_sampling'],
                     'path': {'query': "/", 'level': 0}
                     }
+                if self.context.portal_type == 'Client':
+                    contentFilter['getClientUID'] = self.context.UID()
                 brains = catalog(contentFilter)
                 self._items = [obj.getObject() for obj in brains]
         else:
