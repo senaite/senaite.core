@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #723 Solve Traceback on Print Samples Sheet
 - #716 Samples from inside Batch are not filtered correctly
 - #707 AR Add: Set default contact on client change
 - #700 Fix filtering by review state in aggregated list of analyses
