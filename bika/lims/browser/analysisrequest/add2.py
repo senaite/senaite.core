@@ -7,6 +7,7 @@
 
 import json
 from datetime import datetime
+from collections import OrderedDict
 
 import magnitude
 from BTrees.OOBTree import OOBTree
@@ -1845,7 +1846,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {'errors': errors}
 
         # Process Form
-        ARs = {}
+        ARs = OrderedDict()
         for n, record in enumerate(valid_records):
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
