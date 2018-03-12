@@ -8,19 +8,14 @@
 import json
 
 import transaction
+from bika.lims.barcode import barcode_entry
+from bika.lims.tests.base import BaseTestCase
+from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.workflow import doActionFor
 from DateTime import DateTime
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
-
-from bika.lims.barcode import barcode_entry
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
-from bika.lims.utils import tmpID, changeWorkflowState
-from bika.lims.workflow import doActionFor
 
 try:
     import unittest2 as unittest
@@ -28,8 +23,7 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class TestBarcodeEntry(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestBarcodeEntry(BaseTestCase):
 
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
@@ -45,30 +39,39 @@ class TestBarcodeEntry(BikaFunctionalTestCase):
         clients = self.portal.clients
         bs = self.portal.bika_setup
         # @formatter:off
-        self.client = self.addthing(clients, 'Client', title='Happy Hills', ClientID='HH')
-        contact = self.addthing(self.client, 'Contact', Firstname='Rita', Lastname='Mohale')
-        container = self.addthing(bs.bika_containers, 'Container', title='Bottle', capacity="10ml")
-        sampletype = self.addthing(bs.bika_sampletypes, 'SampleType', title='Water', Prefix='H2O')
-        samplepoint = self.addthing(bs.bika_samplepoints, 'SamplePoint', title='Toilet')
-        service = self.addthing(bs.bika_analysisservices, 'AnalysisService', title='Ecoli', Keyword="ECO")
+        self.client = self.addthing(
+            clients, 'Client', title='Happy Hills', ClientID='HH')
+        contact = self.addthing(
+            self.client, 'Contact', Firstname='Rita', Lastname='Mohale')
+        container = self.addthing(
+            bs.bika_containers, 'Container', title='Bottle', capacity="10ml")
+        sampletype = self.addthing(
+            bs.bika_sampletypes, 'SampleType', title='Water', Prefix='H2O')
+        service = self.addthing(
+            bs.bika_analysisservices, 'AnalysisService', title='Ecoli',
+            Keyword="ECO")
         batch = self.addthing(self.portal.batches, 'Batch', title='B1')
         # Create Sample with single partition
-        self.sample1 = self.addthing(self.client, 'Sample', SampleType=sampletype)
-        self.sample2 = self.addthing(self.client, 'Sample', SampleType=sampletype)
+        self.sample1 = self.addthing(
+            self.client, 'Sample', SampleType=sampletype)
+        self.sample2 = self.addthing(
+            self.client, 'Sample', SampleType=sampletype)
         self.addthing(self.sample1, 'SamplePartition', Container=container)
         self.addthing(self.sample2, 'SamplePartition', Container=container)
         # Create an AR
-        self.ar1 = self.addthing(self.client, 'AnalysisRequest', Contact=contact,
-                                Sample=self.sample1, Analyses=[service], SamplingDate=DateTime())
+        self.ar1 = self.addthing(
+            self.client, 'AnalysisRequest', Contact=contact,
+            Sample=self.sample1, Analyses=[service], SamplingDate=DateTime())
         # Create a secondary AR - linked to a Batch
-        self.ar2 = self.addthing(self.client, 'AnalysisRequest', Contact=contact,
-                                Sample=self.sample1, Analyses=[service], SamplingDate=DateTime(),
-                                Batch=batch)
+        self.ar2 = self.addthing(
+            self.client, 'AnalysisRequest', Contact=contact,
+            Sample=self.sample1, Analyses=[service], SamplingDate=DateTime(),
+            Batch=batch)
         # Create an AR - single AR on sample2
-        self.ar3 = self.addthing(self.client, 'AnalysisRequest', Contact=contact,
-                                Sample=self.sample2, Analyses=[service], SamplingDate=DateTime())
+        self.ar3 = self.addthing(
+            self.client, 'AnalysisRequest', Contact=contact,
+            Sample=self.sample2, Analyses=[service], SamplingDate=DateTime())
         # @formatter:on
-        wf = getToolByName(self.portal, 'portal_workflow')
         for ar in self.ar1, self.ar2, self.ar3:
             # Set initial AR state
             doActionFor(ar, 'no_sampling_workflow')
@@ -145,5 +148,4 @@ def test_sample_with_single_ar_redirects_to_AR(self):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBarcodeEntry))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
