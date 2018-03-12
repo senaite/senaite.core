@@ -109,6 +109,7 @@ def find_analyses(ar_or_sample):
         obj = ar[0].getObject()
         analyses = obj.getAnalyses(full_objects=True)
         return analyses
+    return []
 
 
 def find_analysis_interims(ar_or_sample):
