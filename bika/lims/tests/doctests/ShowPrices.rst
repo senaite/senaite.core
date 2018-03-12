@@ -37,12 +37,10 @@ Functional Helpers:
     >>> def enableShowPrices():
     ...     self.portal.bika_setup.setShowPrices(True)
     ...     transaction.commit()
-    ...     sleep(1)
 
     >>> def disableShowPrices():
     ...     self.portal.bika_setup.setShowPrices(False)
     ...     transaction.commit()
-    ...     sleep(1)
 
 Variables:
 

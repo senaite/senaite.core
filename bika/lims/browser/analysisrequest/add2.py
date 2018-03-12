@@ -273,7 +273,7 @@ class AnalysisRequestAddView(BrowserView):
         logger.info("get_copy_from: uids={}".format(copy_from_uids))
         return out
 
-    def get_default_value(self, field, context):
+    def get_default_value(self, field, context, arnum):
         """Get the default value of the field
         """
         name = field.getName()
@@ -286,7 +286,8 @@ class AnalysisRequestAddView(BrowserView):
             client = self.get_client()
             if client is not None:
                 default = client
-        if name == "Contact":
+        # only set default contact for first column
+        if name == "Contact" and arnum == 0:
             contact = self.get_default_contact()
             if contact is not None:
                 default = contact
@@ -312,8 +313,8 @@ class AnalysisRequestAddView(BrowserView):
             interface=IGetDefaultFieldValueARAddHook)
         if adapter is not None:
             default = adapter(self.context)
-        logger.info("get_default_value: context={} field={} value={}".format(
-            context, name, default))
+        logger.info("get_default_value: context={} field={} value={} arnum={}"
+                    .format(context, name, default, arnum))
         return default
 
     def get_field_value(self, field, context):
@@ -406,14 +407,14 @@ class AnalysisRequestAddView(BrowserView):
                     value = self.get_field_value(field, context)
                 else:
                     # get the default value of this field
-                    value = self.get_default_value(field, ar_context)
+                    value = self.get_default_value(field, ar_context, arnum=arnum)
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
                 out[new_fieldname] = value
 
         return out
 
-    def get_default_contact(self):
+    def get_default_contact(self, client=None):
         """Logic refactored from JavaScript:
 
         * If client only has one contact, and the analysis request comes from
@@ -425,7 +426,7 @@ class AnalysisRequestAddView(BrowserView):
         :rtype: Client object or None
         """
         catalog = api.get_tool("portal_catalog")
-        client = self.get_client()
+        client = client or self.get_client()
         path = api.get_path(self.context)
         if client:
             path = api.get_path(client)
@@ -937,7 +938,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns the client info of an object
         """
         info = self.get_base_info(obj)
-        info.update({})
+
+        default_contact_info = {}
+        default_contact = self.get_default_contact(client=obj)
+        if default_contact:
+            default_contact_info = self.get_contact_info(default_contact)
+
+        info.update({
+            "default_contact": default_contact_info
+        })
 
         # UID of the client
         uid = api.get_uid(obj)
