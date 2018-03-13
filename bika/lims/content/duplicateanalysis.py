@@ -137,10 +137,9 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         """Returns the valid result range for this analysis duplicate, based on
         both on the result and duplicate variation set in the original analysis
 
-        A Duplicate will be considered out of range if its result does not match
-        with the result set to the analysis that was duplicated from, with the
-        Duplicate Variation in % as the margin error, that will be used to set
-        the range's min and max values
+        A Duplicate will be out of range if its result does not match with the
+        result for the parent analysis plus the duplicate variation in % as the
+        margin error.
         :return: A dictionary with the keys min and max
         :rtype: dict
         """
