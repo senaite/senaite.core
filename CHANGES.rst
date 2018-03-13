@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+# Added Instrument: LaChat QuickChem FIA
 - #710 Added more builtin functions for Calculations
 
 **Changed**
