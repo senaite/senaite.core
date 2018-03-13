@@ -13,11 +13,11 @@ from Products.ATContentTypes.utils import DT2dt
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -88,7 +88,7 @@ class ReferenceAnalysesViewView(BrowserView):
         return self.context.id
 
     def get_analyses_json(self):
-        return self.get_analyses_view().get_analyses_json()
+        return self.get_analyses_view().chart.get_json()
 
 
 class ReferenceAnalysesView(AnalysesView):
@@ -149,7 +149,7 @@ class ReferenceAnalysesView(AnalysesView):
                         'state_title'],
              },
         ]
-        self.anjson = {}
+        self.chart = EvolutionChart()
 
     def isItemAllowed(self, obj):
         """
@@ -184,55 +184,9 @@ class ReferenceAnalysesView(AnalysesView):
                 'More than one Worksheet found for ReferenceAnalysis {}'
                 .format(obj.getId))
 
-        # Process results range information for this analysis to make it
-        # available for the QC Chart
-        self.addToResultsRangeJSON(obj)
+        # Add the analysis to the QC Chart
+        self.chart.add_analysis(obj)
         return item
-
-    def addToResultsRangeJSON(self, analysis_brain):
-        """
-        Performs the conversion of the results range associated to the passed
-        in reference analysis to a proper format to be consumed by the QC Chart
-        machinery (js). Updates `self.anjson` variable with this data.
-        :param analysis_object: analysis the results range to be processed
-        """
-        result = analysis_brain.getResult
-        results_range = analysis_brain.getResultsRange
-        range_result = results_range.get('result', None)
-        range_min = results_range.get('min', None)
-        range_max = results_range.get('max', None)
-        # All them must be floatable
-        for value in [result, range_result, range_min, range_max]:
-            if not api.is_floatable(value):
-                return
-        cap_date = analysis_brain.getResultCaptureDate
-        cap_date = api.is_date(cap_date) and \
-                   cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
-        if not cap_date:
-            return
-
-        # Create json
-        parent = api.get_parent(analysis_brain)
-        ref_sample_id = parent.id
-        as_keyword = analysis_brain.getKeyword
-        as_name = analysis_brain.Title
-        as_ref = '{} ({})'.format(as_name, as_keyword)
-        as_rows = self.anjson.get(as_ref, {})
-        an_rows = as_rows.get(ref_sample_id, [])
-        an_rows.append({
-            'date': cap_date,
-            'target': api.to_float(range_result),
-            'upper': api.to_float(range_max),
-            'lower': api.to_float(range_min),
-            'result': api.to_float(result),
-            'unit': analysis_brain.getUnit,
-            'id': api.get_uid(analysis_brain)
-        })
-        as_rows[ref_sample_id] = an_rows
-        self.anjson[as_ref] = as_rows
-
-    def get_analyses_json(self):
-        return json.dumps(self.anjson)
 
 
 class ReferenceResultsView(BikaListingView):
