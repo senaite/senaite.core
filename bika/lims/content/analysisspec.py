@@ -70,7 +70,7 @@ schema = Schema((
             'hidemax',
             'rangecomment'
         ),
-        required_subfields=('keyword','min','max'),
+        required_subfields=('keyword', 'min', 'max'),
         subfield_validators={
             'min': 'analysisspecs_validator',
             'max': 'analysisspecs_validator',
@@ -89,15 +89,13 @@ schema = Schema((
             checkbox_bound=0,
             label=_("Specifications"),
             description=_(
-                "Click on Analysis Categories (against shaded background" \
-                "to see Analysis Services in each category. Enter minimum " \
-                "and maximum values to indicate a valid results range. " \
-                "Any result outside this range will raise an alert. " \
-                "A result out of range but still within the shoulders if"
-                "'Min warn' and/or 'Max warn' are taken into consideration, " \
-                "will raise a less severe alert. If the result is below " \
-                "'< Min' the result will be shown as '< [min]'. The same " \
-                "applies for results above '> Max'"),
+                "'Min' and 'Max' values indicate a valid results range. Any "
+                "result outside this results range will raise an alert. 'Min "
+                "warn' and 'Max warn' values indicate a shoulder range. Any "
+                "result outside the results range but within the shoulder "
+                "range will raise a less severe alert. If the result is out of "
+                "range, the value set for '< Min' or '< Max' will be displayed "
+                "in lists and results reports instead of the real result.")
         ),
     ),
 
