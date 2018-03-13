@@ -24,9 +24,9 @@ def is_out_of_range(brain_or_object, result=None):
     :param brain_or_object: A single catalog brain or content object
     :param result: Tentative result. If None, use the analysis result
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: A tuple of a size of two where the first value is True or False
-    whether if the passed in object is out of range and the second value is
-    True or False if the passed in object is out of shoulders range.
+    :returns: Tuple of two elements. The first value is `True` if the result is
+    out of range and `False` if it is in range. The second value is `True` if
+    the result is out of shoulder range and `False` if it is in shoulder range
     :rtype: (bool, bool)
     """
     analysis = api.get_object(brain_or_object)
