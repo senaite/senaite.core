@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #723 Solve Traceback on Print Samples Sheet
 - #724 Department Filtering Portlet appears only for the manager with 'admin' username
 - #720 Make automatic sticker printing work with 'registered' option activated
 - #716 Samples from inside Batch are not filtered correctly
