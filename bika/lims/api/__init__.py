@@ -1221,7 +1221,7 @@ def is_floatable(value):
         return False
 
 
-def to_float(value, default=0.0):
+def to_float(value, default=_marker):
     """Converts the passed in value to a float number
 
     :param value: The value to be converted to a floatable number
@@ -1230,8 +1230,7 @@ def to_float(value, default=0.0):
     :rtype: float
     """
     if not is_floatable(default):
-        fail("Param default needs to be floatable, got '%s'" % type(default))
-    try:
-        return float(value)
-    except:
-        return to_float(default, default=0.0)
+        if default is not _marker:
+            return to_float(default)
+        fail("Value %s is not floarable" % repr(value))
+    return float(value)
