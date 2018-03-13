@@ -14,6 +14,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.subscribers import skip
@@ -143,7 +144,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         :return: A dictionary with the keys min and max
         :rtype: dict
         """
-        specs = {'min': '', 'max': '', 'warn_min': '', 'warn_max': ''}
+        specs = ResultsRangeDict()
         analysis = self.getAnalysis()
         if not analysis:
             return specs
@@ -152,7 +153,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         if not api.is_floatable(result):
             return specs
 
-        specs['min'] = specs['max'] = result
+        specs.min = specs.max = result
         result = api.to_float(result)
         dup_variation = analysis.getDuplicateVariation()
         dup_variation = api.to_float(dup_variation)
@@ -160,8 +161,8 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             return specs
 
         margin = abs(result) * (dup_variation / 100.0)
-        specs['min'] = str(result - margin)
-        specs['max'] = str(result + margin)
+        specs.min = str(result - margin)
+        specs.max = str(result + margin)
         return specs
 
     def workflow_script_attach(self):

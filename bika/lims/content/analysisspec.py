@@ -186,3 +186,44 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
+
+class ResultsRangeDict(dict):
+
+    def __init__(self, *arg, **kw):
+        super(ResultsRangeDict, self).__init__(*arg, **kw)
+        self["min"] = self.min
+        self["max"] = self.max
+        self["warn_min"] = self.warn_min
+        self["warn_max"] = self.warn_max
+
+    @property
+    def min(self):
+        return self.get("min", '')
+
+    @property
+    def max(self):
+        return self.get("max", '')
+
+    @property
+    def warn_min(self):
+        return self.get("warn_min", self.min)
+
+    @property
+    def warn_max(self):
+        return self.get('warn_max', self.max)
+
+    @min.setter
+    def min(self, value):
+        self["min"] = value
+
+    @max.setter
+    def max(self, value):
+        self["max"] = value
+
+    @warn_min.setter
+    def warn_min(self, value):
+        self['warn_min'] = value
+
+    @warn_max.setter
+    def warn_max(self, value):
+        self['warn_max'] = value

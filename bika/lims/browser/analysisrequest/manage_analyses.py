@@ -9,6 +9,7 @@ import json
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.content.analysisspec import ResultsRangeDict
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.i18n.locales import locales
@@ -176,8 +177,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         return json.dumps(rr_dict_by_service_uid)
 
     def get_spec_from_ar(self, ar, keyword):
-        empty = {'min': '', 'max': '', 'warn_min': '', 'warn_max': '',
-                 'keyword': keyword}
+        empty = ResultsRangeDict(keyword=keyword)
         spec = ar.getResultsRange()
         if spec:
             return dicts_to_dict(spec, 'keyword').get(keyword, empty)

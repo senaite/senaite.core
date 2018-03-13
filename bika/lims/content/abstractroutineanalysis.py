@@ -18,6 +18,7 @@ from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
 from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
@@ -359,7 +360,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         :return: A dictionary with keys "min", "max", "warn_min" and "warn_max"
         :rtype: dict
         """
-        specs = {'min': '', 'max': '', 'warn_min': '', 'warn_max': ''}
+        specs = ResultsRangeDict()
         analysis_request = self.getRequest()
         if not analysis_request:
             return specs

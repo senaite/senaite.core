@@ -16,6 +16,7 @@ from bika.lims import deprecated
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.subscribers import skip
 from bika.lims.workflow import doActionFor
@@ -99,7 +100,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         :return: A dictionary with the keys min and max
         :rtype: dict
         """
-        specs = {'result': '', 'min': '', 'max': '',}
+        specs = ResultsRangeDict(result="")
         sample = self.getSample()
         if not sample:
             return specs
