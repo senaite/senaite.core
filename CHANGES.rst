@@ -16,6 +16,7 @@ Changelog
 
 **Fixed**
 
+- #725 Late Analyses are not filtered by Department
 - #723 Solve Traceback on Print Samples Sheet
 - #724 Department Filtering Portlet appears only for the manager with 'admin' username
 - #720 Make automatic sticker printing work with 'registered' option activated
