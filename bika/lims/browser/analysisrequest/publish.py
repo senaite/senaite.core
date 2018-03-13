@@ -1386,7 +1386,10 @@ class AnalysisRequestDigester:
             analysis, analysis.getResult(), decimalmark=decimalmark,
             sciformat=int(scinot))
 
-        # Out of range?
+        # Out of range? Note is_out_of_range returns a tuple of two elements,
+        # were the first returned value is a bool that indicates if the result
+        # is out of range. The second value (dismissed here) is a bool that
+        # indicates if the result is out of shoulders
         andict['outofrange'] = is_out_of_range(analysis)[0]
         return andict
 
