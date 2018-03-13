@@ -6,12 +6,13 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims.api import _marker
 from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
     IResultOutOfRange
 from zope.component._api import getAdapters
 
 
-def is_out_of_range(brain_or_object, result=None):
+def is_out_of_range(brain_or_object, result=_marker):
     """Checks if the result for the analysis passed in is out of range and/or
     out of shoulders range.
 
@@ -35,7 +36,7 @@ def is_out_of_range(brain_or_object, result=None):
         api.fail("{} is not supported. Needs to be IAnalysis or "
                  "IReferenceAnalysis".format(repr(analysis)))
 
-    if result is None:
+    if result is _marker:
         result = api.safe_getattr(analysis, "getResult", None)
     if not api.is_floatable(result):
         # Result is empty/None or not a valid number
