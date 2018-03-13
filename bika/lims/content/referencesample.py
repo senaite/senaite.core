@@ -234,11 +234,11 @@ class ReferenceSample(BaseFolder):
         :return: list of uids or AnalysisService objects
         """
         uids = map(lambda range: range['uid'], self.getReferenceResults())
-        uids = [uid for uid in uids if api.is_uid(uid)]
+        uids = filter(api.is_uid, uids)
         if only_uids:
             return uids
         brains = api.search({'UID': uids}, 'uid_catalog')
-        return [api.get_object(brain) for brain in brains]
+        return map(api.get_object, brains)
 
     security.declarePublic('getReferenceAnalyses')
     def getReferenceAnalyses(self):
