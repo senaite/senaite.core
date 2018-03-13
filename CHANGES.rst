@@ -25,6 +25,8 @@ Changelog
 - #694 Bad calculation of min and max in ReferenceResults on negative result
 - #694 Instrument validity not updated in accordance with latest QC tests
 - #694 Result range shoulders computed badly on full/partial negative specs
+- #720 Make automatic sticker printing work with 'registered' option activated
+- #716 Samples from inside Batch are not filtered correctly
 - #707 AR Add: Set default contact on client change
 - #700 Fix filtering by review state in aggregated list of analyses
 - #715 AR Rejection Fails when e-mail Notification is enabled

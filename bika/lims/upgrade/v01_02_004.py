@@ -30,6 +30,8 @@ def upgrade(tool):
 
     # Required to make filtering by department in worksheets work
     ut.addIndex(CATALOG_WORKSHEET_LISTING, 'getDepartmentUIDs', 'KeywordIndex')
+    # Required by https://github.com/senaite/senaite.core/issues/683
+    ut.addIndexAndColumn('bika_catalog', 'getBatchUIDs', 'KeywordIndex')
     ut.refreshCatalogs()
 
     # % Error subfield is meaningless in result ranges. Also, the system was
