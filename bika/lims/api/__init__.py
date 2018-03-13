@@ -1229,8 +1229,8 @@ def to_float(value, default=_marker):
     :returns: The float number representation of the passed in value
     :rtype: float
     """
-    if not is_floatable(default):
+    if not is_floatable(value):
         if default is not _marker:
             return to_float(default)
-        fail("Value %s is not floarable" % repr(value))
+        fail("Value %s is not floatable" % repr(value))
     return float(value)
