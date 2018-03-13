@@ -7,6 +7,7 @@
 
 import json
 from datetime import datetime
+from collections import OrderedDict
 
 import magnitude
 from BTrees.OOBTree import OOBTree
@@ -273,7 +274,7 @@ class AnalysisRequestAddView(BrowserView):
         logger.info("get_copy_from: uids={}".format(copy_from_uids))
         return out
 
-    def get_default_value(self, field, context):
+    def get_default_value(self, field, context, arnum):
         """Get the default value of the field
         """
         name = field.getName()
@@ -286,7 +287,8 @@ class AnalysisRequestAddView(BrowserView):
             client = self.get_client()
             if client is not None:
                 default = client
-        if name == "Contact":
+        # only set default contact for first column
+        if name == "Contact" and arnum == 0:
             contact = self.get_default_contact()
             if contact is not None:
                 default = contact
@@ -312,8 +314,8 @@ class AnalysisRequestAddView(BrowserView):
             interface=IGetDefaultFieldValueARAddHook)
         if adapter is not None:
             default = adapter(self.context)
-        logger.info("get_default_value: context={} field={} value={}".format(
-            context, name, default))
+        logger.info("get_default_value: context={} field={} value={} arnum={}"
+                    .format(context, name, default, arnum))
         return default
 
     def get_field_value(self, field, context):
@@ -406,14 +408,14 @@ class AnalysisRequestAddView(BrowserView):
                     value = self.get_field_value(field, context)
                 else:
                     # get the default value of this field
-                    value = self.get_default_value(field, ar_context)
+                    value = self.get_default_value(field, ar_context, arnum=arnum)
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
                 out[new_fieldname] = value
 
         return out
 
-    def get_default_contact(self):
+    def get_default_contact(self, client=None):
         """Logic refactored from JavaScript:
 
         * If client only has one contact, and the analysis request comes from
@@ -425,7 +427,7 @@ class AnalysisRequestAddView(BrowserView):
         :rtype: Client object or None
         """
         catalog = api.get_tool("portal_catalog")
-        client = self.get_client()
+        client = client or self.get_client()
         path = api.get_path(self.context)
         if client:
             path = api.get_path(client)
@@ -937,7 +939,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns the client info of an object
         """
         info = self.get_base_info(obj)
-        info.update({})
+
+        default_contact_info = {}
+        default_contact = self.get_default_contact(client=obj)
+        if default_contact:
+            default_contact_info = self.get_contact_info(default_contact)
+
+        info.update({
+            "default_contact": default_contact_info
+        })
 
         # UID of the client
         uid = api.get_uid(obj)
@@ -1836,7 +1846,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {'errors': errors}
 
         # Process Form
-        ARs = []
+        ARs = OrderedDict()
         for n, record in enumerate(valid_records):
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
@@ -1853,7 +1863,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             except (KeyError, RuntimeError) as e:
                 errors["message"] = e.message
                 return {"errors": errors}
-            ARs.append(ar.Title())
+            # We keep the title to check if AR is newly created
+            # and UID to print stickers
+            ARs[ar.Title()] = ar.UID()
 
             _attachments = []
             for attachment in attachments.get(n, []):
@@ -1872,20 +1884,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             level = "error"
         elif len(ARs) > 1:
             message = _('Analysis requests ${ARs} were successfully created.',
-                        mapping={'ARs': safe_unicode(', '.join(ARs))})
+                        mapping={'ARs': safe_unicode(', '.join(ARs.keys()))})
         else:
             message = _('Analysis request ${AR} was successfully created.',
-                        mapping={'AR': safe_unicode(ARs[0])})
+                        mapping={'AR': safe_unicode(ARs.keys()[0])})
 
         # Display a portal message
         self.context.plone_utils.addPortalMessage(message, level)
-
         # Automatic label printing won't print "register" labels for Secondary. ARs
         bika_setup = api.get_bika_setup()
         auto_print = bika_setup.getAutoPrintStickers()
 
         # https://github.com/bikalabs/bika.lims/pull/2153
-        new_ars = [a for a in ARs if a[-1] == '1']
+        new_ars = [uid for key, uid in ARs.items() if key[-1] == '1']
 
         if 'register' in auto_print and new_ars:
             return {

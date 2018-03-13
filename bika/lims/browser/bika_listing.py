@@ -588,13 +588,6 @@ class BikaListingView(BrowserView):
         self.member = api.get_current_user()
         self.translate = self.context.translate
 
-        # Sanitize the request form
-        # XXX When does this happen?
-        if self.request.form:
-            for key, value in self.request.form.items():
-                if isinstance(value, list):
-                    self.request.form[key] = self.request.form[key][0]
-
         self.rows_only = self.get_rows_only()
         self.limit_from = self.get_limit_from()
 
