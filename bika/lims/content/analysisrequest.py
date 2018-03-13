@@ -2579,8 +2579,8 @@ class AnalysisRequest(BaseFolder):
             return specs_range
 
         # Remove those analysis ranges that neither min nor max are floatable
-        an_specs = [an for an in ar_range if \
-                    api.is_floatable(an.get('min', None)) or \
+        an_specs = [an for an in ar_range if
+                    api.is_floatable(an.get('min', None)) or
                     api.is_floatable(an.get('max', None))]
         # Want to know which are the analyses that needs to be overriden
         keywords = map(lambda item: item.get('keyword'), an_specs)
