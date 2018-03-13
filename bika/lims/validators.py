@@ -752,98 +752,78 @@ class AnalysisSpecificationsValidator:
         fieldname = kwargs['field'].getName()
 
         # This value in request prevents running once per subfield value.
-        key = '{}{}'.format(instance.id, fieldname)
+        key = '{}{}'.format(instance.getId(), fieldname)
         if instance.REQUEST.get(key, False):
             return True
 
-        # For each parameter (e.g. 'min'), get the dict where the key is the
-        # uid of the Analysis Service and the value is the parameter value
+        # Walk through all AS UIDs and validate each parameter for that AS
+        services = request.get('service', [{}])[0]
+        for uid, service_name in services.items():
+            err_msg = self.validate_service(request, uid)
+            if not err_msg:
+                continue
+
+            # Validation failed
+            err_msg = "{}: {}".format(_("Validation for '{}' failed"),
+                                      _(err_msg))
+            err_msg = err_msg.format(service_name)
+            translate = api.get_tool('translation_service').translate
+            instance.REQUEST[key] = to_utf8(translate(safe_unicode(err_msg)))
+            return instance.REQUEST[key]
+
+        instance.REQUEST[key] = True
+        return True
+
+    def validate_service(self, request, uid):
+        """Validates the specs values from request for the service uid. Returns
+        a non-translated message if the validation failed.
+        """
         mins = request.get('min', [{}])[0]
         maxs = request.get('max', [{}])[0]
         warn_mins = request.get('warn_min', [{}])[0]
         warn_maxs = request.get('warn_max', [{}])[0]
         errors = request.get('error', [{}])[0]
-        services = request.get('service', [{}])[0]
+        spec_min = mins.get(uid, '0')
+        if spec_min and not api.is_floatable(spec_min):
+            return "'Min' value must be numeric"
 
-        # Walkthrough all AS UIDs and validate each parameter for that AS
-        err_msg = None
-        for uid, service_name in services.items():
-            spec_min = mins.get(uid, '0')
-            if spec_min and not api.is_floatable(spec_min):
-                err_msg = _("Validation for '{}' failed: Min value must be "
-                            "numeric").format(service_name)
-                break
+        spec_max = maxs.get(uid, '0')
+        if spec_max and not api.is_floatable(spec_max):
+            return "'Max' value must be numeric"
 
-            spec_max = maxs.get(uid, '0')
-            if spec_max and not api.is_floatable(spec_max):
-                err_msg = _("Validation for '{}' failed: Max value must be "
-                            "numeric").format(service_name)
-                break
-
-            if spec_min and spec_max \
+        if spec_min and spec_max \
                 and api.to_float(spec_min) > api.to_float(spec_max):
-                err_msg = _("Validation for '{}' failed: Max value must be"
-                            "greater than Min value").format(service_name)
-                break
+            return "'Max' value must be greater than Min value"
 
-            warn_min = warn_mins.get(uid, '')
-            if warn_min:
-                if not api.is_floatable(warn_min):
-                    err_msg = _("Validation for '{}' failed: Warning for "
-                                "Min value must be numeric or empty").format(
-                        service_name)
-                    break
-                if not spec_min:
-                    err_msg = _("Validation for '{}' failed: Cannot set a "
-                                "Warning for Min value without having a Min "
-                                "value set").format(service_name)
-                    break
-                if api.to_float(warn_min) > api.to_float(spec_min):
-                    err_msg = _("Validation for '{}' failed: Warning for Min "
-                                "value must be below Min value").format(
-                        service_name)
-                    break
+        warn_min = warn_mins.get(uid, '')
+        if warn_min:
+            if not api.is_floatable(warn_min):
+                return "'Warn Min' value must be numeric or empty"
+            if not spec_min:
+                return "Cannot set 'Warn Min' without 'Min'"
+            if api.to_float(warn_min) > api.to_float(spec_min):
+                return "'Warn Min' value must be lower than 'Min'"
 
-            warn_max = warn_maxs.get(uid, '')
-            if warn_max:
-                if not api.is_floatable(warn_max):
-                    err_msg = _("Validation for '{}' failed: Warning for "
-                                "Max value must be numeric or empty").format(
-                        service_name)
-                    break
-                if not spec_max:
-                    err_msg = _("Validation for '{}' failed: Cannot set a "
-                                "Warning for Max value without having a Max "
-                                "value set").format(service_name)
-                    break
-                if api.to_float(warn_max) < api.to_float(spec_max):
-                    err_msg = _("Validation for '{}' failed: Warning for Max "
-                                "value must above Max value").format(
-                        service_name)
-                    break
+        warn_max = warn_maxs.get(uid, '')
+        if warn_max:
+            if not api.is_floatable(warn_max):
+                return "'Warn Max' value must be numeric or empty"
+            if not spec_max:
+                return "Cannot set 'Warn Max' value without 'Max'"
+            if api.to_float(warn_max) < api.to_float(spec_max):
+                return "'Warn Max' value must be greather than 'Max'"
 
-            if warn_min and warn_max \
-                    and api.to_float(warn_min) > api.to_float(warn_max):
-                err_msg = _("Validation for '{}' failed: Warning for Max must "
-                            "be greater than Warning for Min")
-                break
+        if warn_min and warn_max \
+                and api.to_float(warn_min) > api.to_float(warn_max):
+            return "'Warn Max' value must be greater than 'Warn Min'"
 
-            error = errors.get(uid, '')
-            if error and (not api.is_floatable(error)
-                        or api.to_float(error) < 0.0
-                        or api.to_float(error) > 100):
-                err_msg = _("Validation for '{}' failed: % Error must be a "
-                            "value between 0 and 100 or empty")
-                break
+        error = errors.get(uid, '')
+        if error and (not api.is_floatable(error)
+                      or api.to_float(error) < 0.0
+                      or api.to_float(error) > 100):
+            return "% Error must be between 0 and 100"
 
-        if err_msg:
-            # Something went wrong!
-            translate = api.get_tool('translation_service').translate
-            instance.REQUEST[key] = to_utf8(translate(err_msg))
-            return instance.REQUEST[key]
-
-        instance.REQUEST[key] = True
-        return True
+        return None
 
 
 validation.register(AnalysisSpecificationsValidator())
