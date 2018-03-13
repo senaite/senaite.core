@@ -551,7 +551,7 @@ class SamplesPrint(BrowserView):
         # Checking if the day is correct after been computed
         if (day - default) <= 0:
             # substract a month
-            if (month-1) < 0:
+            if (month-1) <= 0:
                 year -= 1
                 month = 12
             else:

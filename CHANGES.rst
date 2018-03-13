@@ -17,6 +17,9 @@ Changelog
 **Fixed**
 
 - #725 Late Analyses are not filtered by Department
+- #723 Solve Traceback on Print Samples Sheet
+- #724 Department Filtering Portlet appears only for the manager with 'admin' username
+- #720 Make automatic sticker printing work with 'registered' option activated
 - #716 Samples from inside Batch are not filtered correctly
 - #707 AR Add: Set default contact on client change
 - #700 Fix filtering by review state in aggregated list of analyses
