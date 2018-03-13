@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- # Added Instrument: Varian Vista-PRO ICP
 - #710 Added more builtin functions for Calculations
 
 **Changed**
