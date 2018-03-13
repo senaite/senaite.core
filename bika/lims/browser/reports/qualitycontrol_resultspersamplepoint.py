@@ -116,6 +116,7 @@ class Report(BrowserView):
             uid = analysis.UID()
             keyword = analysis.getKeyword()
             service_title = "%s (%s)" % (analysis.Title(), keyword)
+            # First tuple element is the out-of-range flag
             result_in_range = is_out_of_range(analysis)[0]
 
             if service_title not in analyses.keys():
