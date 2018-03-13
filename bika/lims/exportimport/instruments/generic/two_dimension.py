@@ -248,10 +248,11 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                     if found:
                         continue
                     interims = find_analysis_interims(quantitation['AR'])
-                    letscallitxxfornow = dict(zip(self._keywords, clean_splitted))
+                    # pairing headers(keywords) and their values(results) per line
+                    keyword_value_dict = dict(zip(self._keywords, clean_splitted))
                     for interim in interims:
-                        if interim in letscallitxxfornow:
-                            quantitation[interim] = letscallitxxfornow[interim]
+                        if interim in keyword_value_dict:
+                            quantitation[interim] = keyword_value_dict[interim]
                             list_of_interim_results.append(quantitation)
                     kw = new_kw
                     kw = re.sub(r"\W", "", kw)
