@@ -5,27 +5,21 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 
 try:
     import unittest2 as unittest
-except ImportError: # Python 2.7
+except ImportError:  # Python 2.7
     import unittest
 
 
-class TestHiddenAnalyses(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestHiddenAnalyses(DataTestCase):
 
     def setUp(self):
         super(TestHiddenAnalyses, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
         servs = self.portal.bika_setup.bika_analysisservices
@@ -63,7 +57,6 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
 
     def test_service_hidden_service(self):
         service = self.services[1]
-        uid = service.UID()
         self.assertFalse(service.getHidden())
         self.assertFalse(service.Schema().getField('Hidden').get(service))
 
@@ -80,7 +73,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
     def test_service_hidden_profile(self):
         # Profile
         # For Calcium (unset)
-        uid = self.services[0].UID();
+        uid = self.services[0].UID()
         self.assertFalse(self.services[0].getHidden())
         self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
@@ -344,9 +337,9 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         # AR with template, with changes
         values['Template'] = self.artemplate.UID()
         del values['Profiles']
-        matrix = [[2, 1,-2],  # AS = Not set
-                  [2, 1,-2],  # AS = False
-                  [2, 1,-1]]
+        matrix = [[2, 1, -2],  # AS = Not set
+                  [2, 1, -2],  # AS = False
+                  [2, 1, -1]]
         for i in range(len(matrix)):
             sets = {'uid': services[i]}
             opts = [0, 1, 2]
@@ -373,8 +366,8 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         # Restore
         self.artemplate.setAnalysisServicesSettings([])
 
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestHiddenAnalyses))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

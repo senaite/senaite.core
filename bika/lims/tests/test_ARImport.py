@@ -8,21 +8,15 @@
 import re
 
 import transaction
+from bika.lims.catalog import (CATALOG_ANALYSIS_LISTING,
+                               CATALOG_ANALYSIS_REQUEST_LISTING)
+from bika.lims.tests.base import BaseTestCase
+from bika.lims.utils import tmpID
+from bika.lims.workflow import doActionFor, getCurrentState
+from plone.app.testing import (TEST_USER_ID, TEST_USER_NAME,
+                               TEST_USER_PASSWORD, login, setRoles)
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import TEST_USER_PASSWORD
-from plone.app.testing import login
-from plone.app.testing import setRoles
-
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
-from bika.lims.utils import tmpID
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
 
 try:
     import unittest2 as unittest
@@ -30,7 +24,7 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class TestARImports(BikaFunctionalTestCase):
+class TestARImports(BaseTestCase):
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
         thing.unmarkCreationFlag()
@@ -245,5 +239,4 @@ Total price excl Tax,,,,,,,,,,,,,,
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestARImports))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite
