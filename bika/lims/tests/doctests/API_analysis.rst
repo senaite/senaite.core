@@ -1,7 +1,7 @@
 API Analysis
 ============
 
-Th> api_analysis provides single functions for single purposes especifically
+The api_analysis provides single functions for single purposes especifically
 related with analyses.
 
 Running this test from the buildout directory::
@@ -113,7 +113,7 @@ Create an Analysis Request:
 Create a new Worksheet and add the analyses:
 
     >>> worksheet = api.create(portal.worksheets, "Worksheet")
-    >>> analyses = [api.get_object(an) for an  in ar.getAnalyses()]
+    >>> analyses = map(api.get_object, ar.getAnalyses())
     >>> for analysis in analyses:
     ...     worksheet.addAnalysis(analysis)
 
@@ -196,7 +196,7 @@ Results in shoulders?:
 Check if results for duplicates are out of range
 ------------------------------------------------
 
-Get the first duplicate analysis that comes from from `Au`:
+Get the first duplicate analysis that comes from `Au`:
 
     >>> duplicate = duplicates[0]
 
