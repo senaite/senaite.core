@@ -8,7 +8,7 @@
 import json
 from bika.lims import api
 
-class EvolutionChart():
+class EvolutionChart(object):
 
     def __init__(self):
         self.analyses_dict = dict()
