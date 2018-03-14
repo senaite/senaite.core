@@ -7,6 +7,7 @@
 
 import json
 from datetime import datetime
+from collections import OrderedDict
 
 import magnitude
 from BTrees.OOBTree import OOBTree
@@ -1845,7 +1846,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {'errors': errors}
 
         # Process Form
-        ARs = []
+        ARs = OrderedDict()
         for n, record in enumerate(valid_records):
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
@@ -1862,7 +1863,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             except (KeyError, RuntimeError) as e:
                 errors["message"] = e.message
                 return {"errors": errors}
-            ARs.append(ar.Title())
+            # We keep the title to check if AR is newly created
+            # and UID to print stickers
+            ARs[ar.Title()] = ar.UID()
 
             _attachments = []
             for attachment in attachments.get(n, []):
@@ -1881,20 +1884,19 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             level = "error"
         elif len(ARs) > 1:
             message = _('Analysis requests ${ARs} were successfully created.',
-                        mapping={'ARs': safe_unicode(', '.join(ARs))})
+                        mapping={'ARs': safe_unicode(', '.join(ARs.keys()))})
         else:
             message = _('Analysis request ${AR} was successfully created.',
-                        mapping={'AR': safe_unicode(ARs[0])})
+                        mapping={'AR': safe_unicode(ARs.keys()[0])})
 
         # Display a portal message
         self.context.plone_utils.addPortalMessage(message, level)
-
         # Automatic label printing won't print "register" labels for Secondary. ARs
         bika_setup = api.get_bika_setup()
         auto_print = bika_setup.getAutoPrintStickers()
 
         # https://github.com/bikalabs/bika.lims/pull/2153
-        new_ars = [a for a in ARs if a[-1] == '1']
+        new_ars = [uid for key, uid in ARs.items() if key[-1] == '1']
 
         if 'register' in auto_print and new_ars:
             return {
