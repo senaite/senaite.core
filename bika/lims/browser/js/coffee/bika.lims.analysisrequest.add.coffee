@@ -78,7 +78,8 @@ class window.AnalysisRequestAdd
     # Analysis Specification changed
     $("body").on "change", "input.min", @on_analysis_specification_changed
     $("body").on "change", "input.max", @on_analysis_specification_changed
-    $("body").on "change", "input.err", @on_analysis_specification_changed
+    $("body").on "change", "input.warn_min", @on_analysis_specification_changed
+    $("body").on "change", "input.warn_max", @on_analysis_specification_changed
     # Analysis lock button clicked
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
@@ -783,11 +784,13 @@ class window.AnalysisRequestAdd
 
     min = $(".min", el)
     max = $(".max", el)
-    err = $(".err", el)
+    warn_min = $(".warn_min", el)
+    warn_max = $(".warn_max", el)
 
     min.val spec.min
     max.val spec.max
-    err.val spec.error
+    warn_min.val spec.warn_min
+    warn_max.val spec.warn_max
 
 
   get_service: (uid) =>

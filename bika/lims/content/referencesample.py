@@ -18,7 +18,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims import PMF, bikaMessageFactory as _, api
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
@@ -140,10 +140,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Reference Values',
         required = 1,
         subfield_validators = {
-                    'result':'referencevalues_validator',
-                    'min':'referencevalues_validator',
-                    'max':'referencevalues_validator',
-                    'error':'referencevalues_validator'},
+                    'result':'referencevalues_validator',},
         widget = ReferenceResultsWidget(
             label=_("Expected Values"),
         ),
@@ -218,16 +215,6 @@ class ReferenceSample(BaseFolder):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    security.declarePublic('getSpecCategories')
-    def getSpecCategories(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        categories = []
-        for spec in self.getReferenceResults():
-            service = tool.lookupObject(spec['uid'])
-            if service.getCategoryUID() not in categories:
-                categories.append(service.getCategoryUID())
-        return categories
-
     security.declarePublic('getResultsRangeDict')
     def getResultsRangeDict(self):
         specs = {}
@@ -237,42 +224,21 @@ class ReferenceSample(BaseFolder):
             specs[uid]['result'] = spec['result']
             specs[uid]['min'] = spec.get('min', '')
             specs[uid]['max'] = spec.get('max', '')
-            specs[uid]['error'] = 'error' in spec and spec['error'] or 0
         return specs
 
-    security.declarePublic('getResultsRangeSorted')
-    def getResultsRangeSorted(self):
-        tool = getToolByName(self, REFERENCE_CATALOG)
-
-        cats = {}
-        for spec in self.getReferenceResults():
-            service = tool.lookupObject(spec['uid'])
-            service_title = service.Title()
-            category = service.getCategoryTitle()
-            if not cats.has_key(category):
-                cats[category] = {}
-
-            cat = cats[category]
-            cat[service_title] = {'category': category,
-                                  'service': service_title,
-                                  'id': service.getId(),
-                                  'unit': service.getUnit(),
-                                  'result': spec['result'],
-                                  'min': spec.get('min', ''),
-                                  'max': spec.get('max', ''),
-                                  'error': spec['error']}
-
-        cat_keys = cats.keys()
-        cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-        sorted_specs = []
-        for cat in cat_keys:
-            services = cats[cat]
-            service_keys = services.keys()
-            service_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-            for service_key in service_keys:
-                sorted_specs.append(services[service_key])
-
-        return sorted_specs
+    def getSupportedServices(self, only_uids=True):
+        """Return a list with the services supported by this reference sample,
+        those for which there is a valid results range assigned in reference
+        results
+        :param only_uids: returns a list of uids or a list of objects
+        :return: list of uids or AnalysisService objects
+        """
+        uids = map(lambda range: range['uid'], self.getReferenceResults())
+        uids = filter(api.is_uid, uids)
+        if only_uids:
+            return uids
+        brains = api.search({'UID': uids}, 'uid_catalog')
+        return map(api.get_object, brains)
 
     security.declarePublic('getReferenceAnalyses')
     def getReferenceAnalyses(self):
@@ -287,34 +253,6 @@ class ReferenceSample(BaseFolder):
             if analysis.getServiceUID() == service_uid:
                 analyses.append(analysis)
         return analyses
-
-    security.declarePublic('getReferenceResult')
-    def getReferenceResult(self, service_uid):
-        """ Return an array [result, min, max, error] with the desired result
-            for a specific service.
-            If any reference result found, returns None.
-            If no value found for result, min, max, error found returns None
-            If floatable value, sets the value in array as floatable, otherwise
-            sets the raw value for that spec key
-            in its array position
-        """
-        for spec in self.getReferenceResults():
-            if spec['uid'] == service_uid:
-                found = False
-                outrefs = []
-                specitems = ['result', 'min', 'max', 'error']
-                for item in specitems:
-                    if item in spec:
-                        try:
-                            floatitem = spec[item]
-                            outrefs.append(floatitem)
-                        except:
-                            outrefs.append(spec[item])
-                        found = True
-                    else:
-                        outrefs.append(None)
-                return found == True and outrefs or None
-        return None
 
     security.declarePublic('addReferenceAnalysis')
     def addReferenceAnalysis(self, service_uid, reference_type):
@@ -374,26 +312,6 @@ class ReferenceSample(BaseFolder):
             service = tool.lookupObject(spec['uid'])
             services.append(service)
         return services
-
-    security.declarePublic('getReferenceResultStr')
-    def getReferenceResultStr(self, service_uid):
-        specstr = ''
-        specs = self.getReferenceResult(service_uid)
-        if specs:
-            # [result, min, max, error]
-            if not specs[0]:
-                if specs[1] and specs[2]:
-                    specstr = '%s - %s' % (specs[1], specs[2])
-                elif specs[1]:
-                    specstr = '> %s' % (specs[1])
-                elif specs[2]:
-                    specstr = '< %s' % (specs[2])
-            elif specs[0]:
-                if specs[3] and specs[3] != 0:
-                    specstr = '%s (%s%)' % (specs[0], specs[3])
-                else:
-                    specstr = specs[0]
-        return specstr
 
     def isValid(self):
         """

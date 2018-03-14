@@ -21,6 +21,7 @@ from bika.lims import PMF, api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
@@ -214,7 +215,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 specs[service_uid] = {
                     "min": form["min"][0][service_uid],
                     "max": form["max"][0][service_uid],
-                    "error": form["error"][0][service_uid],
+                    "warn_min": form["warn_min"][0][service_uid],
+                    "warn_max": form["warn_max"][0][service_uid],
                     "keyword": keyword,
                     "uid": service_uid,
                 }
@@ -222,8 +224,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             for service_uid in Analyses:
                 service = objects[service_uid]
                 keyword = service.getKeyword()
-                specs[service_uid] = {"min": "", "max": "", "error": "",
-                                      "keyword": keyword, "uid": service_uid}
+                specs[service_uid] = ResultsRangeDict(keyword=keyword,
+                                                      uid=service_uid)
         new = ar.setAnalyses(Analyses, prices=prices, specs=specs.values())
         # link analyses and partitions
         # If Bika Setup > Analyses > 'Display individual sample

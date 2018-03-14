@@ -6,16 +6,25 @@ Changelog
 
 **Added**
 
+- #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
 **Changed**
 
+- #694 Out of range/shoulders logic redux, ported to `api.analysis`
+- #694 Make getResultRange functions from Analysis-types consistent
+- #694 Out of range/shoulders icons are rendered in AnalysesView
 
 **Removed**
 
+- #694 Removal of "Permitted % Error" subfield in Analysis Specifications
+- #694 Removal of Adapters for out of range icons
 
 **Fixed**
 
+- #694 Bad calculation of min and max in ReferenceResults on negative result
+- #694 Instrument validity not updated in accordance with latest QC tests
+- #694 Result range shoulders computed badly on full/partial negative specs
 - #725 Late Analyses are not filtered by Department
 - #723 Solve Traceback on Print Samples Sheet
 - #724 Department Filtering Portlet appears only for the manager with 'admin' username

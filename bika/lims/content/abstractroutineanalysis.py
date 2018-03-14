@@ -18,6 +18,7 @@ from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
 from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
@@ -346,75 +347,29 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return request.getPrinted()
 
     @security.public
-    def getAnalysisSpecs(self, specification=None):
-        """Retrieves the analysis specs to be applied to this analysis.
-        Allowed values for specification= 'client', 'lab', None If
-        specification is None, client specification gets priority from lab
-        specification. If no specification available for this analysis,
-        returns None
+    def getResultsRange(self):
+        """Returns the valid result range for this routine analysis based on the
+        results ranges defined in the Analysis Request this routine analysis is
+        assigned to.
+
+        A routine analysis will be considered out of range if it result falls
+        out of the range defined in "min" and "max". If there are values set for
+        "warn_min" and "warn_max", these are used to compute the shoulders in
+        both ends of the range. Thus, an analysis can be out of range, but be
+        within shoulders still.
+        :return: A dictionary with keys "min", "max", "warn_min" and "warn_max"
+        :rtype: dict
         """
-        sample = self.getSample()
-        client_uid = self.getClientUID()
-        if not sample or not client_uid:
-            return None
+        specs = ResultsRangeDict()
+        analysis_request = self.getRequest()
+        if not analysis_request:
+            return specs
 
-        sampletype = sample.getSampleType()
-        sampletype_uid = sampletype and sampletype.UID() or ''
-        bsc = getToolByName(self, 'bika_setup_catalog')
-
-        # retrieves the desired specs if None specs defined
-        if not specification:
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getClientUID=client_uid,
-                          getSampleTypeUID=sampletype_uid)
-
-            if len(proxies) == 0:
-                # No client specs available, retrieve lab specs
-                proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid)
-        else:
-            specuid = self.bika_setup.bika_analysisspecs.UID()
-            if specification == 'client':
-                specuid = client_uid
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getSampleTypeUID=sampletype_uid,
-                          getClientUID=specuid)
-
-        outspecs = None
-        for spec in (p.getObject() for p in proxies):
-            if self.getKeyword() in spec.getResultsRangeDict():
-                outspecs = spec
-                break
-
-        return outspecs
-
-    @security.public
-    def getResultsRange(self, specification=None):
-        """Returns the valid results range for this analysis, a dictionary
-        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error',
-        'hidemin', 'hidemax', 'rangecomment' Allowed values for
-        specification='ar', 'client', 'lab', None If specification is None,
-        the following is the priority to get the results range: AR > Client >
-        Lab If no specification available for this analysis, returns {}
-        """
-        rr = {}
-        an = self
-
-        if specification == 'ar' or specification is None:
-            if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
-                rr = an.aq_parent.getResultsRange()
-                rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
-                rr = rr[0] if rr and len(rr) > 0 else {}
-                if rr:
-                    rr['uid'] = self.UID()
-        if not rr:
-            # Let's try to retrieve the specs from client and/or lab
-            specs = an.getAnalysisSpecs(specification)
-            rr = specs.getResultsRangeDict() if specs else {}
-            rr = rr.get(an.getKeyword(), {}) if rr else {}
-            if rr:
-                rr['uid'] = self.UID()
-        return rr
+        keyword = self.getKeyword()
+        ar_ranges = analysis_request.getResultsRange()
+        # Get the result range that corresponds to this specific analysis
+        an_range = [rr for rr in ar_ranges if rr.get('keyword', '') == keyword]
+        return an_range and an_range[0] or specs
 
     @security.public
     def getSiblings(self, retracted=False):
