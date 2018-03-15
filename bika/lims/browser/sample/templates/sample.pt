@@ -1,38 +1,46 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:tal="http://xml.zope.org/namespaces/tal"
-	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	metal:use-macro="here/main_template/macros/master"
-	i18n:domain="bika">
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="here/main_template/macros/master"
+  i18n:domain="bika">
 
 <body>
 
 <metal:title fill-slot="content-title">
-	<h1>
-        <img tal:condition="view/icon | nothing"
-            src="" tal:attributes="src view/icon"/>
-        <span tal:content="here/title_or_id"/>
-    </h1>
+  <h1>
+    <img tal:condition="view/icon | nothing"
+        src="" tal:attributes="src view/icon"/>
+    <span tal:content="here/title_or_id"/>
+    <tal:add_actions repeat="add_item python:view.context_actions.keys()">
+      <a tal:attributes="
+        style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+        href python:view.context_actions[add_item]['url'];
+        class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+        <span tal:replace="python:add_item"/>
+      </a>
+    </tal:add_actions>
+  </h1>
 </metal:title>
 
 <metal:content fill-slot="content-core" tal:define="
-	review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
-	portal context/@@plone_portal_state/portal;
-	checkPermission nocall:context/portal_membership/checkPermission;
-	specification python:request.get('specification', view.getDefaultSpec());
-	mtool here/portal_membership;">
+  review_state python:context.portal_workflow.getInfoFor(here, 'review_state', '');
+  portal context/@@plone_portal_state/portal;
+  checkPermission nocall:context/portal_membership/checkPermission;
+  specification python:request.get('specification', view.getDefaultSpec());
+  mtool here/portal_membership;">
 
     <span tal:replace="structure view/header_table"/>
 
     <tal:tables tal:condition="view/tables"
-	            tal:repeat="table python:view.tables.items()">
-		<h3 style="margin-top:2em;">
-			<img
-				i18n:attributes="title"
-				title="Analyses"
-				tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisservice.png"/>
-			<span tal:content="python: table[0]"/>
-		</h3>
+              tal:repeat="table python:view.tables.items()">
+    <h3 style="margin-top:2em;">
+      <img
+        i18n:attributes="title"
+        title="Analyses"
+        tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisservice.png"/>
+      <span tal:content="python: table[0]"/>
+    </h3>
         <span tal:replace="structure python: table[1]"/>
     </tal:tables>
 
@@ -46,4 +54,3 @@
 </metal:content>
 </body>
 </html>
-

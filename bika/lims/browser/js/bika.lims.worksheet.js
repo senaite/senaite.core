@@ -259,19 +259,12 @@ function WorksheetManageResultsView() {
     }
 
     function loadRemarksEventHandlers() {
-        // Add a baloon icon before Analyses' name when you'd add a remark. If you click on, it'll display remarks textarea.
-        var txt1 = '<a href="#" class="add-remark"><img src="'+window.portal_url+'/++resource++bika.lims.images/comment_ico.png" title="'+_('Add Remark')+'")"></a>';
-        var pointer = $(".listing_remarks:contains('')").closest('tr').prev().find('td.service_title span.before');
-        $(pointer).append(txt1);
-
+        // On click, toggle the remarks field
         $("a.add-remark").click(function(e){
             e.preventDefault();
             var rmks = $(this).closest('tr').next('tr').find('td.remarks');
-            if (rmks.length > 0) {
-                rmks.toggle();
-            }
+            $(rmks).find('div.remarks-placeholder').toggle();
         });
-        $("a.add-remark").click();
     }
 
     function loadDetectionLimitsEventHandlers() {

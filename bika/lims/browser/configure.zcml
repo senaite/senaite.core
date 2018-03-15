@@ -21,7 +21,6 @@
   <include file="invoicebatch.zcml"/>
   <include file="invoice.zcml"/>
   <include file="contact.zcml"/>
-  <include file="duplicateanalysis.zcml"/>
   <include file="instrument.zcml"/>
   <include file="instrumenttype.zcml"/>
   <include file="instrumentlocation.zcml"/>

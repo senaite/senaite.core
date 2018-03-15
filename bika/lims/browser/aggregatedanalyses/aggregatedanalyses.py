@@ -44,7 +44,7 @@ class AggregatedAnalysesView(AnalysesView):
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
-        self.allow_edit = True
+        self.allow_edit = False
 
         self.columns['AnalysisRequest'] = {
             'title': _('Analysis Request'),
@@ -58,15 +58,31 @@ class AggregatedAnalysesView(AnalysesView):
             }
         self.review_states = [
             {'id': 'default',
-             'title':  _('Results pending'),
-             'transitions': [{'id': 'sample'},
-                             {'id': 'submit'},
-                             {'id': 'cancel'},
-                             # {'id': 'assign'}
+             'title': _('Assignment pending'),
+             'transitions': [{'id': 'submit'}, ],
+             'contentFilter': {
+                 'worksheetanalysis_review_state': ['unassigned'],
+                 'review_state': ['sample_received', 'attachment_due'],
+                 'cancellation_state': 'active', },
+             'columns': ['AnalysisRequest',
+                         'Service',
+                         'Result',
+                         'Uncertainty',
+                         'Partition',
+                         'Method',
+                         'Instrument',
+                         'DetectionLimit',
+                         'Specification',
+                         'state_title',
+                         ]
+             },
+            {'id': 'results_pending',
+             'title': _('Results pending'),
+             'transitions': [{'id': 'submit'},
                              ],
-             'contentFilter': {'review_state': [
-                'sample_received', 'assigned', 'attachment_due'],
-                'cancellation_state': 'active', },
+             'contentFilter': {
+                 'review_state': ['sample_received', 'attachment_due'],
+                 'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
@@ -75,6 +91,8 @@ class AggregatedAnalysesView(AnalysesView):
                          'Partition',
                          'Method',
                          'Instrument',
+                         'DetectionLimit',
+                         'Specification',
                          'Analyst',
                          'state_title',
                          ]
@@ -82,7 +100,7 @@ class AggregatedAnalysesView(AnalysesView):
             {'id': 'to_be_verified',
              'title':  _('To be verified'),
              'transitions': [{'id': 'verify'},
-                             {'id': 'cancel'}
+                             {'id': 'retract'}
                              ],
              'contentFilter': {
                 'review_state': ['to_be_verified'],
@@ -95,6 +113,28 @@ class AggregatedAnalysesView(AnalysesView):
                          'Partition',
                          'Method',
                          'Instrument',
+                         'DetectionLimit',
+                         'Specification',
+                         'Analyst',
+                         'state_title',
+                         ]
+             },
+            {'id': 'verified',
+             'title': _('Verified'),
+             'transitions': [],
+             'contentFilter': {
+                 'review_state': ['verified'],
+                 'cancellation_state': 'active', },
+             'columns': ['AnalysisRequest',
+                         'Worksheet',
+                         'Service',
+                         'Result',
+                         'Uncertainty',
+                         'Partition',
+                         'Method',
+                         'Instrument',
+                         'DetectionLimit',
+                         'Specification',
                          'Analyst',
                          'state_title',
                          ]
@@ -103,6 +143,12 @@ class AggregatedAnalysesView(AnalysesView):
 
     def getPOSTAction(self):
         return 'aggregatedanalyses_workflow_action'
+
+    def is_analysis_edition_allowed(self, analysis_brain):
+        """Overrides the function from the parent, cause we don't want in any
+        case the analyses displayed in aggregated list to be editable. The
+        correct way to introduce results is by using Worksheets!"""
+        return False
 
     def isItemAllowed(self, obj):
         """

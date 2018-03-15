@@ -5,16 +5,12 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 
 try:
     import unittest2 as unittest
@@ -22,17 +18,15 @@ except ImportError:
     import unittest
 
 
-class TestAddDuplicateAnalysis(BikaFunctionalTestCase):
+class TestAddDuplicateAnalysis(DataTestCase):
     """
     When adding a duplicate for an AR in a worksheet, only the first analysis
     gets duplicated: https://jira.bikalabs.com/browse/LIMS-2001
     """
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(TestAddDuplicateAnalysis, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
     def tearDown(self):
@@ -169,5 +163,4 @@ class TestAddDuplicateAnalysis(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestAddDuplicateAnalysis))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

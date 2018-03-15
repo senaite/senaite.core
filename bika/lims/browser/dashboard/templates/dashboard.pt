@@ -288,10 +288,16 @@
     function loadBarChart(id) {
         var container = $('#'+id);
         $(container).find('svg').remove();
-        var data = $.parseJSON($(container).attr('data'));
+        var raw_data = $.parseJSON($(container).attr('data'));
+        var data = raw_data.data;
         if (data.length == 0 || Object.keys(data[0]).length < 2) {
             return;
         }
+        // All available states come sorted from by quantity descending, but we
+        // only want those for which there is at least one entry in data
+        var states = raw_data.states;
+        states = states.filter(function(key) { return key in data[0] });
+
         $(container).html("");
         var margin = {top: 10, right: 200, bottom: 50, left: 50},
             width = $(container).innerWidth() - margin.left - margin.right,
@@ -301,7 +307,7 @@
         var y = d3.scale.linear().range([height, 0]);
         colors = $.parseJSON($(container).attr('data-colors'));
         var color = d3.scale.ordinal().range(colors);
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+        color.domain(states);
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -319,9 +325,6 @@
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var statusNames = d3.keys(data[0]).filter(function(key) {
-            return key !== "date";
-        });
         data.forEach(function(d) {
             var y0=0;
             d.statuses=color.domain().map(function(name) {
@@ -388,7 +391,7 @@
                 });
 
         var legend = svg.selectAll(".legend")
-                .data(statusNames.slice().reverse())
+                .data(states.slice().reverse())
                 .enter().append("g")
                     .attr("class", "legend")
                     .attr("transform", function(d, i) {
@@ -546,9 +549,10 @@
                 <h3 tal:content="python:panel.get('name', '')"></h3>
                 <div class='h2-legend'>
                     <span i18n:translate="">From</span>&nbsp;
-                    <span tal:content="python:here.toLocalizedTime(view.min_date)"></span>
+                    <span tal:content="python:here.toLocalizedTime(view.date_from)"></span>
                     &nbsp;<span i18n:translate="">to</span>&nbsp;
                     <span tal:content="python:here.toLocalizedTime(view.date_to)"></span>
+                    (<span i18n:translate="">updated every 2 hours</span>)
                 </div>
                 <ul class='dashboard-time-selector'>
                     <li tal:attributes="class python:'selected' if view.periodicity == 'd' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=d' i18n:translate="">Daily</a></li>

@@ -6,15 +6,11 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import DataTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.workflow import doActionFor
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 
 try:
     import unittest2 as unittest
@@ -23,8 +19,8 @@ except ImportError:  # Python 2.7
 
 
 # Tests related with reflex testing
-class TestReflexRules(BikaFunctionalTestCase):
-    layer = BIKA_LIMS_FUNCTIONAL_TESTING
+class TestReflexRules(DataTestCase):
+
     # A list with the created rules
     rules_list = []
     # A list with the created methods
@@ -180,7 +176,6 @@ class TestReflexRules(BikaFunctionalTestCase):
 
         """
         # Creating a rule
-        rules_list = []
         folder = self.portal.bika_setup.bika_reflexrulefolder
         _id = folder.invokeFactory('ReflexRule', id=tmpID())
         rule = folder[_id]
@@ -197,7 +192,6 @@ class TestReflexRules(BikaFunctionalTestCase):
     def setUp(self):
         super(TestReflexRules, self).setUp()
         setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
-        self.setup_data_load()
         login(self.portal, TEST_USER_NAME)
 
     def tearDown(self):
@@ -903,5 +897,4 @@ class TestReflexRules(BikaFunctionalTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestReflexRules))
-    suite.layer = BIKA_LIMS_FUNCTIONAL_TESTING
     return suite

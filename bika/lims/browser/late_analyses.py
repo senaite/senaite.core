@@ -116,3 +116,35 @@ class LateAnalysesView(BikaListingView):
 
             items[x]['Late'] = late_str
         return items
+
+    def isItemAllowed(self, obj):
+        """Checks if the passed in Analysis must be displayed in the list.
+
+        If the 'filtering by department' option is enabled in Bika Setup, this
+        function checks if the Analysis Service associated to the Analysis is
+        assigned to any of the currently selected departments (information
+        stored in a cookie).
+
+        If department filtering is disabled in bika_setup, returns True. If the
+        obj is None or empty, returns False.
+
+        If the obj has no department assigned, returns True
+
+        :param obj: A single Analysis brain or content object
+        :type obj: ATContentType/CatalogBrain
+        :returns: True if the item can be added to the list.
+        :rtype: bool
+        """
+        if not obj:
+            return False
+
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            # Filtering by department is disabled. Return True
+            return True
+
+        # Department filtering is enabled. Check if the Analysis Service
+        # associated to this Analysis is assigned to at least one of the
+        # departments currently selected.
+        dep_uid = obj.getDepartmentUID()
+        departments = self.request.get('filter_by_department_info', '')
+        return not dep_uid or dep_uid in departments.split(',')

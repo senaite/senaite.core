@@ -191,7 +191,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/assigned.png'/>" % (
                        t(_("Assigned")), self.portal_url),
-             'contentFilter': {'worksheetanalysis_review_state': 'assigned',
+             'contentFilter': {'assigned_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
@@ -216,7 +216,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
                        t(_("Unassigned")), self.portal_url),
-             'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
+             'contentFilter': {'assigned_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
                                                 'published'),
