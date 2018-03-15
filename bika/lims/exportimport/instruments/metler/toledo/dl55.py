@@ -8,7 +8,6 @@ import traceback
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
-from bika.lims.utils import t
 from openpyxl import load_workbook
 
 title = "Metler Toledo DL55"
@@ -26,6 +25,7 @@ class MetlerToledoDL55Parser(InstrumentResultsFileParser):
         sheet = wb.worksheets[0]
 
         sample_id = None
+        cnt = 0
         for row in sheet.rows:
 
             # sampleid is only present in first row of each sample.
@@ -40,7 +40,6 @@ class MetlerToledoDL55Parser(InstrumentResultsFileParser):
                 continue
             # keyword is stripped of non-word characters
             keyword = re.sub(r"\W", "", row[6].value)
-
 
             # result is floatable or error
             result = row[4].value
@@ -57,10 +56,34 @@ class MetlerToledoDL55Parser(InstrumentResultsFileParser):
                 'DefaultResult': 'Result',
                 'Result': result,
             }
+            result = rawdict[rawdict['DefaultResult']]
+            column_name = rawdict['DefaultResult']
+            cnt += 1
+            result = self.zeroValueDefaultInstrumentResults(column_name,
+                                                            result, cnt)
+            rawdict[rawdict['DefaultResult']] = result
             self._addRawResult(sample_id,
                                values={keyword: rawdict},
                                override=False)
         return True
+
+    def zeroValueDefaultInstrumentResults(self, column_name, result, line):
+        result = str(result)
+        if result.startswith('--') or result == '' or result == 'ND':
+            return 0.0
+
+        try:
+            result = float(result)
+            if result < 0.0:
+                result = 0.0
+        except ValueError:
+            self.err(
+                "No valid number ${result} in column (${column_name})",
+                mapping={"result": result,
+                         "column_name": column_name},
+                numline=self._numline, line=line)
+            return
+        return result
 
 
 class Importer(AnalysisResultsImporter):
