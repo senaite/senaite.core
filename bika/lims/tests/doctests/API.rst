@@ -1301,3 +1301,56 @@ Use a non-conversionable value as fallback:
     >>> zpdt = api.to_date(strd, default_date)
     >>> zpdt is None
     True
+
+Check if floatable
+------------------
+
+    >>> api.is_floatable(None)
+    False
+
+    >>> api.is_floatable("")
+    False
+
+    >>> api.is_floatable("31")
+    True
+
+    >>> api.is_floatable("31.23")
+    True
+
+    >>> api.is_floatable("-13")
+    True
+
+    >>> api.is_floatable("12,35")
+    False
+
+Convert to a float number
+-------------------------
+
+    >>> api.to_float("2")
+    2.0
+
+    >>> api.to_float("2.234")
+    2.234
+
+With default fallback:
+
+    >>> api.to_float(None, 2)
+    2.0
+
+    >>> api.to_float(None, "2")
+    2.0
+
+    >>> api.to_float("", 2)
+    2.0
+
+    >>> api.to_float("", "2")
+    2.0
+
+    >>> api.to_float(2.1, 2)
+    2.1
+
+    >>> api.to_float("2.1", 2)
+    2.1
+
+    >>> api.to_float("2.1", "2")
+    2.1

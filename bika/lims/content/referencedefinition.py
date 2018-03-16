@@ -26,10 +26,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Reference Values',
         required = 1,
         subfield_validators = {
-            'result':'referencevalues_validator',
-            'min':'referencevalues_validator',
-            'max':'referencevalues_validator',
-            'error':'referencevalues_validator'},
+            'result':'referencevalues_validator',},
         widget = ReferenceResultsWidget(
             label=_("Reference Values"),
             description =_(

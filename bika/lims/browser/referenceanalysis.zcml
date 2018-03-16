@@ -4,16 +4,4 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <adapter
-      for="bika.lims.interfaces.IReferenceAnalysis"
-      provides="bika.lims.interfaces.IFieldIcons"
-      factory="bika.lims.browser.referenceanalysis.ResultOutOfRangeIcons"
-    />
-
-    <adapter
-      for="bika.lims.interfaces.IReferenceAnalysis"
-      provides="bika.lims.interfaces.IResultOutOfRange"
-      factory="bika.lims.browser.referenceanalysis.ResultOutOfRange"
-    />
-
 </configure>
