@@ -519,23 +519,29 @@
                                     tal:attributes="name string:${fieldname}.keyword:records;
                                                     value string:${service_keyword}"/>
                             <input type="text"
-                                   class="min" size="5"
+                                   class="warn_min" size="1"
+                                   placeholder="&lt;min"
+                                   i18n:attributes="placeholder"
+                                   tal:attributes="name string:${fieldname}.warn_min:records;
+                                                   value python:service_spec.get('warn_min');"/>
+                            <input type="text"
+                                   class="min" size="1"
                                    placeholder="&gt;min"
                                    i18n:attributes="placeholder"
                                    tal:attributes="name string:${fieldname}.min:records;
                                                    value python:service_spec.get('min');"/>
                             <input type="text"
-                                   class="max" size="5"
+                                   class="max" size="1"
                                    placeholder="&lt;max"
                                    i18n:attributes="placeholder"
                                    tal:attributes="name string:${fieldname}.max:records;
                                                    value python:service_spec.get('max');"/>
                             <input type="text"
-                                   class="err" size="5"
-                                   placeholder="err%"
+                                   class="warn_max" size="1"
+                                   placeholder="&gt;max"
                                    i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.error:records;
-                                                   value python:service_spec.get('error');"/>
+                                   tal:attributes="name string:${fieldname}.warn_max:records;
+                                                   value python:service_spec.get('warn_max');"/>
                           </div>
                         </tal:specifications>
 
@@ -696,23 +702,29 @@
                                     tal:attributes="name string:${fieldname}.keyword:records;
                                                     value string:${service_keyword}"/>
                             <input type="text"
-                                   class="min" size="5"
+                                   class="warn_min" size="1"
+                                   placeholder="&lt;min"
+                                   i18n:attributes="placeholder"
+                                   tal:attributes="name string:${fieldname}.warn_min:records;
+                                                   value python:service_spec.get('warn_min');"/>
+                            <input type="text"
+                                   class="min" size="1"
                                    placeholder="&gt;min"
                                    i18n:attributes="placeholder"
                                    tal:attributes="name string:${fieldname}.min:records;
                                                    value python:service_spec.get('min');"/>
                             <input type="text"
-                                   class="max" size="5"
+                                   class="max" size="1"
                                    placeholder="&lt;max"
                                    i18n:attributes="placeholder"
                                    tal:attributes="name string:${fieldname}.max:records;
                                                    value python:service_spec.get('max');"/>
                             <input type="text"
-                                   class="err" size="5"
-                                   placeholder="err%"
+                                   class="warn_max" size="1"
+                                   placeholder="&gt;max"
                                    i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.error:records;
-                                                   value python:service_spec.get('error');"/>
+                                   tal:attributes="name string:${fieldname}.warn_max:records;
+                                                   value python:service_spec.get('warn_max');"/>
                           </div>
                         </tal:specifications>
 

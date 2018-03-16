@@ -5,9 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_brain_metadata
@@ -16,7 +14,6 @@ from bika.lims.vocabularies import CatalogVocabulary
 from bika.lims.workflow import get_workflow_actions
 from invoice import InvoiceCreate
 from zope.component import adapts
-from zope.component import getAdapters
 from zope.interface import implements
 
 # This AnalysisRequestViewView import must be here, above all the ones that are
@@ -37,37 +34,6 @@ from .manage_results import AnalysisRequestManageResultsView
 from .published_results import AnalysisRequestPublishedResults
 from .results_not_requested import AnalysisRequestResultsNotRequestedView
 from .workflow import AnalysisRequestWorkflowAction
-
-
-class ResultOutOfRange(object):
-
-    """Return alerts for any analyses inside the context ar
-    """
-    implements(IFieldIcons)
-    adapts(IAnalysisRequest)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self, result=None, **kwargs):
-        workflow = getToolByName(self.context, 'portal_workflow')
-        items = self.context.getAnalyses()
-        field_icons = {}
-        for obj in items:
-            obj = obj.getObject() if hasattr(obj, 'getObject') else obj
-            uid = obj.UID()
-            astate = workflow.getInfoFor(obj, 'review_state')
-            if astate == 'retracted':
-                continue
-            adapters = getAdapters((obj, ), IFieldIcons)
-            for name, adapter in adapters:
-                alerts = adapter(obj)
-                if alerts:
-                    if uid in field_icons:
-                        field_icons[uid].extend(alerts[uid])
-                    else:
-                        field_icons[uid] = alerts[uid]
-        return field_icons
 
 
 class ClientContactVocabularyFactory(CatalogVocabulary):

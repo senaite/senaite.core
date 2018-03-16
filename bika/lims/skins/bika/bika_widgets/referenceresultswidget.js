@@ -8,8 +8,8 @@ $(document).ready(function(){
 		min_field = $("input[name='min."+uid+":records']")
 		max_field = $("input[name='max."+uid+":records']")
 		if (result != "" && error != ""){
-			min_field.val(parseFloat(result) - parseFloat(result)/100 * parseFloat(error));
-			max_field.val(parseFloat(result) + parseFloat(result)/100 * parseFloat(error));
+			min_field.val(parseFloat(result) - Math.abs(parseFloat(result))/100 * parseFloat(error));
+			max_field.val(parseFloat(result) + Math.abs(parseFloat(result))/100 * parseFloat(error));
 		}
 	}
 

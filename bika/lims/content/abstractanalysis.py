@@ -477,18 +477,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return sample.UID()
 
     @security.public
-    def getAnalysisSpecs(self, specification=None):
-        raise NotImplementedError("getAnalysisSpecs is not implemented.")
-
-    @security.public
-    def getResultsRange(self, specification=None):
+    def getResultsRange(self):
         raise NotImplementedError("getResultsRange is not implemented.")
-
-    @security.public
-    def getResultsRangeNoSpecs(self):
-        """This method is used to populate catalog values
-        """
-        return self.getResultsRange()
 
     @security.public
     def calculateResult(self, override=False, cascade=False):

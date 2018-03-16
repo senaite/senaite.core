@@ -13,12 +13,6 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
-  <adapter
-    for="bika.lims.interfaces.IAnalysis"
-    factory="bika.lims.browser.calcs.CalculationResultAlerts"
-    name="bika.lims.calculation_result_icons"
-  />
-
   <browser:page
       for="*"
       name="get_method_calculation"
