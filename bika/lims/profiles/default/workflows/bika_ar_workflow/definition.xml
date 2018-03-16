@@ -414,6 +414,7 @@
     <description>Creating an AR</description>
     <exit-transition transition_id="sampling_workflow" />
     <exit-transition transition_id="no_sampling_workflow" />
+    <exit-transition transition_id="receive" />
     <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
