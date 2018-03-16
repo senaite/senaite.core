@@ -53,7 +53,7 @@ def receive(obj):
     if not isBasicTransitionAllowed(obj):
         return False
 
-    sw = obj.SamplingWorkflowEnabled()
+    sw = obj.getSamplingWorkflowEnabled()
     st = getCurrentState(obj)
     ar = obj.bika_setup.getAutoReceiveSamples()
 
