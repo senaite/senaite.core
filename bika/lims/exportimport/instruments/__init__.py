@@ -100,7 +100,7 @@ PARSERS = [
            # ['generic.xml', ''],
            ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
            ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
-           ['rochecobas.taqman.model48', 'RocheCobasTaqmanRSFParser'],
+           ['rochecobas.taqman.model48', 'RocheCobasTaqmanParser'],
            ['rochecobas.taqman.model96', 'RocheCobasTaqmanRSFParser'],
            ['thermoscientific.arena.xt20', 'ThermoArena20XTRPRCSVParser'],
            ['thermoscientific.gallery.Ts9861x', 'ThermoGallery9861xTSVParser'],
