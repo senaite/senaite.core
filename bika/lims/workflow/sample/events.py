@@ -5,13 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
 from DateTime import DateTime
 
-from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import isBasicTransitionAllowed
 
 
 def _cascade_transition(obj, transition_id):

@@ -5,16 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-
-from bika.lims import logger
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isActive
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import guards as analysis_guards
 
 
 def to_be_preserved(obj):
@@ -62,12 +57,16 @@ def receive(obj):
     st = getCurrentState(obj)
     ar = obj.bika_setup.getAutoReceiveSamples()
 
-    return \
-        False if [sw, st, ar] == [True, 'sample_registered', True] else \
-        False if [sw, st, ar] == [True, 'sample_registered', False] else \
-        True if [sw, st, ar] == [True, 'sample_due', True] else \
-        False if [sw, st, ar] == [True, 'sample_due', False] else \
-        True if [sw, st, ar] == [False, 'sample_registered', True] else False
+    if [sw, st, ar] == [True, 'sample_registered', True]:
+        return False
+    if [sw, st, ar] == [True, 'sample_registered', False]:
+        return False
+    if [sw, st, ar] == [True, 'sample_due', True]:
+        return True
+    if [sw, st, ar] == [True, 'sample_due', False]:
+        return False
+    if [sw, st, ar] == [False, 'sample_registered', True]:
+        return True
 
 
 def sample_prep(obj):

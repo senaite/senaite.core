@@ -6,10 +6,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
-from bika.lims.workflow import doActionFor, getCurrentState
-from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.permissions import Unassign
+from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import isBasicTransitionAllowed
 
 
 def sample(obj):
@@ -18,6 +17,7 @@ def sample(obj):
     :returns: true or false
     """
     return isBasicTransitionAllowed(obj)
+
 
 def retract(obj):
     """ Returns true if the sample transition can be performed for the sample
@@ -56,12 +56,16 @@ def receive(obj):
     st = getCurrentState(obj)
     ar = obj.bika_setup.getAutoReceiveSamples()
 
-    return \
-        False if [sw, st, ar] == [True, 'sample_registered', True] else \
-        False if [sw, st, ar] == [True, 'sample_registered', False] else \
-        True if [sw, st, ar] == [True, 'sample_due', True] else \
-        False if [sw, st, ar] == [True, 'sample_due', False] else \
-        True if [sw, st, ar] == [False, 'sample_registered', True] else False
+    if [sw, st, ar] == [True, 'sample_registered', True]:
+        return False
+    if [sw, st, ar] == [True, 'sample_registered', False]:
+        return False
+    if [sw, st, ar] == [True, 'sample_due', True]:
+        return True
+    if [sw, st, ar] == [True, 'sample_due', False]:
+        return False
+    if [sw, st, ar] == [False, 'sample_registered', True]:
+        return True
 
 
 def publish(obj):
@@ -119,6 +123,7 @@ def verify(obj):
         return obj.isUserAllowedToVerify(member)
 
     return False
+
 
 # TODO Workflow Analysis - Enable and review together with bika_listing stuff
 def new_verify(obj):
