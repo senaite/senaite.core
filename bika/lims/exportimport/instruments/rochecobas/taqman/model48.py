@@ -29,13 +29,11 @@ class RocheCobasTaqmanParser(InstrumentCSVResultsFileParser):
         self._rownum = None
         self._end_header = False
         self._fileformat = fileformat
+        self._separator = ',' if self._fileformat == 'csv' else '\t'
 
     def _parseline(self, line):
 
-        if self._fileformat == "csv":
-            sline = line.replace('"', '').split(',')
-        else:
-            sline = line.replace('"', '').split('\t')
+        sline = line.replace('"', '').split(self._separator)
 
         if len(sline) > 0 and not self._end_header:
             self._columns = sline
