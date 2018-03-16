@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 """ Varian Vista-PRO ICP
 """
 import logging
@@ -9,7 +15,12 @@ from Products.CMFCore.utils import getToolByName
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
 
+from bika.lims import api
 from bika.lims.browser import BrowserView
+from bika.lims.exportimport.instruments.utils import \
+    (get_instrument_import_search_criteria,
+     get_instrument_import_override,
+     get_instrument_import_ar_allowed_states)
 from bika.lims.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
 from bika.lims import bikaMessageFactory as _
@@ -31,10 +42,9 @@ class VistaPROICPParser(InstrumentCSVResultsFileParser):
         self._numline = 0
 
     def _parseline(self, line):
-        if self._end_header is False:
-            return self.parse_headerline(line)
-        else:
+        if self._end_header:
             return self.parse_resultsline(line)
+        return self.parse_headerline(line)
 
     def parse_headerline(self, line):
         """ Parses header lines
@@ -66,9 +76,7 @@ class VistaPROICPParser(InstrumentCSVResultsFileParser):
         # Set DefaultResult to 0.0 if result is "0" or "--" or '' or 'ND'
         result = rawdict[rawdict['DefaultResult']]
         column_name = rawdict['DefaultResult']
-        result = self.zeroValueDefaultInstrumentResults(column_name,
-                                                        result,
-                                                        line)
+        result = self.get_result(column_name, result, line)
         rawdict[rawdict['DefaultResult']] = result
         #
 
@@ -83,23 +91,20 @@ class VistaPROICPParser(InstrumentCSVResultsFileParser):
                      "total_results": self.getResultsTotalCount()}
         )
 
-    def zeroValueDefaultInstrumentResults(self, column_name, result, line):
+    def get_result(self, column_name, result, line):
         result = str(result)
         if result.startswith('--') or result == '' or result == 'ND':
             return 0.0
 
-        try:
-            result = float(result)
-            if result < 0.0:
-                result = 0.0
-        except ValueError:
-            self.err(
-                "No valid number ${result} in column (${column_name})",
-                mapping={"result": result,
-                         "column_name": column_name},
-                numline=self._numline, line=line)
-            return
-        return result
+        if api.is_floatable(result):
+            result = api.to_float(result)
+            return result > 0.0 and result or 0.0
+        self.err("No valid number ${result} in column (${column_name})",
+                 mapping={"result": result,
+                          "column_name": column_name},
+                 numline=self._numline, line=line)
+        return
+
 
 
 class VistaPROICPImporter(AnalysisResultsImporter):
@@ -142,49 +147,27 @@ def Import(context, request):
         errors.append(_("No file selected"))
 
     parser = VistaPROICPParser(infile)
-    if parser:
-        # Load the importer
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
-        if artoapply == 'received':
-            status = ['sample_received']
-        elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
+    status = get_instrument_import_ar_allowed_states(artoapply)
+    over = get_instrument_import_override(override)
+    sam = get_instrument_import_search_criteria(sample)
 
-        over = [False, False]
-        if override == 'nooverride':
-            over = [False, False]
-        elif override == 'override':
-            over = [True, False]
-        elif override == 'overrideempty':
-            over = [True, True]
-
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getRequestID']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
-        importer = VistaPROICPImporter(parser=parser,
-                                       context=context,
-                                       idsearchcriteria=sam,
-                                       allowed_ar_states=status,
-                                       allowed_analysis_states=None,
-                                       override=over,
-                                       instrument_uid=instrument)
-        tbex = ''
-        try:
-            importer.process()
-        except:
-            tbex = traceback.format_exc()
-        errors = importer.errors
-        logs = importer.logs
-        warns = importer.warns
-        if tbex:
-            errors.append(tbex)
+    importer = VistaPROICPImporter(parser=parser,
+                                   context=context,
+                                   idsearchcriteria=sam,
+                                   allowed_ar_states=status,
+                                   allowed_analysis_states=None,
+                                   override=over,
+                                   instrument_uid=instrument)
+    tbex = ''
+    try:
+        importer.process()
+    except:
+        tbex = traceback.format_exc()
+    errors = importer.errors
+    logs = importer.logs
+    warns = importer.warns
+    if tbex:
+        errors.append(tbex)
 
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
