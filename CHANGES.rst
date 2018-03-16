@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
 - #694 Instrument validity not updated in accordance with latest QC tests
