@@ -61,9 +61,10 @@
         </table>
 
         <!-- Searchform -->
-        <fieldset class="criteria" name="criteria">
-          <legend i18n:translate="">Filter Analyses</legend>
-          <div class="field">
+        <form class="criteria form-inline" name="criteria">
+          <h3 i18n:translate="">Filter Analyses</h3>
+
+          <div class="form-group">
             <label tal:attributes="for string:${form_id}_FilterByCategory"
                    i18n:translate="">Category</label>
             <select id="CategorySelector"
@@ -80,7 +81,7 @@
             </select>
           </div>
 
-          <div class="field">
+          <div class="form-group">
             <label tal:attributes="for string:${form_id}_FilterByService"
                    i18n:translate="">Service</label>
             <select id="ServiceSelector"
@@ -97,7 +98,7 @@
             </select>
           </div>
 
-          <div class="field">
+          <div class="form-group">
             <label tal:attributes="for string:${form_id}_FilterByClient"
                    i18n:translate="">Client</label>
             <select id="ClientSelector"
@@ -116,10 +117,10 @@
 
           <!-- Search Button -->
           <a tal:attributes="href view/view_url"
-             class="ws-analyses-search-button"
+             class="btn btn-default ws-analyses-search-button"
              i18n:translate="">Search</a>
 
-        </fieldset>
+        </form>
       </tal:searchform>
 
       <!-- Listing Table -->
