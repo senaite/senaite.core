@@ -42,7 +42,32 @@ def schedule_sampling(obj):
 
 
 def receive(obj):
-    return isBasicTransitionAllowed(obj)
+    """This transition can be fired from 'registered' and 'due' states, and
+    the result depends on the SamplingWorkflow and AutoReceiveSamples settings:
+    +==================+=============+=============+==============+
+    | SamplingWorkflow |   State     | AutoReceive | Guard result |
+    +==================+=============+=============+==============+
+    | Enabled          | registered  | Enabled     | False        |
+    | Enabled          | registered  | Disabled    | False        |
+    | Enabled          | due         | Enabled     | True         |
+    | Enabled          | due         | Disabled    | False        |
+    | Disabled         | registered  | Enabled     | True         |
+    | Disabled         | registered  | Disabled    | False        |
+    +==================+=============+=============+==============+
+    """
+    if not isBasicTransitionAllowed(obj):
+        return False
+
+    sw = obj.SamplingWorkflowEnabled()
+    st = getCurrentState(obj)
+    ar = obj.bika_setup.getAutoReceiveSamples()
+
+    return \
+        False if [sw, st, ar] == [True, 'sample_registered', True] else \
+        False if [sw, st, ar] == [True, 'sample_registered', False] else \
+        True if [sw, st, ar] == [True, 'sample_due', True] else \
+        False if [sw, st, ar] == [True, 'sample_due', False] else \
+        True if [sw, st, ar] == [False, 'sample_registered', True] else False
 
 
 def sample_prep(obj):
