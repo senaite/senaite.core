@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
-from operator import itemgetter
 
 import plone
 from Products.CMFCore.utils import getToolByName
@@ -16,12 +15,13 @@ from bika.lims import bikaMessageFactory as _, api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.browser.multifile import MultifileView
 from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
-from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
-from bika.lims.utils import t
+from bika.lims.utils import t, get_link
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets import ViewletBase
@@ -427,11 +427,10 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
             self._analysesview.show_workflow_action_buttons = False
             self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
             self._analysesview.review_states[0]['transitions'] = [{}]
-
         return self._analysesview
 
     def get_analyses_json(self):
-        return self.get_analyses_view().get_analyses_json()
+        return self.get_analyses_view().chart.get_json()
 
 
 class InstrumentReferenceAnalysesView(AnalysesView):
@@ -443,121 +442,70 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request, **kwargs)
+        self.catalog = CATALOG_ANALYSIS_LISTING
+        self.contentFilter = {
+            "portal_type": "ReferenceAnalysis",
+            "getInstrumentUID": api.get_uid(self.context),
+            "sort_on": "getResultCaptureDate",
+            "sort_order": "reverse"
+        }
+        self.columns['getReferenceAnalysesGroupID'] = {
+            'title': _('QC Sample ID'),
+            'sortable': False
+        }
+        self.columns['Partition'] = {
+            'title': _('Reference Sample'),
+            'sortable': False
+        }
+        self.columns['Retractions'] = {
+            'title': '',
+            'sortable': False
+        }
+        self.review_states[0]['columns'] = [
+            'Service',
+            'getReferenceAnalysesGroupID',
+            'Partition',
+            'Result',
+            'Uncertainty',
+            'CaptureDate',
+            'Retractions'
+        ]
+        self.chart = EvolutionChart()
 
-        self.columns['getReferenceAnalysesGroupID'] = {'title': _('QC Sample ID'),
-                                                       'sortable': False}
+    def isItemAllowed(self, obj):
+        """
+        :obj: it is a brain
+        """
+        allowed = super(InstrumentReferenceAnalysesView,
+                        self).isItemAllowed(obj)
+        return allowed or obj.getResult != ''
 
-        self.columns['Partition'] = {'title': _('Reference Sample'),
-                                     'sortable': False}
-        self.columns['Retractions'] = {'title': '',
-                                       'sortable': False}
-        self.review_states[0]['columns'] = ['Service',
-                                            'getReferenceAnalysesGroupID',
-                                            'Partition',
-                                            'Result',
-                                            'Uncertainty',
-                                            'CaptureDate',
-                                            'Retractions']
+    def folderitem(self, obj, item, index):
+        item = super(InstrumentReferenceAnalysesView,
+                     self).folderitem(obj, item, index)
+        analysis = api.get_object(obj)
 
-        analyses = self.context.getReferenceAnalyses()
-        asuids = [an.UID() for an in analyses]
-        self.contentFilter = {'UID': asuids}
-        self.anjson = {}
+        # Partition is used to group/toggle QC Analyses
+        sample = analysis.getSample()
+        item['replace']['Partition'] = get_link(api.get_url(sample),
+                                                api.get_id(sample))
 
-    # TODO-performance: Use folderitem and brains
-    def folderitems(self):
-        items = AnalysesView.folderitems(self)
-        items.sort(key=itemgetter('CaptureDate'), reverse=True)
-        for item in items:
-            obj = item['obj']
-            # TODO-performance: getting an object
-            # Note here the object in items[i]['obj'] is a brain, cause the
-            # base class (AnalysesView), calls folderitems(.., classic=False).
-            obj = obj.getObject()
-            imgtype = ""
-            if obj.portal_type == 'ReferenceAnalysis':
-                antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
-                if obj.getReferenceType() == 'c':
-                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                if obj.getReferenceType() == 'b':
-                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                item['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
-            elif obj.portal_type == 'DuplicateAnalysis':
-                antype = QCANALYSIS_TYPES.getValue('d')
-                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
-            else:
-                item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
-
-            item['before']['Service'] = imgtype
-
-            # Get retractions field
-            pdf = obj.getRetractedAnalysesPdfReport()
-            title = ''
-            anchor = ''
-            try:
-                if pdf:
-                    filesize = 0
-                    title = _('Retractions')
-                    anchor = "<a class='pdf' target='_blank' href='%s/at_download/RetractedAnalysesPdfReport'>%s</a>" % \
-                             (obj.absolute_url(), _("Retractions"))
-                    filesize = pdf.get_size()
-                    filesize = filesize / 1024 if filesize > 0 else 0
-            except:
-                # POSKeyError: 'No blob file'
-                # Show the record, but not the link
-                title = _('Retraction report unavailable')
-                anchor = title
+        # Get retractions field
+        item['Retractions'] = ''
+        report = analysis.getRetractedAnalysesPdfReport()
+        if report:
+            url = api.get_url(analysis)
+            href = "{}/at_download/RetractedAnalysesPdfReport".format(url)
+            attrs = {"class": "pdf", "target": "_blank"}
+            title = _("Retractions")
+            link = get_link(href, title, **attrs)
             item['Retractions'] = title
-            item['replace']['Retractions'] = anchor
+            item['replace']['Retractions'] = link
 
-            # Create json
-            qcid = obj.aq_parent.getId()
-            serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
-            trows = self.anjson.get(serviceref, {})
-            anrows = trows.get(qcid, [])
-            # anid = '%s.%s' % (item['getReferenceAnalysesGroupID'],
-            #                   item['id'])
+        # Add the analysis to the QC Chart
+        self.chart.add_analysis(analysis)
 
-            rr = obj.aq_parent.getResultsRangeDict()
-            uid = obj.getServiceUID()
-            if uid in rr:
-                specs = rr[uid]
-                try:
-                    smin = float(specs.get('min', 0))
-                    smax = float(specs.get('max', 0))
-                    error = float(specs.get('error', 0))
-                    target = float(specs.get('result', 0))
-                    result = float(item['Result'])
-                    error_amount = ((target / 100) * error) if target > 0 else 0
-                    upper = smax + error_amount
-                    lower = smin - error_amount
-                    cap_date = obj.getResultCaptureDate()
-                    cap_date = api.is_date(cap_date) and \
-                               cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
-                    anrow = {
-                        'date': cap_date,
-                        'min': smin,
-                        'max': smax,
-                        'target': target,
-                        'error': error,
-                        'erroramount': error_amount,
-                        'upper': upper,
-                        'lower': lower,
-                        'result': result,
-                        'unit': item['Unit'],
-                        'id': item['uid']
-                    }
-                    anrows.append(anrow)
-                    trows[qcid] = anrows
-                    self.anjson[serviceref] = trows
-                except:
-                    pass
-
-        return items
-
-    def get_analyses_json(self):
-        return json.dumps(self.anjson)
+        return item
 
 
 class InstrumentCertificationsView(BikaListingView):

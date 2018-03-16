@@ -7,59 +7,18 @@
 
 import json
 import math
+
 import plone
-
-from zope.component import adapts
-from zope.component import getAdapters
-from zope.interface import implements
-
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
-
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, api
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import t, isnumber
 from bika.lims.utils.analysis import format_numeric_result
-
-
-class CalculationResultAlerts(object):
-    """This uses IAnalysis.ResultOutOfRange on values in request.
-
-    To validate results at ajax calculation time, make more adapters like this
-    one, from IFieldIcons.  Any existing IAnalysis/IFieldIcon adapters
-    (AnalysisOutOfRange) have already been called.
-    """
-    adapts(IAnalysis)
-    implements(IFieldIcons)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self, result=None, specification=None, **kwargs):
-        workflow = getToolByName(self.context, 'portal_workflow')
-        astate = workflow.getInfoFor(self.context, 'review_state')
-        if astate == 'retracted':
-            return {}
-        result = self.context.getResult() if result is None else result
-        alerts = {}
-        path = '++resource++bika.lims.images'
-        uid = self.context.UID()
-        try:
-            indet = result.startswith("<") or result.startswith(">")
-        except AttributeError:
-            indet = False
-        if indet:
-            alert = {'field': 'Result',
-                     'icon': path + '/exclamation.png',
-                     'msg': t(_("Indeterminate result"))}
-            if uid in alerts:
-                alerts[uid].append(alert)
-            else:
-                alerts[uid] = [alert, ]
-        return alerts
+from zope.component import getAdapters
 
 
 class ajaxCalculateAnalysisEntry(BrowserView):
@@ -333,16 +292,39 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     continue
                 self.calculate(dependent_uid)
 
-        # These self.alerts are just for the json return.
-        # we're placing the entire form's results in kwargs.
-        adapters = getAdapters((analysis, ), IFieldIcons)
-        for name, adapter in adapters:
-            alerts = adapter(result=Result['result'], form_results=self.current_results)
-            if alerts:
-                if analysis.UID() in self.alerts:
-                    self.alerts[analysis.UID()].extend(alerts[analysis.UID()])
-                else:
-                    self.alerts[analysis.UID()] = alerts[analysis.UID()]
+        # Render out of range / in shoulder alert info
+        self._render_range_alert(analysis, Result["result"])
+
+    def _render_range_alert(self, analysis, result):
+        """Appends an entry for the passed in analysis in self.alerts if the
+        passed in tentative result is out of range or in shoulder range, in
+        accordance with the assigned results range for the passed in analysis
+
+        :param analysis: analysis object to be evaluated
+        :param result: the tentative result to test if out of range/in shoulder
+        """
+        if not analysis or not api.is_floatable(result):
+            return
+        out_of_range, out_of_shoulder = is_out_of_range(analysis, result)
+        if not out_of_range:
+            return
+
+        result_range = analysis.getResultsRange()
+        rngstr = "{0} {1}, {2} {3}".format(
+            t(_("min")), result_range.get("min"),
+            t(_("max")), result_range.get("max"))
+        message = "Result out of range"
+        icon = "exclamation.png"
+        if not out_of_shoulder:
+            message = "Result in shoulder range"
+            icon = "warning.png"
+
+        uid = api.get_uid(analysis)
+        alert = self.alerts.get(uid, [])
+        alert.append({'icon': "++resource++bika.lims.images/{}".format(icon),
+                      'msg': "{0} ({1})".format(t(_(message)), rngstr),
+                      'field': "Result"})
+        self.alerts[uid] = alert
 
     def __call__(self):
         self.rc = getToolByName(self.context, REFERENCE_CATALOG)

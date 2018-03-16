@@ -13,11 +13,11 @@ from Products.ATContentTypes.utils import DT2dt
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -88,7 +88,7 @@ class ReferenceAnalysesViewView(BrowserView):
         return self.context.id
 
     def get_analyses_json(self):
-        return self.get_analyses_view().get_analyses_json()
+        return self.get_analyses_view().chart.get_json()
 
 
 class ReferenceAnalysesView(AnalysesView):
@@ -149,7 +149,7 @@ class ReferenceAnalysesView(AnalysesView):
                         'state_title'],
              },
         ]
-        self.anjson = {}
+        self.chart = EvolutionChart()
 
     def isItemAllowed(self, obj):
         """
@@ -183,54 +183,10 @@ class ReferenceAnalysesView(AnalysesView):
             logger.warn(
                 'More than one Worksheet found for ReferenceAnalysis {}'
                 .format(obj.getId))
-        service_uid = obj.getServiceUID
-        self.addToJSON(obj, service_uid, item)
+
+        # Add the analysis to the QC Chart
+        self.chart.add_analysis(obj)
         return item
-
-    # TODO-catalog: memoize here?
-    def addToJSON(self, analysis, service_uid, item):
-        """ Adds an analysis item to the self.anjson dict that will be used
-            after the page is rendered to generate a QC Chart
-        """
-        parent = api.get_parent(analysis)
-        qcid = parent.id
-        serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
-        trows = self.anjson.get(serviceref, {})
-        anrows = trows.get(qcid, [])
-        rr = parent.getResultsRangeDict()
-        cap_date = item['obj'].getResultCaptureDate
-        cap_date = api.is_date(cap_date) and \
-                   cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
-        if service_uid in rr:
-            specs = rr.get(service_uid, None)
-            try:
-                smin = float(specs.get('min', 0))
-                smax = float(specs.get('max', 0))
-                error = float(specs.get('error', 0))
-                target = float(specs.get('result', 0))
-                result = float(item['Result'])
-                error_amount = ((target / 100) * error) if target > 0 else 0
-                upper = smax + error_amount
-                lower = smin - error_amount
-                anrow = {'date': cap_date,
-                         'min': smin,
-                         'max': smax,
-                         'target': target,
-                         'error': error,
-                         'erroramount': error_amount,
-                         'upper': upper,
-                         'lower': lower,
-                         'result': result,
-                         'unit': item['Unit'],
-                         'id': item['uid']}
-                anrows.append(anrow)
-                trows[qcid] = anrows
-                self.anjson[serviceref] = trows
-            except:
-                pass
-
-    def get_analyses_json(self):
-        return json.dumps(self.anjson)
 
 
 class ReferenceResultsView(BikaListingView):

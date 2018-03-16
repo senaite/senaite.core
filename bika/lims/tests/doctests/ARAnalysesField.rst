@@ -345,24 +345,13 @@ Each Analysis can request its own Specification (Result Range):
     >>> analysis2 = ar[analysisservice2.getKeyword()]
     >>> analysis3 = ar[analysisservice3.getKeyword()]
 
-The precedence of Specification lookup is AR -> Client -> Lab. Therefore, we
-expect to get the prior added Water Specification of the Lab for each Analysis.
-
-    >>> spec1 = analysis1.getResultsRange()
-    >>> spec1.get("rangecomment")
-    'Lab PH Spec'
-
-    >>> spec2 = analysis2.getResultsRange()
-    >>> spec2.get("rangecomment")
-    'Lab MG Spec'
-
-    >>> spec3 = analysis3.getResultsRange()
-    >>> spec3.get("rangecomment")
-    'Lab CA Spec'
-
 Now we will set the analyses with custom specifications through the
 ARAnalysesField. This should set the custom Specifications on the Analysis
 Request and have precedence over the lab specifications:
+
+    >>> spec_min = 5.5
+    >>> spec_max = 7.5
+    >>> error = 5
 
     >>> arr1 = {"keyword": "PH", "min": 5.5, "max": 7.5, "error": 5, "hidemin": "", "hidemax": "", "rangecomment": "My PH Spec"}
     >>> arr2 = {"keyword": "MG", "min": 5.5, "max": 7.5, "error": 5, "hidemin": "", "hidemax": "", "rangecomment": "My MG Spec"}

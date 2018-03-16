@@ -10,7 +10,7 @@ from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, api
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 
@@ -204,24 +204,48 @@ class ReferenceResultsWidget(TypesWidget):
             If any of min, max, or result fields are blank, the row value
             is ignored here.
         """
-        value = []
-        if 'service' in form:
-            for uid, service in form['service'][0].items():
-                result = form['result'][0][uid]
-                result = result if result else False
-                Min = form['min'][0][uid]
-                Min = Min if Min else False
-                Max = form['max'][0][uid]
-                Max = Max if Max else False
-                # big old false check because these could be zeroes
-                if Min is not False \
-                  and Max is not False \
-                  and result is not False:
-                    value.append({'uid': uid,
-                                  'result': result,
-                                  'min': Min,
-                                  'max': Max})
-        return value, {}
+        values = []
+        if 'service' not in form:
+            return values, {}
+
+        for uid, keyword in form['service'][0].items():
+            result = self._get_spec_value(form, uid, 'result')
+            if not result:
+                # User has to set a value for result subfield at least
+                continue
+            # If neither min nor max have been set, assume we only accept a
+            # discrete result (like if % of error was 0).
+            s_min = self._get_spec_value(form, uid, 'min', result)
+            s_max = self._get_spec_value(form, uid, 'max', result)
+            values.append({
+                'keyword': keyword,
+                'uid': uid,
+                'result': result,
+                'min': s_min,
+                'max': s_max
+            })
+        return values, {}
+
+    def _get_spec_value(self, form, uid, key, default=''):
+        """Returns the value assigned to the passed in key for the analysis
+        service uid from the passed in form.
+
+        If check_floatable is true, will return the passed in default if the
+        obtained value is not floatable
+        :param form: form being submitted
+        :param uid: uid of the Analysis Service the specification relates
+        :param key: id of the specs param to get (e.g. 'min')
+        :param check_floatable: check if the value is floatable
+        :param default: fallback value that will be returned by default
+        :type default: str, None
+        """
+        if not form or not uid:
+            return default
+        values = form.get(key, None)
+        if not values or len(values) == 0:
+            return default
+        value = values[0].get(uid, default)
+        return api.is_floatable(value) and value or default
 
     security.declarePublic('ReferenceResults')
 

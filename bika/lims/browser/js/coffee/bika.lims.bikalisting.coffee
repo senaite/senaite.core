@@ -380,7 +380,7 @@ class window.BikaListingTableView
     form_data.set "#{form_id}_review_state", state_id
 
     @ajax_submit
-      url: window.location.href.split("?")[0]
+      url: @get_base_url()
       data: form_data
       processData: no  # do not transform to a query string
       contentType: no # do not set any content type header

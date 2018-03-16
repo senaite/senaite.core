@@ -13,6 +13,9 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.atapi import DisplayList, PicklistWidget
 from Products.Archetypes.atapi import registerType
+from bika.lims.api.analysis import is_out_of_range
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from zope.component._api import getAdapters
 
 from zope.interface import implements
 from plone.app.folder.folder import ATFolder
@@ -580,35 +583,46 @@ class Instrument(ATFolder):
         return refs
 
     def isQCValid(self):
-        """ Returns True if the instrument succeed for all the latest
-            Analysis QCs performed (for diferent types of AS)
+        """ Returns True if the results of the last batch of QC Analyses
+        performed against this instrument was within the valid range.
+
+        For a given Reference Sample, more than one Reference Analyses assigned
+        to this same instrument can be performed and the Results Capture Date
+        might slightly differ amongst them. Thus, this function gets the latest
+        QC Analysis performed, looks for siblings (through RefAnalysisGroupID)
+        and if the results for all them are valid, then returns True. If there
+        is one single Reference Analysis from the group with an out-of-range
+        result, the function returns False
         """
-        for last in self.getLatestReferenceAnalyses():
-            rr = last.aq_parent.getResultsRangeDict()
-            uid = last.getServiceUID()
-            if uid not in rr:
-                # This should never happen.
-                # All QC Samples must have specs for its own AS
-                continue
+        query = {"portal_type": "ReferenceAnalysis",
+                 "getInstrumentUID": self.UID(),
+                 "sort_on": "getResultCaptureDate",
+                 "sort_order": "reverse",
+                 "sort_limit": 1,}
+        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        if len(brains) == 0:
+            # There are no Reference Analyses assigned to this instrument yet
+            return True
 
-            specs = rr[uid]
-            try:
-                smin = float(specs.get('min', 0))
-                smax = float(specs.get('max', 0))
-                error = float(specs.get('error', 0))
-                target = float(specs.get('result', 0))
-                result = float(last.getResult())
-                error_amount = ((target / 100) * error) if target > 0 else 0
-                upper = smax + error_amount
-                lower = smin - error_amount
-                if result < lower or result > upper:
-                    return False
-            except:
-                # This should never happen.
-                # All Reference Analysis Results and QC Samples specs
-                # must be floatable
+        # Look for siblings. These are the QC Analyses that were created
+        # together with this last ReferenceAnalysis and for the same Reference
+        # Sample. If they were added through "Add Reference Analyses" in a
+        # Worksheet, they typically appear in the same slot.
+        group_id = brains[0].getReferenceAnalysesGroupID
+        query = {"portal_type": "ReferenceAnalysis",
+                 "getInstrumentUID": self.UID(),
+                 "getReferenceAnalysesGroupID": group_id,}
+        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        for brain in brains:
+            results_range = brain.getResultsRange
+            if not results_range:
                 continue
+            # Is out of range?
+            out_of_range = is_out_of_range(brain)[0]
+            if out_of_range:
+                return False
 
+        # By default, in range
         return True
 
     def isOutOfDate(self):
