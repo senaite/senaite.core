@@ -6,7 +6,7 @@ Changelog
 
 **Added**
 
-# Added Instrument: LaChat QuickChem FIA
+- #730 Added Instrument: LaChat QuickChem FIA
 - #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
