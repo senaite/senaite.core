@@ -5,30 +5,32 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import os
+import tempfile
+from copy import deepcopy
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis
+from bika.lims.interfaces import IAnalysisService, IRoutineAnalysis, ISample
+from bika.lims.utils import attachPdf
+from bika.lims.utils import createPdf
+from bika.lims.utils import encode_header
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
-from bika.lims.utils import encode_header
-from bika.lims.utils import createPdf
-from bika.lims.utils import attachPdf
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, isTransitionAllowed
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
-from copy import deepcopy
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.Utils import formataddr
 from plone import api
-from Products.CMFPlone.utils import _createObjectByType
-import os
-import tempfile
+
 
 def create_analysisrequest(client, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
@@ -116,18 +118,12 @@ def create_analysisrequest(client, request, values, analyses=None,
             )
         part_num += 1
 
-    # At this point, we have a fully created AR, with a Sample, Partitions and
-    # Analyses, but the state of all them is the initial ("sample_registered").
-    # We can now transition the whole thing (instead of doing it manually for
-    # each object we created). After and Before transitions will take care of
-    # cascading and promoting the transitions in all the objects "associated"
-    # to this Analysis Request.
-    sampling_workflow_enabled = sample.getSamplingWorkflowEnabled()
-    action = 'no_sampling_workflow'
-    if sampling_workflow_enabled:
-        action = 'sampling_workflow'
-    # Transition the Analysis Request and related objects to "sampled" (if
-    # sampling workflow not enabled) or to "to_be_sampled" statuses.
+    # At this point, we have AR, Sample, Partitions, Analyses,
+    # all in state "sample_registered". Manually execute initial
+    # transition for new objects:
+    action = 'sampling_workflow' if sample.getSamplingWorkflowEnabled() \
+        else 'receive' if isTransitionAllowed(ar, 'receive') \
+        else 'no_sampling_workflow'
     doActionFor(ar, action)
 
     if secondary:
