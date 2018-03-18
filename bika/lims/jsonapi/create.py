@@ -13,7 +13,7 @@ from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID, dicts_to_dict
 from bika.lims.utils.analysisrequest import get_services_uids
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, isTransitionAllowed, doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
@@ -418,10 +418,9 @@ class Create(object):
                 analysis.setSamplePartition(part)
             part.setAnalyses(analyses)
 
-        action = 'no_sampling_workflow'
-        if SamplingWorkflowEnabled:
-            action = 'sampling_workflow'
-        wftool.doActionFor(ar, action)
+        action = 'sampling_workflow' if sample.getSamplingWorkflowEnabled() \
+            else 'receive' if isTransitionAllowed(ar, 'receive') \
+            else 'no_sampling_workflow'
 
         if secondary:
             # If secondary AR, then we need to manually transition the AR (and its
@@ -453,7 +452,7 @@ class Create(object):
             for p in parts:
                 if 'prepreserved' in p and p['prepreserved']:
                     part = p['object']
-                    state = workflow.getInfoFor(part, 'review_state')
+                    state = wftool.getInfoFor(part, 'review_state')
                     if state == 'to_be_preserved':
                         doActionFor(part, 'preserve')
 
