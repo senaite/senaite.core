@@ -382,11 +382,7 @@ def tmpID():
 
 
 def isnumber(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
+    return api.is_floatable(s)
 
 
 def senaite_url_fetcher(url):

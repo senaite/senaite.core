@@ -9,13 +9,12 @@ import tempfile
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.utils import t, dicts_to_dict
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from gpw import plot
 from plone.app.layout.globals.interfaces import IViewView
-from zope.component import getAdapters
 from zope.interface import implements
 import os
 
@@ -30,22 +29,6 @@ class Report(BrowserView):
         super(Report, self).__init__(context, request)
         self.report = report
         self.selection_macros = SelectionMacrosView(self.context, self.request)
-
-    def get_analysis_spec(self, analysis):
-        rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
-        return rr.get(analysis.getKeyword(), None)
-
-    def ResultOutOfRange(self, analysis):
-        """Template wants to know, is this analysis out of range? We scan 
-        IResultOutOfRange adapters, and return True if any IAnalysis adapters 
-        trigger a result. """
-        adapters = getAdapters((analysis, ), IResultOutOfRange)
-        spec = self.get_analysis_spec(analysis)
-        for name, adapter in adapters:
-            if not spec:
-                return False
-            if adapter(specification=spec):
-                return True
 
     def __call__(self):
 
@@ -133,7 +116,8 @@ class Report(BrowserView):
             uid = analysis.UID()
             keyword = analysis.getKeyword()
             service_title = "%s (%s)" % (analysis.Title(), keyword)
-            result_in_range = self.ResultOutOfRange(analysis)
+            # First tuple element is the out-of-range flag
+            result_in_range = is_out_of_range(analysis)[0]
 
             if service_title not in analyses.keys():
                 analyses[service_title] = []

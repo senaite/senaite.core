@@ -9,6 +9,7 @@ import json
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.content.analysisspec import ResultsRangeDict
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.i18n.locales import locales
@@ -79,14 +80,17 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 'sortable': False,
                 'type': 'choices'
             },
+            'warn_min': {
+                'title': _('Min warn')
+            },
             'min': {
                 'title': _('Min')
             },
             'max': {
                 'title': _('Max')
             },
-            'error': {
-                'title': _('Permitted Error %')
+            'warn_max': {
+                'title': _('Max warn')
             },
         }
 
@@ -99,9 +103,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
             columns.append('Partition')
         EnableARSpecs = self.context.bika_setup.getEnableARSpecs()
         if EnableARSpecs:
+            columns.append("warn_min")
             columns.append('min')
             columns.append('max')
-            columns.append('error')
+            columns.append("warn_max")
 
         self.review_states = [
             {'id': 'default',
@@ -172,7 +177,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         return json.dumps(rr_dict_by_service_uid)
 
     def get_spec_from_ar(self, ar, keyword):
-        empty = {'min': '', 'max': '', 'error': '', 'keyword': keyword}
+        empty = ResultsRangeDict(keyword=keyword)
         spec = ar.getResultsRange()
         if spec:
             return dicts_to_dict(spec, 'keyword').get(keyword, empty)
@@ -242,7 +247,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['class']['Price'] = 'nowrap'
             item['allow_edit'] = list()
             if item['selected']:
-                item['allow_edit'] = ['Partition', 'min', 'max', 'error']
+                item['allow_edit'] = ['Partition', 'min', 'max', 'warn_min',
+                                      'warn_max']
                 if not logged_in_client(self.context):
                     item['allow_edit'].append('Price')
 
@@ -262,13 +268,15 @@ class AnalysisRequestAnalysesView(BikaListingView):
                                              analysis.getKeyword())
                 item["min"] = spec.get("min", '')
                 item["max"] = spec.get("max", '')
-                item["error"] = spec.get("error", '')
+                item["warn_min"] = spec.get("warn_min", "")
+                item["warn_max"] = spec.get("warn_max", "")
                 item['Price'] = analysis.getPrice()
             else:
                 item['Partition'] = ''
                 item["min"] = ''
                 item["max"] = ''
-                item["error"] = ''
+                item["warn_min"] = ""
+                item["warn_max"] = ""
 
             # js checks in row_data if an analysis may not be editable.
             item['row_data'] = json.dumps(row_data)

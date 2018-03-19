@@ -36,6 +36,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
@@ -786,7 +787,8 @@ schema = BikaSchema.copy() + Schema((
         'ResultsRange',
         required=0,
         type='resultsrange',
-        subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax', 'rangecomment'),
+        subfields=('keyword', 'min', 'max', 'warn_min', 'warn_max', 'hidemin',
+                   'hidemax', 'rangecomment'),
         widget=ComputedWidget(visible=False),
     ),
 
@@ -2549,55 +2551,44 @@ class AnalysisRequest(BaseFolder):
         else:
             return ''
 
-    def setResultsRange(self, value=None):
-        """Sets the spec values for this AR.
-        1 - Client specs where (spec.Title) matches (ar.SampleType.Title)
-        2 - Lab specs where (spec.Title) matches (ar.SampleType.Title)
-        3 - Take override values from instance.Specification
-        4 - Take override values from the form (passed here as parameter
-        'value').
+    @security.public
+    def getResultsRange(self):
+        """Returns the valid result ranges for the analyses this Analysis
+        Request contains.
 
-        The underlying field value is a list of dictionaries.
+        By default uses the result ranges defined in the Analysis Specification
+        set in "Specification" field if any. Values manually set through
+        `ResultsRange` field for any given analysis keyword have priority over
+        the result ranges defined in "Specification" field.
 
-        The value parameter may be a list of dictionaries, or a dictionary (of
-        dictionaries).  In the last case, the keys are irrelevant, but in both
-        cases the specs must contain, at minimum, the "keyword", "min", "max",
-        and "error" fields.
-
-        Value will be stored in ResultsRange field as list of dictionaries
+        :return: A list of dictionaries, where each dictionary defines the
+            result range to use for any analysis contained in this Analysis
+            Request for the keyword specified. Each dictionary has, at least,
+                the following keys: "keyword", "min", "max"
+        :rtype: dict
         """
-        rr = {}
-        sample = self.getSample()
-        if not sample:
-            # portal_factory
-            return []
-        stt = self.getSample().getSampleType().Title()
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        # 1 or 2: rr = Client specs where (spec.Title) matches (
-        # ar.SampleType.Title)
-        for folder in self.aq_parent, self.bika_setup.bika_analysisspecs:
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getSampleTypeTitle=stt,
-                          ClientUID=folder.UID())
-            if proxies:
-                rr = dicts_to_dict(proxies[0].getObject().getResultsRange(),
-                                   'keyword')
-                break
-        # 3: rr += override values from instance.Specification
-        ar_spec = self.getSpecification()
-        if ar_spec:
-            ar_spec_rr = ar_spec.getResultsRange()
-            rr.update(dicts_to_dict(ar_spec_rr, 'keyword'))
-        # 4: rr += override values from the form (value=dict key=service_uid)
-        if value:
-            if type(value) in (list, tuple):
-                value = dicts_to_dict(value, "keyword")
-            elif type(value) == dict:
-                value = dicts_to_dict(value.values(), "keyword")
-            rr.update(value)
-        return self.Schema()['ResultsRange'].set(self, rr.values())
+        specs_range = []
+        specification = self.getSpecification()
+        if specification:
+            specs_range = specification.getResultsRange()
+            specs_range = specs_range and specs_range or []
 
-    security.declarePublic('getDatePublished')
+        # Override with AR's custom ranges
+        ar_range = self.Schema().getField("ResultsRange").get(self)
+        if not ar_range:
+            return specs_range
+
+        # Remove those analysis ranges that neither min nor max are floatable
+        an_specs = [an for an in ar_range if
+                    api.is_floatable(an.get('min', None)) or
+                    api.is_floatable(an.get('max', None))]
+        # Want to know which are the analyses that needs to be overriden
+        keywords = map(lambda item: item.get('keyword'), an_specs)
+        # Get rid of those analyses to be overriden
+        out_specs = [sp for sp in specs_range if sp['keyword'] not in keywords]
+        # Add manually set ranges
+        out_specs.extend(an_specs)
+        return out_specs
 
     def getDatePublished(self):
         """
