@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #741 CSV Importer for 'Cobas Taqman 48' Instrument Interface
 - #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
