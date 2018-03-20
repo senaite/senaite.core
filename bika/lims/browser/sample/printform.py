@@ -24,6 +24,7 @@ import glob
 import traceback
 import App
 import tempfile
+from senaite import api
 
 
 class SamplesPrint(BrowserView):
@@ -59,6 +60,16 @@ class SamplesPrint(BrowserView):
     _avoid_filter_by_date = False
 
     def __call__(self):
+
+        uids = self.request.form.get("uids", [])
+        objs = map(api.get_object_by_uid, uids)
+        to_print_objs = filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled", "to_be_scheduled"],
+                               objs)
+        to_print_uids = map(api.get_uid, to_print_objs)
+        if to_print_uids:
+            self.request.response.redirect(self.context.absolute_url() +
+                                           "/print_sampling_sheets?items=%s" % ",".join(to_print_uids))
+
         if self.context.portal_type in ['SamplesFolder', 'Client']:
             if self.request.get('items', ''):
                 uids = self.request.get('items').split(',')
