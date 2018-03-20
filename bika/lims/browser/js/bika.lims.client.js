@@ -66,6 +66,7 @@ function ClientOverlayHandler() {
 }
 
 function ClientSamplesView() {
+    "use strict";
     var that = this;
 
     that.load = function() {
@@ -75,7 +76,6 @@ function ClientSamplesView() {
     function print_samples_trigger(event){
         event.preventDefault();
         $('form#samples')[0].action = 'print_sampling_sheets';
-        alert($('form#samples')[0].action);
         $('form#samples').submit();
         $('form#samples')[0].action = 'workflow_action';
         }
