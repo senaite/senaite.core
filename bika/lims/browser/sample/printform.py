@@ -6,25 +6,28 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from plone.resource.utils import iterDirectoriesOfType
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+
+from plone.resource.utils import iterDirectoriesOfType
+
+from senaite import api
+from bika.lims.browser import BrowserView
 from bika.lims.utils import createPdf
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.permissions import *
+
 from DateTime import DateTime
-from Products.CMFPlone.utils import safe_unicode
-import datetime
 from calendar import monthrange
+import datetime
 import os
 import glob
 import traceback
 import App
 import tempfile
-from senaite import api
 
 
 class SamplesPrint(BrowserView):
@@ -77,7 +80,7 @@ class SamplesPrint(BrowserView):
                 self._items = [obj.getObject() for obj in uc(UID=uids)]
             else:
                 catalog = getToolByName(self.context, 'portal_catalog')
-                contentFilter = {
+                content_filter = {
                     'portal_type': 'Sample',
                     'sort_on': 'created',
                     'sort_order': 'reverse',
@@ -85,8 +88,8 @@ class SamplesPrint(BrowserView):
                     'path': {'query': "/", 'level': 0}
                     }
                 if self.context.portal_type == 'Client':
-                    contentFilter['getClientUID'] = self.context.UID()
-                brains = catalog(contentFilter)
+                    content_filter['getClientUID'] = self.context.UID()
+                brains = catalog(content_filter)
                 self._items = [obj.getObject() for obj in brains]
         else:
             # Warn and redirect to referer
@@ -156,7 +159,7 @@ class SamplesPrint(BrowserView):
         }
         """
         samples = self._items
-        if not(self._avoid_filter_by_date):
+        if not self._avoid_filter_by_date:
             self._filter_date_from = \
                 self.ulocalized_time(self._filter_date_from) if\
                 self._filter_date_from else self.default_from_date()
