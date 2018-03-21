@@ -8,10 +8,8 @@
 from AccessControl import ClassSecurityInfo
 
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims import api
 from bika.lims import deprecated
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
@@ -157,7 +155,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         return []
 
     @deprecated("[1710] Reference Analyses do not support Interims")
-    def setInterimFields(self, interims=None , **kwargs):
+    def setInterimFields(self, interims=None, **kwargs):
         pass
 
     @deprecated("[1710] Reference Analyses do not support Interims")
