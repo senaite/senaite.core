@@ -26,27 +26,47 @@ class InvoiceBatchInvoicesView(BikaListingView):
         request.set('disable_border', 1)
         self.context_actions = {}
         self.columns = {
-            'id': {'title': _('Invoice Number'),
-                'toggle': True },
-            'client': {'title': _('Client'),
-                'toggle': True},
-            'email': {'title': _('Email Address'),
-                'toggle': False},
-            'phone': {'title': _('Phone'),
-                'toggle': False},
-            'invoicedate': {'title': _('Invoice Date'),
-                'toggle': True},
-            'startdate': {'title': _('Start Date'),
-                'toggle': False},
-            'enddate': {'title': _('End Date'),
-                'toggle': False},
-            'subtotal': {'title': _('Subtotal'),
-                'toggle': False},
-            'vatamount': {'title': _('VAT'),
-                'toggle': False},
-            'total': {'title': _('Total'),
-                'toggle': True},
-            }
+            'id': {
+                'title': _('Invoice Number'),
+                'toggle': True
+            },
+            'client': {
+                'title': _('Client'),
+                'toggle': True
+            },
+            'email': {
+                'title': _('Email Address'),
+                'toggle': False
+            },
+            'phone': {
+                'title': _('Phone'),
+                'toggle': False
+            },
+            'invoicedate': {
+                'title': _('Invoice Date'),
+                'toggle': True
+            },
+            'startdate': {
+                'title': _('Start Date'),
+                'toggle': False
+            },
+            'enddate': {
+                'title': _('End Date'),
+                'toggle': False
+            },
+            'subtotal': {
+                'title': _('Subtotal'),
+                'toggle': False
+            },
+            'vatamount': {
+                'title': _('VAT'),
+                'toggle': False
+            },
+            'total': {
+                'title': _('Total'),
+                'toggle': True
+            },
+        }
         self.review_states = [
             {
                 'id': 'default',
@@ -122,7 +142,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
 
 class BatchFolderExportCSV(InvoiceBatchInvoicesView):
 
-    def __call__(self, REQUEST, RESPONSE):
+    def __call__(self, request, response):
         """
         Export invoice batch into csv format.
         Writes the csv file into the RESPONSE to allow
@@ -194,9 +214,16 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         result = ramdisk.getvalue()
         ramdisk.close()
         # stream file to browser
-        setheader = RESPONSE.setHeader
-        setheader('Content-Length', len(result))
-        setheader('Content-Type',
-            'text/x-comma-separated-values')
-        setheader('Content-Disposition', 'inline; filename=%s' % filename)
-        RESPONSE.write(result)
+        setheader = response.setHeader
+        setheader(
+            'Content-Length',
+            len(result)
+        )
+        setheader(
+            'Content-Type',
+            'text/x-comma-separated-values'
+        )
+        setheader(
+            'Content-Disposition',
+            'inline; filename=%s' % filename)
+        response.write(result)
