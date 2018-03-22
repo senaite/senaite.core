@@ -3,10 +3,22 @@ Instruments import interface
 We are going to test all instruments import interfaces on this one doctest
 1. These files can only be added on `tests/files/instruments/`
 2. The filenames(files to be imported) have to have the same name as their
-   import data interface i.e `exportimport/instruments/generic/two_dimension.py`
-   would match with `tests/files/instruments/generic.two_dimension.csv`
-3. All the files would have the same SampleID/AR-ID, same analyses and same
-   results because they will be testing against the same AR
+   import data interface i.e
+   `exportimport/instruments/generic/two_dimension.py` would match with
+   `tests/files/instruments/generic.two_dimension.csv` and
+   `exportimport/instruments/varian/vistapro/icp.py` would match with
+   `tests/files/instruments/varian.vistapro.icp.csv`
+   The reason for the above filenaming is so that we can do
+   `interface = varian.vistapro.icp`
+   `exec('from bika.lims.exportimport.instruments.{} import Import'.format(inteface))`
+   LINE:225
+3. All the files would have the same SampleID/AR-ID
+   `H2O-0001`
+4. Same analyses and same results because they will be testing against the same AR
+   `Ca` = 0.0
+   `Mg` = 2.0
+5. To set DefaultResult to float `0.0` use `zeroValueDefaultInstrumentResults`
+   example can be found at `exportimport/instruments/varian/vistapro/icp.py`
 
 Running this test from the buildout directory::
 
