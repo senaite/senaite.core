@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #729 Added Instrument: Varian Vista-PRO ICP
 - #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
