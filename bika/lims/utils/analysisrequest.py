@@ -121,8 +121,9 @@ def create_analysisrequest(client, request, values, analyses=None,
     # At this point, we have AR, Sample, Partitions, Analyses,
     # all in state "sample_registered". Manually execute initial
     # transition for new objects:
+    auto = ar.bika_setup.getAutoReceiveSamples()
     action = 'sampling_workflow' if sample.getSamplingWorkflowEnabled() \
-        else 'receive' if isTransitionAllowed(ar, 'receive') \
+        else 'receive' if auto and isTransitionAllowed(ar, 'receive') \
         else 'no_sampling_workflow'
     doActionFor(ar, action)
 
