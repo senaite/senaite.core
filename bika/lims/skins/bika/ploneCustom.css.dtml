@@ -579,14 +579,6 @@ table.analysisrequest input {
   text-align:center !important;
   vertical-align:top !important;
 }
-fieldset.criteria {
-  padding-top:1em;
-  margin-bottom:0;
-}
-fieldset.criteria p {
-  padding-bottom:0;
-  margin-bottom:.5em;
-}
 .worksheet_add_control_services {
   text-align:center !important;
   vertical-align:top !important;
@@ -1420,6 +1412,20 @@ div.bika-listing-table-top-hooks div.listing-hook-top-left {
 div.bika-listing-table-top-hooks div.listing-hook-top-wide {
     clear:both;
     display:block;
+}
+
+.form-inline .form-group {
+  float: left;
+}
+
+.form-group {
+  padding: 1em 1em 1em 0;
+  margin-bottom: 0;
+}
+
+.ws-analyses-search-button {
+  clear: left;
+  float: left;
 }
 
 </dtml-with>

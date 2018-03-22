@@ -41,6 +41,7 @@ from rigaku.supermini import wxrf
 from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
+from varian.vistapro import icp
 
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
@@ -81,6 +82,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.arena.xt20',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
+           'varian.vistapro.icp',
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
@@ -125,6 +127,7 @@ PARSERS = [
            ['myself.myinstrument', 'MyInstrumentCSVParser'],
            ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
+           ['varian.vistapro.icp', 'VistaPROICPParser'],
            ]
 
 
