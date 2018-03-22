@@ -88,25 +88,9 @@ class InvoiceBatchInvoicesView(BikaListingView):
             },
         ]
 
-    def getInvoices(self, contentFilter):
-        return self.context.objectValues('Invoice')
-
-    # def __call__(self):
-    #     mtool = getToolByName(self.context, 'portal_membership')
-    #     addPortalMessage = self.context.plone_utils.addPortalMessage
-    #     if mtool.checkPermission(AddInvoice, self.context):
-    #         clients = self.context.clients.objectIds()
-    #         if clients:
-    #             self.context_actions[_('Add')] = {
-    #                 'url': 'createObject?type_name=Invoice',
-    #                 'icon': '++resource++bika.lims.images/add.png'
-    #             }
-    #     return super(InvoiceBatchInvoicesView, self).__call__()
-
     def folderitems(self, full_objects=False):
         currency = currency_format(self.context, 'en')
         self.show_all = True
-        self.contentsMethod = self.getInvoices
         items = BikaListingView.folderitems(self, full_objects)
         for item in items:
             obj = item['obj']
@@ -157,7 +141,7 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         assert container
         container.plone_log("Exporting InvoiceBatch to CSV format for PASTEL")
         # Getting the invoice batch's invoices
-        invoices = self.getInvoices({})
+        # TODO -> get batch invoices
         if not len(invoices):
             container.plone_log("InvoiceBatch contains no entries")
 
