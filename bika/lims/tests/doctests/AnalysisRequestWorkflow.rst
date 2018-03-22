@@ -37,11 +37,14 @@ Functional Helpers:
     >>> def timestamp(format='%Y-%m-%d'):
     ...     return DateTime().strftime(format)
 
-    >>> def getstates(ar, state):
+    >>> def getstates(ar):
     ...     arstate = getCurrentState(ar)
     ...     anstate = getCurrentState(ar.getAnalyses()[0].getObject())
     ...     samplestate = getCurrentState(ar.getSample())
-    ...     return "AR: '%s', Analyses: '%s', Sample: '%s'" % (arstate, anstate, samplestate)
+    ...     part = ar.getSample().objectValues('SamplePartition')[0]
+    ...     partstate = getCurrentState(part)
+    ...     return "AR: '%s', Analyses: '%s', Sample: '%s', Partition: '%s'" % \
+    ...            (arstate, anstate, samplestate, partstate)
 
 Variables:
 
@@ -131,22 +134,27 @@ An `AnalysisService` defines a analysis service offered by the laboratory:
     >>> service
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
 
+
+Standard AR/Sample/Analysis workflow
+------------------------------------
+
+Standard workflow when adding a new AR to an existing sample
+------------------------------------------------------------
+
 Verify that AutoReceiveSamples and SamplingWorkflowEnabled settings play nicely
 -------------------------------------------------------------------------------
 
 There are six possible outcomes, as specified in the sample/AR/analysis
 'receive' guards:
 
- +=========================+==============+====================+==============+
  | SamplingWorkflowEnabled | review_state | AutoReceiveSamples | Guard result |
  +=========================+==============+====================+==============+
 1| Enabled                 | registered   | Enabled            | False        |
 2| Enabled                 | due          | Enabled            | True         |
-2| Enabled                 | registered   | Disabled           | False        |
+3| Enabled                 | registered   | Disabled           | False        |
 4| Enabled                 | due          | Disabled           | False        |
 5| Disabled                | registered   | Enabled            | True         |
 6| Disabled                | registered   | Disabled           | False        |
- +=========================+==============+====================+==============+
 
 All ARs in this text will be created with the same values:
 
@@ -170,39 +178,37 @@ all items should be in state `to_be_sampled`
     >>> bika_setup.setSamplingWorkflowEnabled(True)
     >>> bika_setup.setAutoReceiveSamples(True)
     >>> ar = create_analysisrequest(client, request, values, [service.UID()])
-    >>> getstates(ar, 'to_be_sampled')
-    "AR: 'to_be_sampled', Analyses: 'to_be_sampled', Sample: 'to_be_sampled'"
+    >>> getstates(ar)
+    "AR: 'to_be_sampled', Analyses: 'to_be_sampled', Sample: 'to_be_sampled', Partition: 'to_be_sampled'"
 
 Case 2:  Both `SamplingWorkflowEnabled` and `AutoReceiveSamples` are
-enabled; once the `sample` transition is completed, all items should
+still enabled; once the `sample` transition is completed, all items should
 automatically be transitioned to state `sample_received`.
 
 .. code-block::
 
     >>> ar.setSampler(sampler)
     >>> ar.setDateSampled(timestamp())
-    >>> p = doActionFor(ar, 'sample')[0]
-    >>> getstates(ar, 'sample_received')
-    "AR: 'sample_received', Analyses: 'sample_received', Sample: 'sample_received'"
+    >>> p = doActionFor(ar, 'sample')
+    >>> getstates(ar)
+    "AR: 'sample_received', Analyses: 'sample_received', Sample: 'sample_received', Partition: 'sample_received'"
 
-Case 3 and Case 4:  `SamplingWorkflowEnabled` is on, but `AutoReceiveSamples` is
-off. The workflow will require manual transition through the sampling workflow,
-and manual transition from `sample_due` -> `sample_received`
+Case 3: `SamplingWorkflowEnabled` is on and `AutoReceiveSamples` is off;
+Proceed normally to sample_due, user must manually receive.
 
 .. code-block::
 
     >>> bika_setup.setSamplingWorkflowEnabled(True)
     >>> bika_setup.setAutoReceiveSamples(False)
     >>> ar = create_analysisrequest(client, request, values, [service.UID()])
-
-    >>> getstates(ar, 'to_be_sampled')
-    "AR: 'to_be_sampled', Analyses: 'to_be_sampled', Sample: 'to_be_sampled'"
+    >>> getstates(ar)
+    "AR: 'to_be_sampled', Analyses: 'to_be_sampled', Sample: 'to_be_sampled', Partition: 'to_be_sampled'"
 
     >>> ar.setSampler(sampler)
     >>> ar.setDateSampled(timestamp())
-    >>> p = doActionFor(ar, 'sample')[0]
-    >>> getstates(ar, 'sample_due')
-    "AR: 'sample_due', Analyses: 'sample_due', Sample: 'sample_due'"
+    >>> p = doActionFor(ar, 'sample')
+    >>> getstates(ar)
+    "AR: 'sample_due', Analyses: 'sample_due', Sample: 'sample_due', Partition: 'sample_due'"
 
 Case 5: `SamplingWorkflowEnabled` is off, `AutoReceiveSamples` is on.
 This means the objects should begin their lives in state 'sample_received'
@@ -212,8 +218,11 @@ This means the objects should begin their lives in state 'sample_received'
     >>> bika_setup.setSamplingWorkflowEnabled(False)
     >>> bika_setup.setAutoReceiveSamples(True)
     >>> ar = create_analysisrequest(client, request, values, [service.UID()])
-    >>> getstates(ar, 'sample_received')
-    "AR: 'sample_received', Analyses: 'sample_received', Sample: 'sample_received'"
+    >>> getstates(ar)
+    "AR: 'sample_received', Analyses: 'sample_received', Sample: 'sample_received', Partition: 'sample_received'"
+    >>> import time
+    >>> time.sleep(1)
+
 
 Case 6: Both settings are off.  The items should start in `sample_due` state.
 
@@ -222,5 +231,5 @@ Case 6: Both settings are off.  The items should start in `sample_due` state.
     >>> bika_setup.setSamplingWorkflowEnabled(False)
     >>> bika_setup.setAutoReceiveSamples(False)
     >>> ar = create_analysisrequest(client, request, values, [service.UID()])
-    >>> getstates(ar, 'sample_due')
-    "AR: 'sample_due', Analyses: 'sample_due', Sample: 'sample_due'"
+    >>> getstates(ar)
+    "AR: 'sample_due', Analyses: 'sample_due', Sample: 'sample_due', Partition: 'sample_due'"
