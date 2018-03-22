@@ -15,9 +15,13 @@ class InvoiceBatchInvoicesView(BikaListingView):
 
     def __init__(self, context, request):
         super(InvoiceBatchInvoicesView, self).__init__(context, request)
-        self.contentFilter['path'] = {
-            "query": "/".join(self.context.getPhysicalPath()),
-            "level": 0}
+        self.content_filter = {
+            'portal_type': 'Invoice',
+            'path': {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level": 0
+            },
+        }
         self.title = context.Title()
         self.description = ""
         self.show_sort_column = False
