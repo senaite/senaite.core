@@ -28,6 +28,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
+        self.show_all = True
         self.pagesize = 25
         request.set('disable_border', 1)
         self.context_actions = {}
@@ -96,7 +97,6 @@ class InvoiceBatchInvoicesView(BikaListingView):
 
     def folderitems(self, full_objects=False):
         currency = currency_format(self.context, 'en')
-        self.show_all = True
         items = BikaListingView.folderitems(self, full_objects)
         for item in items:
             obj = item['obj']
