@@ -7,6 +7,8 @@ Changelog
 **Added**
 
 - #737 Added Instrument: Metler Toledo DL55
+- #730 Added Instrument: LaChat QuickChem FIA
+- #729 Added Instrument: Varian Vista-PRO ICP
 - #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
@@ -23,6 +25,8 @@ Changelog
 
 **Fixed**
 
+- #721 Fix filter functionality of Worksheets after sort/pagination
+- #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
 - #694 Instrument validity not updated in accordance with latest QC tests
 - #694 Result range shoulders computed badly on full/partial negative specs

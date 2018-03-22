@@ -5,15 +5,16 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-""" LaChat QuickChem FIA
+""" Varian Vista-PRO ICP
 """
-import json
 import logging
 import re
-import traceback
 
+from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
+from plone.i18n.normalizer.interfaces import IIDNormalizer
+from zope.component import getUtility
+
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.exportimport.instruments.utils import \
@@ -22,18 +23,18 @@ from bika.lims.exportimport.instruments.utils import \
      get_instrument_import_ar_allowed_states)
 from bika.lims.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
-from plone.i18n.normalizer.interfaces import IIDNormalizer
-from zope.component import getUtility
+from bika.lims import bikaMessageFactory as _
+import json
+import traceback
 
 logger = logging.getLogger(__name__)
 
-title = "LaChat QuickChem FIA"
+title = "Varian Vista-PRO ICP"
 
 
-class LaChatQuickCheckFIAParser(InstrumentCSVResultsFileParser):
-    """ Instrument Parser
+class VistaPROICPParser(InstrumentCSVResultsFileParser):
+    """ Vista-PRO Parser
     """
-
     def __init__(self, csv):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._end_header = False
@@ -41,10 +42,9 @@ class LaChatQuickCheckFIAParser(InstrumentCSVResultsFileParser):
         self._numline = 0
 
     def _parseline(self, line):
-        if self._end_header is False:
-            return self.parse_headerline(line)
-        else:
+        if self._end_header:
             return self.parse_resultsline(line)
+        return self.parse_headerline(line)
 
     def parse_headerline(self, line):
         """ Parses header lines
@@ -54,27 +54,24 @@ class LaChatQuickCheckFIAParser(InstrumentCSVResultsFileParser):
             return 0
 
         splitted = [token.strip() for token in line.split(',')]
-        if splitted[1] == 'Sample ID':
+        if splitted[0] == 'Solution Label':
             self._resultsheader = splitted
             self._end_header = True
         return 0
 
     def parse_resultsline(self, line):
-        """
+        """ CSV Parser
         """
 
         splitted = [token.strip() for token in line.split(',')]
         if self._end_header:
-            # in Sample ID column, we may find format: '[SampleID] samplepoint'
-            # the part between brackets is the sample id:
-            resid = splitted[1]
-            if resid.startswith('['):
-                # the part between brackets is the sample id:
-                resid = resid[1:].split(']')[0]
-
-        rawdict = {'DefaultResult': 'Peak Concentration'}
+            resid = splitted[0]
+        rawdict = {'DefaultResult': 'Soln Conc'}
         rawdict.update(dict(zip(self._resultsheader, splitted)))
-        val = re.sub(r"\W", "", rawdict['Analyte Name'])
+        date_string = "{Date} {Time}".format(**rawdict)
+        date_time = DateTime(date_string)
+        rawdict['DateTime'] = date_time
+        element = rawdict.get("Element", "").replace(" ", "").replace(".", "")
 
         # Set DefaultResult to 0.0 if result is "0" or "--" or '' or 'ND'
         result = rawdict[rawdict['DefaultResult']]
@@ -82,7 +79,10 @@ class LaChatQuickCheckFIAParser(InstrumentCSVResultsFileParser):
         result = self.get_result(column_name, result, line)
         rawdict[rawdict['DefaultResult']] = result
         #
+
+        val = re.sub(r"\W", "", element)
         self._addRawResult(resid, values={val: rawdict}, override=False)
+
         self.log(
             "End of file reached successfully: ${total_objects} objects, "
             "${total_analyses} analyses, ${total_results} results",
@@ -106,13 +106,15 @@ class LaChatQuickCheckFIAParser(InstrumentCSVResultsFileParser):
         return
 
 
-class Importer(AnalysisResultsImporter):
-    """ Instrument Importer
+
+class VistaPROICPImporter(AnalysisResultsImporter):
+    """ Importer
     """
 
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
+
         AnalysisResultsImporter.__init__(self,
                                          parser,
                                          context,
@@ -131,7 +133,6 @@ def Import(context, request):
     infile = form['instrument_results_file'][0] if \
         isinstance(form['instrument_results_file'], list) \
         else form['instrument_results_file']
-    # fileformat = form['instrument_results_file_format']
     override = form['results_override']
     artoapply = form['artoapply']
     sample = form.get('sample', 'requestid')
@@ -145,18 +146,18 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
 
-    parser = LaChatQuickCheckFIAParser(infile)
+    parser = VistaPROICPParser(infile)
     status = get_instrument_import_ar_allowed_states(artoapply)
     over = get_instrument_import_override(override)
     sam = get_instrument_import_search_criteria(sample)
 
-    importer = Importer(parser=parser,
-                        context=context,
-                        idsearchcriteria=sam,
-                        allowed_ar_states=status,
-                        allowed_analysis_states=None,
-                        override=over,
-                        instrument_uid=instrument)
+    importer = VistaPROICPImporter(parser=parser,
+                                   context=context,
+                                   idsearchcriteria=sam,
+                                   allowed_ar_states=status,
+                                   allowed_analysis_states=None,
+                                   override=over,
+                                   instrument_uid=instrument)
     tbex = ''
     try:
         importer.process()
@@ -174,7 +175,7 @@ def Import(context, request):
 
 
 class Export(BrowserView):
-    """ Writes worksheet analyses to a CSV file for LaChat QuickChem FIA.
+    """ Writes worksheet analyses to a CSV file for Varian Vista Pro ICP.
         Sends the CSV file to the response for download by the browser.
     """
 
@@ -186,26 +187,38 @@ class Export(BrowserView):
         uc = getToolByName(self.context, 'uid_catalog')
         instrument = self.context.getInstrument()
         norm = getUtility(IIDNormalizer).normalize
-        filename = '{}-{}.csv'.format(self.context.getId(),
+        # We use ".sin" extension, but really it's just a little CSV inside.
+        filename = '{}-{}.sin'.format(self.context.getId(),
                                       norm(instrument.getDataInterface()))
 
         # write rows, one per Sample, including including refs and duplicates.
-        # Start Column A at 1 or 9? (the examples given used 9, no clues.)
-        # If routine analysis, Column B is the AR ID + sample type.
-        # If Reference analysis, Column B is the Ref Sample.
-        # If Duplicate analysis, column B is the Worksheet.
-        # Column C is the well number
-        # Column D empty
-        # Column E should always be 1 (2 indicates a duplicate from the same cup)
-        layout = self.context.getLayout()
+        # COL A:  "sample-id*sampletype-title"  (yes that's a '*').
+        # COL B:  "                    ",
+        # COL C:  "                    ",
+        # COL D:  "                    ",
+        # COL E:  1.000000000,
+        # COL F:  1.000000,
+        # COL G:  1.0000000
+        # If routine analysis, COL B is the AR ID + sample type.
+        # If Reference analysis, COL B is the Ref Sample.
+        # If Duplicate analysis, COL B is the Worksheet.
+        lyt = self.context.getLayout()
+        lyt.sort(cmp=lambda x, y: cmp(int(x['position']), int(y['position'])))
         rows = []
-        # tmprows = []
-        col_a = 1
+
+        # These are always the same on each row
+        b = '"                    "'
+        c = '"                    "'
+        d = '"                    "'
+        e = '1.000000000'
+        f = '1.000000'
+        g = '1.0000000'
+
         result = ''
         # We don't want to include every single slot!  Just one entry
         # per AR, Duplicate, or Control.
         used_ids = []
-        for x, row in enumerate(layout):
+        for x, row in enumerate(lyt):
             a_uid = row['analysis_uid']
             c_uid = row['container_uid']
             analysis = uc(UID=a_uid)[0].getObject() if a_uid else None
@@ -214,26 +227,17 @@ class Export(BrowserView):
                 if 'a{}'.format(container.id) in used_ids:
                     continue
                 used_ids.append('a{}'.format(container.id))
-                # col_a (sample id) has a weird format, but it matches
-                # the examples we are given, so it is true:
                 sample = container.getSample()
                 samplepoint = sample.getSamplePoint()
                 sp_title = samplepoint.Title() if samplepoint else ''
-                col_b = '[{}] {}'.format(container.id, sp_title)
-                col_c = str(row['position'])
-                col_d = ''
-                col_e = '1'
+                a = '"{}*{}"'.format(container.id, sp_title)
             elif row['type'] in 'bcd':
                 refgid = analysis.getReferenceAnalysesGroupID()
                 if 'bcd{}'.format(refgid) in used_ids:
                     continue
                 used_ids.append('bcd{}'.format(refgid))
-                col_b = refgid
-                col_c = str(row['position'])
-                col_d = ''
-                col_e = '1'
-            rows.append(','.join([str(col_a), col_b, col_c, col_d, col_e]))
-            col_a += 1
+                a = refgid
+            rows.append(','.join([a, b, c, d, e, f, g]))
         result += '\r\n'.join(rows)
 
         # stream to browser

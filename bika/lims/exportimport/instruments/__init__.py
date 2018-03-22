@@ -20,6 +20,7 @@ from thermoscientific.arena import xt20
 from thermoscientific.multiskan import go
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
+from lachat import quickchem
 from lifetechnologies.qubit import qubit
 from metler.toledo import dl55
 from biodrop.ulite import ulite
@@ -41,6 +42,7 @@ from rigaku.supermini import wxrf
 from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
+from varian.vistapro import icp
 
 
 __all__ = ['abaxis.vetscan.vs2',
@@ -59,6 +61,7 @@ __all__ = ['abaxis.vetscan.vs2',
            # 'generic.xml',
            'genexpert.genexpert',
            'horiba.jobinyvon.icp',
+           'lachat.quickchem',
            'lifetechnologies.qubit.qubit',
            'metler.toledo.dl55',
            'myself.myinstrument',
@@ -82,6 +85,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.arena.xt20',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
+           'varian.vistapro.icp',
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
@@ -109,6 +113,7 @@ PARSERS = [
            ['thermoscientific.arena.xt20', 'ThermoArena20XTRPRCSVParser'],
            ['thermoscientific.gallery.Ts9861x', 'ThermoGallery9861xTSVParser'],
            ['panalytical.omnia.axios_xrf', 'AxiosXrfCSVParser'],
+           ['lachat.quickchem', 'LaChatQuickCheckFIAParser'],
            ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
            ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
            ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],
@@ -126,6 +131,7 @@ PARSERS = [
            ['myself.myinstrument', 'MyInstrumentCSVParser'],
            ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
+           ['varian.vistapro.icp', 'VistaPROICPParser'],
            ]
 
 
