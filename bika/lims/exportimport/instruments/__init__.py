@@ -108,7 +108,7 @@ PARSERS = [
            ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
            ['metler.toledo.dl55', 'MetlerToledoDL55Parser'],
            ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
-           ['rochecobas.taqman.model48', 'RocheCobasTaqmanRSFParser'],
+           ['rochecobas.taqman.model48', 'RocheCobasTaqmanParser'],
            ['rochecobas.taqman.model96', 'RocheCobasTaqmanRSFParser'],
            ['thermoscientific.arena.xt20', 'ThermoArena20XTRPRCSVParser'],
            ['thermoscientific.gallery.Ts9861x', 'ThermoGallery9861xTSVParser'],
