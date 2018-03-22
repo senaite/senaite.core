@@ -15,7 +15,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
 
     def __init__(self, context, request):
         super(InvoiceBatchInvoicesView, self).__init__(context, request)
-        self.content_filter = {
+        self.contentFilter = {
             'portal_type': 'Invoice',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
@@ -95,39 +95,45 @@ class InvoiceBatchInvoicesView(BikaListingView):
             },
         ]
 
-    def folderitems(self, full_objects=False):
-        currency = currency_format(self.context, 'en')
-        items = BikaListingView.folderitems(self, full_objects)
-        for item in items:
-            obj = item['obj']
-            number_link = "<a href='%s'>%s</a>" % (
-                item['url'], obj.getId()
-            )
-            item['replace']['id'] = number_link
-            
-            if obj.getClient():
-                item['client'] = obj.getClient().Title()
-                item['replace']['client'] = "<a href='%s'>%s</a>" % (
-                    obj.getClient().absolute_url(), obj.getClient().Title()
-                )
+    def folderitem(self, obj, item, idx):
+        """
+        Replace or add the required/wanted fields for each invoice
+        in the item dictionary
 
-                item['email'] = obj.getClient().getEmailAddress()
-                item['replace']['email'] = "<a href='%s'>%s</a>" % (
-                    'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
-                )
-                item['phone'] = obj.getClient().getPhone()
-            else:
-                item['client'] = ''
-                item['email'] = ''
-                item['phone'] = ''
-            
-            item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
-            item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
-            item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
-            item['subtotal'] = currency(obj.getSubtotal())
-            item['vatamount'] = currency(obj.getVATAmount())
-            item['total'] = currency(obj.getTotal())
-        return items
+        :param obj: the instance of the class to be foldered. In our case, an
+                    Invoice
+        :param item: dict containing the properties of the object to be used by
+                     the template
+        :return: dictionary with the updated fields of the invoice being processed
+        """
+        currency = currency_format(self.context, 'en')
+        number_link = "<a href='%s'>%s</a>" % (
+            item['url'], obj.getId()
+        )
+        item['replace']['id'] = number_link
+        if obj.getClient():
+            item['client'] = obj.getClient().Title()
+            item['replace']['client'] = "<a href='%s'>%s</a>" % (
+                obj.getClient().absolute_url(), item['client']
+            )
+            item['email'] = obj.getClient().getEmailAddress()
+            item['replace']['email'] = "<a href='%s'>%s</a>" % (
+                'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
+            )
+            item['phone'] = obj.getClient().getPhone()
+        else:
+            item['client'] = ''
+            item['email'] = ''
+            item['phone'] = ''
+
+        item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
+        item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
+        item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
+        item['subtotal'] = currency(obj.getSubtotal())
+        item['vatamount'] = currency(obj.getVATAmount())
+        item['total'] = currency(obj.getTotal())
+
+        return item
 
 
 class BatchFolderExportCSV(InvoiceBatchInvoicesView):
