@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #742 Add configuration for automatically receiving samples
 
 **Removed**
 
