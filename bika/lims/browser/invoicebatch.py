@@ -15,7 +15,9 @@ class InvoiceBatchInvoicesView(BikaListingView):
 
     def __init__(self, context, request):
         super(InvoiceBatchInvoicesView, self).__init__(context, request)
-        self.contentFilter = {}
+        self.contentFilter['path'] = {
+            "query": "/".join(self.context.getPhysicalPath()),
+            "level": 0}
         self.title = context.Title()
         self.description = ""
         self.show_sort_column = False
@@ -70,7 +72,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
         self.review_states = [
             {
                 'id': 'default',
-                'contentFilter': {},
+                'contentFilter': self.contentFilter,
                 'title': _('Default'),
                 'transitions': [],
                 'columns': [
