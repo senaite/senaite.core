@@ -7,7 +7,7 @@
 
 from DateTime import DateTime
 
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, isTransitionAllowed
 from bika.lims.workflow import getCurrentState
 
 
@@ -91,6 +91,11 @@ def after_sample(obj):
     # all the analyses associated to all the sample partitions, so there
     # is no need to transition neither the analyses nor partitions here
     _promote_transition(obj, 'sample')
+
+    # AutoReceiveSamples
+    auto = obj.bika_setup.getAutoReceiveSamples()
+    if auto and isTransitionAllowed(obj, 'receive'):
+        doActionFor(obj, 'receive')
 
 
 def after_receive(obj):

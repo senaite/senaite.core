@@ -7,7 +7,7 @@
 
 from DateTime import DateTime
 
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, isTransitionAllowed
 from bika.lims.workflow import getCurrentState
 
 
@@ -112,6 +112,12 @@ def after_sample(obj):
     """Method triggered after a 'sample' transition for the Sample passed in.
     Triggers the 'sample' transition for dependent objects, such as Sample
     Partitions and Analysis Requests.
+
+    Sampling workflow is complete, sample will be put in one of these states:
+      - to_be_preserved
+      - sample_due
+      - received
+
     This function is called automatically by
     bika.lims.workflow.AfterTransitionEventHandler
     :param obj: Sample affected by the transition
@@ -119,23 +125,24 @@ def after_sample(obj):
     """
     _cascade_transition(obj, 'sample')
 
+    def next_transition(o):
+        auto = obj.bika_setup.getAutoReceiveSamples()
+        if auto and isTransitionAllowed(o, 'receive'):
+            return 'receive'
+        else:
+            return 'sample_due'
+
+    lowest_state_transition = next_transition(obj)
+
     if obj.getSamplingWorkflowEnabled():
-        to_be_preserved = []
-        sample_due = []
-        lowest_state = 'sample_due'
         for p in obj.objectValues('SamplePartition'):
             if p.getPreservation():
-                lowest_state = 'to_be_preserved'
-                to_be_preserved.append(p)
+                lowest_state_transition = 'to_be_preserved'
+                doActionFor(p, 'to_be_preserved')
             else:
-                sample_due.append(p)
-        for p in to_be_preserved:
-            doActionFor(p, 'to_be_preserved')
-        for p in sample_due:
-            doActionFor(p, 'sample_due')
-        doActionFor(obj, lowest_state)
-    else:
-        doActionFor(obj, 'sample_due')
+                doActionFor(p, next_transition(p))
+
+    doActionFor(obj, lowest_state_transition)
 
 
 def after_sample_due(obj):
