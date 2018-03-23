@@ -6,6 +6,10 @@ Changelog
 
 **Added**
 
+- #741 CSV Importer for 'Cobas Taqman 48' Instrument Interface
+- #737 Added Instrument: Metler Toledo DL55
+- #730 Added Instrument: LaChat QuickChem FIA
+- #729 Added Instrument: Varian Vista-PRO ICP
 - #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
