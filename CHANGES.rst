@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #743 Traceback when accessing the view of a Statement
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
