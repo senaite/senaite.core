@@ -47,6 +47,9 @@ def upgrade(tool):
     # See PR#694
     remove_error_subfield_from_analysis_specs(portal, ut)
 
+    # ReIndex ReferenceAnalysis
+    reindex_reference_analysis(portal, ut)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
@@ -72,3 +75,13 @@ def remove_error_subfield_from_analysis_specs(portal, ut):
                 spec['warn_max'] = str(warn_max)
                 del spec['error']
         specs.setResultsRange(specs_rr)
+
+
+def reindex_reference_analysis(portal, ut):
+    # Update ReferenceAnalysis because new fields(Calculation & InterimFields)
+    # have been added on ReferenceAnalysis
+    catalog = api.get_tool('bika_analysis_catalog')
+    brains = catalog(portal_type='ReferenceAnalysis')
+    for brain in brains:
+        obj = brain.getObject()
+        obj.reindexObject()
