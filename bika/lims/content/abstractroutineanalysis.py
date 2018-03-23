@@ -9,12 +9,10 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import HistoryAwareReferenceField, \
-    InterimFieldsField, UIDReferenceField
-from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -23,11 +21,10 @@ from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor, getCurrentState
+from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import skip
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from zope.interface import implements
 
 # The physical sample partition linked to the Analysis.
