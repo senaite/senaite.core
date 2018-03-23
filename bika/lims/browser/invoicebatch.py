@@ -5,11 +5,14 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from senaite import api
+
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import currency_format
 import csv
 from cStringIO import StringIO
+
 
 class InvoiceBatchInvoicesView(BikaListingView):
 
@@ -138,22 +141,26 @@ class InvoiceBatchInvoicesView(BikaListingView):
 
 class BatchFolderExportCSV(InvoiceBatchInvoicesView):
 
-    def __call__(self, request, response):
+    def __call__(self, REQUEST, RESPONSE):
         """
         Export invoice batch into csv format.
         Writes the csv file into the RESPONSE to allow
         the file to be streamed to the user.
         Nothing gets returned.
         """
-
         delimiter = ','
         filename = 'invoice_batch.txt'
         # Getting the invoice batch
         container = self.context
         assert container
         container.plone_log("Exporting InvoiceBatch to CSV format for PASTEL")
-        # Getting the invoice batch's invoices
-        # TODO -> get batch invoices
+        # Getting the invoice batch's invoices:
+        # Since BatchFolderExportCSV does not provide an initializer method
+        # (__init__) then the base class initializer is called automatically
+        # and we can use the already defined contentFilter to retrieve the
+        # invoice batch invoices
+        portal_catalog = api.get_tool('portal_catalog')
+        invoices = map(api.get_object, portal_catalog(self.contentFilter))
         if not len(invoices):
             container.plone_log("InvoiceBatch contains no entries")
 
@@ -210,7 +217,7 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         result = ramdisk.getvalue()
         ramdisk.close()
         # stream file to browser
-        setheader = response.setHeader
+        setheader = RESPONSE.setHeader
         setheader(
             'Content-Length',
             len(result)
@@ -222,4 +229,4 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         setheader(
             'Content-Disposition',
             'inline; filename=%s' % filename)
-        response.write(result)
+        RESPONSE.write(result)
