@@ -26,7 +26,7 @@ Changelog
 
 **Fixed**
 
-- #734 Chameleon parse error in "Analyses performed and published as % of total" productivity reports
+- #734 Chameleon parse error in "Analyses performed and published as % of total" and "Analyses summary per department" productivity reports
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
