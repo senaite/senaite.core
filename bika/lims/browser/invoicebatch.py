@@ -159,8 +159,7 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         # (__init__) then the base class initializer is called automatically
         # and we can use the already defined contentFilter to retrieve the
         # invoice batch invoices
-        portal_catalog = api.get_tool('portal_catalog')
-        invoices = map(api.get_object, portal_catalog(self.contentFilter))
+        invoices = map(api.get_object, api.search(self.contentFilter, 'portal_catalog'))
         if not len(invoices):
             container.plone_log("InvoiceBatch contains no entries")
 
