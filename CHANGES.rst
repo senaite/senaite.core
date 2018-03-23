@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
 - #694 Make getResultRange functions from Analysis-types consistent
 - #694 Out of range/shoulders icons are rendered in AnalysesView
