@@ -16,7 +16,7 @@ Test Setup
 
 Needed Imports:
 
-.. code-block::
+.. code-block:: python
 
     >>> from DateTime import DateTime
     >>> from bika.lims import api
@@ -25,9 +25,10 @@ Needed Imports:
     >>> from bika.lims.workflow import isTransitionAllowed
     >>> from bika.lims.workflow import getCurrentState
 
+
 Functional Helpers:
 
-.. code-block::
+.. code-block:: python
 
     >>> def start_server():
     ...     from Testing.ZopeTestCase.utils import startZServer
@@ -46,9 +47,10 @@ Functional Helpers:
     ...     return "AR: '%s', Analyses: '%s', Sample: '%s', Partition: '%s'" % \
     ...            (arstate, anstate, samplestate, partstate)
 
+
 Variables:
 
-.. code-block::
+.. code-block:: python
 
     >>> date_now = timestamp()
     >>> portal = self.portal
@@ -59,12 +61,13 @@ Variables:
     >>> bika_analysiscategories = bika_setup.bika_analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
 
+
 Test user:
 
 We need certain permissions to create and access objects used in this test,
 so here we will assume the role of Lab Manager.
 
-.. code-block::
+.. code-block:: python
 
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import setRoles
@@ -79,26 +82,24 @@ these two settings play against each other.
 
 An `AnalysisRequest` can only be created inside a `Client`:
 
-.. code-block::
+.. code-block:: python
 
     >>> clients = self.portal.clients
     >>> client = api.create(clients, 'Client', Name='Happy Hills', ClientID='RB')
-    >>> client
-    <Client at /plone/clients/client-1>
+
 
 To create a new AR, a `Contact` is needed:
 
-.. code-block::
+.. code-block:: python
 
     >>> contact = api.create(client, 'Contact', Firstname='Rita', Surname='Mohale')
-    >>> contact
-    <Contact at /plone/clients/client-1/contact-1>
+
 
 We're using the SamplingWorkflowEnabled in these tests, so we need a Sampler.  For
 this we must first create a login user, then a labcontact, and then associate
 the two.
 
-.. code-block::
+.. code-block:: python
 
     >>> member = portal.portal_registration.addMember('sampler1', 'sampler1',
     ...              properties={'username': 'sampler1',
@@ -109,56 +110,35 @@ the two.
     >>> sampler.setUser(member)
     True
 
+
 A `SampleType` defines how long the sample can be retained, the minimum volume
 needed, if it is hazardous or not, the point where the sample was taken etc.:
 
-.. code-block::
+.. code-block:: python
 
     >>> sampletype = api.create(bika_sampletypes, 'SampleType', Prefix='water')
-    >>> sampletype
-    <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
+
 
 An `AnalysisCategory` categorizes different `AnalysisServices`:
 
-.. code-block::
+.. code-block:: python
 
     >>> analysiscategory = api.create(bika_analysiscategories, 'AnalysisCategory', title='Water')
-    >>> analysiscategory
-    <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
-
-An `AnalysisService` defines a analysis service offered by the laboratory:
-
-.. code-block::
-
-    >>> service = api.create(bika_analysisservices, 'AnalysisService', title='PH', ShortTitle='ph', Category=analysiscategory, Keyword='PH')
-    >>> service
-    <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
 
 
-Standard AR/Sample/Analysis workflow
-------------------------------------
+An `AnalysisService` defines a analysis service offered by the laboratory.  For the
+purposes of testing workflow, we only need to add simple services which require a
+single result value to be entered.
 
-Standard workflow when adding a new AR to an existing sample
-------------------------------------------------------------
+.. code-block:: python
 
-Verify that AutoReceiveSamples and SamplingWorkflowEnabled settings play nicely
--------------------------------------------------------------------------------
+    >>> service1 = api.create(bika_analysisservices, 'AnalysisService', title='PH', Category=analysiscategory, Keyword='PH')
+    >>> service2 = api.create(bika_analysisservices, 'AnalysisService', title='Calcium', Category=analysiscategory, Keyword='CA')
 
-There are six possible outcomes, as specified in the sample/AR/analysis
-'receive' guards:
 
- | SamplingWorkflowEnabled | review_state | AutoReceiveSamples | Guard result |
- +=========================+==============+====================+==============+
-1| Enabled                 | registered   | Enabled            | False        |
-2| Enabled                 | due          | Enabled            | True         |
-3| Enabled                 | registered   | Disabled           | False        |
-4| Enabled                 | due          | Disabled           | False        |
-5| Disabled                | registered   | Enabled            | True         |
-6| Disabled                | registered   | Disabled           | False        |
+Most ARs in this text will be created with these starting values.
 
-All ARs in this text will be created with the same values:
-
-.. code-block::
+.. code-block:: python
 
     >>> values = {
     ...     'Client': client.UID(),
@@ -167,17 +147,59 @@ All ARs in this text will be created with the same values:
     ...     'DateSampled': date_now,
     ...     'SampleType': sampletype.UID(),
     ...     'Priority': '1',
+    ...     'Analyses': [service1.UID(), service2.UID()],
     ... }
+
+
+Standard AR/Sample/Analysis workflow
+------------------------------------
+
+receive -> submit -> retract -> verify -> publish
+
+.. code-block:: python
+
+    >>> bika_setup.setSamplingWorkflowEnabled(False)
+    >>> bika_setup.setAutoReceiveSamples(False)
+    >>> ar = create_analysisrequest(client, request, values)
+    >>> getstates(ar)
+    "AR: 'sample_due', Analyses: 'sample_due', Sample: 'sample_due', Partition: 'sample_due'"
+    >>> doActionFor(ar, 'receive')
+    >>> getstates(ar)
+    "AR: 'sample_received', Analyses: 'sample_received', Sample: 'sample_received', Partition: 'sample_received'"
+
+
+
+Standard workflow when adding a new AR to an existing sample
+------------------------------------------------------------
+
+Sampling Workflow
+-----------------
+
+Verify that AutoReceiveSamples and SamplingWorkflowEnabled settings play nicely
+-------------------------------------------------------------------------------
+
+There are six possible conditions tested here:
+
+ +=========================+==============+====================+==============+
+ | SamplingWorkflowEnabled | review_state | AutoReceiveSamples | Guard result |
+ +=========================+==============+====================+==============+
+1| Enabled                 | registered   | Enabled            | False        |
+2| Enabled                 | due          | Enabled            | True         |
+3| Enabled                 | registered   | Disabled           | False        |
+4| Enabled                 | due          | Disabled           | False        |
+5| Disabled                | registered   | Enabled            | True         |
+6| Disabled                | registered   | Disabled           | False        |
+ +=========================+==============+====================+==============+
 
 Case 1:  Both `SamplingWorkflowEnabled` and `AutoReceiveSamples` are
 enabled; this should have no effect during the `registered` state,
 all items should be in state `to_be_sampled`
 
-.. code-block::
+.. code-block:: python
 
     >>> bika_setup.setSamplingWorkflowEnabled(True)
     >>> bika_setup.setAutoReceiveSamples(True)
-    >>> ar = create_analysisrequest(client, request, values, [service.UID()])
+    >>> ar = create_analysisrequest(client, request, values)
     >>> getstates(ar)
     "AR: 'to_be_sampled', Analyses: 'to_be_sampled', Sample: 'to_be_sampled', Partition: 'to_be_sampled'"
 
@@ -185,7 +207,7 @@ Case 2:  Both `SamplingWorkflowEnabled` and `AutoReceiveSamples` are
 still enabled; once the `sample` transition is completed, all items should
 automatically be transitioned to state `sample_received`.
 
-.. code-block::
+.. code-block:: python
 
     >>> ar.setSampler(sampler)
     >>> ar.setDateSampled(timestamp())
@@ -193,14 +215,13 @@ automatically be transitioned to state `sample_received`.
     >>> getstates(ar)
     "AR: 'sample_received', Analyses: 'sample_received', Sample: 'sample_received', Partition: 'sample_received'"
 
-Case 3: `SamplingWorkflowEnabled` is on and `AutoReceiveSamples` is off;
-Proceed normally to sample_due, user must manually receive.
+Case 3 and 4: `AutoReceiveSamples` disabled; these cases are tested above in `Sampling Workflow`.
 
-.. code-block::
+.. code-block:: python
 
     >>> bika_setup.setSamplingWorkflowEnabled(True)
     >>> bika_setup.setAutoReceiveSamples(False)
-    >>> ar = create_analysisrequest(client, request, values, [service.UID()])
+    >>> ar = create_analysisrequest(client, request, values)
     >>> getstates(ar)
     "AR: 'to_be_sampled', Analyses: 'to_be_sampled', Sample: 'to_be_sampled', Partition: 'to_be_sampled'"
 
@@ -213,11 +234,11 @@ Proceed normally to sample_due, user must manually receive.
 Case 5: `SamplingWorkflowEnabled` is off, `AutoReceiveSamples` is on.
 This means the objects should begin their lives in state 'sample_received'
 
-.. code-block::
+.. code-block:: python
 
     >>> bika_setup.setSamplingWorkflowEnabled(False)
     >>> bika_setup.setAutoReceiveSamples(True)
-    >>> ar = create_analysisrequest(client, request, values, [service.UID()])
+    >>> ar = create_analysisrequest(client, request, values)
     >>> getstates(ar)
     "AR: 'sample_received', Analyses: 'sample_received', Sample: 'sample_received', Partition: 'sample_received'"
     >>> import time
@@ -226,10 +247,10 @@ This means the objects should begin their lives in state 'sample_received'
 
 Case 6: Both settings are off.  The items should start in `sample_due` state.
 
-.. code-block::
+.. code-block:: python
 
     >>> bika_setup.setSamplingWorkflowEnabled(False)
     >>> bika_setup.setAutoReceiveSamples(False)
-    >>> ar = create_analysisrequest(client, request, values, [service.UID()])
+    >>> ar = create_analysisrequest(client, request, values)
     >>> getstates(ar)
     "AR: 'sample_due', Analyses: 'sample_due', Sample: 'sample_due', Partition: 'sample_due'"
