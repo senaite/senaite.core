@@ -101,29 +101,6 @@ HiddenManually = BooleanField(
     default=False,
 )
 
-# Routine Analyses have a versioned link to the calculation at creation time.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
-)
-
-# InterimFields are defined in Calculations, Services, and Analyses.
-# In Analysis Services, the default values are taken from Calculation.
-# In Analyses, the default values are taken from the Analysis Service.
-# When instrument results are imported, the values in analysis are overridden
-# before the calculation is performed.
-InterimFields = InterimFieldsField(
-    'InterimFields',
-    schemata='Method',
-    widget=RecordsWidget(
-        label=_("Calculation Interim Fields"),
-        description=_(
-            "Values can be entered here which will override the defaults "
-            "specified in the Calculation Interim Fields."),
-    )
-)
 
 schema = schema.copy() + Schema((
     IsReflexAnalysis,
@@ -135,8 +112,6 @@ schema = schema.copy() + Schema((
     SamplePartition,
     Uncertainty,
     HiddenManually,
-    Calculation,
-    InterimFields,
 ))
 
 
@@ -303,22 +278,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             starttime = part.getDateReceived()
             duetime = starttime + max_days if starttime else ''
             return duetime
-
-    @security.public
-    def getCalculationTitle(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.Title()
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
 
     @security.public
     def getSampleTypeUID(self):

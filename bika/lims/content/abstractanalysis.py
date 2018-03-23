@@ -21,7 +21,8 @@ from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.widgets import DateTimeWidget, RecordsWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.content.reflexrule import doReflexRuleAction
@@ -130,6 +131,31 @@ Verificators = StringField(
     default=''
 )
 
+# Routine Analyses and Reference Analysis have a versioned link to
+# the calculation at creation time.
+Calculation = HistoryAwareReferenceField(
+    'Calculation',
+    allowed_types=('Calculation',),
+    relationship='AnalysisCalculation',
+    referenceClass=HoldingReference
+)
+
+# InterimFields are defined in Calculations, Services, and Analyses.
+# In Analysis Services, the default values are taken from Calculation.
+# In Analyses, the default values are taken from the Analysis Service.
+# When instrument results are imported, the values in analysis are overridden
+# before the calculation is performed.
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Method',
+    widget=RecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Values can be entered here which will override the defaults "
+            "specified in the Calculation Interim Fields."),
+    )
+)
+
 schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
@@ -143,7 +169,9 @@ schema = schema.copy() + Schema((
     ResultDM,
     Retested,
     Uncertainty,
-    Verificators
+    Verificators,
+    Calculation,
+    InterimFields
 ))
 
 
@@ -1221,6 +1249,22 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         attachments = self.getAttachment()
         uids = [att.UID() for att in attachments]
         return uids
+
+    @security.public
+    def getCalculationTitle(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.Title()
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
 
     @security.public
     def remove_duplicates(self, ws):
