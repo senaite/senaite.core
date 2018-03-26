@@ -28,10 +28,11 @@ from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisRequest, IResultOutOfRange
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils import attachPdf, createPdf, encode_header, \
     format_supsub, \
@@ -1358,18 +1359,7 @@ class AnalysisRequestDigester:
             if analysis.portal_type == 'Analysis' \
             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
 
-        if analysis.portal_type == 'ReferenceAnalysis':
-            # The analysis is a Control or Blank. We might use the
-            # reference results instead other specs
-            uid = analysis.getServiceUID()
-            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
-
-        else:
-            # Get the specs directly from the analysis. The getResultsRange
-            # function already takes care about which are the specs to be used:
-            # AR, client or lab.
-            specs = analysis.getResultsRange()
-
+        specs = analysis.getResultsRange()
         andict['specs'] = specs
         scinot = self.context.bika_setup.getScientificNotationReport()
         fresult = analysis.getFormattedResult(
@@ -1396,14 +1386,11 @@ class AnalysisRequestDigester:
             analysis, analysis.getResult(), decimalmark=decimalmark,
             sciformat=int(scinot))
 
-        # Out of range?
-        if specs:
-            adapters = getAdapters((analysis,), IResultOutOfRange)
-            for name, adapter in adapters:
-                ret = adapter(specification=specs)
-                if ret and ret['out_of_range']:
-                    andict['outofrange'] = True
-                    break
+        # Out of range? Note is_out_of_range returns a tuple of two elements,
+        # were the first returned value is a bool that indicates if the result
+        # is out of range. The second value (dismissed here) is a bool that
+        # indicates if the result is out of shoulders
+        andict['outofrange'] = is_out_of_range(analysis)[0]
         return andict
 
     def _qcanalyses_data(self, ar, analysis_states=None):

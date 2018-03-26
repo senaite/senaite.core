@@ -6,28 +6,29 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
-from DateTime import DateTime
 from operator import itemgetter
 
-from bika.lims import bikaMessageFactory as _
+from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api, logger
+from bika.lims import bikaMessageFactory as _
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import (IAnalysisRequest, IFieldIcons,
-                                  IResultOutOfRange, IRoutineAnalysis)
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.permissions import (AddAnalysis, EditFieldResults, EditResults,
+                                  IRoutineAnalysis)
+from bika.lims.permissions import (EditFieldResults, EditResults,
                                    ViewResults, ViewRetractedAnalyses)
-from bika.lims.utils import (check_permission, dicts_to_dict, format_supsub,
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import (check_permission, format_supsub,
                              formatDecimalMark, get_image, get_link, getUsers,
                              t)
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import isActive, wasTransitionPerformed
 from plone.memoize import view as viewcache
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapters
 
 
@@ -296,47 +297,6 @@ class AnalysesView(BikaListingView):
             return api.get_object(brain_or_object_or_uid)
         return None
 
-    def get_analysis_spec(self, analysis):
-        """Returns the dictionary with the result specifications (min, max,
-        error, etc.) that apply to the passed in Analysis or ReferenceAnalysis.
-
-        If no specifications are found, returns a basic specifications dict
-        with the following structure:
-
-            {'keyword': <analysis_service_keyword,
-             'uid': <analysis_uid>,
-             'min': ''
-             'max': ''
-             'error': ''}
-
-        :param analysis: A single Analysis brain or Content object
-        :type analysis: bika.lims.content.analysis.Analysis
-                        bika.lims.content.referenceanalysis.ReferenceAnalysis
-                        CatalogBrain
-        :return: The result specifications that apply to the Analysis.
-        :rtype: dict
-        """
-        if api.is_brain(analysis):
-            # This is a brain
-            uid = analysis.UID
-            keyword = analysis.getKeyword
-            results_range = analysis.getResultsRange
-        else:
-            # This is an object
-            uid = analysis.UID()
-            keyword = analysis.getKeyword()
-            results_range = analysis.getResultsRange()
-
-        default = {'keyword': keyword, 'uid': uid,
-                   'min': '', 'max': '', 'error': ''}
-        results_range = results_range or default
-        if isinstance(results_range, list):
-            # Convert the list of dicts to a dictionary
-            # TODO: Is this required? Why?
-            results_range = dicts_to_dict(results_range, 'keyword')
-            results_range = results_range.get(keyword, None) or default
-        return results_range
-
     @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
         """Returns a vocabulary with all the methods available for the passed in
@@ -427,29 +387,6 @@ class AnalysesView(BikaListingView):
             results.append({'ResultValue': analyst_id,
                             'ResultText': analyst_name})
         return results
-
-    def ResultOutOfRange(self, analysis):
-        """Template wants to know, is this analysis out of range?
-
-        We scan IResultOutOfRange adapters, and return True if any IAnalysis
-        adapters trigger a result.
-
-        :param analysis: A single Analysis brain or Content object
-        :returns: True/False
-        """
-        spec = self.get_analysis_spec(analysis)
-        # The function get_analysis_spec ALWAYS return a dict. If no specs
-        # are found for the analysis, returns a dict with empty values for
-        # min and max keys.
-        if not spec or (not spec.get('min') and not spec.get('max')):
-            return False
-        # The analysis has specs defined, evaluate if is out of range
-        adapters = getAdapters((analysis,), IResultOutOfRange)
-        for name, adapter in adapters:
-            if adapter(specification=spec):
-                return True
-        # By default, not out of range
-        return False
 
     def load_analysis_categories(self):
         # Getting analysis categories
@@ -986,20 +923,31 @@ class AnalysesView(BikaListingView):
         defin = defin % (uid, json.dumps(defaults))
         item['after']['DetectionLimit'] = defin
 
-    def _folder_item_specifications(self, obj, item):
+    def _folder_item_specifications(self, analysis_brain, item):
+        """Set the results range to the item passed in"""
         # Everyone can see valid-ranges
         item['Specification'] = ''
-        spec = self.get_analysis_spec(obj)
-        if not spec:
+        results_range = analysis_brain.getResultsRange
+        if not results_range:
             return
-        min_val = spec.get('min', '')
-        min_str = ">{0}".format(min_val) if min_val else ''
-        max_val = spec.get('max', '')
-        max_str = "<{0}".format(max_val) if max_val else ''
-        error_val = spec.get('error', '')
-        error_str = "{0}%".format(error_val) if error_val else ''
-        rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
-        item['Specification'] = rngstr
+        min_str = results_range.get('min', '')
+        max_str = results_range.get('max', '')
+        min_str = api.is_floatable(min_str) and "{0}".format(min_str) or ""
+        max_str = api.is_floatable(max_str) and "{0}".format(max_str) or ""
+        specs = ", ".join([val for val in [min_str, max_str] if val])
+        if not specs:
+            return
+        item["Specification"] = "[{}]".format(specs)
+
+        # Show an icon if out of range
+        out_range, out_shoulders = is_out_of_range(analysis_brain)
+        if not out_range:
+            return
+        # At least is out of range
+        img = get_image("exclamation.png", title=_("Result out of range"))
+        if not out_shoulders:
+            img = get_image("warning.png", title=_("Result in shoulder range"))
+        self._append_html_element(item, "Result", img)
 
     def _folder_item_verify_icons(self, analysis_brain, item):
         """Set the analysis' verification icons to the item passed in.

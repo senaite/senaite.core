@@ -130,21 +130,18 @@ class AddAnalysesView(BikaListingView):
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/add_analyses")
 
+        filter_mapping = {
+            "FilterByCategory": "getCategoryUID",
+            "FilterByService": "getServiceUID",
+            "FilterByClient": "getClientUID",
+        }
 
-        # Always apply filter elements
-        # Note that the name of those fields is '..Title', but we
-        # are getting their UID.
-        category = form.get('FilterByCategory', '')
-        if category:
-            self.contentFilter['getCategoryUID'] = category
-
-        service = form.get('FilterByService', '')
-        if service:
-            self.contentFilter['getServiceUID'] = service
-
-        client = form.get('FilterByClient', '')
-        if client:
-            self.contentFilter['getClientUID'] = client
+        for filter_key, cat_index in filter_mapping.items():
+            form_key = "{}_{}".format(self.form_id, filter_key)
+            value = form.get(form_key)
+            if value is None:
+                continue
+            self.contentFilter[cat_index] = value
 
         self.update()
 
@@ -153,27 +150,6 @@ class AddAnalysesView(BikaListingView):
             return self.contents_table()
         else:
             return self.template()
-
-    def GET_url(self, include_current=True, **kwargs):
-        """Handler for the "Show More" Button
-        """
-        url = super(AddAnalysesView, self).GET_url(include_current=include_current, **kwargs)
-        form = self.request.form
-
-        # Remember the Client filtering when clicking show more...
-        client = form.get('FilterByClient', '')
-        if client:
-            url += "&FilterByClient={}".format(client)
-
-        category = form.get('FilterByCategory', '')
-        if category:
-            url += "&FilterByCategory={}".format(client)
-
-        service = form.get('FilterByService', '')
-        if service:
-            url += "&FilterByService={}".format(client)
-
-        return url
 
     def isItemAllowed(self, obj):
         """

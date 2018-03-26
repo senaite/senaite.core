@@ -19,17 +19,22 @@ import traceback
 title = "Roche Cobas - Taqman - 48"
 
 
-class RocheCobasTaqmanRSFParser(InstrumentCSVResultsFileParser):
-    def __init__(self, rsf):
+class RocheCobasTaqmanParser(InstrumentCSVResultsFileParser):
+
+    def __init__(self, rsf, fileformat=None):
         InstrumentCSVResultsFileParser.__init__(self, rsf)
         self._columns = []  # The different columns names
         self._values = {}  # The analysis services from the same resid
         self._resid = ''  # A stored resid
         self._rownum = None
         self._end_header = False
+        self._fileformat = fileformat
+        self._separator = ',' if self._fileformat == 'csv' else '\t'
 
     def _parseline(self, line):
-        sline = line.replace('"', '').split('\t')
+
+        sline = line.replace('"', '').split(self._separator)
+
         if len(sline) > 0 and not self._end_header:
             self._columns = sline
             self._end_header = True
@@ -113,7 +118,9 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     if fileformat == 'rsf':
-        parser = RocheCobasTaqmanRSFParser(infile)
+        parser = RocheCobasTaqmanParser(infile)
+    if fileformat == 'csv':
+        parser = RocheCobasTaqmanParser(infile, "csv")
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
@@ -166,7 +173,7 @@ def Import(context, request):
 
     return json.dumps(results)
 
-class BeckmancoulterAccess2RSFParser(RocheCobasTaqmanRSFParser):
+class BeckmancoulterAccess2RSFParser(RocheCobasTaqmanParser):
     def getAttachmentFileType(self):
         return "Roche Cobas Taqman 48"
 

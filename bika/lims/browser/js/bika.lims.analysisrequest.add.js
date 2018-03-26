@@ -122,7 +122,8 @@
       // Analysis Specification changed
       $("body").on("change", "input.min", this.on_analysis_specification_changed);
       $("body").on("change", "input.max", this.on_analysis_specification_changed);
-      $("body").on("change", "input.err", this.on_analysis_specification_changed);
+      $("body").on("change", "input.warn_min", this.on_analysis_specification_changed);
+      $("body").on("change", "input.warn_max", this.on_analysis_specification_changed);
       // Analysis lock button clicked
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       // Analysis info button clicked
@@ -805,7 +806,7 @@
     }
 
     set_service_spec(arnum, uid, spec) {
-      var el, err, max, min;
+      var el, max, min, warn_max, warn_min;
       /*
        * Set the specification of the service
        */
@@ -814,10 +815,12 @@
       el = $(`div#${uid}-${arnum}-specifications`);
       min = $(".min", el);
       max = $(".max", el);
-      err = $(".err", el);
+      warn_min = $(".warn_min", el);
+      warn_max = $(".warn_max", el);
       min.val(spec.min);
       max.val(spec.max);
-      return err.val(spec.error);
+      warn_min.val(spec.warn_min);
+      return warn_max.val(spec.warn_max);
     }
 
     get_service(uid) {

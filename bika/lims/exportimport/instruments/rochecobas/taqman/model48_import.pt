@@ -6,6 +6,7 @@
     <label for='rochecobas_taqman_model48_format'>Format</label>&nbsp;
     <select name="rochecobas_taqman_model48_format" id="rochecobas_taqman_model48_format">
         <option value='rsf'>RFS</option>
+        <option value='csv'>CSV</option>
     </select>
     <p></p>
     <h3>Advanced options</h3>

@@ -139,11 +139,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-
-    <!-- Adapters -->
-    <adapter
-      for="bika.lims.interfaces.IWorksheet"
-      factory="bika.lims.browser.worksheet.adapters.ResultOutOfRangeAdapter"
-    />
-
 </configure>
