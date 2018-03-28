@@ -26,6 +26,7 @@ Changelog
 
 **Fixed**
 
+- #750 Wrong redirect after Batch Label edit or creation
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
