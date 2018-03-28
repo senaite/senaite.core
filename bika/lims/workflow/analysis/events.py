@@ -6,6 +6,8 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import transaction
+from DateTime import DateTime
+
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims.interfaces import IRoutineAnalysis
@@ -209,3 +211,10 @@ def _reindex_request(obj, idxs=None):
         request.reindexObject()
     else:
         request.reindexObject(idxs=idxs)
+
+
+def after_publish(obj):
+    """ Sets Date Published Field.
+    """
+    obj.setDateAnalysisPublished(DateTime())
+    obj.reindexObject()

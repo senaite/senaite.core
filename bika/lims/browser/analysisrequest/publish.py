@@ -379,12 +379,6 @@ class AnalysisRequestPublishView(BrowserView):
             except WorkflowException:
                 pass
 
-            # Set Publshed Date of all Analyses of the AR
-            for an in ar.getAnalyses():
-                ar_obj = an.getObject()
-                ar_obj.setDateAnalysisPublished(DateTime())
-                ar_obj.reindexObject()
-
             # compose and send email.
             # The managers of the departments for which the current AR has
             # at least one AS must receive always the pdf report by email.
