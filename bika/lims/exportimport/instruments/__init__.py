@@ -20,7 +20,9 @@ from thermoscientific.arena import xt20
 from thermoscientific.multiskan import go
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
+from lachat import quickchem
 from lifetechnologies.qubit import qubit
+from metler.toledo import dl55
 from biodrop.ulite import ulite
 from tescan.tima import tima
 from sysmex.xs import i500, i1000
@@ -40,6 +42,8 @@ from rigaku.supermini import wxrf
 from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
+from varian.vistapro import icp
+
 
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
@@ -57,7 +61,9 @@ __all__ = ['abaxis.vetscan.vs2',
            # 'generic.xml',
            'genexpert.genexpert',
            'horiba.jobinyvon.icp',
+           'lachat.quickchem',
            'lifetechnologies.qubit.qubit',
+           'metler.toledo.dl55',
            'myself.myinstrument',
            'nuclisens.easyq',
            'panalytical.omnia.axios_xrf',
@@ -79,6 +85,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.arena.xt20',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
+           'varian.vistapro.icp',
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
@@ -99,12 +106,14 @@ PARSERS = [
            ['generic.two_dimension', 'TwoDimensionCSVParser'],
            # ['generic.xml', ''],
            ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
+           ['metler.toledo.dl55', 'MetlerToledoDL55Parser'],
            ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
-           ['rochecobas.taqman.model48', 'RocheCobasTaqmanRSFParser'],
+           ['rochecobas.taqman.model48', 'RocheCobasTaqmanParser'],
            ['rochecobas.taqman.model96', 'RocheCobasTaqmanRSFParser'],
            ['thermoscientific.arena.xt20', 'ThermoArena20XTRPRCSVParser'],
            ['thermoscientific.gallery.Ts9861x', 'ThermoGallery9861xTSVParser'],
            ['panalytical.omnia.axios_xrf', 'AxiosXrfCSVParser'],
+           ['lachat.quickchem', 'LaChatQuickCheckFIAParser'],
            ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
            ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
            ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],
@@ -122,6 +131,7 @@ PARSERS = [
            ['myself.myinstrument', 'MyInstrumentCSVParser'],
            ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
+           ['varian.vistapro.icp', 'VistaPROICPParser'],
            ]
 
 
