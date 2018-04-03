@@ -17,7 +17,6 @@ from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
 from zope.interface import implements
 
-from senaite import api as senaiteapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8
 from bika.lims import api
@@ -216,7 +215,7 @@ class InvoiceBatch_EndDate_Validator:
 
         enddate = _strptime(value, '%Y-%m-%d %H:%M')
 
-        translate = senaiteapi.get_tool('translation_service', instance).translate
+        translate = api.get_tool('translation_service', instance).translate
         if not enddate >= startdate:
             msg = _("Start date must be before End Date")
             return to_utf8(translate(msg))
