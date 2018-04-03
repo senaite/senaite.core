@@ -15,9 +15,11 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.ZCTextIndex.ParseTree import ParseError
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
+from zope.interface import implements
+
+from senaite import api as senaiteapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8
-from zope.interface import implements
 from bika.lims import api
 from bika.lims import logger
 
@@ -206,6 +208,7 @@ class InvoiceBatch_EndDate_Validator:
     def __call__(self, value, *args, **kwargs):
         instance = kwargs.get('instance')
         request = kwargs.get('REQUEST')
+
         if request:
             startdate = _strptime(request.form.get('BatchStartDate'), '%Y-%m-%d %H:%M')
         else:
@@ -213,7 +216,7 @@ class InvoiceBatch_EndDate_Validator:
 
         enddate = _strptime(value, '%Y-%m-%d %H:%M')
 
-        translate = getToolByName(instance, 'translation_service').translate
+        translate = senaiteapi.get_tool('translation_service', instance).translate
         if not enddate >= startdate:
             msg = _("Start date must be before End Date")
             return to_utf8(translate(msg))
