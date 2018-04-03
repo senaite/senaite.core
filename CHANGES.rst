@@ -15,6 +15,7 @@ Changelog
 
 **Changed**
 
+- #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
 - #694 Make getResultRange functions from Analysis-types consistent
 - #694 Out of range/shoulders icons are rendered in AnalysesView
@@ -26,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #734 Chameleon parse error in "Analyses performed and published as % of total", "Analyses summary per department" and "Data entry day book" productivity reports
 - #750 Wrong redirect after Batch Label edit or creation
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
