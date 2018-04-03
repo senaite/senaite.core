@@ -47,6 +47,12 @@ def upgrade(tool):
     # See PR#694
     remove_error_subfield_from_analysis_specs(portal, ut)
 
+    # reload type profiles so that the fix for
+    # https://github.com/senaite/senaite.core/issues/590
+    # becomes effective
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True

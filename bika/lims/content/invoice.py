@@ -22,32 +22,37 @@ from zope.interface import implements
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Client',
+    ReferenceField(
+        'Client',
         required=1,
         vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Client',),
         relationship='ClientInvoice',
     ),
-    ReferenceField('AnalysisRequest',
+    ReferenceField(
+        'AnalysisRequest',
         required=1,
         vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestInvoice',
     ),
-    ReferenceField('SupplyOrder',
+    ReferenceField(
+        'SupplyOrder',
         required=1,
         vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('SupplyOrder',),
         relationship='SupplyOrderInvoice',
     ),
-    DateTimeField('InvoiceDate',
+    DateTimeField(
+        'InvoiceDate',
         required=1,
         default_method='current_date',
         widget=DateTimeWidget(
             label=_("Date"),
         ),
     ),
-    TextField('Remarks',
+    TextField(
+        'Remarks',
         searchable=True,
         default_content_type='text/plain',
         allowed_content_types=('text/plain', ),
@@ -58,34 +63,39 @@ schema = BikaSchema.copy() + Schema((
             append_only=True,
         ),
     ),
-    ComputedField('Subtotal',
+    ComputedField(
+        'Subtotal',
         expression='context.getSubtotal()',
         widget=ComputedWidget(
             label=_("Subtotal"),
             visible=False,
         ),
     ),
-    ComputedField('VATAmount',
+    ComputedField(
+        'VATAmount',
         expression='context.getVATAmount()',
         widget=ComputedWidget(
             label=_("VAT Total"),
             visible=False,
         ),
     ),
-    ComputedField('Total',
+    ComputedField(
+        'Total',
         expression='context.getTotal()',
         widget=ComputedWidget(
             label=_("Total"),
             visible=False,
         ),
     ),
-    ComputedField('ClientUID',
+    ComputedField(
+        'ClientUID',
         expression='here.getClient() and here.getClient().UID()',
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-    ComputedField('InvoiceSearchableText',
+    ComputedField(
+        'InvoiceSearchableText',
         expression='here.getInvoiceSearchableText()',
         widget=ComputedWidget(
             visible=False,
@@ -156,5 +166,6 @@ class Invoice(BaseFolder):
     def current_date(self):
         """ return current date """
         return DateTime()
+
 
 registerType(Invoice, PROJECTNAME)
