@@ -1,6 +1,14 @@
 Release notes
 =============
 
+Update from 1.2.3 to 1.2.4
+--------------------------
+
+- This update requires the execution of `bin/buildout`, because WeasyPrint has
+  been updated to version 0.42.2:
+  http://weasyprint.readthedocs.io/en/stable/changelog.html#version-0-42-2
+
+
 Update from 1.2.2 to 1.2.3
 --------------------------
 

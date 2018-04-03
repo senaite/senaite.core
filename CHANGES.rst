@@ -6,11 +6,16 @@ Changelog
 
 **Added**
 
+- #741 CSV Importer for 'Cobas Taqman 48' Instrument Interface
+- #737 Added Instrument: Metler Toledo DL55
+- #730 Added Instrument: LaChat QuickChem FIA
+- #729 Added Instrument: Varian Vista-PRO ICP
 - #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
 **Changed**
 
+- #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
 - #694 Make getResultRange functions from Analysis-types consistent
 - #694 Out of range/shoulders icons are rendered in AnalysesView
@@ -22,6 +27,10 @@ Changelog
 
 **Fixed**
 
+- #734 Chameleon parse error in "Analyses performed and published as % of total", "Analyses summary per department" and "Data entry day book" productivity reports
+- #750 Wrong redirect after Batch Label edit or creation
+- #721 Fix filter functionality of Worksheets after sort/pagination
+- #738 Traceback when Invalidating Analysis Requests
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
 - #694 Bad calculation of min and max in ReferenceResults on negative result
 - #694 Instrument validity not updated in accordance with latest QC tests
