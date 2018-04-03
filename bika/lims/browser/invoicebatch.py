@@ -9,7 +9,7 @@ from senaite import api
 
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import currency_format, get_link
+from bika.lims.utils import currency_format, get_link, get_email_link
 import csv
 from cStringIO import StringIO
 
@@ -116,8 +116,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
             item['client'] = client.Title()
             item['replace']['client'] = get_link(client.absolute_url(), item['client'])
             item['email'] = client.getEmailAddress()
-            item['replace']['email'] = get_link('mailto:%s' % client.getEmailAddress(),
-                                                client.getEmailAddress())
+            item['replace']['email'] = get_email_link(client.getEmailAddress())
             item['phone'] = client.getPhone()
         else:
             item['client'] = ''
