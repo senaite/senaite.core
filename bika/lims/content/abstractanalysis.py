@@ -86,15 +86,6 @@ Retested = BooleanField(
     default=False
 )
 
-# When the AR is published, the date of publication is recorded here.
-# It's used to populate catalog values.
-DateAnalysisPublished = DateTimeField(
-    'DateAnalysisPublished',
-    widget=DateTimeWidget(
-        label=_("Date Published")
-    )
-)
-
 # If the result is outside of the detection limits of the method or instrument,
 # the operand (< or >) is stored here.  For routine analyses this is taken
 # from the Result, if the result entered explicitly startswith "<" or ">"
@@ -134,7 +125,6 @@ schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
     Attachment,
-    DateAnalysisPublished,
     DetectionLimitOperand,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
     NumberOfRequiredVerifications,
@@ -1221,6 +1211,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         attachments = self.getAttachment()
         uids = [att.UID() for att in attachments]
         return uids
+
+    @security.public
+    def getDateAnalysisPublished(self):
+        """
+        Returns the date when the "publish" transition took place for this
+        object.
+        """
+        return getTransitionDate(self, 'publish', return_as_datetime=True)
 
     @security.public
     def remove_duplicates(self, ws):

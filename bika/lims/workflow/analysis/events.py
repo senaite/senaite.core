@@ -211,10 +211,3 @@ def _reindex_request(obj, idxs=None):
         request.reindexObject()
     else:
         request.reindexObject(idxs=idxs)
-
-
-def after_publish(obj):
-    """ Sets Date Published Field.
-    """
-    obj.setDateAnalysisPublished(DateTime())
-    obj.reindexObject()
