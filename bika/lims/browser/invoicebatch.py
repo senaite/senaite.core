@@ -114,13 +114,10 @@ class InvoiceBatchInvoicesView(BikaListingView):
         client = obj.getClient()
         if client:
             item['client'] = client.Title()
-            item['replace']['client'] = "<a href='%s'>%s</a>" % (
-                client.absolute_url(), item['client']
-            )
+            item['replace']['client'] = get_link(client.absolute_url(), item['client'])
             item['email'] = client.getEmailAddress()
-            item['replace']['email'] = "<a href='%s'>%s</a>" % (
-                'mailto:%s' % client.getEmailAddress(), client.getEmailAddress()
-            )
+            item['replace']['email'] = get_link('mailto:%s' % client.getEmailAddress(),
+                                                client.getEmailAddress())
             item['phone'] = client.getPhone()
         else:
             item['client'] = ''
