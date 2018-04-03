@@ -26,6 +26,7 @@ Changelog
 
 **Fixed**
 
+- #752 Published Date field of Analyses is never set
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
