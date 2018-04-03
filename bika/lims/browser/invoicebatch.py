@@ -9,7 +9,7 @@ from senaite import api
 
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import currency_format
+from bika.lims.utils import currency_format, get_link
 import csv
 from cStringIO import StringIO
 
@@ -110,10 +110,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
         :return: dictionary with the updated fields of the invoice being processed
         """
         currency = currency_format(self.context, 'en')
-        number_link = "<a href='%s'>%s</a>" % (
-            item['url'], obj.getId()
-        )
-        item['replace']['id'] = number_link
+        item['replace']['id'] = get_link(api.get_url(obj), obj.getId())
         if obj.getClient():
             item['client'] = obj.getClient().Title()
             item['replace']['client'] = "<a href='%s'>%s</a>" % (
