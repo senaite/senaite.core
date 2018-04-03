@@ -6,8 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import transaction
-from DateTime import DateTime
-
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims.interfaces import IRoutineAnalysis
