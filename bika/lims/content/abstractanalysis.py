@@ -1213,14 +1213,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return uids
 
     @security.public
-    def getDateAnalysisPublished(self):
-        """
-        Returns the date when the "publish" transition took place for this
-        object.
-        """
-        return getTransitionDate(self, 'publish', return_as_datetime=True)
-
-    @security.public
     def remove_duplicates(self, ws):
         """When this analysis is unassigned from a worksheet, this function
         is responsible for deleting DuplicateAnalysis objects from the ws.
