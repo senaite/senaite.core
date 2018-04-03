@@ -111,16 +111,17 @@ class InvoiceBatchInvoicesView(BikaListingView):
         """
         currency = currency_format(self.context, 'en')
         item['replace']['id'] = get_link(api.get_url(obj), obj.getId())
-        if obj.getClient():
-            item['client'] = obj.getClient().Title()
+        client = obj.getClient()
+        if client:
+            item['client'] = client.Title()
             item['replace']['client'] = "<a href='%s'>%s</a>" % (
-                obj.getClient().absolute_url(), item['client']
+                client.absolute_url(), item['client']
             )
-            item['email'] = obj.getClient().getEmailAddress()
+            item['email'] = client.getEmailAddress()
             item['replace']['email'] = "<a href='%s'>%s</a>" % (
-                'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
+                'mailto:%s' % client.getEmailAddress(), client.getEmailAddress()
             )
-            item['phone'] = obj.getClient().getPhone()
+            item['phone'] = client.getPhone()
         else:
             item['client'] = ''
             item['email'] = ''
