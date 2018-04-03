@@ -209,7 +209,7 @@ class InvoiceBatch_EndDate_Validator:
         instance = kwargs.get('instance')
         request = kwargs.get('REQUEST')
 
-        if request:
+        if request and request.form.get('BatchStartDate'):
             startdate = _strptime(request.form.get('BatchStartDate'), '%Y-%m-%d %H:%M')
         else:
             startdate = _strptime(instance.getBatchStartDate(), '%Y-%m-%d %H:%M')
