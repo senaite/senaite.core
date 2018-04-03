@@ -8,6 +8,7 @@
 import re
 import string
 import types
+from time import strptime as _strptime
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -203,15 +204,16 @@ class InvoiceBatch_EndDate_Validator:
     name = "invoicebatch_EndDate_validator"
 
     def __call__(self, value, *args, **kwargs):
-        instance = kwargs['instance']
-        startdate = instance.getBatchStartDate()
-        # request = kwargs.get('REQUEST', {})
-        # form = request.get('form', {})
-        enddate = value
-        startdate = startdate.strftime('%Y-%m-%d %H:%M')
+        instance = kwargs.get('instance')
+        request = kwargs.get('REQUEST')
+        if request:
+            startdate = _strptime(request.form.get('BatchStartDate'), '%Y-%m-%d %H:%M')
+        else:
+            startdate = _strptime(instance.getBatchStartDate(), '%Y-%m-%d %H:%M')
+
+        enddate = _strptime(value, '%Y-%m-%d %H:%M')
 
         translate = getToolByName(instance, 'translation_service').translate
-
         if not enddate >= startdate:
             msg = _("Start date must be before End Date")
             return to_utf8(translate(msg))
