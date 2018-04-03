@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #760 Default to empty the Title field when creating a new Analysis Specification (it was showing the UID).
 - #734 Chameleon parse error in "Analyses performed and published as % of total", "Analyses summary per department" and "Data entry day book" productivity reports
 - #750 Wrong redirect after Batch Label edit or creation
 - #721 Fix filter functionality of Worksheets after sort/pagination
