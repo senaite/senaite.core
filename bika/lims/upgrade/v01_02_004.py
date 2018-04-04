@@ -95,6 +95,19 @@ def reindex_reference_analysis(portal, ut):
     # have been added on ReferenceAnalysis
     catalog = api.get_tool('bika_analysis_catalog')
     brains = catalog(portal_type='ReferenceAnalysis')
+    exclude_states = ['to_be_verified', 'verified', 'published']
     for brain in brains:
-        obj = brain.getObject()
-        obj.reindexObject()
+        if brain.review_state in exclude_states:
+            continue
+        analysis = api.get_object(brain)
+        # Assign calculation and interims
+        service = analysis.getAnalysisService()
+        service = api.get_object(service)
+        calc = service.getCalculation()
+        if not calc:
+            # No calculation, no need to reindex!
+            continue
+        analysis.setCalculation(calc)
+        analysis.setInterimFields(calc.getInterimFields())
+        analysis.reindexObject()
+        logger.info("Updated Analysis '%s'  with calculation '%s'" % (analysis.Title(), calc.Title()))
