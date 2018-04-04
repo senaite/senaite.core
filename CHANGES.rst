@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #735 Interim fields not created for QC Analyses on WSs
 - #752 Published Date field of Analyses is never set
 - #760 Default to empty the Title field when creating a new Analysis Specification (it was showing the UID)

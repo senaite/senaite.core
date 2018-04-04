@@ -9,6 +9,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
 from Products.ATExtensions.widget.records import RecordsWidget
 
+
 class WorksheetTemplateLayoutWidget(RecordsWidget):
     security = ClassSecurityInfo()
     _properties = RecordsWidget._properties.copy()
@@ -20,8 +21,10 @@ class WorksheetTemplateLayoutWidget(RecordsWidget):
 
     security.declarePublic('get_template_rows')
     def get_template_rows(self, num_positions, current_field_value):
-        try: num_pos = int(num_positions)
-        except ValueError: num_pos = 10
+        try:
+            num_pos = int(num_positions)
+        except ValueError:
+            num_pos = 10
 
         rows = []
         i = 1
@@ -40,7 +43,9 @@ class WorksheetTemplateLayoutWidget(RecordsWidget):
             rows.append(row)
         return rows
 
-registerWidget(WorksheetTemplateLayoutWidget,
-               title = 'WS Template Analyses Layout',
-               description = ('Worksheet analyses layout.'),
-               )
+
+registerWidget(
+    WorksheetTemplateLayoutWidget,
+    title='WS Template Analyses Layout',
+    description=('Worksheet analyses layout.'),
+)
