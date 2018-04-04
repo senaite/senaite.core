@@ -48,10 +48,10 @@ Available attributes:
 
    footlines {
        Total: {
-           Created,    	-- total count of ARs created
-           Received,		-- total count of ARs received
-           Published,		-- total count of ARs published
-           ReceivedCreatedRatio, -- ratio of AR received amongst created
+           Created,                 - total count of ARs created
+           Received,                - total count of ARs received
+           Published,               - total count of ARs published
+           ReceivedCreatedRatio,    - ratio of AR received amongst created
            ReceivedCreatedRatioPercentage,
            PublishedCreatedRatio,
            PublishedCreatedRatioPercentage

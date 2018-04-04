@@ -60,13 +60,11 @@ class Report(BrowserView):
         for sample in samples:
             sample = sample.getObject()
 
-            # For each sample, retrieve check is has results published
-            # and add it to datalines
+            # Check if the sample has at least one Analysis Request published
             published = False
-            analyses = sample.getAnalyses({})
-            for analysis in analyses:
-                analysis = analysis.getObject()
-                if not (analysis.getDateAnalysisPublished() is None):
+            for ar in sample.getAnalysisRequests():
+                datepublished = ar.getDatePublished()
+                if datepublished:
                     published = True
                     break
 
