@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -32,6 +33,9 @@ def upgrade(tool):
     ut.addIndex(CATALOG_WORKSHEET_LISTING, 'getDepartmentUIDs', 'KeywordIndex')
     # Required by https://github.com/senaite/senaite.core/issues/683
     ut.addIndexAndColumn('bika_catalog', 'getBatchUIDs', 'KeywordIndex')
+    # Required by https://github.com/senaite/senaite.core/pulls/752
+    ut.delIndex(CATALOG_ANALYSIS_LISTING, 'getDateAnalysisPublished')
+
     ut.refreshCatalogs()
 
     # % Error subfield is meaningless in result ranges. Also, the system was
@@ -47,8 +51,17 @@ def upgrade(tool):
     # See PR#694
     remove_error_subfield_from_analysis_specs(portal, ut)
 
-    # ReIndex ReferenceAnalysis
+    # Reindex ReferenceAnalysis because of Calculation and Interims fields have
+    # been added to Controls and Blanks. Until now, only routine analyses allowed
+    # Calculations and Interim fields
+    # Required by https://github.com/senaite/senaite.core/issues/735
     reindex_reference_analysis(portal, ut)
+
+    # reload type profiles so that the fix for
+    # https://github.com/senaite/senaite.core/issues/590
+    # becomes effective
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
 
     logger.info("{0} upgraded to version {1}".format(product, version))
 

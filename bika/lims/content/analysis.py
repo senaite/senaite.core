@@ -69,7 +69,7 @@ class Analysis(AbstractRoutineAnalysis):
         AR workflow_script_publish method and, if there are enough
         analyses, it will result in "RuntimeError: maximum recursion
         depth exceeded"
-        """ 
+        """
         pass
 
 registerType(Analysis, PROJECTNAME)

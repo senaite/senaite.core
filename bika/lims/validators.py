@@ -8,15 +8,17 @@
 import re
 import string
 import types
+from time import strptime as _strptime
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.ZCTextIndex.ParseTree import ParseError
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8
-from zope.interface import implements
 from bika.lims import api
 from bika.lims import logger
 
@@ -203,15 +205,17 @@ class InvoiceBatch_EndDate_Validator:
     name = "invoicebatch_EndDate_validator"
 
     def __call__(self, value, *args, **kwargs):
-        instance = kwargs['instance']
-        startdate = instance.getBatchStartDate()
-        # request = kwargs.get('REQUEST', {})
-        # form = request.get('form', {})
-        enddate = value
-        startdate = startdate.strftime('%Y-%m-%d %H:%M')
+        instance = kwargs.get('instance')
+        request = kwargs.get('REQUEST')
 
-        translate = getToolByName(instance, 'translation_service').translate
+        if request and request.form.get('BatchStartDate'):
+            startdate = _strptime(request.form.get('BatchStartDate'), '%Y-%m-%d %H:%M')
+        else:
+            startdate = _strptime(instance.getBatchStartDate(), '%Y-%m-%d %H:%M')
 
+        enddate = _strptime(value, '%Y-%m-%d %H:%M')
+
+        translate = api.get_tool('translation_service', instance).translate
         if not enddate >= startdate:
             msg = _("Start date must be before End Date")
             return to_utf8(translate(msg))

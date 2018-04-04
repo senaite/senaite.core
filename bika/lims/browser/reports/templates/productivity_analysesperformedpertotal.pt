@@ -63,8 +63,8 @@ Available attributes:
 
    footlines {
        Total: {
-           Requested,    	-- total requested analyses count
-           Published,		-- total published analyses count
+           Requested,    	- total requested analyses count
+           Published,		- total published analyses count
            PerformedRequestedRatio,
            PerformedRequestedRatioPercentage,
            PublishedPerformedRatio,
