@@ -51,6 +51,12 @@ def upgrade(tool):
     # See PR#694
     remove_error_subfield_from_analysis_specs(portal, ut)
 
+    # Reindex ReferenceAnalysis because of Calculation and Interims fields have
+    # been added to Controls and Blanks. Until now, only routine analyses allowed
+    # Calculations and Interim fields
+    # Required by https://github.com/senaite/senaite.core/issues/735
+    reindex_reference_analysis(portal, ut)
+
     # reload type profiles so that the fix for
     # https://github.com/senaite/senaite.core/issues/590
     # becomes effective
@@ -82,3 +88,26 @@ def remove_error_subfield_from_analysis_specs(portal, ut):
                 spec['warn_max'] = str(warn_max)
                 del spec['error']
         specs.setResultsRange(specs_rr)
+
+
+def reindex_reference_analysis(portal, ut):
+    # Update ReferenceAnalysis because new fields(Calculation & InterimFields)
+    # have been added on ReferenceAnalysis
+    catalog = api.get_tool('bika_analysis_catalog')
+    brains = catalog(portal_type='ReferenceAnalysis')
+    exclude_states = ['to_be_verified', 'verified', 'published']
+    for brain in brains:
+        if brain.review_state in exclude_states:
+            continue
+        analysis = api.get_object(brain)
+        # Assign calculation and interims
+        service = analysis.getAnalysisService()
+        service = api.get_object(service)
+        calc = service.getCalculation()
+        if not calc:
+            # No calculation, no need to reindex!
+            continue
+        analysis.setCalculation(calc)
+        analysis.setInterimFields(calc.getInterimFields())
+        analysis.reindexObject()
+        logger.info("Updated Analysis '%s'  with calculation '%s'" % (analysis.Title(), calc.Title()))
