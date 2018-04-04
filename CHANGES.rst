@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #760 Default to empty the Title field when creating a new Analysis Specification (it was showing the UID)
 - #759 Date error raised in invoice batch creation although End date is after Start date
 - #743 Traceback when accessing the view of a Statement
