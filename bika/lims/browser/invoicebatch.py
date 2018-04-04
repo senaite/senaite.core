@@ -5,52 +5,82 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
+
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import currency_format
+from bika.lims.utils import currency_format, get_link, get_email_link
 import csv
 from cStringIO import StringIO
+
 
 class InvoiceBatchInvoicesView(BikaListingView):
 
     def __init__(self, context, request):
         super(InvoiceBatchInvoicesView, self).__init__(context, request)
-        self.contentFilter = {}
+        self.contentFilter = {
+            'portal_type': 'Invoice',
+            'path': {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level": 0
+            },
+        }
         self.title = context.Title()
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
+        self.show_all = True
         self.pagesize = 25
         request.set('disable_border', 1)
         self.context_actions = {}
         self.columns = {
-            'id': {'title': _('Invoice Number'),
-                'toggle': True },
-            'client': {'title': _('Client'),
-                'toggle': True},
-            'email': {'title': _('Email Address'),
-                'toggle': False},
-            'phone': {'title': _('Phone'),
-                'toggle': False},
-            'invoicedate': {'title': _('Invoice Date'),
-                'toggle': True},
-            'startdate': {'title': _('Start Date'),
-                'toggle': False},
-            'enddate': {'title': _('End Date'),
-                'toggle': False},
-            'subtotal': {'title': _('Subtotal'),
-                'toggle': False},
-            'vatamount': {'title': _('VAT'),
-                'toggle': False},
-            'total': {'title': _('Total'),
-                'toggle': True},
-            }
+            'id': {
+                'title': _('Invoice Number'),
+                'toggle': True
+            },
+            'client': {
+                'title': _('Client'),
+                'toggle': True
+            },
+            'email': {
+                'title': _('Email Address'),
+                'toggle': False
+            },
+            'phone': {
+                'title': _('Phone'),
+                'toggle': False
+            },
+            'invoicedate': {
+                'title': _('Invoice Date'),
+                'toggle': True
+            },
+            'startdate': {
+                'title': _('Start Date'),
+                'toggle': False
+            },
+            'enddate': {
+                'title': _('End Date'),
+                'toggle': False
+            },
+            'subtotal': {
+                'title': _('Subtotal'),
+                'toggle': False
+            },
+            'vatamount': {
+                'title': _('VAT'),
+                'toggle': False
+            },
+            'total': {
+                'title': _('Total'),
+                'toggle': True
+            },
+        }
         self.review_states = [
             {
                 'id': 'default',
-                'contentFilter': {},
+                'contentFilter': self.contentFilter,
                 'title': _('Default'),
                 'transitions': [],
                 'columns': [
@@ -68,56 +98,39 @@ class InvoiceBatchInvoicesView(BikaListingView):
             },
         ]
 
-    def getInvoices(self, contentFilter):
-        return self.context.objectValues('Invoice')
+    def folderitem(self, obj, item, idx):
+        """
+        Replace or add the required/wanted fields for each invoice
+        in the item dictionary
 
-    # def __call__(self):
-    #     mtool = getToolByName(self.context, 'portal_membership')
-    #     addPortalMessage = self.context.plone_utils.addPortalMessage
-    #     if mtool.checkPermission(AddInvoice, self.context):
-    #         clients = self.context.clients.objectIds()
-    #         if clients:
-    #             self.context_actions[_('Add')] = {
-    #                 'url': 'createObject?type_name=Invoice',
-    #                 'icon': '++resource++bika.lims.images/add.png'
-    #             }
-    #     return super(InvoiceBatchInvoicesView, self).__call__()
-
-    def folderitems(self, full_objects=False):
+        :param obj: the instance of the class to be foldered. In our case, an
+                    Invoice
+        :param item: dict containing the properties of the object to be used by
+                     the template
+        :return: dictionary with the updated fields of the invoice being processed
+        """
         currency = currency_format(self.context, 'en')
-        self.show_all = True
-        self.contentsMethod = self.getInvoices
-        items = BikaListingView.folderitems(self, full_objects)
-        for item in items:
-            obj = item['obj']
-            number_link = "<a href='%s'>%s</a>" % (
-                item['url'], obj.getId()
-            )
-            item['replace']['id'] = number_link
-            
-            if obj.getClient():
-                item['client'] = obj.getClient().Title()
-                item['replace']['client'] = "<a href='%s'>%s</a>" % (
-                    obj.getClient().absolute_url(), obj.getClient().Title()
-                )
+        item['replace']['id'] = get_link(api.get_url(obj), obj.getId())
+        client = obj.getClient()
+        if client:
+            item['client'] = client.Title()
+            item['replace']['client'] = get_link(client.absolute_url(), item['client'])
+            item['email'] = client.getEmailAddress()
+            item['replace']['email'] = get_email_link(client.getEmailAddress())
+            item['phone'] = client.getPhone()
+        else:
+            item['client'] = ''
+            item['email'] = ''
+            item['phone'] = ''
 
-                item['email'] = obj.getClient().getEmailAddress()
-                item['replace']['email'] = "<a href='%s'>%s</a>" % (
-                    'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
-                )
-                item['phone'] = obj.getClient().getPhone()
-            else:
-                item['client'] = ''
-                item['email'] = ''
-                item['phone'] = ''
-            
-            item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
-            item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
-            item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
-            item['subtotal'] = currency(obj.getSubtotal())
-            item['vatamount'] = currency(obj.getVATAmount())
-            item['total'] = currency(obj.getTotal())
-        return items
+        item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
+        item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
+        item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
+        item['subtotal'] = currency(obj.getSubtotal())
+        item['vatamount'] = currency(obj.getVATAmount())
+        item['total'] = currency(obj.getTotal())
+
+        return item
 
 
 class BatchFolderExportCSV(InvoiceBatchInvoicesView):
@@ -129,15 +142,18 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         the file to be streamed to the user.
         Nothing gets returned.
         """
-
         delimiter = ','
         filename = 'invoice_batch.txt'
         # Getting the invoice batch
         container = self.context
         assert container
         container.plone_log("Exporting InvoiceBatch to CSV format for PASTEL")
-        # Getting the invoice batch's invoices
-        invoices = self.getInvoices({})
+        # Getting the invoice batch's invoices:
+        # Since BatchFolderExportCSV does not provide an initializer method
+        # (__init__) then the base class initializer is called automatically
+        # and we can use the already defined contentFilter to retrieve the
+        # invoice batch invoices
+        invoices = map(api.get_object, api.search(self.contentFilter, 'portal_catalog'))
         if not len(invoices):
             container.plone_log("InvoiceBatch contains no entries")
 
@@ -195,8 +211,15 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         ramdisk.close()
         # stream file to browser
         setheader = RESPONSE.setHeader
-        setheader('Content-Length', len(result))
-        setheader('Content-Type',
-            'text/x-comma-separated-values')
-        setheader('Content-Disposition', 'inline; filename=%s' % filename)
+        setheader(
+            'Content-Length',
+            len(result)
+        )
+        setheader(
+            'Content-Type',
+            'text/x-comma-separated-values'
+        )
+        setheader(
+            'Content-Disposition',
+            'inline; filename=%s' % filename)
         RESPONSE.write(result)

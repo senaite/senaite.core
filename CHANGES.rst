@@ -16,6 +16,7 @@ Changelog
 **Changed**
 
 - #746 StringField to UIDReferenceField for Default Department of Lab Contact
+- #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
 - #694 Make getResultRange functions from Analysis-types consistent
 - #694 Out of range/shoulders icons are rendered in AnalysesView
@@ -27,6 +28,14 @@ Changelog
 
 **Fixed**
 
+- #761 Dormant Reference Definitions were listed for selection on WS Templates
+- #735 Interim fields not created for QC Analyses on WSs
+- #752 Published Date field of Analyses is never set
+- #760 Default to empty the Title field when creating a new Analysis Specification (it was showing the UID)
+- #759 Date error raised in invoice batch creation although End date is after Start date
+- #743 Traceback when accessing the view of a Statement
+- #734 Chameleon parse error in "Analyses performed and published as % of total", "Analyses summary per department" and "Data entry day book" productivity reports
+- #750 Wrong redirect after Batch Label edit or creation
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
@@ -36,6 +45,7 @@ Changelog
 - #723 Solve Traceback on Print Samples Sheet
 - #724 Department Filtering Portlet appears only for the manager with 'admin' username
 - #720 Make automatic sticker printing work with 'registered' option activated
+- #719 Fix interim fields result and calculation updating on the 2-Dimensional-CSV instrument
 - #716 Samples from inside Batch are not filtered correctly
 - #707 AR Add: Set default contact on client change
 - #700 Fix filtering by review state in aggregated list of analyses
