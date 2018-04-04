@@ -143,7 +143,7 @@ This service matches the service specified in the file from which the import wil
     >>> interims = [pest1, pest2, pest3]
     >>> interim_calc.setInterimFields(interims)
     >>> self.assertEqual(interim_calc.getInterimFields(), interims)
-    >>> interim_calc.setFormula('((([pest1] > 0.0) or ([pest2] > .05) or ([pest3] > 10.0) ) and "FAIL" or "PASS" )')
+    >>> interim_calc.setFormula('((([pest1] > 0.0) or ([pest2] > .05) or ([pest3] > 10.0) ) and "PASS" or "FAIL" )')
     >>> analysisservice5 = api.create(bika_analysisservices, 'AnalysisService', title='Total Terpenes', Keyword="TotalTerpenes")
     >>> analysisservice5.setUseDefaultCalculation(False)
     >>> analysisservice5.setCalculation(interim_calc)
@@ -239,8 +239,21 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     #TODO: Test for interim fields on other files aswell
     ...     if 'Parsing file generic.two_dimension.csv' in test_results['log']:
     ...         # Testing also for interim fields, only for `generic.two_dimension` interface
-    ...         if 'Import finished successfully: 1 ARs and 5 results updated' not in test_results['log']:
+    ...         # TODO: Test for - H2O-0001: calculated result for 'THCaCO3': '2.0'
+    ...         if 'Import finished successfully: 1 ARs and 3 results updated' not in test_results['log']:
     ...             self.fail("Results Update failed")
+    ...         if "H2O-0001 result for 'TotalTerpenes:pest1': '1'" not in test_results['log']:
+    ...             self.fail("pest1 did not get updated")
+    ...         if "H2O-0001 result for 'TotalTerpenes:pest2': '1'" not in test_results['log']:
+    ...             self.fail("pest2 did not get updated")
+    ...         if "H2O-0001 result for 'TotalTerpenes:pest3': '1'" not in test_results['log']:
+    ...             self.fail("pest3 did not get updated")
+    ...         analyses = ar.getAnalyses(full_objects=True)
+    ...         if an.getKeyword() ==  'TotalTerpenes':
+    ...             if an.getResult() != 'PASS':
+    ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
+    ...                 self.fail(msg)
+    ...
     ...     elif 'Import finished successfully: 1 ARs and 2 results updated' not in test_results['log']:
     ...         self.fail("Results Update failed")
     ...
@@ -251,6 +264,10 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
     ...                 self.fail(msg)
     ...         if an.getKeyword() ==  'Mg':
+    ...             if an.getResult() != '2.0':
+    ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
+    ...                 self.fail(msg)
+    ...         if an.getKeyword() ==  'THCaCO3':
     ...             if an.getResult() != '2.0':
     ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
     ...                 self.fail(msg)

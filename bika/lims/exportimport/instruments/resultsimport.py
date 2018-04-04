@@ -938,6 +938,7 @@ class AnalysisResultsImporter(Logger):
         # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
+            analysis.calculateResult(override=self._override[1])
 
         # Set result if present.
         res = values.get(defresultkey, '')
