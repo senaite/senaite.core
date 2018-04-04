@@ -86,15 +86,6 @@ Retested = BooleanField(
     default=False
 )
 
-# When the AR is published, the date of publication is recorded here.
-# It's used to populate catalog values.
-DateAnalysisPublished = DateTimeField(
-    'DateAnalysisPublished',
-    widget=DateTimeWidget(
-        label=_("Date Published")
-    )
-)
-
 # If the result is outside of the detection limits of the method or instrument,
 # the operand (< or >) is stored here.  For routine analyses this is taken
 # from the Result, if the result entered explicitly startswith "<" or ">"
@@ -134,7 +125,6 @@ schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
     Attachment,
-    DateAnalysisPublished,
     DetectionLimitOperand,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
     NumberOfRequiredVerifications,
