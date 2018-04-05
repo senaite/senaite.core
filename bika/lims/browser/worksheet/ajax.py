@@ -29,11 +29,18 @@ class GetServices():
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        brains = bsc(
-            portal_type='AnalysisService',
-            getCategoryUID=self.request.get('getCategoryUID', ''),
-            inactive_state='active',
-            sort_on='sortable_title')
+
+        query = {
+            "portal_type": 'AnalysisService',
+            "inactive_state": 'active',
+            "sort_on": 'sortable_title',
+        }
+
+        getCategoryUID = self.request.get('getCategoryUID', '')
+        if getCategoryUID:
+            query["getCategoryUID"] = getCategoryUID
+
+        brains = bsc(query)
         voc = [[brain.UID, brain.Title] for brain in brains]
         return json.dumps(voc)
 

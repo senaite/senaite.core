@@ -6,11 +6,17 @@ Changelog
 
 **Added**
 
+- #741 CSV Importer for 'Cobas Taqman 48' Instrument Interface
+- #737 Added Instrument: Metler Toledo DL55
+- #730 Added Instrument: LaChat QuickChem FIA
+- #729 Added Instrument: Varian Vista-PRO ICP
 - #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
 - #710 Added more builtin functions for Calculations
 
 **Changed**
 
+- #746 StringField to UIDReferenceField for Default Department of Lab Contact
+- #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
 - #694 Make getResultRange functions from Analysis-types consistent
 - #694 Out of range/shoulders icons are rendered in AnalysesView
@@ -23,6 +29,16 @@ Changelog
 **Fixed**
 
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
+- #761 Dormant Reference Definitions were listed for selection on WS Templates
+- #735 Interim fields not created for QC Analyses on WSs
+- #752 Published Date field of Analyses is never set
+- #760 Default to empty the Title field when creating a new Analysis Specification (it was showing the UID)
+- #759 Date error raised in invoice batch creation although End date is after Start date
+- #743 Traceback when accessing the view of a Statement
+- #734 Chameleon parse error in "Analyses performed and published as % of total", "Analyses summary per department" and "Data entry day book" productivity reports
+- #750 Wrong redirect after Batch Label edit or creation
+- #721 Fix filter functionality of Worksheets after sort/pagination
+- #738 Traceback when Invalidating Analysis Requests
 - #694 Bad calculation of min and max in ReferenceResults on negative result
 - #694 Instrument validity not updated in accordance with latest QC tests
 - #694 Result range shoulders computed badly on full/partial negative specs
@@ -30,6 +46,7 @@ Changelog
 - #723 Solve Traceback on Print Samples Sheet
 - #724 Department Filtering Portlet appears only for the manager with 'admin' username
 - #720 Make automatic sticker printing work with 'registered' option activated
+- #719 Fix interim fields result and calculation updating on the 2-Dimensional-CSV instrument
 - #716 Samples from inside Batch are not filtered correctly
 - #707 AR Add: Set default contact on client change
 - #700 Fix filtering by review state in aggregated list of analyses

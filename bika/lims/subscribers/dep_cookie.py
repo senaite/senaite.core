@@ -87,7 +87,7 @@ def SetDepartmentCookies(event):
             elif brain[0].portal_type == 'LabContact':
                 lab_con = brain[0].getObject()
                 if lab_con.getDefaultDepartment():
-                    dep_for_cookie = lab_con.getDefaultDepartment()
+                    dep_for_cookie = lab_con.getDefaultDepartment().UID()
                 else:
                     departments = lab_con.getSortedDepartments()
                     dep_for_cookie = \

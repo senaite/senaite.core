@@ -3,10 +3,22 @@ Instruments import interface
 We are going to test all instruments import interfaces on this one doctest
 1. These files can only be added on `tests/files/instruments/`
 2. The filenames(files to be imported) have to have the same name as their
-   import data interface i.e `exportimport/instruments/generic/two_dimension.py`
-   would match with `tests/files/instruments/generic.two_dimension.csv`
-3. All the files would have the same SampleID/AR-ID, same analyses and same
-   results because they will be testing against the same AR
+   import data interface i.e
+   `exportimport/instruments/generic/two_dimension.py` would match with
+   `tests/files/instruments/generic.two_dimension.csv` and
+   `exportimport/instruments/varian/vistapro/icp.py` would match with
+   `tests/files/instruments/varian.vistapro.icp.csv`
+   The reason for the above filenaming is so that we can do
+   `interface = varian.vistapro.icp`
+   `exec('from bika.lims.exportimport.instruments.{} import Import'.format(inteface))`
+   LINE:225
+3. All the files would have the same SampleID/AR-ID
+   `H2O-0001`
+4. Same analyses and same results because they will be testing against the same AR
+   `Ca` = 0.0
+   `Mg` = 2.0
+5. To set DefaultResult to float `0.0` use `zeroValueDefaultInstrumentResults`
+   example can be found at `exportimport/instruments/varian/vistapro/icp.py`
 
 Running this test from the buildout directory::
 
@@ -131,7 +143,7 @@ This service matches the service specified in the file from which the import wil
     >>> interims = [pest1, pest2, pest3]
     >>> interim_calc.setInterimFields(interims)
     >>> self.assertEqual(interim_calc.getInterimFields(), interims)
-    >>> interim_calc.setFormula('((([pest1] > 0.0) or ([pest2] > .05) or ([pest3] > 10.0) ) and "FAIL" or "PASS" )')
+    >>> interim_calc.setFormula('((([pest1] > 0.0) or ([pest2] > .05) or ([pest3] > 10.0) ) and "PASS" or "FAIL" )')
     >>> analysisservice5 = api.create(bika_analysisservices, 'AnalysisService', title='Total Terpenes', Keyword="TotalTerpenes")
     >>> analysisservice5.setUseDefaultCalculation(False)
     >>> analysisservice5.setCalculation(interim_calc)
@@ -227,8 +239,21 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     #TODO: Test for interim fields on other files aswell
     ...     if 'Parsing file generic.two_dimension.csv' in test_results['log']:
     ...         # Testing also for interim fields, only for `generic.two_dimension` interface
-    ...         if 'Import finished successfully: 1 ARs and 5 results updated' not in test_results['log']:
+    ...         # TODO: Test for - H2O-0001: calculated result for 'THCaCO3': '2.0'
+    ...         if 'Import finished successfully: 1 ARs and 3 results updated' not in test_results['log']:
     ...             self.fail("Results Update failed")
+    ...         if "H2O-0001 result for 'TotalTerpenes:pest1': '1'" not in test_results['log']:
+    ...             self.fail("pest1 did not get updated")
+    ...         if "H2O-0001 result for 'TotalTerpenes:pest2': '1'" not in test_results['log']:
+    ...             self.fail("pest2 did not get updated")
+    ...         if "H2O-0001 result for 'TotalTerpenes:pest3': '1'" not in test_results['log']:
+    ...             self.fail("pest3 did not get updated")
+    ...         analyses = ar.getAnalyses(full_objects=True)
+    ...         if an.getKeyword() ==  'TotalTerpenes':
+    ...             if an.getResult() != 'PASS':
+    ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
+    ...                 self.fail(msg)
+    ...
     ...     elif 'Import finished successfully: 1 ARs and 2 results updated' not in test_results['log']:
     ...         self.fail("Results Update failed")
     ...
@@ -239,6 +264,10 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
     ...                 self.fail(msg)
     ...         if an.getKeyword() ==  'Mg':
+    ...             if an.getResult() != '2.0':
+    ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
+    ...                 self.fail(msg)
+    ...         if an.getKeyword() ==  'THCaCO3':
     ...             if an.getResult() != '2.0':
     ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
     ...                 self.fail(msg)

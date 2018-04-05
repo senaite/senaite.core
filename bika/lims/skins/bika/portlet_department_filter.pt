@@ -22,7 +22,7 @@
                 deps_from_cookie python: cookie.split(',') if cookie and len(deps)>0
                     else [];
                 first_from_cat python: deps[0].UID if is_admin and deps else
-                          brains[0].getObject().getDefaultDepartment() if brains and brains[0].getObject().getDefaultDepartment()
+                          brains[0].getObject().getDefaultDepartment().UID() if brains and brains[0].getObject().getDefaultDepartment()
                           else deps[0].UID() if deps else '';
                 first_dep python: deps_from_cookie[0] if len(deps_from_cookie)>1
                     else first_from_cat if not cookie else '';">

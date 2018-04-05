@@ -8,11 +8,8 @@
 from AccessControl import ClassSecurityInfo
 
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims import api
-from bika.lims import deprecated
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -155,30 +152,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         routine analyses
         """
         return []
-
-    @deprecated("[1710] Reference Analyses do not support Interims")
-    def setInterimFields(self, interims=None , **kwargs):
-        pass
-
-    @deprecated("[1710] Reference Analyses do not support Interims")
-    def getInterimFields(self):
-        return []
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def setCalculation(self, calculation=None, **kwargs):
-        pass
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def getCalculation(self):
-        return None
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def getCalculationTitle(self):
-        return None
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def getCalculationUID(self):
-        return None
 
     @security.public
     def workflow_script_submit(self):

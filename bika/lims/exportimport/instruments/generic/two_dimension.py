@@ -93,6 +93,45 @@ def is_keyword(kw):
     return len(bsc(getKeyword=kw))
 
 
+def find_analyses(ar_or_sample):
+    """ This function is used to find keywords that are not on the analysis
+        but keywords that are on the interim fields.
+
+        This function and is is_keyword function should probably be in
+        resultsimport.py or somewhere central where it can be used by other
+        instrument interfaces.
+    """
+    bc = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    ar = bc(portal_type='AnalysisRequest', id=ar_or_sample)
+    if len(ar) == 0:
+        ar = bc(portal_type='AnalysisRequest', getSampleID=ar_or_sample)
+    if len(ar) == 1:
+        obj = ar[0].getObject()
+        analyses = obj.getAnalyses(full_objects=True)
+        return analyses
+    return []
+
+
+def find_analysis_interims(ar_or_sample):
+    """ This function is used to find keywords that are not on the analysis
+        but keywords that are on the interim fields.
+
+        This function and is is_keyword function should probably be in
+        resultsimport.py or somewhere central where it can be used by other
+        instrument interfaces.
+    """
+    interim_fields = []
+    analyses = find_analyses(ar_or_sample)
+    for analysis in analyses:
+        interims = []
+        if hasattr(analysis, 'getInterimFields'):
+            interims = analysis.getInterimFields()
+        for interim in interims:
+            if interim['keyword'] not in interim_fields:
+                interim_fields.append(interim['keyword'])
+    return interim_fields
+
+
 def find_kw(ar_or_sample, kw):
     """ This function is used to find keywords that are not on the analysis
         but keywords that are on the interim fields.
@@ -102,20 +141,15 @@ def find_kw(ar_or_sample, kw):
         instrument interfaces.
     """
     keyword = None
-    bc = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    ar = bc(portal_type='AnalysisRequest', id=ar_or_sample)
-    if len(ar) == 0:
-        ar = bc(portal_type='AnalysisRequest', getSampleID=ar_or_sample)
-    if len(ar) == 1:
-        obj = ar[0].getObject()
-        analyses = obj.getAnalyses(full_objects=True)
-        for analysis in analyses:
-            interims = hasattr(analysis, 'getInterimFields') \
-                        and analysis.getInterimFields() or []
-            for interim in interims:
-                if interim['keyword'] == kw:
-                    keyword = analysis.getKeyword()
-                    break
+    analyses = find_analyses(ar_or_sample)
+    for analysis in analyses:
+        interims = []
+        if hasattr(analysis, 'getInterimFields'):
+            interims = analysis.getInterimFields()
+        for interim in interims:
+            if interim['keyword'] == kw:
+                keyword = analysis.getKeyword()
+                break
     return keyword
 
 
@@ -167,6 +201,19 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
             return 0
 
         quantitation = {}
+        list_of_interim_results = []
+        # list_of_interim_results is a list that will have interim fields on
+        # the current line so that we don't have to call self._addRawResult
+        # for the same interim fields, ultimately we want a dict that looks
+        # like quantitation = {'AR': 'AP-0001-R01', 'interim1': 83.12, 'interim2': 22.3}
+        # self._addRawResult(quantitation['AR'],
+        #                    values={kw: quantitation},
+        #                    override=False)
+        # We use will one of the interims to find the analysis in this case new_kw which becomes kw
+        # kw is the analysis keyword which sometimes we have to find using the interim field
+        # because we have the result of the interim field and not of the analysis
+
+        found = False  # This is just a flag used to check values in list_of_interim_results
         clean_splitted = splitted[1:-1]  # First value on the line is AR
         for i in range(len(clean_splitted)):
             token = clean_splitted[i]
@@ -177,7 +224,7 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                 quantitation['resultValue'] = token
             elif token:
                 self.err("Orphan value in column ${index} (${token})",
-                         mapping={"index": str(i+1),
+                         mapping={"index": str(i + 1),
                                   "token": token},
                          numline=self._numline, line=line)
 
@@ -193,6 +240,20 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                 if new_kw:
                     quantitation[kw] = quantitation['resultValue']
                     del quantitation['resultValue']
+                    for interim_res in list_of_interim_results:
+                        if kw in interim_res:
+                            # Interim field already in quantitation dict
+                            found = True
+                            break
+                    if found:
+                        continue
+                    interims = find_analysis_interims(quantitation['AR'])
+                    # pairing headers(keywords) and their values(results) per line
+                    keyword_value_dict = dict(zip(self._keywords, clean_splitted))
+                    for interim in interims:
+                        if interim in keyword_value_dict:
+                            quantitation[interim] = keyword_value_dict[interim]
+                            list_of_interim_results.append(quantitation)
                     kw = new_kw
                     kw = re.sub(r"\W", "", kw)
 
@@ -200,6 +261,7 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                                values={kw: quantitation},
                                override=False)
             quantitation = {}
+            found = False
 
     def zeroValueDefaultInstrumentResults(self, column_name, result, line):
         result = str(result)

@@ -15,31 +15,25 @@ from Products.Archetypes.Field import BooleanField, DateTimeField, \
     FixedPointField, IntegerField, StringField
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.widgets import DateTimeWidget, RecordsWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import ISamplePrepWorkflow, IDuplicateAnalysis
-from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import changeWorkflowState, formatDecimalMark
+from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
-from bika.lims.utils.analysis import create_analysis, format_numeric_result
+from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow import skip
 from bika.lims.workflow.analysis import events
 from bika.lims.workflow.analysis import guards
 from plone.api.user import has_permission
@@ -86,15 +80,6 @@ Retested = BooleanField(
     default=False
 )
 
-# When the AR is published, the date of publication is recorded here.
-# It's used to populate catalog values.
-DateAnalysisPublished = DateTimeField(
-    'DateAnalysisPublished',
-    widget=DateTimeWidget(
-        label=_("Date Published")
-    )
-)
-
 # If the result is outside of the detection limits of the method or instrument,
 # the operand (< or >) is stored here.  For routine analyses this is taken
 # from the Result, if the result entered explicitly startswith "<" or ">"
@@ -130,11 +115,35 @@ Verificators = StringField(
     default=''
 )
 
+# Routine Analyses and Reference Analysis have a versioned link to
+# the calculation at creation time.
+Calculation = HistoryAwareReferenceField(
+    'Calculation',
+    allowed_types=('Calculation',),
+    relationship='AnalysisCalculation',
+    referenceClass=HoldingReference
+)
+
+# InterimFields are defined in Calculations, Services, and Analyses.
+# In Analysis Services, the default values are taken from Calculation.
+# In Analyses, the default values are taken from the Analysis Service.
+# When instrument results are imported, the values in analysis are overridden
+# before the calculation is performed.
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Method',
+    widget=RecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Values can be entered here which will override the defaults "
+            "specified in the Calculation Interim Fields."),
+    )
+)
+
 schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
     Attachment,
-    DateAnalysisPublished,
     DetectionLimitOperand,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
     NumberOfRequiredVerifications,
@@ -143,7 +152,9 @@ schema = schema.copy() + Schema((
     ResultDM,
     Retested,
     Uncertainty,
-    Verificators
+    Verificators,
+    Calculation,
+    InterimFields
 ))
 
 
@@ -1221,6 +1232,22 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         attachments = self.getAttachment()
         uids = [att.UID() for att in attachments]
         return uids
+
+    @security.public
+    def getCalculationTitle(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.Title()
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
 
     @security.public
     def remove_duplicates(self, ws):

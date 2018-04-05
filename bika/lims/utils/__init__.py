@@ -20,6 +20,7 @@ from AccessControl import allow_module
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
+from Products.Archetypes.interfaces.field import IComputedField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api as api
@@ -750,6 +751,8 @@ def copy_field_values(src, dst, ignore_fieldnames=None, ignore_fieldtypes=None):
     dst_schema = dst.Schema()
 
     for field in src_schema.fields():
+        if IComputedField.providedBy(field):
+            continue
         fieldname = field.getName()
         if fieldname in ignore_fields \
                 or field.type in ignore_types \
