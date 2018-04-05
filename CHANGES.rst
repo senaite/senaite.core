@@ -28,6 +28,7 @@ Changelog
 
 **Fixed**
 
+- #763 Datetime conversion error in CSV Importer of Taqman 48
 - #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #735 Interim fields not created for QC Analyses on WSs
 - #752 Published Date field of Analyses is never set
