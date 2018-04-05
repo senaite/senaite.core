@@ -13,7 +13,7 @@ from bika.lims import logger
 def set_department_cookies(event):
     """
     Login event handler.
-    When user logs in for the first time, we are setting department filtering cookie values.
+    When user logs in, departments must be selected if necessary.
     """
     if not is_bika_installed():
         logger.warn(
@@ -37,6 +37,8 @@ def set_department_cookies(event):
     response = request.RESPONSE
     user = api.get_current_user()
     username = user and user.getUserName() or None
+    is_manager = user and (user.has_role('Manager') or
+                           user.has_role('LabManager'))
     portal_catalog = api.get_tool("portal_catalog")
 
     # If department filtering is disabled, disable the cookies
@@ -47,17 +49,15 @@ def set_department_cookies(event):
             'dep_filter_disabled', None,  path='/', max_age=0)
         return
 
-    dep_for_cookie = ''
+    selected_deps = []
 
-    if username == 'admin':
-        departments = portal_catalog(
+    # Select all Departments for Lab Managers
+    if is_manager:
+        selected_deps = portal_catalog(
             portal_type='Department',
             sort_on='sortable_title',
             sort_order='ascending',
             inactive_state='active')
-
-        for department in departments:
-            dep_for_cookie += department.UID + ','
 
         response.setCookie(
             'dep_filter_disabled', 'true',  path='/',
@@ -77,32 +77,31 @@ def set_department_cookies(event):
                 'dep_filter_disabled', None, path='/', max_age=0)
             return
 
-        # If it is Client Contact, enable all departments
-        # no need to filter.
+        # If it is a Client Contact, select all departments no need to filter.
         elif brain[0].portal_type == 'Contact':
-            departments = portal_catalog(
+            selected_deps = portal_catalog(
                 portal_type='Department',
                 sort_on='sortable_title',
                 sort_order='ascending',
                 inactive_state='active')
-            for department in departments:
-                dep_for_cookie += department.UID + ','
+
             response.setCookie(
                 'dep_filter_disabled', None, path='/', max_age=24 * 3600)
 
-        # It is a LabContact, set up departments.
+        # It is a LabContact, select only one department. It must be Default
+        # Department of the Lab Contact if possible
         elif brain[0].portal_type == 'LabContact':
             lab_con = brain[0].getObject()
             if lab_con.getDefaultDepartment():
-                dep_for_cookie = lab_con.getDefaultDepartment().UID()
+                selected_deps = [lab_con.getDefaultDepartment()]
             else:
                 departments = lab_con.getSortedDepartments()
-                dep_for_cookie = \
-                    departments[0].UID() if len(departments) > 0 else ''
+                selected_deps = [departments[0]] if departments else []
 
+    selected_dep_uids = ','.join([api.get_uid(dep) for dep in selected_deps])
     response.setCookie(
         'filter_by_department_info',
-        dep_for_cookie,
+        selected_dep_uids,
         path='/',
         max_age=24 * 3600)
 
