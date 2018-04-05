@@ -5,7 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from plone import api
+from bika.lims import api
 
 from bika.lims import logger
 
@@ -22,7 +22,7 @@ def SetDepartmentCookies(event):
         return
 
     # get the bika_setup object
-    portal = api.portal.get()
+    portal = api.get_portal()
     bika_setup = portal.get("bika_setup")
 
     # just to be sure...
@@ -33,11 +33,11 @@ def SetDepartmentCookies(event):
 
     # Getting request, response and username
 
-    request = api.env.getRequest()
+    request = api.get_request()
     response = request.RESPONSE
-    user = api.user.get_current()
+    user = api.get_current_user()
     username = user and user.getUserName() or None
-    portal_catalog = api.portal.get_tool("portal_catalog")
+    portal_catalog = api.get_tool("portal_catalog")
 
     if bika_setup.getAllowDepartmentFiltering():
         dep_for_cookie = ''
@@ -116,7 +116,7 @@ def ClearDepartmentCookies(event):
             "Package 'bika.lims' is not installed, skipping event handler "
             "for IUserLoggedOutEvent.")
         return
-    request = api.env.getRequest()
+    request = api.get_request()
     response = request.RESPONSE
 
     # Voiding our special cookie on logout
@@ -129,5 +129,5 @@ def ClearDepartmentCookies(event):
 def is_bika_installed():
     """Check if Bika LIMS is installed in the Portal
     """
-    qi = api.portal.get_tool("portal_quickinstaller")
+    qi = api.get_tool("portal_quickinstaller")
     return qi.isProductInstalled("bika.lims")
