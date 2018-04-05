@@ -13,7 +13,13 @@ from bika.lims import logger
 def set_department_cookies(event):
     """
     Login event handler.
-    When user logs in, departments must be selected if necessary.
+    When user logs in, departments must be selected if filtering by department
+    is enabled in Bika Setup.
+        - For (Lab)Managers and Client Contacts, all the departments from the
+          system must be selected.
+        - For regular Lab Contacts, default Department must be selected. If
+          the Contact doesn't have any default department assigned, then first
+          department in alphabetical order will be selected.
     """
     if not is_bika_installed():
         logger.warn(
@@ -32,7 +38,6 @@ def set_department_cookies(event):
             "bika_setup not found in this Bika LIMS installation")
 
     # Getting request, response and username
-
     request = api.get_request()
     response = request.RESPONSE
     user = api.get_current_user()
@@ -105,6 +110,7 @@ def set_department_cookies(event):
         path='/',
         max_age=24 * 3600)
 
+    return
 
 def clear_department_cookies(event):
     """
