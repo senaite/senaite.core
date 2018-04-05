@@ -15,6 +15,7 @@ Changelog
 
 **Changed**
 
+- #765 Department Filtering Improvements
 - #746 StringField to UIDReferenceField for Default Department of Lab Contact
 - #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
