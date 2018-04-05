@@ -15,6 +15,7 @@ Changelog
 
 **Changed**
 
+- #746 StringField to UIDReferenceField for Default Department of Lab Contact
 - #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
 - #694 Make getResultRange functions from Analysis-types consistent

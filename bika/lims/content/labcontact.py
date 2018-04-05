@@ -15,7 +15,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 
 from Products.Archetypes import atapi
-from Products.Archetypes.public import StringField
+# Bika Fields
+from bika.lims.browser.fields import UIDReferenceField
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
@@ -59,7 +60,7 @@ schema = Person.schema.copy() + atapi.Schema((
                              label=_("Departments"),
                              description=_("The laboratory departments"),
                          )),
-    StringField('DefaultDepartment',
+    UIDReferenceField('DefaultDepartment',
                 required=0,
                 vocabulary_display_path_bound=sys.maxint,
                 vocabulary='_defaultDepsVoc',
