@@ -103,6 +103,9 @@ def set_department_cookies(event):
                 departments = lab_con.getSortedDepartments()
                 selected_deps = [departments[0]] if departments else []
 
+            response.setCookie(
+                'dep_filter_disabled', None, path='/', max_age=0)
+
     selected_dep_uids = ','.join([api.get_uid(dep) for dep in selected_deps])
     response.setCookie(
         'filter_by_department_info',
