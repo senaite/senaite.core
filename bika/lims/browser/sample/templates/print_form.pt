@@ -102,6 +102,7 @@
                     <input type="checkbox" id='disable_filter_by_date'/>
                     <br/>
                     <input type="button" id='filter_button' i18n:translate="" value="Filter"/>
+                    <input type="hidden" id="uids" name="uids" tal:attributes='value python:view.get_uids(jsonify=True)'/>
                 </div>
             </div>
             <div id='preview_buttons'>

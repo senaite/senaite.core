@@ -159,17 +159,22 @@ function FormPrintView() {
         if ($('#report:visible').length > 0) {
             $('#report').fadeTo('fast', 0.4);
         }
-        $.ajax({
-            url: url,
-            type: 'POST',
-            async: true,
-            data: { "template": template,
+        var form_data = { "template": template,
                     "sampler": $("#sel_sampler option:selected").val(),
                     "client": $("#sel_client option:selected").val(),
                     "date_from": $("#filter_date_from").val(),
                     "date_to": $("#filter_date_to").val(),
+                    "uids": [],
                     "avoid_filter_by_date": $('#disable_filter_by_date').is(':checked')
-                }
+                };
+        $.each($.parseJSON($('#uids').val()), function(index, uid){
+            form_data['uids'].push(uid);
+        });
+        $.ajax({
+            url: url,
+            type: 'POST',
+            async: true,
+            data: form_data,
         })
         .always(function(data) {
             var htmldata = data;

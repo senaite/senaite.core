@@ -28,6 +28,7 @@ import glob
 import traceback
 import App
 import tempfile
+import json
 
 
 class SamplesPrint(BrowserView):
@@ -78,29 +79,10 @@ class SamplesPrint(BrowserView):
         objs = map(api.get_object_by_uid, uids)
         to_print_objs = filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled", "to_be_scheduled"],
                                objs)
-        to_print_uids = map(api.get_uid, to_print_objs)
-        if to_print_uids:
-            self.request.response.redirect(self.context.absolute_url() +
-                                           "/print_sampling_sheets?items=%s" % ",".join(to_print_uids))
+        self.to_print_uids = map(api.get_uid, to_print_objs)
 
         if self.context.portal_type in ['SamplesFolder', 'Client']:
-            if self.request.get('items', ''):
-                uids = self.request.get('items').split(',')
-                uc = getToolByName(self.context, 'uid_catalog')
-                self._items = [obj.getObject() for obj in uc(UID=uids)]
-            else:
-                catalog = getToolByName(self.context, 'portal_catalog')
-                content_filter = {
-                    'portal_type': 'Sample',
-                    'sort_on': 'created',
-                    'sort_order': 'reverse',
-                    'review_state': ['to_be_sampled', 'scheduled_sampling'],
-                    'path': {'query': "/", 'level': 0}
-                    }
-                if self.context.portal_type == 'Client':
-                    content_filter['getClientUID'] = self.context.UID()
-                brains = catalog(content_filter)
-                self._items = [obj.getObject() for obj in brains]
+           self._items = self.get_items()
         else:
             # Warn and redirect to referer
             logger.warning(
@@ -123,6 +105,31 @@ class SamplesPrint(BrowserView):
             return self.pdfFromPOST()
         else:
             return self.template()
+
+    def get_uids(self, jsonify=False):
+        if jsonify:
+            return json.dumps(self.to_print_uids)
+        return self.to_print_uids
+
+
+    def get_items(self):
+        uids = self.get_uids()
+        if uids:
+            query = dict(UID=uids)
+            return map(api.get_object, api.search(query, 'uid_catalog'))
+        # Return all items
+        catalog = getToolByName(self.context, 'portal_catalog')
+        content_filter = {
+            'portal_type': 'Sample',
+            'sort_on': 'created',
+            'sort_order': 'reverse',
+            'review_state': ['to_be_sampled', 'scheduled_sampling'],
+            'path': {'query': "/", 'level': 0}
+        }
+        if self.context.portal_type == 'Client':
+            content_filter['getClientUID'] = self.context.UID()
+        brains = catalog(content_filter)
+        return [obj.getObject() for obj in brains]
 
     def _rise_error(self):
         """
