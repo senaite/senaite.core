@@ -58,7 +58,6 @@ class AnalysisRequestsView(BikaListingView):
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
-            "path": {"query": "/", "depth": 2},
             "cancellation_state": "active",
         }
 
