@@ -112,6 +112,11 @@ def find_analyses(ar_or_sample):
     return []
 
 
+def get_interims_keywords(analysis):
+    interims = api.safe_getattr(analysis, 'getInterimFields')
+    return map(lambda item: item['keyword'], interims)
+
+
 def find_analysis_interims(ar_or_sample):
     """ This function is used to find keywords that are not on the analysis
         but keywords that are on the interim fields.
@@ -120,16 +125,11 @@ def find_analysis_interims(ar_or_sample):
         resultsimport.py or somewhere central where it can be used by other
         instrument interfaces.
     """
-    interim_fields = []
-    analyses = find_analyses(ar_or_sample)
-    for analysis in analyses:
-        interims = []
-        if hasattr(analysis, 'getInterimFields'):
-            interims = analysis.getInterimFields()
-        for interim in interims:
-            if interim['keyword'] not in interim_fields:
-                interim_fields.append(interim['keyword'])
-    return interim_fields
+    interim_fields = list()
+    for analysis in find_analyses(ar_or_sample):
+        keywords = get_interims_keywords(analysis)
+        interim_fields.extend(keywords)
+    return list(set(interim_fields))
 
 
 def find_kw(ar_or_sample, kw):
@@ -140,17 +140,10 @@ def find_kw(ar_or_sample, kw):
         resultsimport.py or somewhere central where it can be used by other
         instrument interfaces.
     """
-    keyword = None
-    analyses = find_analyses(ar_or_sample)
-    for analysis in analyses:
-        interims = []
-        if hasattr(analysis, 'getInterimFields'):
-            interims = analysis.getInterimFields()
-        for interim in interims:
-            if interim['keyword'] == kw:
-                keyword = analysis.getKeyword()
-                break
-    return keyword
+    for analysis in find_analyses(ar_or_sample):
+        if kw in get_interims_keywords(analysis):
+            return analysis.getKeyword()
+    return None
 
 
 class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
