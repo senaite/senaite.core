@@ -17,7 +17,7 @@ We are going to test all instruments import interfaces on this one doctest
 4. Same analyses and same results because they will be testing against the same AR
    `Ca` = 0.0
    `Mg` = 2.0
-5. To set DefaultResult to float `0.0` use `zeroValueDefaultInstrumentResults`
+5. To set DefaultResult to float `0.0` use `get_result`
    example can be found at `exportimport/instruments/varian/vistapro/icp.py`
 
 Running this test from the buildout directory::
