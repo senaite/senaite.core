@@ -10,7 +10,7 @@ from bika.lims import api
 from bika.lims import logger
 
 
-def SetDepartmentCookies(event):
+def set_department_cookies(event):
     """
     Login event handler.
     When user logs in for the first time, we are setting department filtering cookie values.
@@ -39,73 +39,75 @@ def SetDepartmentCookies(event):
     username = user and user.getUserName() or None
     portal_catalog = api.get_tool("portal_catalog")
 
-    if bika_setup.getAllowDepartmentFiltering():
-        dep_for_cookie = ''
+    # If department filtering is disabled, disable the cookies
+    if not bika_setup.getAllowDepartmentFiltering():
+        response.setCookie(
+            'filter_by_department_info', None,  path='/', max_age=0)
+        response.setCookie(
+            'dep_filter_disabled', None,  path='/', max_age=0)
+        return
 
-        if username == 'admin':
+    dep_for_cookie = ''
+
+    if username == 'admin':
+        departments = portal_catalog(
+            portal_type='Department',
+            sort_on='sortable_title',
+            sort_order='ascending',
+            inactive_state='active')
+
+        for department in departments:
+            dep_for_cookie += department.UID + ','
+
+        response.setCookie(
+            'dep_filter_disabled', 'true',  path='/',
+            max_age=24 * 3600)
+
+    else:
+        brain = portal_catalog(getUsername=username)
+        # It is possible that current user is created by Plone ZMI.
+        # Just log it as a warning and go on
+        if not brain:
+            logger.warn(
+                "No lab Contact found... Plone user or Client "
+                "Contact logged in. " + username)
+            response.setCookie(
+                'filter_by_department_info', None, path='/', max_age=0)
+            response.setCookie(
+                'dep_filter_disabled', None, path='/', max_age=0)
+            return
+
+        # If it is Client Contact, enable all departments
+        # no need to filter.
+        elif brain[0].portal_type == 'Contact':
             departments = portal_catalog(
                 portal_type='Department',
                 sort_on='sortable_title',
                 sort_order='ascending',
                 inactive_state='active')
-
             for department in departments:
                 dep_for_cookie += department.UID + ','
-
             response.setCookie(
-                'dep_filter_disabled', 'true',  path='/',
-                max_age=24 * 3600)
+                'dep_filter_disabled', None, path='/', max_age=24 * 3600)
 
-        else:
-            brain = portal_catalog(getUsername=username)
-            # It is possible that current user is created by Plone ZMI.
-            # Just log it as a warning and go on
-            if not brain:
-                logger.warn(
-                    "No lab Contact found... Plone user or Client "
-                    "Contact logged in. " + username)
-                response.setCookie(
-                    'filter_by_department_info', None, path='/', max_age=0)
-                response.setCookie(
-                    'dep_filter_disabled', None, path='/', max_age=0)
-                return
+        # It is a LabContact, set up departments.
+        elif brain[0].portal_type == 'LabContact':
+            lab_con = brain[0].getObject()
+            if lab_con.getDefaultDepartment():
+                dep_for_cookie = lab_con.getDefaultDepartment().UID()
+            else:
+                departments = lab_con.getSortedDepartments()
+                dep_for_cookie = \
+                    departments[0].UID() if len(departments) > 0 else ''
 
-            # If it is Client Contact, enable all departments
-            # no need to filter.
-            elif brain[0].portal_type == 'Contact':
-                departments = portal_catalog(
-                    portal_type='Department',
-                    sort_on='sortable_title',
-                    sort_order='ascending',
-                    inactive_state='active')
-                for department in departments:
-                    dep_for_cookie += department.UID + ','
-                response.setCookie(
-                    'dep_filter_disabled', None, path='/', max_age=24 * 3600)
-
-            # It is a LabContact, set up departments.
-            elif brain[0].portal_type == 'LabContact':
-                lab_con = brain[0].getObject()
-                if lab_con.getDefaultDepartment():
-                    dep_for_cookie = lab_con.getDefaultDepartment().UID()
-                else:
-                    departments = lab_con.getSortedDepartments()
-                    dep_for_cookie = \
-                        departments[0].UID() if len(departments) > 0 else ''
-
-        response.setCookie(
-            'filter_by_department_info',
-            dep_for_cookie,
-            path='/',
-            max_age=24 * 3600)
-    else:
-        response.setCookie(
-            'filter_by_department_info', None,  path='/', max_age=0)
-        response.setCookie(
-            'dep_filter_disabled', None,  path='/', max_age=0)
+    response.setCookie(
+        'filter_by_department_info',
+        dep_for_cookie,
+        path='/',
+        max_age=24 * 3600)
 
 
-def ClearDepartmentCookies(event):
+def clear_department_cookies(event):
     """
     Logout event handler.
     When user explicitly logs out from the Logout menu, clean department
