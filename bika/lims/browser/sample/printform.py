@@ -67,7 +67,6 @@ class SamplesPrint(BrowserView):
         uids = self.request.form.get("uids", [])
         # When only one uid has been selected it comes from the
         # ajax post as a string and not as a list
-        import pdb; pdb.set_trace()
         if isinstance(uids, str):
             uids = [uids]
         objs = map(api.get_object_by_uid, uids)
