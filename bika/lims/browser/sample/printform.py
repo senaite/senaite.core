@@ -64,17 +64,7 @@ class SamplesPrint(BrowserView):
     _avoid_filter_by_date = False
 
     def __call__(self):
-        # When printing sample sheets this method is called at least
-        # twice.
-        # The first time it gets the uids of the selected samples
-        # in the samples form and filters them by workflow status.
-        # The result is the list of samples to be printed.
-        # Then it builds the URL that will print the sample
-        # sheets (including the previous list as the items parameter
-        # of the request) and redirects to it. This results in this
-        # method being called again. The first lines are skipped because
-        # the form now is empty. In this second execution the
-        # actual rendering of the sample sheets is performed.
+
         uids = self.request.form.get("uids", [])
         objs = map(api.get_object_by_uid, uids)
         to_print_objs = filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled", "to_be_scheduled"],
