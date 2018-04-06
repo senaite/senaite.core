@@ -39,6 +39,7 @@ Changelog
 - #750 Wrong redirect after Batch Label edit or creation
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
+- #726 404 Error raised when clicking Print Samples Sheets from within a client
 - #694 Bad calculation of min and max in ReferenceResults on negative result
 - #694 Instrument validity not updated in accordance with latest QC tests
 - #694 Result range shoulders computed badly on full/partial negative specs
