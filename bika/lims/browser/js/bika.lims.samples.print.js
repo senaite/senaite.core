@@ -164,17 +164,15 @@ function FormPrintView() {
                     "client": $("#sel_client option:selected").val(),
                     "date_from": $("#filter_date_from").val(),
                     "date_to": $("#filter_date_to").val(),
-                    "uids": [],
+                    "uids": $.parseJSON($('#uids').val()),
                     "avoid_filter_by_date": $('#disable_filter_by_date').is(':checked')
                 };
-        $.each($.parseJSON($('#uids').val()), function(index, uid){
-            form_data['uids'].push(uid);
-        });
         $.ajax({
             url: url,
             type: 'POST',
             async: true,
             data: form_data,
+            traditional: true,
         })
         .always(function(data) {
             var htmldata = data;
