@@ -56,7 +56,7 @@ class SamplesPrint(BrowserView):
     _TEMPLATES_DIR = 'templates/print'
     _TEMPLATES_ADDON_DIR = 'samples'
     # selected samples
-    _items = []
+    _samples_to_print = []
     _filter_sampler = ''
     _filter_client = ''
     _filter_date_from = ''
@@ -64,18 +64,8 @@ class SamplesPrint(BrowserView):
     _avoid_filter_by_date = False
 
     def __call__(self):
-        uids = self.request.form.get("uids", [])
-        # When only one uid has been selected it comes from the
-        # ajax post as a string and not as a list
-        if isinstance(uids, str):
-            uids = [uids]
-        objs = map(api.get_object_by_uid, uids)
-        to_print_objs = filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled", "to_be_scheduled"],
-                               objs)
-        self.to_print_uids = map(api.get_uid, to_print_objs)
-
         if self.context.portal_type in ['SamplesFolder', 'Client']:
-           self._items = self.get_items()
+            self._samples_to_print = self.get_samples_to_print()
         else:
             # Warn and redirect to referer
             logger.warning(
@@ -99,18 +89,46 @@ class SamplesPrint(BrowserView):
         else:
             return self.template()
 
-    def get_uids(self, jsonify=False):
-        if jsonify:
-            return json.dumps(self.to_print_uids)
-        return self.to_print_uids
+    def get_samples_to_print(self):
+        """
 
+        :return: list with the samples that will be rendered in the print samples
+        sheet view
+        """
+        samples_to_print = self.get_samples_from_form()
+        # if no samples have been selected in the samples listing
+        # then we assume the user wants to print all the samples in
+        # a valid workflow status.
+        if not samples_to_print:
+            samples_to_print = self.get_samples_from_catalog()
+        return samples_to_print
 
-    def get_items(self):
-        uids = self.get_uids()
+    def get_samples_from_form(self):
+        """
+
+        :return:
+        """
+        uids = self.request.form.get("uids", [])
+        # When only one uid has been selected it comes from the
+        # ajax post as a string and not as a list
+        if isinstance(uids, str):
+            uids = [uids]
         if uids:
-            query = dict(UID=uids)
-            return map(api.get_object, api.search(query, 'uid_catalog'))
-        # Return all items
+            # Only samples whose workflow status is either to_be_sampled
+            # or to_be_scheduled are accepted for printing. This means we have to
+            # filter the list of selected samples by workflow status.
+            # To do so, from the uids of the selected samples get the objects
+            samples = map(api.get_object_by_uid, uids)
+            # Filter them and keep only the ones with a valid workflow status
+            return filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled","to_be_scheduled"], samples)
+
+    def get_samples_from_catalog(self):
+        """
+
+        :return:
+        """
+        # Return all samples whose workflow status is either to_be_sampled
+        # or to_be_scheduled
         catalog = getToolByName(self.context, 'portal_catalog')
         content_filter = {
             'portal_type': 'Sample',
@@ -119,14 +137,28 @@ class SamplesPrint(BrowserView):
             'review_state': ['to_be_sampled', 'scheduled_sampling'],
             'path': {'query': "/", 'level': 0}
         }
+        # if we are printing from inside a client then limit
+        # the results to the samples under that client
         if self.context.portal_type == 'Client':
             content_filter['getClientUID'] = self.context.UID()
         brains = catalog(content_filter)
-        return [obj.getObject() for obj in brains]
+        return [sample.getObject() for sample in brains]
+
+    def get_uids(self, jsonify=False):
+        """
+
+        :param jsonify: boolean value specifying if the uids should
+        be returned as a string representing a json object
+        :return: uids to be printed
+        """
+        uids_to_print = map(api.get_uid, self._samples_to_print)
+        if jsonify:
+            return json.dumps(uids_to_print)
+        return uids_to_print
 
     def _rise_error(self):
         """
-        Give the error missage
+        Give the error message
         """
         tbex = traceback.format_exc()
         logger.error(
@@ -168,7 +200,7 @@ class SamplesPrint(BrowserView):
             }
         }
         """
-        samples = self._items
+        samples = self._samples_to_print
         if not self._avoid_filter_by_date:
             self._filter_date_from = \
                 self.ulocalized_time(self._filter_date_from) if\
@@ -533,7 +565,7 @@ class SamplesPrint(BrowserView):
         """
         samplers = {}
         pc = getToolByName(self, 'portal_catalog')
-        for sample in self._items:
+        for sample in self._samples_to_print:
             sampler_id = sample.getScheduledSamplingSampler()
             sampler_brain = pc(
                 portal_type='LabContact', getUsername=sampler_id)
@@ -557,7 +589,7 @@ class SamplesPrint(BrowserView):
             'uid': {'name':'xxx'}, ...}
         """
         clients = {}
-        for sample in self._items:
+        for sample in self._samples_to_print:
             if sample.getClientUID() not in clients.keys():
                 clients[sample.getClientUID()] = {
                     'name': sample.getClientTitle()
