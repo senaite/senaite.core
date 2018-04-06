@@ -64,8 +64,11 @@ class SamplesPrint(BrowserView):
     _avoid_filter_by_date = False
 
     def __call__(self):
-
         uids = self.request.form.get("uids", [])
+        # When only one uid has been selected it comes from the
+        # ajax post as a string and not as a list
+        if isinstance(uids, str):
+            uids = list(uids)
         objs = map(api.get_object_by_uid, uids)
         to_print_objs = filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled", "to_be_scheduled"],
                                objs)
