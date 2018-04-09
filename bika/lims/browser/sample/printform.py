@@ -91,44 +91,41 @@ class SamplesPrint(BrowserView):
 
     def get_samples_to_print(self):
         """
-
-        :return: list with the samples that will be rendered in the print samples
-        sheet view
+        Get the list of sample objects that fulfill the requirements
+        to be printed, i.e, whose workflow status is either to_be_sampled
+        or to_be_scheduled. If several samples from the samples list has
+        been selected only those selected will be considered. If no samples
+        have been selected then all samples will be taken into account.
+        :return: list with the sample objects that will be rendered in
+        the print samples sheet view
         """
-        samples_to_print = self.get_samples_from_form()
-        # if no samples have been selected in the samples listing
-        # then we assume the user wants to print all the samples in
-        # a valid workflow status.
-        if not samples_to_print:
-            samples_to_print = self.get_samples_from_catalog()
-        return samples_to_print
-
-    def get_samples_from_form(self):
-        """
-
-        :return:
-        """
-        uids = self.request.form.get("uids", [])
-        # When only one uid has been selected it comes from the
-        # ajax post as a string and not as a list
-        if isinstance(uids, str):
-            uids = [uids]
+        uids = self.get_uids()
         if uids:
-            # Only samples whose workflow status is either to_be_sampled
-            # or to_be_scheduled are accepted for printing. This means we have to
-            # filter the list of selected samples by workflow status.
-            # To do so, from the uids of the selected samples get the objects
-            samples = map(api.get_object_by_uid, uids)
-            # Filter them and keep only the ones with a valid workflow status
-            return filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled","to_be_scheduled"], samples)
+            return self.get_samples_from_uids(uids)
+        # if no samples have been selected assume the user wants
+        # to print all the samples with a valid workflow status
+        return self.get_samples_from_catalog()
+
+    def get_samples_from_uids(self, uids):
+        """
+        Filter a list of sample uids by workflow status and return the list
+        of sample objects with a valid workflow status for printing.
+        :param uids: list of sample uids selected by the user in the samples
+        listing
+        :return: list of sample objects with a valid workflow status for
+        printing
+        """
+        samples = map(api.get_object_by_uid, uids)
+        return filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled","to_be_scheduled"], samples)
 
     def get_samples_from_catalog(self):
         """
-
-        :return:
+        From all the samples get those whose workflow status is either
+        to_be_sampled or to_be_scheduled. If the call is being made from
+        inside a client then also filter the samples to be printed by client.
+        :return: list of sample objects with a valid workflow status
+        for printing
         """
-        # Return all samples whose workflow status is either to_be_sampled
-        # or to_be_scheduled
         catalog = getToolByName(self.context, 'portal_catalog')
         content_filter = {
             'portal_type': 'Sample',
@@ -146,15 +143,19 @@ class SamplesPrint(BrowserView):
 
     def get_uids(self, jsonify=False):
         """
-
+        Get the list of selected samples' uids from the request
         :param jsonify: boolean value specifying if the uids should
         be returned as a string representing a json object
         :return: uids to be printed
         """
-        uids_to_print = map(api.get_uid, self._samples_to_print)
+        uids = self.request.form.get("uids", [])
+        # When only one uid has been selected it comes from the
+        # ajax post as a string and not as a list
+        if isinstance(uids, str):
+            uids = [uids]
         if jsonify:
-            return json.dumps(uids_to_print)
-        return uids_to_print
+            return json.dumps(uids)
+        return uids
 
     def _rise_error(self):
         """
@@ -169,8 +170,8 @@ class SamplesPrint(BrowserView):
     def _get_contacts_for_sample(self, sample, contacts_list):
         """
         This function returns the contacts defined in each analysis request.
-        :sample: a sample object
-        :old_list: A list with the contact names
+        :param sample: a sample object
+        :param contacts_list: A list with the contact names
         Returns a sorted list with the complete names.
         """
         ars = sample.getAnalysisRequests()
