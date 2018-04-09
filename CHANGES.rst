@@ -1,7 +1,25 @@
 Changelog
 =========
 
-1.2.4 (unreleased)
+1.2.5 (unreleased)
+------------------
+
+**Added**
+
+
+**Changed**
+
+
+**Removed**
+
+
+**Fixed**
+
+
+**Security**
+
+
+1.2.4 (2018-04-06)
 ------------------
 
 **Added**
@@ -29,13 +47,14 @@ Changelog
 **Fixed**
 
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
+- #763 Datetime conversion error in CSV Importer of Taqman 48
 - #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #735 Interim fields not created for QC Analyses on WSs
 - #752 Published Date field of Analyses is never set
-- #760 Default to empty the Title field when creating a new Analysis Specification (it was showing the UID)
-- #759 Date error raised in invoice batch creation although End date is after Start date
+- #760 Default to empty the Title field when creating a new Analysis Specification
+- #759 Date error in invoice batch creation although End date is after Start date
 - #743 Traceback when accessing the view of a Statement
-- #734 Chameleon parse error in "Analyses performed and published as % of total", "Analyses summary per department" and "Data entry day book" productivity reports
+- #734 Chameleon parse error in productivity reports
 - #750 Wrong redirect after Batch Label edit or creation
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
@@ -57,9 +76,7 @@ Changelog
 - #712 Dates in date picker are visible again
 - #703 Containers of Duplicated Analyses are not found
 - #698 Fix Publish Actions for Batches
-- #696 Filter worksheets by department. The worksheet count in the dashboard is now properly updated accordingly to the selected departments
-
-**Security**
+- #696 Worksheet count in dashboard is wrong in when filtered by department
 
 
 1.2.3 (2018-02-23)
