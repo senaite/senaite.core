@@ -116,7 +116,7 @@ class SamplesPrint(BrowserView):
         printing
         """
         samples = map(api.get_object_by_uid, uids)
-        return filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled","to_be_scheduled"], samples)
+        return filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled", "to_be_scheduled"], samples)
 
     def get_samples_from_catalog(self):
         """
@@ -140,7 +140,7 @@ class SamplesPrint(BrowserView):
         if self.context.portal_type == 'Client':
             return filter(lambda obj: obj.getClientUID() == api.get_uid(self.context), samples)
         return samples
-    
+
     def get_uids(self, jsonify=False):
         """
         Get the list of selected samples' uids from the request
