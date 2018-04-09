@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #726 404 Error raised when clicking Print Samples Sheets from within a client
 
 **Security**
 
@@ -46,7 +47,6 @@ Changelog
 
 **Fixed**
 
-- #726 404 Error raised when clicking Print Samples Sheets from within a client
 - #763 Datetime conversion error in CSV Importer of Taqman 48
 - #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #735 Interim fields not created for QC Analyses on WSs
