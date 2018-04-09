@@ -1,7 +1,7 @@
 /**
  * Controller class for Samples Folder View
  */
-function SamplesFolderView() {
+function PrintSamplesSheetView() {
     "use strict";
     var that = this;
 
@@ -9,7 +9,8 @@ function SamplesFolderView() {
         $('a.context_action_link').click(print_samples_trigger);
     };
     /**
-    * Function fired when Print Sample Sheets is clicked
+    * Function fired when Print Sample Sheets is clicked both from
+    * Samples Folder View or Client Samples Folder View.
     * It makes a POST of the samples form to print_sampling_sheets.
     *
     * To do so, it first cancels the default action of the Print

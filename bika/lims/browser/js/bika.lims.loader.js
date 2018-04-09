@@ -91,7 +91,7 @@ window.bika.lims.controllers =  {
 
     // Client Samples View
     ".portaltype-client.template-samples":
-        ['ClientSamplesView'],
+        ['PrintSamplesSheetView'],
 
     // Sampling Rounds PrintView
     "#sr_publish_container":
@@ -108,7 +108,7 @@ window.bika.lims.controllers =  {
         'RejectionKickOff'],
     // Samples fodler
     ".portaltype-samplesfolder":
-        ['SamplesFolderView'],
+        ['PrintSamplesSheetView'],
 
     // Analysis Request Templates
     ".portaltype-artemplate.template-base_edit":
