@@ -136,11 +136,11 @@ class SamplesPrint(BrowserView):
         }
         # if we are printing from inside a client then limit
         # the results to the samples under that client
+        samples = [sample.getObject() for sample in catalog(content_filter)]
         if self.context.portal_type == 'Client':
-            content_filter['getClientUID'] = self.context.UID()
-        brains = catalog(content_filter)
-        return [sample.getObject() for sample in brains]
-
+            return filter(lambda obj: obj.getClientUID() == api.get_uid(self.context), samples)
+        return samples
+    
     def get_uids(self, jsonify=False):
         """
         Get the list of selected samples' uids from the request
