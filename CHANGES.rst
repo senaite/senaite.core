@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #769 Traceback when submitting duplicate when Duplicate Variation is not set
+
 
 **Security**
 
