@@ -1328,9 +1328,13 @@ class BikaListingView(BrowserView):
                     .format(searchterm, end - start, len(brains)))
         return brains
 
-    def zcindex_search(self, catalog, query, searchterm):
+    def ng3_index_search(self, catalog, query, searchterm):
         """ Searches given catalog by query and also looks for a keyword in the
         specific index called 'listing_searchable_text'
+        #REMEMBER TextIndexNG indexes are the only indexes that wildcards can be
+        used in the beginning of the string.
+        http://zope.readthedocs.io/en/latest/zope2book/SearchingZCatalog.html#textindexng
+
         :param catalog: catalog to search
         :param query:
         :param searchterm: a keyword to look for in 'listing_searchable_text'
@@ -1338,7 +1342,7 @@ class BikaListingView(BrowserView):
         """
         logger.info(u"ListingView::search: Prepare zcindex query for '{}'"
                     .format(self.catalog))
-        query["listing_searchable_text"] = searchterm + "*"
+        query["listing_searchable_text"] = "*" + searchterm + "*"
         return catalog(query)
 
     def metadata_search(self, catalog, query, searchterm, ignorecase=True):
