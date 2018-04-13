@@ -29,9 +29,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
-
-    logger.info("{0} upgraded to version {1}".format(product, version))
     ut.addIndex(CATALOG_ANALYSIS_REQUEST_LISTING, "listing_searchable_text",
                 "TextIndexNG3")
     ut.refreshCatalogs()
+    logger.info("{0} upgraded to version {1}".format(product, version))
+
     return True

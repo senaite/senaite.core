@@ -1314,7 +1314,7 @@ class BikaListingView(BrowserView):
         self.expand_all_categories = True
 
         if "listing_searchable_text" in catalog.indexes():
-            brains = self.zcindex_search(catalog, query, searchterm)
+            brains = self.ng3_index_search(catalog, query, searchterm)
         else:
             brains = self.metadata_search(catalog, query, searchterm, ignorecase)
 

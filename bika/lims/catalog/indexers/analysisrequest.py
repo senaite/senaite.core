@@ -28,3 +28,23 @@ def assigned_state(instance):
             return 'unassigned'
 
     return 'assigned'
+
+
+@indexer(IAnalysisRequest)
+def listing_searchable_text(instance):
+    """
+
+    :param instance:
+    :return:
+    """
+    entries = []
+    plain_text_fields = ("getId", "getSampleID")
+
+    # Concatenate plain text fields as they are
+    for field_name in plain_text_fields:
+        value = api.safe_getattr(instance, field_name)
+        value = value.replace("-", "=")
+        entries.append(value)
+
+    # Concatenate all strings to one text blob
+    return " ".join(entries)
