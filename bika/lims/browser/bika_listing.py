@@ -1339,6 +1339,52 @@ class BikaListingView(BrowserView):
                     .format(searchterm, end - start, len(out)))
         return out
 
+    def zcindex_search(self, catalog, query, searchterm):
+        """ Searches given catalog by query and also looks for a keyword in the
+        specific index called 'listing_searchable_text'
+        :param catalog: catalog to search
+        :param query:
+        :param searchterm: a keyword to look for in 'listing_searchable_text'
+        :return: brains matching the search result
+        """
+        logger.info(u"ListingView::search: Prepare zcindex query for '{}'"
+                    .format(self.catalog))
+        query["listing_searchable_text"] = searchterm + "*"
+        return catalog(query)
+
+    def metadata_search(self, catalog, query, searchterm, ignorecase=True):
+        """ Retrieves all the brains from given catalog and returns the ones
+        with at least one metadata containing the search term
+        :param catalog: catalog to search
+        :param query:
+        :param searchterm:
+        :param ignorecase:
+        :return: brains matching search result
+        """
+        # create a catalog query
+        logger.info(u"ListingView::search: Prepare metadata query for '{}'"
+                    .format(self.catalog))
+
+        brains = catalog(query)
+
+        # Build a regular expression for the given searchterm
+        regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
+
+        # Get the catalog metadata columns
+        columns = self.get_metadata_columns()
+
+        # Filter predicate to match each metadata value against the searchterm
+        def match(brain):
+            for column in columns:
+                value = getattr(brain, column, None)
+                parsed = self.metadata_to_searchable_text(brain, column, value)
+                if regex.search(parsed):
+                    return True
+            return False
+
+        # Filtered brains by searchterm -> metadata match
+        return filter(match, brains)
+
     def get_searchterm(self):
         """Get the user entered search value from the request
 
