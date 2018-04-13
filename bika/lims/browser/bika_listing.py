@@ -1302,42 +1302,31 @@ class BikaListingView(BrowserView):
 
         # search the catalog
         catalog = api.get_tool(self.catalog)
-        brains = catalog(query)
-
-        # Sort manually?
-        if self.manual_sort_on is not None:
-            brains = self.sort_brains(brains, sort_on=self.manual_sort_on)
 
         # return the unfiltered catalog results
         if not searchterm:
-            logger.info(u"ListingView::search: return {} results".format(len(brains)))
+            brains = catalog(query)
+            logger.info(u"ListingView::search: return {} results"
+                        .format(len(brains)))
             return brains
 
         # Always expand all categories if we have a searchterm
         self.expand_all_categories = True
 
-        # Build a regular expression for the given searchterm
-        regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
+        if "listing_searchable_text" in catalog.indexes():
+            brains = self.zcindex_search(catalog, query, searchterm)
+        else:
+            brains = self.metadata_search(catalog, query, searchterm, ignorecase)
 
-        # Get the catalog metadata columns
-        columns = self.get_metadata_columns()
-
-        # Filter predicate to match each metadata value against the searchterm
-        def match(brain):
-            for column in columns:
-                value = getattr(brain, column, None)
-                parsed = self.metadata_to_searchable_text(brain, column, value)
-                if regex.search(parsed):
-                    return True
-            return False
-
-        # Filtered brains by searchterm -> metadata match
-        out = filter(match, brains)
+        # Sort manually?
+        if self.manual_sort_on is not None:
+            brains = self.sort_brains(brains, sort_on=self.manual_sort_on)
 
         end = time.time()
-        logger.info(u"ListingView::search: Search for '{}' executed in {:.2f}s ({} matches)"
-                    .format(searchterm, end - start, len(out)))
-        return out
+        logger.info(u"ListingView::search: Search for '{}' executed in "
+                    u"{:.2f}s ({} matches)"
+                    .format(searchterm, end - start, len(brains)))
+        return brains
 
     def zcindex_search(self, catalog, query, searchterm):
         """ Searches given catalog by query and also looks for a keyword in the
