@@ -5,6 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import re
+
 from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
@@ -66,6 +68,8 @@ Thanks.
 """
 
 _marker = object()
+
+UID_RX = re.compile("[a-z0-9]{32}$")
 
 
 class BikaLIMSError(Exception):
@@ -1160,6 +1164,8 @@ def is_uid(uid, validate=False):
     if not isinstance(uid, basestring):
         return False
     if len(uid) != 32:
+        return False
+    if not UID_RX.match(uid):
         return False
     if not validate:
         return True
