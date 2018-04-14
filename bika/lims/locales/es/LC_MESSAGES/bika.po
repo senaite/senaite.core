@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2018-02-09 12:39+0000\n"
-"PO-Revision-Date: 2018-04-04 20:59+0100\n"
+"PO-Revision-Date: 2018-04-14 22:43+0100\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -2078,7 +2078,7 @@ msgstr ""
 "como cabeceras de columnas en las vistas de introducción de resultados. Si "
 "'Aplicar globalmente' está activado, el campo se mostrará en una lista de "
 "selección en la cabecera de la hoja de trabajo, permitiendo establecer un "
-"valor para todos las variables de entrada de la hoja de trabajo a la vez."
+"valor para todas las variables de entrada de la hoja de trabajo a la vez."
 
 #: bika/lims/content/abstractbaseanalysis.py:89
 msgid "Define the number of decimals to be used for this result."
@@ -3885,7 +3885,7 @@ msgstr "Módulo"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:556
 msgid "Monthly"
-msgstr "Mes"
+msgstr "Mensual"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:59
 #: bika/lims/skins/bika/portlet_late_analyses.pt:59
@@ -4460,7 +4460,7 @@ msgid ""
 "The option's result value must be a number"
 msgstr ""
 "Des de aquí puede restringir los resultados del análisis a opciones "
-"específicas. Por ejemplo, si solo desea que se puedan escoger como resultado "
+"específicas. Por ejemplo, si desea que solo se pueda escoger como resultado "
 "alguna de las opciones 'Positivo', 'Negativo' o 'Indeterminado'. El valor de "
 "la opción tiene que ser numérico."
 
@@ -4802,7 +4802,7 @@ msgstr "Cantidad"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:557
 msgid "Quarterly"
-msgstr "Trimestre"
+msgstr "Trimestral"
 
 #: bika/lims/content/analysisspec.py:85
 msgid "Range Comment"
@@ -5102,14 +5102,14 @@ msgid ""
 "results reported for them with differences between the two"
 msgstr ""
 "Reportar tablas para un período de tiempo del número de muestras recibidas y "
-"resultados reportados para estas con diferencias entre si"
+"resultados reportados para estas con diferencias entre sí"
 
 #: bika/lims/browser/reports/templates/productivity.pt:485
 msgid ""
 "Report tables of Analysis Requests and totals submitted between a period of "
 "time"
 msgstr ""
-"Reportar tablas de Solicitudes de Análisis y totales entregados entre un "
+"Reportar tablas de Solicitudes de Análisis y totales entregados en un "
 "período de tiempo"
 
 #: bika/lims/content/report.py:30
@@ -5703,7 +5703,7 @@ msgid ""
 "depends on the sample type combination, specify a preservation per sample "
 "type in the table below"
 msgstr ""
-"Seleccione un método de conservación para el servicio de análisis. Si el "
+"Seleccione un método de preservación para el servicio de análisis. Si el "
 "método de preservación depende de la combinación de tipos de muestra, "
 "especifique un método de preservación por tipo de muestra de la tabla "
 "siguiente."
@@ -5720,7 +5720,7 @@ msgid ""
 msgstr ""
 "Seleccione alguno de los responsables que están registrados en el apartado "
 "'Contactos del laboratorio'. El sistema incluye los nombres de los "
-"responsables de departamento a todos los informes de análisis que le "
+"responsables de departamento en todos los informes de análisis que le "
 "pertenecen."
 
 #: bika/lims/content/analysisrequest.py:262
@@ -5798,8 +5798,9 @@ msgid ""
 "Select services in the left column to locate reference samples. Select a "
 "reference by clicking it. "
 msgstr ""
-"Seleccione los servicios de la columna de la izquierda para encontrar "
-"muestras de referencia. Podréis seleccionarlas haciendo clic encima."
+"Seleccione los servicios de la columna de la izquierda para mostrar las "
+"muestras de referencia disponibles. Haga clic sobre la muestra de referencia "
+"que desee de la columna de la derecha."
 
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:45
 #: bika/lims/browser/worksheet/templates/worksheets.pt:47
@@ -5822,8 +5823,8 @@ msgid ""
 msgstr ""
 "Seleccionar el recipiente por defecto que debe ser utilizado para este "
 "servicio de análisis. Si el recipiente depende de la combinación del tipo de "
-"muestra y del método de conservación, deberá especificar el recipiente "
-"específico para cada tipo de de muestra."
+"muestra y del método de conservación, deberá especificar el recipiente para "
+"cada tipo de de muestra."
 
 #: bika/lims/profiles/default/registry.xml
 msgid ""
@@ -5983,7 +5984,7 @@ msgid ""
 "results per email"
 msgstr ""
 "Número máximo de resultados de solicitudes de análisis por correo "
-"electrónico. Tened en cuenta que demasiadas columnas de resultados en un "
+"electrónico. Tenga en cuenta que demasiadas columnas de resultados en un "
 "correo electrónico puede comprometer la lectura."
 
 #: bika/lims/content/analysisrequest.py:803
@@ -6087,7 +6088,7 @@ msgid ""
 "not allowed"
 msgstr ""
 "Algunos servicios de análisis utilizan instrumentos sin calibración vigente. "
-"La edición de resultados no es permitida."
+"La edición de resultados no está permitida."
 
 #: bika/lims/content/abstractbaseanalysis.py:51
 #: bika/lims/content/analysiscategory.py:51 bika/lims/content/subgroup.py:22
@@ -6111,9 +6112,9 @@ msgid ""
 "position it should be a duplicate of"
 msgstr ""
 "Tamaño de la hoja de trabajo, como por ejemplo el número de posiciones para "
-"muestras de un equipo concreto. Si selecciona muestras de QC, seleccionad "
-"también qué muestras de referencia deben utilizarse. Si habéis escogido un "
-"análisis duplicado, indicad también en qué posición se encuentra el duplicado"
+"muestras de un equipo concreto. Si selecciona muestras de QC, seleccione "
+"también qué muestras de referencia deben utilizarse. Si ha escogido un "
+"análisis duplicado, indique también en qué posición se encuentra el duplicado"
 
 #: bika/lims/content/abstractbaseanalysis.py:491
 msgid ""
@@ -6193,7 +6194,7 @@ msgid ""
 "continue."
 msgstr ""
 "Proporcione un archivo Open XML (.XLSX) válido que contenga los datos de "
-"configuración del Bika para continuar."
+"configuración de SENAITE para continuar."
 
 msgid "Submit for verification"
 msgstr "Enviar para verificación"
@@ -6514,8 +6515,8 @@ msgid ""
 "The list of sample points from which this sample type can be collected.  If "
 "no sample points are selected, then all sample points are available."
 msgstr ""
-"La lista de puntos de muestreo de desde poden ser recogidas las muestras de "
-"este tipo. Si no selecciona ningún punto de muestreo, entonces estarán "
+"La lista de puntos de muestreo donde se pueden recoger las muestras de este "
+"tipo. Si no selecciona ningún punto de muestreo, entonces estarán "
 "disponibles todos los puntos de muestreo."
 
 #: bika/lims/content/samplepoint.py:84
@@ -6565,8 +6566,8 @@ msgstr "El número de análisis solicitados por tipo de muestra"
 msgid ""
 "The number of days before a password expires. 0 disables password expiry"
 msgstr ""
-"Número de días antes que caduque la contraseña. Si desea que la contraseña "
-"no caduque nunca, introduzca el valor 0."
+"Validez de la contraseña en días. Si desea que la contraseña no caduque "
+"nunca, introduzca el valor 0."
 
 #: bika/lims/content/bikasetup.py:640
 msgid ""
@@ -6702,6 +6703,9 @@ msgid ""
 "the Dashboard is not selected as the default front page. If no landing page "
 "is selected, the default Bika frontpage is displayed."
 msgstr ""
+"Página inicial para usuarios anónimos o cuando el Tablero de Control no sea "
+"la página predeterminada. Si no selecciona ninguna página de inicio, el "
+"sistema mostrará la página de bienvenida por defecto de SENAITE."
 
 #: bika/lims/content/instrument.py:112
 msgid "The serial number that uniquely identifies the instrument"
@@ -7528,7 +7532,7 @@ msgstr "Dirección web."
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:555
 msgid "Weekly"
-msgstr "Semana"
+msgstr "Semanal"
 
 #: bika/lims/controlpanel/bika_instruments.py:59
 msgid "Weeks To Expire"
@@ -7598,7 +7602,7 @@ msgstr ""
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:559
 msgid "Yearly"
-msgstr "Año"
+msgstr "Anual"
 
 #: bika/lims/browser/analysisservice.py:106
 #: bika/lims/browser/header_table.py:91
@@ -7648,7 +7652,7 @@ msgstr "y otros"
 
 #: bika/lims/content/instrumentcertification.py:252
 msgid "biannually"
-msgstr "semestre"
+msgstr "semestral"
 
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:46
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:46
@@ -7723,7 +7727,7 @@ msgstr "min"
 
 #: bika/lims/content/instrumentcertification.py:250
 msgid "monthly"
-msgstr "mes"
+msgstr "mensual"
 
 #. current version is ${current_version}. ${click_here} to disable
 #. notifications about new releases."
@@ -7735,7 +7739,7 @@ msgstr ""
 #. Default: "New Bika LIMS release available"
 #: bika/lims/browser/viewlets/templates/new_versions.pt:8
 msgid "new_version_available_title"
-msgstr ""
+msgstr "Nueva versión de SENAITE disponible"
 
 #: bika/lims/browser/dashboard/dashboard.py:361
 msgid "of"
@@ -7743,7 +7747,7 @@ msgstr "de"
 
 #: bika/lims/content/instrumentcertification.py:251
 msgid "quarterly"
-msgstr "trimestre"
+msgstr "trimestral"
 
 #: bika/lims/content/instrumentscheduledtask.py:107
 msgid "repeating every"
@@ -7809,11 +7813,11 @@ msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:249
 msgid "weekly"
-msgstr "semana"
+msgstr "semanal"
 
 #: bika/lims/content/instrumentcertification.py:253
 msgid "yearly"
-msgstr "año"
+msgstr "anual"
 
 #: bika/lims/controlpanel/bika_instruments.py:122
 msgid "{} weeks and {} day(s)"
