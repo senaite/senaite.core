@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2018-02-09 12:39+0000\n"
-"PO-Revision-Date: 2018-04-14 22:43+0100\n"
+"PO-Revision-Date: 2018-04-14 22:56+0100\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -2686,15 +2686,15 @@ msgstr ""
 
 #: bika/lims/browser/idserver/templates/numbergenerator.pt:63
 msgid "Flush"
-msgstr ""
+msgstr "Purgar"
 
 #: bika/lims/browser/idserver/view.py:72
 msgid "Flushed Number Storage"
-msgstr ""
+msgstr "Se ha purgado el contador de IDs"
 
 #: bika/lims/content/instrument.py:207
 msgid "Folder that results will be saved"
-msgstr ""
+msgstr "Directorio donde se guardan los resultados"
 
 #: bika/lims/content/instrument.py:212
 msgid ""
@@ -2710,7 +2710,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:816
 msgid "Formatting Configuration"
-msgstr ""
+msgstr "Configuración de formatos"
 
 #: bika/lims/controlpanel/bika_calculations.py:50
 msgid "Formula"
@@ -2810,7 +2810,7 @@ msgstr "Horas"
 
 #: bika/lims/content/supplier.py:56
 msgid "IBN"
-msgstr ""
+msgstr "IBAN"
 
 #: bika/lims/browser/bika_listing.py:450
 #: bika/lims/browser/referencesample.py:101
@@ -2824,7 +2824,7 @@ msgstr "URL del servidor de IDs"
 
 #: bika/lims/content/bikasetup.py:888
 msgid "ID Server Values"
-msgstr ""
+msgstr "Valores del servidor de IDs"
 
 #: bika/lims/controlpanel/bika_idserver.py:65 bika/lims/idserver.py:54
 msgid "ID Server unavailable"
@@ -3023,7 +3023,7 @@ msgstr ""
 
 #: bika/lims/config.py:59
 msgid "Ignore in Report"
-msgstr ""
+msgstr "No mostrar en el informe"
 
 #: bika/lims/browser/templates/arimport_add.pt:26
 #: bika/lims/exportimport/dataimport.py:57
@@ -3077,11 +3077,11 @@ msgstr "Incluir descripciones"
 
 #: bika/lims/validators.py:1146
 msgid "Incorrect IBAN number: %s"
-msgstr ""
+msgstr "El número IBAN no es correcto: %s"
 
 #: bika/lims/validators.py:1105
 msgid "Incorrect NIB number: %s"
-msgstr ""
+msgstr "El número NIB no es correcto: %s"
 
 #: bika/lims/browser/calcs.py:57
 msgid "Indeterminate result"
@@ -3158,7 +3158,7 @@ msgstr "Equipo"
 
 #: bika/lims/browser/instrument.py:160
 msgid "Instrument Calibrations"
-msgstr "Calibramiento de Instrumentos"
+msgstr "Calibraciones del equipo"
 
 #: bika/lims/browser/instrument.py:691
 msgid "Instrument Files"
@@ -3180,11 +3180,11 @@ msgstr "Localizaciones para equipos analíticos"
 
 #: bika/lims/browser/instrument.py:43
 msgid "Instrument Maintenance"
-msgstr "Mantenimiento de Instrumentos"
+msgstr "Mantenimiento del equipo"
 
 #: bika/lims/browser/instrument.py:301
 msgid "Instrument Scheduled Tasks"
-msgstr "Tareas Programadas de Instrumentos"
+msgstr "Tareas programadas para el equipo"
 
 #: bika/lims/content/instrument.py:279
 msgid "Instrument Type"
@@ -3208,7 +3208,7 @@ msgstr ""
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:29
 msgid "Instrument disabled until successful calibration:"
-msgstr ""
+msgstr "Se ha desactivado el instrumento hasta nueva calibración:"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:45
 msgid "Instrument disposed until new calibration tests being done:"
