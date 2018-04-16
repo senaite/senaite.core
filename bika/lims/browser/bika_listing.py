@@ -1304,8 +1304,6 @@ class BikaListingView(BrowserView):
         # return the unfiltered catalog results if no searchterm
         if not searchterm:
             brains = catalog(query)
-            logger.info(u"ListingView::search: return {} results"
-                        .format(len(brains)))
 
         # check if there is ng3 index in the catalog to query by wildcards
         elif "listing_searchable_text" in catalog.indexes():
@@ -1333,7 +1331,6 @@ class BikaListingView(BrowserView):
         #REMEMBER TextIndexNG indexes are the only indexes that wildcards can be
         used in the beginning of the string.
         http://zope.readthedocs.io/en/latest/zope2book/SearchingZCatalog.html#textindexng
-
         :param catalog: catalog to search
         :param query:
         :param searchterm: a keyword to look for in 'listing_searchable_text'

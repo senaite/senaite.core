@@ -35,10 +35,15 @@ def listing_searchable_text(instance):
     """ Indexes values of desired fields for searches in listing view. All the
     field names added to 'plain_text_fields' will be available to search by
     wildcards.
+    Please choose the searchable fields carefully and add only fields that
+    can be useful to search by. For example, there is no need to add 'SampleId'
+    since 'getId' of AR already contains that value. Nor 'ClientTitle' because
+    AR's are/can be filtered by client in Clients' 'AR Listing View'
     :return: values of the fields defined as a string
     """
     entries = []
-    plain_text_fields = ("getId", "getSampleID")
+    plain_text_fields = ('getId', 'getContactFullName', 'getSampleTypeTitle',
+                         'getSamplePointTitle',)
 
     # Concatenate plain text fields as they are
     for field_name in plain_text_fields:
