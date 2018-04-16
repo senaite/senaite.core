@@ -43,7 +43,10 @@ def listing_searchable_text(instance):
     """
     entries = []
     plain_text_fields = ('getId', 'getContactFullName', 'getSampleTypeTitle',
-                         'getSamplePointTitle',)
+                         'getSamplePointTitle', 'getCreatorFullName',
+                         'getProfilesTitle', 'getStorageLocationTitle',
+                         'getClientOrderNumber', 'getClientReference',
+                         'getClientSampleID', 'getTemplateTitle', )
 
     # Concatenate plain text fields as they are
     for field_name in plain_text_fields:
