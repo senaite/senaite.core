@@ -1338,7 +1338,7 @@ class BikaListingView(BrowserView):
         :param searchterm: a keyword to look for in 'listing_searchable_text'
         :return: brains matching the search result
         """
-        logger.info(u"ListingView::search: Prepare zcindex query for '{}'"
+        logger.info(u"ListingView::search: Prepare NG3 index query for '{}'"
                     .format(self.catalog))
         query["listing_searchable_text"] = "*" + searchterm + "*"
         return catalog(query)

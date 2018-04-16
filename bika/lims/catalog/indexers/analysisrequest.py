@@ -32,10 +32,10 @@ def assigned_state(instance):
 
 @indexer(IAnalysisRequest)
 def listing_searchable_text(instance):
-    """
-
-    :param instance:
-    :return:
+    """ Indexes values of desired fields for searches in listing view. All the
+    field names added to 'plain_text_fields' will be available to search by
+    wildcards.
+    :return: values of the fields defined as a string
     """
     entries = []
     plain_text_fields = ("getId", "getSampleID")
