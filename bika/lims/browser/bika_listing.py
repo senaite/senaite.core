@@ -1301,19 +1301,20 @@ class BikaListingView(BrowserView):
         # search the catalog
         catalog = api.get_tool(self.catalog)
 
-        # return the unfiltered catalog results
+        # return the unfiltered catalog results if no searchterm
         if not searchterm:
             brains = catalog(query)
             logger.info(u"ListingView::search: return {} results"
                         .format(len(brains)))
-            return brains
 
-        # Always expand all categories if we have a searchterm
-        self.expand_all_categories = True
-
-        if "listing_searchable_text" in catalog.indexes():
+        # check if there is ng3 index in the catalog to query by wildcards
+        elif "listing_searchable_text" in catalog.indexes():
+            # Always expand all categories if we have a searchterm
+            self.expand_all_categories = True
             brains = self.ng3_index_search(catalog, query, searchterm)
+
         else:
+            self.expand_all_categories = True
             brains = self.metadata_search(catalog, query, searchterm, ignorecase)
 
         # Sort manually?
