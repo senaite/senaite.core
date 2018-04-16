@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #772 Improved UID check in API
+
 
 **Security**
 
