@@ -56,6 +56,8 @@ def listing_searchable_text(instance):
             logger.error("{} has no attribute called '{}' ".format(
                             repr(instance), field_name))
             continue
+        if isinstance(value, list):
+            value = " ".join(value)
         entries.append(value)
 
     # Concatenate all strings to one text blob
