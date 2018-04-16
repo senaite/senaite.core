@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+-  #771 Slow Searches in Listing Views
 
 **Security**
 
