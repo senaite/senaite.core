@@ -6,8 +6,8 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.workflow import getCurrentState
 from plone.indexer import indexer
 
 
@@ -47,7 +47,12 @@ def listing_searchable_text(instance):
 
     # Concatenate plain text fields as they are
     for field_name in plain_text_fields:
-        value = api.safe_getattr(instance, field_name)
+        try:
+            value = api.safe_getattr(instance, field_name)
+        except:
+            logger.error("{} has no attribute called '{}' ".format(
+                            repr(instance), field_name))
+            continue
         entries.append(value)
 
     # Concatenate all strings to one text blob
