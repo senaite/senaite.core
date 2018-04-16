@@ -2551,6 +2551,12 @@ class AnalysisRequest(BaseFolder):
         else:
             return ''
 
+    def getStorageLocationTitle(self):
+        """ A method for AR listing catalog metadata
+        :return: Title of Storage Location
+        """
+        return self.getStorageLocation() and self.getStorageLocation().Title() or ''
+
     @security.public
     def getResultsRange(self):
         """Returns the valid result ranges for the analyses this Analysis
