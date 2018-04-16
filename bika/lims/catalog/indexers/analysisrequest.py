@@ -43,7 +43,6 @@ def listing_searchable_text(instance):
     # Concatenate plain text fields as they are
     for field_name in plain_text_fields:
         value = api.safe_getattr(instance, field_name)
-        value = value.replace("-", "=")
         entries.append(value)
 
     # Concatenate all strings to one text blob
