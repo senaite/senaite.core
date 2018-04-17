@@ -1340,6 +1340,8 @@ class BikaListingView(BrowserView):
         """
         logger.info(u"ListingView::search: Prepare NG3 index query for '{}'"
                     .format(self.catalog))
+        # If the keyword is not encoded in searches, TextIndexNG3 encodes by
+        # default encoding which we cannot always trust
         searchterm = searchterm.encode("utf-8")
         query["listing_searchable_text"] = "*" + searchterm + "*"
         return catalog(query)
