@@ -1291,6 +1291,8 @@ class BikaListingView(BrowserView):
 
         # strip whitespaces off the searchterm
         searchterm = searchterm.strip()
+        # Strip illegal characters of the searchterm
+        searchterm = searchterm.strip(u"*.!$%&/()=-+:'`´^")
         logger.info(u"ListingView::search:searchterm='{}'".format(searchterm))
 
         # create a catalog query
@@ -1338,6 +1340,7 @@ class BikaListingView(BrowserView):
         """
         logger.info(u"ListingView::search: Prepare NG3 index query for '{}'"
                     .format(self.catalog))
+        searchterm = searchterm.encode("utf-8")
         query["listing_searchable_text"] = "*" + searchterm + "*"
         return catalog(query)
 
@@ -1350,9 +1353,6 @@ class BikaListingView(BrowserView):
         :param ignorecase:
         :return: brains matching search result
         """
-        # Strip illegal characters of the searchterm
-        searchterm = searchterm.strip(u"*.!$%&/()=-+:'`´^")
-
         # create a catalog query
         logger.info(u"ListingView::search: Prepare metadata query for '{}'"
                     .format(self.catalog))
