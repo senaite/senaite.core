@@ -143,7 +143,7 @@ def getUsers(context, roles, allow_empty=True):
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """
-    wf = getToolByName(obj, 'portal_workflow')
+    wf = api.get_tool('portal_workflow', obj)
     if (hasattr(obj, 'inactive_state') and obj.inactive_state == 'inactive') or \
        wf.getInfoFor(obj, 'inactive_state', 'active') == 'inactive':
         return False
