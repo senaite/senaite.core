@@ -23,6 +23,5 @@ function PrintSamplesSheetView() {
         event.preventDefault();
         $('form#samples')[0].action = 'print_sampling_sheets';
         $('form#samples').submit();
-        $('form#samples')[0].action = 'workflow_action';
         }
     }
