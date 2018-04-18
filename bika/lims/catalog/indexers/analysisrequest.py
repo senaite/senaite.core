@@ -7,6 +7,7 @@
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
 from plone.indexer import indexer
 
@@ -42,23 +43,21 @@ def listing_searchable_text(instance):
     :return: values of the fields defined as a string
     """
     entries = []
-    plain_text_fields = ('getId', 'getContactFullName', 'getSampleTypeTitle',
-                         'getSamplePointTitle', 'getCreatorFullName',
-                         'getProfilesTitle', 'getStorageLocationTitle',
-                         'getClientOrderNumber', 'getClientReference',
-                         'getClientSampleID', 'getTemplateTitle', )
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    columns = catalog.schema()
 
     # Concatenate plain text fields as they are
-    for field_name in plain_text_fields:
+    for column in columns:
         try:
-            value = api.safe_getattr(instance, field_name)
+            value = api.safe_getattr(instance, column)
         except:
             logger.error("{} has no attribute called '{}' ".format(
-                            repr(instance), field_name))
+                            repr(instance), column))
             continue
 
         if not value:
             continue
+
         if isinstance(value, list):
             value = " ".join(value)
 
