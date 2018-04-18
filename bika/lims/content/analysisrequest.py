@@ -2546,8 +2546,9 @@ class AnalysisRequest(BaseFolder):
         """Obtains the sampling round UID
         :returns: UID
         """
-        if self.getSamplingRound():
-            return self.getSamplingRound().UID()
+        sr = self.getSamplingRound()
+        if sr:
+            return sr.UID()
         else:
             return ''
 
@@ -2555,7 +2556,10 @@ class AnalysisRequest(BaseFolder):
         """ A method for AR listing catalog metadata
         :return: Title of Storage Location
         """
-        return self.getStorageLocation() and self.getStorageLocation().Title() or ''
+        sl = self.getStorageLocation()
+        if sl:
+            return sl.Title()
+        return ''
 
     @security.public
     def getResultsRange(self):
