@@ -138,7 +138,8 @@ class SamplesPrint(BrowserView):
         # the results to the samples under that client
         samples = [sample.getObject() for sample in catalog(content_filter)]
         if self.context.portal_type == 'Client':
-            return filter(lambda obj: obj.getClientUID() == api.get_uid(self.context), samples)
+            client_uid = api.get_uid(self.context)
+            return filter(lambda obj: obj.getClientUID() == client_uid, samples)
         return samples
 
     def get_uids(self, jsonify=False):
