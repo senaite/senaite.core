@@ -132,7 +132,7 @@ class SamplesPrint(BrowserView):
             'sort_on': 'created',
             'sort_order': 'reverse',
             'review_state': ['to_be_sampled', 'scheduled_sampling'],
-            'path': {'query': "/", 'level': 0}
+            'path': {'query': "/", 'depth': 0}
         }
         # if we are printing from inside a client then limit
         # the results to the samples under that client
