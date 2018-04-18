@@ -33,14 +33,9 @@ def assigned_state(instance):
 
 @indexer(IAnalysisRequest)
 def listing_searchable_text(instance):
-    """ Indexes values of desired fields for searches in listing view. All the
-    field names added to 'plain_text_fields' will be available to search by
-    wildcards.
-    Please choose the searchable fields carefully and add only fields that
-    can be useful to search by. For example, there is no need to add 'SampleId'
-    since 'getId' of AR already contains that value. Nor 'ClientTitle' because
-    AR's are/can be filtered by client in Clients' 'AR Listing View'
-    :return: values of the fields defined as a string
+    """ Retrieves all the values of metadata columns in the catalog for
+    wildcard searches
+    :return: all metadata values joined in a string
     """
     entries = []
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
