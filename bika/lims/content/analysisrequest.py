@@ -3042,6 +3042,10 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_reject(self):
         events.after_reject(self)
 
+    @security.public
+    def workflow_script_retract(self):
+        events.after_retract(self)
+
     def SearchableText(self):
         """
         Override searchable text logic based on the requirements.
