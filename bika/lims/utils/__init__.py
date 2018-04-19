@@ -145,7 +145,7 @@ def isActive(obj):
     """
     # The import is performed here because if placed
     # at the beginning of the file we get circular imports
-    from bika.lims.workflow import is_active
+    from bika.lims.workflow import isActive as is_active
     return is_active(obj)
 
 
