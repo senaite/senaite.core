@@ -106,15 +106,6 @@ class WorkflowAction:
             items = self._get_selected_items().values()
 
         if items:
-            # If the items have descendants add them to the items list to also
-            # transition them (for example, the Analyses of an AR)
-            child_objs = []
-            for item in items:
-                if not hasattr(item, "getChildNodes"):
-                    continue
-                child_objs += [child_obj for child_obj in item.getChildNodes()]
-            items.extend(child_objs)
-
             trans, dest = self.submitTransition(action, came_from, items)
             if trans:
                 message = PMF('Changes saved.')
