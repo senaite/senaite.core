@@ -143,8 +143,10 @@ def getUsers(context, roles, allow_empty=True):
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """
-    from bika.lims.workflow import isActive
-    return isActive(obj)
+    # The import is performed here because if placed
+    # at the beginning of the file we get circular imports
+    from bika.lims.workflow import is_active
+    return is_active(obj)
 
 
 def formatDateQuery(context, date_id):
