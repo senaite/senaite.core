@@ -41,7 +41,6 @@ def listing_searchable_text(instance):
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     columns = catalog.schema()
 
-    # Concatenate plain text fields as they are
     for column in columns:
         try:
             value = api.safe_getattr(instance, column)
@@ -49,14 +48,10 @@ def listing_searchable_text(instance):
             logger.error("{} has no attribute called '{}' ".format(
                             repr(instance), column))
             continue
-
         if not value:
             continue
-
-        if isinstance(value, list):
-            value = " ".join(value)
-
-        entries.append(value)
+        parsed = api.to_searchable_text_metadata(value)
+        entries.append(parsed)
 
     # Concatenate all strings to one text blob
     return " ".join(entries)
