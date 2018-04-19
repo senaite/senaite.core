@@ -107,7 +107,7 @@ class WorkflowAction:
 
         if items:
             # If the items have descendants add them to the items list to also
-            # transition them
+            # transition them (for example, the Analyses of an AR)
             child_objs = []
             for item in items:
                 if not hasattr(item, "getChildNodes"):
