@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #775 Analyses on Analysis Requests are hyperlinked to their Worksheets
 - #774 When retracting an Analysis Requests its analyses are also retracted
 - #772 Improved UID check in API
 
