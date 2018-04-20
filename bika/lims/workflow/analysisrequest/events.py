@@ -147,7 +147,7 @@ def after_retract(obj):
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    ans = obj.getAnalyses(full_objects=True, cancellation_state='cancelled')
+    ans = obj.getAnalyses(full_objects=True)
     for analysis in ans:
         doActionFor(analysis, 'retract')
 
