@@ -5,13 +5,16 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import Missing
+import re
+
 from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
 from datetime import datetime
 from DateTime import DateTime
 
-from Products.CMFPlone.utils import base_hasattr
+from Products.CMFPlone.utils import base_hasattr, safe_unicode
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.interfaces import IFolderish
 from Products.Archetypes.BaseObject import BaseObject
@@ -66,6 +69,8 @@ Thanks.
 """
 
 _marker = object()
+
+UID_RX = re.compile("[a-z0-9]{32}$")
 
 
 class BikaLIMSError(Exception):
@@ -1161,6 +1166,8 @@ def is_uid(uid, validate=False):
         return False
     if len(uid) != 32:
         return False
+    if not UID_RX.match(uid):
+        return False
     if not validate:
         return True
 
@@ -1234,3 +1241,30 @@ def to_float(value, default=_marker):
             return to_float(default)
         fail("Value %s is not floatable" % repr(value))
     return float(value)
+
+
+def to_searchable_text_metadata(value):
+    """Parse the given metadata value to searchable text
+
+    :param value: The raw value of the metadata column
+    :returns: Searchable and translated unicode value or None
+    """
+    if not value:
+        return u""
+    if value is Missing.Value:
+        return u""
+    if is_uid(value):
+        return u""
+    if isinstance(value, (bool)):
+        return u""
+    if isinstance(value, (list, tuple)):
+        for v in value:
+            return to_searchable_text_metadata(v)
+    if isinstance(value, (dict)):
+        for k, v in value.items():
+            return to_searchable_text_metadata(v)
+    if is_date(value):
+        return value.strftime("%Y-%m-%d")
+    if not isinstance(value, basestring):
+        value = str(value)
+    return safe_unicode(value)

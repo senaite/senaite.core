@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -35,6 +36,9 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/issues/768
     fix_duplicate_variation_nonfloatable_values()
 
+    ut.addIndex(CATALOG_ANALYSIS_REQUEST_LISTING, "listing_searchable_text",
+                "TextIndexNG3")
+    ut.refreshCatalogs()
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True

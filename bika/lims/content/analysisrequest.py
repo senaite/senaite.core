@@ -2546,10 +2546,20 @@ class AnalysisRequest(BaseFolder):
         """Obtains the sampling round UID
         :returns: UID
         """
-        if self.getSamplingRound():
-            return self.getSamplingRound().UID()
+        sr = self.getSamplingRound()
+        if sr:
+            return sr.UID()
         else:
             return ''
+
+    def getStorageLocationTitle(self):
+        """ A method for AR listing catalog metadata
+        :return: Title of Storage Location
+        """
+        sl = self.getStorageLocation()
+        if sl:
+            return sl.Title()
+        return ''
 
     @security.public
     def getResultsRange(self):
@@ -3041,6 +3051,10 @@ class AnalysisRequest(BaseFolder):
     @security.public
     def workflow_script_reject(self):
         events.after_reject(self)
+
+    @security.public
+    def workflow_script_retract(self):
+        events.after_retract(self)
 
     def SearchableText(self):
         """
