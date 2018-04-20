@@ -351,6 +351,7 @@ MaxTimeAllowed = DurationField(
 # The amount of difference allowed between this analysis, and any duplicates.
 DuplicateVariation = FixedPointField(
     'DuplicateVariation',
+    default='0.00',
     schemata="Method",
     widget=DecimalWidget(
         label=_("Duplicate Variation %"),

@@ -6,8 +6,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.workflow import getCurrentState
 from plone.indexer import indexer
 
 
@@ -28,3 +29,29 @@ def assigned_state(instance):
             return 'unassigned'
 
     return 'assigned'
+
+
+@indexer(IAnalysisRequest)
+def listing_searchable_text(instance):
+    """ Retrieves all the values of metadata columns in the catalog for
+    wildcard searches
+    :return: all metadata values joined in a string
+    """
+    entries = []
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    columns = catalog.schema()
+
+    for column in columns:
+        try:
+            value = api.safe_getattr(instance, column)
+        except:
+            logger.error("{} has no attribute called '{}' ".format(
+                            repr(instance), column))
+            continue
+        if not value:
+            continue
+        parsed = api.to_searchable_text_metadata(value)
+        entries.append(parsed)
+
+    # Concatenate all strings to one text blob
+    return " ".join(entries)

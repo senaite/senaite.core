@@ -42,6 +42,7 @@ setup(
         'Products.DataGridField',
         'Products.AdvancedQuery',
         'Products.TinyMCE',
+        'Products.TextIndexNG3',
         'collective.monkeypatcher',
         'collective.js.jqueryui',
         'plone.app.z3cform',
@@ -61,6 +62,7 @@ setup(
         'plone.resource',
         'CairoSVG==1.0.20',
         'collective.taskqueue',
+        'zopyx.txng3.ext==3.4.0'
     ],
     extras_require={
         'test': [
