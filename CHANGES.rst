@@ -15,9 +15,9 @@ Changelog
 
 **Fixed**
 
+-  #771 Slow Searches in Listing Views
 - #774 When retracting an Analysis Requests its analyses are also retracted
 - #772 Improved UID check in API
-
 
 **Security**
 

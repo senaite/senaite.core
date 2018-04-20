@@ -40,6 +40,9 @@ _indexes_dict = {
     'getClientTitle': 'FieldIndex',
     'getPrioritySortkey': 'FieldIndex',
     'assigned_state': 'FieldIndex',
+    # Searchable Text Index by wildcards
+    # http://zope.readthedocs.io/en/latest/zope2book/SearchingZCatalog.html#textindexng
+    'listing_searchable_text': 'TextIndexNG3',
 }
 # Defining the columns for this catalog
 _columns_list = [
