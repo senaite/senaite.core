@@ -48,6 +48,7 @@ Changelog
 
 **Fixed**
 
+- #774 When retracting an Analysis Requests its analyses are also retracted
 - #763 Datetime conversion error in CSV Importer of Taqman 48
 - #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #735 Interim fields not created for QC Analyses on WSs
