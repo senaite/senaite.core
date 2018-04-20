@@ -1053,7 +1053,7 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-        if IAnalysisRequest.providedBy(self.context):
+        if not IAnalysisRequest.providedBy(self.context):
             # We want this icon to only appear if the context is an AR
             return
 
