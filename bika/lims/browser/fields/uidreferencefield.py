@@ -80,7 +80,7 @@ class UIDReferenceField(StringField):
             ret = value.UID
         elif api.is_at_content(value) or api.is_dexterity_content(value):
             ret = value.UID()
-        elif is_uid(context, value):
+        elif api.is_uid(value):
             ret = value
         else:
             raise ReferenceException("{}.{}: Cannot resolve UID for {}".format(
@@ -221,7 +221,7 @@ def _get_object(context, value):
 
     if api.is_at_content(value) or api.is_dexterity_content(value):
         return value
-    elif value and is_uid(context, value):
+    elif value and api.is_uid(value):
         uc = api.get_tool('uid_catalog', context=context)
         brains = uc(UID=value)
         assert len(brains) == 1
