@@ -10,6 +10,7 @@ from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DecimalWidget
@@ -476,29 +477,30 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """This function does all the reflex rule process.
         :param wf_action: is a string containing the workflow action triggered
         """
-        workflow = getToolByName(self, 'portal_workflow')
         # Check out if the analysis has any reflex rule bound to it.
         # First we have get the analysis' method because the Reflex Rule
         # objects are related to a method.
         a_method = self.getMethod()
+        if not a_method:
+            return
         # After getting the analysis' method we have to get all Reflex Rules
         # related to that method.
-        if a_method:
-            all_rrs = a_method.getBackReferences('ReflexRuleMethod')
-            # Once we have all the Reflex Rules with the same method as the
-            # analysis has, it is time to get the rules that are bound to the
-            # same analysis service that is using the analysis.
-            for rule in all_rrs:
-                state = workflow.getInfoFor(rule, 'inactive_state')
-                if state == 'inactive':
-                    continue
-                # Getting the rules to be done from the reflex rule taking
-                # in consideration the analysis service, the result and
-                # the state change
-                action_row = rule.getActionReflexRules(self, wf_action)
-                # Once we have the rules, the system has to execute its
-                # instructions if the result has the expected result.
-                doReflexRuleAction(self, action_row)
+        all_rrs = a_method.getBackReferences('ReflexRuleMethod')
+        if not all_rrs:
+            return
+        # Once we have all the Reflex Rules with the same method as the
+        # analysis has, it is time to get the rules that are bound to the
+        # same analysis service that is using the analysis.
+        for rule in all_rrs:
+            if not api.is_active(rule):
+                continue
+            # Getting the rules to be done from the reflex rule taking
+            # in consideration the analysis service, the result and
+            # the state change
+            action_row = rule.getActionReflexRules(self, wf_action)
+            # Once we have the rules, the system has to execute its
+            # instructions if the result has the expected result.
+            doReflexRuleAction(self, action_row)
 
     @security.public
     def guard_to_be_preserved(self):
@@ -560,15 +562,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
         # Do all the reflex rules process
         self._reflex_rule_process('submit')
-
-        # If all analyses from the Analysis Request to which this Analysis
-        # belongs have been submitted, then promote the action to the parent
-        # Analysis Request
-        ar = self.getRequest()
-        ans = [an.getObject() for an in ar.getAnalyses()]
-        anssub = [an for an in ans if wasTransitionPerformed(an, 'submit')]
-        if len(ans) == len(anssub):
-            doActionFor(ar, 'submit')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
         super(AbstractRoutineAnalysis, self).workflow_script_submit()
