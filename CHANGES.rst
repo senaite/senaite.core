@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #776 Analyses submission in Worksheet is slow
 - #775 Analyses on Analysis Requests are hyperlinked to their Worksheets
 - #769 Traceback when submitting duplicate when Duplicate Variation is not set
 - #771 Slow Searches in Listing Views
