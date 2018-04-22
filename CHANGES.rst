@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #777 Delay option for searches in reference widget combos
 
 **Changed**
 
