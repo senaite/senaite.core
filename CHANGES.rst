@@ -12,6 +12,8 @@ Changelog
 
 **Removed**
 
+- #779 Remove Dry Matter functionality
+
 
 **Fixed**
 
