@@ -197,12 +197,6 @@ function CalculationUtils() {
                         result = $(data['results'])[i];
                          $("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result.result);
 
-                        $('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").val(result.dry_result);
-                        $($('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").siblings()[0]).empty().append(result.dry_result);
-                        if(result.dry_result != ''){
-                            $($('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").siblings().filter(".after")).empty().append("<em class='discreet'>%</em>")
-                        }
-
                         $("input[uid='"+result.uid+"']").filter("input[field='formatted_result']").val(result.formatted_result);
                         $("span[uid='"+result.uid+"']").filter("span[field='formatted_result']").empty().append(result.formatted_result);
 
