@@ -288,13 +288,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
                     self.portal_url,
                     t(_("Accredited"))
                 )
-            if obj.getReportDryMatter():
-                after_icons += "<img\
-                src='%s/++resource++bika.lims.images/dry.png'\
-                title='%s'>" % (
-                    self.portal_url,
-                    t(_("Can be reported as dry matter"))
-                )
             if obj.getAttachmentOption() == 'r':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_reqd.png'\
