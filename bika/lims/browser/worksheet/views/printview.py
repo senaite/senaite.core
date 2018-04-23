@@ -404,7 +404,6 @@ class PrintView(BrowserView):
             'formatted_uncertainty': '',
             'retested': analysis.getRetested(),
             'remarks': to_utf8(analysis.getRemarks()),
-            'resultdm': to_utf8(analysis.getResultDM()),
             'outofrange': False,
             'type': analysis.portal_type,
             'reftype': analysis.getReferenceType() if hasattr(
