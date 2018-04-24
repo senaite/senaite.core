@@ -50,7 +50,9 @@ def upgrade(tool):
 
 def fix_permission_on_analysisrequests():
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    brains = catalog(portal_type='AnalysisRequest')
+    valid_states = ['sample_due', 'sample_received', 'sampled',
+                    'to_be_sampled', 'to_be_preserved']
+    brains = catalog(cancellation_state='active', review_state=valid_states)
     for brain in brains:
         obj = api.get_object(brain)
         mp = obj.manage_permission

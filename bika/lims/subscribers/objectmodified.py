@@ -32,11 +32,14 @@ def ObjectModifiedEventHandler(obj, event):
             reference_versions[obj.UID()] = version_id + 1
             target.reference_versions = reference_versions
 
-    elif obj.portal_type == 'AnalysisRequest':
+    # Note: obj can be also a reference!
+    # <Folder at .../client-1/4d1dd3f77b76b3427a005e1f339e7bd4/at_references>
+    elif obj.meta_type == obj.portal_type == 'AnalysisRequest':
         mp = obj.manage_permission
-        # Manage Analyses / Attachment Removal
+        # Allow to remove Analyses / Attachments
         # https://github.com/senaite/senaite.core/issues/780
-        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        can_delete = ["Manager", "LabManager", "Owner"]
+        mp(permissions.DeleteObjects, can_delete, 0)
 
     elif obj.portal_type == 'Client':
         mp = obj.manage_permission
