@@ -8,12 +8,12 @@
 import json
 from operator import attrgetter
 
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from bika.lims import api
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
@@ -21,10 +21,11 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.permissions import EditResults, ManageWorksheets
+from bika.lims.permissions import ManageWorksheets
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.workflow import in_state
+from DateTime import DateTime
 from plone.protect import CheckAuthenticator
 
 
@@ -176,7 +177,7 @@ class WorksheetWorkflowAction(WorkflowAction):
     def submit(self):
         """ Saves the form
         """
-        uids = self.request.form.get("uids", [])
+        uids = self.get_selected_uids()
         if not uids:
             return
 
@@ -191,6 +192,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         dlimits = self.request.form.get('DetectionLimit', [{}])[0]
 
         # XXX combine data from multiple bika listing tables.
+        # TODO: What's this for? I am lost here...
         item_data = {}
         if 'item_data' in form:
             if type(form['item_data']) == list:
@@ -200,12 +202,19 @@ class WorksheetWorkflowAction(WorkflowAction):
             else:
                 item_data = json.loads(form['item_data'])
 
+        # Store Analysis Requests that need to be reindexed
+        ar_uids_to_reindex = set()
+
+        # Store invalid instruments-ref.analyses
+        invalid_instrument_refs = dict()
+
+        # We manually query by all analyses uids at once here instead of using
+        # _get_selected_items from the base class, cause that function fetches
+        # the objects by uid, but sequentially one by one
         worksheet_uid = api.get_uid(self.context)
         query = dict(getWorksheetUID=worksheet_uid, UID=uids,
                      cancellation_state='active')
-        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
-        ar_uids = list()
-        for brain in brains:
+        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
             uid = api.get_uid(brain)
             analysis = api.get_object(brain)
 
@@ -222,7 +231,17 @@ class WorksheetWorkflowAction(WorkflowAction):
                 instrument = instruments[uid] or None
                 analysis.setInstrument(instrument)
                 if instrument and IReferenceAnalysis.providedBy(analysis):
-                    instrument.setDisposeUntilNextCalibrationTest(False)
+                    if is_out_of_range(analysis):
+                        # This reference analysis is out of range, so we have
+                        # to retract all analyses assigned to this same
+                        # instrument that are awaiting for verification
+                        if uid not in invalid_instrument_refs:
+                            invalid_instrument_refs[uid]=set()
+                        invalid_instrument_refs[uid].add(analysis)
+                    else:
+                        # The reference result is valid, so make the instrument
+                        # available again for further analyses
+                        instrument.setDisposeUntilNextCalibrationTest(False)
 
             # Need to save the method?
             if uid in methods:
@@ -242,10 +261,15 @@ class WorksheetWorkflowAction(WorkflowAction):
                 analysis.setDetectionLimitOperand(dlimits[uid])
 
             # Need to save results?
+            submitted = False
             if uid in results and results[uid]:
                 interims = item_data.get(uid, [])
                 analysis.setInterimFields(interims)
                 analysis.setResult(results[uid])
+
+                # Can the analysis be submitted?
+                # An analysis can only be submitted if all its dependencies
+                # are valid and have been submitted already
                 can_submit = True
                 invalid_states = ['to_be_sampled', 'to_be_preserved',
                                   'sample_due', 'sample_received']
@@ -257,99 +281,71 @@ class WorksheetWorkflowAction(WorkflowAction):
                     # doActionFor transitions the analysis to verif pending,
                     # so must only be done when results are submitted.
                     doActionFor(analysis, 'submit')
+                    submitted = True
                     if IRequestAnalysis.providedBy(analysis):
-                        request_uid = brain.getParentUID
-                        if request_uid not in ar_uids:
-                            ar_uids.append(request_uid)
-                else:
-                    analysis.reindexObject()
+                        # Store the AR uids to be reindexed later.
+                        ar_uids_to_reindex.add(brain.getParentUID)
 
-        # Reindex ARs
-        if ar_uids:
-            query = dict(UID=ar_uids)
-            ar_brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
-            for ar_brain in ar_brains:
+            if not submitted:
+                # Analysis has not been submitted, so we need to reindex the
+                # object manually, to update catalog's metadata.
+                analysis.reindexObject()
+
+        # Reindex the Analysis Requests for which at least one Analysis has
+        # been submitted. We do this here because one AR can contain multiple
+        # Analyses, so better to just reindex the AR once instead of each time.
+        # AR Catalog contains some metadata that that rely on the Analyses an
+        # Analysis Request contains.
+        if ar_uids_to_reindex:
+            query = dict(UID=ar_uids_to_reindex)
+            for ar_brain in api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING):
                 if ar_brain.review_state == 'to_be_verified':
                     continue
                 ar = api.get_object(ar_brain)
                 ar.reindexObject(idxs='assigned_state')
 
-        # Maybe some analyses need to be retracted due to a QC failure
-        # Done here because don't know if the last selected analysis is
-        # a valid QC for the instrument used in previous analyses.
-        # If we add this logic in subscribers.analyses, there's the
-        # possibility to retract analyses before the QC being reached.
-        self.retractInvalidAnalyses()
+        # If a reference analysis with an out-of-range result and instrument
+        # assigned has been submitted, retract then routine analyses that are
+        # awaiting for verification and with same instrument associated
+        retracted = list()
+        for invalid_instrument_uid in invalid_instrument_refs.keys():
+            query = dict(getInstrumentUID=invalid_instrument_uid,
+                         portal_type=['Analysis', 'DuplicateAnalysis'],
+                         review_state='to_be_verified',
+                         cancellation_state='active',)
+            brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+            for brain in brains:
+                analysis = api.get_object(brain)
+                failed_msg = '{0}: {1}'.format(
+                    ulocalized_time(DateTime(), long_format=1),
+                    _("Instrument failed reference test"))
+                an_remarks = analysis.getRemarks()
+                analysis.setRemarks('. '.join([an_remarks, failed_msg]))
+                doActionFor(analysis, 'retract')
+                retracted.append(analysis)
+
+        # If some analyses have been retracted because instrument failed a
+        # reference test, then generate a pdf report
+        if retracted:
+            # Create the Retracted Analyses List
+            report = AnalysesRetractedListReport(self.context, self.request,
+                                              self.portal_url,
+                                              'Retracted analyses', retracted)
+
+            # Attach the pdf to all ReferenceAnalysis that failed (accessible
+            # from Instrument's Internal Calibration Tests list
+            pdf = report.toPdf()
+            for ref in invalid_instrument_refs.values():
+                ref.setRetractedAnalysesPdfReport(pdf)
+
+            # Send the email
+            try:
+                report.sendEmail()
+            except:
+                pass
 
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.request.get_header("referer",
                                self.context.absolute_url())
         self.request.response.redirect(self.destination_url)
-
-    def retractInvalidAnalyses(self):
-        """ Retract the analyses with validation pending status for which
-            the instrument used failed a QC Test.
-        """
-        toretract = {}
-        instruments = {}
-        refs = []
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        selected = WorkflowAction._get_selected_items(self)
-        for uid in selected.iterkeys():
-            # We need to do this instead of using the dict values
-            # directly because all these analyses have been saved before
-            # and don't know if they already had an instrument assigned
-            an = rc.lookupObject(uid)
-            if an.portal_type == 'ReferenceAnalysis':
-                refs.append(an)
-                instrument = an.getInstrument()
-                if instrument and instrument.UID() not in instruments:
-                    instruments[instrument.UID()] = instrument
-
-        for instr in instruments.itervalues():
-            analyses = instr.getAnalysesToRetract()
-            for a in analyses:
-                if a.UID() not in toretract:
-                    toretract[a.UID] = a
-
-        retracted = []
-        for analysis in toretract.itervalues():
-            try:
-                # add a remark to this analysis
-                failedtxt = ulocalized_time(DateTime(), long_format=0)
-                failedtxt = '%s: %s' % (failedtxt, _("Instrument failed reference test"))
-                analysis.setRemarks(failedtxt)
-
-                # retract the analysis
-                doActionFor(analysis, 'retract')
-                retracted.append(analysis)
-            except:
-                # Already retracted as a dependant from a previous one?
-                pass
-
-        if len(retracted) > 0:
-            # Create the Retracted Analyses List
-            rep = AnalysesRetractedListReport(self.context,
-                                               self.request,
-                                               self.portal_url,
-                                               'Retracted analyses',
-                                               retracted)
-
-            # Attach the pdf to the ReferenceAnalysis (accessible
-            # from Instrument's Internal Calibration Tests list
-            pdf = rep.toPdf()
-            for ref in refs:
-                ref.setRetractedAnalysesPdfReport(pdf)
-
-            # Send the email
-            try:
-                rep.sendEmail()
-            except:
-                pass
-
-            # TODO: mostra una finestra amb els resultats publicats d'AS
-            # que han utilitzat l'instrument des de la seva última
-            # calibració vàlida, amb els emails, telèfons dels
-            # contactes associats per a una intervenció manual
-            pass

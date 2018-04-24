@@ -433,17 +433,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     # The current analysis allows the instrument regards
                     # to its analysis service and method?
                     if (instruments[uid]==''):
-                        previnstr = analysis.getInstrument()
-                        if previnstr:
-                            previnstr.removeAnalysis(analysis)
                         analysis.setInstrument(None)
                     elif analysis.isInstrumentAllowed(instruments[uid]):
-                        previnstr = analysis.getInstrument()
-                        if previnstr:
-                            previnstr.removeAnalysis(analysis)
                         analysis.setInstrument(instruments[uid])
-                        instrument = analysis.getInstrument()
-                        instrument.addAnalysis(analysis)
 
             # Need to save the method?
             if uid in methods and analysis_active:
