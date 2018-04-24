@@ -5,10 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims.permissions import ManageLoginDetails
+from bika.lims.permissions import ManageSupplyOrders
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims.permissions import ManageSupplyOrders, ManageLoginDetails
-from bika.lims.interfaces import IAnalysisRequest
 
 
 def ObjectModifiedEventHandler(obj, event):
