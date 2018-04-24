@@ -21,6 +21,7 @@ from bika.lims import PMF, api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
@@ -32,6 +33,7 @@ from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import in_state
 from bika.lims.workflow import wasTransitionPerformed
 from email.Utils import formataddr
 
@@ -337,15 +339,30 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.destination_url)
 
     def workflow_action_submit(self):
-        form = self.request.form
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
+        uids = self.get_selected_uids()
+        if not uids:
+            message = _('No items selected.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(self.context.absolute_url())
+            return
+
         if not isActive(self.context):
             message = _('Item is inactive.')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
             return
+
+        form = self.request.form
+        remarks = form.get('Remarks', [{}])[0]
+        results = form.get('Result', [{}])[0]
+        retested = form.get('retested', {})
+        methods = form.get('Method', [{}])[0]
+        instruments = form.get('Instrument', [{}])[0]
+        analysts =  form.get('Analyst', [{}])[0]
+        uncertainties =  form.get('Uncertainty', [{}])[0]
+        dlimits =  form.get('DetectionLimit', [{}])[0]
+
         # calcs.js has kept item_data and form input interim values synced,
         # so the json strings from item_data will be the same as the form values
         item_data = {}
@@ -356,133 +373,52 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         item_data[i] = d
             else:
                 item_data = json.loads(form['item_data'])
-        selected_analyses = WorkflowAction._get_selected_items(self)
-        results = {}
-        hasInterims = {}
-        # check that the form values match the database
-        # save them if not.
-        for uid, result in self.request.form.get('Result', [{}])[0].items():
-            # Do not save data for analyses that are not selected.
-            if uid not in selected_analyses:
-                continue
-            analysis = selected_analyses[uid]
-            # never save any part of rows with empty result values.
-            # https://jira.bikalabs.com/browse/LIMS-1944:
-            if not result:
-                continue
-            # ignore result if analysis object no longer exists
-            if not analysis:
-                continue
-            # Prevent saving data if the analysis is already transitioned
-            if not (checkPermission(EditResults, analysis) or checkPermission(EditFieldResults, analysis)):
-                title = safe_unicode(analysis.Title())
-                msgid = _('Result for ${analysis} could not be saved because '
-                          'it was already submitted by another user.',
-                          mapping={'analysis': title})
-                message = safe_unicode(t(msgid))
-                self.context.plone_utils.addPortalMessage(message)
-                continue
-            # if the AR has ReportDryMatter set, get dry_result from form.
-            dry_result = ''
-            if hasattr(self.context, 'getReportDryMatter') \
-               and self.context.getReportDryMatter():
-                for k, v in self.request.form['ResultDM'][0].items():
-                    if uid == k:
-                        dry_result = v
-                        break
-            results[uid] = result
-            interimFields = item_data[uid]
-            if len(interimFields) > 0:
-                hasInterims[uid] = True
-            else:
-                hasInterims[uid] = False
-            retested = 'retested' in form and uid in form['retested']
-            remarks = form.get('Remarks', [{}, ])[0].get(uid, '')
-            # Don't save uneccessary things
-            # https://github.com/bikalabs/Bika-LIMS/issues/766:
-            #    Somehow, using analysis.edit() fails silently when
-            #    logged in as Analyst.
-            if analysis.getInterimFields() != interimFields or \
-               analysis.getRetested() != retested or \
-               analysis.getRemarks() != remarks:
-                analysis.setInterimFields(interimFields)
-                analysis.setRetested(retested)
-                analysis.setRemarks(remarks)
-            # save results separately, otherwise capture date is rewritten
-            if analysis.getResult() != result or \
-               analysis.getResultDM() != dry_result:
-                analysis.setResultDM(dry_result)
-                analysis.setResult(result)
-        methods = self.request.form.get('Method', [{}])[0]
-        instruments = self.request.form.get('Instrument', [{}])[0]
-        analysts = self.request.form.get('Analyst', [{}])[0]
-        uncertainties = self.request.form.get('Uncertainty', [{}])[0]
-        dlimits = self.request.form.get('DetectionLimit', [{}])[0]
-        # discover which items may be submitted
-        submissable = []
-        for uid, analysis in selected_analyses.items():
-            analysis_active = isActive(analysis)
+
+        query = dict(UID=uids, cancellation_state='active')
+        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
+            uid = api.get_uid(brain)
+            analysis = api.get_object(brain)
+
+            # Need to save remarks?
+            if uid in remarks:
+                analysis.setRemarks(remarks[uid])
+
+            # Retested?
+            if uid in retested:
+                analysis.setRetested(retested[uid])
 
             # Need to save the instrument?
-            if uid in instruments and analysis_active:
-                # TODO: Add SetAnalysisInstrument permission
-                # allow_setinstrument = sm.checkPermission(SetAnalysisInstrument)
-                allow_setinstrument = True
-                # ---8<-----
-                if allow_setinstrument is True:
-                    # The current analysis allows the instrument regards
-                    # to its analysis service and method?
-                    if (instruments[uid]==''):
-                        analysis.setInstrument(None)
-                    elif analysis.isInstrumentAllowed(instruments[uid]):
-                        analysis.setInstrument(instruments[uid])
+            if uid in instruments:
+                instrument = instruments[uid] or None
+                analysis.setInstrument(instrument)
 
             # Need to save the method?
-            if uid in methods and analysis_active:
-                # TODO: Add SetAnalysisMethod permission
-                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
-                allow_setmethod = True
-                # ---8<-----
-                if allow_setmethod is True and analysis.isMethodAllowed(methods[uid]):
-                    analysis.setMethod(methods[uid])
+            if uid in methods:
+                method = methods[uid] or None
+                analysis.setMethod(method)
 
             # Need to save the analyst?
-            if uid in analysts and analysis_active:
+            if uid in analysts:
                 analysis.setAnalyst(analysts[uid])
 
             # Need to save the uncertainty?
-            if uid in uncertainties and analysis_active:
+            if uid in uncertainties:
                 analysis.setUncertainty(uncertainties[uid])
 
             # Need to save the detection limit?
-            if analysis_active:
-                analysis.setDetectionLimitOperand(dlimits.get(uid, None))
+            if uid in dlimits and dlimits[uid]:
+                analysis.setDetectionLimitOperand(dlimits[uid])
 
-            if uid not in results or not results[uid]:
-                continue
-            can_submit = True
-            # guard_submit does a lot of the same stuff, too.
-            # the code there has also been commented.
-            # we must find a better way to allow dependencies to control
-            # this process.
-            # for dependency in analysis.getDependencies():
-            #     dep_state = workflow.getInfoFor(dependency, 'review_state')
-            #     if hasInterims[uid]:
-            #         if dep_state in ('to_be_sampled', 'to_be_preserved',
-            #                          'sample_due', 'sample_received',
-            #                          'attachment_due', 'to_be_verified',):
-            #             can_submit = False
-            #             break
-            #     else:
-            #         if dep_state in ('to_be_sampled', 'to_be_preserved',
-            #                          'sample_due', 'sample_received',):
-            #             can_submit = False
-            #             break
-            if can_submit and analysis not in submissable:
-                submissable.append(analysis)
-        # and then submit them.
-        for analysis in submissable:
-            doActionFor(analysis, 'submit')
+            # Need to save results?
+            if uid in results and results[uid]:
+                interims = item_data.get(uid, [])
+                analysis.setInterimFields(interims)
+                analysis.setResult(results[uid])
+                doActionFor(analysis, 'submit')
+            else:
+                # Analysis has not been submitted, so we need to reindex the
+                # object manually, to update catalog's metadata.
+                analysis.reindexObject()
 
         # LIMS-2366: Finally, when we are done processing all applicable
         # analyses, we must attempt to initiate the submit transition on the
@@ -497,6 +433,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         else:
             ar = self.context
         doActionFor(ar, 'submit')
+        ar.reindexObject()
 
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')

@@ -179,6 +179,9 @@ class WorksheetWorkflowAction(WorkflowAction):
         """
         uids = self.get_selected_uids()
         if not uids:
+            message = _('No items selected.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(self.context.absolute_url())
             return
 
         form = self.request.form
