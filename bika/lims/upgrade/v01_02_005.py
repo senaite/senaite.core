@@ -4,12 +4,14 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.Archetypes.config import REFERENCE_CATALOG
 
 version = '1.2.5'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -28,16 +30,22 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
-    # -------- ADD YOUR STUFF HERE --------
-
     # Traceback when submitting duplicate when Duplicate Variation is not set
     # Walkthrough all analyses and analyses services and set 0.00 value for
     # DuplicateVariation if returns None
     # https://github.com/senaite/senaite.core/issues/768
-    fix_duplicate_variation_nonfloatable_values()
+    #fix_duplicate_variation_nonfloatable_values()
 
+    # Analyses submission in Worksheets is slow
+    # Remove "_LatestReferenceAnalyses" ReferenceField. Is not used anymore,
+    # https://github.com/senaite/senaite.core/pull/776
+    del_at_refs('InstrumentLatestReferenceAnalyses')
+
+    # Make searches in Analysis Request listings faster
+    # https://github.com/senaite/senaite.core/pull/771
     ut.addIndex(CATALOG_ANALYSIS_REQUEST_LISTING, "listing_searchable_text",
                 "TextIndexNG3")
+
     ut.refreshCatalogs()
     logger.info("{0} upgraded to version {1}".format(product, version))
 
@@ -68,3 +76,24 @@ def fix_duplicate_variation_nonfloatable_values():
         analysis.setDuplicateVariation(0.0)
         logger.info("Updated Duplicate Variation for Analysis '%s': '0.0'" % (
                     analysis.Title()))
+
+def del_at_refs(relationship, pgthreshold=100):
+    rc = api.get_tool(REFERENCE_CATALOG)
+    refs = rc(relationship=relationship)
+    if not refs:
+        return
+
+    logger.info("Found {} refs for {}".format(len(refs), relationship))
+    total = len(refs)
+    removed = 0
+    for ref in refs:
+        ref_object = ref.getObject()
+        if ref_object:
+            ref_object.aq_parent.manage_delObjects([ref.UID])
+        removed+=1
+        if removed % pgthreshold == 0:
+            ratio = '%.2f' % (float(removed) * 100 / float(total))
+            msg = "Removed {0}/{1} references ({2}%)"
+            logger.info(msg.format(removed, total, ratio))
+    if removed:
+        logger.info("Performed {} deletions".format(removed))
