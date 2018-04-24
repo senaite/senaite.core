@@ -200,17 +200,18 @@ def _get_object(context, value):
     :type context: BaseContent
     :param value: A UID.
     :type value: string
-    :return: Returns a Content object.
+    :return: Returns a Content object or None.
     :rtype: BaseContent
     """
-
-    if api.is_at_content(value) or api.is_dexterity_content(value):
+    if not value:
+        return None
+    if api.is_brain(value):
+        return api.get_object(value)
+    if api.is_object(value):
         return value
-    elif value and api.is_uid(value):
-        uc = api.get_tool('uid_catalog', context=context)
-        brains = uc(UID=value)
-        assert len(brains) == 1
-        return brains[0].getObject()
+    if api.is_uid(value):
+        return api.get_object_by_uid(value)
+    return None
 
 
 def get_storage(context):
