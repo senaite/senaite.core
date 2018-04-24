@@ -193,21 +193,6 @@ class UIDReferenceField(StringField):
                 StringField.set(self, context, '', **kwargs)
 
 
-def is_uid(context, value):
-    """Checks that the string passed is a valid UID of an existing object
-
-    :param context: Context is only used for acquiring uid_catalog tool.
-    :type context: BaseContent
-    :param value: A UID.
-    :type value: string
-    :return: True if the value is a UID and exists as an entry in uid_catalog.
-    :rtype: bool
-    """
-    uc = api.get_tool('uid_catalog', context=context)
-    brains = uc(UID=value)
-    return brains and True or False
-
-
 def _get_object(context, value):
     """Resolve a UID to an object.
 
