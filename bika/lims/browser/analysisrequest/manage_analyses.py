@@ -111,7 +111,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('All'),
-             'contentFilter': {},
+             'contentFilter': {"inactive_state": "active"},
              'columns': columns,
              'transitions': [{'id': 'empty'}, ],  # none
              'custom_transitions': [{'id': 'save_analyses_button',
