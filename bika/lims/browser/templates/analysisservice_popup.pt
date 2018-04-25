@@ -56,13 +56,6 @@
         </span>
       </h5>
 
-      <h5 tal:condition="view/service/getReportDryMatter">
-        <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dry.png"/>
-        <span i18n:translate="">
-          Can be reported as dry matter
-        </span>
-      </h5>
-
       <tal:method define="method view/service/getMethod"
                   condition="method">
         <h5>

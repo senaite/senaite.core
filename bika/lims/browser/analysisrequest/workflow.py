@@ -382,14 +382,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 message = safe_unicode(t(msgid))
                 self.context.plone_utils.addPortalMessage(message)
                 continue
-            # if the AR has ReportDryMatter set, get dry_result from form.
-            dry_result = ''
-            if hasattr(self.context, 'getReportDryMatter') \
-               and self.context.getReportDryMatter():
-                for k, v in self.request.form['ResultDM'][0].items():
-                    if uid == k:
-                        dry_result = v
-                        break
             results[uid] = result
             interimFields = item_data[uid]
             if len(interimFields) > 0:
@@ -409,9 +401,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis.setRetested(retested)
                 analysis.setRemarks(remarks)
             # save results separately, otherwise capture date is rewritten
-            if analysis.getResult() != result or \
-               analysis.getResultDM() != dry_result:
-                analysis.setResultDM(dry_result)
+            if analysis.getResult() != result:
                 analysis.setResult(result)
         methods = self.request.form.get('Method', [{}])[0]
         instruments = self.request.form.get('Instrument', [{}])[0]

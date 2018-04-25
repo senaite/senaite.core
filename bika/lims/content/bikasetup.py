@@ -433,20 +433,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    ReferenceField(
-        'DryMatterService',
-        schemata="Analyses",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
-        allowed_types=('AnalysisService',),
-        relationship='SetupDryAnalysisService',
-        vocabulary='getAnalysisServicesVocabulary',
-        referenceClass=HoldingReference,
-        widget=ReferenceWidget(
-            label=_("Dry matter analysis"),
-            description=_("The analysis to be used for determining dry matter."),
-        )
-    ),
     LinesField(
         'ARImportOption',
         schemata="Analyses",

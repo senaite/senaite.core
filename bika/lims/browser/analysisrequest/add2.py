@@ -130,12 +130,6 @@ class AnalysisRequestAddView(BrowserView):
         bika_setup = api.get_bika_setup()
         return bika_setup.getEnableARSpecs()
 
-    def get_drymatter_service(self):
-        """The analysis to be used for determining dry matter
-        """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getDryMatterService()
-
     def get_ar_count(self):
         """Return the ar_count request paramteter
         """
@@ -1044,7 +1038,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "short_title": obj.getShortTitle(),
             "scientific_name": obj.getScientificName(),
             "unit": obj.getUnit(),
-            "report_dry_matter": obj.getReportDryMatter(),
             "keyword": obj.getKeyword(),
             "methods": map(self.get_method_info, obj.getMethods()),
             "calculation": self.get_calculation_info(obj.getCalculation()),
@@ -1099,7 +1092,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "composite": obj.getComposite(),
             "partitions": obj.getPartitions(),
             "remarks": obj.getRemarks(),
-            "report_dry_matter": obj.getReportDryMatter(),
             "sample_point_title": sample_point_title,
             "sample_point_uid": sample_point_uid,
             "sample_type_title": sample_type_title,
@@ -1405,12 +1397,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             sample_metadata = {}
             # Mapping of sampletype UID -> sampletype object info
             sampletype_metadata = {}
-            # Mapping of drymatter UID -> drymatter service info
-            dms_metadata = {}
-            # Mapping of drymatter service (dms) -> list of dependent services
-            dms_to_services = {}
-            # Mapping of dependent services -> drymatter service (dms)
-            service_to_dms = {}
             # Mapping of specification UID -> specification object info
             specification_metadata = {}
             # Mapping of specification UID -> list of service UIDs
@@ -1482,9 +1468,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # remember the template metadata
                 template_metadata[uid] = metadata
 
-                # XXX notify below to include the drymatter service as well
-                record["ReportDryMatter"] = obj.getReportDryMatter()
-
                 # profile from the template
                 profile = obj.getAnalysisProfile()
                 # add the profile to the other profiles
@@ -1509,31 +1492,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                         service_to_templates[service_uid].append(uid)
                     else:
                         service_to_templates[service_uid] = [uid]
-
-            # DRY MATTER
-            dms = self.get_drymatter_service()
-            if dms and record.get("ReportDryMatter"):
-                # get the UID of the drymatter service
-                dms_uid = api.get_uid(dms)
-                # get the drymatter metadata
-                metadata = self.get_service_info(dms)
-                # remember the metadata of the drymatter service
-                dms_metadata[dms_uid] = metadata
-                # add the drymatter service to the service collection (processed later)
-                _services[dms_uid] = dms
-                # get the dependencies of the drymatter service
-                dms_deps = self.get_calculation_dependencies_for(dms)
-                # add the drymatter service dependencies to the service collection (processed later)
-                _services.update(dms_deps)
-                # remember a mapping of dms uid -> services
-                dms_to_services[dms_uid] = dms_deps.keys() + [dms_uid]
-                # remember a mapping of dms dependency uid -> dms
-                service_to_dms[dms_uid] = [dms_uid]
-                for dep_uid, dep in dms_deps.iteritems():
-                    if dep_uid in service_to_dms:
-                        service_to_dms[dep_uid].append(dms_uid)
-                    else:
-                        service_to_dms[dep_uid] = [dms_uid]
 
             # PROFILES
             for uid, obj in _profiles.iteritems():

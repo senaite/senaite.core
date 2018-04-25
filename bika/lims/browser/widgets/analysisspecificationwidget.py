@@ -119,11 +119,6 @@ class AnalysisSpecificationView(BikaListingView):
                 src='%s/++resource++bika.lims.images/accredited.png'\
                 title='%s'>"%(self.context.absolute_url(),
                               _("Accredited"))
-            if service.getReportDryMatter():
-                after_icons += "<img\
-                src='%s/++resource++bika.lims.images/dry.png'\
-                title='%s'>"%(self.context.absolute_url(),
-                              _("Can be reported as dry matter"))
             if service.getAttachmentOption() == 'r':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_reqd.png'\
