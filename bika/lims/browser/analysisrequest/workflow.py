@@ -13,13 +13,13 @@ from string import Template
 import plone
 import zope.event
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import PMF, api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
+from bika.lims.browser.analyses.workflow import AnalysesWorkflowAction
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.analysisspec import ResultsRangeDict
@@ -38,7 +38,7 @@ from bika.lims.workflow import wasTransitionPerformed
 from email.Utils import formataddr
 
 
-class AnalysisRequestWorkflowAction(WorkflowAction):
+class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
 
     """Workflow actions taken in AnalysisRequest context.
 
@@ -339,104 +339,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.destination_url)
 
     def workflow_action_submit(self):
+        AnalysesWorkflowAction.workflow_action_submit(self)
         checkPermission = self.context.portal_membership.checkPermission
-        uids = self.get_selected_uids()
-        if not uids:
-            message = _('No items selected.')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(self.context.absolute_url())
-            return
-
-        if not isActive(self.context):
-            message = _('Item is inactive.')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(self.context.absolute_url())
-            return
-
-        form = self.request.form
-        remarks = form.get('Remarks', [{}])[0]
-        results = form.get('Result', [{}])[0]
-        retested = form.get('retested', {})
-        methods = form.get('Method', [{}])[0]
-        instruments = form.get('Instrument', [{}])[0]
-        analysts =  form.get('Analyst', [{}])[0]
-        uncertainties =  form.get('Uncertainty', [{}])[0]
-        dlimits =  form.get('DetectionLimit', [{}])[0]
-
-        # calcs.js has kept item_data and form input interim values synced,
-        # so the json strings from item_data will be the same as the form values
-        item_data = {}
-        if 'item_data' in form:
-            if isinstance(form['item_data'], list):
-                for i_d in form['item_data']:
-                    for i, d in json.loads(i_d).items():
-                        item_data[i] = d
-            else:
-                item_data = json.loads(form['item_data'])
-
-        query = dict(UID=uids, cancellation_state='active')
-        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
-            uid = api.get_uid(brain)
-            analysis = api.get_object(brain)
-
-            # Need to save remarks?
-            if uid in remarks:
-                analysis.setRemarks(remarks[uid])
-
-            # Retested?
-            if uid in retested:
-                analysis.setRetested(retested[uid])
-
-            # Need to save the instrument?
-            if uid in instruments:
-                instrument = instruments[uid] or None
-                analysis.setInstrument(instrument)
-
-            # Need to save the method?
-            if uid in methods:
-                method = methods[uid] or None
-                analysis.setMethod(method)
-
-            # Need to save the analyst?
-            if uid in analysts:
-                analysis.setAnalyst(analysts[uid])
-
-            # Need to save the uncertainty?
-            if uid in uncertainties:
-                analysis.setUncertainty(uncertainties[uid])
-
-            # Need to save the detection limit?
-            if uid in dlimits and dlimits[uid]:
-                analysis.setDetectionLimitOperand(dlimits[uid])
-
-            # Need to save results?
-            if uid in results and results[uid]:
-                interims = item_data.get(uid, [])
-                analysis.setInterimFields(interims)
-                analysis.setResult(results[uid])
-                doActionFor(analysis, 'submit')
-            else:
-                # Analysis has not been submitted, so we need to reindex the
-                # object manually, to update catalog's metadata.
-                analysis.reindexObject()
-
-        # LIMS-2366: Finally, when we are done processing all applicable
-        # analyses, we must attempt to initiate the submit transition on the
-        # AR itself. This is for the case where "general retraction" has been
-        # done, or where the last "received" analysis has been removed, and
-        # the AR is in state "received" while there are no "received" analyses
-        # left to trigger the parent transition.
-        if self.context.portal_type == 'Sample':
-            ar = self.context.getAnalysisRequests()[0]
-        elif self.context.portal_type == 'Analysis':
-            ar = self.context.aq_parent
-        else:
-            ar = self.context
-        doActionFor(ar, 'submit')
-        ar.reindexObject()
-
-        message = PMF("Changes saved.")
-        self.context.plone_utils.addPortalMessage(message, 'info')
         if checkPermission(EditResults, self.context):
             self.destination_url = self.context.absolute_url() + "/manage_results"
         else:
