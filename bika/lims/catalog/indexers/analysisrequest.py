@@ -42,14 +42,7 @@ def listing_searchable_text(instance):
     columns = catalog.schema()
 
     for column in columns:
-        try:
-            value = api.safe_getattr(instance, column)
-        except:
-            logger.error("{} has no attribute called '{}' ".format(
-                            repr(instance), column))
-            continue
-        if not value:
-            continue
+        value = api.safe_getattr(instance, column, None)
         parsed = api.to_searchable_text_metadata(value)
         entries.append(parsed)
 
