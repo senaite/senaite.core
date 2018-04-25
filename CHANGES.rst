@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #788 Lab Clerks cannot see Contacts tab of Clients
 - #781 Delete Permission on ARs for Lab Managers
 - #784 Fix workflow state filter not kept when expanding categories in AS listing
 - #786 Fix inactive services listed in AR "Manage Analyses" forms

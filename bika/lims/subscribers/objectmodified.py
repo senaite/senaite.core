@@ -45,7 +45,7 @@ def ObjectModifiedEventHandler(obj, event):
         mp = obj.manage_permission
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk',  'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabClerk', 'LabManager', 'Owner'], 0)
         mp(ManageSupplyOrders, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
 

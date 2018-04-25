@@ -327,7 +327,7 @@ def setup_permissions(portal):
         obj = contact.getObject()
         mp = contact.manage_permission
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk','Owner', 'SamplingCoordinator'], 0)
 
     # /Clients
 
