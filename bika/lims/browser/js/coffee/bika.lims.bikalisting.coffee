@@ -342,7 +342,7 @@ class window.BikaListingTableView
     url = cat_url or base_url
 
     # prepare a new form data
-    form_data = new FormData()
+    form_data = new FormData form[0]
     form_data.set "cat", cat_id
     form_data.set "form_id", form_id
     form_data.set "ajax_category_expand", 1

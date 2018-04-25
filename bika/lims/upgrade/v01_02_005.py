@@ -10,6 +10,7 @@ from bika.lims.catalog.analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_L
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.CMFCore import permissions
 
 version = '1.2.5'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -30,6 +31,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    # Lab Managers can not remove Analyses in "Manage Analyses" form
+    fix_permission_on_analysisrequests()
+
     # Traceback when submitting duplicate when Duplicate Variation is not set
     # Walkthrough all analyses and analyses services and set 0.00 value for
     # DuplicateVariation if returns None
@@ -42,6 +46,20 @@ def upgrade(tool):
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
+
+
+def fix_permission_on_analysisrequests():
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    valid_states = ['sample_due', 'sample_received', 'sampled',
+                    'to_be_sampled', 'to_be_preserved']
+    brains = catalog(cancellation_state='active', review_state=valid_states)
+    for brain in brains:
+        obj = api.get_object(brain)
+        mp = obj.manage_permission
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        logger.info("Fixed '{}' permission on '{}'".format(
+            permissions.DeleteObjects, obj.Title()))
+
 
 def fix_duplicate_variation_nonfloatable_values():
     # Update Analysis Services
