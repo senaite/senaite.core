@@ -37,21 +37,15 @@ def listing_searchable_text(instance):
     wildcard searches
     :return: all metadata values joined in a string
     """
-    entries = []
+    entries = set()
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     columns = catalog.schema()
 
     for column in columns:
-        try:
-            value = api.safe_getattr(instance, column)
-        except:
-            logger.error("{} has no attribute called '{}' ".format(
-                            repr(instance), column))
-            continue
-        if not value:
-            continue
+        value = api.safe_getattr(instance, column, None)
         parsed = api.to_searchable_text_metadata(value)
-        entries.append(parsed)
+        if parsed:
+            entries.add(parsed)
 
     # Concatenate all strings to one text blob
     return " ".join(entries)

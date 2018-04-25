@@ -201,22 +201,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         doActionFor(analysis, 'assign')
 
-        # If a dependency of DryMatter service is added here, we need to
-        # make sure that the dry matter analysis itself is also
-        # present.  Otherwise WS calculations refer to the DB version
-        # of the DM analysis, which is out of sync with the form.
-        dms = self.bika_setup.getDryMatterService()
-        if dms:
-            dmk = dms.getKeyword()
-            deps = analysis.getDependents()
-            # if dry matter service in my dependents:
-            if dmk in [a.getKeyword() for a in deps]:
-                # get dry matter analysis from AR
-                dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
-                                                     full_objects=True)[0]
-                # add it.
-                if dma not in self.getAnalyses():
-                    self.addAnalysis(dma)
         # Reindex the worksheet in order to update its columns
         self.reindexObject()
         analysis.reindexObject(idxs=['getWorksheetUID', ])

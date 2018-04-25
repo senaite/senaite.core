@@ -12,10 +12,13 @@ Changelog
 
 **Removed**
 
+- #779 Remove Dry Matter functionality
+
 
 **Fixed**
 
 - #776 Analyses submission in Worksheet is slow
+- #781 Delete Permission on ARs for Lab Managers
 - #784 Fix workflow state filter not kept when expanding categories in AS listing
 - #786 Fix inactive services listed in AR "Manage Analyses" forms
 - #775 Analyses on Analysis Requests are hyperlinked to their Worksheets
@@ -41,6 +44,7 @@ Changelog
 
 **Changed**
 
+- #765 Department Filtering Improvements
 - #746 StringField to UIDReferenceField for Default Department of Lab Contact
 - #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`

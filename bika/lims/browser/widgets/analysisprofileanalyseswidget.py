@@ -143,9 +143,6 @@ class AnalysisProfileAnalysesView(BikaListingView):
         if obj.getAccredited():
             after_icons += u"<img src='{}/++resource++bika.lims.images/accredited.png' title='{}'>".format(
                 self.context.absolute_url(), _("Accredited"))
-        if obj.getReportDryMatter():
-            after_icons += u"<img src='{}/++resource++bika.lims.images/dry.png' title='{}'>".format(
-                self.context.absolute_url(), _("Can be reported as dry matter"))
         if obj.getAttachmentOption() == "r":
             after_icons += u"<img src='{}/++resource++bika.lims.images/attach_reqd.png' title='{}'>".format(
                 self.context.absolute_url(), _("Attachment required"))

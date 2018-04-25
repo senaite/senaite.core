@@ -58,9 +58,15 @@ class AnalysisRequestsView(BikaListingView):
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
-            "path": {"query": "/", "depth": 2},
             "cancellation_state": "active",
         }
+
+        # Filter by Department
+        if self.context.bika_setup.getAllowDepartmentFiltering():
+            deps = self.request.get('filter_by_department_info', '')
+            dep_uids = deps.split(",")
+            dep_query = {"query": dep_uids, "operator": "or"}
+            self.contentFilter['getDepartmentUIDs'] = dep_query
 
         self.context_actions = {}
 
@@ -613,31 +619,10 @@ class AnalysisRequestsView(BikaListingView):
         self.review_states = new_states
 
     def isItemAllowed(self, obj):
+        """ If Adnvanced Filter bar is enabled, this method checks if the item
+        matches advanced filter bar criteria
         """
-        It checks if the analysis request can be added to the list depending
-        on the department filter. It checks the department of each analysis
-        service from each analysis belonguing to the given analysis request.
-        If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis request brain.
-        @return: boolean
-        """
-        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
-            return False
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
-        # Getting the department from analysis service
-        deps = obj.getDepartmentUIDs if hasattr(obj, "getDepartmentUIDs")\
-            else []
-        result = True
-        if deps:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get("filter_by_department_info", "")
-            # Comparing departments" UIDs
-            deps_uids = set(deps)
-            filter_uids = set(cookie_dep_uid.split(","))
-            matches = deps_uids & filter_uids
-            result = len(matches) > 0
-        return result
+        return not self.filter_bar_enabled or self.filter_bar_check_item(obj)
 
     def folderitems(self, full_objects=False, classic=False):
         # We need to get the portal catalog here in roder to save process

@@ -48,7 +48,6 @@
       // Note: Context of callback bound to this object
       this.on_analysis_profile_removed = this.on_analysis_profile_removed.bind(this);
       this.on_analysis_checkbox_click = this.on_analysis_checkbox_click.bind(this);
-      this.on_reportdrymatter_click = this.on_reportdrymatter_click.bind(this);
       this.on_service_listing_header_click = this.on_service_listing_header_click.bind(this);
       this.on_service_category_click = this.on_service_category_click.bind(this);
       this.on_copy_button_click = this.on_copy_button_click.bind(this);
@@ -117,8 +116,6 @@
       $("body").on("selected change", "tr[fieldname=Client] input[type='text']", this.on_client_changed);
       // Contact changed
       $("body").on("selected change", "tr[fieldname=Contact] input[type='text']", this.on_contact_changed);
-      // ReportDryMatter Checkbox clicked
-      $("body").on("click", "tr[fieldname=ReportDryMatter] input[type='checkbox']", this.on_reportdrymatter_click);
       // Analysis Specification changed
       $("body").on("change", "input.min", this.on_analysis_specification_changed);
       $("body").on("change", "input.max", this.on_analysis_specification_changed);
@@ -315,10 +312,7 @@
           // service is part of the template
           // if uid of record.service_to_templates
           //   lock.show()
-          // service is part of the drymatter service
-          if (uid in record.service_to_dms) {
-            lock.show();
-          }
+
           // select the service
           return me.set_service(arnum, uid, true);
         });
@@ -743,9 +737,6 @@
       // set the composite checkbox
       field = $(`#Composite-${arnum}`);
       field.prop("checked", template.composite);
-      // set the drymatter checkbox
-      field = $(`#ReportDryMatter-${arnum}`);
-      field.prop("checked", template.report_dry_matter);
       // set the services
       $.each(template.service_uids, function(index, uid) {
         // select the service
@@ -950,7 +941,7 @@
       /*
        * Eventhandler when the user clicked on the info icon of a service.
        */
-      var $el, arnum, context, data, dms, el, extra, info, profiles, record, specifications, template, templates, uid;
+      var $el, arnum, context, data, el, extra, info, profiles, record, specifications, template, templates, uid;
       el = event.currentTarget;
       $el = $(el);
       uid = $el.attr("uid");
@@ -963,18 +954,10 @@
       extra = {
         profiles: [],
         templates: [],
-        specifications: [],
-        drymatter: []
+        specifications: []
       };
       // get the current snapshot record for this column
       record = this.records_snapshot[arnum];
-      // inject drymatter info
-      if (uid in record.service_to_dms) {
-        dms = record.service_to_dms[uid];
-        $.each(dms, function(index, uid) {
-          return extra["drymatter"].push(record.dms_metadata[uid]);
-        });
-      }
       // inject profile info
       if (uid in record.service_to_profiles) {
         profiles = record.service_to_profiles[uid];
@@ -1014,7 +997,7 @@
     }
 
     on_analysis_lock_button_click(event) {
-      var $el, arnum, buttons, context, dialog, dms_uid, el, me, profile_uid, record, template_uid, uid;
+      var $el, arnum, buttons, context, dialog, el, me, profile_uid, record, template_uid, uid;
       /*
        * Eventhandler when an Analysis Profile was removed.
        */
@@ -1029,7 +1012,6 @@
       context["service"] = record.service_metadata[uid];
       context["profiles"] = [];
       context["templates"] = [];
-      context["drymatter"] = [];
       // collect profiles
       if (uid in record.service_to_profiles) {
         profile_uid = record.service_to_profiles[uid];
@@ -1039,11 +1021,6 @@
       if (uid in record.service_to_templates) {
         template_uid = record.service_to_templates[uid];
         context["templates"].push(record.template_metadata[template_uid]);
-      }
-      // collect drymatter
-      if (uid in record.service_to_dms) {
-        dms_uid = record.service_to_dms[uid];
-        context["drymatter"].push(record.dms_metadata[dms_uid]);
       }
       buttons = {
         OK: function() {
@@ -1241,51 +1218,6 @@
       $el = $(el);
       uid = $el.val();
       console.debug(`°°° on_analysis_click::UID=${uid} checked=${checked}°°°`);
-      // trigger form:changed event
-      return $(me).trigger("form:changed");
-    }
-
-    on_reportdrymatter_click(event) {
-      /*
-       * Eventhandler for ReportDryMatter Checkbox.
-       */
-      var $el, arnum, checked, context, dialog, dms_metadata, dms_services, el, me, record;
-      me = this;
-      el = event.currentTarget;
-      checked = el.checked;
-      $el = $(el);
-      arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug(`°°° on_reportdrymatter_click:: checked=${checked}°°°`);
-      // drymatter service deselected -> ask the user to deselect the services as well
-      if (!checked) {
-        record = this.records_snapshot[arnum];
-        dms_metadata = {};
-        dms_services = [];
-        // prepare a list of services used by the drymatter service
-        $.each(record.dms_to_services, function(dms_uid, service_uids) {
-          dms_metadata = record.dms_metadata[dms_uid];
-          return $.each(service_uids, function(index, service_uid) {
-            return dms_services.push(record.service_metadata[service_uid]);
-          });
-        });
-        context = {};
-        context["drymatter"] = dms_metadata;
-        context["services"] = dms_services;
-        me = this;
-        dialog = this.template_dialog("drymatter-remove-template", context);
-        dialog.on("yes", function() {
-          // deselect the services
-          $.each(dms_services, function(index, service) {
-            return me.set_service(arnum, service.uid, false);
-          });
-          // trigger form:changed event
-          return $(me).trigger("form:changed");
-        });
-        dialog.on("no", function() {
-          // trigger form:changed event
-          return $(me).trigger("form:changed");
-        });
-      }
       // trigger form:changed event
       return $(me).trigger("form:changed");
     }
