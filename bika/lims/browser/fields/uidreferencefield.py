@@ -210,7 +210,10 @@ def _get_object(context, value):
     if api.is_object(value):
         return value
     if api.is_uid(value):
-        return api.get_object_by_uid(value)
+        uc = api.get_tool('uid_catalog', context=context)
+        brains = uc(UID=value)
+        assert len(brains) == 1
+        return brains[0].getObject()
     return None
 
 
