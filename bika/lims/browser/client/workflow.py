@@ -75,20 +75,30 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
                 # grab this object's Sampler and DateSampled from the form
                 # (if the columns are available and edit controls exist)
-                if 'getSampler' in form and dsfn in form:
+                if 'getSampler' in form:
                     try:
                         Sampler = form['getSampler'][0][obj_uid].strip()
-                        DateSampled = form[dsfn][0][obj_uid].strip()
                     except KeyError:
                         continue
                     Sampler = Sampler and Sampler or ''
+                    sample.setSampler(Sampler)
+                    sample.reindexObject()
+
+                if dsfn in form:
+                    try:
+                        DateSampled = form[dsfn][0][obj_uid].strip()
+                    except KeyError:
+                        continue
                     DateSampled = DateSampled and DateTime(DateSampled) or ''
-                else:
-                    continue
+                    sample.setDateSampled(DateSampled)
+                    sample.reindexObject()
 
                 # write them to the sample
-                sample.setSampler(Sampler)
-                sample.setDateSampled(DateSampled)
+                if not sample.getSampler() or not sample.getDateSampled():
+                    continue
+                Sampler = sample.getSampler()
+                DateSampled = sample.getDateSampled()
+
                 sample.reindexObject()
                 ars = sample.getAnalysisRequests()
                 # Analyses and AnalysisRequets have calculated fields
