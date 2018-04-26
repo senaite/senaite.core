@@ -39,7 +39,6 @@ class AnalysisRequestsView(BikaListingView):
     implements(IViewView)
 
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
-    ar_add = ViewPageTemplateFile("templates/ar_add.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
