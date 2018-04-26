@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #806 Include Client ID when setting up ARReport on the IDServer
 
 **Changed**
 
