@@ -12,7 +12,7 @@ Changelog
 
 **Removed**
 
-
+- #800 Remove Dry Matter from tests
 - #779 Remove Dry Matter functionality
 
 
