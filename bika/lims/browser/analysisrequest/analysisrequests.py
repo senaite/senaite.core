@@ -905,23 +905,3 @@ class AnalysisRequestsView(BikaListingView):
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
-
-
-class QueuedAnalysisRequestsCount():
-
-    def __call__(self):
-        """Returns the number of tasks in the queue ar-create, responsible of
-        creating Analysis Requests asynchronously"""
-        try:
-            PostOnly(self.context.REQUEST)
-        except:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        try:
-            CheckAuthenticator(self.request.form)
-        except:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        task_queue = queryUtility(ITaskQueue, name="ar-create")
-        count = len(task_queue) if task_queue is not None else 0
-        return json.dumps({"count": count})
