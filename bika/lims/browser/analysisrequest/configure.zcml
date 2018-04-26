@@ -3,30 +3,6 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="bika">
 
-<!-- Async ARs probably are not compatible with ar-add2.
-  <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="ar_add_async"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
-  <browser:page
-      for="bika.lims.interfaces.IAnalysisRequestsFolder"
-      name="queued_ars"
-      class="bika.lims.browser.analysisrequest.QueuedAnalysisRequestsCount"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
-  <browser:page
-      for="*"
-      name="analysisrequest_submit_async"
-      class="bika.lims.browser.analysisrequest.add.AsyncAnalysisRequestSubmit"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
--->
-
   <!-- AR Add 2 -->
   <browser:page
       for="*"
