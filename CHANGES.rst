@@ -12,6 +12,7 @@ Changelog
 
 **Removed**
 
+- #808 Remove old AR Add code
 - #800 Remove Dry Matter from tests
 - #779 Remove Dry Matter functionality
 
