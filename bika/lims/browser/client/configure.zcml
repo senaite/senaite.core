@@ -53,6 +53,14 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
+      name="print_sampling_sheets"
+      class="bika.lims.browser.sample.SamplesPrint"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IClient"
       name="analysisprofiles"
       class="bika.lims.browser.client.ClientAnalysisProfilesView"
       permission="zope2.View"

@@ -7,7 +7,7 @@
     <browser:page
       for="*"
       name="late_analyses"
-      class="bika.lims.browser.late_analyses.LateAnalysesView"
+      class=".late.LateAnalysesView"
       permission="bika.lims.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
