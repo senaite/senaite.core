@@ -220,3 +220,30 @@
     background-image: url(++resource++bika.lims.css/images/ui-icons_72a7cf_256x240.png)!important;
 }
 
+/*
+ * Add and Edit buttons
+ */
+
+a.add-button {
+    font-weight: bold;
+    background: transparent url(++resource++bika.lims.images/add.png) left center no-repeat;
+    padding: 8px 8px 8px 10px;
+}
+a.edit-button {
+    font-weight: bold;
+    background: transparent url(++resource++bika.lims.images/edit.png) left center no-repeat;
+    padding: 8px 8px 8px 10px;
+}
+#content a.add-button.referencewidget-add-button.link-overlay,
+#content a.edit-button.referencewidget-edit-button.link-overlay {
+    border-bottom: medium none !important;
+}
+h2 a.add-button {
+    padding: 12px 0 0 38px;
+    background-position: 15px 10px;
+}
+.notext {
+    overflow: hidden;
+    visibility:hidden;
+    display:none;
+}
