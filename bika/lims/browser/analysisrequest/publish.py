@@ -920,7 +920,6 @@ class AnalysisRequestDigester:
                 'client_sampleid': ar.getClientSampleID(),
                 'adhoc': ar.getAdHoc(),
                 'composite': ar.getComposite(),
-                'report_drymatter': ar.getReportDryMatter(),
                 'invoice_exclude': ar.getInvoiceExclude(),
                 'date_received': ulocalized_time(ar.getDateReceived(),
                                                  long_format=1),
@@ -1338,7 +1337,6 @@ class AnalysisRequestDigester:
                   'formatted_uncertainty': '',
                   'retested': analysis.getRetested(),
                   'remarks': to_utf8(analysis.getRemarks()),
-                  'resultdm': to_utf8(analysis.getResultDM()),
                   'outofrange': False,
                   'type': analysis.portal_type,
                   'reftype': analysis.getReferenceType() \

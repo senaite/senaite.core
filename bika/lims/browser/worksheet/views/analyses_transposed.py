@@ -53,8 +53,7 @@ class AnalysesTransposedTable(BikaListingTable):
     def _transpose_data(self):
         cached = []
         index = 0
-        include = ['Attachments', 'DetectionLimit', 'DueDate', 'Pos',
-                   'ResultDM']
+        include = ['Attachments', 'DetectionLimit', 'DueDate', 'Pos']
         resindex = 0
         for col in self.bika_listing.review_state['columns']:
             if col == 'Result':

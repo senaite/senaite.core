@@ -140,6 +140,18 @@ def after_reject(obj):
         notify_rejection(obj)
 
 
+def after_retract(obj):
+    """Method triggered after a 'retract' transition for the Analysis Request
+    passed in is performed. Transitions and sets the analyses of the Analyses
+    Request to retracted.
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    ans = obj.getAnalyses(full_objects=True)
+    for analysis in ans:
+        doActionFor(analysis, 'retract')
+
+
 def after_attach(obj):
     """Method triggered after an 'attach' transition for the Analysis Request
     passed in is performed.

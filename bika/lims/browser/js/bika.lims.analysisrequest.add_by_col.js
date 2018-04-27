@@ -60,7 +60,6 @@ function AnalysisRequestAddByCol() {
         profile_selected();
         profile_unset_trigger();
         template_selected()
-        drymatter_selected()
         sample_selected()
 
         singleservice_dropdown_init()
@@ -276,7 +275,7 @@ function AnalysisRequestAddByCol() {
                 // Writing the sampling date
                 $('input[id^="SamplingDate-"]:visible').val(spec['samplingRoundSamplingDate']+ " 00:00");
                 // Hiding all fields which depends on the sampling round
-                var to_disable = ['Specification', 'SamplePoint', 'ReportDryMatter', 'Sample', 'Batch',
+                var to_disable = ['Specification', 'SamplePoint', 'Sample', 'Batch',
                     'SubGroup', 'SamplingDate', 'Composite', 'Profiles', 'DefaultContainerType', 'AdHoc'];
                 for (var i=0; to_disable.length > i; i++) {
                     $('tr[fieldname="' + to_disable[i] + '"]').hide();
@@ -759,7 +758,6 @@ function AnalysisRequestAddByCol() {
      sampletype_selected    -
      profile_selected       -
      template_selected      -
-     drymatter_selected     -
      --- These are called by the above bindings, or by other javascript ---
      cc_contacts_set            - when contact is selected, apply CC Contacts
      spec_field_entry           - min/max/error field
@@ -773,8 +771,6 @@ function AnalysisRequestAddByCol() {
      profile_unset_trigger      - Unset the deleted profile and its analyses
      template_set               - apply template
      template_unset             - empty template field in form and state
-     drymatter_set              - select the DryMatterService and set state
-     drymatter_unset            - unset state
      */
 
     function client_selected() {
@@ -1177,8 +1173,6 @@ function AnalysisRequestAddByCol() {
             profile.attr("price", profile_objects['AnalysisProfilePrice']);
             profile.attr("useprice", profile_objects['UseAnalysisProfilePrice']);
             profile.attr("VATAmount", profile_objects['VATAmount']);
-            // I'm not sure about unset dry matter, but it was done in 318
-            drymatter_unset(arnum);
             // Adding the services uids inside the analysis profile div, so we can get its analyses quickly
             if (service_data.length != 0) {
                 for (var i = 0; i < service_data.length; i++) {
@@ -1287,7 +1281,6 @@ function AnalysisRequestAddByCol() {
                 "SampleTypeUID",
                 "SamplePoint",
                 "SamplePointUID",
-                "ReportDryMatter",
                 "Composite",
                 "AnalysisProfile",
                 "Partitions",
@@ -1355,14 +1348,7 @@ function AnalysisRequestAddByCol() {
                 }
                 // Call $.when with all deferreds
                 $.when.apply(null, defs).then(function () {
-                    // Dry Matter checkbox.  drymatter_set will calculate it's
-                    // dependencies and select them, and apply specs
-                    td = $("tr[fieldname='ReportDryMatter'] td[arnum='" + arnum + "']")
-                    if (template['ReportDryMatter']) {
-                        $(td).find("input[type='checkbox']").attr("checked", true)
-                        drymatter_set(arnum, true)
-                    }
-                    // Now apply the Template's partition information to the form.
+                    // Apply the Template's partition information to the form.
                     // If the template doesn't specify partition information,
                     // calculate it like normal.
                     if (template['Partitions']) {
@@ -1386,84 +1372,6 @@ function AnalysisRequestAddByCol() {
         var td = $("tr[fieldname='Template'] td[arnum='" + arnum + "']")
         $(td).find("input[type='text']").val("").attr("uid", "")
         $(td).find("input[id$='_uid']").val("")
-    }
-
-    function drymatter_selected() {
-        $("tr[fieldname='ReportDryMatter'] td[arnum] input[type='checkbox']")
-          .live('click copy', function (event) {
-                    var arnum = get_arnum(this)
-                    if ($(this).prop("checked")) {
-                        drymatter_set(arnum)
-                        partition_indicators_set(arnum)
-                    }
-                    else {
-                        drymatter_unset(arnum)
-                    }
-                })
-          .each(function (i, e) {
-                    // trigger copy on form load
-                    $(e).trigger('copy')
-                })
-    }
-
-    function drymatter_set(arnum) {
-        /* set the Dry Matter service, dependencies, etc
-
-         skip_indicators should be true if you want to prevent partition
-         indicators from being set.  This is useful if drymatter is being
-         checked during the application of a Template to this column.
-         */
-        var dm_service = $("#getDryMatterService");
-        var uid = $(dm_service).val();
-        var cat = $(dm_service).attr("cat");
-        var poc = $(dm_service).attr("poc");
-        var keyword = $(dm_service).attr("keyword");
-        var title = $(dm_service).attr("title");
-        var price = $(dm_service).attr("price");
-        var vatamount = $(dm_service).attr("vatamount");
-        var element = $("tr[fieldname='ReportDryMatter'] " +
-                        "td[arnum='" + arnum + "'] " +
-                        "input[type='checkbox']");
-        // set drymatter service IF checkbox is checked
-        if ($(element).attr("checked")) {
-            var checkbox = $("tr[uid='" + uid + "'] " +
-                             "td[class*='ar\\." + arnum + "'] " +
-                             "input[type='checkbox']");
-            // singleservice selection gets some added attributes.
-            // singleservice_duplicate will apply these to the TR it creates
-            if ($("#singleservice").length > 0) {
-                if ($(checkbox).length > 0) {
-                    $("#ReportDryMatter-" + arnum).prop("checked", true);
-                }
-                else {
-                    $("#singleservice").attr("uid", uid);
-                    $("#singleservice").attr("keyword", keyword);
-                    $("#singleservice").attr("title", title);
-                    $("#singleservice").attr("price", price);
-                    $("#singleservice").attr("vatamount", vatamount);
-                    singleservice_duplicate(uid, title, keyword, price,
-                                            vatamount);
-                    $("#ReportDryMatter-" + arnum).prop("checked", true);
-                }
-                state_analyses_push(arnum, uid)
-            }
-            // in case of bika_listing service selector, some attributes
-            // must be applied manually to each TR.  bika_listing already
-            // hacks in a lot of what we need (keyword, uid etc).
-            else {
-                $("#ReportDryMatter-" + arnum).prop("checked", true);
-                state_analyses_push(arnum, uid);
-            }
-            deps_calc(arnum, [uid], true, _("Dry Matter"));
-            recalc_prices(arnum);
-            state_set(arnum, 'ReportDryMatter', true);
-            specification_apply()
-        }
-    }
-
-    function drymatter_unset(arnum) {
-        // if disabling, then we must still update the state var
-        state_set(arnum, 'ReportDryMatter', false)
     }
 
     function sample_selected() {
@@ -1796,8 +1704,6 @@ function AnalysisRequestAddByCol() {
     }
 
     function uncheck_all_services(arnum) {
-        // Can't have dry matter without any services
-        drymatter_unset(arnum)
         // Remove checkboxes for all existing services in this column
         var cblist = $("tr[uid] td[class*='ar\\." + arnum + "'] " +
                        "input[type='checkbox']").filter(":checked")
@@ -2014,11 +1920,6 @@ function AnalysisRequestAddByCol() {
         else {
             $(tr).find("[name='uids:list']").removeAttr("checked")
         }
-        // Unselecting Dry Matter Service unsets 'Report Dry Matter'
-        if (uid == $("#getDryMatterService").val() && !checked) {
-            var dme = $("#ReportDryMatter-" + arnum);
-            $(dme).removeAttr("checked")
-        }
     }
 
     function state_analyses_push(arnum, uid) {
@@ -2222,8 +2123,8 @@ function AnalysisRequestAddByCol() {
         /*
          uid - this is the analysisservice checkbox which was selected
          dep_services and dep_titles are the calculated dependencies
-         initiator_title is the dialog title, this could be a service but also could
-         be "Dry Matter" or some other name
+         initiator_title is the dialog title, this could be a service
+         but also could be some other name
          */
          // this function is not used!
         var d = $.Deferred()

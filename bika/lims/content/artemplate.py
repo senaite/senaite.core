@@ -91,13 +91,6 @@ schema = BikaSchema.copy() + Schema((
             description=_("It's a composite sample"),
         ),
     ),
-    BooleanField('ReportDryMatter',
-        default = False,
-        widget = BooleanWidget(
-            label = _("Report as Dry Matter"),
-            description = _("These results can be reported as dry matter"),
-        ),
-    ),
     TextField('Remarks',
         searchable = True,
         default_content_type = 'text/plain',

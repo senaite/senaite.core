@@ -67,14 +67,6 @@
                 {{/each}}
               </dl>
             {{/if}}
-            {{#if drymatter}}
-              <dl class="service-template-dependants">
-                <dt i18n:translate="">Drymatter Service</dt>
-                {{#each drymatter}}
-                <dd>{{title}}</dd>
-                {{/each}}
-              </dl>
-            {{/if}}
           </div>
           <p i18n:translate="">Please deselect these dependants first.</p>
         </div>
@@ -87,20 +79,6 @@
           <div class="dialog-profile-services dialog-listing">
             {{#each services}}
             <div class="dialog-profile-service">
-              <span>{{title}}</span>
-            </div>
-            {{/each}}
-          </div>
-        </div>
-      </script>
-
-      <!-- Remove DryMatterService popup -->
-      <script id="drymatter-remove-template" type="text/x-handlebars-template">
-        <div title="Remove Drymatter Service" i18n:attributes="title">
-          <p i18n:translate="">Do you also want to remove the drymatter services?</p>
-          <div class="dialog-drymatter-services dialog-listing">
-            {{#each services}}
-            <div class="dialog-drymatter-service">
               <span>{{title}}</span>
             </div>
             {{/each}}
@@ -135,12 +113,6 @@
                    class="service-info-accredited-image"
                    tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
               {{/if}}
-              {{#if drymatter}}
-              <img title="Drymatter Service"
-                   i18n:attributes="title"
-                   class="service-info-drymatter-image"
-                   tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry.png">
-              {{/if}}
               {{title}}
             </td>
           </tr>
@@ -167,19 +139,6 @@
             <td class="service-info-value">
               <ul class="service-methods">
                 {{#each methods}}
-                <li>{{title}}</li>
-                {{/each}}
-              </ul>
-            </td>
-          </tr>
-          {{/if}}
-          {{#if drymatter}}
-          <tr>
-            <td class="service-info-key"
-                i18n:translate="">Drymatter Service</td>
-            <td class="service-info-value">
-              <ul class="service-drymatter">
-                {{#each drymatter}}
                 <li>{{title}}</li>
                 {{/each}}
               </ul>

@@ -6,9 +6,11 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.CMFCore import permissions
 
 version = '1.2.5'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -29,6 +31,58 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    # Lab Managers can not remove Analyses in "Manage Analyses" form
+    fix_permission_on_analysisrequests()
+
+    # Traceback when submitting duplicate when Duplicate Variation is not set
+    # Walkthrough all analyses and analyses services and set 0.00 value for
+    # DuplicateVariation if returns None
+    # https://github.com/senaite/senaite.core/issues/768
+    fix_duplicate_variation_nonfloatable_values()
+
+    ut.addIndex(CATALOG_ANALYSIS_REQUEST_LISTING, "listing_searchable_text",
+                "TextIndexNG3")
+    ut.refreshCatalogs()
     logger.info("{0} upgraded to version {1}".format(product, version))
 
     return True
+
+
+def fix_permission_on_analysisrequests():
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    valid_states = ['sample_due', 'sample_received', 'sampled',
+                    'to_be_sampled', 'to_be_preserved']
+    brains = catalog(cancellation_state='active', review_state=valid_states)
+    for brain in brains:
+        obj = api.get_object(brain)
+        mp = obj.manage_permission
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        logger.info("Fixed '{}' permission on '{}'".format(
+            permissions.DeleteObjects, obj.Title()))
+
+
+def fix_duplicate_variation_nonfloatable_values():
+    # Update Analysis Services
+    catalog = api.get_tool('bika_setup_catalog')
+    brains = catalog(portal_type='AnalysisService')
+    for brain in brains:
+        service = api.get_object(brain)
+        dup_var = service.getDuplicateVariation()
+        if api.is_floatable(dup_var):
+            continue
+        service.setDuplicateVariation(0.0)
+        logger.info("Updated Duplicate Variation for Service '%s': '0.0'" % (
+                    service.Title()))
+
+    # Update Analyses
+    catalog = api.get_tool('bika_analysis_catalog')
+    portal_types = ['Analysis', 'ReferenceAnalysis', 'DuplicateAnalysis']
+    brains = catalog(portal_type=portal_types)
+    for brain in brains:
+        analysis = api.get_object(brain)
+        dup_var = analysis.getDuplicateVariation()
+        if api.is_floatable(dup_var):
+            continue
+        analysis.setDuplicateVariation(0.0)
+        logger.info("Updated Duplicate Variation for Analysis '%s': '0.0'" % (
+                    analysis.Title()))

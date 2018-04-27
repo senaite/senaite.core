@@ -1285,39 +1285,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     BooleanField(
-        'ReportDryMatter',
-        default=False,
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=BooleanWidget(
-            label=_("Report as Dry Matter"),
-            render_own_label=True,
-            description=_("These results can be reported as dry matter"),
-            visible={
-                'edit': 'visible',
-                'view': 'visible',
-                'add': 'edit',
-                'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
-                'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
-                'sampled': {'view': 'visible', 'edit': 'visible'},
-                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
-                'sample_due': {'view': 'visible', 'edit': 'visible'},
-                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
-                'sample_received': {'view': 'visible', 'edit': 'visible'},
-                'attachment_due': {'view': 'visible', 'edit': 'visible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'visible'},
-                'verified': {'view': 'visible', 'edit': 'invisible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'visible', 'edit': 'invisible'},
-            },
-        ),
-    ),
-
-    BooleanField(
         'InvoiceExclude',
         default=False,
         mode="rw",
@@ -2546,10 +2513,20 @@ class AnalysisRequest(BaseFolder):
         """Obtains the sampling round UID
         :returns: UID
         """
-        if self.getSamplingRound():
-            return self.getSamplingRound().UID()
+        sr = self.getSamplingRound()
+        if sr:
+            return sr.UID()
         else:
             return ''
+
+    def getStorageLocationTitle(self):
+        """ A method for AR listing catalog metadata
+        :return: Title of Storage Location
+        """
+        sl = self.getStorageLocation()
+        if sl:
+            return sl.Title()
+        return ''
 
     @security.public
     def getResultsRange(self):
@@ -3041,6 +3018,10 @@ class AnalysisRequest(BaseFolder):
     @security.public
     def workflow_script_reject(self):
         events.after_reject(self)
+
+    @security.public
+    def workflow_script_retract(self):
+        events.after_retract(self)
 
     def SearchableText(self):
         """

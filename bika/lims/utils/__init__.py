@@ -143,14 +143,10 @@ def getUsers(context, roles, allow_empty=True):
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """
-    wf = getToolByName(obj, 'portal_workflow')
-    if (hasattr(obj, 'inactive_state') and obj.inactive_state == 'inactive') or \
-       wf.getInfoFor(obj, 'inactive_state', 'active') == 'inactive':
-        return False
-    if (hasattr(obj, 'cancellation_state') and obj.inactive_state == 'cancelled') or \
-       wf.getInfoFor(obj, 'cancellation_state', 'active') == 'cancelled':
-        return False
-    return True
+    # The import is performed here because if placed
+    # at the beginning of the file we get circular imports
+    from bika.lims.workflow import isActive as is_active
+    return is_active(obj)
 
 
 def formatDateQuery(context, date_id):

@@ -73,8 +73,6 @@ class window.AnalysisRequestAdd
     $("body").on "selected change", "tr[fieldname=Client] input[type='text']", @on_client_changed
     # Contact changed
     $("body").on "selected change", "tr[fieldname=Contact] input[type='text']", @on_contact_changed
-    # ReportDryMatter Checkbox clicked
-    $("body").on "click", "tr[fieldname=ReportDryMatter] input[type='checkbox']", @on_reportdrymatter_click
     # Analysis Specification changed
     $("body").on "change", "input.min", @on_analysis_specification_changed
     $("body").on "change", "input.max", @on_analysis_specification_changed
@@ -257,9 +255,6 @@ class window.AnalysisRequestAdd
         # service is part of the template
         # if uid of record.service_to_templates
         #   lock.show()
-        # service is part of the drymatter service
-        if uid of record.service_to_dms
-          lock.show()
 
         # select the service
         me.set_service arnum, uid, yes
@@ -712,10 +707,6 @@ class window.AnalysisRequestAdd
     field = $("#Composite-#{arnum}")
     field.prop "checked", template.composite
 
-    # set the drymatter checkbox
-    field = $("#ReportDryMatter-#{arnum}")
-    field.prop "checked", template.report_dry_matter
-
     # set the services
     $.each template.service_uids, (index, uid) ->
       # select the service
@@ -948,16 +939,9 @@ class window.AnalysisRequestAdd
       profiles: []
       templates: []
       specifications: []
-      drymatter: []
 
     # get the current snapshot record for this column
     record = @records_snapshot[arnum]
-
-    # inject drymatter info
-    if uid of record.service_to_dms
-      dms = record.service_to_dms[uid]
-      $.each dms, (index, uid) ->
-        extra["drymatter"].push record.dms_metadata[uid]
 
     # inject profile info
     if uid of record.service_to_profiles
@@ -1009,7 +993,6 @@ class window.AnalysisRequestAdd
     context["service"] = record.service_metadata[uid]
     context["profiles"] = []
     context["templates"] = []
-    context["drymatter"] = []
 
     # collect profiles
     if uid of record.service_to_profiles
@@ -1020,11 +1003,6 @@ class window.AnalysisRequestAdd
     if uid of record.service_to_templates
       template_uid = record.service_to_templates[uid]
       context["templates"].push record.template_metadata[template_uid]
-
-    # collect drymatter
-    if uid of record.service_to_dms
-      dms_uid = record.service_to_dms[uid]
-      context["drymatter"].push record.dms_metadata[dms_uid]
 
     buttons =
       OK: ->
@@ -1229,52 +1207,6 @@ class window.AnalysisRequestAdd
     uid = $el.val()
 
     console.debug "°°° on_analysis_click::UID=#{uid} checked=#{checked}°°°"
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_reportdrymatter_click: (event) =>
-    ###
-     * Eventhandler for ReportDryMatter Checkbox.
-    ###
-
-    me = this
-    el = event.currentTarget
-    checked = el.checked
-    $el = $(el)
-    arnum = $el.closest("[arnum]").attr "arnum"
-
-    console.debug "°°° on_reportdrymatter_click:: checked=#{checked}°°°"
-
-    # drymatter service deselected -> ask the user to deselect the services as well
-    if not checked
-      record = @records_snapshot[arnum]
-
-      dms_metadata = {}
-      dms_services = []
-
-      # prepare a list of services used by the drymatter service
-      $.each record.dms_to_services, (dms_uid, service_uids) ->
-        dms_metadata = record.dms_metadata[dms_uid]
-        $.each service_uids, (index, service_uid) ->
-          dms_services.push record.service_metadata[service_uid]
-
-      context = {}
-      context["drymatter"] = dms_metadata
-      context["services"] = dms_services
-
-      me = this
-      dialog = @template_dialog "drymatter-remove-template", context
-      dialog.on "yes", ->
-        # deselect the services
-        $.each dms_services, (index, service) ->
-          me.set_service arnum, service.uid, no
-        # trigger form:changed event
-        $(me).trigger "form:changed"
-      dialog.on "no", ->
-        # trigger form:changed event
-        $(me).trigger "form:changed"
 
     # trigger form:changed event
     $(me).trigger "form:changed"
