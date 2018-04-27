@@ -24,9 +24,6 @@
 			<img
 				tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited() and service_obj.getAccredited()"
 				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/accredited.png"/>
-			<img
-				tal:condition="python:service_obj.getReportDryMatter()"
-				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/dry.png"/>
 		</td>
         <td tal:condition="python:context.portal_type == 'Client' and ShowPrices"
             style="white-space:nowrap;"

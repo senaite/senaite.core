@@ -123,9 +123,6 @@ class AnalysesView(BikaListingView):
             'Specification': {
                 'title': _('Specification'),
                 'sortable': False},
-            'ResultDM': {
-                'title': _('Dry'),
-                'sortable': False},
             'Uncertainty': {
                 'title': _('+-'),
                 'sortable': False},
@@ -499,8 +496,6 @@ class AnalysesView(BikaListingView):
         self._folder_item_report_visibility(obj, item)
         # Renders additional icons to be displayed
         self._folder_item_fieldicons(obj)
-        # Renders DryMatter if necessary
-        self._folder_item_dry_matter(obj, item)
         # Renders remarks toggle button
         self._folder_item_remarks(obj, item)
 
@@ -1126,25 +1121,6 @@ class AnalysesView(BikaListingView):
                 self.field_icons[uid] = alerts
                 continue
             self.field_icons[uid].extend(alerts)
-
-    def _folder_item_dry_matter(self, analysis_brain, item):
-        """Renders the result for Dry Matter if allowed for the current context
-        and analysis_brain passed in.
-
-        :param analysis_brain: Brain that represents an analysis
-        :param item: analysis' dictionary counterpart that represents a row
-        """
-        if not hasattr(self.context, 'getReportDryMatter'):
-            return
-        if not callable(self.context.getReportDryMatter):
-            return
-        if not self.context.getReportDryMatter():
-            return False
-        analysis = self.get_object(analysis_brain)
-        if analysis.getReportDryMatter():
-            item['ResultDM'] = analysis.getResultDM()
-            item['after']['ResultDM'] = "<em class='discreet'>%</em>"
-        item['ResultDM'] = ''
 
     def _folder_item_remarks(self, analysis_brain, item):
         """Renders the Remarks field for the passed in analysis and if the

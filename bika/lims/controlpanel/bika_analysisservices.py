@@ -378,9 +378,6 @@ class AnalysisServicesView(BikaListingView):
         if obj.getAccredited():
             after_icons += "<img src='%s/accredited.png' title='%s'>" % (
                 ipath, _("Accredited"))
-        if obj.getReportDryMatter():
-            after_icons += "<img src='%s/dry.png' title='%s'>" % (
-                ipath, _("Can be reported as dry matter"))
         if obj.getAttachmentOption() == 'r':
             after_icons += "<img src='%s/attach_reqd.png' title='%s'>" % (
                 ipath, _("Attachment required"))

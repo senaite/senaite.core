@@ -92,21 +92,6 @@
         <!-- And the current form partition configuration is stored here -->
         <input type="hidden" id="parts" name="parts" value="{}"/>
 
-        <!-- The system configured 'Dry Matter Service' -->
-        <tal:i define="dms python:context.bika_setup.getDryMatterService()">
-            <input type="hidden" id="getDryMatterService"
-                   name="getDryMatterService"
-                    tal:condition="nocall:dms"
-                    tal:attributes="
-                            poc python: dms.getPointOfCapture();
-                            cat python: dms.getCategoryUID();
-                            title python: dms.Title();
-                            keyword python: dms.getKeyword();
-                            price python: dms.getPrice();
-                            vatamount python: dms.getVATAmount();
-                            value python: dms.UID()"/>
-        </tal:i>
-
         <input type="hidden"
                id="PhysicalPath"
                 tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3])"/>
@@ -132,12 +117,6 @@
         <br/>&nbsp;
 
         <div class="discreeter">
-
-            <p>  <!-- AVS this should be conditional if any dryables present -->
-                <img src="" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry.png">
-        <span i18n:translate="">
-            Can be reported as dry matter</span>
-            </p>
 
             <!-- XXX this also -->
             <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
