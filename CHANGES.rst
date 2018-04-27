@@ -6,18 +6,23 @@ Changelog
 
 **Added**
 
+- #777 Delay option for searches in reference widget combos
+- #806 Include Client ID when setting up ARReport on the IDServer
 
 **Changed**
 
 
 **Removed**
 
+- #800 Remove Dry Matter from tests
 - #779 Remove Dry Matter functionality
 
 
 **Fixed**
 
 - #776 Analyses submission in Worksheet is slow
+- #726 404 Error raised when clicking Print Samples Sheets from within a client
+- #802 Remove Dry Matter remainders
 - #781 Delete Permission on ARs for Lab Managers
 - #784 Fix workflow state filter not kept when expanding categories in AS listing
 - #786 Fix inactive services listed in AR "Manage Analyses" forms

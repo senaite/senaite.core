@@ -69,47 +69,6 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
-	<tal:queued define="num_tasks python:view.pending_tasks()">
-		 <script type="text/javascript">
-		 	(function( $ ) {
-			$(document).ready(function(){
-				var ar_queue_seconds = 1;
-				var ar_queue_max_seconds = 20;
-				function query_pending() {
-					var url = window.portal_url +
-					    "/analysisrequests/queued_ars";
-					var ac = readCookie('__ac');
-					$.post(url, {'__ac': ac}).done(function(data) {
-						var num_jobs = $.parseJSON(data);
-						var num_jobs = num_jobs['count'];
-						if (parseInt(num_jobs) > 0) {
-							$('.queued-items').not(':visible').slideDown();
-							$('.queued-items-number').html(num_jobs);
-						} else {
-							$('.queued-items:visible').slideUp();
-							if (ar_queue_seconds > ar_queue_max_seconds) {
-								ar_queue_seconds = ar_queue_max_seconds;
-							} else {
-								ar_queue_seconds = ar_queue_seconds*2;
-							}
-							setTimeout(function() {
-								query_pending();
-							}, ar_queue_seconds * 1000);
-						}
-					});
-				}
-				query_pending();
-			});
-			}(jQuery));
-		 </script>
-		 <div class="queued-items" style="display:none;">
-			 <span i18n:translate=''>
-				 There are <span class="queued-items-number"
-								 i18n:name='num'></span> jobs in queue for the creation of new Analysis Requests
-			 </span>.&nbsp;
-			 <a href='' i18n:translate='' class="button">Refresh</a>
-		 </div>
-	</tal:queued>
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
 

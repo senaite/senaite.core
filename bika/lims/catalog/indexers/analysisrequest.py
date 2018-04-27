@@ -5,11 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from plone.indexer import indexer
+
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
-from plone.indexer import indexer
 
 
 @indexer(IAnalysisRequest)
@@ -40,12 +40,13 @@ def listing_searchable_text(instance):
     entries = set()
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     columns = catalog.schema()
-
+    brains = catalog({"UID": api.get_uid(instance)})
+    brain = brains[0] if brains else None
     for column in columns:
-        value = api.safe_getattr(instance, column, None)
-        parsed = api.to_searchable_text_metadata(value)
-        if parsed:
-            entries.add(parsed)
+        brain_value = api.safe_getattr(brain, column, None)
+        instance_value = api.safe_getattr(instance, column, None)
+        parsed = api.to_searchable_text_metadata(brain_value or instance_value)
+        entries.add(parsed)
 
     # Concatenate all strings to one text blob
     return " ".join(entries)

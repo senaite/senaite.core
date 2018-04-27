@@ -201,8 +201,6 @@ Total price excl Tax,,,,,,,,,,,,,,
             self.fail("Should be two empty SamplePoints, and two with values")
         if len(re.findall('<.*selected.*Liquids', content)) != 2:
             self.fail("Should be two empty Matrix fields, and two with values")
-        if len(re.findall('<.*checked.*ReportDry', content)) != 2:
-            self.fail("Should be two False DryMatters, and two True")
 
     def test_LIMS_2081_post_edit_fails_validation_gracefully(self):
         client = self.portal.clients.objectValues()[0]
