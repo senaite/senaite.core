@@ -40,10 +40,10 @@ def listing_searchable_text(instance):
     entries = set()
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     columns = catalog.schema()
+    brains = catalog({"UID": api.get_uid(instance)})
 
     for column in columns:
         brain_value = None
-        brains = catalog({"UID": api.get_uid(instance)})
         if brains:
             brain_value = api.safe_getattr(brains[0], column, None)
         instance_value = api.safe_getattr(instance, column, None)
