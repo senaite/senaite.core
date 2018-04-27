@@ -20,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #776 Analyses submission in Worksheet is slow
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
 - #802 Remove Dry Matter remainders
 - #781 Delete Permission on ARs for Lab Managers

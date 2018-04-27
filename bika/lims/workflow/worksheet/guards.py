@@ -5,8 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import isActive
+from bika.lims import api
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
@@ -20,34 +20,20 @@ def _children_are_ready(obj, transition_id, dettached_states=None):
     this function to return true (if all children are in dettached states, it
     always return False).
     """
-    analyses = obj.getAnalyses()
-    invalid = 0
-    for an in analyses:
-        # The analysis has already been transitioned?
-        if wasTransitionPerformed(an, transition_id):
-            continue
-
-        # Maybe the analysis is in an 'inactive' state?
-        if not isActive(an):
-            invalid += 1
-            continue
-
-        # Maybe the analysis is in a dettached state?
-        if dettached_states:
-            status = getCurrentState(an)
-            if status in dettached_states:
-                invalid += 1
-                continue
-
-        # At this point we can assume this analysis is an a valid state and
-        # could potentially be transitioned, but the Worksheet can only be
-        # transitioned if all the analyses have been transitioned previously
+    query = dict(getWorksheetUID=api.get_uid(obj))
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    if not brains:
         return False
 
-    # Be sure that at least there is one analysis in an active state, it
-    # doesn't make sense to transition a Worksheet if all the analyses that
-    # contains are not valid
-    return len(analyses) - invalid > 0
+    for brain in brains:
+        if dettached_states and brain.review_state in dettached_states:
+            return False
+        if not api.is_active(brain):
+            return False
+        analysis = api.get_object(brain)
+        if not wasTransitionPerformed(analysis, transition_id):
+            return False
+    return True
 
 
 def submit(obj):

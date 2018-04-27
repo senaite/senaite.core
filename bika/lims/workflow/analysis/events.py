@@ -8,7 +8,6 @@
 import transaction
 from Products.CMFCore.utils import getToolByName
 
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
@@ -28,7 +27,10 @@ def after_submit(obj):
     ws = obj.getWorksheet()
     if ws:
         doActionFor(ws, 'submit')
-    _reindex_request(obj)
+
+    if IRequestAnalysis.providedBy(obj):
+        ar = obj.getRequest()
+        doActionFor(ar, 'submit')
 
 
 def after_retract(obj):

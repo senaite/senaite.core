@@ -82,12 +82,15 @@ class WorkflowAction:
 
         return action, came_from
 
+    def get_selected_uids(self):
+        """Returns a list of selected form uids"""
+        return self.request.form.get('uids', None) or list()
+
     def _get_selected_items(self):
         """return a list of selected form objects
            full_objects defaults to True
         """
-        form = self.request.form
-        uids = form.get("uids", [])
+        uids = self.get_selected_uids()
         selected_items = collections.OrderedDict()
         for uid in uids:
             obj = get_object_by_uid(uid)
