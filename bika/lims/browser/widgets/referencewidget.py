@@ -55,6 +55,7 @@ class ReferenceWidget(StringWidget):
         'showOn': False,
         'searchIcon': True,
         'minLength': '0',
+        'delay': '500',
         'resetButton': False,
         'sord': 'asc',
         'sidx': 'Title',
@@ -115,6 +116,7 @@ class ReferenceWidget(StringWidget):
             'minLength': self.minLength,
             'resetButton': self.resetButton,
             'searchIcon': self.searchIcon,
+            'delay': self.delay,
         }
         return json.dumps(options)
 
