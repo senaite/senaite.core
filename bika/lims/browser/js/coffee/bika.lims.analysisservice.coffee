@@ -136,13 +136,14 @@ class window.AnalysisServiceEditView
 
   ### METHODS ###
 
-  ajax_submit: (options={}) =>
+  ajax_submit: (options) =>
     ###
      * Ajax Submit with automatic event triggering and some sane defaults
     ###
     console.debug "°°° ajax_submit °°°"
 
     # some sane option defaults
+    options ?= {}
     options.type ?= "POST"
     options.url ?= @get_url()
     options.context ?= this
@@ -216,55 +217,6 @@ class window.AnalysisServiceEditView
     return field
 
 
-  get_default_instrument_uid: =>
-    ###
-     * Return the UID of the selected default instrument
-    ###
-    return $("#archetypes-fieldname-Instrument #Instrument").val()
-
-
-  get_default_method_uid: =>
-    ###
-     * Return the UID of the selected default method
-    ###
-    return $("#archetypes-fieldname-Method #Method").val()
-
-
-  fetch_instrument_methods: (instrument_uid) =>
-    ###
-     * Fetch the methods for the selected instrument UID
-     * Returns a deferred
-    ###
-
-    return @ajax_submit
-      url: window.location.href + "/get_instrument_methods"
-      data:
-        uid: instrument_uid
-
-
-  fetch_method_calculation: (method_uid) =>
-    ###
-     * Fetch the methods for the selected instrument UID
-     * Returns a deferred
-    ###
-
-    return @ajax_submit
-      url: window.location.href + "/get_method_calculation"
-      data:
-        uid: method_uid
-
-
-  fetch_available_calculations: =>
-    ###
-     * Fetch the available calculations of the system
-     * Returns a deferred list of calculation items
-     * [{uid: ..., title: ...}, {uid: ..., title: ...}, ...]
-    ###
-
-    return @ajax_submit
-      url: window.location.href + "/get_available_calculations"
-
-
   add_empty_option: (select) =>
     ###
      * Add an empty option to the select box
@@ -272,40 +224,6 @@ class window.AnalysisServiceEditView
     empty_option = "<option value=''>#{@_('None')}</option>"
     $(select).append empty_option
     $(select).val ""
-
-  set_manual_entry_of_results: (toggle) =>
-    ###
-     * If "Instrument assignment is not required" is true, insert all methods
-       without instrument into the methods option
-    ###
-    console.debug "set_manual_entry_of_results: #{toggle}"
-
-    method_sel = $('#archetypes-fieldname-Method #Method')
-    methods_ms = $('#archetypes-fieldname-Methods #Methods')
-
-    if toggle is yes
-      # get the methods of the default instrument
-      @fetch_instrument_methods @get_default_method_uid()
-      .done (data) ->
-        # flush the "Default Method" select box
-        method_sel.empty()
-        $.each data.methods, (index, item) ->
-          option = "<option value='#{item.uid}'>#{item.title}</option>"
-          method_sel.append option
-          method_sel.val item.uid
-        # show the whole methods field
-        @show_methods_field yes
-    else
-      # hide the whole methods field
-      @show_methods_field no
-      @toggle_instrument_entry_of_results_checkbox yes
-
-      methods_ms.find("option[selected]").prop "selected", no
-      methods_ms.val ""
-
-    # insert the empty option if the select box is empty
-    if method_sel.length == 0
-      @add_empty_option method_sel
 
 
   ### EVENT HANDLER ###

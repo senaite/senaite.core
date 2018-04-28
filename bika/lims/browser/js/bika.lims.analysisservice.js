@@ -19,13 +19,7 @@
       this.is_uid = this.is_uid.bind(this);
       this.show_methods_field = this.show_methods_field.bind(this);
       this.toggle_instrument_entry_of_results_checkbox = this.toggle_instrument_entry_of_results_checkbox.bind(this);
-      this.get_default_instrument_uid = this.get_default_instrument_uid.bind(this);
-      this.get_default_method_uid = this.get_default_method_uid.bind(this);
-      this.fetch_instrument_methods = this.fetch_instrument_methods.bind(this);
-      this.fetch_method_calculation = this.fetch_method_calculation.bind(this);
-      this.fetch_available_calculations = this.fetch_available_calculations.bind(this);
       this.add_empty_option = this.add_empty_option.bind(this);
-      this.set_manual_entry_of_results = this.set_manual_entry_of_results.bind(this);
       /* EVENT HANDLER */
       this.on_default_method_change = this.on_default_method_change.bind(this);
       this.on_methods_change = this.on_methods_change.bind(this);
@@ -160,13 +154,16 @@
       });
     }
 
-    ajax_submit(options = {}) {
+    ajax_submit(options) {
       var base, done;
       /*
        * Ajax Submit with automatic event triggering and some sane defaults
        */
       console.debug("°°° ajax_submit °°°");
       // some sane option defaults
+      if (options == null) {
+        options = {};
+      }
       if (options.type == null) {
         options.type = "POST";
       }
@@ -259,57 +256,6 @@
       return field;
     }
 
-    get_default_instrument_uid() {
-      /*
-       * Return the UID of the selected default instrument
-       */
-      return $("#archetypes-fieldname-Instrument #Instrument").val();
-    }
-
-    get_default_method_uid() {
-      /*
-       * Return the UID of the selected default method
-       */
-      return $("#archetypes-fieldname-Method #Method").val();
-    }
-
-    fetch_instrument_methods(instrument_uid) {
-      /*
-       * Fetch the methods for the selected instrument UID
-       * Returns a deferred
-       */
-      return this.ajax_submit({
-        url: window.location.href + "/get_instrument_methods",
-        data: {
-          uid: instrument_uid
-        }
-      });
-    }
-
-    fetch_method_calculation(method_uid) {
-      /*
-       * Fetch the methods for the selected instrument UID
-       * Returns a deferred
-       */
-      return this.ajax_submit({
-        url: window.location.href + "/get_method_calculation",
-        data: {
-          uid: method_uid
-        }
-      });
-    }
-
-    fetch_available_calculations() {
-      /*
-       * Fetch the available calculations of the system
-       * Returns a deferred list of calculation items
-       * [{uid: ..., title: ...}, {uid: ..., title: ...}, ...]
-       */
-      return this.ajax_submit({
-        url: window.location.href + "/get_available_calculations"
-      });
-    }
-
     add_empty_option(select) {
       /*
        * Add an empty option to the select box
@@ -318,42 +264,6 @@
       empty_option = `<option value=''>${this._('None')}</option>`;
       $(select).append(empty_option);
       return $(select).val("");
-    }
-
-    set_manual_entry_of_results(toggle) {
-      var method_sel, methods_ms;
-      /*
-       * If "Instrument assignment is not required" is true, insert all methods
-         without instrument into the methods option
-       */
-      console.debug(`set_manual_entry_of_results: ${toggle}`);
-      method_sel = $('#archetypes-fieldname-Method #Method');
-      methods_ms = $('#archetypes-fieldname-Methods #Methods');
-      if (toggle === true) {
-        // get the methods of the default instrument
-        this.fetch_instrument_methods(this.get_default_method_uid()).done(function(data) {
-          // flush the "Default Method" select box
-          method_sel.empty();
-          $.each(data.methods, function(index, item) {
-            var option;
-            option = `<option value='${item.uid}'>${item.title}</option>`;
-            method_sel.append(option);
-            return method_sel.val(item.uid);
-          });
-          // show the whole methods field
-          return this.show_methods_field(true);
-        });
-      } else {
-        // hide the whole methods field
-        this.show_methods_field(false);
-        this.toggle_instrument_entry_of_results_checkbox(true);
-        methods_ms.find("option[selected]").prop("selected", false);
-        methods_ms.val("");
-      }
-      // insert the empty option if the select box is empty
-      if (method_sel.length === 0) {
-        return this.add_empty_option(method_sel);
-      }
     }
 
     on_default_method_change(event) {
