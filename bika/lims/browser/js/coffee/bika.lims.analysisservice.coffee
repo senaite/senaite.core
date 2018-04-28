@@ -8,9 +8,15 @@ class window.AnalysisServiceEditView
   load: =>
     console.debug "AnalysisServiceEditView::load"
 
+    # load translations
+    jarn.i18n.loadCatalog 'bika'
+    @_ = window.jarn.i18n.MessageFactory('bika')
 
     # bind the event handler to the elements
     @bind_eventhandler()
+
+    # Develpp only
+    window.asv = @
 
 
   ### INITIALIZERS ###
@@ -58,9 +64,251 @@ class window.AnalysisServiceEditView
     $("body").on "change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", @on_display_detection_limit_selector_change
 
 
+  ### LOADERS ###
+
+  load_instrument_methods: (instrument_uid) =>
+    ###
+     * Load methods assigned to the instrument
+    ###
+    if not @is_uid instrument_uid
+      console.warn "Instrument UID '#{instrument_uid}' is invalid"
+      return
+
+    field = $('#archetypes-fieldname-Method #Method')
+    field.empty()
+    options =
+      url: @get_url() + "/get_instrument_methods"
+      data:
+        uid: instrument_uid
+    @ajax_submit options
+    .done (data) ->
+      $.each data.methods, (index, item) ->
+        option = "<option value='#{item.uid}'>#{item.title}</option>"
+        field.append option
+      if field.length == 0
+        console.warn "Instrument with UID '#{instrument_uid}' has no methods assigned"
+        @add_empty_option field
+
+
+  load_available_calculations: =>
+    ###
+     * Load all available calculations to the calculation select box
+    ###
+    field = $("#archetypes-fieldname-Calculation #Calculation")
+    field.empty()
+    options =
+      url: @get_url() + "/get_available_calculations"
+    @ajax_submit options
+    .done (data) ->
+      $.each data, (index, item) ->
+        option = "<option value='#{item.uid}'>#{item.title}</option>"
+        field.append option
+      if field.length == 0
+        @add_empty_option field
+
+
+  load_method_calculation: (method_uid) =>
+    ###
+     * Load calculations for the given method UID
+    ###
+
+    if not @is_uid method_uid
+      console.warn "Method UID '#{method_uid}' is invalid"
+      return
+
+    field = $("#archetypes-fieldname-Calculation #Calculation")
+    field.empty()
+
+    options =
+      url: @get_url() + "/get_method_calculation"
+      data:
+        uid: method_uid
+
+    # Fetch the assigned calculations of the method
+    @ajax_submit options
+    .done (data) ->
+      if not $.isEmptyObject data
+        option = "<option value='#{data.uid}'>#{data.title}</option>"
+        field.append option
+      else
+        @add_empty_option field
+
+
+  ### METHODS ###
+
+  ajax_submit: (options={}) =>
+    ###
+     * Ajax Submit with automatic event triggering and some sane defaults
+    ###
+    console.debug "°°° ajax_submit °°°"
+
+    # some sane option defaults
+    options.type ?= "POST"
+    options.url ?= @get_url()
+    options.context ?= this
+    options.dataType ?= "json"
+    options.data ?= {}
+    options.data._authenticator ?= @get_authenticator()
+
+    console.debug ">>> ajax_submit::options=", options
+
+    $(this).trigger "ajax:submit:start"
+    done = =>
+        $(this).trigger "ajax:submit:end"
+    return $.ajax(options).done done
+
+
+  get_url: =>
+    ###
+     * Return the current URL
+    ###
+    protocol = location.protocol
+    host = location.host
+    pathname = location.pathname
+    return "#{protocol}//#{host}#{pathname}"
+
+  get_portal_url: =>
+    ###
+     * Return the portal url
+    ###
+    return window.portal_url
+
+
+  get_authenticator: =>
+    ###
+     * Get the authenticator value
+    ###
+    return $("input[name='_authenticator']").val()
+
+
+  is_uid: (str) =>
+    ###
+     * Validate valid URL
+    ###
+    if typeof str isnt "string"
+      return no
+    match = str.match /[a-z0-9]{32}/
+    return match isnt null
+
+
+  show_methods_field: (toggle) =>
+    ###
+     * This method toggles the visibility of complete "Methods" field
+    ###
+    field = $("#archetypes-fieldname-Methods")
+    if toggle is undefined
+      field.fadeToggle "fast"
+    else if toggle is yes
+      field.fadeIn "fast"
+    else
+      field.fadeOut "fast"
+    return field
+
+
+  toggle_instrument_entry_of_results_checkbox: (toggle) =>
+    ###
+     * This method toggles the "Instrument assignment is allowed" checkbox
+    ###
+    field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults")
+    if toggle is undefined
+      toggle = not field.prop "checked"
+    field.prop "checked", toggle
+    return field
+
+
+  get_default_instrument_uid: =>
+    ###
+     * Return the UID of the selected default instrument
+    ###
+    return $("#archetypes-fieldname-Instrument #Instrument").val()
+
+
+  get_default_method_uid: =>
+    ###
+     * Return the UID of the selected default method
+    ###
+    return $("#archetypes-fieldname-Method #Method").val()
+
+
+  fetch_instrument_methods: (instrument_uid) =>
+    ###
+     * Fetch the methods for the selected instrument UID
+     * Returns a deferred
+    ###
+
+    return @ajax_submit
+      url: window.location.href + "/get_instrument_methods"
+      data:
+        uid: instrument_uid
+
+
+  fetch_method_calculation: (method_uid) =>
+    ###
+     * Fetch the methods for the selected instrument UID
+     * Returns a deferred
+    ###
+
+    return @ajax_submit
+      url: window.location.href + "/get_method_calculation"
+      data:
+        uid: method_uid
+
+
+  fetch_available_calculations: =>
+    ###
+     * Fetch the available calculations of the system
+     * Returns a deferred list of calculation items
+     * [{uid: ..., title: ...}, {uid: ..., title: ...}, ...]
+    ###
+
+    return @ajax_submit
+      url: window.location.href + "/get_available_calculations"
+
+
+  add_empty_option: (select) =>
+    ###
+     * Add an empty option to the select box
+    ###
+    empty_option = "<option value=''>#{@_('None')}</option>"
+    $(select).append empty_option
+    $(select).val ""
+
+  set_manual_entry_of_results: (toggle) =>
+    ###
+     * If "Instrument assignment is not required" is true, insert all methods
+       without instrument into the methods option
+    ###
+    console.debug "set_manual_entry_of_results: #{toggle}"
+
+    method_sel = $('#archetypes-fieldname-Method #Method')
+    methods_ms = $('#archetypes-fieldname-Methods #Methods')
+
+    if toggle is yes
+      # get the methods of the default instrument
+      @fetch_instrument_methods @get_default_method_uid()
+      .done (data) ->
+        # flush the "Default Method" select box
+        method_sel.empty()
+        $.each data.methods, (index, item) ->
+          option = "<option value='#{item.uid}'>#{item.title}</option>"
+          method_sel.append option
+          method_sel.val item.uid
+        # show the whole methods field
+        @show_methods_field yes
+    else
+      # hide the whole methods field
+      @show_methods_field no
+      @toggle_instrument_entry_of_results_checkbox yes
+
+      methods_ms.find("option[selected]").prop "selected", no
+      methods_ms.val ""
+
+    # insert the empty option if the select box is empty
+    if method_sel.length == 0
+      @add_empty_option method_sel
+
 
   ### EVENT HANDLER ###
-
 
   on_default_method_change: (event) =>
     ###
