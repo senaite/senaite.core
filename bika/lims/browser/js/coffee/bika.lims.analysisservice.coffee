@@ -9,13 +9,25 @@ class window.AnalysisServiceEditView
     console.debug "AnalysisServiceEditView::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
-    @_ = window.jarn.i18n.MessageFactory('bika')
+    jarn.i18n.loadCatalog "bika"
+    @_ = window.jarn.i18n.MessageFactory "bika"
+
+    # JSONAPI v1 access
+    @read = window.bika.lims.jsonapi_read
+
+    # Interim values defined in default Calculation
+    @calculation_interims = []
+
+    # Interim values defined by the user (not part of a calculation)
+    @manual_interims = []
 
     # bind the event handler to the elements
     @bind_eventhandler()
 
-    # Develpp only
+    # Initialize default calculation
+    @init_default_calculation()
+
+    # Dev only
     window.asv = @
 
 
@@ -29,7 +41,6 @@ class window.AnalysisServiceEditView
      * delegate the event: https://learn.jquery.com/events/event-delegation/
     ###
     console.debug "AnalysisServiceEditView::bind_eventhandler"
-
 
     ### METHODS TAB ###
 
@@ -57,14 +68,143 @@ class window.AnalysisServiceEditView
     # The "Calculation" selector changed
     $("body").on "change", "#archetypes-fieldname-Calculation #Calculation", @on_calculation_change
 
-
     ### ANALYSIS TAB ###
 
     # The "Display a Detection Limit selector" checkbox changed
     $("body").on "change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", @on_display_detection_limit_selector_change
 
 
+  init_default_calculation: =>
+    ###
+     * 1. Check if field "Use the Default Calculation of Method" is checked
+     * 2. Fetch the selected calculation
+     * 3. Replace the calculation select box with the calculations
+    ###
+    me = this
+
+    calculation_uid = @get_default_calculation()
+
+    # nothing to do if we do not have a calculation uid set
+    if not @is_uid calculation_uid
+      return
+
+    options =
+      catalog_name: "bika_setup_catalog"
+      UID: calculation_uid
+
+    @read options, (data) ->
+      if data.objects.length isnt 1
+        console.warn "No Calculation found for UID '#{calculation_uid}'"
+        return
+
+      # Calculation data
+      calculation = data.objects[0]
+
+      # limit the calculation select box to this calculation
+      field = $("#archetypes-fieldname-Calculation #Calculation")
+      field.empty()
+      me.add_select_option field, calculation.Title, calculation.UID
+
+      # process interims of this calculation
+      calculation_interims = []
+      $.each calculation.InterimFields, (index, value) ->
+        # we use the same format as expected by `set_interims`
+        calculation_interims.push([
+          value.keyword
+          value.title
+          value.value
+          value.unit
+          false  # Hidden (missing here)
+          false  # Apply wide (missing here)
+        ])
+      # remember the interims of this calculation
+      me.calculation_interims = calculation_interims
+
+      # Calculate which interims were manually set (not part of the calculation)
+      manual_interims = []
+      calculation_interim_keys = calculation_interims.map (v) -> return v[0]
+      $.each me.get_interims(), (index, value) ->
+        if value[0] not in calculation_interim_keys
+          manual_interims.push value
+      # remember the manual set interims of this AS
+      me.manual_interims = manual_interims
+
+
+  ### INTERIM FIELD HANDLING ###
+
+  get_interims: =>
+    ###
+     * Extract the interim field values as a list of lists
+     * [['MG', 'Magnesium', 'g' ...], [], ...]
+    ###
+    field = $("#archetypes-fieldname-InterimFields")
+    rows = field.find("tr.records_row_InterimFields")
+
+    interims = []
+    $.each rows, (index, row) ->
+      values = []
+      $.each $(row).find("td input"), (index, input) ->
+        value = input.value
+        if input.type is "checkbox"
+          value = input.checked
+        values.push value
+      # Only rows with Keyword set
+      if values and values[0] isnt ""
+        interims.push values
+    return interims
+
+
+  set_interims: (values) =>
+    ###
+     * Set the interim field values
+     * Note: This method takes the same input format as returned from get_interims
+    ###
+
+    # empty all interims
+    @flush_interims()
+    field = $("#archetypes-fieldname-InterimFields")
+    more_button = field.find("#InterimFields_more")
+
+    $.each values, (index, value) ->
+      last_row = field.find("tr.records_row_InterimFields").last()
+      more_button.click()
+      inputs = last_row.find "input"
+
+      $.each value, (i, v) ->
+        input = inputs[i]
+        if input.type is "checkbox"
+          input.checked = v
+        else
+          input.value = v
+
+
+  flush_interims: =>
+    ###
+     * Flush interim field
+    ###
+    field = $("#archetypes-fieldname-InterimFields")
+    more_button = field.find("#InterimFields_more")
+    more_button.click()
+    rows = field.find("tr.records_row_InterimFields")
+    rows.not(":last").remove()
+
+
   ### LOADERS ###
+
+  load_interims: (calculation_uid) =>
+    ###
+     * Load interims assigned to the calculation
+    ###
+    if not @is_uid calculation_uid
+      console.warn "Calculation UID '#{calculation_uid}' is invalid"
+      return
+
+    options =
+      catalog_name: "bika_setup_catalog"
+      UID: calculation_uid
+    window.bika.lims.jsonapi_read options, (data) ->
+      interims = data?.objects?[0].InterimFields
+
 
   load_instrument_methods: (instrument_uid) =>
     ###
@@ -77,7 +217,7 @@ class window.AnalysisServiceEditView
     field = $('#archetypes-fieldname-Method #Method')
     field.empty()
     options =
-      url: @get_url() + "/get_instrument_methods"
+      url: @get_portal_url() + "/get_instrument_methods"
       data:
         uid: instrument_uid
     @ajax_submit options
@@ -87,7 +227,7 @@ class window.AnalysisServiceEditView
         field.append option
       if field.length == 0
         console.warn "Instrument with UID '#{instrument_uid}' has no methods assigned"
-        @add_empty_option field
+        @add_select_option field, ""
 
 
   load_available_calculations: =>
@@ -97,14 +237,14 @@ class window.AnalysisServiceEditView
     field = $("#archetypes-fieldname-Calculation #Calculation")
     field.empty()
     options =
-      url: @get_url() + "/get_available_calculations"
+      url: @get_portal_url() + "/get_available_calculations"
     @ajax_submit options
     .done (data) ->
       $.each data, (index, item) ->
         option = "<option value='#{item.uid}'>#{item.title}</option>"
         field.append option
       if field.length == 0
-        @add_empty_option field
+        @add_select_option field, ""
 
 
   load_method_calculation: (method_uid) =>
@@ -120,7 +260,7 @@ class window.AnalysisServiceEditView
     field.empty()
 
     options =
-      url: @get_url() + "/get_method_calculation"
+      url: @get_portal_url() + "/get_method_calculation"
       data:
         uid: method_uid
 
@@ -131,7 +271,7 @@ class window.AnalysisServiceEditView
         option = "<option value='#{data.uid}'>#{data.title}</option>"
         field.append option
       else
-        @add_empty_option field
+        @add_select_option field, ""
 
 
   ### METHODS ###
@@ -145,11 +285,11 @@ class window.AnalysisServiceEditView
     # some sane option defaults
     options ?= {}
     options.type ?= "POST"
-    options.url ?= @get_url()
+    options.url ?= @get_portal_url()
     options.context ?= this
     options.dataType ?= "json"
     options.data ?= {}
-    options.data._authenticator ?= @get_authenticator()
+    options.data._authenticator ?= $("input[name='_authenticator']").val()
 
     console.debug ">>> ajax_submit::options=", options
 
@@ -159,27 +299,11 @@ class window.AnalysisServiceEditView
     return $.ajax(options).done done
 
 
-  get_url: =>
-    ###
-     * Return the current URL
-    ###
-    protocol = location.protocol
-    host = location.host
-    pathname = location.pathname
-    return "#{protocol}//#{host}#{pathname}"
-
   get_portal_url: =>
     ###
      * Return the portal url
     ###
     return window.portal_url
-
-
-  get_authenticator: =>
-    ###
-     * Get the authenticator value
-    ###
-    return $("input[name='_authenticator']").val()
 
 
   is_uid: (str) =>
@@ -192,9 +316,9 @@ class window.AnalysisServiceEditView
     return match isnt null
 
 
-  show_methods_field: (toggle) =>
+  toggle_visibility_methods_field: (toggle) =>
     ###
-     * This method toggles the visibility of complete "Methods" field
+     * This method toggles the visibility of the "Methods" field
     ###
     field = $("#archetypes-fieldname-Methods")
     if toggle is undefined
@@ -217,13 +341,34 @@ class window.AnalysisServiceEditView
     return field
 
 
-  add_empty_option: (select) =>
+  add_select_option: (select, name, value) =>
     ###
-     * Add an empty option to the select box
+     * Adds an option to the select
     ###
-    empty_option = "<option value=''>#{@_('None')}</option>"
-    $(select).append empty_option
-    $(select).val ""
+
+    # empty option
+    if value is ""
+      name = "None"
+    option = "<option value='#{value}'>#{@_(name)}</option>"
+    return $(select).append option
+
+
+  ### ELEMENT HANDLING ###
+
+  use_default_calculation_of_method: =>
+    ###
+     * Retrun the value of the "Use the Default Calculation of Method" checkbox
+    ###
+    field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation")
+    return field.is(":checked")
+
+
+  get_default_calculation: =>
+    ###
+     * Get the UID of the selected default calculation
+    ###
+    field = $("#archetypes-fieldname-Calculation #Calculation")
+    return field.val()
 
 
   ### EVENT HANDLER ###
