@@ -9,26 +9,28 @@
       this.load = this.load.bind(this);
       /* INITIALIZERS */
       this.bind_eventhandler = this.bind_eventhandler.bind(this);
-      this.init_default_calculation = this.init_default_calculation.bind(this);
-      /* INTERIM FIELD HANDLING */
+      this.init_interims = this.init_interims.bind(this);
+      /* FIELD GETTERS/SETTERS */
+      this.get_calculation = this.get_calculation.bind(this);
+      this.set_calculation = this.set_calculation.bind(this);
       this.get_interims = this.get_interims.bind(this);
       this.set_interims = this.set_interims.bind(this);
       this.flush_interims = this.flush_interims.bind(this);
-      /* LOADERS */
-      this.load_interims = this.load_interims.bind(this);
-      this.load_instrument_methods = this.load_instrument_methods.bind(this);
+      /* ASYNC DATA LOADERS */
       this.load_available_calculations = this.load_available_calculations.bind(this);
+      this.load_instrument_methods = this.load_instrument_methods.bind(this);
       this.load_method_calculation = this.load_method_calculation.bind(this);
-      /* METHODS */
+      this.load_calculation = this.load_calculation.bind(this);
+      /* HELPERS */
       this.ajax_submit = this.ajax_submit.bind(this);
       this.get_portal_url = this.get_portal_url.bind(this);
       this.is_uid = this.is_uid.bind(this);
+      /* ELEMENT HANDLING */
+      this.use_default_calculation_of_method = this.use_default_calculation_of_method.bind(this);
+      this.get_default_method = this.get_default_method.bind(this);
       this.toggle_visibility_methods_field = this.toggle_visibility_methods_field.bind(this);
       this.toggle_instrument_entry_of_results_checkbox = this.toggle_instrument_entry_of_results_checkbox.bind(this);
       this.add_select_option = this.add_select_option.bind(this);
-      /* ELEMENT HANDLING */
-      this.use_default_calculation_of_method = this.use_default_calculation_of_method.bind(this);
-      this.get_default_calculation = this.get_default_calculation.bind(this);
       /* EVENT HANDLER */
       this.on_default_method_change = this.on_default_method_change.bind(this);
       this.on_methods_change = this.on_methods_change.bind(this);
@@ -48,14 +50,12 @@
       this._ = window.jarn.i18n.MessageFactory("bika");
       // JSONAPI v1 access
       this.read = window.bika.lims.jsonapi_read;
-      // Interim values defined in default Calculation
-      this.calculation_interims = [];
       // Interim values defined by the user (not part of a calculation)
       this.manual_interims = [];
       // bind the event handler to the elements
       this.bind_eventhandler();
       // Initialize default calculation
-      this.init_default_calculation();
+      this.init_interims();
       // Dev only
       return window.asv = this;
     }
@@ -90,70 +90,74 @@
       return $("body").on("change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", this.on_display_detection_limit_selector_change);
     }
 
-    init_default_calculation() {
+    init_interims() {
       /*
        * 1. Check if field "Use the Default Calculation of Method" is checked
        * 2. Fetch the selected calculation
        * 3. Replace the calculation select box with the calculations
+       * 4. Separate manual set interims from calculation interims
        */
-      var calculation_uid, me, options;
+      var me;
       me = this;
-      calculation_uid = this.get_default_calculation();
-      // nothing to do if we do not have a calculation uid set
-      if (!this.is_uid(calculation_uid)) {
-        return;
-      }
-      options = {
-        catalog_name: "bika_setup_catalog",
-        UID: calculation_uid
-      };
-      return this.read(options, function(data) {
-        var calculation, calculation_interim_keys, calculation_interims, field, manual_interims;
-        if (data.objects.length !== 1) {
-          console.warn(`No Calculation found for UID '${calculation_uid}'`);
-          return;
-        }
-        // Calculation data
-        calculation = data.objects[0];
-        // limit the calculation select box to this calculation
-        field = $("#archetypes-fieldname-Calculation #Calculation");
-        field.empty();
-        me.add_select_option(field, calculation.Title, calculation.UID);
-        // process interims of this calculation
-        calculation_interims = [];
-        $.each(calculation.InterimFields, function(index, value) {
-          // we use the same format as expected by `set_interims`
-          return calculation_interims.push([
-            value.keyword,
-            value.title,
-            value.value,
-            value.unit,
-            false, // Hidden (missing here)
-            false // Apply wide (missing here)
-          ]);
-        });
-        // remember the interims of this calculation
-        me.calculation_interims = calculation_interims;
-        // Calculate which interims were manually set (not part of the calculation)
-        manual_interims = [];
+      return this.load_calculation(this.get_calculation()).done(function(calculation) {
+        var calculation_interim_keys, calculation_interims, manual_interims;
+        // set the calculation field
+        this.set_calculation(calculation);
+        // interims of this calculation
+        calculation_interims = calculation.InterimFields || [];
+        // extract the keys of the calculation interims
         calculation_interim_keys = calculation_interims.map(function(v) {
-          return v[0];
+          return v.keyword;
         });
-        $.each(me.get_interims(), function(index, value) {
+        // separate manual interims from calculation interims
+        manual_interims = [];
+        $.each(this.get_interims(), function(index, value) {
           var ref;
-          if (ref = value[0], indexOf.call(calculation_interim_keys, ref) < 0) {
+          if (ref = value.keyword, indexOf.call(calculation_interim_keys, ref) < 0) {
             return manual_interims.push(value);
           }
         });
         // remember the manual set interims of this AS
-        return me.manual_interims = manual_interims;
+        // -> they are kept on calculation change
+        return this.manual_interims = manual_interims;
       });
+    }
+
+    get_calculation() {
+      /*
+       * Get the UID of the selected default calculation
+       */
+      var field;
+      field = $("#archetypes-fieldname-Calculation #Calculation");
+      return field.val();
+    }
+
+    set_calculation(calculation, flush = true) {
+      var field, title, uid;
+      /*
+       * Set the calculation field with the given ()JSON calculation data
+       */
+      // create a copy of the calculation
+      calculation = $.extend({}, calculation);
+      field = $("#archetypes-fieldname-Calculation #Calculation");
+      // empty the field first
+      if (flush) {
+        field.empty();
+      }
+      // XXX: Workaround for inconsistent data structures of the JSON API v1 and the
+      //      return value of `get_method_calculation`
+      title = calculation.title || calculation.Title;
+      uid = calculation.uid || calculation.UID;
+      if (title && uid) {
+        return this.add_select_option(field, title, uid);
+      } else {
+        return this.add_select_option(field, null);
+      }
     }
 
     get_interims() {
       /*
-       * Extract the interim field values as a list of lists
-       * [['MG', 'Magnesium', 'g' ...], [], ...]
+       * Extract the interim field values as a list of objects
        */
       var field, interims, rows;
       field = $("#archetypes-fieldname-InterimFields");
@@ -161,45 +165,64 @@
       interims = [];
       $.each(rows, function(index, row) {
         var values;
-        values = [];
+        values = {};
         $.each($(row).find("td input"), function(index, input) {
-          var value;
+          var key, value;
+          // Extract the key from the element name
+          // InterimFields.keyword:records:ignore_empty
+          key = this.name.split(":")[0].split(".")[1];
           value = input.value;
           if (input.type === "checkbox") {
             value = input.checked;
           }
-          return values.push(value);
+          return values[key] = value;
         });
         // Only rows with Keyword set
-        if (values && values[0] !== "") {
+        if (values.keyword !== "") {
           return interims.push(values);
         }
       });
       return interims;
     }
 
-    set_interims(values) {
+    set_interims(interims, flush = true) {
       var field, more_button;
       /*
        * Set the interim field values
        * Note: This method takes the same input format as returned from get_interims
        */
-      // empty all interims
-      this.flush_interims();
+      // create a copy of the calculation interims
+      interims = $.extend([], interims);
       field = $("#archetypes-fieldname-InterimFields");
       more_button = field.find("#InterimFields_more");
-      return $.each(values, function(index, value) {
+      // empty all interims
+      if (flush) {
+        this.flush_interims();
+      }
+      // always keep manual set interims
+      $.each(this.manual_interims, function(index, interim) {
+        return interims.push(interim);
+      });
+      return $.each(interims, function(index, interim) {
         var inputs, last_row;
         last_row = field.find("tr.records_row_InterimFields").last();
         more_button.click();
         inputs = last_row.find("input");
-        return $.each(value, function(i, v) {
-          var input;
-          input = inputs[i];
+        // iterate over all inputs of the interim field
+        return $.each(inputs, function(index, input) {
+          var key, value, vvalue;
+          key = this.name.split(":")[0].split(".")[1];
+          value = interim[key];
           if (input.type === "checkbox") {
-            return input.checked = v;
+            // transform to bool value
+            if (value) {
+              vvalue = true;
+            } else {
+              value = false;
+            }
+            return input.checked = value;
           } else {
-            return input.value = v;
+            return input.value = value;
           }
         });
       });
@@ -217,29 +240,21 @@
       return rows.not(":last").remove();
     }
 
-    load_interims(calculation_uid) {
-      var options;
+    load_available_calculations() {
       /*
-       * Load interims assigned to the calculation
+       * Load all available calculations to the calculation select box
        */
-      if (!this.is_uid(calculation_uid)) {
-        console.warn(`Calculation UID '${calculation_uid}' is invalid`);
-        return;
-      }
+      var options;
       options = {
-        catalog_name: "bika_setup_catalog",
-        UID: calculation_uid
+        url: this.get_portal_url() + "/get_available_calculations"
       };
-      return window.bika.lims.jsonapi_read(options, function(data) {
-        var interims, ref;
-        return interims = data != null ? (ref = data.objects) != null ? ref[0].InterimFields : void 0 : void 0;
-      });
+      return this.ajax_submit(options);
     }
 
     load_instrument_methods(instrument_uid) {
       var field, options;
       /*
-       * Load methods assigned to the instrument
+       * Load assigned methods of the instrument
        */
       if (!this.is_uid(instrument_uid)) {
         console.warn(`Instrument UID '${instrument_uid}' is invalid`);
@@ -261,44 +276,25 @@
         });
         if (field.length === 0) {
           console.warn(`Instrument with UID '${instrument_uid}' has no methods assigned`);
-          return this.add_select_option(field, "");
-        }
-      });
-    }
-
-    load_available_calculations() {
-      /*
-       * Load all available calculations to the calculation select box
-       */
-      var field, options;
-      field = $("#archetypes-fieldname-Calculation #Calculation");
-      field.empty();
-      options = {
-        url: this.get_portal_url() + "/get_available_calculations"
-      };
-      return this.ajax_submit(options).done(function(data) {
-        $.each(data, function(index, item) {
-          var option;
-          option = `<option value='${item.uid}'>${item.title}</option>`;
-          return field.append(option);
-        });
-        if (field.length === 0) {
-          return this.add_select_option(field, "");
+          return this.add_select_option(field, null);
         }
       });
     }
 
     load_method_calculation(method_uid) {
-      var field, options;
       /*
-       * Load calculations for the given method UID
+       * Load assigned calculation of the given method UID
+       * Returns a deferred
        */
+      var deferred, me, options;
+      me = this;
+      deferred = $.Deferred();
+      // Immediately if we do not have a valid method UID
       if (!this.is_uid(method_uid)) {
         console.warn(`Method UID '${method_uid}' is invalid`);
-        return;
+        deferred.resolveWith(me, [{}]);
+        return deferred.promise();
       }
-      field = $("#archetypes-fieldname-Calculation #Calculation");
-      field.empty();
       options = {
         url: this.get_portal_url() + "/get_method_calculation",
         data: {
@@ -306,15 +302,40 @@
         }
       };
       // Fetch the assigned calculations of the method
-      return this.ajax_submit(options).done(function(data) {
-        var option;
-        if (!$.isEmptyObject(data)) {
-          option = `<option value='${data.uid}'>${data.title}</option>`;
-          return field.append(option);
-        } else {
-          return this.add_select_option(field, "");
-        }
+      this.ajax_submit(options).done(function(data) {
+        return deferred.resolveWith(me, [data]);
       });
+      return deferred.promise();
+    }
+
+    load_calculation(calculation_uid) {
+      /*
+       * Load calculation object for the given UID
+       * Returns a deferred
+       */
+      var deferred, me, options;
+      me = this;
+      deferred = $.Deferred();
+      // Immediately if we do not have a valid calculation UID
+      if (!this.is_uid(calculation_uid)) {
+        console.warn(`Calculation UID '${calculation_uid}' is invalid`);
+        deferred.resolveWith(me, [{}]);
+        return deferred.promise();
+      }
+      // Load the calculation, so that we can set the interims
+      options = {
+        catalog_name: "bika_setup_catalog",
+        UID: calculation_uid
+      };
+      this.read(options, function(data) {
+        var calculation;
+        calculation = {};
+        if (data.objects.length === 1) {
+          calculation = data.objects[0];
+        }
+        return deferred.resolveWith(me, [calculation]);
+      });
+      return deferred.promise();
     }
 
     ajax_submit(options) {
@@ -372,6 +393,24 @@
       return match !== null;
     }
 
+    use_default_calculation_of_method() {
+      /*
+       * Retrun the value of the "Use the Default Calculation of Method" checkbox
+       */
+      var field;
+      field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation");
+      return field.is(":checked");
+    }
+
+    get_default_method() {
+      /*
+       * Get the UID of the selected default method
+       */
+      var field;
+      field = $("#archetypes-fieldname-Method #Method");
+      return field.val();
+    }
+
     toggle_visibility_methods_field(toggle) {
       /*
        * This method toggles the visibility of the "Methods" field
@@ -407,29 +446,11 @@
        * Adds an option to the select
        */
       // empty option
-      if (value === "") {
+      if (!value) {
         name = "None";
       }
       option = `<option value='${value}'>${this._(name)}</option>`;
       return $(select).append(option);
-    }
-
-    use_default_calculation_of_method() {
-      /*
-       * Retrun the value of the "Use the Default Calculation of Method" checkbox
-       */
-      var field;
-      field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation");
-      return field.is(":checked");
-    }
-
-    get_default_calculation() {
-      /*
-       * Get the UID of the selected default calculation
-       */
-      var field;
-      field = $("#archetypes-fieldname-Calculation #Calculation");
-      return field.val();
     }
 
     on_default_method_change(event) {
@@ -475,17 +496,56 @@
     }
 
     on_use_default_calculation_change(event) {
+      var method_uid;
       /*
        * Eventhandler when the "Use the Default Calculation of Method" checkbox changed
        */
-      return console.debug("°°° AnalysisServiceEditView::on_use_default_calculation_change °°°");
+      console.debug("°°° AnalysisServiceEditView::on_use_default_calculation_change °°°");
+      // "Use the Default Calculation of Method" checkbox checked
+      if (event.currentTarget.checked) {
+        // - get the UID of the default method
+        // - set the assigned calculation of the method
+        // - unselect all previous calculation interims (just keep the manual ones)
+        // - set the interims of the new set calculation
+
+        // Get the UID of the default Method
+        method_uid = this.get_default_method();
+        // Set empty calculation if method UID is not set
+        if (!this.is_uid(method_uid)) {
+          return this.set_calculation(null);
+        }
+        return this.load_method_calculation(method_uid).done(function(data) {
+          // {uid: "488400e9f5e24a4cbd214056e6b5e2aa", title: "My Calculation"}
+          this.set_calculation(data);
+          // load the calculation now, to set the interims
+          return this.load_calculation(this.get_calculation()).done(function(calculation) {
+            return this.set_interims(calculation.InterimFields);
+          });
+        });
+      } else {
+        // load all available calculations
+        return this.load_available_calculations().done(function(calculations) {
+          var me;
+          me = this;
+          $.each(calculations, function(index, calculation) {
+            var flush;
+            flush = index === 0 ? true : false;
+            return me.set_calculation(calculation, flush);
+          });
+          // flush interims
+          return this.set_interims(null);
+        });
+      }
     }
 
     on_calculation_change(event) {
+      var calculation_uid;
       /*
        * Eventhandler when the "Calculation" selector changed
        */
-      return console.debug("°°° AnalysisServiceEditView::on_calculation_change °°°");
+      console.debug("°°° AnalysisServiceEditView::on_calculation_change °°°");
+      // Always load interims of the calculation
+      return calculation_uid = event.currentTarget.value;
     }
 
     on_display_detection_limit_selector_change(event) {
