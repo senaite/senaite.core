@@ -210,6 +210,43 @@ class window.AnalysisServiceEditView
     rows.not(":last").remove()
 
 
+  set_method_calculation: (method_uid) =>
+    ###
+     * Loads the calculation of the method and set the interims of it
+    ###
+
+    # Set empty calculation if method UID is not set
+    if not @is_uid method_uid
+      return @set_calculation null
+
+    @load_method_calculation method_uid
+    .done (data) ->
+      # {uid: "488400e9f5e24a4cbd214056e6b5e2aa", title: "My Calculation"}
+      @set_calculation data
+
+      # load the calculation now, to set the interims
+      @load_calculation @get_calculation()
+      .done (calculation) ->
+        @set_interims calculation.InterimFields
+
+
+  set_all_calculations: =>
+    ###
+     * Loads all available calculations and set it
+    ###
+
+    me = this
+
+    @load_available_calculations()
+    .done (calculations) ->
+      $.each calculations, (index, calculation) ->
+        # flush only initially
+        flush = if index is 0 then yes else no
+        me.set_calculation calculation, flush
+      # flush interims
+      @set_interims null
+
+
   ### ASYNC DATA LOADERS ###
 
   load_available_calculations: =>
@@ -406,6 +443,11 @@ class window.AnalysisServiceEditView
     ###
     console.debug "°°° AnalysisServiceEditView::on_default_method_change °°°"
 
+    # Get the UID of the default Method
+    method_uid = @get_default_method()
+    # set the calculation of the method
+    @set_method_calculation method_uid
+
 
   on_methods_change: (event) =>
     ###
@@ -458,30 +500,12 @@ class window.AnalysisServiceEditView
       # Get the UID of the default Method
       method_uid = @get_default_method()
 
-      # Set empty calculation if method UID is not set
-      if not @is_uid method_uid
-        return @set_calculation null
-
-      @load_method_calculation method_uid
-      .done (data) ->
-        # {uid: "488400e9f5e24a4cbd214056e6b5e2aa", title: "My Calculation"}
-        @set_calculation data
-
-        # load the calculation now, to set the interims
-        @load_calculation @get_calculation()
-        .done (calculation) ->
-          @set_interims calculation.InterimFields
+      # set the calculation of the method
+      @set_method_calculation method_uid
 
     else
       # load all available calculations
-      @load_available_calculations()
-      .done (calculations) ->
-        me = this
-        $.each calculations, (index, calculation) ->
-          flush = if index is 0 then yes else no
-          me.set_calculation calculation, flush
-        # flush interims
-        @set_interims null
+      @set_all_calculations()
 
 
   on_calculation_change: (event) =>

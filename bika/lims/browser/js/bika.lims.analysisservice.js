@@ -16,6 +16,8 @@
       this.get_interims = this.get_interims.bind(this);
       this.set_interims = this.set_interims.bind(this);
       this.flush_interims = this.flush_interims.bind(this);
+      this.set_method_calculation = this.set_method_calculation.bind(this);
+      this.set_all_calculations = this.set_all_calculations.bind(this);
       /* ASYNC DATA LOADERS */
       this.load_available_calculations = this.load_available_calculations.bind(this);
       this.load_instrument_methods = this.load_instrument_methods.bind(this);
@@ -243,6 +245,42 @@
       return rows.not(":last").remove();
     }
 
+    set_method_calculation(method_uid) {
+      /*
+       * Loads the calculation of the method and set the interims of it
+       */
+      // Set empty calculation if method UID is not set
+      if (!this.is_uid(method_uid)) {
+        return this.set_calculation(null);
+      }
+      return this.load_method_calculation(method_uid).done(function(data) {
+        // {uid: "488400e9f5e24a4cbd214056e6b5e2aa", title: "My Calculation"}
+        this.set_calculation(data);
+        // load the calculation now, to set the interims
+        return this.load_calculation(this.get_calculation()).done(function(calculation) {
+          return this.set_interims(calculation.InterimFields);
+        });
+      });
+    }
+
+    set_all_calculations() {
+      /*
+       * Loads all available calculations and set it
+       */
+      var me;
+      me = this;
+      return this.load_available_calculations().done(function(calculations) {
+        $.each(calculations, function(index, calculation) {
+          var flush;
+          // flush only initially
+          flush = index === 0 ? true : false;
+          return me.set_calculation(calculation, flush);
+        });
+        // flush interims
+        return this.set_interims(null);
+      });
+    }
+
     load_available_calculations() {
       /*
        * Load all available calculations to the calculation select box
@@ -457,10 +495,15 @@
     }
 
     on_default_method_change(event) {
+      var method_uid;
       /*
        * Eventhandler when the "Default Method" selector changed
        */
-      return console.debug("°°° AnalysisServiceEditView::on_default_method_change °°°");
+      console.debug("°°° AnalysisServiceEditView::on_default_method_change °°°");
+      // Get the UID of the default Method
+      method_uid = this.get_default_method();
+      // set the calculation of the method
+      return this.set_method_calculation(method_uid);
     }
 
     on_methods_change(event) {
@@ -513,31 +556,11 @@
 
         // Get the UID of the default Method
         method_uid = this.get_default_method();
-        // Set empty calculation if method UID is not set
-        if (!this.is_uid(method_uid)) {
-          return this.set_calculation(null);
-        }
-        return this.load_method_calculation(method_uid).done(function(data) {
-          // {uid: "488400e9f5e24a4cbd214056e6b5e2aa", title: "My Calculation"}
-          this.set_calculation(data);
-          // load the calculation now, to set the interims
-          return this.load_calculation(this.get_calculation()).done(function(calculation) {
-            return this.set_interims(calculation.InterimFields);
-          });
-        });
+        // set the calculation of the method
+        return this.set_method_calculation(method_uid);
       } else {
         // load all available calculations
-        return this.load_available_calculations().done(function(calculations) {
-          var me;
-          me = this;
-          $.each(calculations, function(index, calculation) {
-            var flush;
-            flush = index === 0 ? true : false;
-            return me.set_calculation(calculation, flush);
-          });
-          // flush interims
-          return this.set_interims(null);
-        });
+        return this.set_all_calculations();
       }
     }
 
