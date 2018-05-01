@@ -1918,41 +1918,120 @@ class Setup(WorksheetImporter):
         for row in self.get_rows(3):
             values[row['Field']] = row['Value']
 
-        DSL = {
-            'days': int(values['DefaultSampleLifetime_days'] and values['DefaultSampleLifetime_days'] or 0),
-            'hours': int(values['DefaultSampleLifetime_hours'] and values['DefaultSampleLifetime_hours'] or 0),
-            'minutes': int(values['DefaultSampleLifetime_minutes'] and values['DefaultSampleLifetime_minutes'] or 0),
-        }
-        self.context.bika_setup.edit(
-            PasswordLifetime=int(values['PasswordLifetime']),
-            AutoLogOff=int(values['AutoLogOff']),
-            ShowPricing=values.get('ShowPricing', True),
-            Currency=values['Currency'],
-            DefaultCountry=values.get('DefaultCountry', ''),
-            MemberDiscount=str(Float(values['MemberDiscount'])),
-            VAT=str(Float(values['VAT'])),
-            MinimumResults=int(values['MinimumResults']),
-            BatchEmail=int(values['BatchEmail']),
-            SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
-            ScheduleSamplingEnabled=values.get('ScheduleSamplingEnabled', 0),
-            CategoriseAnalysisServices=self.to_bool(
-                values['CategoriseAnalysisServices']),
-            EnableAnalysisRemarks=self.to_bool(
-                values.get('EnableAnalysisRemarks', '')),
-            ARImportOption=values['ARImportOption'],
-            ARAttachmentOption=values['ARAttachmentOption'][0].lower(),
-            AnalysisAttachmentOption=values[
-                'AnalysisAttachmentOption'][0].lower(),
-            DefaultSampleLifetime=DSL,
-            AutoPrintStickers=values.get('AutoPrintStickers','receive').lower(),
-            AutoStickerTemplate=values.get('AutoStickerTemplate', 'Code_128_1x48mm.pt'),
-            YearInPrefix=self.to_bool(values['YearInPrefix']),
-            SampleIDPadding=int(values['SampleIDPadding']),
-            ARIDPadding=int(values['ARIDPadding']),
-            ExternalIDServer=self.to_bool(values['ExternalIDServer']),
-            IDServerURL=values['IDServerURL'],
-            ShowNewReleasesInfo=values.get('ShowNewReleasesInfo', True),
-        )
+        bsetup = self.context.bika_setup
+        bschema = bsetup.Schema()
+        for field in bschema.fields():
+            value = None
+            field_name = field.getName()
+            if field_name in values:
+                value = values[field_name]
+                if value is None:
+                    continue
+                msg = "No valid type for BikaSetup.{0} ({1}): {2}"
+                if field.type == 'integer':
+                    try:
+                        value = str(int(value))
+                    except ValueError:
+                        msg = msg.format(field_name, field.type, value)
+                        logger.error(msg)
+                        continue
+
+                elif field.type == 'fixedpoint':
+                    try:
+                        value = str(float(value))
+                    except ValueError:
+                        msg = msg.format(field_name, field.type, value)
+                        logger.error(msg)
+                        continue
+
+                elif field.type == 'boolean':
+                    value = str(self.to_bool(value))
+
+                elif field.type == 'string' and field.vocabulary:
+                    vocabulary = field.vocabulary
+                    if type(vocabulary) is str:
+                        from bika.lims.utils import getFromString
+                        vocabulary = getFromString(bsetup, vocabulary)
+                    else:
+                        vocabulary = vocabulary.items()
+                    if not vocabulary:
+                        continue
+                    if type(vocabulary) in (tuple, list):
+                        vocabulary = {item[0]: item[1] for item in vocabulary}
+
+                    found = False
+                    for key, val in vocabulary.items():
+                        key_low = str(to_utf8(key)).lower()
+                        val_low = str(to_utf8(val)).lower()
+                        value_low = str(value).lower()
+                        if key_low == value_low or val_low == value_low:
+                            value = key
+                            found = True
+                            break
+                    if not found:
+                        msg = "No valid value for BikaSetup.{0} ({1}): {2}"
+                        msg = msg.format(field_name, field.type, value)
+                        logger.error(msg)
+                        continue
+
+                elif field.type == 'reference' and field.allowed_types:
+                    if not value:
+                        continue
+                    found = False
+                    at = getToolByName(self.context, 'archetype_tool')
+                    at_map = at.catalog_map
+                    for allowed_type in field.allowed_types:
+                        if allowed_type in at_map:
+                            catalog_name = at_map[allowed_type][0]
+                            catalog = getToolByName(self.context, catalog_name)
+                            obj = self.get_object(catalog, allowed_type, value)
+                            if obj:
+                                value = obj.UID()
+                                found = True
+                                break
+
+                    if not found:
+                        msg = "No object found for BikaSetup.{0} ({1}): {2}"
+                        msg = msg.format(field_name, field.type, value)
+                        logger.error(msg)
+                        continue
+
+            elif field.type == 'duration':
+                duration_days = '{0}_{1}'.format(field_name, 'days')
+                duration_hours = '{0}_{1}'.format(field_name, 'hours')
+                duration_minutes = '{0}_{1}'.format(field_name, 'minutes')
+                if duration_days in values or duration_hours in values or \
+                                duration_minutes in values:
+                    days = values.get(duration_days, 0)
+                    hours = values.get(duration_hours, 0)
+                    minutes = values.get(duration_minutes, 0)
+                    try:
+                        days = int(days)
+                    except ValueError:
+                        msg = msg.format(duration_days, field.type, days)
+                        logger.error(msg)
+                        continue
+                    try:
+                        hours = int(hours)
+                    except ValueError:
+                        msg = msg.format(duration_hours, field.type, hours)
+                        logger.error(msg)
+                        continue
+                    try:
+                        minutes = int(minutes)
+                    except ValueError:
+                        msg = msg.format(duration_minutes, field.type, minutes)
+                        logger.error(msg)
+                        continue
+                    value = {'days': days, 'hours': hours, 'minutes': minutes}
+            if value is None:
+                continue
+            try:
+                obj_field = bsetup.getField(field_name)
+                obj_field.set(bsetup, str(value))
+            except:
+                msg = msg.format(field_name, field.type, value)
+                logger.error(msg)
 
 
 class ID_Prefixes(WorksheetImporter):

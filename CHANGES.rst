@@ -13,6 +13,7 @@ Changelog
 
 **Changed**
 
+- #873 Generalize the assignment of values into fields for Setup on import
 - #868 AR Add Form: Refactoring and Styling
 - #817 Make warn message clearer if transition rejection is due to missing sampler
 
