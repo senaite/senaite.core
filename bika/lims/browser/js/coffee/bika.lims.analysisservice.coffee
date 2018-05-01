@@ -192,9 +192,10 @@ class window.AnalysisServiceEditView
         value = interim[key]
         if input.type is "checkbox"
           # transform to bool value
-          if value then vvalue = yes else value = no
+          if value then value = yes else value = no
           input.checked = value
         else
+          if not value then value = ""
           input.value = value
 
 
@@ -489,8 +490,10 @@ class window.AnalysisServiceEditView
     ###
     console.debug "°°° AnalysisServiceEditView::on_calculation_change °°°"
 
-    # Always load interims of the calculation
-    calculation_uid = event.currentTarget.value
+    # load the calculation now, to set the interims
+    @load_calculation @get_calculation()
+    .done (calculation) ->
+      @set_interims calculation.InterimFields
 
 
   on_display_detection_limit_selector_change: (event) =>

@@ -210,18 +210,21 @@
         inputs = last_row.find("input");
         // iterate over all inputs of the interim field
         return $.each(inputs, function(index, input) {
-          var key, value, vvalue;
+          var key, value;
           key = this.name.split(":")[0].split(".")[1];
           value = interim[key];
           if (input.type === "checkbox") {
             // transform to bool value
             if (value) {
-              vvalue = true;
+              value = true;
             } else {
               value = false;
             }
             return input.checked = value;
           } else {
+            if (!value) {
+              value = "";
+            }
             return input.value = value;
           }
         });
@@ -539,13 +542,14 @@
     }
 
     on_calculation_change(event) {
-      var calculation_uid;
       /*
        * Eventhandler when the "Calculation" selector changed
        */
       console.debug("°°° AnalysisServiceEditView::on_calculation_change °°°");
-      // Always load interims of the calculation
-      return calculation_uid = event.currentTarget.value;
+      // load the calculation now, to set the interims
+      return this.load_calculation(this.get_calculation()).done(function(calculation) {
+        return this.set_interims(calculation.InterimFields);
+      });
     }
 
     on_display_detection_limit_selector_change(event) {
