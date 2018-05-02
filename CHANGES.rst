@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #811 api import in printform
 
 **Removed**
 
@@ -19,7 +20,7 @@ Changelog
 
 
 **Fixed**
-
+ 
 - #799 On AR Listing, inline edit for Date Sampled not working when Sampler has a value
 - #776 Analyses submission in Worksheet is slow
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
