@@ -539,16 +539,16 @@
 
     set_instrument_methods(instrument_uid, flush = true) {
       /**
-       * Loads the calculation of the method and set the interims of it
+       * Loads the methods of the instrument
        *
        * @param {string} instrument_uid
        *    The UID of the instrument to set the method from
        */
       var me;
       me = this;
-      // Set empty instrument if method UID is not set
+      // Set empty default method if instrument UID is not set
       if (!this.is_uid(instrument_uid)) {
-        return this.set_methods(null);
+        return this.set_default_method(null);
       }
       return this.load_instrument_methods(instrument_uid).done(function(methods) {
         methods = $.extend([], methods);
@@ -560,13 +560,13 @@
     }
 
     set_all_methods() {
-      var methods;
       /**
        * Load and set all available methods
        */
-      if (this._methods) {
-        methods = $.extend([], this._methods);
-        return this.set_methods(methods);
+      var cached;
+      cached = $.extend([], this._methods);
+      if (cached.length) {
+        return this.set_methods(cached);
       } else {
         return this.load_available_methods().done(function(methods) {
           this.set_methods(methods);

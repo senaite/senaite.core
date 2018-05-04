@@ -463,16 +463,16 @@ class window.AnalysisServiceEditView
 
   set_instrument_methods: (instrument_uid, flush=yes) =>
     ###*
-     * Loads the calculation of the method and set the interims of it
+     * Loads the methods of the instrument
      *
      * @param {string} instrument_uid
      *    The UID of the instrument to set the method from
     ###
     me = this
 
-    # Set empty instrument if method UID is not set
+    # Set empty default method if instrument UID is not set
     if not @is_uid instrument_uid
-      return @set_methods null
+      return @set_default_method null
 
     @load_instrument_methods instrument_uid
     .done (methods) ->
@@ -486,9 +486,9 @@ class window.AnalysisServiceEditView
     ###*
      * Load and set all available methods
     ###
-    if @_methods
-      methods = $.extend [], @_methods
-      @set_methods methods
+    cached = $.extend [], @_methods
+    if cached.length
+      @set_methods cached
     else
       @load_available_methods()
       .done (methods) ->
