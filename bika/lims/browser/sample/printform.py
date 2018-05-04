@@ -12,7 +12,7 @@ from Products.CMFPlone.utils import safe_unicode
 
 from plone.resource.utils import iterDirectoriesOfType
 
-from senaite import api
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.utils import createPdf
 from bika.lims import logger
