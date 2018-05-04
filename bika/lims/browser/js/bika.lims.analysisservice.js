@@ -149,7 +149,8 @@
       // Init "Instrument assignment is not required" checkbox
       if (this.is_manual_entry_of_results_allowed()) {
         console.debug("Manual Entry of Results is allowed");
-        this.toggle_instrument_assignment_allowed(true);
+        // load methods with the ManualEntryOfResults flag set to true
+        this.set_all_methods();
       } else {
         console.debug("Manual Entry of Results is **not** allowed");
         // flush all methods and add only the "None" option
@@ -157,11 +158,13 @@
       }
       // Init "Instrument assignment is allowed" checkbox
       if (this.is_instrument_assignment_allowed()) {
-        return console.debug("Instrument assignment is allowed");
+        console.debug("Instrument assignment is allowed");
+        return this.set_all_instruments();
       } else {
         console.debug("Instrument assignment is **not** allowed");
         // flush all instruments and add only the "None" option
-        return this.set_instruments(null);
+        this.set_instruments(null);
+        return this.set_default_instrument(null);
       }
     }
 
@@ -551,9 +554,9 @@
        */
       var me;
       me = this;
-      // Set empty default method if instrument UID is not set
+      // Leave default method if the "None" instrument was selected
       if (!this.is_uid(instrument_uid)) {
-        return this.set_default_method(null);
+        return;
       }
       return this.load_instrument_methods(instrument_uid).done(function(methods) {
         methods = $.extend([], methods);
@@ -874,6 +877,7 @@
       // empty option
       if (!value) {
         name = "None";
+        value = "";
       }
       option = `<option value='${value}'>${this._(name)}</option>`;
       return $(select).append(option);
@@ -907,8 +911,10 @@
         this.set_default_method(null);
         // Flush default instrument
         this.set_default_instrument(null);
+        // Flush default calculation
+        this.set_calculation(null);
         // Enable instrument assignment
-        this.toggle_instrument_assignment_allowed(true);
+        // @toggle_instrument_assignment_allowed on
         // Disable "Use the Default Calculation of Method"
         return this.toggle_use_default_calculation_of_method(false);
       }
@@ -930,6 +936,7 @@
       me = this;
       $.each(method_uids, function(index, uid) {
         var $el, flush, method, option;
+        // flush the field for the first element
         flush = index === 0 && true || false;
         // extract the title and uid from the option element
         $el = $(event.currentTarget);

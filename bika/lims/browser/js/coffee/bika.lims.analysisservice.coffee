@@ -110,7 +110,8 @@ class window.AnalysisServiceEditView
     # Init "Instrument assignment is not required" checkbox
     if @is_manual_entry_of_results_allowed()
       console.debug "Manual Entry of Results is allowed"
-      @toggle_instrument_assignment_allowed on
+      # load methods with the ManualEntryOfResults flag set to true
+      @set_all_methods()
     else
       console.debug "Manual Entry of Results is **not** allowed"
       # flush all methods and add only the "None" option
@@ -119,10 +120,12 @@ class window.AnalysisServiceEditView
     # Init "Instrument assignment is allowed" checkbox
     if @is_instrument_assignment_allowed()
       console.debug "Instrument assignment is allowed"
+      @set_all_instruments()
     else
       console.debug "Instrument assignment is **not** allowed"
       # flush all instruments and add only the "None" option
       @set_instruments null
+      @set_default_instrument null
 
 
   ### FIELD GETTERS/SETTERS ###
@@ -474,9 +477,9 @@ class window.AnalysisServiceEditView
     ###
     me = this
 
-    # Set empty default method if instrument UID is not set
+    # Leave default method if the "None" instrument was selected
     if not @is_uid instrument_uid
-      return @set_default_method null
+      return
 
     @load_instrument_methods instrument_uid
     .done (methods) ->
@@ -771,6 +774,7 @@ class window.AnalysisServiceEditView
     # empty option
     if not value
       name = "None"
+      value = ""
     option = "<option value='#{value}'>#{@_(name)}</option>"
     return $(select).append option
 
@@ -805,8 +809,10 @@ class window.AnalysisServiceEditView
       @set_default_method null
       # Flush default instrument
       @set_default_instrument null
+      # Flush default calculation
+      @set_calculation null
       # Enable instrument assignment
-      @toggle_instrument_assignment_allowed on
+      # @toggle_instrument_assignment_allowed on
       # Disable "Use the Default Calculation of Method"
       @toggle_use_default_calculation_of_method off
 
@@ -827,6 +833,7 @@ class window.AnalysisServiceEditView
     # Set selected methods to the list of the default methods
     me = this
     $.each method_uids, (index, uid) ->
+      # flush the field for the first element
       flush = index is 0 and yes or no
       # extract the title and uid from the option element
       $el = $(event.currentTarget)
