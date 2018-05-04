@@ -135,6 +135,10 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
                 message = _('No changes made.')
+                # Make the message more specific if the reason for not
+                # transitioning is that no Sampler has been selected
+                if not Sampler:
+                    message = _('Sampler is required for the Sampling transition')
                 self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                                            context_url)
