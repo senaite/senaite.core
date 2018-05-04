@@ -179,6 +179,10 @@ class window.AnalysisServiceEditView
     else
       me = this
       $.each methods, (index, method) ->
+        # XXX only methods which allow manual entry
+        #     -> workaround for missing catalog index
+        if method.ManualEntryOfResults is no
+          return
         title = method.title or method.Title
         uid = method.uid or method.UID
         me.add_select_option field, title, uid
@@ -845,6 +849,7 @@ class window.AnalysisServiceEditView
     if @is_instrument_assignment_allowed()
       console.debug "Instrument assignment is allowed"
       # load all instruments to the instruments multi-select
+      # N.B. Methods with ManualEntryOfResults==false are filtered!
       @set_all_instruments()
     else
       console.debug "Instrument assignment is **not** allowed"
