@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2018-02-09 12:39+0000\n"
-"PO-Revision-Date: 2018-04-14 22:56+0100\n"
+"PO-Revision-Date: 2018-05-04 13:20+0200\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -33,7 +33,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: bika\n"
 "Language: es\n"
-"X-Generator: Poedit 1.6.10\n"
+"X-Generator: Poedit 1.8.7.1\n"
 
 #: bika/lims/content/bikasetup.py:818
 msgid ""
@@ -281,7 +281,7 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:33
 msgid "<span>x</span> <span class=\"formHelp\">x</span>"
-msgstr ""
+msgstr "<span>x</span> <span class=\"formHelp\">x</span>"
 
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:56
 #: bika/lims/content/analysisspec.py:84
@@ -673,8 +673,7 @@ msgstr "Categoría del análisis"
 msgid "Analysis Keyword"
 msgstr "Código de análisis"
 
-#: bika/lims/content/analysisrequest.py:466
-#: bika/lims/content/artemplate.py:168
+#: bika/lims/content/analysisrequest.py:466 bika/lims/content/artemplate.py:168
 msgid "Analysis Profile"
 msgstr "Perfil de análisis"
 
@@ -1079,8 +1078,7 @@ msgstr "Lote"
 msgid "Batch ID"
 msgstr "ID Lote"
 
-#: bika/lims/content/batch.py:130
-#: bika/lims/controlpanel/bika_batchlabels.py:31
+#: bika/lims/content/batch.py:130 bika/lims/controlpanel/bika_batchlabels.py:31
 msgid "Batch Labels"
 msgstr "Etiquetas del Lote"
 
@@ -1183,8 +1181,7 @@ msgid "Calculation Formula"
 msgstr "Fórmula de cálculo"
 
 #: bika/lims/content/abstractroutineanalysis.py:120
-#: bika/lims/content/analysisservice.py:366
-#: bika/lims/content/calculation.py:47
+#: bika/lims/content/analysisservice.py:366 bika/lims/content/calculation.py:47
 msgid "Calculation Interim Fields"
 msgstr "Campos de cálculo provisionales"
 
@@ -1594,8 +1591,7 @@ msgid "Complete"
 msgstr "Completada"
 
 #: bika/lims/browser/sample/printform.py:285
-#: bika/lims/content/analysisrequest.py:1259
-#: bika/lims/content/artemplate.py:90
+#: bika/lims/content/analysisrequest.py:1259 bika/lims/content/artemplate.py:90
 msgid "Composite"
 msgstr "Compuesta"
 
@@ -2167,7 +2163,7 @@ msgstr "Descripción del sitio"
 
 #: bika/lims/content/analysisrequest.py:1034
 msgid "Deviation between the sample and how it was sampled"
-msgstr ""
+msgstr "Error entre la muestra y cómo se muestreó"
 
 #: bika/lims/config.py:124
 msgid "Disable multi-verification for the same user"
@@ -2502,6 +2498,10 @@ msgid ""
 "fields are available:  lab_is_accredited, lab_name, lab_country, confidence, "
 "accreditation_body_name, accreditation_standard, accreditation_reference<br/>"
 msgstr ""
+"Introduzca los detalles de las acreditaciones de servicios de su laboratorio "
+"aquí. Los siguientes campos están disponibles: lab_is_accredited, lab_name, "
+"lab_country, confidence, accreditation_body_name, accreditation_standard, "
+"accreditation_reference <br/>"
 
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:76
 msgid "Entity"
@@ -2593,7 +2593,7 @@ msgstr "Límite del formato exponencial"
 
 #: Profile description in configure.zcml
 msgid "Extension profile for the Bika LIMS"
-msgstr ""
+msgstr "Perfil de extensión para Bika LIMS"
 
 #: bika/lims/browser/clientfolder.py:67 bika/lims/browser/supplier.py:70
 #: bika/lims/content/organisation.py:43
@@ -2707,6 +2707,12 @@ msgid ""
 "Interface codes                       to be sure that folder names are "
 "unique."
 msgstr ""
+"Para cada interfaz de este instrumento, puedes definir una carpeta donde el "
+"sistema buscará los archivos de resultados para importar resultados "
+"automáticamente. Una opción sería tener una carpeta para cada instrumento y "
+"dentro de esta carpeta crear otra para cada una de las Interfaces. Puedes "
+"usar los códigos de interfaz para asegurarte de que los nombres de las "
+"carpetas sean únicos."
 
 #: bika/lims/content/bikasetup.py:816
 msgid "Formatting Configuration"
@@ -2749,7 +2755,7 @@ msgstr "Generar reporte"
 
 #: bika/lims/configure.zcml:102
 msgid "Generates an ID with the IDServer"
-msgstr ""
+msgstr "Genera una ID con el IDServer"
 
 #: bika/lims/content/person.py:26
 msgid "Greeting title eg. Mr, Mrs, Dr"
@@ -2871,18 +2877,27 @@ msgid ""
 "able to set the value as a Detection Limit (LDL or UDL) instead of a regular "
 "result"
 msgstr ""
+"Si está marcado, se mostrará una lista de selección junto al campo de "
+"resultados del análisis en las vistas de entrada de resultados. Al usar este "
+"selector, el analista podrá establecer el valor como Límite de detección "
+"(LDL o UDL) en lugar de un resultado regular."
 
 #: bika/lims/content/instrument.py:146
 msgid ""
 "If checked, the instrument will be unavailable until the next valid "
 "calibration was performed. This checkbox will automatically be unchecked."
 msgstr ""
+"Si está marcado, el instrumento no estará disponible hasta que se realice "
+"una calibración válida. Esta casilla de verificación se desactivará "
+"automáticamente."
 
 #: bika/lims/content/bikasetup.py:387
 msgid ""
 "If enabled, a free text field will be displayed close to each analysis in "
 "results entry view"
 msgstr ""
+"Si está marcado, se mostrará un campo de texto libre cerca de cada análisis "
+"en la vista de entrada de resultados"
 
 #: bika/lims/content/abstractbaseanalysis.py:598
 msgid ""
@@ -2892,6 +2907,11 @@ msgid ""
 "labmanagers and verifiers). The option set here has priority over the option "
 "set in Bika Setup"
 msgstr ""
+"Si está marcado, el usuario que introduzco el resultado para un análisis "
+"también podrá verificarlo. Esta configuración solo tiene efecto para "
+"aquellos usuarios con un rol que les permite verificar los resultados (por "
+"defecto, gerentes, labmanagers y verificadores). La opción establecida aquí "
+"tiene prioridad sobre la opción establecida en \"Configuración general\""
 
 #: bika/lims/content/bikasetup.py:399
 msgid ""
@@ -2901,6 +2921,12 @@ msgid ""
 "verifiers).This setting can be overrided for a given Analysis in Analysis "
 "Service edit view. By default, disabled."
 msgstr ""
+"Si está marcado, el usuario que introdució el resultado también podrá "
+"verificarlo. Esta configuración solo tiene efecto para los usuarios con un "
+"rol que les permite verificar los resultados (por defecto, gerentes, "
+"labmanagers y verificadores). Esta configuración puede anularse para una "
+"vista de edición de Análisis en un Servicio de Análisis determinada. Por "
+"defecto, está deshabilitado."
 
 #: bika/lims/content/bikasetup.py:961
 msgid ""
@@ -2908,6 +2934,9 @@ msgid ""
 "allows the user to filter the listed items by some several criteria.Warning: "
 "This may affect the listing performance."
 msgstr ""
+"Si está marcado, las listas de análisis mostrarán una barra de filtro "
+"adicional que permite al usuario filtrar los elementos de la lista por "
+"varios criterios. Advertencia: esto puede afectar el rendimiento de la lista."
 
 #: bika/lims/content/bikasetup.py:935
 msgid ""
@@ -2915,6 +2944,10 @@ msgid ""
 "bar which allows the user to filter the listed items by some several "
 "criteria.Warning: This may affect the listing performance."
 msgstr ""
+"Si está marcado, las Listas de Solicitudes de Análisis mostrarán una barra "
+"de filtro adicional que permite al usuario filtrar los elementos listados "
+"por varios criterios. Advertencia: Esto puede afectar el rendimiento de la "
+"lista."
 
 #: bika/lims/content/bikasetup.py:948
 msgid ""
@@ -2922,10 +2955,13 @@ msgid ""
 "allows the user to filter the listed items by some several criteria.Warning: "
 "This may affect the listing performance."
 msgstr ""
+"Si está marcado, las Listas de Muestras mostrarán una barra de filtro "
+"adicional que permite al usuario filtrar los elementos listados por varios "
+"criterios. Advertencia: Esto puede afectar el rendimiento de la lista."
 
 #: bika/lims/content/abstractbaseanalysis.py:65
 msgid "If enabled, the name of the analysis will be written in italics."
-msgstr ""
+msgstr "Si está marcado, el nombre del análisis se escribirá en cursiva."
 
 #: bika/lims/content/abstractbaseanalysis.py:582
 msgid ""
@@ -2933,6 +2969,9 @@ msgid ""
 "in reports. This setting can be overrided in Analysis Profile and/or "
 "Analysis Request"
 msgstr ""
+"Si está marcado, este análisis y sus resultados no se mostrarán por defecto "
+"en los informes. Esta configuración puede ser anulada en Analysis Profile "
+"y / o Analysis Request"
 
 #: bika/lims/content/batch.py:221
 msgid "If no Title value is entered, the Batch ID will be used."
@@ -2943,6 +2982,7 @@ msgstr ""
 #: bika/lims/content/batch.py:217
 msgid "If no value is entered, the Batch ID will be auto-generated."
 msgstr ""
+"Si no se ingresa ningún valor, el ID del lote se generará automáticamente."
 
 #: bika/lims/browser/fields/reflexrulefield.py:231
 msgid ""
@@ -2951,6 +2991,10 @@ msgid ""
 "discreteresult must conatin a value.The given values are: discreteresult: "
 "%s, range0: %s, range1: %s"
 msgstr ""
+"Si los valores de rango están vacíos, discreteresult debe contener un valor, "
+"y si discreteresult tiene un valor, los rangos deben estar vacíos. Pero los "
+"rangos o discreteresult deben contener un valor. Los valores dados son: "
+"discreteresult:% s, range0:% s, range1:% s"
 
 #: bika/lims/content/method.py:108
 msgid ""
@@ -2979,6 +3023,13 @@ msgid ""
 "link it to the instrument selected above.<br /> If no instrument selected, "
 "no Calibration Test will be created for orphan IDs."
 msgstr ""
+"Si el sistema no encuentra ninguna coincidencia (AnalysisRequest, Sample, "
+"Reference Analysis o Duplicate), utilizará el identificador del registro "
+"para buscar coincidencias con el ID de la muestra de referencia. Si se "
+"encuentra una ID de Muestra de Referencia, el sistema creará automáticamente "
+"una Prueba de Calibración (Análisis de Referencia) y la vinculará con el "
+"instrumento seleccionado anteriormente. <br /> Si no se selecciona ningún "
+"instrumento, no se creará una Prueba de Calibración para los ID huérfanos."
 
 #: bika/lims/content/bikasetup.py:300
 msgid ""
@@ -3000,6 +3051,8 @@ msgid ""
 "the same Instrument more than one Analyses while                           "
 "creating a Worksheet."
 msgstr ""
+"Si no se selecciona, los administradores de laboratorio no podrán asignar el "
+"mismo instrumento a más de un análisis al crear una hoja de trabajo."
 
 #: bika/lims/content/bikasetup.py:189
 msgid ""
@@ -3007,10 +3060,16 @@ msgid ""
 "too. If the users have restricted access only to those worksheets for which "
 "they are assigned, this option will be checked and readonly."
 msgstr ""
+"Si no se selecciona, los analistas y los empleados de laboratorio también "
+"podrán administrar hojas de trabajo. Si los usuarios tienen el acceso "
+"restringido  a aquellas hojas de trabajo para las cuales están asignados, "
+"esta casilla de selección no se podrá modifcar."
 
 #: bika/lims/content/bikasetup.py:180
 msgid "If unchecked, analysts will have access to all worksheets."
 msgstr ""
+"Si no se selecciona, los analistas tendrán acceso a todas las hojas de "
+"trabajo."
 
 #: bika/lims/content/calculation.py:88
 msgid ""
@@ -3020,6 +3079,11 @@ msgid ""
 "the function field. The equivalent in Python would be 'from math import "
 "floor'. In your calculation you could use then 'floor([Ca] + [Mg])'. "
 msgstr ""
+"Si tu fórmula necesita una función especial de una biblioteca Python "
+"externa, puedes importarla aquí. P.ej. si desea usar la función 'floor' del "
+"módulo 'math' de Python, agregue 'math' al campo Módulo y 'floor' al campo "
+"de función. El equivalente en Python sería 'from math import floor'. En tu "
+"cálculo, podrás usar 'floor ([Ca] + [Mg])'."
 
 #: bika/lims/config.py:59
 msgid "Ignore in Report"
@@ -3033,7 +3097,7 @@ msgstr "Importación"
 
 #: bika/lims/browser/templates/arimport_add.pt:17
 msgid "Import Analysis Request Data"
-msgstr ""
+msgstr "Importar Solicitudes de Análisis"
 
 #: bika/lims/content/instrument.py:194
 msgid "Import Data Interface"
@@ -3089,7 +3153,7 @@ msgstr "Resultado indeterminado"
 
 #: bika/lims/content/analysisrequest.py:1832
 msgid "Indicates if the last ARReport is printed,"
-msgstr ""
+msgstr "Indica si el último Reporte de Solicitud de Análisis ha sido impreso,"
 
 #: bika/lims/content/abstractbaseanalysis.py:215
 msgid ""
@@ -3102,7 +3166,7 @@ msgstr ""
 "captura de datos."
 
 msgid "Info"
-msgstr ""
+msgstr "Información"
 
 #: bika/lims/content/batch.py:177
 msgid "Inherit From"
@@ -3200,11 +3264,11 @@ msgstr "Validaciones para el equipo analítico"
 
 #: bika/lims/content/abstractbaseanalysis.py:272
 msgid "Instrument assignment is allowed"
-msgstr ""
+msgstr "La asignación del instrumento está permitida"
 
 #: bika/lims/content/abstractbaseanalysis.py:252
 msgid "Instrument assignment is not required"
-msgstr ""
+msgstr "La asignación del instrumento no es obligatoria"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:29
 msgid "Instrument disabled until successful calibration:"
@@ -3213,6 +3277,7 @@ msgstr "Se ha desactivado el instrumento hasta nueva calibración:"
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:45
 msgid "Instrument disposed until new calibration tests being done:"
 msgstr ""
+"Instrumento descartado hasta que se realicen nuevas pruebas de calibración:"
 
 #: bika/lims/browser/analyses.py:609
 msgid "Instrument entry of results not allowed for ${service}"
@@ -3232,11 +3297,11 @@ msgstr "No ha seleccionado ningún interfaz de conexión de datos para el equipo
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:77
 msgid "Instrument in calibration progress:"
-msgstr ""
+msgstr "Instrumento en progreso de calibración:"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:61
 msgid "Instrument in validation progress:"
-msgstr ""
+msgstr "Instrumento en progreso de validación:"
 
 #: bika/lims/content/instrument.py:69
 msgid "Instrument type"
@@ -3244,7 +3309,7 @@ msgstr "Tipo de equipo"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:13
 msgid "Instrument's calibration certificate expired:"
-msgstr ""
+msgstr "Certificado de calibración del instrumento caducado:"
 
 #: bika/lims/content/analysisservice.py:317 bika/lims/content/method.py:57
 #: bika/lims/controlpanel/bika_instruments.py:37
@@ -3253,23 +3318,25 @@ msgstr "Equipos"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:33
 msgid "Instruments disabled until successful calibration:"
-msgstr ""
+msgstr "Instrumentos desactivados hasta la calibración exitosa:"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:49
 msgid "Instruments disposed until new calibration tests being done:"
 msgstr ""
+"Instrumentos deshabilitado hasta que se realicen nuevas pruebas de "
+"calibración:"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:81
 msgid "Instruments in calibration progress:"
-msgstr ""
+msgstr "Instrumentos en progreso de calibración:"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:65
 msgid "Instruments in validation progress:"
-msgstr ""
+msgstr "Instrumentos en el progreso de validación:"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:17
 msgid "Instruments' calibration certificates expired:"
-msgstr ""
+msgstr "Los certificados de calibración de los instrumentos expiraron:"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:40
 msgid "Interface"
@@ -3297,7 +3364,7 @@ msgstr "Intervalo"
 
 #: bika/lims/content/bikasetup.py:518
 msgid "Interval of Auto-Importing Files in minutes"
-msgstr ""
+msgstr "Intervalo de importación automática de archivos en minutos"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:646
 #: bika/lims/browser/samplinground/analysisrequests.py:177
@@ -3311,18 +3378,18 @@ msgstr "Solicitud de análisis invalidada y repetida"
 
 #: bika/lims/utils/analysis.py:456
 msgid "Invalid instruments are not displayed: %s"
-msgstr ""
+msgstr "Los instrumentos invalidados no se muestran: %s"
 
 msgid "Invalid instruments are not shown: ${invalid_list}"
-msgstr ""
+msgstr "Los instrumentos invalidados no se muestran: ${invalid_list}"
 
 #: bika/lims/validators.py:1371
 msgid "Invalid value: Please enter a value without spaces."
-msgstr ""
+msgstr "Valor inválido: ingrese un valor sin espacios."
 
 #: bika/lims/validators.py:476
 msgid "Invalid wildcards found: ${wildcards}"
-msgstr ""
+msgstr "Se encontraron comodines inválidos: ${comodines}"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Invalidate"
@@ -3358,7 +3425,7 @@ msgstr "Lote de facturación sin título"
 
 #: bika/lims/browser/analyses.py:909
 msgid "It comes form a reflex rule"
-msgstr ""
+msgstr "Viene de una regla de reflejos (reflex rule)"
 
 #: bika/lims/content/artemplate.py:91
 msgid "It's a composite sample"
@@ -3458,11 +3525,11 @@ msgstr "Etiqueta grande"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:32
 msgid "Last Auto-Import Logs"
-msgstr ""
+msgstr "Últimos registros de importación automática"
 
 #: bika/lims/browser/templates/login_details.pt:97
 msgid "Last Login Time"
-msgstr ""
+msgstr "Último registro de inicio de sesión"
 
 #: bika/lims/browser/bika_listing.py:452
 msgid "Last modified"
@@ -3500,6 +3567,8 @@ msgid ""
 "Legend: Results in <em>italic</em> font are pending, results in "
 "<strong>bold</strong> font are verified."
 msgstr ""
+"Leyenda: los resultados en <em> cursiva </ em> están pendientes, los "
+"resultados en <strong> negrita </ strong> están verificados."
 
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:37
 msgid "Linear"
@@ -3507,11 +3576,11 @@ msgstr "Lineal"
 
 #: bika/lims/browser/templates/login_details.pt:209
 msgid "Link User"
-msgstr ""
+msgstr "Linkar usuario"
 
 #: bika/lims/browser/templates/login_details.pt:152
 msgid "Link an existing User"
-msgstr ""
+msgstr "Linka un usuario existente"
 
 #: bika/lims/content/sample.py:122
 msgid "Linked Sample"
@@ -3520,6 +3589,7 @@ msgstr "Muestra vinculada"
 #: bika/lims/controlpanel/bika_identifiertypes.py:35
 msgid "List of types of identifiers for multiple identifier records"
 msgstr ""
+"Lista de tipos de identificadores para múltiples registros identificadores"
 
 #: bika/lims/browser/reports/templates/productivity.pt:102
 msgid "Lists all samples received for a date range"
@@ -3770,8 +3840,7 @@ msgstr "Normal"
 msgid "Member Discount"
 msgstr ""
 
-#: bika/lims/content/analysisrequest.py:1526
-#: bika/lims/content/bikasetup.py:241
+#: bika/lims/content/analysisrequest.py:1526 bika/lims/content/bikasetup.py:241
 msgid "Member discount %"
 msgstr "% de descuento para clientes habituales"
 
@@ -3810,8 +3879,8 @@ msgstr "Método: ${method_name}"
 msgid "Method: None"
 msgstr "Método: ninguno"
 
-#: bika/lims/content/analysisservice.py:290
-#: bika/lims/content/instrument.py:137 bika/lims/content/methods.py:36
+#: bika/lims/content/analysisservice.py:290 bika/lims/content/instrument.py:137
+#: bika/lims/content/methods.py:36
 msgid "Methods"
 msgstr "Métodos"
 
@@ -5073,8 +5142,7 @@ msgid "Report Type"
 msgstr "Tipo de informe"
 
 #: bika/lims/content/abstractbaseanalysis.py:202
-#: bika/lims/content/analysisrequest.py:1292
-#: bika/lims/content/artemplate.py:97
+#: bika/lims/content/analysisrequest.py:1292 bika/lims/content/artemplate.py:97
 msgid "Report as Dry Matter"
 msgstr "Interpretar como materia seca"
 
@@ -6182,8 +6250,7 @@ msgstr ""
 "listas. En una lista, un subgrupo que para este campo tenga valor '1' se "
 "mostrará antes que otro con valor '5'. Admite valores numéricos y caracteres."
 
-#: bika/lims/browser/batch/batchbook.py:251
-#: bika/lims/exportimport/import.pt:66
+#: bika/lims/browser/batch/batchbook.py:251 bika/lims/exportimport/import.pt:66
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Submit"
 msgstr "Tramitar"
@@ -6788,8 +6855,7 @@ msgid ""
 msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:203
-#: bika/lims/content/analysisrequest.py:1294
-#: bika/lims/content/artemplate.py:98
+#: bika/lims/content/analysisrequest.py:1294 bika/lims/content/artemplate.py:98
 msgid "These results can be reported as dry matter"
 msgstr "Estos resultados pueden ser reportados como materia seca"
 
