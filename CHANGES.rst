@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #815 Change description and title of the invalidation notification option so that it is easier to understand
 - #811 api import in printform
 
 **Removed**
