@@ -21,7 +21,8 @@ Changelog
 
 
 **Fixed**
- 
+
+- #813 Saving AR results gives TypeError: can only compare to a set
 - #799 On AR Listing, inline edit for Date Sampled not working when Sampler has a value
 - #776 Analyses submission in Worksheet is slow
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
