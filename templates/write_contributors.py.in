@@ -165,7 +165,9 @@ def get_translators_section():
                     translators_list.append(translator_line)
 
             if translators_section and line.startswith('"Language-Team'):
-                lang_name = line[16:line.rindex(' (http')]
+                lang_name = re.sub(r"\(https?://\S+\)", "", line)
+                lang_name = lang_name[16:len(lang_name)-4]
+                lang_name = lang_name.strip()
                 continue
 
             if translators_section and line.startswith('"Language:'):

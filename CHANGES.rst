@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.5 (unreleased)
+1.2.5 (2018-05-05)
 ------------------
 
 **Added**
@@ -11,20 +11,19 @@ Changelog
 
 **Changed**
 
-- #815 Change description and title of the invalidation notification option so that it is easier to understand
-- #811 api import in printform
+- #815 Change description and title of the invalidation notification option
 
 **Removed**
 
+- #811 Remove senaite.api import in printform
 - #807 Remove "queued_ars" JS call to avoid 404
 - #800 Remove Dry Matter from tests
 - #779 Remove Dry Matter functionality
 
-
 **Fixed**
 
 - #813 Saving AR results gives TypeError: can only compare to a set
-- #799 On AR Listing, inline edit for Date Sampled not working when Sampler has a value
+- #799 On AR Listing, edit for Date Sampled not working when Sampler has a value
 - #776 Analyses submission in Worksheet is slow
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
 - #802 Remove Dry Matter remainders
@@ -36,8 +35,6 @@ Changelog
 - #771 Slow Searches in Listing Views
 - #774 When retracting an Analysis Requests its analyses are also retracted
 - #772 Improved UID check in API
-
-**Security**
 
 
 1.2.4 (2018-04-06)
