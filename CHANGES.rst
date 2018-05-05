@@ -12,15 +12,18 @@ Changelog
 **Changed**
 
 - #815 Change description and title of the invalidation notification option so that it is easier to understand
+- #811 api import in printform
 
 **Removed**
 
+- #807 Remove "queued_ars" JS call to avoid 404
 - #800 Remove Dry Matter from tests
 - #779 Remove Dry Matter functionality
 
 
 **Fixed**
 
+- #813 Saving AR results gives TypeError: can only compare to a set
 - #799 On AR Listing, inline edit for Date Sampled not working when Sampler has a value
 - #776 Analyses submission in Worksheet is slow
 - #726 404 Error raised when clicking Print Samples Sheets from within a client
