@@ -11,9 +11,11 @@ Changelog
 
 **Changed**
 
+- #811 api import in printform
 
 **Removed**
 
+- #807 Remove "queued_ars" JS call to avoid 404
 - #800 Remove Dry Matter from tests
 - #779 Remove Dry Matter functionality
 
