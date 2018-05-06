@@ -9,33 +9,34 @@
       this.load = this.load.bind(this);
       /* INITIALIZERS */
       this.bind_eventhandler = this.bind_eventhandler.bind(this);
-      this.init_interims = this.init_interims.bind(this);
-      this.init_form = this.init_form.bind(this);
-      /* FIELD GETTERS/SETTERS */
+      this.init = this.init.bind(this);
+      /* FIELD GETTERS/SETTERS/SELECTORS */
       this.is_manual_entry_of_results_allowed = this.is_manual_entry_of_results_allowed.bind(this);
       this.toggle_manual_entry_of_results_allowed = this.toggle_manual_entry_of_results_allowed.bind(this);
       this.get_methods = this.get_methods.bind(this);
       this.set_methods = this.set_methods.bind(this);
+      this.select_methods = this.select_methods.bind(this);
       this.is_instrument_assignment_allowed = this.is_instrument_assignment_allowed.bind(this);
       this.toggle_instrument_assignment_allowed = this.toggle_instrument_assignment_allowed.bind(this);
       this.get_instruments = this.get_instruments.bind(this);
       this.set_instruments = this.set_instruments.bind(this);
+      this.select_instruments = this.select_instruments.bind(this);
       this.get_default_method = this.get_default_method.bind(this);
       this.set_default_method = this.set_default_method.bind(this);
+      this.select_default_method = this.select_default_method.bind(this);
       this.get_default_instrument = this.get_default_instrument.bind(this);
       this.set_default_instrument = this.set_default_instrument.bind(this);
+      this.select_default_instrument = this.select_default_instrument.bind(this);
       this.use_default_calculation_of_method = this.use_default_calculation_of_method.bind(this);
       this.toggle_use_default_calculation_of_method = this.toggle_use_default_calculation_of_method.bind(this);
       this.get_calculation = this.get_calculation.bind(this);
       this.set_calculation = this.set_calculation.bind(this);
+      this.select_calculation = this.select_calculation.bind(this);
       this.get_interims = this.get_interims.bind(this);
       this.set_interims = this.set_interims.bind(this);
       this.flush_interims = this.flush_interims.bind(this);
       this.set_method_calculation = this.set_method_calculation.bind(this);
       this.set_instrument_methods = this.set_instrument_methods.bind(this);
-      this.set_all_methods = this.set_all_methods.bind(this);
-      this.set_all_instruments = this.set_all_instruments.bind(this);
-      this.set_all_calculations = this.set_all_calculations.bind(this);
       /* ASYNC DATA LOADERS */
       this.load_available_calculations = this.load_available_calculations.bind(this);
       this.load_available_instruments = this.load_available_instruments.bind(this);
@@ -43,17 +44,18 @@
       this.load_instrument_methods = this.load_instrument_methods.bind(this);
       this.load_method_calculation = this.load_method_calculation.bind(this);
       this.load_calculation = this.load_calculation.bind(this);
+      this.load_manual_interims = this.load_manual_interims.bind(this);
       /* HELPERS */
       this.ajax_submit = this.ajax_submit.bind(this);
       this.get_portal_url = this.get_portal_url.bind(this);
       this.is_uid = this.is_uid.bind(this);
       this.add_select_option = this.add_select_option.bind(this);
-      this.select_first = this.select_first.bind(this);
+      this.parse_select_options = this.parse_select_options.bind(this);
+      this.select_options = this.select_options.bind(this);
       /* EVENT HANDLER */
       this.on_manual_entry_of_results_change = this.on_manual_entry_of_results_change.bind(this);
       this.on_methods_change = this.on_methods_change.bind(this);
       this.on_instrument_assignment_allowed_change = this.on_instrument_assignment_allowed_change.bind(this);
-      // XXX Which instrument to load now?
       this.on_instruments_change = this.on_instruments_change.bind(this);
       this.on_default_instrument_change = this.on_default_instrument_change.bind(this);
       this.on_default_method_change = this.on_default_method_change.bind(this);
@@ -67,14 +69,31 @@
       // load translations
       jarn.i18n.loadCatalog("bika");
       this._ = window.jarn.i18n.MessageFactory("bika");
-      // Interim values defined by the user (not part of a calculation)
+      // Interim values defined by the user (not part of the current calculation)
       this.manual_interims = [];
+      this.load_manual_interims().done(function(manual_interims) {
+        return this.manual_interims = manual_interims;
+      });
+      // UIDs of the initial selected methods
+      this.selected_methods = this.get_methods();
+      // UIDs of the initial selected instruments
+      this.selected_instruments = this.get_instruments();
+      // UID of the initial selected calculation
+      this.selected_calculation = this.get_calculation();
+      // UID of the initial selected default instrument
+      this.selected_default_instrument = this.get_default_instrument();
+      // UID of the initial selected default method
+      this.selected_default_method = this.get_default_method();
+      // Array of UID/Title objects of the initial options from the methods field
+      this.methods = this.parse_select_options($("#archetypes-fieldname-Methods #Methods"));
+      // Array of UID/Title objects of the initial options from the instrument field
+      this.instruments = this.parse_select_options($("#archetypes-fieldname-Instruments #Instruments"));
+      // Array of UID/Title objects of the initial options from the calculations field
+      this.calculations = this.parse_select_options($("#archetypes-fieldname-Calculation #Calculation"));
       // bind the event handler to the elements
       this.bind_eventhandler();
-      // Initialize the interims
-      this.init_interims();
-      // Initialize the form
-      this.init_form();
+      // initialize the form
+      this.init();
       // Dev only
       return window.asv = this;
     }
@@ -109,62 +128,37 @@
       return $("body").on("change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", this.on_display_detection_limit_selector_change);
     }
 
-    init_interims() {
+    init() {
       /**
-       * 1. Check if field "Use the Default Calculation of Method" is checked
-       * 2. Fetch the selected calculation
-       * 3. Replace the calculation select box with the calculations
-       * 4. Separate manual set interims from calculation interims
-       */
-      var me;
-      me = this;
-      return this.load_calculation(this.get_calculation()).done(function(calculation) {
-        var calculation_interim_keys, calculation_interims, manual_interims;
-        // set the calculation field
-        this.set_calculation(calculation);
-        // interims of this calculation
-        calculation_interims = $.extend([], calculation.InterimFields);
-        // extract the keys of the calculation interims
-        calculation_interim_keys = calculation_interims.map(function(v) {
-          return v.keyword;
-        });
-        // separate manual interims from calculation interims
-        manual_interims = [];
-        $.each(this.get_interims(), function(index, value) {
-          var ref;
-          if (ref = value.keyword, indexOf.call(calculation_interim_keys, ref) < 0) {
-            return manual_interims.push(value);
-          }
-        });
-        // remember the manual set interims of this AS
-        // -> they are kept on calculation change
-        return this.manual_interims = manual_interims;
-      });
-    }
-
-    init_form() {
-      /**
-       * Initialize form
+       * Initialize Form
        */
       // Init "Instrument assignment is not required" checkbox
       if (this.is_manual_entry_of_results_allowed()) {
         console.debug("Manual Entry of Results is allowed");
-        // load methods with the ManualEntryOfResults flag set to true
-        this.set_all_methods();
+        // restore all initial set methods
+        this.set_methods(this.methods);
+        // select initial set methods
+        this.select_methods(this.selected_methods);
       } else {
         console.debug("Manual Entry of Results is **not** allowed");
         // flush all methods and add only the "None" option
         this.set_methods(null);
+        // select "None" option
+        this.select_methods([""]);
       }
       // Init "Instrument assignment is allowed" checkbox
       if (this.is_instrument_assignment_allowed()) {
         console.debug("Instrument assignment is allowed");
-        return this.set_all_instruments();
+        // restore all initial set instruments
+        this.set_instruments(this.instruments);
+        // select initial set instruments
+        return this.select_instruments(this.selected_instruments);
       } else {
         console.debug("Instrument assignment is **not** allowed");
         // flush all instruments and add only the "None" option
         this.set_instruments(null);
-        return this.set_default_instrument(null);
+        // select "None" option
+        return this.select_instruments([""]);
       }
     }
 
@@ -239,6 +233,23 @@
       }
     }
 
+    select_methods(uids, silent = false) {
+      /**
+       * Select methods by UID
+       *
+       * @param {Array} uids
+       *    UIDs of Methods to select
+       * @param {boolean} silent
+       *    Flag to trigger the "change" event
+       */
+      var field;
+      field = $("#archetypes-fieldname-Methods #Methods");
+      this.select_options(field, uids);
+      if (silent === false) {
+        return field.trigger("change");
+      }
+    }
+
     is_instrument_assignment_allowed() {
       /**
        * Get the value of the checkbox "Instrument assignment is allowed"
@@ -309,6 +320,23 @@
       }
     }
 
+    select_instruments(uids, silent = false) {
+      /**
+       * Select instruments by UID
+       *
+       * @param {Array} uids
+       *    UIDs of Instruments to select
+       * @param {boolean} silent
+       *    Flag to trigger the "change" event
+       */
+      var field;
+      field = $("#archetypes-fieldname-Instruments #Instruments");
+      this.select_options(field, uids);
+      if (silent === false) {
+        return field.trigger("change");
+      }
+    }
+
     get_default_method() {
       /**
        * Get the UID of the selected default method
@@ -341,6 +369,23 @@
       }
     }
 
+    select_default_method(uid, silent = false) {
+      /**
+       * Select method by UID
+       *
+       * @param {string} uid
+       *    UID of Method to select
+       * @param {boolean} silent
+       *    Flag to trigger the "change" event
+       */
+      var field;
+      field = $("#archetypes-fieldname-Method #Method");
+      this.select_options(field, [uid]);
+      if (silent === false) {
+        return field.trigger("change");
+      }
+    }
+
     get_default_instrument() {
       /**
        * Get the UID of the selected default instrument
@@ -370,6 +415,23 @@
         return this.add_select_option(field, title, uid);
       } else {
         return this.add_select_option(field, null);
+      }
+    }
+
+    select_default_instrument(uid, silent = false) {
+      /**
+       * Select instrument by UID
+       *
+       * @param {string} uid
+       *    UID of Instrument to select
+       * @param {boolean} silent
+       *    Flag to trigger the "change" event
+       */
+      var field;
+      field = $("#archetypes-fieldname-Instrument #Instrument");
+      this.select_options(field, [uid]);
+      if (silent === false) {
+        return field.trigger("change");
       }
     }
 
@@ -428,6 +490,23 @@
         return this.add_select_option(field, title, uid);
       } else {
         return this.add_select_option(field, null);
+      }
+    }
+
+    select_calculation(uid, silent = false) {
+      /**
+       * Select calculation by UID
+       *
+       * @param {string} uid
+       *    UID of Calculation to select
+       * @param {boolean} silent
+       *    Flag to trigger the "change" event
+       */
+      var field;
+      field = $("#archetypes-fieldname-Calculation #Calculation");
+      this.select_options(field, [uid]);
+      if (silent === false) {
+        return field.trigger("change");
       }
     }
 
@@ -564,58 +643,6 @@
           flush = index === 0 ? true : false;
           return me.set_default_method(method, flush = flush);
         });
-      });
-    }
-
-    set_all_methods() {
-      /**
-       * Load and set all available methods
-       */
-      var cached;
-      cached = $.extend([], this._methods);
-      if (cached.length) {
-        return this.set_methods(cached);
-      } else {
-        return this.load_available_methods().done(function(methods) {
-          this.set_methods(methods);
-          // cache
-          return this._methods = methods;
-        });
-      }
-    }
-
-    set_all_instruments() {
-      var instruments;
-      /**
-       * Load and set all available instruments
-       */
-      if (this._instruments) {
-        instruments = $.extend([], this._instruments);
-        return this.set_instruments(instruments);
-      } else {
-        return this.load_available_instruments().done(function(instruments) {
-          this.set_instruments(instruments);
-          // cache
-          return this._instruments = instruments;
-        });
-      }
-    }
-
-    set_all_calculations() {
-      /*
-       * Load and set all available calculations
-       */
-      return this.load_available_calculations().done(function(calculations) {
-        var me;
-        me = this;
-        $.each(calculations, function(index, calculation) {
-          var flush;
-          // flush only initially
-          flush = index === 0 ? true : false;
-          return me.set_calculation(calculation, flush);
-        });
-        // flush interims
-        return this.set_interims(null);
       });
     }
 
@@ -806,6 +833,38 @@
       return deferred.promise();
     }
 
+    load_manual_interims() {
+      /**
+       * 1. Load the default calculation
+       * 2. Subtract calculation interims from the current active interims
+       *
+       * XXX: This should be better done by the server!
+       *
+       * @returns {Deferred} Array of manual interims
+       */
+      var deferred;
+      deferred = $.Deferred();
+      this.load_calculation(this.get_calculation()).done(function(calculation) {
+        var calculation_interim_keys, calculation_interims, manual_interims;
+        // interims of this calculation
+        calculation_interims = $.extend([], calculation.InterimFields);
+        // extract the keys of the calculation interims
+        calculation_interim_keys = calculation_interims.map(function(v) {
+          return v.keyword;
+        });
+        // separate manual interims from calculation interims
+        manual_interims = [];
+        $.each(this.get_interims(), function(index, value) {
+          var ref;
+          if (ref = value.keyword, indexOf.call(calculation_interim_keys, ref) < 0) {
+            return manual_interims.push(value);
+          }
+        });
+        return deferred.resolveWith(this, [manual_interims]);
+      });
+      return deferred.promise();
+    }
+
     ajax_submit(options) {
       var base, done;
       /**
@@ -883,14 +942,45 @@
       return $(select).append(option);
     }
 
-    select_first(select) {
+    parse_select_options(select) {
       /**
-       * Select the first option of the select element
+       * Parse UID/Title from the select field
+       *
+       * @returns {Array} of UID/Title objects
        */
-      return $(select).children().first().prop("selected", true);
+      var options;
+      options = [];
+      $.each($(select).children(), function(index, option) {
+        var title, uid;
+        uid = option.value;
+        title = option.innerText;
+        if (!uid) {
+          return;
+        }
+        return options.push({
+          uid: uid,
+          title: title
+        });
+      });
+      return options;
+    }
+
+    select_options(select, values) {
+      /**
+       * Select the options of the given select field where the value is in values
+       */
+      return $.each($(select).children(), function(index, option) {
+        var value;
+        value = option.value;
+        if (indexOf.call(values, value) < 0) {
+          return;
+        }
+        return option.selected = "selected";
+      });
     }
 
     on_manual_entry_of_results_change(event) {
+      var silent;
       /**
        * Eventhandler when the "Instrument assignment is not required" checkbox changed
        */
@@ -898,30 +988,24 @@
       // Results can be set by "hand"
       if (this.is_manual_entry_of_results_allowed()) {
         console.debug("Manual entry of results is allowed");
-        // load all methods to the methods multi-select
-        this.set_all_methods();
-        // set the methods of the default instrument
-        return this.set_instrument_methods(this.get_default_instrument());
+        // restore all initial set methods
+        this.set_methods(this.methods);
+        // select initial set methods
+        this.select_methods(this.selected_methods);
+        // restore initial selected default method
+        return this.select_default_method(this.selected_default_method, silent = true);
       } else {
         // Results can be only set by an instrument
         console.debug("Manual entry of results is **not** allowed");
-        // Flush all methods ()
+        // flush all methods and add only the "None" option
         this.set_methods(null);
-        // Flush default method
-        this.set_default_method(null);
-        // Flush default instrument
-        this.set_default_instrument(null);
-        // Flush default calculation
-        this.set_calculation(null);
-        // Enable instrument assignment
-        // @toggle_instrument_assignment_allowed on
-        // Disable "Use the Default Calculation of Method"
-        return this.toggle_use_default_calculation_of_method(false);
+        // select "None" option
+        return this.select_methods([""]);
       }
     }
 
     on_methods_change(event) {
-      var me, method_uids;
+      var me, method_uids, silent;
       /**
        * Eventhandler when the "Methods" multiselect changed
        */
@@ -947,29 +1031,35 @@
         };
         return me.set_default_method(method, flush = flush);
       });
+      // restore initial selected default method (if it is in the list of selected methods)
+      this.select_default_method(this.selected_default_method, silent = true);
       // set the calculation of the default method
       return this.set_method_calculation(this.get_default_method());
     }
 
     on_instrument_assignment_allowed_change(event) {
+      var silent;
       /**
        * Eventhandler when the "Instrument assignment is allowed" checkbox changed
        */
       console.debug("°°° AnalysisServiceEditView::on_instrument_assignment_allowed_change °°°");
       if (this.is_instrument_assignment_allowed()) {
         console.debug("Instrument assignment is allowed");
-        // load all instruments to the instruments multi-select
-        // N.B. Methods with ManualEntryOfResults==false are filtered!
-        return this.set_all_instruments();
+        // restore the instruments multi-select to the initial value
+        this.set_instruments(this.instruments);
+        // select initially selected instruments
+        this.select_instruments(this.selected_instruments);
+        // restore initially selected default instrument
+        return this.select_default_instrument(this.selected_default_instrument, silent = true);
       } else {
         console.debug("Instrument assignment is **not** allowed");
         this.set_instruments(null);
-        return this.set_default_instrument(null);
+        return this.select_instruments([""]);
       }
     }
 
     on_instruments_change(event) {
-      var instrument_uids, me;
+      var instrument_uids, me, silent;
       /**
        * Eventhandler when the "Instruments" multiselect changed
        */
@@ -993,6 +1083,8 @@
         };
         return me.set_default_instrument(instrument, flush = flush);
       });
+      // restore initial selected default instrument (if it is in the list of selected instruments)
+      this.select_default_instrument(this.selected_default_instrument, silent = true);
       // set the instrument methods of the default instrument
       return this.set_instrument_methods(this.get_default_instrument());
     }
@@ -1023,6 +1115,7 @@
     }
 
     on_use_default_calculation_change(event) {
+      var me;
       /**
        * Eventhandler when the "Use the Default Calculation of Method" checkbox changed
        */
@@ -1032,8 +1125,13 @@
         // set the calculation of the method
         return this.set_method_calculation(this.get_default_method());
       } else {
-        // load all available calculations
-        return this.set_all_calculations();
+        // restore all initial set calculations
+        me = this;
+        $.each(this.calculations, function(index, calculation) {
+          return me.set_calculation(calculation);
+        });
+        // select initial set calculation
+        return this.select_calculation(this.selected_calculation);
       }
     }
 
