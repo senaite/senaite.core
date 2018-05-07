@@ -656,10 +656,10 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
-            label=_("Email notification on AR retract"),
+            label=_("Email notification on AR invalidation"),
             description=_("Select this to activate automatic notifications "
                           "via email to the Client and Lab Managers when an Analysis "
-                          "Request is retracted.")
+                          "Request is invalidated.")
         ),
     ),
     TextField(
