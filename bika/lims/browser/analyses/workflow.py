@@ -215,7 +215,7 @@ class AnalysesWorkflowAction(WorkflowAction):
         # AR Catalog contains some metadata that that rely on the Analyses an
         # Analysis Request contains.
         if affected_ars:
-            query = dict(UID=affected_ars, portal_type="AnalysisRequest")
+            query = dict(UID=list(affected_ars), portal_type="AnalysisRequest")
             for ar_brain in api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING):
                 if ar_brain.review_state == 'to_be_verified':
                     continue
@@ -226,7 +226,7 @@ class AnalysesWorkflowAction(WorkflowAction):
                     ar.reindexObject()
 
         if affected_ws:
-            query = dict(UID=affected_ws, portal_type="Worksheet")
+            query = dict(UID=list(affected_ws), portal_type="Worksheet")
             for ws_brain in api.search(query, CATALOG_WORKSHEET_LISTING):
                 if ws_brain.review_state == 'to_be_verified':
                     continue
