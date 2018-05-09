@@ -37,6 +37,8 @@
       this.flush_interims = this.flush_interims.bind(this);
       this.set_method_calculation = this.set_method_calculation.bind(this);
       this.set_instrument_methods = this.set_instrument_methods.bind(this);
+      this.display_detection_limit_selector = this.display_detection_limit_selector.bind(this);
+      this.toggle_display_detection_limit_selector = this.toggle_display_detection_limit_selector.bind(this);
       /* ASYNC DATA LOADERS */
       this.load_available_calculations = this.load_available_calculations.bind(this);
       this.load_available_instruments = this.load_available_instruments.bind(this);
@@ -154,9 +156,17 @@
       }
       // Set "Use the Default Calculation of Method" checkbox
       if (this.use_default_calculation_of_method()) {
-        return console.debug("--> Use default calculation of method");
+        console.debug("--> Use default calculation of method");
       } else {
-        return console.debug("--> Use default calculation of instrument");
+        console.debug("--> Use default calculation of instrument");
+      }
+      // Set "Display a Detection Limit selector" checkbox
+      if (this.display_detection_limit_selector()) {
+        console.debug("--> Allow detection limit selector");
+        return this.toggle_display_detection_limit_selector(true);
+      } else {
+        console.debug("--> Disallow detection limit selector");
+        return this.toggle_display_detection_limit_selector(false);
       }
     }
 
@@ -171,7 +181,7 @@
       return field.is(":checked");
     }
 
-    toggle_manual_entry_of_results_allowed(toggle, silent = false) {
+    toggle_manual_entry_of_results_allowed(toggle, silent = true) {
       /**
        * Toggle the "Instrument assignment is not required" checkbox
        *
@@ -291,12 +301,15 @@
       return field.is(":checked");
     }
 
-    toggle_instrument_assignment_allowed(toggle, silent = false) {
+    toggle_instrument_assignment_allowed(toggle, silent = true) {
       /**
        * Toggle the "Instrument assignment is allowed" checkbox
        *
        * @param {boolean} toggle
        *    True to check the checkbox (undefined toggles the current state)
+       *
+       * @param {boolean} silent
+       *    True to trigger a "change" event after set
        */
       var field;
       field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults");
@@ -489,9 +502,15 @@
       return field.is(":checked");
     }
 
-    toggle_use_default_calculation_of_method(toggle, silent = false) {
+    toggle_use_default_calculation_of_method(toggle, silent = true) {
       /**
        * Toggle the "Use the Default Calculation of Method" checkbox
+       *
+       * @param {boolean} toggle
+       *    True to check the checkbox (undefined toggles the current state)
+       *
+       * @param {boolean} silent
+       *    True to trigger a "change" event after set
        */
       var field;
       field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation");
@@ -693,6 +712,47 @@
           return this.set_method_calculation(this.get_default_method());
         }
       });
+    }
+
+    display_detection_limit_selector() {
+      /**
+       * Get the value of the checkbox "Display a Detection Limit selector"
+       *
+       * @returns {boolean} True if detection limit selector should be displayed
+       */
+      var field;
+      field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector");
+      return field.is(":checked");
+    }
+
+    toggle_display_detection_limit_selector(toggle, silent = true) {
+      /**
+       * Toggle the checkbox
+       *
+       * @param {boolean} toggle
+       *    True to check the checkbox (undefined toggles the current state)
+       *
+       * @param {boolean} silent
+       *    True to trigger a "change" event after set
+       */
+      var field, field2;
+      field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector");
+      field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit");
+      if (toggle === void 0) {
+        toggle = !field.is(":checked");
+      }
+      field.prop("checked", toggle);
+      // control the visiblity of the dependent field
+      if (toggle === true) {
+        field2.parent().show();
+      } else {
+        field2.parent().hide();
+        field2.prop("checked", false);
+      }
+      // trigger change event
+      if (!silent) {
+        return field.trigger("change");
+      }
     }
 
     load_available_calculations() {
@@ -1152,7 +1212,14 @@
        *
        * This checkbox is located on the "Analysis" Tab
        */
-      return console.debug("°°° AnalysisServiceEditView::on_display_detection_limit_selector_change °°°");
+      console.debug("°°° AnalysisServiceEditView::on_display_detection_limit_selector_change °°°");
+      if (this.display_detection_limit_selector()) {
+        console.debug("Allow detection limit selector");
+        return this.toggle_display_detection_limit_selector(true);
+      } else {
+        console.debug("Disallow detection limit selector");
+        return this.toggle_display_detection_limit_selector(false);
+      }
     }
 
   };

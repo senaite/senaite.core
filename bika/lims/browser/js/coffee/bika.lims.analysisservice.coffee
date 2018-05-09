@@ -127,6 +127,14 @@ class window.AnalysisServiceEditView
     else
       console.debug "--> Use default calculation of instrument"
 
+    # Set "Display a Detection Limit selector" checkbox
+    if @display_detection_limit_selector()
+      console.debug "--> Allow detection limit selector"
+      @toggle_display_detection_limit_selector on
+    else
+      console.debug "--> Disallow detection limit selector"
+      @toggle_display_detection_limit_selector off
+
 
   ### FIELD GETTERS/SETTERS/SELECTORS ###
 
@@ -140,7 +148,7 @@ class window.AnalysisServiceEditView
     return field.is ":checked"
 
 
-  toggle_manual_entry_of_results_allowed: (toggle, silent=no) =>
+  toggle_manual_entry_of_results_allowed: (toggle, silent=yes) =>
     ###*
      * Toggle the "Instrument assignment is not required" checkbox
      *
@@ -250,12 +258,15 @@ class window.AnalysisServiceEditView
     return field.is ":checked"
 
 
-  toggle_instrument_assignment_allowed: (toggle, silent=no) =>
+  toggle_instrument_assignment_allowed: (toggle, silent=yes) =>
     ###*
      * Toggle the "Instrument assignment is allowed" checkbox
      *
      * @param {boolean} toggle
      *    True to check the checkbox (undefined toggles the current state)
+     *
+     * @param {boolean} silent
+     *    True to trigger a "change" event after set
     ###
     field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults")
     if toggle is undefined
@@ -439,9 +450,15 @@ class window.AnalysisServiceEditView
     return field.is ":checked"
 
 
-  toggle_use_default_calculation_of_method: (toggle, silent=no) =>
+  toggle_use_default_calculation_of_method: (toggle, silent=yes) =>
     ###*
      * Toggle the "Use the Default Calculation of Method" checkbox
+     *
+     * @param {boolean} toggle
+     *    True to check the checkbox (undefined toggles the current state)
+     *
+     * @param {boolean} silent
+     *    True to trigger a "change" event after set
     ###
     field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation")
     if toggle is undefined
@@ -624,6 +641,43 @@ class window.AnalysisServiceEditView
       # set the calculation of the method
       if @use_default_calculation_of_method()
         @set_method_calculation @get_default_method()
+
+
+  display_detection_limit_selector: =>
+    ###*
+     * Get the value of the checkbox "Display a Detection Limit selector"
+     *
+     * @returns {boolean} True if detection limit selector should be displayed
+    ###
+    field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector")
+    return field.is ":checked"
+
+
+  toggle_display_detection_limit_selector: (toggle, silent=yes) =>
+    ###*
+     * Toggle the checkbox
+     *
+     * @param {boolean} toggle
+     *    True to check the checkbox (undefined toggles the current state)
+     *
+     * @param {boolean} silent
+     *    True to trigger a "change" event after set
+    ###
+    field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector")
+    field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit")
+    if toggle is undefined
+      toggle = not field.is ":checked"
+    field.prop "checked", toggle
+
+    # control the visiblity of the dependent field
+    if toggle is on
+      field2.parent().show()
+    else
+      field2.parent().hide()
+      field2.prop "checked", no
+
+    # trigger change event
+    if not silent then field.trigger "change"
 
 
   ### ASYNC DATA LOADERS ###
@@ -1054,3 +1108,10 @@ class window.AnalysisServiceEditView
      * This checkbox is located on the "Analysis" Tab
     ###
     console.debug "°°° AnalysisServiceEditView::on_display_detection_limit_selector_change °°°"
+
+    if @display_detection_limit_selector()
+      console.debug "Allow detection limit selector"
+      @toggle_display_detection_limit_selector yes
+    else
+      console.debug "Disallow detection limit selector"
+      @toggle_display_detection_limit_selector no
