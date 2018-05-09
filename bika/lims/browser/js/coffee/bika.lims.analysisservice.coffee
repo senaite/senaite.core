@@ -101,33 +101,31 @@ class window.AnalysisServiceEditView
      * Initialize Form
     ###
 
-    # Init "Instrument assignment is not required" checkbox
+    # Set "Instrument assignment is not required" checkbox
     if @is_manual_entry_of_results_allowed()
-      console.debug "Manual Entry of Results is allowed"
-      # restore all initial set methods
+      console.debug "--> Manual Entry of Results is allowed"
+      # restore all initial set methods in the method multi-select
       @set_methods @methods
-      # select initial set methods
-      @select_methods @selected_methods
     else
-      console.debug "Manual Entry of Results is **not** allowed"
+      console.debug "--> Manual Entry of Results is **not** allowed"
       # flush all methods and add only the "None" option
       @set_methods null
-      # select "None" option
-      @select_methods [""]
 
-    # Init "Instrument assignment is allowed" checkbox
+    # Set "Instrument assignment is allowed" checkbox
     if @is_instrument_assignment_allowed()
-      console.debug "Instrument assignment is allowed"
+      console.debug "--> Instrument assignment is allowed"
       # restore all initial set instruments
       @set_instruments @instruments
-      # select initial set instruments
-      @select_instruments @selected_instruments
     else
-      console.debug "Instrument assignment is **not** allowed"
+      console.debug "--> Instrument assignment is **not** allowed"
       # flush all instruments and add only the "None" option
       @set_instruments null
-      # select "None" option
-      @select_instruments [""]
+
+    # Set "Use the Default Calculation of Method" checkbox
+    if @use_default_calculation_of_method()
+      console.debug "--> Use default calculation of method"
+    else
+      console.debug "--> Use default calculation of instrument"
 
 
   ### FIELD GETTERS/SETTERS/SELECTORS ###
@@ -145,6 +143,12 @@ class window.AnalysisServiceEditView
   toggle_manual_entry_of_results_allowed: (toggle, silent=no) =>
     ###*
      * Toggle the "Instrument assignment is not required" checkbox
+     *
+     * @param {boolean} toggle
+     *    True to check the checkbox (undefined toggles the current state)
+     *
+     * @param {boolean} silent
+     *    True to trigger a "change" event after set
     ###
     field = $("#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults")
     if toggle is undefined
@@ -170,6 +174,9 @@ class window.AnalysisServiceEditView
      *
      * @param {array} methods
      *    Array of method objects with at least `title` and `uid` keys set
+     *
+     * @param {boolean} flush
+     *    True to empty all instruments first
     ###
     field = $("#archetypes-fieldname-Methods #Methods")
 
@@ -184,28 +191,53 @@ class window.AnalysisServiceEditView
     else
       me = this
       $.each methods, (index, method) ->
-        # XXX only methods which allow manual entry
-        #     -> workaround for missing catalog index
+        # ensure only "methods with allow manual entry"
         if method.ManualEntryOfResults is no
           return
         title = method.title or method.Title
         uid = method.uid or method.UID
         me.add_select_option field, title, uid
 
+    # restore initial selection
+    @select_methods @selected_methods
 
-  select_methods: (uids, silent=no) =>
+
+  select_methods: (uids) =>
     ###*
      * Select methods by UID
      *
      * @param {Array} uids
      *    UIDs of Methods to select
-     * @param {boolean} silent
-     *    Flag to trigger the "change" event
     ###
+
+    # Prevent any further action if manual entry of results is not allowed
+    if not @is_manual_entry_of_results_allowed()
+      console.debug "Manual entry of results is not allowed"
+      return
+
     field = $("#archetypes-fieldname-Methods #Methods")
+    # set selected attribute to the options
     @select_options field, uids
-    if silent is no
-      field.trigger "change"
+
+    # Set selected value to the default method select box
+    me = this
+    $.each uids, (index, uid) ->
+      # flush the field for the first element
+      flush = index is 0 and yes or no
+      # extract the title and uid from the option element
+      option = field.find "option[value=#{uid}]"
+      method =
+        uid: option.val()
+        title: option.text()
+      # append option to the default method select box
+      me.set_default_method method, flush=flush
+
+    # restore initial selected default method
+    @select_default_method @selected_default_method
+
+    if @use_default_calculation_of_method()
+      # set the calculation of the default method
+      @set_method_calculation @get_default_method()
 
 
   is_instrument_assignment_allowed: =>
@@ -223,7 +255,7 @@ class window.AnalysisServiceEditView
      * Toggle the "Instrument assignment is allowed" checkbox
      *
      * @param {boolean} toggle
-     *    True to check the checkbox, False to uncheck the checkbox
+     *    True to check the checkbox (undefined toggles the current state)
     ###
     field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults")
     if toggle is undefined
@@ -249,6 +281,9 @@ class window.AnalysisServiceEditView
      *
      * @param {array} instruments
      *    Array of instrument objects to set in the multi-select
+     *
+     * @param {boolean} flush
+     *    True to empty all instruments first
     ###
     field = $("#archetypes-fieldname-Instruments #Instruments")
 
@@ -268,20 +303,44 @@ class window.AnalysisServiceEditView
         title = instrument.title or instrument.Title
         me.add_select_option field, title, uid
 
+    # restore initial selection
+    @select_instruments @selected_instruments
 
-  select_instruments: (uids, silent=no) =>
+
+  select_instruments: (uids) =>
     ###*
      * Select instruments by UID
      *
      * @param {Array} uids
      *    UIDs of Instruments to select
-     * @param {boolean} silent
-     *    Flag to trigger the "change" event
     ###
+
+    # Prevent any further action if instrument assignment is not allowed
+    if not @is_instrument_assignment_allowed()
+      console.debug "Instrument assignment not allowed"
+      return
+
     field = $("#archetypes-fieldname-Instruments #Instruments")
+    # set selected attribute to the options
     @select_options field, uids
-    if silent is no
-      field.trigger "change"
+
+    # Set selected instruments to the list of the default instruments
+    me = this
+    $.each uids, (index, uid) ->
+      flush = index is 0 and yes or no
+      # extract the title and uid from the option element
+      option = field.find "option[value=#{uid}]"
+      instrument =
+        uid: option.val()
+        title: option.text()
+      me.set_default_instrument instrument, flush=flush
+
+    # restore initially selected default instrument
+    @select_default_instrument @selected_default_instrument
+
+    # set the instrument methods of the default instrument
+    @set_instrument_methods @get_default_instrument()
+
 
 
   get_default_method: =>
@@ -316,19 +375,15 @@ class window.AnalysisServiceEditView
       @add_select_option field, null
 
 
-  select_default_method: (uid, silent=no) =>
+  select_default_method: (uid) =>
     ###*
      * Select method by UID
      *
      * @param {string} uid
      *    UID of Method to select
-     * @param {boolean} silent
-     *    Flag to trigger the "change" event
     ###
     field = $("#archetypes-fieldname-Method #Method")
     @select_options field, [uid]
-    if silent is no
-      field.trigger "change"
 
 
   get_default_instrument: =>
@@ -363,20 +418,15 @@ class window.AnalysisServiceEditView
       @add_select_option field, null
 
 
-  select_default_instrument: (uid, silent=no) =>
+  select_default_instrument: (uid) =>
     ###*
      * Select instrument by UID
      *
      * @param {string} uid
      *    UID of Instrument to select
-     * @param {boolean} silent
-     *    Flag to trigger the "change" event
     ###
     field = $("#archetypes-fieldname-Instrument #Instrument")
-
     @select_options field, [uid]
-    if silent is no
-      field.trigger "change"
 
 
   use_default_calculation_of_method: =>
@@ -432,20 +482,20 @@ class window.AnalysisServiceEditView
       @add_select_option field, null
 
 
-  select_calculation: (uid, silent=no) =>
+  select_calculation: (uid) =>
     ###*
      * Select calculation by UID
      *
      * @param {string} uid
      *    UID of Calculation to select
-     * @param {boolean} silent
-     *    Flag to trigger the "change" event
     ###
     field = $("#archetypes-fieldname-Calculation #Calculation")
-
     @select_options field, [uid]
-    if silent is no
-      field.trigger "change"
+
+    # load the calculation now, to set the interims
+    @load_calculation uid
+    .done (calculation) ->
+      @set_interims calculation.InterimFields
 
 
   get_interims: =>
@@ -563,9 +613,17 @@ class window.AnalysisServiceEditView
     @load_instrument_methods instrument_uid
     .done (methods) ->
       methods = $.extend [], methods
+      # Extend the default methods with the instrument methods
       $.each methods, (index, method) ->
         flush = if index is 0 then yes else no
         me.set_default_method method, flush=flush
+
+      # restore the initially selected method
+      @select_default_method @selected_default_method
+
+      # set the calculation of the method
+      if @use_default_calculation_of_method()
+        @set_method_calculation @get_default_method()
 
 
   ### ASYNC DATA LOADERS ###
@@ -834,11 +892,11 @@ class window.AnalysisServiceEditView
      * Adds an option to the select
     ###
 
-    # empty option
-    if not value
-      name = "None"
-      value = ""
-    option = "<option value='#{value}'>#{@_(name)}</option>"
+    if value
+      option = "<option value='#{value}'>#{@_(name)}</option>"
+    else
+      # empty option (selected by default)
+      option = "<option selected='selected' value=''>#{@_("None")}</option>"
     return $(select).append option
 
 
@@ -882,17 +940,11 @@ class window.AnalysisServiceEditView
       console.debug "Manual entry of results is allowed"
       # restore all initial set methods
       @set_methods @methods
-      # select initial set methods
-      @select_methods @selected_methods
-      # restore initial selected default method
-      @select_default_method @selected_default_method, silent=yes
     else
       # Results can be only set by an instrument
       console.debug "Manual entry of results is **not** allowed"
       # flush all methods and add only the "None" option
       @set_methods null
-      # select "None" option
-      @select_methods [""]
 
 
   on_methods_change: (event) =>
@@ -908,24 +960,8 @@ class window.AnalysisServiceEditView
     if method_uids.length is 0
       console.warn "All methods deselected"
 
-    # Set selected methods to the list of the default methods
-    me = this
-    $.each method_uids, (index, uid) ->
-      # flush the field for the first element
-      flush = index is 0 and yes or no
-      # extract the title and uid from the option element
-      $el = $(event.currentTarget)
-      option = $el.find "option[value=#{uid}]"
-      method =
-        uid: option.val()
-        title: option.text()
-      me.set_default_method method, flush=flush
-
-    # restore initial selected default method (if it is in the list of selected methods)
-    @select_default_method @selected_default_method, silent=yes
-
-    # set the calculation of the default method
-    @set_method_calculation @get_default_method()
+    # Select the methods
+    @select_methods method_uids
 
 
   on_instrument_assignment_allowed_change: (event) =>
@@ -938,14 +974,9 @@ class window.AnalysisServiceEditView
       console.debug "Instrument assignment is allowed"
       # restore the instruments multi-select to the initial value
       @set_instruments @instruments
-      # select initially selected instruments
-      @select_instruments @selected_instruments
-      # restore initially selected default instrument
-      @select_default_instrument @selected_default_instrument, silent=yes
     else
       console.debug "Instrument assignment is **not** allowed"
       @set_instruments null
-      @select_instruments [""]
 
 
   on_instruments_change: (event) =>
@@ -960,23 +991,8 @@ class window.AnalysisServiceEditView
     if instrument_uids.length is 0
       console.warn "All instruments deselected"
 
-    # Set selected instruments to the list of the default instruments
-    me = this
-    $.each instrument_uids, (index, uid) ->
-      flush = index is 0 and yes or no
-      # extract the title and uid from the option element
-      $el = $(event.currentTarget)
-      option = $el.find "option[value=#{uid}]"
-      instrument =
-        uid: option.val()
-        title: option.text()
-      me.set_default_instrument instrument, flush=flush
-
-    # restore initial selected default instrument (if it is in the list of selected instruments)
-    @select_default_instrument @selected_default_instrument, silent=yes
-
-    # set the instrument methods of the default instrument
-    @set_instrument_methods @get_default_instrument()
+    # Select the instruments
+    @select_instruments instrument_uids
 
 
   on_default_instrument_change: (event) =>
@@ -998,10 +1014,8 @@ class window.AnalysisServiceEditView
     # Load the calculation of the method if the checkbox "Use the Default
     # Calculation of Method" is checked
     if @use_default_calculation_of_method()
-      # Get the UID of the default Method
-      method_uid = @get_default_method()
       # set the calculation of the method
-      @set_method_calculation method_uid
+      @set_method_calculation @get_default_method()
 
 
   on_use_default_calculation_change: (event) =>
@@ -1012,13 +1026,15 @@ class window.AnalysisServiceEditView
 
     # "Use the Default Calculation of Method" checkbox checked
     if @use_default_calculation_of_method()
+      console.debug "Use default calculation"
       # set the calculation of the method
       @set_method_calculation @get_default_method()
     else
       # restore all initial set calculations
       me = this
       $.each @calculations, (index, calculation) ->
-        me.set_calculation calculation
+        flush = if index is 0 then yes else no
+        me.set_calculation calculation, flush=flush
       # select initial set calculation
       @select_calculation @selected_calculation
 
@@ -1028,11 +1044,7 @@ class window.AnalysisServiceEditView
      * Eventhandler when the "Calculation" selector changed
     ###
     console.debug "°°° AnalysisServiceEditView::on_calculation_change °°°"
-
-    # load the calculation now, to set the interims
-    @load_calculation @get_calculation()
-    .done (calculation) ->
-      @set_interims calculation.InterimFields
+    @select_calculation @get_calculation()
 
 
   on_display_detection_limit_selector_change: (event) =>

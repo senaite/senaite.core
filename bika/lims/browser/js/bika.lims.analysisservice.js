@@ -132,33 +132,31 @@
       /**
        * Initialize Form
        */
-      // Init "Instrument assignment is not required" checkbox
+      // Set "Instrument assignment is not required" checkbox
       if (this.is_manual_entry_of_results_allowed()) {
-        console.debug("Manual Entry of Results is allowed");
-        // restore all initial set methods
+        console.debug("--> Manual Entry of Results is allowed");
+        // restore all initial set methods in the method multi-select
         this.set_methods(this.methods);
-        // select initial set methods
-        this.select_methods(this.selected_methods);
       } else {
-        console.debug("Manual Entry of Results is **not** allowed");
+        console.debug("--> Manual Entry of Results is **not** allowed");
         // flush all methods and add only the "None" option
         this.set_methods(null);
-        // select "None" option
-        this.select_methods([""]);
       }
-      // Init "Instrument assignment is allowed" checkbox
+      // Set "Instrument assignment is allowed" checkbox
       if (this.is_instrument_assignment_allowed()) {
-        console.debug("Instrument assignment is allowed");
+        console.debug("--> Instrument assignment is allowed");
         // restore all initial set instruments
         this.set_instruments(this.instruments);
-        // select initial set instruments
-        return this.select_instruments(this.selected_instruments);
       } else {
-        console.debug("Instrument assignment is **not** allowed");
+        console.debug("--> Instrument assignment is **not** allowed");
         // flush all instruments and add only the "None" option
         this.set_instruments(null);
-        // select "None" option
-        return this.select_instruments([""]);
+      }
+      // Set "Use the Default Calculation of Method" checkbox
+      if (this.use_default_calculation_of_method()) {
+        return console.debug("--> Use default calculation of method");
+      } else {
+        return console.debug("--> Use default calculation of instrument");
       }
     }
 
@@ -176,6 +174,12 @@
     toggle_manual_entry_of_results_allowed(toggle, silent = false) {
       /**
        * Toggle the "Instrument assignment is not required" checkbox
+       *
+       * @param {boolean} toggle
+       *    True to check the checkbox (undefined toggles the current state)
+       *
+       * @param {boolean} silent
+       *    True to trigger a "change" event after set
        */
       var field;
       field = $("#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults");
@@ -206,6 +210,9 @@
        *
        * @param {array} methods
        *    Array of method objects with at least `title` and `uid` keys set
+       *
+       * @param {boolean} flush
+       *    True to empty all instruments first
        */
       var field, me;
       field = $("#archetypes-fieldname-Methods #Methods");
@@ -216,13 +223,12 @@
         field.empty();
       }
       if (methods.length === 0) {
-        return this.add_select_option(field, null);
+        this.add_select_option(field, null);
       } else {
         me = this;
-        return $.each(methods, function(index, method) {
+        $.each(methods, function(index, method) {
           var title, uid;
-          // XXX only methods which allow manual entry
-          //     -> workaround for missing catalog index
+          // ensure only "methods with allow manual entry"
           if (method.ManualEntryOfResults === false) {
             return;
           }
@@ -231,22 +237,46 @@
           return me.add_select_option(field, title, uid);
         });
       }
+      // restore initial selection
+      return this.select_methods(this.selected_methods);
     }
 
-    select_methods(uids, silent = false) {
+    select_methods(uids) {
+      var field, me;
       /**
        * Select methods by UID
        *
        * @param {Array} uids
        *    UIDs of Methods to select
-       * @param {boolean} silent
-       *    Flag to trigger the "change" event
        */
-      var field;
+      // Prevent any further action if manual entry of results is not allowed
+      if (!this.is_manual_entry_of_results_allowed()) {
+        console.debug("Manual entry of results is not allowed");
+        return;
+      }
       field = $("#archetypes-fieldname-Methods #Methods");
+      // set selected attribute to the options
       this.select_options(field, uids);
-      if (silent === false) {
-        return field.trigger("change");
+      // Set selected value to the default method select box
+      me = this;
+      $.each(uids, function(index, uid) {
+        var flush, method, option;
+        // flush the field for the first element
+        flush = index === 0 && true || false;
+        // extract the title and uid from the option element
+        option = field.find(`option[value=${uid}]`);
+        method = {
+          uid: option.val(),
+          title: option.text()
+        };
+        // append option to the default method select box
+        return me.set_default_method(method, flush = flush);
+      });
+      // restore initial selected default method
+      this.select_default_method(this.selected_default_method);
+      if (this.use_default_calculation_of_method()) {
+        // set the calculation of the default method
+        return this.set_method_calculation(this.get_default_method());
       }
     }
 
@@ -266,7 +296,7 @@
        * Toggle the "Instrument assignment is allowed" checkbox
        *
        * @param {boolean} toggle
-       *    True to check the checkbox, False to uncheck the checkbox
+       *    True to check the checkbox (undefined toggles the current state)
        */
       var field;
       field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults");
@@ -297,6 +327,9 @@
        *
        * @param {array} instruments
        *    Array of instrument objects to set in the multi-select
+       *
+       * @param {boolean} flush
+       *    True to empty all instruments first
        */
       var field, me;
       field = $("#archetypes-fieldname-Instruments #Instruments");
@@ -307,34 +340,54 @@
         field.empty();
       }
       if (instruments.length === 0) {
-        return this.add_select_option(field, null);
+        this.add_select_option(field, null);
       } else {
         // set the instruments
         me = this;
-        return $.each(instruments, function(index, instrument) {
+        $.each(instruments, function(index, instrument) {
           var title, uid;
           uid = instrument.uid || instrument.UID;
           title = instrument.title || instrument.Title;
           return me.add_select_option(field, title, uid);
         });
       }
+      // restore initial selection
+      return this.select_instruments(this.selected_instruments);
     }
 
-    select_instruments(uids, silent = false) {
+    select_instruments(uids) {
+      var field, me;
       /**
        * Select instruments by UID
        *
        * @param {Array} uids
        *    UIDs of Instruments to select
-       * @param {boolean} silent
-       *    Flag to trigger the "change" event
        */
-      var field;
-      field = $("#archetypes-fieldname-Instruments #Instruments");
-      this.select_options(field, uids);
-      if (silent === false) {
-        return field.trigger("change");
+      // Prevent any further action if instrument assignment is not allowed
+      if (!this.is_instrument_assignment_allowed()) {
+        console.debug("Instrument assignment not allowed");
+        return;
       }
+      field = $("#archetypes-fieldname-Instruments #Instruments");
+      // set selected attribute to the options
+      this.select_options(field, uids);
+      // Set selected instruments to the list of the default instruments
+      me = this;
+      $.each(uids, function(index, uid) {
+        var flush, instrument, option;
+        flush = index === 0 && true || false;
+        // extract the title and uid from the option element
+        option = field.find(`option[value=${uid}]`);
+        instrument = {
+          uid: option.val(),
+          title: option.text()
+        };
+        return me.set_default_instrument(instrument, flush = flush);
+      });
+      // restore initially selected default instrument
+      this.select_default_instrument(this.selected_default_instrument);
+      // set the instrument methods of the default instrument
+      return this.set_instrument_methods(this.get_default_instrument());
     }
 
     get_default_method() {
@@ -369,21 +422,16 @@
       }
     }
 
-    select_default_method(uid, silent = false) {
+    select_default_method(uid) {
       /**
        * Select method by UID
        *
        * @param {string} uid
        *    UID of Method to select
-       * @param {boolean} silent
-       *    Flag to trigger the "change" event
        */
       var field;
       field = $("#archetypes-fieldname-Method #Method");
-      this.select_options(field, [uid]);
-      if (silent === false) {
-        return field.trigger("change");
-      }
+      return this.select_options(field, [uid]);
     }
 
     get_default_instrument() {
@@ -418,21 +466,16 @@
       }
     }
 
-    select_default_instrument(uid, silent = false) {
+    select_default_instrument(uid) {
       /**
        * Select instrument by UID
        *
        * @param {string} uid
        *    UID of Instrument to select
-       * @param {boolean} silent
-       *    Flag to trigger the "change" event
        */
       var field;
       field = $("#archetypes-fieldname-Instrument #Instrument");
-      this.select_options(field, [uid]);
-      if (silent === false) {
-        return field.trigger("change");
-      }
+      return this.select_options(field, [uid]);
     }
 
     use_default_calculation_of_method() {
@@ -493,21 +536,20 @@
       }
     }
 
-    select_calculation(uid, silent = false) {
+    select_calculation(uid) {
       /**
        * Select calculation by UID
        *
        * @param {string} uid
        *    UID of Calculation to select
-       * @param {boolean} silent
-       *    Flag to trigger the "change" event
        */
       var field;
       field = $("#archetypes-fieldname-Calculation #Calculation");
       this.select_options(field, [uid]);
-      if (silent === false) {
-        return field.trigger("change");
-      }
+      // load the calculation now, to set the interims
+      return this.load_calculation(uid).done(function(calculation) {
+        return this.set_interims(calculation.InterimFields);
+      });
     }
 
     get_interims() {
@@ -639,10 +681,17 @@
       }
       return this.load_instrument_methods(instrument_uid).done(function(methods) {
         methods = $.extend([], methods);
-        return $.each(methods, function(index, method) {
+        // Extend the default methods with the instrument methods
+        $.each(methods, function(index, method) {
           flush = index === 0 ? true : false;
           return me.set_default_method(method, flush = flush);
         });
+        // restore the initially selected method
+        this.select_default_method(this.selected_default_method);
+        // set the calculation of the method
+        if (this.use_default_calculation_of_method()) {
+          return this.set_method_calculation(this.get_default_method());
+        }
       });
     }
 
@@ -933,12 +982,12 @@
       /**
        * Adds an option to the select
        */
-      // empty option
-      if (!value) {
-        name = "None";
-        value = "";
+      if (value) {
+        option = `<option value='${value}'>${this._(name)}</option>`;
+      } else {
+        // empty option (selected by default)
+        option = `<option selected='selected' value=''>${this._("None")}</option>`;
       }
-      option = `<option value='${value}'>${this._(name)}</option>`;
       return $(select).append(option);
     }
 
@@ -980,7 +1029,6 @@
     }
 
     on_manual_entry_of_results_change(event) {
-      var silent;
       /**
        * Eventhandler when the "Instrument assignment is not required" checkbox changed
        */
@@ -989,23 +1037,17 @@
       if (this.is_manual_entry_of_results_allowed()) {
         console.debug("Manual entry of results is allowed");
         // restore all initial set methods
-        this.set_methods(this.methods);
-        // select initial set methods
-        this.select_methods(this.selected_methods);
-        // restore initial selected default method
-        return this.select_default_method(this.selected_default_method, silent = true);
+        return this.set_methods(this.methods);
       } else {
         // Results can be only set by an instrument
         console.debug("Manual entry of results is **not** allowed");
         // flush all methods and add only the "None" option
-        this.set_methods(null);
-        // select "None" option
-        return this.select_methods([""]);
+        return this.set_methods(null);
       }
     }
 
     on_methods_change(event) {
-      var me, method_uids, silent;
+      var method_uids;
       /**
        * Eventhandler when the "Methods" multiselect changed
        */
@@ -1016,29 +1058,11 @@
       if (method_uids.length === 0) {
         console.warn("All methods deselected");
       }
-      // Set selected methods to the list of the default methods
-      me = this;
-      $.each(method_uids, function(index, uid) {
-        var $el, flush, method, option;
-        // flush the field for the first element
-        flush = index === 0 && true || false;
-        // extract the title and uid from the option element
-        $el = $(event.currentTarget);
-        option = $el.find(`option[value=${uid}]`);
-        method = {
-          uid: option.val(),
-          title: option.text()
-        };
-        return me.set_default_method(method, flush = flush);
-      });
-      // restore initial selected default method (if it is in the list of selected methods)
-      this.select_default_method(this.selected_default_method, silent = true);
-      // set the calculation of the default method
-      return this.set_method_calculation(this.get_default_method());
+      // Select the methods
+      return this.select_methods(method_uids);
     }
 
     on_instrument_assignment_allowed_change(event) {
-      var silent;
       /**
        * Eventhandler when the "Instrument assignment is allowed" checkbox changed
        */
@@ -1046,20 +1070,15 @@
       if (this.is_instrument_assignment_allowed()) {
         console.debug("Instrument assignment is allowed");
         // restore the instruments multi-select to the initial value
-        this.set_instruments(this.instruments);
-        // select initially selected instruments
-        this.select_instruments(this.selected_instruments);
-        // restore initially selected default instrument
-        return this.select_default_instrument(this.selected_default_instrument, silent = true);
+        return this.set_instruments(this.instruments);
       } else {
         console.debug("Instrument assignment is **not** allowed");
-        this.set_instruments(null);
-        return this.select_instruments([""]);
+        return this.set_instruments(null);
       }
     }
 
     on_instruments_change(event) {
-      var instrument_uids, me, silent;
+      var instrument_uids;
       /**
        * Eventhandler when the "Instruments" multiselect changed
        */
@@ -1069,24 +1088,8 @@
       if (instrument_uids.length === 0) {
         console.warn("All instruments deselected");
       }
-      // Set selected instruments to the list of the default instruments
-      me = this;
-      $.each(instrument_uids, function(index, uid) {
-        var $el, flush, instrument, option;
-        flush = index === 0 && true || false;
-        // extract the title and uid from the option element
-        $el = $(event.currentTarget);
-        option = $el.find(`option[value=${uid}]`);
-        instrument = {
-          uid: option.val(),
-          title: option.text()
-        };
-        return me.set_default_instrument(instrument, flush = flush);
-      });
-      // restore initial selected default instrument (if it is in the list of selected instruments)
-      this.select_default_instrument(this.selected_default_instrument, silent = true);
-      // set the instrument methods of the default instrument
-      return this.set_instrument_methods(this.get_default_instrument());
+      // Select the instruments
+      return this.select_instruments(instrument_uids);
     }
 
     on_default_instrument_change(event) {
@@ -1099,7 +1102,6 @@
     }
 
     on_default_method_change(event) {
-      var method_uid;
       /**
        * Eventhandler when the "Default Method" selector changed
        */
@@ -1107,10 +1109,8 @@
       // Load the calculation of the method if the checkbox "Use the Default
       // Calculation of Method" is checked
       if (this.use_default_calculation_of_method()) {
-        // Get the UID of the default Method
-        method_uid = this.get_default_method();
         // set the calculation of the method
-        return this.set_method_calculation(method_uid);
+        return this.set_method_calculation(this.get_default_method());
       }
     }
 
@@ -1122,13 +1122,16 @@
       console.debug("°°° AnalysisServiceEditView::on_use_default_calculation_change °°°");
       // "Use the Default Calculation of Method" checkbox checked
       if (this.use_default_calculation_of_method()) {
+        console.debug("Use default calculation");
         // set the calculation of the method
         return this.set_method_calculation(this.get_default_method());
       } else {
         // restore all initial set calculations
         me = this;
         $.each(this.calculations, function(index, calculation) {
-          return me.set_calculation(calculation);
+          var flush;
+          flush = index === 0 ? true : false;
+          return me.set_calculation(calculation, flush = flush);
         });
         // select initial set calculation
         return this.select_calculation(this.selected_calculation);
@@ -1140,10 +1143,7 @@
        * Eventhandler when the "Calculation" selector changed
        */
       console.debug("°°° AnalysisServiceEditView::on_calculation_change °°°");
-      // load the calculation now, to set the interims
-      return this.load_calculation(this.get_calculation()).done(function(calculation) {
-        return this.set_interims(calculation.InterimFields);
-      });
+      return this.select_calculation(this.get_calculation());
     }
 
     on_display_detection_limit_selector_change(event) {
