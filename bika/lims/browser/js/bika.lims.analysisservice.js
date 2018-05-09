@@ -259,7 +259,6 @@
        * @param {Array} uids
        *    UIDs of Methods to select
        */
-      // Prevent any further action if manual entry of results is not allowed
       if (!this.is_manual_entry_of_results_allowed()) {
         console.debug("Manual entry of results is not allowed");
         return;
@@ -376,9 +375,9 @@
        * @param {Array} uids
        *    UIDs of Instruments to select
        */
-      // Prevent any further action if instrument assignment is not allowed
       if (!this.is_instrument_assignment_allowed()) {
         console.debug("Instrument assignment not allowed");
+        this.set_default_instrument(null);
         return;
       }
       field = $("#archetypes-fieldname-Instruments #Instruments");
