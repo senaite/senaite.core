@@ -64,6 +64,12 @@
       this.on_use_default_calculation_change = this.on_use_default_calculation_change.bind(this);
       this.on_calculation_change = this.on_calculation_change.bind(this);
       this.on_display_detection_limit_selector_change = this.on_display_detection_limit_selector_change.bind(this);
+      this.on_separate_container_change = this.on_separate_container_change.bind(this);
+      this.on_default_preservation_change = this.on_default_preservation_change.bind(this);
+      this.on_default_container_change = this.on_default_container_change.bind(this);
+      this.on_partition_sampletype_change = this.on_partition_sampletype_change.bind(this);
+      this.on_partition_separate_container_change = this.on_partition_separate_container_change.bind(this);
+      this.on_partition_required_volume_change = this.on_partition_required_volume_change.bind(this);
     }
 
     load() {
@@ -127,7 +133,20 @@
       $("body").on("change", "#archetypes-fieldname-Calculation #Calculation", this.on_calculation_change);
       /* ANALYSIS TAB */
       // The "Display a Detection Limit selector" checkbox changed
-      return $("body").on("change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", this.on_display_detection_limit_selector_change);
+      $("body").on("change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", this.on_display_detection_limit_selector_change);
+      /* CONTAINER AND PRESERVATION TAB */
+      // The "Separate Container" checkbox changed
+      $("body").on("change", "#archetypes-fieldname-Separate #Separate", this.on_separate_container_change);
+      // The "Default Preservation" select changed
+      $("body").on("change", "#archetypes-fieldname-Preservation #Preservation", this.on_default_preservation_change);
+      // The "Default Container" select changed
+      $("body").on("change", "#archetypes-fieldname-Container #Container", this.on_default_container_change);
+      // The "Sample Type" select changed in the Partition setup
+      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.sampletype']", this.on_partition_sampletype_change);
+      // The "Separate Container" checkbox changed in the Partition setup
+      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.separate']", this.on_partition_separate_container_change);
+      // The "Required Volume" value changed in the Partition setup
+      return $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.vol']", this.on_partition_required_volume_change);
     }
 
     init() {
@@ -1219,6 +1238,60 @@
         console.debug("Disallow detection limit selector");
         return this.toggle_display_detection_limit_selector(false);
       }
+    }
+
+    on_separate_container_change(event) {
+      /**
+       * Eventhandler when the "Separate Container" checkbox changed
+       *
+       * This checkbox is located on the "Container and Preservation" Tab
+       */
+      return console.debug("°°° AnalysisServiceEditView::on_separate_container_change °°°");
+    }
+
+    on_default_preservation_change(event) {
+      /**
+       * Eventhandler when the "Default Preservation" selection changed
+       *
+       * This field is located on the "Container and Preservation" Tab
+       */
+      return console.debug("°°° AnalysisServiceEditView::on_default_preservation_change °°°");
+    }
+
+    on_default_container_change(event) {
+      /**
+       * Eventhandler when the "Default Container" selection changed
+       *
+       * This field is located on the "Container and Preservation" Tab
+       */
+      return console.debug("°°° AnalysisServiceEditView::on_default_container_change °°°");
+    }
+
+    on_partition_sampletype_change(event) {
+      /**
+       * Eventhandler when the "Sample Type" selection changed
+       *
+       * This field is located on the "Container and Preservation" Tab
+       */
+      return console.debug("°°° AnalysisServiceEditView::on_partition_sampletype_change °°°");
+    }
+
+    on_partition_separate_container_change(event) {
+      /**
+       * Eventhandler when the "Separate Container" checkbox changed
+       *
+       * This checkbox is located on the "Container and Preservation" Tab
+       */
+      return console.debug("°°° AnalysisServiceEditView::on_partition_separate_container_change °°°");
+    }
+
+    on_partition_required_volume_change(event) {
+      /**
+       * Eventhandler when the "Required Volume" value changed
+       *
+       * This field is located on the "Container and Preservation" Tab
+       */
+      return console.debug("°°° AnalysisServiceEditView::on_partition_required_volume_change °°°");
     }
 
   };

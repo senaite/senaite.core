@@ -95,6 +95,26 @@ class window.AnalysisServiceEditView
     # The "Display a Detection Limit selector" checkbox changed
     $("body").on "change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", @on_display_detection_limit_selector_change
 
+    ### CONTAINER AND PRESERVATION TAB ###
+
+    # The "Separate Container" checkbox changed
+    $("body").on "change", "#archetypes-fieldname-Separate #Separate", @on_separate_container_change
+
+    # The "Default Preservation" select changed
+    $("body").on "change", "#archetypes-fieldname-Preservation #Preservation", @on_default_preservation_change
+
+    # The "Default Container" select changed
+    $("body").on "change", "#archetypes-fieldname-Container #Container", @on_default_container_change
+
+    # The "Sample Type" select changed in the Partition setup
+    $("body").on "change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.sampletype']", @on_partition_sampletype_change
+
+    # The "Separate Container" checkbox changed in the Partition setup
+    $("body").on "change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.separate']", @on_partition_separate_container_change
+
+    # The "Required Volume" value changed in the Partition setup
+    $("body").on "change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.vol']", @on_partition_required_volume_change
+
 
   init: =>
     ###*
@@ -1113,3 +1133,57 @@ class window.AnalysisServiceEditView
     else
       console.debug "Disallow detection limit selector"
       @toggle_display_detection_limit_selector no
+
+
+  on_separate_container_change: (event) =>
+    ###*
+     * Eventhandler when the "Separate Container" checkbox changed
+     *
+     * This checkbox is located on the "Container and Preservation" Tab
+    ###
+    console.debug "°°° AnalysisServiceEditView::on_separate_container_change °°°"
+
+
+  on_default_preservation_change: (event) =>
+    ###*
+     * Eventhandler when the "Default Preservation" selection changed
+     *
+     * This field is located on the "Container and Preservation" Tab
+    ###
+    console.debug "°°° AnalysisServiceEditView::on_default_preservation_change °°°"
+
+
+  on_default_container_change: (event) =>
+    ###*
+     * Eventhandler when the "Default Container" selection changed
+     *
+     * This field is located on the "Container and Preservation" Tab
+    ###
+    console.debug "°°° AnalysisServiceEditView::on_default_container_change °°°"
+
+
+  on_partition_sampletype_change: (event) =>
+    ###*
+     * Eventhandler when the "Sample Type" selection changed
+     *
+     * This field is located on the "Container and Preservation" Tab
+    ###
+    console.debug "°°° AnalysisServiceEditView::on_partition_sampletype_change °°°"
+
+
+  on_partition_separate_container_change: (event) =>
+    ###*
+     * Eventhandler when the "Separate Container" checkbox changed
+     *
+     * This checkbox is located on the "Container and Preservation" Tab
+    ###
+    console.debug "°°° AnalysisServiceEditView::on_partition_separate_container_change °°°"
+
+
+  on_partition_required_volume_change: (event) =>
+    ###*
+     * Eventhandler when the "Required Volume" value changed
+     *
+     * This field is located on the "Container and Preservation" Tab
+    ###
+    console.debug "°°° AnalysisServiceEditView::on_partition_required_volume_change °°°"
