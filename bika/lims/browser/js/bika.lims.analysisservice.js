@@ -54,6 +54,7 @@
       this.add_select_option = this.add_select_option.bind(this);
       this.parse_select_options = this.parse_select_options.bind(this);
       this.select_options = this.select_options.bind(this);
+      this.toggle_checkbox = this.toggle_checkbox.bind(this);
       /* EVENT HANDLER */
       this.on_manual_entry_of_results_change = this.on_manual_entry_of_results_change.bind(this);
       this.on_methods_change = this.on_methods_change.bind(this);
@@ -203,23 +204,10 @@
     toggle_manual_entry_of_results_allowed(toggle, silent = true) {
       /**
        * Toggle the "Instrument assignment is not required" checkbox
-       *
-       * @param {boolean} toggle
-       *    True to check the checkbox (undefined toggles the current state)
-       *
-       * @param {boolean} silent
-       *    True to trigger a "change" event after set
        */
       var field;
       field = $("#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults");
-      if (toggle === void 0) {
-        toggle = !field.is(":checked");
-      }
-      field.prop("checked", toggle);
-      // trigger change event
-      if (!silent) {
-        return field.trigger("change");
-      }
+      return this.toggle_checkbox(field, toggle, silent);
     }
 
     get_methods() {
@@ -322,23 +310,10 @@
     toggle_instrument_assignment_allowed(toggle, silent = true) {
       /**
        * Toggle the "Instrument assignment is allowed" checkbox
-       *
-       * @param {boolean} toggle
-       *    True to check the checkbox (undefined toggles the current state)
-       *
-       * @param {boolean} silent
-       *    True to trigger a "change" event after set
        */
       var field;
       field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults");
-      if (toggle === void 0) {
-        toggle = !field.is(":checked");
-      }
-      field.prop("checked", toggle);
-      // trigger change event
-      if (!silent) {
-        return field.trigger("change");
-      }
+      return this.toggle_checkbox(field, toggle, silent);
     }
 
     get_instruments() {
@@ -523,23 +498,10 @@
     toggle_use_default_calculation_of_method(toggle, silent = true) {
       /**
        * Toggle the "Use the Default Calculation of Method" checkbox
-       *
-       * @param {boolean} toggle
-       *    True to check the checkbox (undefined toggles the current state)
-       *
-       * @param {boolean} silent
-       *    True to trigger a "change" event after set
        */
       var field;
       field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation");
-      if (toggle === void 0) {
-        toggle = !field.is(":checked");
-      }
-      field.prop("checked", toggle);
-      // trigger change event
-      if (!silent) {
-        return field.trigger("change");
-      }
+      return this.toggle_checkbox(field, toggle, silent);
     }
 
     get_calculation() {
@@ -745,32 +707,22 @@
 
     toggle_display_detection_limit_selector(toggle, silent = true) {
       /**
-       * Toggle the checkbox
+       * Toggle the "Display detection limit selector" checkbox
        *
-       * @param {boolean} toggle
-       *    True to check the checkbox (undefined toggles the current state)
-       *
-       * @param {boolean} silent
-       *    True to trigger a "change" event after set
+       * If it is checked, display the "Allow manual detection limit input" field below
+       * If it is unchecked, hide and uncheck the "Allow manual detection limit input" field below
        */
       var field, field2;
       field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector");
-      field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit");
-      if (toggle === void 0) {
-        toggle = !field.is(":checked");
-      }
-      field.prop("checked", toggle);
       // control the visiblity of the dependent field
+      field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit");
       if (toggle === true) {
         field2.parent().show();
       } else {
         field2.parent().hide();
         field2.prop("checked", false);
       }
-      // trigger change event
-      if (!silent) {
-        return field.trigger("change");
-      }
+      return this.toggle_checkbox(field, toggle, silent);
     }
 
     load_available_calculations() {
@@ -1104,6 +1056,31 @@
         }
         return option.selected = "selected";
       });
+    }
+
+    toggle_checkbox(checkbox, toggle, silent = true) {
+      /**
+       * Toggle the checkbox
+       *
+       * @param {element} checkbox
+       *    The checkbox to toggle
+       *
+       * @param {boolean} toggle
+       *    True to check the checkbox
+       *
+       * @param {boolean} silent
+       *    True to trigger a "change" event after set
+       */
+      var field;
+      field = $(checkbox);
+      if (toggle === void 0) {
+        toggle = !field.is(":checked");
+      }
+      field.prop("checked", toggle);
+      // trigger change event
+      if (!silent) {
+        return field.trigger("change");
+      }
     }
 
     on_manual_entry_of_results_change(event) {

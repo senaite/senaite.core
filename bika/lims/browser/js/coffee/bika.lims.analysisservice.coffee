@@ -171,19 +171,9 @@ class window.AnalysisServiceEditView
   toggle_manual_entry_of_results_allowed: (toggle, silent=yes) =>
     ###*
      * Toggle the "Instrument assignment is not required" checkbox
-     *
-     * @param {boolean} toggle
-     *    True to check the checkbox (undefined toggles the current state)
-     *
-     * @param {boolean} silent
-     *    True to trigger a "change" event after set
     ###
     field = $("#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults")
-    if toggle is undefined
-      toggle = not field.is ":checked"
-    field.prop "checked", toggle
-    # trigger change event
-    if not silent then field.trigger "change"
+    @toggle_checkbox field, toggle, silent
 
 
   get_methods: =>
@@ -280,19 +270,9 @@ class window.AnalysisServiceEditView
   toggle_instrument_assignment_allowed: (toggle, silent=yes) =>
     ###*
      * Toggle the "Instrument assignment is allowed" checkbox
-     *
-     * @param {boolean} toggle
-     *    True to check the checkbox (undefined toggles the current state)
-     *
-     * @param {boolean} silent
-     *    True to trigger a "change" event after set
     ###
     field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults")
-    if toggle is undefined
-      toggle = not field.is ":checked"
-    field.prop "checked", toggle
-    # trigger change event
-    if not silent then field.trigger "change"
+    @toggle_checkbox field, toggle, silent
 
 
   get_instruments: =>
@@ -471,19 +451,9 @@ class window.AnalysisServiceEditView
   toggle_use_default_calculation_of_method: (toggle, silent=yes) =>
     ###*
      * Toggle the "Use the Default Calculation of Method" checkbox
-     *
-     * @param {boolean} toggle
-     *    True to check the checkbox (undefined toggles the current state)
-     *
-     * @param {boolean} silent
-     *    True to trigger a "change" event after set
     ###
     field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation")
-    if toggle is undefined
-      toggle = not field.is ":checked"
-    field.prop "checked", toggle
-    # trigger change event
-    if not silent then field.trigger "change"
+    @toggle_checkbox field, toggle, silent
 
 
   get_calculation: =>
@@ -673,29 +643,22 @@ class window.AnalysisServiceEditView
 
   toggle_display_detection_limit_selector: (toggle, silent=yes) =>
     ###*
-     * Toggle the checkbox
+     * Toggle the "Display detection limit selector" checkbox
      *
-     * @param {boolean} toggle
-     *    True to check the checkbox (undefined toggles the current state)
-     *
-     * @param {boolean} silent
-     *    True to trigger a "change" event after set
+     * If it is checked, display the "Allow manual detection limit input" field below
+     * If it is unchecked, hide and uncheck the "Allow manual detection limit input" field below
     ###
     field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector")
-    field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit")
-    if toggle is undefined
-      toggle = not field.is ":checked"
-    field.prop "checked", toggle
 
     # control the visiblity of the dependent field
+    field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit")
     if toggle is on
       field2.parent().show()
     else
       field2.parent().hide()
       field2.prop "checked", no
 
-    # trigger change event
-    if not silent then field.trigger "change"
+    @toggle_checkbox field, toggle, silent
 
 
   ### ASYNC DATA LOADERS ###
@@ -997,6 +960,27 @@ class window.AnalysisServiceEditView
       value = option.value
       return unless value in values
       option.selected = "selected"
+
+
+  toggle_checkbox: (checkbox, toggle, silent=yes) =>
+    ###*
+     * Toggle the checkbox
+     *
+     * @param {element} checkbox
+     *    The checkbox to toggle
+     *
+     * @param {boolean} toggle
+     *    True to check the checkbox
+     *
+     * @param {boolean} silent
+     *    True to trigger a "change" event after set
+    ###
+    field = $(checkbox)
+    if toggle is undefined
+      toggle = not field.is ":checked"
+    field.prop "checked", toggle
+    # trigger change event
+    if not silent then field.trigger "change"
 
 
   ### EVENT HANDLER ###
