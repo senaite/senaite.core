@@ -9,6 +9,8 @@ Changelog
 
 **Changed**
 
+- #820 Always allow interim fields to be added to Analysis Services
+
 
 **Removed**
 
