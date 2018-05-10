@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2018-02-09 12:39+0000\n"
-"PO-Revision-Date: 2018-05-10 16:47+0200\n"
+"PO-Revision-Date: 2018-05-10 17:05+0200\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -2162,8 +2162,11 @@ msgid "Description of the site"
 msgstr "Descripción del sitio"
 
 #: bika/lims/content/analysisrequest.py:1034
+#, fuzzy
 msgid "Deviation between the sample and how it was sampled"
-msgstr "Error entre la muestra y cómo se muestreó"
+msgstr ""
+"Error entre la manera en que se esperaba el muestreo y en cómo finalmente se "
+"muestreó"
 
 #: bika/lims/config.py:124
 msgid "Disable multi-verification for the same user"
@@ -3324,7 +3327,7 @@ msgstr "Instrumentos desactivados hasta la calibración exitosa:"
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:49
 msgid "Instruments disposed until new calibration tests being done:"
 msgstr ""
-"Instrumentos deshabilitado hasta que se realicen nuevas pruebas de "
+"Instrumentos deshabilitados hasta que se realicen nuevas pruebas de "
 "calibración:"
 
 #: bika/lims/browser/templates/instrument_qc_failures_viewlet.pt:81
@@ -3568,8 +3571,8 @@ msgid ""
 "Legend: Results in <em>italic</em> font are pending, results in "
 "<strong>bold</strong> font are verified."
 msgstr ""
-"Leyenda: los resultados en <em> cursiva </ em> están pendientes, los "
-"resultados en <strong> negrita </ strong> están verificados."
+"Leyenda: los resultados en <em>cursiva</em> están pendientes, los resultados "
+"en <strong> negrita</strong> están verificados."
 
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:37
 msgid "Linear"
@@ -3588,9 +3591,9 @@ msgid "Linked Sample"
 msgstr "Muestra vinculada"
 
 #: bika/lims/controlpanel/bika_identifiertypes.py:35
+#, fuzzy
 msgid "List of types of identifiers for multiple identifier records"
-msgstr ""
-"Lista de tipos de identificadores para múltiples registros identificadores"
+msgstr "Tipos de identificadores para múltiples registros de identificación"
 
 #: bika/lims/browser/reports/templates/productivity.pt:102
 msgid "Lists all samples received for a date range"
@@ -5704,12 +5707,14 @@ msgstr "Fecha prevista de muestreo"
 #: bika/lims/browser/analysisrequest/analysisrequests.py:164
 #: bika/lims/browser/sample/view.py:125
 #: bika/lims/content/analysisrequest.py:1033
+#, fuzzy
 msgid "Sampling Deviation"
-msgstr "Desviación en el muestreo"
+msgstr "Diferencias entre el muestreo previsto y el realizado"
 
 #: bika/lims/controlpanel/bika_samplingdeviations.py:32
+#, fuzzy
 msgid "Sampling Deviations"
-msgstr "Desviaciones en el muestreo"
+msgstr "Diferencias entre el muestreo previsto y el realizado"
 
 #: bika/lims/content/samplepoint.py:70 bika/lims/content/srtemplate.py:61
 msgid "Sampling Frequency"
