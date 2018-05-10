@@ -12,9 +12,28 @@ class window.AnalysisServiceEditView
     jarn.i18n.loadCatalog "bika"
     @_ = window.jarn.i18n.MessageFactory "bika"
 
+    # All available instruments by UID
+    @all_instruments = {}
+
+    # All invalid instruments by UID
+    @invalid_instruments = {}
+
+    # Load available instruments
+    @load_available_instruments()
+    .done (instruments) ->
+      me = this
+      $.each instruments, (index, instrument) ->
+        uid = instrument.UID
+        # remember the instrument
+        me.all_instruments[uid] = instrument
+        if instrument.Valid isnt "1"
+          # remember invalid instrument
+          me.invalid_instruments[uid] = instrument
+
     # Interim values defined by the user (not part of the current calculation)
     @manual_interims = []
 
+    # Calculate manual set interims
     @load_manual_interims()
     .done (manual_interims) ->
       @manual_interims = manual_interims
@@ -334,16 +353,28 @@ class window.AnalysisServiceEditView
     # set selected attribute to the options
     @select_options field, uids
 
+    invalid_instruments = []
+
     # Set selected instruments to the list of the default instruments
     me = this
     $.each uids, (index, uid) ->
       flush = index is 0 and yes or no
-      # extract the title and uid from the option element
-      option = field.find "option[value=#{uid}]"
-      instrument =
-        uid: option.val()
-        title: option.text()
+      # get the instrument
+      instrument = me.all_instruments[uid]
+      if uid of me.invalid_instruments
+        console.warn "Instrument '#{instrument.Title}' is invalid"
+        invalid_instruments.push instrument
       me.set_default_instrument instrument, flush=flush
+
+    # show invalid instruments
+    if invalid_instruments.length > 0
+      notification = $("<dl/>")
+      $.each invalid_instruments, (index, instrument) ->
+        notification.append "<dd>⚠ #{instrument.Title}</dd>"
+      title = @_ "Some of the selected instruments are out-of-date or with failed calibration tests"
+      @show_alert title: title, message: notification[0].outerHTML
+    else
+      @show_alert message: ""
 
     # restore initially selected default instrument
     @select_default_instrument @selected_default_instrument
@@ -418,8 +449,8 @@ class window.AnalysisServiceEditView
     if flush
       field.empty()
 
-    title = instrument.title
-    uid = instrument.uid
+    title = instrument.title or instrument.Title
+    uid = instrument.uid or instrument.UID
 
     if title and uid
       @add_select_option field, title, uid
@@ -661,6 +692,30 @@ class window.AnalysisServiceEditView
     @toggle_checkbox field, toggle, silent
 
 
+  show_alert: (options) =>
+    ###
+     * Display a notification box above the content
+    ###
+    title = options.title or ""
+    message = options.message or ""
+    level = options.level or "warning"
+    flush = options.flush or yes
+
+    alerts = $("#viewlet-above-content #alerts")
+    if alerts.length is 0
+       $("#viewlet-above-content").append "<div id='alerts'></div>"
+      alerts = $("#viewlet-above-content #alerts")
+    if flush then alerts.empty()
+    if message is "" then alerts.remove()
+    html = """
+    <div class="alert alert-#{level} errorbox" role="alert">
+      <h3>#{title}</h3>
+      <div>#{message}</div>
+    </div>
+    """
+    alerts.append html
+
+
   ### ASYNC DATA LOADERS ###
 
   load_available_calculations: =>
@@ -697,8 +752,6 @@ class window.AnalysisServiceEditView
         catalog_name: "bika_setup_catalog"
         page_size: 0
         portal_type: "Instrument"
-        inactive_state: "active"
-        sort_on: "sortable_title"
 
     @ajax_submit options
     .done (data) ->
@@ -950,6 +1003,17 @@ class window.AnalysisServiceEditView
         uid: uid
         title: title
     return options
+
+
+  parse_select_option: (select, value) =>
+    ###*
+     * Return the option by value
+    ###
+    option = field.find "option[value=#{uid}]"
+    data =
+      uid: option.val() or ""
+      title: option.text() or ""
+    return data
 
 
   select_options: (select, values) =>

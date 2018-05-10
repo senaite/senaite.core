@@ -39,6 +39,7 @@
       this.set_instrument_methods = this.set_instrument_methods.bind(this);
       this.display_detection_limit_selector = this.display_detection_limit_selector.bind(this);
       this.toggle_display_detection_limit_selector = this.toggle_display_detection_limit_selector.bind(this);
+      this.show_alert = this.show_alert.bind(this);
       /* ASYNC DATA LOADERS */
       this.load_available_calculations = this.load_available_calculations.bind(this);
       this.load_available_instruments = this.load_available_instruments.bind(this);
@@ -53,6 +54,7 @@
       this.is_uid = this.is_uid.bind(this);
       this.add_select_option = this.add_select_option.bind(this);
       this.parse_select_options = this.parse_select_options.bind(this);
+      this.parse_select_option = this.parse_select_option.bind(this);
       this.select_options = this.select_options.bind(this);
       this.toggle_checkbox = this.toggle_checkbox.bind(this);
       /* EVENT HANDLER */
@@ -78,8 +80,28 @@
       // load translations
       jarn.i18n.loadCatalog("bika");
       this._ = window.jarn.i18n.MessageFactory("bika");
+      // All available instruments by UID
+      this.all_instruments = {};
+      // All invalid instruments by UID
+      this.invalid_instruments = {};
+      // Load available instruments
+      this.load_available_instruments().done(function(instruments) {
+        var me;
+        me = this;
+        return $.each(instruments, function(index, instrument) {
+          var uid;
+          uid = instrument.UID;
+          // remember the instrument
+          me.all_instruments[uid] = instrument;
+          if (instrument.Valid !== "1") {
+            // remember invalid instrument
+            return me.invalid_instruments[uid] = instrument;
+          }
+        });
+      });
       // Interim values defined by the user (not part of the current calculation)
       this.manual_interims = [];
+      // Calculate manual set interims
       this.load_manual_interims().done(function(manual_interims) {
         return this.manual_interims = manual_interims;
       });
@@ -362,7 +384,7 @@
     }
 
     select_instruments(uids) {
-      var field, me;
+      var field, invalid_instruments, me, notification, title;
       /**
        * Select instruments by UID
        *
@@ -377,19 +399,36 @@
       field = $("#archetypes-fieldname-Instruments #Instruments");
       // set selected attribute to the options
       this.select_options(field, uids);
+      invalid_instruments = [];
       // Set selected instruments to the list of the default instruments
       me = this;
       $.each(uids, function(index, uid) {
-        var flush, instrument, option;
+        var flush, instrument;
         flush = index === 0 && true || false;
-        // extract the title and uid from the option element
-        option = field.find(`option[value=${uid}]`);
-        instrument = {
-          uid: option.val(),
-          title: option.text()
-        };
+        // get the instrument
+        instrument = me.all_instruments[uid];
+        if (uid in me.invalid_instruments) {
+          console.warn(`Instrument '${instrument.Title}' is invalid`);
+          invalid_instruments.push(instrument);
+        }
         return me.set_default_instrument(instrument, flush = flush);
       });
+      // show invalid instruments
+      if (invalid_instruments.length > 0) {
+        notification = $("<dl/>");
+        $.each(invalid_instruments, function(index, instrument) {
+          return notification.append(`<dd>⚠ ${instrument.Title}</dd>`);
+        });
+        title = this._("Some of the selected instruments are out-of-date or with failed calibration tests");
+        this.show_alert({
+          title: title,
+          message: notification[0].outerHTML
+        });
+      } else {
+        this.show_alert({
+          message: ""
+        });
+      }
       // restore initially selected default instrument
       this.select_default_instrument(this.selected_default_instrument);
       // set the instrument methods of the default instrument
@@ -463,8 +502,8 @@
       if (flush) {
         field.empty();
       }
-      title = instrument.title;
-      uid = instrument.uid;
+      title = instrument.title || instrument.Title;
+      uid = instrument.uid || instrument.UID;
       if (title && uid) {
         return this.add_select_option(field, title, uid);
       } else {
@@ -725,6 +764,30 @@
       return this.toggle_checkbox(field, toggle, silent);
     }
 
+    show_alert(options) {
+      /*
+       * Display a notification box above the content
+       */
+      var alerts, flush, html, level, message, title;
+      title = options.title || "";
+      message = options.message || "";
+      level = options.level || "warning";
+      flush = options.flush || true;
+      alerts = $("#viewlet-above-content #alerts");
+      if (alerts.length === 0) {
+        $("#viewlet-above-content").append("<div id='alerts'></div>");
+      }
+      alerts = $("#viewlet-above-content #alerts");
+      if (flush) {
+        alerts.empty();
+      }
+      if (message === "") {
+        alerts.remove();
+      }
+      html = `<div class="alert alert-${level} errorbox" role="alert">\n  <h3>${title}</h3>\n  <div>${message}</div>\n</div>`;
+      return alerts.append(html);
+    }
+
     load_available_calculations() {
       /**
        * Load all available calculations
@@ -759,9 +822,7 @@
         data: {
           catalog_name: "bika_setup_catalog",
           page_size: 0,
-          portal_type: "Instrument",
-          inactive_state: "active",
-          sort_on: "sortable_title"
+          portal_type: "Instrument"
         }
       };
       this.ajax_submit(options).done(function(data) {
@@ -1042,6 +1103,19 @@
         });
       });
       return options;
+    }
+
+    parse_select_option(select, value) {
+      /**
+       * Return the option by value
+       */
+      var data, option;
+      option = field.find(`option[value=${uid}]`);
+      data = {
+        uid: option.val() || "",
+        title: option.text() || ""
+      };
+      return data;
     }
 
     select_options(select, values) {
