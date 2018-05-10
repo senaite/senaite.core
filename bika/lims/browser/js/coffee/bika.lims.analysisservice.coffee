@@ -123,13 +123,16 @@ class window.AnalysisServiceEditView
     $("body").on "change", "#archetypes-fieldname-Preservation #Preservation", @on_default_preservation_change
 
     # The "Default Container" select changed
-    $("body").on "change", "#archetypes-fieldname-Container #Container", @on_default_container_change
+    $("body").on "selected", "#archetypes-fieldname-Container #Container", @on_default_container_change
 
     # The "Sample Type" select changed in the Partition setup
     $("body").on "change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.sampletype']", @on_partition_sampletype_change
 
     # The "Separate Container" checkbox changed in the Partition setup
     $("body").on "change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.separate']", @on_partition_separate_container_change
+
+    # The "Container" checkbox changed in the Partition setup
+    $("body").on "change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.container']", @on_partition_container_change
 
     # The "Required Volume" value changed in the Partition setup
     $("body").on "change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.vol']", @on_partition_required_volume_change
@@ -925,6 +928,32 @@ class window.AnalysisServiceEditView
     return deferred.promise()
 
 
+  load_object_by_uid: (uid) =>
+    ###
+     * Load object by UID
+     *
+     * @returns {Deferred}
+    ###
+    deferred = $.Deferred()
+
+    options =
+      url: @get_portal_url() + "/@@API/read"
+      data:
+        catalog_name: "uid_catalog"
+        page_size: 0
+        UID: uid
+
+    @ajax_submit options
+    .done (data) ->
+      object = {}
+      if data.objects.length is 1
+        object = data.objects[0]
+      # Resolve the deferred with the parsed calculation
+      return deferred.resolveWith this, [object]
+
+    return deferred.promise()
+
+
   ### HELPERS ###
 
   ajax_submit: (options) =>
@@ -952,6 +981,19 @@ class window.AnalysisServiceEditView
     done = ->
       $(this).trigger "ajax:submit:end"
     return $.ajax(options).done done
+
+
+  get_url: =>
+    ###*
+     * Return the current absolute url
+     *
+     * @returns {string} current absolute url
+    ###
+    location = window.location
+    protocol = location.protocol
+    host = location.host
+    pathname = location.pathname
+    return "#{protocol}//#{host}#{pathname}"
 
 
   get_portal_url: =>
@@ -1191,6 +1233,8 @@ class window.AnalysisServiceEditView
     ###
     console.debug "°°° AnalysisServiceEditView::on_separate_container_change °°°"
 
+    value = event.currentTarget.checked
+
 
   on_default_preservation_change: (event) =>
     ###*
@@ -1209,6 +1253,20 @@ class window.AnalysisServiceEditView
     ###
     console.debug "°°° AnalysisServiceEditView::on_default_container_change °°°"
 
+    el = event.currentTarget
+    uid = el.getAttribute "uid"
+
+    field = $("#archetypes-fieldname-Preservation #Preservation")
+
+    @load_object_by_uid uid
+    .done (data) ->
+      if data
+        field.val data.Preservation
+        field.prop "disabled", yes
+      else
+        field.val ""
+        field.prop "disabled", no
+
 
   on_partition_sampletype_change: (event) =>
     ###*
@@ -1218,6 +1276,15 @@ class window.AnalysisServiceEditView
     ###
     console.debug "°°° AnalysisServiceEditView::on_partition_sampletype_change °°°"
 
+    el = event.currentTarget
+    uid = el.value
+
+    @load_object_by_uid uid
+    .done (sampletype) ->
+      minvol = sampletype.MinimumVolume or ""
+      # set the minimum volume to the partition
+      $(el).parents("tr").find("[name^='PartitionSetup.vol']").val minvol
+
 
   on_partition_separate_container_change: (event) =>
     ###*
@@ -1226,6 +1293,28 @@ class window.AnalysisServiceEditView
      * This checkbox is located on the "Container and Preservation" Tab
     ###
     console.debug "°°° AnalysisServiceEditView::on_partition_separate_container_change °°°"
+
+
+  on_partition_container_change: (event) =>
+    ###*
+     * Eventhandler when the "Container" multi-select changed
+     *
+     * This multi select is located on the "Container and Preservation" Tab
+    ###
+    console.debug "°°° AnalysisServiceEditView::on_partition_container_change °°°"
+    el = event.currentTarget
+    uid = el.value
+
+    field = $(el).parents("tr").find("[name^='PartitionSetup.preservation']")
+
+    @load_object_by_uid uid
+    .done (data) ->
+      if not $.isEmptyObject data
+        $(el).val data.UID
+        $(field).val data.Preservation
+        $(field).prop "disabled", yes
+      else
+        $(field).prop "disabled", no
 
 
   on_partition_required_volume_change: (event) =>

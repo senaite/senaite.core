@@ -48,8 +48,10 @@
       this.load_method_calculation = this.load_method_calculation.bind(this);
       this.load_calculation = this.load_calculation.bind(this);
       this.load_manual_interims = this.load_manual_interims.bind(this);
+      this.load_object_by_uid = this.load_object_by_uid.bind(this);
       /* HELPERS */
       this.ajax_submit = this.ajax_submit.bind(this);
+      this.get_url = this.get_url.bind(this);
       this.get_portal_url = this.get_portal_url.bind(this);
       this.is_uid = this.is_uid.bind(this);
       this.add_select_option = this.add_select_option.bind(this);
@@ -72,6 +74,7 @@
       this.on_default_container_change = this.on_default_container_change.bind(this);
       this.on_partition_sampletype_change = this.on_partition_sampletype_change.bind(this);
       this.on_partition_separate_container_change = this.on_partition_separate_container_change.bind(this);
+      this.on_partition_container_change = this.on_partition_container_change.bind(this);
       this.on_partition_required_volume_change = this.on_partition_required_volume_change.bind(this);
     }
 
@@ -164,11 +167,13 @@
       // The "Default Preservation" select changed
       $("body").on("change", "#archetypes-fieldname-Preservation #Preservation", this.on_default_preservation_change);
       // The "Default Container" select changed
-      $("body").on("change", "#archetypes-fieldname-Container #Container", this.on_default_container_change);
+      $("body").on("selected", "#archetypes-fieldname-Container #Container", this.on_default_container_change);
       // The "Sample Type" select changed in the Partition setup
       $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.sampletype']", this.on_partition_sampletype_change);
       // The "Separate Container" checkbox changed in the Partition setup
       $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.separate']", this.on_partition_separate_container_change);
+      // The "Container" checkbox changed in the Partition setup
+      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.container']", this.on_partition_container_change);
       // The "Required Volume" value changed in the Partition setup
       return $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.vol']", this.on_partition_required_volume_change);
     }
@@ -1006,6 +1011,34 @@
       return deferred.promise();
     }
 
+    load_object_by_uid(uid) {
+      /*
+       * Load object by UID
+       *
+       * @returns {Deferred}
+       */
+      var deferred, options;
+      deferred = $.Deferred();
+      options = {
+        url: this.get_portal_url() + "/@@API/read",
+        data: {
+          catalog_name: "uid_catalog",
+          page_size: 0,
+          UID: uid
+        }
+      };
+      this.ajax_submit(options).done(function(data) {
+        var object;
+        object = {};
+        if (data.objects.length === 1) {
+          object = data.objects[0];
+        }
+        // Resolve the deferred with the parsed calculation
+        return deferred.resolveWith(this, [object]);
+      });
+      return deferred.promise();
+    }
+
     ajax_submit(options) {
       var base, done;
       /**
@@ -1044,6 +1077,20 @@
         return $(this).trigger("ajax:submit:end");
       };
       return $.ajax(options).done(done);
+    }
+
+    get_url() {
+      /**
+       * Return the current absolute url
+       *
+       * @returns {string} current absolute url
+       */
+      var host, location, pathname, protocol;
+      location = window.location;
+      protocol = location.protocol;
+      host = location.host;
+      pathname = location.pathname;
+      return `${protocol}//${host}${pathname}`;
     }
 
     get_portal_url() {
@@ -1293,12 +1340,14 @@
     }
 
     on_separate_container_change(event) {
+      var value;
       /**
        * Eventhandler when the "Separate Container" checkbox changed
        *
        * This checkbox is located on the "Container and Preservation" Tab
        */
-      return console.debug("°°° AnalysisServiceEditView::on_separate_container_change °°°");
+      console.debug("°°° AnalysisServiceEditView::on_separate_container_change °°°");
+      return value = event.currentTarget.checked;
     }
 
     on_default_preservation_change(event) {
@@ -1311,21 +1360,43 @@
     }
 
     on_default_container_change(event) {
+      var el, field, uid;
       /**
        * Eventhandler when the "Default Container" selection changed
        *
        * This field is located on the "Container and Preservation" Tab
        */
-      return console.debug("°°° AnalysisServiceEditView::on_default_container_change °°°");
+      console.debug("°°° AnalysisServiceEditView::on_default_container_change °°°");
+      el = event.currentTarget;
+      uid = el.getAttribute("uid");
+      field = $("#archetypes-fieldname-Preservation #Preservation");
+      return this.load_object_by_uid(uid).done(function(data) {
+        if (data) {
+          field.val(data.Preservation);
+          return field.prop("disabled", true);
+        } else {
+          field.val("");
+          return field.prop("disabled", false);
+        }
+      });
     }
 
     on_partition_sampletype_change(event) {
+      var el, uid;
       /**
        * Eventhandler when the "Sample Type" selection changed
        *
        * This field is located on the "Container and Preservation" Tab
        */
-      return console.debug("°°° AnalysisServiceEditView::on_partition_sampletype_change °°°");
+      console.debug("°°° AnalysisServiceEditView::on_partition_sampletype_change °°°");
+      el = event.currentTarget;
+      uid = el.value;
+      return this.load_object_by_uid(uid).done(function(sampletype) {
+        var minvol;
+        minvol = sampletype.MinimumVolume || "";
+        // set the minimum volume to the partition
+        return $(el).parents("tr").find("[name^='PartitionSetup.vol']").val(minvol);
+      });
     }
 
     on_partition_separate_container_change(event) {
@@ -1335,6 +1406,28 @@
        * This checkbox is located on the "Container and Preservation" Tab
        */
       return console.debug("°°° AnalysisServiceEditView::on_partition_separate_container_change °°°");
+    }
+
+    on_partition_container_change(event) {
+      var el, field, uid;
+      /**
+       * Eventhandler when the "Container" multi-select changed
+       *
+       * This multi select is located on the "Container and Preservation" Tab
+       */
+      console.debug("°°° AnalysisServiceEditView::on_partition_container_change °°°");
+      el = event.currentTarget;
+      uid = el.value;
+      field = $(el).parents("tr").find("[name^='PartitionSetup.preservation']");
+      return this.load_object_by_uid(uid).done(function(data) {
+        if (!$.isEmptyObject(data)) {
+          $(el).val(data.UID);
+          $(field).val(data.Preservation);
+          return $(field).prop("disabled", true);
+        } else {
+          return $(field).prop("disabled", false);
+        }
+      });
     }
 
     on_partition_required_volume_change(event) {
