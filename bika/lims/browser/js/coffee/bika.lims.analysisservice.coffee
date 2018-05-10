@@ -19,7 +19,7 @@ class window.AnalysisServiceEditView
     @invalid_instruments = {}
 
     # Load available instruments
-    @load_available_instruments()
+    d1 = @load_available_instruments()
     .done (instruments) ->
       me = this
       $.each instruments, (index, instrument) ->
@@ -34,7 +34,7 @@ class window.AnalysisServiceEditView
     @manual_interims = []
 
     # Calculate manual set interims
-    @load_manual_interims()
+    d2 = @load_manual_interims()
     .done (manual_interims) ->
       @manual_interims = manual_interims
 
@@ -65,8 +65,8 @@ class window.AnalysisServiceEditView
     # bind the event handler to the elements
     @bind_eventhandler()
 
-    # initialize the form
-    @init()
+    # initialize the form when all data is loaded
+    $.when(d1, d2).then @init
 
     # Dev only
     window.asv = @

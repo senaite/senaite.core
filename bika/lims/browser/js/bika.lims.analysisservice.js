@@ -76,6 +76,7 @@
     }
 
     load() {
+      var d1, d2;
       console.debug("AnalysisServiceEditView::load");
       // load translations
       jarn.i18n.loadCatalog("bika");
@@ -85,7 +86,7 @@
       // All invalid instruments by UID
       this.invalid_instruments = {};
       // Load available instruments
-      this.load_available_instruments().done(function(instruments) {
+      d1 = this.load_available_instruments().done(function(instruments) {
         var me;
         me = this;
         return $.each(instruments, function(index, instrument) {
@@ -102,7 +103,7 @@
       // Interim values defined by the user (not part of the current calculation)
       this.manual_interims = [];
       // Calculate manual set interims
-      this.load_manual_interims().done(function(manual_interims) {
+      d2 = this.load_manual_interims().done(function(manual_interims) {
         return this.manual_interims = manual_interims;
       });
       // UIDs of the initial selected methods
@@ -123,8 +124,8 @@
       this.calculations = this.parse_select_options($("#archetypes-fieldname-Calculation #Calculation"));
       // bind the event handler to the elements
       this.bind_eventhandler();
-      // initialize the form
-      this.init();
+      // initialize the form when all data is loaded
+      $.when(d1, d2).then(this.init);
       // Dev only
       return window.asv = this;
     }
