@@ -174,6 +174,11 @@ def get_variables(context, **kw):
             'sampleType': sampletype_prefix,
         })
 
+    elif portal_type == "ARReport":
+        variables.update({
+            'clientId': context.aq_parent.getClientID(),
+        })
+
     return variables
 
 

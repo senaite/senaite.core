@@ -163,13 +163,15 @@ function FormPrintView() {
             url: url,
             type: 'POST',
             async: true,
-            data: { "template": template,
-                    "sampler": $("#sel_sampler option:selected").val(),
-                    "client": $("#sel_client option:selected").val(),
-                    "date_from": $("#filter_date_from").val(),
-                    "date_to": $("#filter_date_to").val(),
-                    "avoid_filter_by_date": $('#disable_filter_by_date').is(':checked')
-                }
+            data: {"template": template,
+                   "sampler": $("#sel_sampler option:selected").val(),
+                   "client": $("#sel_client option:selected").val(),
+                   "date_from": $("#filter_date_from").val(),
+                   "date_to": $("#filter_date_to").val(),
+                   "uids": $.parseJSON($('#uids').val()),
+                   "avoid_filter_by_date": $('#disable_filter_by_date').is(':checked')
+            },
+            traditional: true,
         })
         .always(function(data) {
             var htmldata = data;

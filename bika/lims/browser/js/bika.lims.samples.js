@@ -1,43 +1,27 @@
 /**
  * Controller class for Samples Folder View
  */
-function SamplesFolderView() {
+function PrintSamplesSheetView() {
     "use strict";
     var that = this;
 
     that.load = function() {
         $('a.context_action_link').click(print_samples_trigger);
     };
-
+    /**
+    * Function fired when Print Sample Sheets is clicked both from
+    * Samples Folder View or Client Samples Folder View.
+    * It makes a POST of the samples form to print_sampling_sheets.
+    *
+    * To do so, it first cancels the default action of the Print
+    * Samples Sheet anchor. It is a GET to print_sampling_sheets
+    * that would override the POST with the consequent data loss.
+    * Secondly, the form action is overridden before submitting
+    * because by default the POST is made to workflow_action
+    */
     function print_samples_trigger(event){
-        /*
-        This function triggers when the print button is clicked.
-        It gets all selected samples and buils the url redirections with
-        their uid so the printing function could get back the samples.
-        If no samples selected, it shows an error.
-        */
         event.preventDefault();
-        var s_uids = [];
-        // Gets the selected samples if they are in 'scheduled sampling' state or
-        // in 'to be sampled' state
-        $("input[id^='samples_cb_']:checked").each(function(){
-            var tr = $(this).closest('tr');
-            var uid = $(tr).attr('uid');
-            var tr_state = $(tr).find('.state_title').attr('class');
-            if (tr_state.indexOf("state-scheduled_sampling") >= 0 ||
-                tr_state.indexOf("state-to_be_sampled") >= 0){
-                s_uids.push(uid);
-            }
-        });
-        // Getting the url
-        var href = $('a.context_action_link').attr('href');
-        if (s_uids.length < 1) {
-            window.location.href = $('base').attr('href') + href;
-        }
-        else {
-            href += "?items=";
-            // Add the uids in the url and redirect
-            window.location.href = $('base').attr('href') + href + s_uids.join();
+        $('form#samples')[0].action = 'print_sampling_sheets';
+        $('form#samples').submit();
         }
     }
-}
