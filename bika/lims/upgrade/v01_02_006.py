@@ -35,7 +35,13 @@ def upgrade(tool):
 
 
 def rename_bika_setup():
+    """
+    Rename Bika Setup to just Setup to avoid naming confusions for new users
+    """
     logger.info("Renaming Bika Setup...")
     bika_setup = api.get_bika_setup()
     bika_setup.setTitle("Setup")
     bika_setup.reindexObject()
+    setup = api.get_portal().portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
+
