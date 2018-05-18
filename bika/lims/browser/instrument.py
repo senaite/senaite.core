@@ -703,21 +703,101 @@ class InstrumentAutoImportLogsView(AutoImportLogsView):
         self.pagesize = 25
 
 
-class InstrumentMultifileView(MultifileView):
-    implements(IFolderContentsView, IViewView)
+class InstrumentMultifileView(BikaListingView):
+    """Listing view for instrument multi files
+    """
 
     def __init__(self, context, request):
         super(InstrumentMultifileView, self).__init__(context, request)
-        self.show_workflow_action_buttons = False
-        self.title = self.context.translate(_("Instrument Files"))
-        self.description = "Different interesting documents and files to be attached to the instrument"
 
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 25
+        self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            "portal_type": "Multifile",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
+
+        self.form_id = "instrumentfiles"
+        self.title = self.context.translate(_("Instrument Files"))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcertification_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=Multifile",
+                "icon": "++resource++bika.lims.images/add.png"
+            }
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        self.columns = {
+            "DocumentID": {"title": _("Document ID"),
+                           "index": "sortable_title"},
+            "DocumentVersion": {"title": _("Document Version"),
+                                "index": "sortable_title"},
+            "DocumentLocation": {"title": _("Document Location"),
+                                 "index": "sortable_title"},
+            "DocumentType": {"title": _("Document Type"),
+                             "index": "sortable_title"},
+            "FileDownload": {"title": _("File")}
+        }
+
+        self.review_states = [
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "DocumentID",
+                    "DocumentVersion",
+                    "DocumentLocation",
+                    "DocumentType",
+                    "FileDownload"
+                ]
+            },
+        ]
+
+    def get_file(self, obj):
+        """Return the file of the given object
+        """
+        try:
+            return obj.getFile()
+        except POSKeyError:  # POSKeyError: "No blob file"
+            # XXX When does this happen?
+            return None
+
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item with additional data
+        """
+        url = item.get("url")
+        title = item.get("DocumentID")
+
+        item["replace"]["DocumentID"] = get_link(url, title)
+
+        item["FileDownload"] = ""
+        item["replace"]["FileDownload"] = ""
+        file = self.get_file(obj)
+        if file and file.get_size() > 0:
+            filename = file.filename
+            download_url = "{}/at_download/File".format(url)
+            anchor = get_link(download_url, filename)
+            item["FileDownload"] = filename
+            item["replace"]["FileDownload"] = anchor
+
+        item["DocumentVersion"] = obj.getDocumentVersion()
+        item["DocumentLocation"] = obj.getDocumentLocation()
+        item["DocumentType"] = obj.getDocumentType()
+
+        return item
 
 
 class ajaxGetInstrumentMethods(BrowserView):
