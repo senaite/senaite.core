@@ -8,10 +8,8 @@
 import json
 
 import plone
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _, api
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -21,14 +19,16 @@ from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
-from bika.lims.utils import t, get_link
+from bika.lims.utils import get_image, get_link, t
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets import ViewletBase
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
-from zope.interface import implements
 from ZODB.POSException import POSKeyError
-from bika.lims.utils import get_image
+from zope.interface import implements
 
 
 class InstrumentMaintenanceView(BikaListingView):
