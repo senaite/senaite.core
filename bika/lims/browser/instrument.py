@@ -27,6 +27,8 @@ from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets import ViewletBase
 from zExceptions import Forbidden
 from zope.interface import implements
+from ZODB.POSException import POSKeyError
+from bika.lims.utils import get_image
 
 
 class InstrumentMaintenanceView(BikaListingView):
@@ -158,7 +160,7 @@ class InstrumentCalibrationsView(BikaListingView):
             "portal_type": "InstrumentCalibration",
             "path": {
                 "query": api.get_path(context),
-                "depth": 0
+                "depth": 1  # searching just inside the specified folder
             }
         }
 
@@ -503,101 +505,126 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
 
 class InstrumentCertificationsView(BikaListingView):
-    """ View for the table of Certifications. Includes Internal and
-        External Calibrations. Also a bar to filter the results
+    """Listing view for instrument certifications
     """
 
     def __init__(self, context, request, **kwargs):
         BikaListingView.__init__(self, context, request, **kwargs)
-        self.form_id = "instrumentcertifications"
+        self.catalog = "portal_catalog"
+        self.contentFilter = {
+            "portal_type": "InstrumentCertification",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
+        self.form_id = "instrumentcertifications"
         self.title = self.context.translate(_("Calibration Certificates"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentCertification',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcertification_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentCertification",
+                "icon": "++resource++bika.lims.images/add.png"
+            }
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        # latest valid certificate UIDs
+        self.valid_certificate_uids = map(
+            api.get_uid, self.context.getValidCertifications())
+        self.latest_certificate_uid = api.get_uid(
+            self.context.getLatestValidCertification())
 
         self.columns = {
-            'Title': {'title': _('Cert. Num'), 'index': 'sortable_title'},
-            'getAgency': {'title': _('Agency'), 'sortable': False},
-            'getDate': {'title': _('Date'), 'sortable': False},
-            'getValidFrom': {'title': _('Valid from'), 'sortable': False},
-            'getValidTo': {'title': _('Valid to'), 'sortable': False},
-            'getDocument': {'title': _('Document'), 'sortable': False},
+            "Title": {"title": _("Cert. Num"), "index": "sortable_title"},
+            "getAgency": {"title": _("Agency"), "sortable": False},
+            "getDate": {"title": _("Date"), "sortable": False},
+            "getValidFrom": {"title": _("Valid from"), "sortable": False},
+            "getValidTo": {"title": _("Valid to"), "sortable": False},
+            "getDocument": {"title": _("Document"), "sortable": False},
         }
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getAgency',
-                    'getDate',
-                    'getValidFrom',
-                    'getValidTo',
-                    'getDocument',
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getAgency",
+                    "getDate",
+                    "getValidFrom",
+                    "getValidTo",
+                    "getDocument",
                 ],
-                'transitions': []
+                "transitions": []
             }
         ]
-        self.allow_edit = False
-        self.show_select_column = False
-        self.show_workflow_action_buttons = True
-        uids = [c.UID() for c in self.context.getCertifications()]
-        self.catalog = 'portal_catalog'
-        self.contentFilter = {'UID': uids, 'sort_on': 'sortable_title'}
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        valid = [c.UID() for c in self.context.getValidCertifications()]
-        latest = self.context.getLatestValidCertification()
-        latest = latest.UID() if latest else ''
+    def get_document(self, certificate):
+        """Return the document of the given document
+        """
+        try:
+            return certificate.getDocument()
+        except POSKeyError:  # POSKeyError: "No blob file"
+            # XXX When does this happen?
+            return None
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            item['getDate'] = self.ulocalized_time(obj.getDate(), long_format=0)
-            item['getValidFrom'] = self.ulocalized_time(obj.getValidFrom(), long_format=0)
-            item['getValidTo'] = self.ulocalized_time(obj.getValidTo(), long_format=0)
-            item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                (item['url'], item['Title'])
-            if obj.getInternal() is True:
-                item['replace']['getAgency'] = ""
-                item['state_class'] = '%s %s' % (item['state_class'], 'internalcertificate')
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=0)
 
-            item['getDocument'] = ""
-            item['replace']['getDocument'] = ""
-            try:
-                doc = obj.getDocument()
-                if doc and doc.get_size() > 0:
-                    anchor = "<a href='%s/at_download/Document'>%s</a>" % \
-                        (obj.absolute_url(), doc.filename)
-                    item['getDocument'] = doc.filename
-                    item['replace']['getDocument'] = anchor
-            except:
-                # POSKeyError: 'No blob file'
-                # Show the record, but not the link
-                item['getDocument'] = _('Not available')
-                item['replace']['getDocument'] = _('Not available')
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item with additional data
+        """
+        uid = api.get_uid(obj)
+        url = item.get("url")
+        title = item.get("Title")
 
-            uid = obj.UID()
-            if uid in valid:
-                # Valid calibration.
-                item['state_class'] = '%s %s' % (item['state_class'], 'active')
-            elif uid == latest:
-                # Latest valid certificate
-                img = "<img title='%s' src='%s/++resource++bika.lims.images/exclamation.png'/>&nbsp;" \
-                    % (t(_('Out of date')), self.portal_url)
-                item['replace']['getValidTo'] = '%s %s' % (item['getValidTo'], img)
-                item['state_class'] = '%s %s' % (item['state_class'], 'inactive outofdate')
-            else:
-                # Old and further calibrations
-                item['state_class'] = '%s %s' % (item['state_class'], 'inactive')
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["getDate"] = self.localize_date(obj.getDate())
+        item["getValidFrom"] = self.localize_date(obj.getValidFrom())
+        item["getValidTo"] = self.localize_date(obj.getValidTo())
 
-        return items
+        if obj.getInternal() is True:
+            item["replace"]["getAgency"] = ""
+            item["state_class"] = "%s %s" % \
+                (item["state_class"], "internalcertificate")
+
+        item["getDocument"] = ""
+        item["replace"]["getDocument"] = ""
+        doc = self.get_document(obj)
+        if doc and doc.get_size() > 0:
+            filename = doc.filename
+            download_url = "{}/at_download/Document".format(url)
+            anchor = get_link(download_url, filename)
+            item["getDocument"] = filename
+            item["replace"]["getDocument"] = anchor
+
+        # Latest valid certificate
+        if uid == self.latest_certificate_uid:
+            item["state_class"] = "state-published"
+        # Valid certificate
+        elif uid in self.valid_certificate_uids:
+            item["state_class"] = "state-valid state-published"
+        # Invalid certificates
+        else:
+            img = get_image("exclamation.png", title=t(_("Out of date")))
+            item["replace"]["getValidTo"] = "%s %s" % (item["getValidTo"], img)
+            item["state_class"] = "state-invalid"
+
+        return item
 
 
 class InstrumentAutoImportLogsView(AutoImportLogsView):
