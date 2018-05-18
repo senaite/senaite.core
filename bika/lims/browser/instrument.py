@@ -151,7 +151,6 @@ class InstrumentMaintenanceView(BikaListingView):
 class InstrumentCalibrationsView(BikaListingView):
     """Listing view for instrument calibrations
     """
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(InstrumentCalibrationsView, self).__init__(context, request)
@@ -161,26 +160,35 @@ class InstrumentCalibrationsView(BikaListingView):
             "path": {
                 "query": api.get_path(context),
                 "depth": 1  # searching just inside the specified folder
-            }
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
+        self.form_id = "instrumentcalibrations"
+        self.title = self.context.translate(_("Instrument Calibrations"))
         self.icon = "{}/{}".format(
             self.portal_url,
             "++resource++bika.lims.images/instrumentcalibration_big.png"
         )
-        self.title = self.context.translate(_("Instrument Calibrations"))
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=InstrumentCalibration",
                 "icon": "++resource++bika.lims.images/add.png"}
         }
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
-        self.form_id = "instrumentcalibrations"
-        self.description = ""
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        # instrument calibrations
+        calibrations = self.context.getCalibrations()
+        # current running calibrations
+        self.active_calibrations = filter(
+            lambda c: c.isCalibrationInProgress(), calibrations)
+        self.latest_calibration = self.context.getLatestValidCalibration()
+
         self.columns = {
             "Title": {"title": _("Task"),
                       "index": "sortable_title"},
@@ -202,15 +210,37 @@ class InstrumentCalibrationsView(BikaListingView):
             }
         ]
 
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
+
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
         url = item.get("url")
         title = item.get("Title")
-        item["getDownFrom"] = obj.getDownFrom()
-        item["getDownTo"] = obj.getDownTo()
-        item["getCalibrator"] = obj.getCalibrator()
-        item["replace"]["Title"] = "<a href='%s'>%s</a>" % (url, title)
+        calibrator = obj.getCalibrator()
+
+        item["getDownFrom"] = self.localize_date(obj.getDownFrom())
+        item["getDownTo"] = self.localize_date(obj.getDownTo())
+        item["getCalibrator"] = ""
+        if calibrator:
+            props = api.get_user_properties(calibrator)
+            name = props.get("fullname", calibrator)
+            item["getCalibrator"] = name
+        item["replace"]["Title"] = get_link(url, value=title)
+
+        # calibration with the most remaining days
+        if obj == self.latest_calibration:
+            item["state_class"] = "state-published"
+        # running calibrations
+        elif obj in self.active_calibrations:
+            item["state_class"] = "state-published state-pending"
+        # inactive calibrations
+        else:
+            item["state_class"] = "state-inactive"
+
         return item
 
 
