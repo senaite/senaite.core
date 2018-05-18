@@ -14,7 +14,6 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
-from bika.lims.browser.multifile import MultifileView
 from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.instrumentmaintenancetask import \
