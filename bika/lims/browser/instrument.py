@@ -162,12 +162,16 @@ class InstrumentCalibrationsView(BikaListingView):
             }
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcalibration_big.png"
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcalibration_big.png"
+        )
         self.title = self.context.translate(_("Instrument Calibrations"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentCalibration',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentCalibration",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
@@ -175,25 +179,23 @@ class InstrumentCalibrationsView(BikaListingView):
         self.pagesize = 25
         self.form_id = "instrumentcalibrations"
         self.description = ""
-
         self.columns = {
-            'Title': {'title': _('Task'),
-                      'index': 'sortable_title'},
-            'getDownFrom': {'title': _('Down from')},
-            'getDownTo': {'title': _('Down to')},
-            'getCalibrator': {'title': _('Calibrator')},
+            "Title": {"title": _("Task"),
+                      "index": "sortable_title"},
+            "getDownFrom": {"title": _("Down from")},
+            "getDownTo": {"title": _("Down to")},
+            "getCalibrator": {"title": _("Calibrator")},
         }
-
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getCalibrator',
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getCalibrator",
                 ]
             }
         ]
