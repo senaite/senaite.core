@@ -3,26 +3,21 @@
 # Translators:
 # Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2012-2013
 # Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
-# Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
 # Chema Polo <chemapolo@gmail.com>, 2017
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2012-2013
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2014,2016
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2012,2013,2014,2016,2017,2018
 # lemoene Smit <admin@bikalabs.com>, 2012
 # Leonardo Rojas <leonardorojass@gmail.com>, 2014,2017
-# Leonardo Rojas <leonardorojass@gmail.com>, 2014
-# Leonardo Rojas <leonardorojass@gmail.com>, 2014
 # Luis Lorenzo Gomez Blanco <luislorenzogomezblanco@yahoo.es>, 2012
 # Michael Quintana <michaelquintana@gmail.com>, 2015
 # orestesmanolo <orestesmanolo@gmail.com>, 2012
-# orestesmanolo <orestesmanolo@gmail.com>, 2012
-# orestesmanolo <orestesmanolo@gmail.com>, 2012
 # SSchott <sschottv@gmail.com>, 2013-2014
+# Pau Soliva <psoliva@naralabs.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2018-02-09 12:39+0000\n"
 "PO-Revision-Date: 2018-05-10 17:05+0200\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
+"Last-Translator: Pau Soliva <psoliva@naralabs.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
