@@ -245,71 +245,94 @@ class InstrumentCalibrationsView(BikaListingView):
 
 
 class InstrumentValidationsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+    """Listing view for instrument validations
+    """
 
     def __init__(self, context, request):
         super(InstrumentValidationsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentValidation',
+            "portal_type": "InstrumentValidation",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentvalidation_big.png"
-        self.title = self.context.translate(_("Instrument Validations"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentValidation',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
         self.form_id = "instrumentvalidations"
-        self.description = ""
+        self.title = self.context.translate(_("Instrument Validations"))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentvalidation_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentValidation",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        # instrument validations
+        validations = self.context.getValidations()
+        # current running validations
+        self.active_validations = filter(
+            lambda v: v.isValidationInProgress(), validations)
+        self.latest_validation = self.context.getLatestValidValidation()
 
         self.columns = {
-            'Title': {'title': _('Task'),
-                      'index': 'sortable_title'},
-            'getDownFrom': {'title': _('Down from')},
-            'getDownTo': {'title': _('Down to')},
-            'getValidator': {'title': _('Validator')},
+            "Title": {"title": _("Task"),
+                      "index": "sortable_title"},
+            "getDownFrom": {"title": _("Down from")},
+            "getDownTo": {"title": _("Down to")},
+            "getValidator": {"title": _("Validator")},
         }
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getValidator',
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getValidator",
                 ]
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getValidations()
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-        for val in self.context.getValidations():
-            toshow.append(val.UID())
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['getDownFrom'] = obj.getDownFrom()
-                item['getDownTo'] = obj.getDownTo()
-                item['getValidator'] = obj.getValidator()
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], item['Title'])
-                outitems.append(item)
-        return outitems
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
+
+        item["getDownFrom"] = self.localize_date(obj.getDownFrom())
+        item["getDownTo"] = self.localize_date(obj.getDownTo())
+        item["getValidator"] = obj.getValidator()
+        item["replace"]["Title"] = get_link(url, value=title)
+
+        # validation with the most remaining days
+        if obj == self.latest_validation:
+            item["state_class"] = "state-published"
+        # running validations
+        elif obj in self.active_validations:
+            item["state_class"] = "state-active"
+        # inactive validations
+        else:
+            item["state_class"] = "state-inactive"
+
+        return item
 
 
 class InstrumentScheduleView(BikaListingView):
