@@ -31,28 +31,39 @@ from zope.interface import implements
 
 
 class InstrumentMaintenanceView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+    """Listing view for instrument maintenance tasks
+    """
 
     def __init__(self, context, request):
         super(InstrumentMaintenanceView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentMaintenanceTask',
+            "portal_type": "InstrumentMaintenanceTask",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentmaintenance_big.png"
-        self.title = self.context.translate(_("Instrument Maintenance"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentMaintenanceTask',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 40
         self.form_id = "instrumentmaintenance"
-        self.description = ""
+        self.title = self.context.translate(_("Instrument Maintenance"))
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentmaintenance_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentMaintenanceTask",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
 
         self.columns = {
             'getCurrentState': {'title': ''},
@@ -66,85 +77,84 @@ class InstrumentMaintenanceView(BikaListingView):
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('Open'),
-                'contentFilter': {'cancellation_state': 'active'},
-                'columns': [
-                    'getCurrentState',
-                    'Title',
-                    'getType',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getMaintainer',
+                "id": "default",
+                "title": _("Open"),
+                "contentFilter": {"cancellation_state": "active"},
+                "columns": [
+                    "getCurrentState",
+                    "Title",
+                    "getType",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getMaintainer",
                 ]
             }, {
-                'id': 'cancelled',
-                'title': _('Cancelled'),
-                'contentFilter': {'cancellation_state': 'cancelled'},
-                'columns': [
-                    'getCurrentState',
-                    'Title',
-                    'getType',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getMaintainer',
+                "id": "cancelled",
+                "title": _("Cancelled"),
+                "contentFilter": {"cancellation_state": "cancelled"},
+                "columns": [
+                    "getCurrentState",
+                    "Title",
+                    "getType",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getMaintainer",
                 ]
             }, {
-                'id': 'all',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'getCurrentState',
-                    'Title',
-                    'getType',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getMaintainer'
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "getCurrentState",
+                    "Title",
+                    "getType",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getMaintainer"
                 ]
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getMaintenanceTasks()
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-        for man in self.context.getMaintenanceTasks():
-            toshow.append(man.UID())
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
-                item['getDownFrom'] = obj.getDownFrom() and self.ulocalized_time(obj.getDownFrom(), long_format=1) or ''
-                item['getDownTo'] = obj.getDownTo() and self.ulocalized_time(obj.getDownTo(), long_format=1) or ''
-                item['getMaintainer'] = safe_unicode(_(obj.getMaintainer())).encode('utf-8')
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], safe_unicode(item['Title']).encode('utf-8'))
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["getType"] = _(obj.getType()[0])
+        item["getDownFrom"] = self.localize_date(obj.getDownFrom())
+        item["getDownTo"] = self.localize_date(obj.getDownTo())
+        item["getMaintainer"] = obj.getMaintainer()
 
-                status = obj.getCurrentState()
-                statustext = obj.getCurrentStateI18n()
-                statusimg = ""
-                if status == mstatus.CLOSED:
-                    statusimg = "instrumentmaintenance_closed.png"
-                elif status == mstatus.CANCELLED:
-                    statusimg = "instrumentmaintenance_cancelled.png"
-                elif status == mstatus.INQUEUE:
-                    statusimg = "instrumentmaintenance_inqueue.png"
-                elif status == mstatus.OVERDUE:
-                    statusimg = "instrumentmaintenance_overdue.png"
-                elif status == mstatus.PENDING:
-                    statusimg = "instrumentmaintenance_pending.png"
+        status = obj.getCurrentState()
+        statustext = obj.getCurrentStateI18n()
+        statusimg = ""
 
-                item['replace']['getCurrentState'] = \
-                    "<img title='%s' src='%s/++resource++bika.lims.images/%s'/>" % \
-                    (statustext, self.portal_url, statusimg)
-                outitems.append(item)
-        return outitems
+        if status == mstatus.CLOSED:
+            statusimg = "instrumentmaintenance_closed.png"
+            item["state_class"] = "state-inactive"
+        elif status == mstatus.CANCELLED:
+            statusimg = "instrumentmaintenance_cancelled.png"
+            item["state_class"] = "state-cancelled"
+        elif status == mstatus.INQUEUE:
+            statusimg = "instrumentmaintenance_inqueue.png"
+            item["state_class"] = "state-open"
+        elif status == mstatus.OVERDUE:
+            statusimg = "instrumentmaintenance_overdue.png"
+            item["state_class"] = "state-open"
+        elif status == mstatus.PENDING:
+            statusimg = "instrumentmaintenance_pending.png"
+            item["state_class"] = "state-pending"
+
+        item["replace"]["getCurrentState"] = get_image(
+            statusimg, title=statustext)
+        return item
 
 
 class InstrumentCalibrationsView(BikaListingView):
