@@ -19,7 +19,6 @@ from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.utils import get_image, get_link, t
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets import ViewletBase
 from Products.CMFCore.utils import getToolByName
@@ -345,102 +344,110 @@ class InstrumentValidationsView(BikaListingView):
 
 
 class InstrumentScheduleView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+    """Listing view for instrument scheduled tasks
+    """
 
     def __init__(self, context, request):
         super(InstrumentScheduleView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentScheduledTask',
-            'getInstrumentUID()': context.UID(),
+            "portal_type": "InstrumentScheduledTask",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentschedule_big.png"
-        self.title = self.context.translate(_("Instrument Scheduled Tasks"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentScheduledTask',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 25
-
         self.form_id = "instrumentschedule"
-        self.description = ""
+        self.title = self.context.translate(_("Instrument Scheduled Tasks"))
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentschedule_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentScheduledTask",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
 
         self.columns = {
-            'Title': {'title': _('Scheduled task'),
-                      'index': 'sortable_title'},
-            'getType': {'title': _('Task type', 'Type')},
-            'getCriteria': {'title': _('Criteria')},
-            'creator': {'title': _('Created by')},
-            'created': {'title': _('Created')},
+            "Title": {"title": _("Scheduled task"),
+                      "index": "sortable_title"},
+            "getType": {"title": _("Task type", "Type")},
+            "getCriteria": {"title": _("Criteria")},
+            "creator": {"title": _("Created by")},
+            "created": {"title": _("Created")},
         }
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('Active'),
-                'contentFilter': {'inactive_state': 'active'},
-                'transitions': [{'id': 'deactivate'}, ],
-                'columns': [
-                    'Title',
-                    'getType',
-                    'getCriteria',
-                    'creator',
-                    'created',
+                "id": "default",
+                "title": _("Active"),
+                "contentFilter": {"inactive_state": "active"},
+                "transitions": [{"id": "deactivate"}, ],
+                "columns": [
+                    "Title",
+                    "getType",
+                    "getCriteria",
+                    "creator",
+                    "created",
                 ]
             }, {
-                'id': 'inactive',
-                'title': _('Dormant'),
-                'contentFilter': {'inactive_state': 'inactive'},
-                'transitions': [{'id': 'activate'}, ],
-                'columns': [
-                    'Title',
-                    'getType',
-                    'getCriteria',
-                    'creator',
-                    'created'
+                "id": "inactive",
+                "title": _("Dormant"),
+                "contentFilter": {"inactive_state": "inactive"},
+                "transitions": [{"id": "activate"}, ],
+                "columns": [
+                    "Title",
+                    "getType",
+                    "getCriteria",
+                    "creator",
+                    "created"
                 ]
             }, {
-                'id': 'all',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getType',
-                    'getCriteria',
-                    'creator',
-                    'created',
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getType",
+                    "getCriteria",
+                    "creator",
+                    "created",
                 ]
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getSchedule()
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-        for sch in self.context.getSchedule():
-            toshow.append(sch.UID())
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
+        creator = obj.Creator()
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['created'] = self.ulocalized_time(obj.created())
-                item['creator'] = obj.Creator()
-                item['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], item['Title'])
-                outitems.append(item)
-        return outitems
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["created"] = self.localize_date(obj.created())
+        item["getType"] = _(obj.getType()[0])
+        item["creator"] = ""
+        if creator:
+            props = api.get_user_properties(creator)
+            name = props.get("fullname", creator)
+            item["creator"] = name
+
+        return item
 
 
 class InstrumentReferenceAnalysesViewView(BrowserView):
