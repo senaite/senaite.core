@@ -236,7 +236,7 @@ class InstrumentCalibrationsView(BikaListingView):
             item["state_class"] = "state-published"
         # running calibrations
         elif obj in self.active_calibrations:
-            item["state_class"] = "state-published state-pending"
+            item["state_class"] = "state-active"
         # inactive calibrations
         else:
             item["state_class"] = "state-inactive"
