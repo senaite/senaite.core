@@ -147,13 +147,19 @@ class InstrumentMaintenanceView(BikaListingView):
 
 
 class InstrumentCalibrationsView(BikaListingView):
+    """Listing view for instrument calibrations
+    """
     implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(InstrumentCalibrationsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentCalibration',
+            "portal_type": "InstrumentCalibration",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 0
+            }
         }
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcalibration_big.png"
@@ -192,30 +198,16 @@ class InstrumentCalibrationsView(BikaListingView):
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getCalibrations()
-
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-
-        for cal in self.context.getCalibrations():
-            toshow.append(cal.UID())
-
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['getDownFrom'] = obj.getDownFrom()
-                item['getDownTo'] = obj.getDownTo()
-                item['getCalibrator'] = obj.getCalibrator()
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], item['Title'])
-                outitems.append(item)
-
-        return outitems
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
+        item["getDownFrom"] = obj.getDownFrom()
+        item["getDownTo"] = obj.getDownTo()
+        item["getCalibrator"] = obj.getCalibrator()
+        item["replace"]["Title"] = "<a href='%s'>%s</a>" % (url, title)
+        return item
 
 
 class InstrumentValidationsView(BikaListingView):
