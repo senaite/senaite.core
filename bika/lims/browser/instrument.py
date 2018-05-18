@@ -570,10 +570,8 @@ class InstrumentCertificationsView(BikaListingView):
         self.pagesize = 30
 
         # latest valid certificate UIDs
-        self.valid_certificate_uids = map(
-            api.get_uid, self.context.getValidCertifications())
-        self.latest_certificate_uid = api.get_uid(
-            self.context.getLatestValidCertification())
+        self.valid_certificates = self.context.getValidCertifications()
+        self.latest_certificate = self.context.getLatestValidCertification()
 
         self.columns = {
             "Title": {"title": _("Cert. Num"), "index": "sortable_title"},
@@ -618,7 +616,6 @@ class InstrumentCertificationsView(BikaListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item with additional data
         """
-        uid = api.get_uid(obj)
         url = item.get("url")
         title = item.get("Title")
 
@@ -643,10 +640,10 @@ class InstrumentCertificationsView(BikaListingView):
             item["replace"]["getDocument"] = anchor
 
         # Latest valid certificate
-        if uid == self.latest_certificate_uid:
+        if obj == self.latest_certificate:
             item["state_class"] = "state-published"
         # Valid certificate
-        elif uid in self.valid_certificate_uids:
+        elif obj in self.valid_certificates:
             item["state_class"] = "state-valid state-published"
         # Invalid certificates
         else:
