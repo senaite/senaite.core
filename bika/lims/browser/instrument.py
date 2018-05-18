@@ -696,29 +696,35 @@ class InstrumentCertificationsView(BikaListingView):
 
 
 class InstrumentAutoImportLogsView(AutoImportLogsView):
-    """ Logs of Auto-Imports of this instrument.
+    """Logs of Auto-Imports of this instrument.
     """
 
     def __init__(self, context, request, **kwargs):
         AutoImportLogsView.__init__(self, context, request, **kwargs)
-        del self.columns['Instrument']
-        self.review_states[0]['columns'].remove('Instrument')
-        self.contentFilter = {'portal_type': 'AutoImportLog',
-                              'getInstrumentUID': self.context.UID(),
-                              'sort_on': 'Created',
-                              'sort_order': 'reverse'}
+        del self.columns["Instrument"]
+        self.review_states[0]["columns"].remove("Instrument")
+        self.contentFilter = {
+            "portal_type": "AutoImportLog",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
         self.title = self.context.translate(
             _("Auto Import Logs of %s" % self.context.Title()))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcertification_big.png"
+        )
         self.context_actions = {}
 
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 25
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
 
 
 class InstrumentMultifileView(BikaListingView):
