@@ -9,6 +9,8 @@ Changelog
 
 **Changed**
 
+- #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
+- #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
 
 **Removed**
 
@@ -29,8 +31,6 @@ Changelog
 
 **Changed**
 
-- #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
-- #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
 - #815 Change description and title of the invalidation notification option
 
 **Removed**
