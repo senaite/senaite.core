@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #824 Instrument Listing Views Fixes and Refactoring
+
 
 **Security**
 
