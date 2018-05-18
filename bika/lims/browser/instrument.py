@@ -22,7 +22,6 @@ from bika.lims.utils import get_image, get_link, t
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets import ViewletBase
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
 from ZODB.POSException import POSKeyError
@@ -451,34 +450,39 @@ class InstrumentScheduleView(BikaListingView):
 
 
 class InstrumentReferenceAnalysesViewView(BrowserView):
-    """ View of Reference Analyses linked to the Instrument.
-        Only shows the Reference Analyses (Control and Blanks), the rest
-        of regular and duplicate analyses linked to this instrument are
-        not displayed.
-        The Reference Analyses from an Instrument can be from Worksheets
-        (QC analysis performed regularly for any Analysis Request) or
-        attached directly to the instrument, without being linked to
-        any Worksheet). In this case, the Reference Analyses are created
-        automatically by the instrument import tool.
+    """View of Reference Analyses linked to the Instrument.
+
+    Only shows the Reference Analyses (Control and Blanks), the rest of regular
+    and duplicate analyses linked to this instrument are not displayed.
+
+    The Reference Analyses from an Instrument can be from Worksheets (QC
+    analysis performed regularly for any Analysis Request) or attached directly
+    to the instrument, without being linked to any Worksheet).
+
+    In this case, the Reference Analyses are created automatically by the
+    instrument import tool.
     """
 
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/instrument_referenceanalyses.pt")
+    template = ViewPageTemplateFile(
+        "templates/instrument_referenceanalyses.pt")
 
     def __init__(self, context, request):
-        super(InstrumentReferenceAnalysesViewView, self).__init__(context, request)
+        super(InstrumentReferenceAnalysesViewView, self).__init__(
+            context, request)
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
         self.title = self.context.translate(_("Internal Calibration Tests"))
-
-        self.description = ""
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/referencesample_big.png"
+        )
         self._analysesview = None
 
     def __call__(self):
         return self.template()
 
     def get_analyses_table(self):
-        """ Returns the table of Reference Analyses
+        """Returns the table of Reference Analyses
         """
         return self.get_analyses_view().contents_table()
 
@@ -491,7 +495,7 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
             self._analysesview.show_select_column = False
             self._analysesview.show_workflow_action_buttons = False
             self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
-            self._analysesview.review_states[0]['transitions'] = [{}]
+            self._analysesview.review_states[0]["transitions"] = [{}]
         return self._analysesview
 
     def get_analyses_json(self):
@@ -499,51 +503,49 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
 
 
 class InstrumentReferenceAnalysesView(AnalysesView):
-    """ View for the table of Reference Analyses linked to the Instrument.
-        Only shows the Reference Analyses (Control and Blanks), the rest
-        of regular and duplicate analyses linked to this instrument are
-        not displayed.
+    """View for the table of Reference Analyses linked to the Instrument.
+
+    Only shows the Reference Analyses (Control and Blanks), the rest of regular
+    and duplicate analyses linked to this instrument are not displayed.
     """
 
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request, **kwargs)
         self.catalog = CATALOG_ANALYSIS_LISTING
+
         self.contentFilter = {
             "portal_type": "ReferenceAnalysis",
             "getInstrumentUID": api.get_uid(self.context),
             "sort_on": "getResultCaptureDate",
             "sort_order": "reverse"
         }
-        self.columns['getReferenceAnalysesGroupID'] = {
-            'title': _('QC Sample ID'),
-            'sortable': False
+        self.columns["getReferenceAnalysesGroupID"] = {
+            "title": _("QC Sample ID"),
+            "sortable": False
         }
-        self.columns['Partition'] = {
-            'title': _('Reference Sample'),
-            'sortable': False
+        self.columns["Partition"] = {
+            "title": _("Reference Sample"),
+            "sortable": False
         }
-        self.columns['Retractions'] = {
-            'title': '',
-            'sortable': False
+        self.columns["Retractions"] = {
+            "title": "",
+            "sortable": False
         }
-        self.review_states[0]['columns'] = [
-            'Service',
-            'getReferenceAnalysesGroupID',
-            'Partition',
-            'Result',
-            'Uncertainty',
-            'CaptureDate',
-            'Retractions'
+        self.review_states[0]["columns"] = [
+            "Service",
+            "getReferenceAnalysesGroupID",
+            "Partition",
+            "Result",
+            "Uncertainty",
+            "CaptureDate",
+            "Retractions"
         ]
         self.chart = EvolutionChart()
 
     def isItemAllowed(self, obj):
-        """
-        :obj: it is a brain
-        """
         allowed = super(InstrumentReferenceAnalysesView,
                         self).isItemAllowed(obj)
-        return allowed or obj.getResult != ''
+        return allowed or obj.getResult != ""
 
     def folderitem(self, obj, item, index):
         item = super(InstrumentReferenceAnalysesView,
@@ -552,11 +554,11 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
         # Partition is used to group/toggle QC Analyses
         sample = analysis.getSample()
-        item['replace']['Partition'] = get_link(api.get_url(sample),
+        item["replace"]["Partition"] = get_link(api.get_url(sample),
                                                 api.get_id(sample))
 
         # Get retractions field
-        item['Retractions'] = ''
+        item["Retractions"] = ""
         report = analysis.getRetractedAnalysesPdfReport()
         if report:
             url = api.get_url(analysis)
@@ -564,8 +566,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             attrs = {"class": "pdf", "target": "_blank"}
             title = _("Retractions")
             link = get_link(href, title, **attrs)
-            item['Retractions'] = title
-            item['replace']['Retractions'] = link
+            item["Retractions"] = title
+            item["replace"]["Retractions"] = link
 
         # Add the analysis to the QC Chart
         self.chart.add_analysis(analysis)
