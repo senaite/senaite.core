@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #828 Traceback when removing a retracted analysis through Manage Analyses view
 
 **Security**
 

@@ -13,7 +13,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis, IAnalysisService, IARAnalysesField
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import getReviewHistoryActionsList
 from Products.Archetypes.public import Field, ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.utils import shasattr
@@ -182,8 +182,9 @@ class ARAnalysesField(ObjectField):
                 continue
 
             # Skip Analyses in frozen states
-            if self._is_frozen(analysis):
-                logger.warn("Inactive/verified Analyses can not be removed.")
+            if self._is_frozen(analysis, additional_frozen_actions=['retract']):
+                logger.warn("Inactive/verified/retracted Analyses can not be "
+                            "removed.")
                 continue
 
             # If it is assigned to a worksheet, unassign it before deletion.
@@ -193,7 +194,14 @@ class ARAnalysesField(ObjectField):
                 ws.removeAnalysis(analysis)
 
             # Unset the partition reference
-            analysis.edit(SamplePartition=None)
+            part = analysis.getSamplePartition()
+            an_uid = api.get_uid(analysis)
+            part_ans = part.getAnalyses() or []
+            part_ans = filter(lambda an: api.get_uid(an) != an_uid, part_ans)
+            # Unset the Partition-to-Analysis reference
+            part.setAnalyses(part_ans)
+            # Unset the Analysis-to-Partition reference
+            analysis.setSamplePartition(None)
             delete_ids.append(analysis.getId())
 
         if delete_ids:
@@ -243,16 +251,23 @@ class ARAnalysesField(ObjectField):
         logger.warn(msg)
         return None
 
-    def _is_frozen(self, brain_or_object):
-        """Check if the passed in object is frozen
-
-        :param obj: Analysis or AR Brain/Object
+    def _is_frozen(self, brain_or_object, additional_frozen_actions=None):
+        """Check if the passed in object is frozen: the objectt is cancelled,
+        inactive or has been verified at some point
+        :param brain_or_object: Analysis or AR Brain/Object
+        :param additional_frozen_actions: additional actions to check against
         :returns: True if the object is frozen
         """
-        obj = api.get_object(brain_or_object)
-        active = api.is_active(obj)
-        verified = wasTransitionPerformed(obj, 'verify')
-        return not active or verified
+        if not api.is_active(brain_or_object):
+            return True
+        actions = getReviewHistoryActionsList(api.get_object(brain_or_object))
+        if 'verify' in actions:
+            return True
+        additional = additional_frozen_actions or list()
+        for action in additional:
+            if action in actions:
+                return True
+        return False
 
     def _get_assigned_worksheets(self, analysis):
         """Return the assigned worksheets of this Analysis
