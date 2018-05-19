@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #825 Error when exporting Worksheets list with `senaite.exporter`
 
 **Security**
 
