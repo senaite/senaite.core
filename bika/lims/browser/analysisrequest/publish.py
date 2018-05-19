@@ -26,6 +26,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.api.analysis import is_out_of_range
@@ -44,6 +45,7 @@ from bika.lims.workflow import wasTransitionPerformed
 from plone.api.portal import get_registry_record
 from plone.api.portal import set_registry_record
 from plone.app.blob.interfaces import IBlobField
+from plone.memoize import view as viewcache
 from plone.registry import Record
 from plone.registry import field
 from plone.registry.interfaces import IRegistry
@@ -1436,7 +1438,7 @@ class AnalysisRequestDigester:
     def _managers_data(self, ar):
         managers = {'ids': [], 'dict': {}}
         departments = {}
-        ar_mngrs = ar.getResponsible()
+        ar_mngrs = self._verifiers_data(ar.UID())
         for id in ar_mngrs['ids']:
             new_depts = ar_mngrs['dict'][id]['departments'].split(',')
             if id in managers['ids']:
@@ -1458,6 +1460,53 @@ class AnalysisRequestDigester:
             managers['dict'][mngr]['departments'] = final_depts
 
         return managers
+
+    @viewcache.memoize
+    def _verifiers_data(self, ar_uid):
+        verifiers = dict()
+        for brain in self.get_analyses(ar_uid):
+            an_verifiers = brain.getVerificators or ''
+            an_verifiers = an_verifiers.split(',')
+            for user_id in an_verifiers:
+                user_data = self._user_contact_data(user_id)
+                if not user_data:
+                    continue
+                verifiers[user_id]=user_data
+        return {'ids': verifiers.keys(),
+                'dict': verifiers}
+
+    @viewcache.memoize
+    def get_analyses(self, ar_uid):
+        query = dict(getRequestUID=ar_uid,
+                     portal_type='Analysis',
+                     cancellation_state='active',
+                     review_state=['verified', 'published'])
+        return api.search(query, CATALOG_ANALYSIS_LISTING)
+
+    @viewcache.memoize
+    def _user_contact_data(self, user_id):
+        user = self.get_user_contact(user_id)
+        if not user:
+            return None
+        signature = user.getSignature()
+        if signature:
+            signature = '{}/Signature'.format(user.absolute_url())
+        return dict(salutation=safe_unicode(user.getSalutation()),
+                    name=safe_unicode(user.getFullname()),
+                    email=safe_unicode(user.getEmailAddress()),
+                    phone=safe_unicode(user.getBusinessPhone()),
+                    job_title=safe_unicode(user.getJobTitle()),
+                    signature=signature or '',
+                    departments='')
+
+    @viewcache.memoize
+    def get_user_contact(self, user_id):
+        query = dict(getUsername=user_id,
+                     portal_type=['LabContact', 'Contact'])
+        users = api.search(query, 'portal_catalog')
+        if len(users) == 1:
+            return api.get_object(users[0])
+        return None
 
     def _set_results_interpretation(self, ar, data):
         """
