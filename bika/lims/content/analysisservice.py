@@ -5,17 +5,12 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import transaction
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.public import BooleanField, BooleanWidget, \
-    DisplayList, MultiSelectionWidget, Schema, registerType
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
+from bika.lims import PMF
 from bika.lims import api
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.fields import InterimFieldsField, UIDReferenceField
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
@@ -23,9 +18,19 @@ from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.interfaces import IAnalysisService, IHaveIdentifiers
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import MultiSelectionWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import registerType
+from Products.Archetypes.Registry import registerField
+from Products.ATExtensions.ateapi import RecordsField
+from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
 
