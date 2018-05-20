@@ -2319,6 +2319,7 @@ class AnalysisRequest(BaseFolder):
         invoice_url = invoice.absolute_url()
         RESPONSE.redirect('{}/invoice_print'.format(invoice_url))
 
+    @deprecated("addARAttachment will be removed in senaite.core 1.3.0")
     def addARAttachment(self, REQUEST=None, RESPONSE=None):
         """Add the file as an attachment
         """
@@ -2366,6 +2367,7 @@ class AnalysisRequest(BaseFolder):
         else:
             RESPONSE.redirect(self.absolute_url())
 
+    @deprecated("delARAttachment will be removed in senaite.core 1.3.0")
     def delARAttachment(self, REQUEST=None, RESPONSE=None):
         """Delete the attachment
         """
