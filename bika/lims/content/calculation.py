@@ -11,32 +11,28 @@ import math
 import re
 
 import transaction
-
-from zope.interface import implements
-
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.field import RecordsField
+from bika.lims import bikaMessageFactory as _
+from bika.lims.api import get_object_by_uid
+from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces.calculation import ICalculation
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import ReferenceWidget
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
-
-from bika.lims import bikaMessageFactory as _
-from bika.lims.api import get_object_by_uid
-from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces.calculation import ICalculation
+from zope.interface import implements
 
 
 schema = BikaSchema.copy() + Schema((
