@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #821 Cannot retract single analysis services
 
 **Security**
 
