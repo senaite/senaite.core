@@ -758,33 +758,6 @@ class window.AnalysisServiceEditView
     return deferred.promise()
 
 
-  load_available_methods: =>
-    ###*
-     * Load all available and valid instruments
-     *
-     * @returns {Deferred} Array of all available Method objects
-    ###
-    deferred = $.Deferred()
-
-    options =
-      url: @get_portal_url() + "/@@API/read"
-      data:
-        catalog_name: "bika_setup_catalog"
-        page_size: 0
-        portal_type: "Method"
-        inactive_state: "active"
-        sort_on: "sortable_title"
-
-    @ajax_submit options
-    .done (data) ->
-      if not data.objects
-        # resolve with an empty array
-        return deferred.resolveWith this, [[]]
-      return deferred.resolveWith this, [data.objects]
-
-    return deferred.promise()
-
-
   load_instrument_methods: (instrument_uid) =>
     ###*
      * Load assigned methods of the instrument

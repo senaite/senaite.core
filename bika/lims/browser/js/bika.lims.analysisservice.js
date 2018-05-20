@@ -42,7 +42,6 @@
       this.show_alert = this.show_alert.bind(this);
       /* ASYNC DATA LOADERS */
       this.load_available_instruments = this.load_available_instruments.bind(this);
-      this.load_available_methods = this.load_available_methods.bind(this);
       this.load_instrument_methods = this.load_instrument_methods.bind(this);
       this.load_method_calculation = this.load_method_calculation.bind(this);
       this.load_calculation = this.load_calculation.bind(this);
@@ -828,34 +827,6 @@
           return deferred.resolveWith(this, [[]]);
         }
         // resolve with data objects
-        return deferred.resolveWith(this, [data.objects]);
-      });
-      return deferred.promise();
-    }
-
-    load_available_methods() {
-      /**
-       * Load all available and valid instruments
-       *
-       * @returns {Deferred} Array of all available Method objects
-       */
-      var deferred, options;
-      deferred = $.Deferred();
-      options = {
-        url: this.get_portal_url() + "/@@API/read",
-        data: {
-          catalog_name: "bika_setup_catalog",
-          page_size: 0,
-          portal_type: "Method",
-          inactive_state: "active",
-          sort_on: "sortable_title"
-        }
-      };
-      this.ajax_submit(options).done(function(data) {
-        if (!data.objects) {
-          // resolve with an empty array
-          return deferred.resolveWith(this, [[]]);
-        }
         return deferred.resolveWith(this, [data.objects]);
       });
       return deferred.promise();
