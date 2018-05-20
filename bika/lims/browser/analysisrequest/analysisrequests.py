@@ -377,7 +377,7 @@ class AnalysisRequestsView(BikaListingView):
                 "id": "published",
                 "title": _("Published"),
                 "contentFilter": {
-                    "review_state": ("published", "invalid"),
+                    "review_state": ("published"),
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
