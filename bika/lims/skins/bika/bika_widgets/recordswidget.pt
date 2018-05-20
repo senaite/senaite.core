@@ -48,7 +48,7 @@
                         i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
 
             <table
-              class="recordswidget nosort"
+              class="recordswidget nosort table table-condensed"
               tal:attributes="id string:${fieldName}_table">
 
               <tr class="header">
@@ -93,7 +93,7 @@
                           value=""
                           size="30"
                           tabindex="#"
-                          tal:attributes="class string:records_inputstring;
+                          tal:attributes="class string:records_inputstring form-control input-sm;
                                           name string:${fieldName}.${key}:records:ignore_empty;
                                           id string:${fieldName}-${key}-${repeat/idx/index};
                                           value python:field.getSubfieldValue(values, idx, key);
@@ -112,6 +112,7 @@
                                       vocab python:field.getVocabularyFor(key, here);
                                       size python:field.getSubfieldSize(key);">
                           <select
+                            class="form-control input-sm"
                             tal:condition="python:size and size < 2 or False"
                             tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
                                            id string:${fieldName}-${key}-${repeat/idx/index};
@@ -128,6 +129,7 @@
                           <!-- multi-select selection -->
 
                           <select
+                            class="form-control input-sm"
                             tal:condition="python:size and size > 1 or False"
                             multiple="multiple"
                             tal:attributes="name string:${fieldName}.${key}:records:list;
@@ -149,6 +151,7 @@
 
                       <tal:text condition="python: type == 'lines'">
                         <textarea
+                          class="form-control input-sm"
                           name="" cols="30" rows="5" tabindex="#"
                           tal:attributes="id string:${fieldName}-${key}-${repeat/idx/index};
                                           name string:${fieldName}.${key}:records:ignore_empty:lines;
@@ -178,7 +181,7 @@
                           value=""
                           size="30"
                           tabindex="#"
-                          tal:attributes="class string:datepicker;
+                          tal:attributes="class string:datepicker form-control input-sm;
                                           name string:${fieldName}.${key}:records:ignore_empty;
                                           id string:${fieldName}-${key}-${repeat/idx/index};
                                           value python:field.getSubfieldValue(values, idx, key);
@@ -197,7 +200,7 @@
                           value=""
                           size="30"
                           tabindex="#"
-                          tal:attributes="class string:datepicker_nofuture;
+                          tal:attributes="class string:datepicker_nofuture form-control input-sm;
                                           name string:${fieldName}.${key}:records:ignore_empty;
                                           id string:${fieldName}-${key}-${repeat/idx/index};
                                           value python:field.getSubfieldValue(values, idx, key);
@@ -211,6 +214,7 @@
 
                       <tal:number condition="python: type == 'int'">
 						            <input
+                          class="form-control input-sm"
                           type="text" name="" value="" size="10" tabindex="#"
 							            tal:attributes="name string:${fieldName}.${key}:${type}:records:ignore_empty:int;
 								                          id string:${fieldName}-${key}-${repeat/idx/index};
@@ -224,6 +228,7 @@
 
 					            <tal:number condition="python: type in ['float', 'long']">
 						            <input
+                          class="form-control input-sm"
                           type="text" name="" value="" size="10" tabindex="#"
                           tal:attributes="name string:${fieldName}.${key}:${type}:records:ignore_empty;
                                           id string:${fieldName}-${key}-${repeat/idx/index};
@@ -243,7 +248,7 @@
 		              <!-- delete -->
 			            <img
                     tal:condition="widget/allowDelete"
-                    class="rw_deletebtn"
+                    class="rw_deletebtn btn btn-link"
                     tal:attributes="id string:delete-row-${repeat/idx/index};
                                     src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
 
@@ -266,7 +271,7 @@
 
             <input
               type="button"
-              class="context"
+              class="context btn btn-default btn btn-default btn-xs"
               value="More"
               tal:condition="python: field.showMore(values) or not field.fixedSize"
               tal:attributes="id string:${fieldName}_more;tabindex tabindex/next|nothing"
