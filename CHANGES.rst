@@ -17,6 +17,8 @@ Changelog
 
 **Fixed**
 
+- #834 Fix Duplication Action for Analysis Services
+
 
 **Security**
 
