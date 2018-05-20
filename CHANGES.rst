@@ -17,6 +17,8 @@ Changelog
 
 **Fixed**
 
+- #832 Set new calculation Interims to dependant services
+
 
 **Security**
 
