@@ -580,9 +580,19 @@ class window.AnalysisServiceEditView
     if flush
       @flush_interims()
 
+    # extract the keys of the calculation interims
+    interim_keys = interims.map (v) -> return v.keyword
+
     # always keep manual set interims
     $.each @manual_interims, (index, interim) ->
-      interims.push interim
+      # the keyword of the manual interim is in the keys of the calculation
+      # interims -> overwrite calculation interim with the manual interim
+      i = interim_keys.indexOf interim.keyword
+      if i >= 0
+        interims[i] = interim
+      else
+        # append the manual interim at the end
+        interims.push interim
 
     $.each interims, (index, interim) ->
       last_row = field.find("tr.records_row_InterimFields").last()
@@ -921,8 +931,23 @@ class window.AnalysisServiceEditView
       # separate manual interims from calculation interims
       manual_interims = []
       $.each @get_interims(), (index, value) ->
+        # manual interim is not part of the calculation interims
         if value.keyword not in calculation_interim_keys
           manual_interims.push value
+        else
+          # manual interim is also located in the calculaiton interims
+          # -> check for interim override, e.g. different value, unit etc.
+
+          # get the calculation interim
+          i = calculation_interim_keys.indexOf value.keyword
+          calculation_interim = calculation_interims[i]
+
+          # check for different values
+          $.each calculation_interim, (k, v) ->
+            if v isnt value[k]
+              manual_interims.push value
+              # stop iteration
+              return false
       deferred.resolveWith this, [manual_interims]
 
     return deferred.promise()

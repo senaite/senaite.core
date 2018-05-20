@@ -629,7 +629,7 @@
     }
 
     set_interims(interims, flush = true) {
-      var field, more_button;
+      var field, interim_keys, more_button;
       /**
        * Set the interim field values
        *
@@ -643,9 +643,22 @@
       if (flush) {
         this.flush_interims();
       }
+      // extract the keys of the calculation interims
+      interim_keys = interims.map(function(v) {
+        return v.keyword;
+      });
       // always keep manual set interims
       $.each(this.manual_interims, function(index, interim) {
-        return interims.push(interim);
+        var i;
+        // the keyword of the manual interim is in the keys of the calculation
+        // interims -> overwrite calculation interim with the manual interim
+        i = interim_keys.indexOf(interim.keyword);
+        if (i >= 0) {
+          return interims[i] = interim;
+        } else {
+          // append the manual interim at the end
+          return interims.push(interim);
+        }
       });
       return $.each(interims, function(index, interim) {
         var inputs, last_row;
@@ -1001,9 +1014,25 @@
         // separate manual interims from calculation interims
         manual_interims = [];
         $.each(this.get_interims(), function(index, value) {
-          var ref;
+          var calculation_interim, i, ref;
+          // manual interim is not part of the calculation interims
           if (ref = value.keyword, indexOf.call(calculation_interim_keys, ref) < 0) {
             return manual_interims.push(value);
+          } else {
+            // manual interim is also located in the calculaiton interims
+            // -> check for interim override, e.g. different value, unit etc.
+
+            // get the calculation interim
+            i = calculation_interim_keys.indexOf(value.keyword);
+            calculation_interim = calculation_interims[i];
+            // check for different values
+            return $.each(calculation_interim, function(k, v) {
+              if (v !== value[k]) {
+                manual_interims.push(value);
+                // stop iteration
+                return false;
+              }
+            });
           }
         });
         return deferred.resolveWith(this, [manual_interims]);
