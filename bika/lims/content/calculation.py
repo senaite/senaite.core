@@ -225,7 +225,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.
-            The return value is dictionary of dictionaries (of dictionaries....)
+            The return value is dictionary of dictionaries (of dictionaries...)
 
             {service_UID1:
                 {service_UID2:
