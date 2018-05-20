@@ -425,7 +425,7 @@
         $.each(invalid_instruments, function(index, instrument) {
           return notification.append(`<dd>⚠ ${instrument.Title}</dd>`);
         });
-        title = this._("Some of the selected instruments are out-of-date or with failed calibration tests");
+        title = this._("Some of the selected instruments are out-of-date, with failed calibration tests or under maintenance");
         this.show_alert({
           title: title,
           message: notification[0].outerHTML

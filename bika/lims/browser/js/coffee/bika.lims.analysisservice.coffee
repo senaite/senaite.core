@@ -374,7 +374,7 @@ class window.AnalysisServiceEditView
       notification = $("<dl/>")
       $.each invalid_instruments, (index, instrument) ->
         notification.append "<dd>⚠ #{instrument.Title}</dd>"
-      title = @_ "Some of the selected instruments are out-of-date or with failed calibration tests"
+      title = @_ "Some of the selected instruments are out-of-date, with failed calibration tests or under maintenance"
       @show_alert title: title, message: notification[0].outerHTML
     else
       @show_alert message: ""
