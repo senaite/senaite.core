@@ -731,25 +731,6 @@ class window.AnalysisServiceEditView
 
   ### ASYNC DATA LOADERS ###
 
-  load_available_calculations: =>
-    ###*
-     * Load all available calculations
-     *
-     * @returns {Deferred} Array of all available Calculation objects
-    ###
-    deferred = $.Deferred()
-
-    options =
-      url: @get_portal_url() + "/get_available_calculations"
-
-    @ajax_submit options
-    .done (data) ->
-      if not data.objects
-        # resolve with an empty array
-        return deferred.resolveWith this, [[]]
-      # resolve with data objects
-      return deferred.resolveWith this, [data.objects]
-
 
   load_available_instruments: =>
     ###*

@@ -41,7 +41,6 @@
       this.toggle_display_detection_limit_selector = this.toggle_display_detection_limit_selector.bind(this);
       this.show_alert = this.show_alert.bind(this);
       /* ASYNC DATA LOADERS */
-      this.load_available_calculations = this.load_available_calculations.bind(this);
       this.load_available_instruments = this.load_available_instruments.bind(this);
       this.load_available_methods = this.load_available_methods.bind(this);
       this.load_instrument_methods = this.load_instrument_methods.bind(this);
@@ -805,27 +804,6 @@
       }
       html = `<div class="alert alert-${level} errorbox" role="alert">\n  <h3>${title}</h3>\n  <div>${message}</div>\n</div>`;
       return alerts.append(html);
-    }
-
-    load_available_calculations() {
-      /**
-       * Load all available calculations
-       *
-       * @returns {Deferred} Array of all available Calculation objects
-       */
-      var deferred, options;
-      deferred = $.Deferred();
-      options = {
-        url: this.get_portal_url() + "/get_available_calculations"
-      };
-      return this.ajax_submit(options).done(function(data) {
-        if (!data.objects) {
-          // resolve with an empty array
-          return deferred.resolveWith(this, [[]]);
-        }
-        // resolve with data objects
-        return deferred.resolveWith(this, [data.objects]);
-      });
     }
 
     load_available_instruments() {
