@@ -20,6 +20,8 @@ from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import FileField
+from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import FixedPointField
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import StringField
@@ -1345,6 +1347,24 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'edit': 'invisible',
                 'view': 'invisible',
+            },
+        )
+    ),
+
+    # This is a virtual field and handled only by AR Add View to allow multi
+    # attachment upload in AR Add. It should never contain an own value!
+    FileField(
+        '_ARAttachment',
+        widget=FileWidget(
+            label=_("Attachment"),
+            description=_("Add one or more attachments to describe the "
+                          "sample in this analysis request, or to specify "
+                          "your request."),
+            render_own_label=True,
+            visible={
+                'view': 'invisible',
+                'add': 'edit',
+                'header_table': 'invisible',
             },
         )
     ),
@@ -3101,6 +3121,16 @@ class AnalysisRequest(BaseFolder):
         if self.getPriority():
             return PRIORITIES.getValue(self.getPriority())
         return ''
+
+    def get_ARAttachment(self):
+        logger.warn("_ARAttachment is a virtual field used in AR Add. "
+                    "It can not hold an own value!")
+        return None
+
+    def set_ARAttachment(self, value):
+        logger.warn("_ARAttachment is a virtual field used in AR Add. "
+                    "It can not hold an own value!")
+        return Nonw
 
 
 registerType(AnalysisRequest, PROJECTNAME)
