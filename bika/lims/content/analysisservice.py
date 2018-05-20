@@ -368,7 +368,7 @@ InterimFields = InterimFieldsField(
     'InterimFields',
     schemata='Method',
     widget=RecordsWidget(
-        label=_("Calculation Interim Fields"),
+        label=_("Additional Values"),
         description=_(
             "Values can be entered here which will override the defaults "
             "specified in the Calculation Interim Fields."),
