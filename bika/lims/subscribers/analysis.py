@@ -38,11 +38,7 @@ def ObjectInitializedEventHandler(instance, event):
         changeWorkflowState(instance, "bika_analysis_workflow", ar_state)
     elif ar_state in ('to_be_verified'):
         # Apply to AR only; we don't want this transition to cascade.
-        if 'workflow_skiplist' not in ar.REQUEST:
-            ar.REQUEST['workflow_skiplist'] = []
-        ar.REQUEST['workflow_skiplist'].append("retract all analyses")
-        wf_tool.doActionFor(ar, 'retract')
-        ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
+        changeWorkflowState(ar, "bika_ar_workflow", "sample_received")
 
     return
 
