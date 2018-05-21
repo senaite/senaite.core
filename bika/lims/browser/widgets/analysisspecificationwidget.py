@@ -4,19 +4,14 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
+import collections
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.Registry import registerWidget, registerPropertyType
+from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
-from zope.i18n.locales import locales
-from operator import itemgetter
-import json
-from bika.lims.utils import isnumber
 
 class AnalysisSpecificationView(BikaListingView):
     """ bika listing to display Analysis Services (AS) table for an
@@ -47,23 +42,41 @@ class AnalysisSpecificationView(BikaListingView):
         for specresults in fieldvalue:
             self.specsresults[specresults['keyword']] = specresults
 
-        self.columns = {
-            'service': {'title': _('Service'), 'index': 'sortable_title', 'sortable': False},
-            'min': {'title': _('Min'), 'sortable': False,},
-            'max': {'title': _('Max'), 'sortable': False,},
-            'error': {'title': _('Permitted Error %'), 'sortable': False},
-            'hidemin': {'title': _('< Min'), 'sortable': False},
-            'hidemax': {'title': _('> Max'), 'sortable': False},
-            'rangecomment': {'title': _('Range comment'), 'sortable': False, 'toggle': False}
-        }
+        self.columns = collections.OrderedDict((
+            ('service', {
+                'title': _('Service'),
+                'index': 'sortable_title',
+                'sortable': False}),
+            ('warn_min', {
+                'title': _('Min warn'),
+                'sortable': False}),
+            ('min', {
+                'title': _('Min'),
+                'sortable': False}),
+            ('max', {
+                'title': _('Max'),
+                'sortable': False}),
+            ('warn_max', {
+                'title': _('Max warn'),
+                'sortable': False}),
+            ('hidemin', {
+                'title': _('< Min'),
+                'sortable': False}),
+            ('hidemax', {
+                'title': _('> Max'),
+                'sortable': False}),
+            ('rangecomment', {
+                'title': _('Range comment'),
+                'sortable': False,
+                'toggle': False}),
+        ))
 
         self.review_states = [
             {'id':'default',
              'title': _('All'),
              'contentFilter':{},
              'transitions': [],
-             'columns': ['service', 'min', 'max', 'error',
-                         'hidemin', 'hidemax', 'rangecomment'],
+             'columns': self.columns.keys(),
              },
         ]
 
@@ -84,7 +97,7 @@ class AnalysisSpecificationView(BikaListingView):
         self.contentFilter['portal_type'] = 'AnalysisService'
         services = bsc(self.contentFilter)
         for service in services:
-            service = service.getObject();
+            service = service.getObject()
             cat = service.getCategoryTitle()
             if cat not in self.categories:
                 self.categories.append(cat)
@@ -94,7 +107,8 @@ class AnalysisSpecificationView(BikaListingView):
                 specresults = {'keyword': service.getKeyword(),
                         'min': '',
                         'max': '',
-                        'error': '',
+                        'warn_min': '',
+                        'warn_max': '',
                         'hidemin': '',
                         'hidemax': '',
                         'rangecomment': ''}
@@ -105,11 +119,6 @@ class AnalysisSpecificationView(BikaListingView):
                 src='%s/++resource++bika.lims.images/accredited.png'\
                 title='%s'>"%(self.context.absolute_url(),
                               _("Accredited"))
-            if service.getReportDryMatter():
-                after_icons += "<img\
-                src='%s/++resource++bika.lims.images/dry.png'\
-                title='%s'>"%(self.context.absolute_url(),
-                              _("Can be reported as dry matter"))
             if service.getAttachmentOption() == 'r':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_reqd.png'\
@@ -129,7 +138,7 @@ class AnalysisSpecificationView(BikaListingView):
             unit = service.getUnit()
             unitspan = unit and \
                 "<span class='discreet'>%s</span>" % service.getUnit() or ''
-            percspan = "<span class='discreet'>%</span>";
+            percspan = "<span class='discreet'>%</span>"
 
             item = {
                 'obj': service,
@@ -144,9 +153,10 @@ class AnalysisSpecificationView(BikaListingView):
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
                 'service': service.Title(),
-                'error': specresults.get('error', ''),
                 'min': specresults.get('min', ''),
                 'max': specresults.get('max', ''),
+                'warn_min': specresults.get('warn_min', ''),
+                'warn_max': specresults.get('warn_max', ''),
                 'hidemin': specresults.get('hidemin',''),
                 'hidemax': specresults.get('hidemax',''),
                 'rangecomment': specresults.get('rangecomment', ''),
@@ -155,12 +165,13 @@ class AnalysisSpecificationView(BikaListingView):
                 'after': {'service':after_icons,
                           'min':unitspan,
                           'max':unitspan,
-                          'error': percspan},
+                          'warn_min':unitspan,
+                          'warn_max':unitspan},
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
-                'allow_edit': ['min', 'max', 'error', 'hidemin', 'hidemax',
-                               'rangecomment'],
+                'allow_edit': ['min', 'max', 'warn_min', 'warn_max', 'hidemin',
+                               'hidemax', 'rangecomment'],
             }
             items.append(item)
 
@@ -174,8 +185,6 @@ class AnalysisSpecificationWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
         'macro': "bika_widgets/analysisspecificationwidget",
-        #'helper_js': ("bika_widgets/analysisspecificationwidget.js",),
-        #'helper_css': ("bika_widgets/analysisspecificationwidget.css",),
     })
 
     security = ClassSecurityInfo()
@@ -188,32 +197,55 @@ class AnalysisSpecificationWidget(TypesWidget):
             will be included. If hidemin and/or hidemax specified, results
             might contain empty min and/or max fields.
         """
-        value = []
-        if 'service' in form:
-            for uid, keyword in form['keyword'][0].items():
+        values = []
+        if 'service' not in form:
+            return values, {}
 
-                hidemin = form['hidemin'][0].get(uid, '') if 'hidemin' in form else ''
-                hidemax = form['hidemax'][0].get(uid, '') if 'hidemax' in form else ''
-                mins = form['min'][0].get(uid, '') if 'min' in form else ''
-                maxs = form['max'][0].get(uid, '') if 'max' in form else ''
-                err = form['error'][0].get(uid, '') if 'error' in form else ''
-                rangecomment = form['rangecomment'][0].get(uid, '') if 'rangecomment' in form else ''
+        for uid, keyword in form['keyword'][0].items():
+            s_min = self._get_spec_value(form, uid, 'min')
+            s_max = self._get_spec_value(form, uid, 'max')
+            if not s_min and not s_max:
+                # If user has not set value neither for min nor max, omit this
+                # record. Otherwise, since 'min' and 'max' are defined as
+                # mandatory subfields, the following message will appear after
+                # submission: "Specifications is required, please correct."
+                continue
 
-                if not isnumber(hidemin) and not isnumber(hidemax) and \
-                   (not isnumber(mins) or not isnumber(maxs)):
-                    # If neither hidemin nor hidemax have been specified,
-                    # min and max values are mandatory.
-                    continue
+            values.append({
+                'keyword': keyword,
+                'uid': uid,
+                'min': s_min,
+                'max': s_max,
+                'warn_min': self._get_spec_value(form, uid, 'warn_min'),
+                'warn_max': self._get_spec_value(form, uid, 'warn_max'),
+                'hidemin': self._get_spec_value(form, uid, 'hidemin'),
+                'hidemax': self._get_spec_value(form, uid, 'hidemax'),
+                'rangecomment': self._get_spec_value(form, uid, 'rangecomment',
+                                                     check_floatable=False)})
+        return values, {}
 
-                value.append({'keyword': keyword,
-                              'uid': uid,
-                              'min': mins if isnumber(mins) else '',
-                              'max': maxs if isnumber(maxs) else '',
-                              'hidemin': hidemin if isnumber(hidemin) else '',
-                              'hidemax': hidemax if isnumber(hidemax) else '',
-                              'error': err if isnumber(err) else '0',
-                              'rangecomment': rangecomment})
-        return value, {}
+    def _get_spec_value(self, form, uid, key, check_floatable=True, default=''):
+        """Returns the value assigned to the passed in key for the analysis
+        service uid from the passed in form.
+
+        If check_floatable is true, will return the passed in default if the
+        obtained value is not floatable
+        :param form: form being submitted
+        :param uid: uid of the Analysis Service the specification relates
+        :param key: id of the specs param to get (e.g. 'min')
+        :param check_floatable: check if the value is floatable
+        :param default: fallback value that will be returned by default
+        :type default: str, None
+        """
+        if not form or not uid:
+            return default
+        values = form.get(key, None)
+        if not values or len(values) == 0:
+            return default
+        value = values[0].get(uid, default)
+        if not check_floatable:
+            return value
+        return api.is_floatable(value) and value or default
 
     security.declarePublic('AnalysisSpecificationResults')
     def AnalysisSpecificationResults(self, field, allow_edit = False):

@@ -9,24 +9,23 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import HistoryAwareReferenceField, \
-    InterimFieldsField, UIDReferenceField
-from bika.lims.browser.widgets import DecimalWidget, RecordsWidget
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor, getCurrentState
+from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import skip
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from zope.interface import implements
 
 # The physical sample partition linked to the Analysis.
@@ -100,29 +99,6 @@ HiddenManually = BooleanField(
     default=False,
 )
 
-# Routine Analyses have a versioned link to the calculation at creation time.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
-)
-
-# InterimFields are defined in Calculations, Services, and Analyses.
-# In Analysis Services, the default values are taken from Calculation.
-# In Analyses, the default values are taken from the Analysis Service.
-# When instrument results are imported, the values in analysis are overridden
-# before the calculation is performed.
-InterimFields = InterimFieldsField(
-    'InterimFields',
-    schemata='Method',
-    widget=RecordsWidget(
-        label=_("Calculation Interim Fields"),
-        description=_(
-            "Values can be entered here which will override the defaults "
-            "specified in the Calculation Interim Fields."),
-    )
-)
 
 schema = schema.copy() + Schema((
     IsReflexAnalysis,
@@ -134,8 +110,6 @@ schema = schema.copy() + Schema((
     SamplePartition,
     Uncertainty,
     HiddenManually,
-    Calculation,
-    InterimFields,
 ))
 
 
@@ -304,22 +278,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return duetime
 
     @security.public
-    def getCalculationTitle(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.Title()
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
-
-    @security.public
     def getSampleTypeUID(self):
         """Used to populate catalog values.
         """
@@ -346,75 +304,29 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return request.getPrinted()
 
     @security.public
-    def getAnalysisSpecs(self, specification=None):
-        """Retrieves the analysis specs to be applied to this analysis.
-        Allowed values for specification= 'client', 'lab', None If
-        specification is None, client specification gets priority from lab
-        specification. If no specification available for this analysis,
-        returns None
+    def getResultsRange(self):
+        """Returns the valid result range for this routine analysis based on the
+        results ranges defined in the Analysis Request this routine analysis is
+        assigned to.
+
+        A routine analysis will be considered out of range if it result falls
+        out of the range defined in "min" and "max". If there are values set for
+        "warn_min" and "warn_max", these are used to compute the shoulders in
+        both ends of the range. Thus, an analysis can be out of range, but be
+        within shoulders still.
+        :return: A dictionary with keys "min", "max", "warn_min" and "warn_max"
+        :rtype: dict
         """
-        sample = self.getSample()
-        client_uid = self.getClientUID()
-        if not sample or not client_uid:
-            return None
+        specs = ResultsRangeDict()
+        analysis_request = self.getRequest()
+        if not analysis_request:
+            return specs
 
-        sampletype = sample.getSampleType()
-        sampletype_uid = sampletype and sampletype.UID() or ''
-        bsc = getToolByName(self, 'bika_setup_catalog')
-
-        # retrieves the desired specs if None specs defined
-        if not specification:
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getClientUID=client_uid,
-                          getSampleTypeUID=sampletype_uid)
-
-            if len(proxies) == 0:
-                # No client specs available, retrieve lab specs
-                proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid)
-        else:
-            specuid = self.bika_setup.bika_analysisspecs.UID()
-            if specification == 'client':
-                specuid = client_uid
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getSampleTypeUID=sampletype_uid,
-                          getClientUID=specuid)
-
-        outspecs = None
-        for spec in (p.getObject() for p in proxies):
-            if self.getKeyword() in spec.getResultsRangeDict():
-                outspecs = spec
-                break
-
-        return outspecs
-
-    @security.public
-    def getResultsRange(self, specification=None):
-        """Returns the valid results range for this analysis, a dictionary
-        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error',
-        'hidemin', 'hidemax', 'rangecomment' Allowed values for
-        specification='ar', 'client', 'lab', None If specification is None,
-        the following is the priority to get the results range: AR > Client >
-        Lab If no specification available for this analysis, returns {}
-        """
-        rr = {}
-        an = self
-
-        if specification == 'ar' or specification is None:
-            if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
-                rr = an.aq_parent.getResultsRange()
-                rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
-                rr = rr[0] if rr and len(rr) > 0 else {}
-                if rr:
-                    rr['uid'] = self.UID()
-        if not rr:
-            # Let's try to retrieve the specs from client and/or lab
-            specs = an.getAnalysisSpecs(specification)
-            rr = specs.getResultsRangeDict() if specs else {}
-            rr = rr.get(an.getKeyword(), {}) if rr else {}
-            if rr:
-                rr['uid'] = self.UID()
-        return rr
+        keyword = self.getKeyword()
+        ar_ranges = analysis_request.getResultsRange()
+        # Get the result range that corresponds to this specific analysis
+        an_range = [rr for rr in ar_ranges if rr.get('keyword', '') == keyword]
+        return an_range and an_range[0] or specs
 
     @security.public
     def getSiblings(self, retracted=False):
@@ -565,29 +477,30 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """This function does all the reflex rule process.
         :param wf_action: is a string containing the workflow action triggered
         """
-        workflow = getToolByName(self, 'portal_workflow')
         # Check out if the analysis has any reflex rule bound to it.
         # First we have get the analysis' method because the Reflex Rule
         # objects are related to a method.
         a_method = self.getMethod()
+        if not a_method:
+            return
         # After getting the analysis' method we have to get all Reflex Rules
         # related to that method.
-        if a_method:
-            all_rrs = a_method.getBackReferences('ReflexRuleMethod')
-            # Once we have all the Reflex Rules with the same method as the
-            # analysis has, it is time to get the rules that are bound to the
-            # same analysis service that is using the analysis.
-            for rule in all_rrs:
-                state = workflow.getInfoFor(rule, 'inactive_state')
-                if state == 'inactive':
-                    continue
-                # Getting the rules to be done from the reflex rule taking
-                # in consideration the analysis service, the result and
-                # the state change
-                action_row = rule.getActionReflexRules(self, wf_action)
-                # Once we have the rules, the system has to execute its
-                # instructions if the result has the expected result.
-                doReflexRuleAction(self, action_row)
+        all_rrs = a_method.getBackReferences('ReflexRuleMethod')
+        if not all_rrs:
+            return
+        # Once we have all the Reflex Rules with the same method as the
+        # analysis has, it is time to get the rules that are bound to the
+        # same analysis service that is using the analysis.
+        for rule in all_rrs:
+            if not api.is_active(rule):
+                continue
+            # Getting the rules to be done from the reflex rule taking
+            # in consideration the analysis service, the result and
+            # the state change
+            action_row = rule.getActionReflexRules(self, wf_action)
+            # Once we have the rules, the system has to execute its
+            # instructions if the result has the expected result.
+            doReflexRuleAction(self, action_row)
 
     @security.public
     def guard_to_be_preserved(self):
@@ -649,15 +562,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
         # Do all the reflex rules process
         self._reflex_rule_process('submit')
-
-        # If all analyses from the Analysis Request to which this Analysis
-        # belongs have been submitted, then promote the action to the parent
-        # Analysis Request
-        ar = self.getRequest()
-        ans = [an.getObject() for an in ar.getAnalyses()]
-        anssub = [an for an in ans if wasTransitionPerformed(an, 'submit')]
-        if len(ans) == len(anssub):
-            doActionFor(ar, 'submit')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
         super(AbstractRoutineAnalysis, self).workflow_script_submit()

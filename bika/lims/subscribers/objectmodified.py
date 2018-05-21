@@ -5,10 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims.permissions import ManageLoginDetails
+from bika.lims.permissions import ManageSupplyOrders
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims.permissions import ManageSupplyOrders, ManageLoginDetails
-from bika.lims.interfaces import IAnalysisRequest
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -31,6 +31,15 @@ def ObjectModifiedEventHandler(obj, event):
             reference_versions = getattr(target, 'reference_versions', {})
             reference_versions[obj.UID()] = version_id + 1
             target.reference_versions = reference_versions
+
+    # Note: obj can be also a reference!
+    # <Folder at .../client-1/4d1dd3f77b76b3427a005e1f339e7bd4/at_references>
+    elif obj.meta_type == obj.portal_type == 'AnalysisRequest':
+        mp = obj.manage_permission
+        # Allow to remove Analyses / Attachments
+        # https://github.com/senaite/senaite.core/issues/780
+        can_delete = ["Manager", "LabManager", "Owner"]
+        mp(permissions.DeleteObjects, can_delete, 0)
 
     elif obj.portal_type == 'Client':
         mp = obj.manage_permission

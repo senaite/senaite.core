@@ -8,7 +8,6 @@
 import plone
 from Acquisition import aq_inner
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
@@ -34,10 +33,9 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         plone.protect.CheckAuthenticator(form)
         self.context = aq_inner(self.context)
         workflow = getToolByName(self.context, 'portal_workflow')
-        bc = getToolByName(self.context, 'bika_catalog')
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        translate = self.context.translate
         checkPermission = self.context.portal_membership.checkPermission
+        context = self.context
+        context_url = context.absolute_url()
 
         # use came_from to decide which UI action was clicked.
         # "workflow_action" is the action name specified in the
@@ -52,21 +50,21 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             if not action:
                 if self.destination_url == "":
                     self.destination_url = self.request.get_header("referer",
-                                           self.context.absolute_url())
+                                                                   context_url)
                 self.request.response.redirect(self.destination_url)
                 return
 
         if action == "sample":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
-            transitioned = {'to_be_preserved':[], 'sample_due':[]}
-            dsfn='getDateSampled'
+            transitioned = {'to_be_preserved': [], 'sample_due': []}
+            dsfn = 'getDateSampled'
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
                     ar = obj
                     sample = obj.getSample()
                 else:
                     # If it is a Sample, then fieldname is DateSampled
-                    dsfn='DateSampled'
+                    dsfn = 'DateSampled'
                     sample = obj
                     ar = sample.aq_parent
                 # can't transition inactive items
@@ -75,27 +73,37 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
                 # grab this object's Sampler and DateSampled from the form
                 # (if the columns are available and edit controls exist)
-                if 'getSampler' in form and dsfn in form:
+                if 'getSampler' in form:
                     try:
                         Sampler = form['getSampler'][0][obj_uid].strip()
-                        DateSampled = form[dsfn][0][obj_uid].strip()
                     except KeyError:
                         continue
                     Sampler = Sampler and Sampler or ''
+                    sample.setSampler(Sampler)
+                    sample.reindexObject()
+
+                if dsfn in form:
+                    try:
+                        DateSampled = form[dsfn][0][obj_uid].strip()
+                    except KeyError:
+                        continue
                     DateSampled = DateSampled and DateTime(DateSampled) or ''
-                else:
-                    continue
+                    sample.setDateSampled(DateSampled)
+                    sample.reindexObject()
 
                 # write them to the sample
-                sample.setSampler(Sampler)
-                sample.setDateSampled(DateSampled)
+                if not sample.getSampler() or not sample.getDateSampled():
+                    continue
+                Sampler = sample.getSampler()
+                DateSampled = sample.getDateSampled()
+
                 sample.reindexObject()
                 ars = sample.getAnalysisRequests()
                 # Analyses and AnalysisRequets have calculated fields
                 # that are indexed; re-index all these objects.
                 for ar in ars:
                     ar.reindexObject()
-                    analyses = sample.getAnalyses({'review_state':'to_be_sampled'})
+                    analyses = sample.getAnalyses({'review_state': 'to_be_sampled'})
                     for a in analyses:
                         a.getObject().reindexObject()
 
@@ -112,24 +120,24 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 if len(tlist) > 1:
                     if state == 'to_be_preserved':
                         message = _('${items} are waiting for preservation.',
-                                    mapping = {'items': ', '.join(tlist)})
+                                    mapping={'items': ', '.join(tlist)})
                     else:
                         message = _('${items} are waiting to be received.',
-                                    mapping = {'items': ', '.join(tlist)})
+                                    mapping={'items': ', '.join(tlist)})
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 elif len(tlist) == 1:
                     if state == 'to_be_preserved':
                         message = _('${item} is waiting for preservation.',
-                                    mapping = {'item': ', '.join(tlist)})
+                                    mapping={'item': ', '.join(tlist)})
                     else:
                         message = _('${item} is waiting to be received.',
-                                    mapping = {'item': ', '.join(tlist)})
+                                    mapping={'item': ', '.join(tlist)})
                     self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
                 message = _('No changes made.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
+                                                           context_url)
             self.request.response.redirect(self.destination_url)
 
         elif action == "preserve":
@@ -178,20 +186,20 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
             if len(transitioned.keys()) > 1:
                 message = _('${items}: partitions are waiting to be received.',
-                        mapping = {'items': ', '.join(transitioned.keys())})
+                            mapping={'items': ', '.join(transitioned.keys())})
             else:
                 message = _('${item}: ${part} is waiting to be received.',
-                        mapping = {'item': ', '.join(transitioned.keys()),
-                                   'part': ', '.join(transitioned.values()),})
+                            mapping={'item': ', '.join(transitioned.keys()),
+                                     'part': ', '.join(transitioned.values()), })
             self.context.plone_utils.addPortalMessage(message, 'info')
 
             # And then the sample itself
             if Preserver and DatePreserved and not not_transitioned:
                 doActionFor(sample, action)
-                #message = _('${item} is waiting to be received.',
+                # message = _('${item} is waiting to be received.',
                 #            mapping = {'item': sample.Title()})
-                #message = t(message)
-                #self.context.plone_utils.addPortalMessage(message, 'info')
+                # message = t(message)
+                # self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header(
                 "referer", self.context.absolute_url())

@@ -80,7 +80,7 @@ class UIDReferenceField(StringField):
             ret = value.UID
         elif api.is_at_content(value) or api.is_dexterity_content(value):
             ret = value.UID()
-        elif is_uid(context, value):
+        elif api.is_uid(value):
             ret = value
         else:
             raise ReferenceException("{}.{}: Cannot resolve UID for {}".format(
@@ -193,21 +193,6 @@ class UIDReferenceField(StringField):
                 StringField.set(self, context, '', **kwargs)
 
 
-def is_uid(context, value):
-    """Checks that the string passed is a valid UID of an existing object
-
-    :param context: Context is only used for acquiring uid_catalog tool.
-    :type context: BaseContent
-    :param value: A UID.
-    :type value: string
-    :return: True if the value is a UID and exists as an entry in uid_catalog.
-    :rtype: bool
-    """
-    uc = api.get_tool('uid_catalog', context=context)
-    brains = uc(UID=value)
-    return brains and True or False
-
-
 def _get_object(context, value):
     """Resolve a UID to an object.
 
@@ -215,17 +200,21 @@ def _get_object(context, value):
     :type context: BaseContent
     :param value: A UID.
     :type value: string
-    :return: Returns a Content object.
+    :return: Returns a Content object or None.
     :rtype: BaseContent
     """
-
-    if api.is_at_content(value) or api.is_dexterity_content(value):
+    if not value:
+        return None
+    if api.is_brain(value):
+        return api.get_object(value)
+    if api.is_object(value):
         return value
-    elif value and is_uid(context, value):
+    if api.is_uid(value):
         uc = api.get_tool('uid_catalog', context=context)
         brains = uc(UID=value)
         assert len(brains) == 1
         return brains[0].getObject()
+    return None
 
 
 def get_storage(context):

@@ -13,6 +13,7 @@ from Products.CMFPlone.interfaces import IWorkflowChain
 from Products.CMFPlone.workflow import ToolWorkflowChain
 from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
 from bika.lims import PMF
+from bika.lims import api
 from bika.lims import enum
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
@@ -94,17 +95,12 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     if allowed_transition:
         allowed = isTransitionAllowed(instance, action_id, active_only)
         if not allowed:
-            transitions = workflow.getTransitionsFor(instance)
-            transitions = [trans['id'] for trans in transitions]
-            transitions = ', '.join(transitions)
             currstate = getCurrentState(instance)
             clazzname = instance.__class__.__name__
-            msg = "Transition '{0}' not allowed: {1} '{2}' ({3}). " \
-                  "Available transitions: {4}".format(action_id, clazzname,
-                                                      instance.getId(),
-                                                      currstate, transitions)
+            msg = "Transition '{0}' not allowed: {1} '{2}' ({3})"
+            msg = msg.format(action_id, clazzname, instance.getId(), currstate)
             logger.warning(msg)
-            _logTransitionFailure(instance, action_id)
+            #_logTransitionFailure(instance, action_id)
             return actionperformed, message
     else:
         logger.warning(
@@ -368,13 +364,11 @@ def getReviewHistory(instance):
     review_history.reverse()
     return review_history
 
-
 def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
     """
-    wf = getToolByName(obj, 'portal_workflow')
-    return wf.getInfoFor(obj, stateflowid, '')
+    return api.get_workflow_status_of(obj, stateflowid)
 
 def in_state(obj, states, stateflowid='review_state'):
     """ Returns if the object passed matches with the states passed in

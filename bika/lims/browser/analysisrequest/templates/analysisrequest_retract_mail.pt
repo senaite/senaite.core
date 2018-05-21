@@ -9,7 +9,7 @@
 
     <tal:multiplereasons condition="python:len(reasons)&gt;1">
     <p tal:content="python: 'The analysis request %s has been rejected because of the following reasons: ' % ar.id"></p>
-    <tal:reason repeat="reason python:r for r in reasons">
+    <tal:reason repeat="reason reasons">
     - <span tal:replace="reason"></span><br/>
     </tal:reason>
     </tal:multiplereasons>

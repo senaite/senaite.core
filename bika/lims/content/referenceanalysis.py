@@ -8,13 +8,12 @@
 from AccessControl import ClassSecurityInfo
 
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims import deprecated
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.subscribers import skip
 from bika.lims.workflow import doActionFor
@@ -87,14 +86,25 @@ class ReferenceAnalysis(AbstractAnalysis):
 
     @security.public
     def getResultsRange(self):
-        sample = self.getSample()
-        if sample:
-            return sample.getResultsRangeDict()
+        """Returns the valid result range for this reference analysis based on
+        the results ranges defined in the Reference Sample from which this
+        analysis has been created.
 
-    def getAnalysisSpecs(self, specification=None):
-        specs = self.getResultsRange()
-        if specs and self.getKeyword() in specs:
+        A Reference Analysis (control or blank) will be considered out of range
+        if its results does not match with the result defined on its parent
+        Reference Sample, with the % error as the margin of error, that will be
+        used to set the range's min and max values
+        :return: A dictionary with the keys min and max
+        :rtype: dict
+        """
+        specs = ResultsRangeDict(result="")
+        sample = self.getSample()
+        if not sample:
             return specs
+
+        service_uid = self.getServiceUID()
+        sample_range = sample.getResultsRangeDict()
+        return sample_range.get(service_uid, specs)
 
     def getInstrumentUID(self):
         """
@@ -142,30 +152,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         routine analyses
         """
         return []
-
-    @deprecated("[1710] Reference Analyses do not support Interims")
-    def setInterimFields(self, interims=None , **kwargs):
-        pass
-
-    @deprecated("[1710] Reference Analyses do not support Interims")
-    def getInterimFields(self):
-        return []
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def setCalculation(self, calculation=None, **kwargs):
-        pass
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def getCalculation(self):
-        return None
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def getCalculationTitle(self):
-        return None
-
-    @deprecated("[1710] Reference Analyses do not support Calculations")
-    def getCalculationUID(self):
-        return None
 
     @security.public
     def workflow_script_submit(self):

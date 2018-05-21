@@ -5,15 +5,14 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from operator import itemgetter
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.analysisrequest import AnalysisRequestAddView as _ARAV
 from bika.lims.browser.analysisrequest import AnalysisRequestsView as _ARV
 from bika.lims.permissions import *
 from plone.app.layout.globals.interfaces import IViewView
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 
@@ -25,13 +24,11 @@ class AnalysisRequestsView(_ARV, _ARAV):
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
-
-    def contentsMethod(self, contentFilter):
-        """
-        Using batch's 'getAnalysisRequests' method in order to get the
-        analysisrequests assigned to it.
-        """
-        return self.context.getAnalysisRequestsBrains(**contentFilter)
+        self.contentFilter = {'portal_type': 'AnalysisRequest',
+                              'getBatchUID': api.get_uid(self.context),
+                              'sort_on': 'created',
+                              'sort_order': 'reverse',
+                              'cancellation_state':'active'}
 
     def __call__(self):
         self.context_actions = {}

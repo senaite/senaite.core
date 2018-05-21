@@ -5,11 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.browser.analysisrequest.workflow import AnalysisRequestWorkflowAction
 
 
-class BatchWorkflowAction(WorkflowAction):
-    """This function is called to do the worflow actions on objects
-    acted on in bika-listing views in batch context
+class BatchWorkflowAction(AnalysisRequestWorkflowAction):
+    """Button Action Handler for Batches
     """
-    pass

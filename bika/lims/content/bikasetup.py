@@ -433,20 +433,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    ReferenceField(
-        'DryMatterService',
-        schemata="Analyses",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
-        allowed_types=('AnalysisService',),
-        relationship='SetupDryAnalysisService',
-        vocabulary='getAnalysisServicesVocabulary',
-        referenceClass=HoldingReference,
-        widget=ReferenceWidget(
-            label=_("Dry matter analysis"),
-            description=_("The analysis to be used for determining dry matter."),
-        )
-    ),
     LinesField(
         'ARImportOption',
         schemata="Analyses",
@@ -685,10 +671,10 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
-            label=_("Email notification on AR retract"),
+            label=_("Email notification on AR invalidation"),
             description=_("Select this to activate automatic notifications "
                           "via email to the Client and Lab Managers when an Analysis "
-                          "Request is retracted.")
+                          "Request is invalidated.")
         ),
     ),
     TextField(
@@ -748,6 +734,16 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
             label=_("Large sticker"),
             description=_("Select which sticker should be used as the 'large' sticker by default")
+        )
+    ),
+    IntegerField(
+        'DefaultNumberOfCopies',
+        schemata="Sticker",
+        required="1",
+        default="1",
+        widget=IntegerWidget(
+            label=_("Number of copies"),
+            description=_("Set the default number of copies to be printed for each sticker")
         )
     ),
     IDFormattingField(

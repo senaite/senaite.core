@@ -180,7 +180,6 @@ SampleData = DataGridField(
              'SampleMatrix',
              'SampleType',  # not a schema field!
              'ContainerType',  # not a schema field!
-             'ReportDryMatter',
              'Analyses',  # not a schema field!
              'Profiles'  # not a schema field!
              ),
@@ -198,7 +197,6 @@ SampleData = DataGridField(
                 'Sample Type', vocabulary='Vocabulary_SampleType'),
             'ContainerType': SelectColumn(
                 'Container', vocabulary='Vocabulary_ContainerType'),
-            'ReportDryMatter': CheckboxColumn('Dry'),
             'Analyses': LinesColumn('Analyses'),
             'Profiles': LinesColumn('Profiles'),
         }

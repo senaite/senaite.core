@@ -23,20 +23,23 @@ from zope.interface import implements
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    RecordsField('Layout',
-        schemata = 'Layout',
-        required = 1,
-        type = 'templateposition',
-        subfields = ('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
-        required_subfields = ('pos', 'type'),
-        subfield_labels = {'pos': _('Position'),
-                           'type': _('Analysis Type'),
-                           'blank_ref': _('Reference'),
-                           'control_ref': _('Reference'),
-                           'dup': _('Duplicate Of')},
-        widget = WorksheetTemplateLayoutWidget(
+    RecordsField(
+        'Layout',
+        schemata='Layout',
+        required=1,
+        type='templateposition',
+        subfields=('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
+        required_subfields=('pos', 'type'),
+        subfield_labels={
+            'pos': _('Position'),
+            'type': _('Analysis Type'),
+            'blank_ref': _('Reference'),
+            'control_ref': _('Reference'),
+            'dup': _('Duplicate Of')
+        },
+        widget=WorksheetTemplateLayoutWidget(
             label=_("Worksheet Layout"),
-            description =_(
+            description=_(
                 "Specify the size of the Worksheet, e.g. corresponding to a "
                 "specific instrument's tray size. Then select an Analysis 'type' "
                 "per Worksheet position. Where QC samples are selected, also select "
@@ -44,16 +47,19 @@ schema = BikaSchema.copy() + Schema((
                 "selected, indicate which sample position it should be a duplicate of"),
         )
     ),
-    ReferenceField('Service',
-        schemata = 'Analyses',
-        required = 0,
-        multiValued = 1,
-        allowed_types = ('AnalysisService',),
-        relationship = 'WorksheetTemplateAnalysisService',
-        referenceClass = HoldingReference,
-        widget = ServicesWidget(
+    ReferenceField(
+        'Service',
+        schemata='Analyses',
+        required=0,
+        multiValued=1,
+        allowed_types=('AnalysisService',),
+        relationship='WorksheetTemplateAnalysisService',
+        referenceClass=HoldingReference,
+        widget=ServicesWidget(
             label=_("Analysis Service"),
-            description=_("Select which Analyses should be included on the Worksheet"),
+            description=_(
+                "Select which Analyses should be included on the Worksheet"
+            ),
         )
     ),
     ReferenceField(
@@ -65,34 +71,39 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('Method',),
         relationship='WorksheetTemplateMethod',
         referenceClass=HoldingReference,
-        widget = SelectionWidget(
+        widget=SelectionWidget(
             format='select',
             label=_("Method"),
             description=_(
                 "Restrict the available analysis services and instruments"
                 "to those with the selected method."
                 " In order to apply this change to the services list, you "
-                "should save the change first."),
+                "should save the change first."
+            ),
         ),
     ),
-    ReferenceField('Instrument',
-        schemata = "Description",
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = 'getInstruments',
-        allowed_types = ('Instrument',),
-        relationship = 'WorksheetTemplateInstrument',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+    ReferenceField(
+        'Instrument',
+        schemata="Description",
+        required=0,
+        vocabulary_display_path_bound=sys.maxint,
+        vocabulary='getInstruments',
+        allowed_types=('Instrument',),
+        relationship='WorksheetTemplateInstrument',
+        referenceClass=HoldingReference,
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Instrument"),
-            description=_("Select the preferred instrument"),
+            description=_(
+                "Select the preferred instrument"
+            ),
         ),
     ),
-    ComputedField('InstrumentTitle',
-        expression = "context.getInstrument() and context.getInstrument().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
+    ComputedField(
+        'InstrumentTitle',
+        expression="context.getInstrument() and context.getInstrument().Title() or ''",
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     BooleanField(
@@ -101,9 +112,11 @@ schema = BikaSchema.copy() + Schema((
         schemata="Description",
         widget=BooleanWidget(
             label=_("Enable Multiple Use of Instrument in Worksheets."),
-            description=_("If unchecked, \
-                          Lab Managers won't be able to assign the same Instrument more than one Analyses while \
-                          creating a Worksheet.")
+            description=_(
+                "If unchecked, \
+                Lab Managers won't be able to assign the same Instrument more than one Analyses while \
+                creating a Worksheet."
+            )
         )
     ),
 ))
@@ -164,5 +177,6 @@ class WorksheetTemplate(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("Not specified")))
         return DisplayList(list(items))
+
 
 registerType(WorksheetTemplate, PROJECTNAME)

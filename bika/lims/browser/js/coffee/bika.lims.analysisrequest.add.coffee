@@ -49,64 +49,86 @@ class window.AnalysisRequestAdd
   bind_eventhandler: =>
     ###
      * Binds callbacks on elements
+     *
+     * N.B. We attach all the events to the body and refine the selector to
+     * delegate the event: https://learn.jquery.com/events/event-delegation/
+     *
     ###
     console.debug "AnalysisRequestAdd::bind_eventhandler"
     # Categories header clicked
-    $(".service-listing-header").on "click", @on_service_listing_header_click
+    $("body").on "click", ".service-listing-header", @on_service_listing_header_click
     # Category toggle button clicked
-    $("tr.category").on "click", @on_service_category_click
+    $("body").on "click", "tr.category", @on_service_category_click
     # Save button clicked
-    $("[name='save_button']").on "click", @on_form_submit
+    $("body").on "click", "[name='save_button']", @on_form_submit
     # AdHoc Checkbox clicked
-    $("tr[fieldname=AdHoc] input[type='checkbox']").on "click", @recalculate_records
+    $("body").on "click", "tr[fieldname=AdHoc] input[type='checkbox']", @recalculate_records
     # Composite Checkbox clicked
-    $("tr[fieldname=Composite] input[type='checkbox']").on "click", @recalculate_records
+    $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
-    $("tr[fieldname=InvoiceExclude] input[type='checkbox']").on "click", @recalculate_records
+    $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
-    $("tr[fieldname=Analyses] input[type='checkbox']").on "click", @on_analysis_checkbox_click
+    $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox']", @on_analysis_checkbox_click
     # Client changed
-    $("tr[fieldname=Client] input[type='text']").on "selected change", @on_client_changed
+    $("body").on "selected change", "tr[fieldname=Client] input[type='text']", @on_client_changed
     # Contact changed
-    $("tr[fieldname=Contact] input[type='text']").on "selected change", @on_contact_changed
-    # ReportDryMatter Checkbox clicked
-    $("tr[fieldname=ReportDryMatter] input[type='checkbox']").on "click", @on_reportdrymatter_click
+    $("body").on "selected change", "tr[fieldname=Contact] input[type='text']", @on_contact_changed
     # Analysis Specification changed
-    $("input.min").on "change", @on_analysis_specification_changed
-    $("input.max").on "change", @on_analysis_specification_changed
-    $("input.err").on "change", @on_analysis_specification_changed
+    $("body").on "change", "input.min", @on_analysis_specification_changed
+    $("body").on "change", "input.max", @on_analysis_specification_changed
+    $("body").on "change", "input.warn_min", @on_analysis_specification_changed
+    $("body").on "change", "input.warn_max", @on_analysis_specification_changed
     # Analysis lock button clicked
-    $(".service-lockbtn").on "click", @on_analysis_lock_button_click
+    $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
-    $(".service-infobtn").on "click", @on_analysis_details_click
+    $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Sample changed
-    $("tr[fieldname=Sample] input[type='text']").on "selected change", @on_sample_changed
+    $("body").on "selected change", "tr[fieldname=Sample] input[type='text']", @on_sample_changed
     # SampleType changed
-    $("tr[fieldname=SampleType] input[type='text']").on "selected change", @on_sampletype_changed
+    $("body").on "selected change", "tr[fieldname=SampleType] input[type='text']", @on_sampletype_changed
     # Specification changed
-    $("tr[fieldname=Specification] input[type='text']").on "selected change", @on_specification_changed
+    $("body").on "selected change", "tr[fieldname=Specification] input[type='text']", @on_specification_changed
     # Analysis Template changed
-    $("tr[fieldname=Template] input[type='text']").on "selected change", @on_analysis_template_changed
+    $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
     # Analysis Profile selected
-    $("tr[fieldname=Profiles] input[type='text']").on "selected", @on_analysis_profile_selected
+    $("body").on "selected", "tr[fieldname=Profiles] input[type='text']", @on_analysis_profile_selected
     # Analysis Profile deselected
-    $("tr[fieldname=Profiles] img.deletebtn").live "click", @on_analysis_profile_removed
+    $("body").on "click", "tr[fieldname=Profiles] img.deletebtn", @on_analysis_profile_removed
     # Copy button clicked
-    $("img.copybutton").on "click", @on_copy_button_click
+    $("body").on "click", "img.copybutton", @on_copy_button_click
 
     ### internal events ###
 
     # handle value changes in the form
-    $(this).on "form:changed", @recalculate_records
-    # update form from records
-    $(this).on "data:updated", @update_form
+    $(this).on "form:changed", @debounce @recalculate_records, 500
     # recalculate prices after data changed
-    $(this).on "data:updated", @recalculate_prices
+    $(this).on "data:updated", @debounce @recalculate_prices, 3000
+    # update form from records after the data changed
+    $(this).on "data:updated", @debounce @update_form, 300
     # hide open service info after data changed
-    $(this).on "data:updated", @hide_all_service_info
+    $(this).on "data:updated", @debounce @hide_all_service_info, 300
     # handle Ajax events
     $(this).on "ajax:start", @on_ajax_start
     $(this).on "ajax:end", @on_ajax_end
+
+
+  debounce: (func, threshold, execAsap) =>
+    ###
+     * Debounce a function call
+     * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+    ###
+    timeout = null
+
+    (args...) ->
+      obj = this
+      delayed = ->
+        func.apply(obj, args) unless execAsap
+        timeout = null
+      if timeout
+        clearTimeout(timeout)
+      else if (execAsap)
+        func.apply(obj, args)
+      timeout = setTimeout delayed, threshold || 100
 
 
   template_dialog: (template_id, context, buttons) =>
@@ -233,9 +255,6 @@ class window.AnalysisRequestAdd
         # service is part of the template
         # if uid of record.service_to_templates
         #   lock.show()
-        # service is part of the drymatter service
-        if uid of record.service_to_dms
-          lock.show()
 
         # select the service
         me.set_service arnum, uid, yes
@@ -481,6 +500,14 @@ class window.AnalysisRequestAdd
     query = client.filter_queries.contact
     @set_reference_field_query field, query
 
+    # handle default contact for /analysisrequests listing
+    # https://github.com/senaite/senaite.core/issues/705
+    if document.URL.indexOf("analysisrequests") > -1
+      contact_title = client.default_contact.title
+      contact_uid = client.default_contact.uid
+      if contact_title and contact_uid
+        @set_reference_field field, contact_uid, contact_title
+
     # filter CCContacts
     field = $("#CCContact-#{arnum}")
     query = client.filter_queries.cc_contact
@@ -541,9 +568,14 @@ class window.AnalysisRequestAdd
      * Apply the sample data to all fields of arnum
     ###
 
-    # set the sampling date (required)
+    # set the sampling date
     field = $("#SamplingDate-#{arnum}")
     value = sample.sampling_date
+    field.val value
+
+    # set the date sampeld
+    field = $("#DateSampled-#{arnum}")
+    value = sample.date_sampled
     field.val value
 
     # set the sample type (required)
@@ -675,10 +707,6 @@ class window.AnalysisRequestAdd
     field = $("#Composite-#{arnum}")
     field.prop "checked", template.composite
 
-    # set the drymatter checkbox
-    field = $("#ReportDryMatter-#{arnum}")
-    field.prop "checked", template.report_dry_matter
-
     # set the services
     $.each template.service_uids, (index, uid) ->
       # select the service
@@ -747,11 +775,13 @@ class window.AnalysisRequestAdd
 
     min = $(".min", el)
     max = $(".max", el)
-    err = $(".err", el)
+    warn_min = $(".warn_min", el)
+    warn_max = $(".warn_max", el)
 
     min.val spec.min
     max.val spec.max
-    err.val spec.error
+    warn_min.val spec.warn_min
+    warn_max.val spec.warn_max
 
 
   get_service: (uid) =>
@@ -909,16 +939,9 @@ class window.AnalysisRequestAdd
       profiles: []
       templates: []
       specifications: []
-      drymatter: []
 
     # get the current snapshot record for this column
     record = @records_snapshot[arnum]
-
-    # inject drymatter info
-    if uid of record.service_to_dms
-      dms = record.service_to_dms[uid]
-      $.each dms, (index, uid) ->
-        extra["drymatter"].push record.dms_metadata[uid]
 
     # inject profile info
     if uid of record.service_to_profiles
@@ -970,7 +993,6 @@ class window.AnalysisRequestAdd
     context["service"] = record.service_metadata[uid]
     context["profiles"] = []
     context["templates"] = []
-    context["drymatter"] = []
 
     # collect profiles
     if uid of record.service_to_profiles
@@ -981,11 +1003,6 @@ class window.AnalysisRequestAdd
     if uid of record.service_to_templates
       template_uid = record.service_to_templates[uid]
       context["templates"].push record.template_metadata[template_uid]
-
-    # collect drymatter
-    if uid of record.service_to_dms
-      dms_uid = record.service_to_dms[uid]
-      context["drymatter"].push record.dms_metadata[dms_uid]
 
     buttons =
       OK: ->
@@ -1190,52 +1207,6 @@ class window.AnalysisRequestAdd
     uid = $el.val()
 
     console.debug "°°° on_analysis_click::UID=#{uid} checked=#{checked}°°°"
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_reportdrymatter_click: (event) =>
-    ###
-     * Eventhandler for ReportDryMatter Checkbox.
-    ###
-
-    me = this
-    el = event.currentTarget
-    checked = el.checked
-    $el = $(el)
-    arnum = $el.closest("[arnum]").attr "arnum"
-
-    console.debug "°°° on_reportdrymatter_click:: checked=#{checked}°°°"
-
-    # drymatter service deselected -> ask the user to deselect the services as well
-    if not checked
-      record = @records_snapshot[arnum]
-
-      dms_metadata = {}
-      dms_services = []
-
-      # prepare a list of services used by the drymatter service
-      $.each record.dms_to_services, (dms_uid, service_uids) ->
-        dms_metadata = record.dms_metadata[dms_uid]
-        $.each service_uids, (index, service_uid) ->
-          dms_services.push record.service_metadata[service_uid]
-
-      context = {}
-      context["drymatter"] = dms_metadata
-      context["services"] = dms_services
-
-      me = this
-      dialog = @template_dialog "drymatter-remove-template", context
-      dialog.on "yes", ->
-        # deselect the services
-        $.each dms_services, (index, service) ->
-          me.set_service arnum, service.uid, no
-        # trigger form:changed event
-        $(me).trigger "form:changed"
-      dialog.on "no", ->
-        # trigger form:changed event
-        $(me).trigger "form:changed"
 
     # trigger form:changed event
     $(me).trigger "form:changed"

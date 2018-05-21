@@ -192,18 +192,6 @@ AllowManualDetectionLimit = BooleanField(
     )
 )
 
-# Indicates that the result should be calculated against the system "Dry Matter"
-# service, and the modified result stored in Analysis.ResultDM field.
-ReportDryMatter = BooleanField(
-    'ReportDryMatter',
-    schemata="Analysis",
-    default=False,
-    widget=BooleanWidget(
-        label=_("Report as Dry Matter"),
-        description=_("These results can be reported as dry matter"),
-    )
-)
-
 # Specify attachment requirements for these analyses
 AttachmentOption = StringField(
     'AttachmentOption',
@@ -351,6 +339,7 @@ MaxTimeAllowed = DurationField(
 # The amount of difference allowed between this analysis, and any duplicates.
 DuplicateVariation = FixedPointField(
     'DuplicateVariation',
+    default='0.00',
     schemata="Method",
     widget=DecimalWidget(
         label=_("Duplicate Variation %"),
@@ -666,7 +655,6 @@ schema = BikaSchema.copy() + Schema((
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
-    ReportDryMatter,
     AttachmentOption,
     Keyword,
     ManualEntryOfResults,
