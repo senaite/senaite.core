@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #836: Allow (Multi-)Attachment upload available in AR Add
+
 
 **Changed**
 
