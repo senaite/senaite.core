@@ -4,7 +4,7 @@
  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
  i18n:domain="plone">
 
- <configlet title="Bika Setup" action_id="bika_setup"
+ <configlet title="Setup" action_id="bika_setup"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/bikasetup.png"
     url_expr="string:$portal_url/bika_setup/edit"
