@@ -182,7 +182,7 @@ class ARAnalysesField(ObjectField):
                 continue
 
             # Skip Analyses in frozen states
-            if self._is_frozen(analysis, additional_frozen_actions=['retract']):
+            if self._is_frozen(analysis, "retract"):
                 logger.warn("Inactive/verified/retracted Analyses can not be "
                             "removed.")
                 continue
@@ -251,22 +251,21 @@ class ARAnalysesField(ObjectField):
         logger.warn(msg)
         return None
 
-    def _is_frozen(self, brain_or_object, additional_frozen_actions=None):
-        """Check if the passed in object is frozen: the objectt is cancelled,
+    def _is_frozen(self, brain_or_object, *frozen_transitions):
+        """Check if the passed in object is frozen: the object is cancelled,
         inactive or has been verified at some point
         :param brain_or_object: Analysis or AR Brain/Object
-        :param additional_frozen_actions: additional actions to check against
+        :param frozen_transitions: additional transitions that freeze the object
         :returns: True if the object is frozen
         """
         if not api.is_active(brain_or_object):
             return True
-        actions = getReviewHistoryActionsList(api.get_object(brain_or_object))
-        if 'verify' in actions:
+        object = api.get_object(brain_or_object)
+        frozen_trans = set(frozen_transitions)
+        frozen_trans.add('verify')
+        performed_transitions = set(getReviewHistoryActionsList(object))
+        if frozen_trans.intersection(performed_transitions):
             return True
-        additional = additional_frozen_actions or list()
-        for action in additional:
-            if action in actions:
-                return True
         return False
 
     def _get_assigned_worksheets(self, analysis):
