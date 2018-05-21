@@ -17,6 +17,8 @@ Changelog
 
 **Fixed**
 
+- #833 Fix sort order of interims in Calculations and Analysis Services
+
 
 **Security**
 
