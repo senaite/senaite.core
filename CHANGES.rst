@@ -17,6 +17,8 @@ Changelog
 
 **Fixed**
 
+- #835 List only published ARs when "Published" Filter is active
+
 
 **Security**
 
