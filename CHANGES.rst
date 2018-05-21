@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #834 Fix Duplication Action for Analysis Services
 - #835 List only published ARs when "Published" Filter is active
 - #825 Error when exporting Worksheets list with `senaite.exporter`
 - #821 Cannot retract single analysis services

@@ -838,7 +838,7 @@
     }
 
     on_workflow_button_click(event) {
-      var $el, e, el, focus, form, form_id, transition;
+      var $el, e, el, focus, form, form_id, transition, url;
       /*
        * Eventhandler for the workflow buttons
        */
@@ -872,9 +872,10 @@
       }
       // If a custom_transitions action with a URL is clicked the form will be
       // submitted there
-      if ($el.attr("url") !== "") {
+      url = $el.attr("url");
+      if (url !== "") {
         form = $el.parents("form");
-        $(form).attr("action", $(this).attr("url"));
+        $(form).attr("action", url);
         return $(form).submit();
       }
     }
