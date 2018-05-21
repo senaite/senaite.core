@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #825 Error when exporting Worksheets list with `senaite.exporter`
 - #821 Cannot retract single analysis services
 
 **Security**
