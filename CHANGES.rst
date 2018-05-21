@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #833 Fix sort order of interims in Calculations and Analysis Services
 - #834 Fix Duplication Action for Analysis Services
 - #835 List only published ARs when "Published" Filter is active
 - #825 Error when exporting Worksheets list with `senaite.exporter`
