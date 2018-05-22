@@ -79,7 +79,7 @@ schema = BikaSchema.copy() + Schema((
         subfield_validators={
             'module': 'importvalidator',
         },
-        widget=RecordsWidget(
+        widget=BikaRecordsWidget(
             label=_("Additional Python Libraries"),
             description=_(
                 "If your formula needs a special function from an external "
@@ -123,7 +123,7 @@ schema = BikaSchema.copy() + Schema((
         subfield_readonly={'keyword': True, 'value': False},
         subfield_types={'keyword': 'string', 'value': 'float'},
         default=[{'keyword': '', 'value': 0}],
-        widget=RecordsWidget(
+        widget=BikaRecordsWidget(
             label=_("Test Parameters"),
             description=_("To test the calculation, enter values here for all "
                           "calculation parameters.  This includes Interim "
