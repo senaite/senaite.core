@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #840 Fix date range filter for "Data entry day book" report
 - #828 Traceback when removing a retracted analysis through Manage Analyses view
 - #832 Set new calculation Interims to dependant services
 - #833 Fix sort order of interims in Calculations and Analysis Services
