@@ -9,6 +9,7 @@ Changelog
 
 **Changed**
 
+- #838 Unpinned WeasyPrint to allow Addon to use newer version
 - #826 Display signatures of verifiers instead of dept managers in results report
 - #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
 - #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
