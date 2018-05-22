@@ -1177,7 +1177,11 @@ class window.AnalysisServiceEditView
         flush = if index is 0 then yes else no
         me.set_calculation calculation, flush=flush
       # select initial set calculation
-      @select_calculation @selected_calculation
+      if @selected_calculation
+        @select_calculation @selected_calculation
+      # select first calculation in list
+      else
+        @select_calculation @get_calculation()
 
 
   on_calculation_change: (event) =>

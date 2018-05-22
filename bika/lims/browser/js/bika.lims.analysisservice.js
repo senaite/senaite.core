@@ -1289,7 +1289,12 @@
           return me.set_calculation(calculation, flush = flush);
         });
         // select initial set calculation
-        return this.select_calculation(this.selected_calculation);
+        if (this.selected_calculation) {
+          return this.select_calculation(this.selected_calculation);
+        } else {
+          // select first calculation in list
+          return this.select_calculation(this.get_calculation());
+        }
       }
     }
 
