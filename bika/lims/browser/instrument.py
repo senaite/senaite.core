@@ -8,50 +8,60 @@
 import json
 
 import plone
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _, api
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
-from bika.lims.browser.multifile import MultifileView
 from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
+from bika.lims.browser.viewlets import InstrumentQCFailuresViewlet  # noqa
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
-from bika.lims.utils import t, get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
+from bika.lims.utils import get_image, get_link, t
 from plone.app.layout.globals.interfaces import IViewView
-from plone.app.layout.viewlets import ViewletBase
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
+from ZODB.POSException import POSKeyError
 from zope.interface import implements
 
 
 class InstrumentMaintenanceView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+    """Listing view for instrument maintenance tasks
+    """
 
     def __init__(self, context, request):
         super(InstrumentMaintenanceView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentMaintenanceTask',
+            "portal_type": "InstrumentMaintenanceTask",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentmaintenance_big.png"
-        self.title = self.context.translate(_("Instrument Maintenance"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentMaintenanceTask',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 40
         self.form_id = "instrumentmaintenance"
-        self.description = ""
+        self.title = self.context.translate(_("Instrument Maintenance"))
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentmaintenance_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentMaintenanceTask",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
 
         self.columns = {
             'getCurrentState': {'title': ''},
@@ -65,355 +75,414 @@ class InstrumentMaintenanceView(BikaListingView):
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('Open'),
-                'contentFilter': {'cancellation_state': 'active'},
-                'columns': [
-                    'getCurrentState',
-                    'Title',
-                    'getType',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getMaintainer',
+                "id": "default",
+                "title": _("Open"),
+                "contentFilter": {"cancellation_state": "active"},
+                "columns": [
+                    "getCurrentState",
+                    "Title",
+                    "getType",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getMaintainer",
                 ]
             }, {
-                'id': 'cancelled',
-                'title': _('Cancelled'),
-                'contentFilter': {'cancellation_state': 'cancelled'},
-                'columns': [
-                    'getCurrentState',
-                    'Title',
-                    'getType',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getMaintainer',
+                "id": "cancelled",
+                "title": _("Cancelled"),
+                "contentFilter": {"cancellation_state": "cancelled"},
+                "columns": [
+                    "getCurrentState",
+                    "Title",
+                    "getType",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getMaintainer",
                 ]
             }, {
-                'id': 'all',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'getCurrentState',
-                    'Title',
-                    'getType',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getMaintainer'
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "getCurrentState",
+                    "Title",
+                    "getType",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getMaintainer"
                 ]
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getMaintenanceTasks()
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-        for man in self.context.getMaintenanceTasks():
-            toshow.append(man.UID())
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
-                item['getDownFrom'] = obj.getDownFrom() and self.ulocalized_time(obj.getDownFrom(), long_format=1) or ''
-                item['getDownTo'] = obj.getDownTo() and self.ulocalized_time(obj.getDownTo(), long_format=1) or ''
-                item['getMaintainer'] = safe_unicode(_(obj.getMaintainer())).encode('utf-8')
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], safe_unicode(item['Title']).encode('utf-8'))
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["getType"] = _(obj.getType()[0])
+        item["getDownFrom"] = self.localize_date(obj.getDownFrom())
+        item["getDownTo"] = self.localize_date(obj.getDownTo())
+        item["getMaintainer"] = obj.getMaintainer()
 
-                status = obj.getCurrentState()
-                statustext = obj.getCurrentStateI18n()
-                statusimg = ""
-                if status == mstatus.CLOSED:
-                    statusimg = "instrumentmaintenance_closed.png"
-                elif status == mstatus.CANCELLED:
-                    statusimg = "instrumentmaintenance_cancelled.png"
-                elif status == mstatus.INQUEUE:
-                    statusimg = "instrumentmaintenance_inqueue.png"
-                elif status == mstatus.OVERDUE:
-                    statusimg = "instrumentmaintenance_overdue.png"
-                elif status == mstatus.PENDING:
-                    statusimg = "instrumentmaintenance_pending.png"
+        status = obj.getCurrentState()
+        statustext = obj.getCurrentStateI18n()
+        statusimg = ""
 
-                item['replace']['getCurrentState'] = \
-                    "<img title='%s' src='%s/++resource++bika.lims.images/%s'/>" % \
-                    (statustext, self.portal_url, statusimg)
-                outitems.append(item)
-        return outitems
+        if status == mstatus.CLOSED:
+            statusimg = "instrumentmaintenance_closed.png"
+            item["state_class"] = "state-inactive"
+        elif status == mstatus.CANCELLED:
+            statusimg = "instrumentmaintenance_cancelled.png"
+            item["state_class"] = "state-cancelled"
+        elif status == mstatus.INQUEUE:
+            statusimg = "instrumentmaintenance_inqueue.png"
+            item["state_class"] = "state-open"
+        elif status == mstatus.OVERDUE:
+            statusimg = "instrumentmaintenance_overdue.png"
+            item["state_class"] = "state-open"
+        elif status == mstatus.PENDING:
+            statusimg = "instrumentmaintenance_pending.png"
+            item["state_class"] = "state-pending"
+
+        item["replace"]["getCurrentState"] = get_image(
+            statusimg, title=statustext)
+        return item
 
 
 class InstrumentCalibrationsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+    """Listing view for instrument calibrations
+    """
 
     def __init__(self, context, request):
         super(InstrumentCalibrationsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentCalibration',
+            "portal_type": "InstrumentCalibration",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcalibration_big.png"
-        self.title = self.context.translate(_("Instrument Calibrations"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentCalibration',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
         self.form_id = "instrumentcalibrations"
-        self.description = ""
+        self.title = self.context.translate(_("Instrument Calibrations"))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcalibration_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentCalibration",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        # instrument calibrations
+        calibrations = self.context.getCalibrations()
+        # current running calibrations
+        self.active_calibrations = filter(
+            lambda c: c.isCalibrationInProgress(), calibrations)
+        self.latest_calibration = self.context.getLatestValidCalibration()
 
         self.columns = {
-            'Title': {'title': _('Task'),
-                      'index': 'sortable_title'},
-            'getDownFrom': {'title': _('Down from')},
-            'getDownTo': {'title': _('Down to')},
-            'getCalibrator': {'title': _('Calibrator')},
+            "Title": {"title": _("Task"),
+                      "index": "sortable_title"},
+            "getDownFrom": {"title": _("Down from")},
+            "getDownTo": {"title": _("Down to")},
+            "getCalibrator": {"title": _("Calibrator")},
         }
-
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getCalibrator',
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getCalibrator",
                 ]
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getCalibrations()
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
+        calibrator = obj.getCalibrator()
 
-        for cal in self.context.getCalibrations():
-            toshow.append(cal.UID())
+        item["getDownFrom"] = self.localize_date(obj.getDownFrom())
+        item["getDownTo"] = self.localize_date(obj.getDownTo())
+        item["getCalibrator"] = ""
+        if calibrator:
+            props = api.get_user_properties(calibrator)
+            name = props.get("fullname", calibrator)
+            item["getCalibrator"] = name
+        item["replace"]["Title"] = get_link(url, value=title)
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['getDownFrom'] = obj.getDownFrom()
-                item['getDownTo'] = obj.getDownTo()
-                item['getCalibrator'] = obj.getCalibrator()
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], item['Title'])
-                outitems.append(item)
+        # calibration with the most remaining days
+        if obj == self.latest_calibration:
+            item["state_class"] = "state-published"
+        # running calibrations
+        elif obj in self.active_calibrations:
+            item["state_class"] = "state-active"
+        # inactive calibrations
+        else:
+            item["state_class"] = "state-inactive"
 
-        return outitems
+        return item
 
 
 class InstrumentValidationsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+    """Listing view for instrument validations
+    """
 
     def __init__(self, context, request):
         super(InstrumentValidationsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentValidation',
+            "portal_type": "InstrumentValidation",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentvalidation_big.png"
-        self.title = self.context.translate(_("Instrument Validations"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentValidation',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
         self.form_id = "instrumentvalidations"
-        self.description = ""
+        self.title = self.context.translate(_("Instrument Validations"))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentvalidation_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentValidation",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        # instrument validations
+        validations = self.context.getValidations()
+        # current running validations
+        self.active_validations = filter(
+            lambda v: v.isValidationInProgress(), validations)
+        self.latest_validation = self.context.getLatestValidValidation()
 
         self.columns = {
-            'Title': {'title': _('Task'),
-                      'index': 'sortable_title'},
-            'getDownFrom': {'title': _('Down from')},
-            'getDownTo': {'title': _('Down to')},
-            'getValidator': {'title': _('Validator')},
+            "Title": {"title": _("Task"),
+                      "index": "sortable_title"},
+            "getDownFrom": {"title": _("Down from")},
+            "getDownTo": {"title": _("Down to")},
+            "getValidator": {"title": _("Validator")},
         }
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getDownFrom',
-                    'getDownTo',
-                    'getValidator',
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getDownFrom",
+                    "getDownTo",
+                    "getValidator",
                 ]
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getValidations()
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-        for val in self.context.getValidations():
-            toshow.append(val.UID())
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['getDownFrom'] = obj.getDownFrom()
-                item['getDownTo'] = obj.getDownTo()
-                item['getValidator'] = obj.getValidator()
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], item['Title'])
-                outitems.append(item)
-        return outitems
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
+
+        item["getDownFrom"] = self.localize_date(obj.getDownFrom())
+        item["getDownTo"] = self.localize_date(obj.getDownTo())
+        item["getValidator"] = obj.getValidator()
+        item["replace"]["Title"] = get_link(url, value=title)
+
+        # validation with the most remaining days
+        if obj == self.latest_validation:
+            item["state_class"] = "state-published"
+        # running validations
+        elif obj in self.active_validations:
+            item["state_class"] = "state-active"
+        # inactive validations
+        else:
+            item["state_class"] = "state-inactive"
+
+        return item
 
 
 class InstrumentScheduleView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+    """Listing view for instrument scheduled tasks
+    """
 
     def __init__(self, context, request):
         super(InstrumentScheduleView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
-            'portal_type': 'InstrumentScheduledTask',
-            'getInstrumentUID()': context.UID(),
+            "portal_type": "InstrumentScheduledTask",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentschedule_big.png"
-        self.title = self.context.translate(_("Instrument Scheduled Tasks"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentScheduledTask',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 25
-
         self.form_id = "instrumentschedule"
-        self.description = ""
+        self.title = self.context.translate(_("Instrument Scheduled Tasks"))
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentschedule_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentScheduledTask",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
 
         self.columns = {
-            'Title': {'title': _('Scheduled task'),
-                      'index': 'sortable_title'},
-            'getType': {'title': _('Task type', 'Type')},
-            'getCriteria': {'title': _('Criteria')},
-            'creator': {'title': _('Created by')},
-            'created': {'title': _('Created')},
+            "Title": {"title": _("Scheduled task"),
+                      "index": "sortable_title"},
+            "getType": {"title": _("Task type", "Type")},
+            "getCriteria": {"title": _("Criteria")},
+            "creator": {"title": _("Created by")},
+            "created": {"title": _("Created")},
         }
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('Active'),
-                'contentFilter': {'inactive_state': 'active'},
-                'transitions': [{'id': 'deactivate'}, ],
-                'columns': [
-                    'Title',
-                    'getType',
-                    'getCriteria',
-                    'creator',
-                    'created',
+                "id": "default",
+                "title": _("Active"),
+                "contentFilter": {"inactive_state": "active"},
+                "transitions": [{"id": "deactivate"}, ],
+                "columns": [
+                    "Title",
+                    "getType",
+                    "getCriteria",
+                    "creator",
+                    "created",
                 ]
             }, {
-                'id': 'inactive',
-                'title': _('Dormant'),
-                'contentFilter': {'inactive_state': 'inactive'},
-                'transitions': [{'id': 'activate'}, ],
-                'columns': [
-                    'Title',
-                    'getType',
-                    'getCriteria',
-                    'creator',
-                    'created'
+                "id": "inactive",
+                "title": _("Dormant"),
+                "contentFilter": {"inactive_state": "inactive"},
+                "transitions": [{"id": "activate"}, ],
+                "columns": [
+                    "Title",
+                    "getType",
+                    "getCriteria",
+                    "creator",
+                    "created"
                 ]
             }, {
-                'id': 'all',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getType',
-                    'getCriteria',
-                    'creator',
-                    'created',
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getType",
+                    "getCriteria",
+                    "creator",
+                    "created",
                 ]
             }
         ]
 
-    def contentsMethod(self, *args, **kw):
-        return self.context.getSchedule()
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-        for sch in self.context.getSchedule():
-            toshow.append(sch.UID())
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item
+        """
+        url = item.get("url")
+        title = item.get("Title")
+        creator = obj.Creator()
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            if obj.UID() in toshow:
-                item['created'] = self.ulocalized_time(obj.created())
-                item['creator'] = obj.Creator()
-                item['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
-                item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                    (item['url'], item['Title'])
-                outitems.append(item)
-        return outitems
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["created"] = self.localize_date(obj.created())
+        item["getType"] = _(obj.getType()[0])
+        item["creator"] = ""
+        if creator:
+            props = api.get_user_properties(creator)
+            name = props.get("fullname", creator)
+            item["creator"] = name
+
+        return item
 
 
 class InstrumentReferenceAnalysesViewView(BrowserView):
-    """ View of Reference Analyses linked to the Instrument.
-        Only shows the Reference Analyses (Control and Blanks), the rest
-        of regular and duplicate analyses linked to this instrument are
-        not displayed.
-        The Reference Analyses from an Instrument can be from Worksheets
-        (QC analysis performed regularly for any Analysis Request) or
-        attached directly to the instrument, without being linked to
-        any Worksheet). In this case, the Reference Analyses are created
-        automatically by the instrument import tool.
+    """View of Reference Analyses linked to the Instrument.
+
+    Only shows the Reference Analyses (Control and Blanks), the rest of regular
+    and duplicate analyses linked to this instrument are not displayed.
+
+    The Reference Analyses from an Instrument can be from Worksheets (QC
+    analysis performed regularly for any Analysis Request) or attached directly
+    to the instrument, without being linked to any Worksheet).
+
+    In this case, the Reference Analyses are created automatically by the
+    instrument import tool.
     """
 
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/instrument_referenceanalyses.pt")
+    template = ViewPageTemplateFile(
+        "templates/instrument_referenceanalyses.pt")
 
     def __init__(self, context, request):
-        super(InstrumentReferenceAnalysesViewView, self).__init__(context, request)
+        super(InstrumentReferenceAnalysesViewView, self).__init__(
+            context, request)
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
         self.title = self.context.translate(_("Internal Calibration Tests"))
-
-        self.description = ""
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/referencesample_big.png"
+        )
         self._analysesview = None
 
     def __call__(self):
         return self.template()
 
     def get_analyses_table(self):
-        """ Returns the table of Reference Analyses
+        """Returns the table of Reference Analyses
         """
         return self.get_analyses_view().contents_table()
 
@@ -426,7 +495,7 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
             self._analysesview.show_select_column = False
             self._analysesview.show_workflow_action_buttons = False
             self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
-            self._analysesview.review_states[0]['transitions'] = [{}]
+            self._analysesview.review_states[0]["transitions"] = [{}]
         return self._analysesview
 
     def get_analyses_json(self):
@@ -434,51 +503,49 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
 
 
 class InstrumentReferenceAnalysesView(AnalysesView):
-    """ View for the table of Reference Analyses linked to the Instrument.
-        Only shows the Reference Analyses (Control and Blanks), the rest
-        of regular and duplicate analyses linked to this instrument are
-        not displayed.
+    """View for the table of Reference Analyses linked to the Instrument.
+
+    Only shows the Reference Analyses (Control and Blanks), the rest of regular
+    and duplicate analyses linked to this instrument are not displayed.
     """
 
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request, **kwargs)
         self.catalog = CATALOG_ANALYSIS_LISTING
+
         self.contentFilter = {
             "portal_type": "ReferenceAnalysis",
             "getInstrumentUID": api.get_uid(self.context),
             "sort_on": "getResultCaptureDate",
             "sort_order": "reverse"
         }
-        self.columns['getReferenceAnalysesGroupID'] = {
-            'title': _('QC Sample ID'),
-            'sortable': False
+        self.columns["getReferenceAnalysesGroupID"] = {
+            "title": _("QC Sample ID"),
+            "sortable": False
         }
-        self.columns['Partition'] = {
-            'title': _('Reference Sample'),
-            'sortable': False
+        self.columns["Partition"] = {
+            "title": _("Reference Sample"),
+            "sortable": False
         }
-        self.columns['Retractions'] = {
-            'title': '',
-            'sortable': False
+        self.columns["Retractions"] = {
+            "title": "",
+            "sortable": False
         }
-        self.review_states[0]['columns'] = [
-            'Service',
-            'getReferenceAnalysesGroupID',
-            'Partition',
-            'Result',
-            'Uncertainty',
-            'CaptureDate',
-            'Retractions'
+        self.review_states[0]["columns"] = [
+            "Service",
+            "getReferenceAnalysesGroupID",
+            "Partition",
+            "Result",
+            "Uncertainty",
+            "CaptureDate",
+            "Retractions"
         ]
         self.chart = EvolutionChart()
 
     def isItemAllowed(self, obj):
-        """
-        :obj: it is a brain
-        """
         allowed = super(InstrumentReferenceAnalysesView,
                         self).isItemAllowed(obj)
-        return allowed or obj.getResult != ''
+        return allowed or obj.getResult != ""
 
     def folderitem(self, obj, item, index):
         item = super(InstrumentReferenceAnalysesView,
@@ -487,11 +554,11 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
         # Partition is used to group/toggle QC Analyses
         sample = analysis.getSample()
-        item['replace']['Partition'] = get_link(api.get_url(sample),
+        item["replace"]["Partition"] = get_link(api.get_url(sample),
                                                 api.get_id(sample))
 
         # Get retractions field
-        item['Retractions'] = ''
+        item["Retractions"] = ""
         report = analysis.getRetractedAnalysesPdfReport()
         if report:
             url = api.get_url(analysis)
@@ -499,8 +566,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             attrs = {"class": "pdf", "target": "_blank"}
             title = _("Retractions")
             link = get_link(href, title, **attrs)
-            item['Retractions'] = title
-            item['replace']['Retractions'] = link
+            item["Retractions"] = title
+            item["replace"]["Retractions"] = link
 
         # Add the analysis to the QC Chart
         self.chart.add_analysis(analysis)
@@ -509,144 +576,252 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
 
 class InstrumentCertificationsView(BikaListingView):
-    """ View for the table of Certifications. Includes Internal and
-        External Calibrations. Also a bar to filter the results
+    """Listing view for instrument certifications
     """
 
     def __init__(self, context, request, **kwargs):
         BikaListingView.__init__(self, context, request, **kwargs)
-        self.form_id = "instrumentcertifications"
+        self.catalog = "portal_catalog"
+        self.contentFilter = {
+            "portal_type": "InstrumentCertification",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
+        self.form_id = "instrumentcertifications"
         self.title = self.context.translate(_("Calibration Certificates"))
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentCertification',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcertification_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentCertification",
+                "icon": "++resource++bika.lims.images/add.png"
+            }
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        # latest valid certificate UIDs
+        self.valid_certificates = self.context.getValidCertifications()
+        self.latest_certificate = self.context.getLatestValidCertification()
 
         self.columns = {
-            'Title': {'title': _('Cert. Num'), 'index': 'sortable_title'},
-            'getAgency': {'title': _('Agency'), 'sortable': False},
-            'getDate': {'title': _('Date'), 'sortable': False},
-            'getValidFrom': {'title': _('Valid from'), 'sortable': False},
-            'getValidTo': {'title': _('Valid to'), 'sortable': False},
-            'getDocument': {'title': _('Document'), 'sortable': False},
+            "Title": {"title": _("Cert. Num"), "index": "sortable_title"},
+            "getAgency": {"title": _("Agency"), "sortable": False},
+            "getDate": {"title": _("Date"), "sortable": False},
+            "getValidFrom": {"title": _("Valid from"), "sortable": False},
+            "getValidTo": {"title": _("Valid to"), "sortable": False},
+            "getDocument": {"title": _("Document"), "sortable": False},
         }
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'columns': [
-                    'Title',
-                    'getAgency',
-                    'getDate',
-                    'getValidFrom',
-                    'getValidTo',
-                    'getDocument',
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "Title",
+                    "getAgency",
+                    "getDate",
+                    "getValidFrom",
+                    "getValidTo",
+                    "getDocument",
                 ],
-                'transitions': []
+                "transitions": []
             }
         ]
-        self.allow_edit = False
-        self.show_select_column = False
-        self.show_workflow_action_buttons = True
-        uids = [c.UID() for c in self.context.getCertifications()]
-        self.catalog = 'portal_catalog'
-        self.contentFilter = {'UID': uids, 'sort_on': 'sortable_title'}
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        valid = [c.UID() for c in self.context.getValidCertifications()]
-        latest = self.context.getLatestValidCertification()
-        latest = latest.UID() if latest else ''
+    def get_document(self, certificate):
+        """Return the document of the given document
+        """
+        try:
+            return certificate.getDocument()
+        except POSKeyError:  # POSKeyError: "No blob file"
+            # XXX When does this happen?
+            return None
 
-        for item in items:
-            if "obj" not in item:
-                continue
-            obj = item['obj']
-            item['getDate'] = self.ulocalized_time(obj.getDate(), long_format=0)
-            item['getValidFrom'] = self.ulocalized_time(obj.getValidFrom(), long_format=0)
-            item['getValidTo'] = self.ulocalized_time(obj.getValidTo(), long_format=0)
-            item['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                (item['url'], item['Title'])
-            if obj.getInternal() is True:
-                item['replace']['getAgency'] = ""
-                item['state_class'] = '%s %s' % (item['state_class'], 'internalcertificate')
+    def localize_date(self, date):
+        """Return the localized date
+        """
+        return self.ulocalized_time(date, long_format=0)
 
-            item['getDocument'] = ""
-            item['replace']['getDocument'] = ""
-            try:
-                doc = obj.getDocument()
-                if doc and doc.get_size() > 0:
-                    anchor = "<a href='%s/at_download/Document'>%s</a>" % \
-                        (obj.absolute_url(), doc.filename)
-                    item['getDocument'] = doc.filename
-                    item['replace']['getDocument'] = anchor
-            except:
-                # POSKeyError: 'No blob file'
-                # Show the record, but not the link
-                item['getDocument'] = _('Not available')
-                item['replace']['getDocument'] = _('Not available')
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item with additional data
+        """
+        url = item.get("url")
+        title = item.get("Title")
 
-            uid = obj.UID()
-            if uid in valid:
-                # Valid calibration.
-                item['state_class'] = '%s %s' % (item['state_class'], 'active')
-            elif uid == latest:
-                # Latest valid certificate
-                img = "<img title='%s' src='%s/++resource++bika.lims.images/exclamation.png'/>&nbsp;" \
-                    % (t(_('Out of date')), self.portal_url)
-                item['replace']['getValidTo'] = '%s %s' % (item['getValidTo'], img)
-                item['state_class'] = '%s %s' % (item['state_class'], 'inactive outofdate')
-            else:
-                # Old and further calibrations
-                item['state_class'] = '%s %s' % (item['state_class'], 'inactive')
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["getDate"] = self.localize_date(obj.getDate())
+        item["getValidFrom"] = self.localize_date(obj.getValidFrom())
+        item["getValidTo"] = self.localize_date(obj.getValidTo())
 
-        return items
+        if obj.getInternal() is True:
+            item["replace"]["getAgency"] = ""
+            item["state_class"] = "%s %s" % \
+                (item["state_class"], "internalcertificate")
+
+        item["getDocument"] = ""
+        item["replace"]["getDocument"] = ""
+        doc = self.get_document(obj)
+        if doc and doc.get_size() > 0:
+            filename = doc.filename
+            download_url = "{}/at_download/Document".format(url)
+            anchor = get_link(download_url, filename)
+            item["getDocument"] = filename
+            item["replace"]["getDocument"] = anchor
+
+        # Latest valid certificate
+        if obj == self.latest_certificate:
+            item["state_class"] = "state-published"
+        # Valid certificate
+        elif obj in self.valid_certificates:
+            item["state_class"] = "state-valid state-published"
+        # Invalid certificates
+        else:
+            img = get_image("exclamation.png", title=t(_("Out of date")))
+            item["replace"]["getValidTo"] = "%s %s" % (item["getValidTo"], img)
+            item["state_class"] = "state-invalid"
+
+        return item
 
 
 class InstrumentAutoImportLogsView(AutoImportLogsView):
-    """ Logs of Auto-Imports of this instrument.
+    """Logs of Auto-Imports of this instrument.
     """
 
     def __init__(self, context, request, **kwargs):
         AutoImportLogsView.__init__(self, context, request, **kwargs)
-        del self.columns['Instrument']
-        self.review_states[0]['columns'].remove('Instrument')
-        self.contentFilter = {'portal_type': 'AutoImportLog',
-                              'getInstrumentUID': self.context.UID(),
-                              'sort_on': 'Created',
-                              'sort_order': 'reverse'}
+        del self.columns["Instrument"]
+        self.review_states[0]["columns"].remove("Instrument")
+        self.contentFilter = {
+            "portal_type": "AutoImportLog",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
         self.title = self.context.translate(
             _("Auto Import Logs of %s" % self.context.Title()))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcertification_big.png"
+        )
         self.context_actions = {}
 
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 25
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
 
 
-class InstrumentMultifileView(MultifileView):
-    implements(IFolderContentsView, IViewView)
+class InstrumentMultifileView(BikaListingView):
+    """Listing view for instrument multi files
+    """
 
     def __init__(self, context, request):
         super(InstrumentMultifileView, self).__init__(context, request)
-        self.show_workflow_action_buttons = False
-        self.title = self.context.translate(_("Instrument Files"))
-        self.description = "Different interesting documents and files to be attached to the instrument"
 
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_select_all_checkbox = False
-        self.pagesize = 25
+        self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            "portal_type": "Multifile",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1  # searching just inside the specified folder
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
+
+        self.form_id = "instrumentfiles"
+        self.title = self.context.translate(_("Instrument Files"))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/instrumentcertification_big.png"
+        )
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=Multifile",
+                "icon": "++resource++bika.lims.images/add.png"
+            }
+        }
+
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = True
+        self.pagesize = 30
+
+        self.columns = {
+            "DocumentID": {"title": _("Document ID"),
+                           "index": "sortable_title"},
+            "DocumentVersion": {"title": _("Document Version"),
+                                "index": "sortable_title"},
+            "DocumentLocation": {"title": _("Document Location"),
+                                 "index": "sortable_title"},
+            "DocumentType": {"title": _("Document Type"),
+                             "index": "sortable_title"},
+            "FileDownload": {"title": _("File")}
+        }
+
+        self.review_states = [
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": [
+                    "DocumentID",
+                    "DocumentVersion",
+                    "DocumentLocation",
+                    "DocumentType",
+                    "FileDownload"
+                ]
+            },
+        ]
+
+    def get_file(self, obj):
+        """Return the file of the given object
+        """
+        try:
+            return obj.getFile()
+        except POSKeyError:  # POSKeyError: "No blob file"
+            # XXX When does this happen?
+            return None
+
+    def folderitem(self, obj, item, index):
+        """Augment folder listing item with additional data
+        """
+        url = item.get("url")
+        title = item.get("DocumentID")
+
+        item["replace"]["DocumentID"] = get_link(url, title)
+
+        item["FileDownload"] = ""
+        item["replace"]["FileDownload"] = ""
+        file = self.get_file(obj)
+        if file and file.get_size() > 0:
+            filename = file.filename
+            download_url = "{}/at_download/File".format(url)
+            anchor = get_link(download_url, filename)
+            item["FileDownload"] = filename
+            item["replace"]["FileDownload"] = anchor
+
+        item["DocumentVersion"] = obj.getDocumentVersion()
+        item["DocumentLocation"] = obj.getDocumentLocation()
+        item["DocumentType"] = obj.getDocumentType()
+
+        return item
 
 
 class ajaxGetInstrumentMethods(BrowserView):
@@ -665,8 +840,9 @@ class ajaxGetInstrumentMethods(BrowserView):
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
             return json.dumps(out)
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        results = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
+        bsc = getToolByName(self, "bika_setup_catalog")
+        results = bsc(portal_type="Instrument",
+                      UID=self.request.get("uid", "0"))
         instrument = results[0] if results and len(results) == 1 else None
         if instrument:
             instrument_obj = instrument.getObject()
@@ -680,81 +856,3 @@ class ajaxGetInstrumentMethods(BrowserView):
                     "title": method.Title(),
                 })
         return json.dumps(out)
-
-
-class InstrumentQCFailuresViewlet(ViewletBase):
-    """ Print a viewlet showing failed instruments
-    """
-
-    index = ViewPageTemplateFile("templates/instrument_qc_failures_viewlet.pt")
-
-    def __init__(self, context, request, view, manager=None):
-        super(InstrumentQCFailuresViewlet, self).__init__(context, request, view, manager=manager)
-        self.nr_failed = 0
-        self.failed = {
-            'out-of-date': [],
-            'qc-fail': [],
-            'next-test': [],
-            'validation': [],
-            'calibration': [],
-        }
-
-    def get_failed_instruments(self):
-        """ Find all active instruments who have failed QC tests
-            Find instruments whose certificate is out of date
-            Find instruments which are disposed until next calibration test
-
-            Return a dictionary with all info about expired/invalid instruments
-
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        insts = bsc(portal_type='Instrument', inactive_state='active')
-        for i in insts:
-            i = i.getObject()
-            instr = {
-                'uid': i.UID(),
-                'title': i.Title(),
-            }
-            if i.isValidationInProgress():
-                instr['link'] = '<a href="%s/validations">%s</a>' % (
-                    i.absolute_url(), i.Title()
-                )
-                self.nr_failed += 1
-                self.failed['validation'].append(instr)
-            elif i.isCalibrationInProgress():
-                instr['link'] = '<a href="%s/calibrations">%s</a>' % (
-                    i.absolute_url(), i.Title()
-                )
-                self.nr_failed += 1
-                self.failed['calibration'].append(instr)
-            elif i.isOutOfDate():
-                instr['link'] = '<a href="%s/certifications">%s</a>' % (
-                    i.absolute_url(), i.Title()
-                )
-                self.nr_failed += 1
-                self.failed['out-of-date'].append(instr)
-            elif not i.isQCValid():
-                instr['link'] = '<a href="%s/referenceanalyses">%s</a>' % (
-                    i.absolute_url(), i.Title()
-                )
-                self.nr_failed += 1
-                self.failed['qc-fail'].append(instr)
-            elif i.getDisposeUntilNextCalibrationTest():
-                instr['link'] = '<a href="%s/referenceanalyses">%s</a>' % (
-                    i.absolute_url(), i.Title()
-                )
-                self.nr_failed += 1
-                self.failed['next-test'].append(instr)
-
-    def render(self):
-        mtool = getToolByName(self.context, 'portal_membership')
-        member = mtool.getAuthenticatedMember()
-        roles = member.getRoles()
-        allowed = 'LabManager' in roles or 'Manager' in roles
-
-        self.get_failed_instruments()
-
-        if allowed and self.nr_failed:
-            return self.index()
-        else:
-            return ""

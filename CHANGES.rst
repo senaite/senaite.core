@@ -10,6 +10,7 @@ Changelog
 **Changed**
 
 - #838 Unpinned WeasyPrint to allow Addon to use newer version
+- #820 Always allow interim fields to be added to Analysis Services
 - #826 Display signatures of verifiers instead of dept managers in results report
 - #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
 - #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
@@ -19,6 +20,8 @@ Changelog
 
 **Fixed**
 
+- #824 Instrument Listing Views Fixes and Refactoring
+- #840 Fix date range filter for "Data entry day book" report
 - #828 Traceback when removing a retracted analysis through Manage Analyses view
 - #832 Set new calculation Interims to dependant services
 - #833 Fix sort order of interims in Calculations and Analysis Services
