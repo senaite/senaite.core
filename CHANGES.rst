@@ -9,6 +9,7 @@ Changelog
 
 **Changed**
 
+- #826 Display signatures of verifiers instead of dept managers in results report
 - #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
 - #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
 
@@ -18,6 +19,12 @@ Changelog
 **Fixed**
 
 - #828 Traceback when removing a retracted analysis through Manage Analyses view
+- #832 Set new calculation Interims to dependant services
+- #833 Fix sort order of interims in Calculations and Analysis Services
+- #834 Fix Duplication Action for Analysis Services
+- #835 List only published ARs when "Published" Filter is active
+- #825 Error when exporting Worksheets list with `senaite.exporter`
+- #821 Cannot retract single analysis services
 
 **Security**
 
