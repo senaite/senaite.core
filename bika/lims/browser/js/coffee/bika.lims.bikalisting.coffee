@@ -890,9 +890,10 @@ class window.BikaListingTableView
 
     # If a custom_transitions action with a URL is clicked the form will be
     # submitted there
-    if $el.attr("url") != ""
+    url = $el.attr "url"
+    if url != ""
       form = $el.parents("form")
-      $(form).attr "action", $(this).attr("url")
+      $(form).attr "action", url
       $(form).submit()
 
 
