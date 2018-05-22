@@ -19,6 +19,7 @@ Changelog
 
 **Fixed**
 
+- #824 Instrument Listing Views Fixes and Refactoring
 - #840 Fix date range filter for "Data entry day book" report
 - #828 Traceback when removing a retracted analysis through Manage Analyses view
 - #832 Set new calculation Interims to dependant services

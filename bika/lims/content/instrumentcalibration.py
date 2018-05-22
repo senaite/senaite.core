@@ -206,7 +206,7 @@ class InstrumentCalibration(BaseFolder):
         """
         delta = 0
         today = DateTime()
-        down_from = self.getDownFrom()
+        down_from = self.getDownFrom() or today
         down_to = self.getDownTo()
 
         # one of the fields is not set, return 0 days
