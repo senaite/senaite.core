@@ -20,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #842 Re-compiled Coffee-Scripts with version 1.12.7 
 - #824 Instrument Listing Views Fixes and Refactoring
 - #840 Fix date range filter for "Data entry day book" report
 - #828 Traceback when removing a retracted analysis through Manage Analyses view
