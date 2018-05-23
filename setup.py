@@ -51,7 +51,7 @@ setup(
         'magnitude',
         'gpw',
         'jarn.jsi18n',
-        'WeasyPrint==0.42.2',
+        'WeasyPrint',
         'collective.progressbar',
         'z3c.unconfigure==1.0.1',
         'plone.app.dexterity',
