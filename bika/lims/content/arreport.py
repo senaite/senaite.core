@@ -12,6 +12,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IARReport
 from plone.app.blob.field import BlobField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
@@ -19,6 +20,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField
+from zope.interface import implements
 
 
 schema = BikaSchema.copy() + Schema((
@@ -65,6 +67,8 @@ class ARReport(BaseFolder):
        format. It includes information about the date when was published, from
        whom, the report recipients (and their emails) and the publication mode
     """
+    implements(IARReport)
+
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
