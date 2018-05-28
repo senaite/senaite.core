@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #844 Missing interface for AR Report added
+
 
 **Changed**
 
