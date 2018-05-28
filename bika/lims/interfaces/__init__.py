@@ -838,3 +838,7 @@ class IGetStickerTemplates(Interface):
     :return: [{'id': <template_id>,
              'title': <template_title>}, ...]
     """
+
+class IARReport(Interface):
+    """Marker interface for published AR Reports
+    """
