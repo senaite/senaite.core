@@ -1,23 +1,20 @@
-# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
-# SOME DESCRIPTIVE TITLE.
 # Translators:
-# Matthew Tsui <mtsui@app2one.com>, 2016
-# Rui Tang <bio.nanoparticle@gmail.com>, 2012
+# Ramon Bartl <rb@ridingbytes.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2018-06-01 18:03+0000\n"
-"PO-Revision-Date: 2017-10-02 17:43+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/bikalabs/bika-lims/language/zh_TW/)\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-06-01 19:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: Chinese (Taiwan) (https://www.transifex.com/senaite/teams/87045/zh_TW/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: bika\n"
+"Domain: DOMAIN\n"
 "Language: zh_TW\n"
 
 #: bika/lims/content/bikasetup.py:804
@@ -344,7 +341,6 @@ msgstr "添加重復"
 msgid "Add Reflex rule"
 msgstr ""
 
-# worksheet.js
 #: bika/lims/browser/analyses/view.py:1142
 msgid "Add Remark"
 msgstr ""
@@ -6875,9 +6871,8 @@ msgstr ""
 #. notifications about new releases."
 #. Default: "Version ${new_version} was released on ${new_date}, and your current version is ${current_version}. ${click_here} to disable notifications about new releases."
 #: bika/lims/browser/viewlets/templates/new_versions.pt:16
-#, fuzzy
 msgid "new_version_available_description"
-msgstr "新版本可用說明"
+msgstr ""
 
 #. Default: "New Bika LIMS release available"
 #: bika/lims/browser/viewlets/templates/new_versions.pt:8
@@ -6946,9 +6941,8 @@ msgstr ""
 #. upgrade."
 #. Default: "Your current database profile version is ${installed_version}, and the version installed on disk is ${new_version}. Please remember to ${backup_instructions_link}, and then ${click_here} to perform the upgrade."
 #: bika/lims/browser/viewlets/templates/new_versions.pt:34
-#, fuzzy
 msgid "upgrade_available_description"
-msgstr "可升級說明"
+msgstr ""
 
 #. Default: "Upgrade step available"
 #: bika/lims/browser/viewlets/templates/new_versions.pt:25

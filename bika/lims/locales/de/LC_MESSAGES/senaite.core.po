@@ -1,49 +1,21 @@
-# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
-# SOME DESCRIPTIVE TITLE.
 # Translators:
-# <>, 2012
-# campbellbasset <>, 2012
-# campbellbasset <>, 2012
-# Harry  Falk <harrymfalk@gmail.com>, 2012
-# Harry  Falk <harrymfalk@gmail.com>, 2012
-# Harry  Falk <harrymfalk@gmail.com>, 2012
-# Harry  Falk <harrymfalk@gmail.com>, 2012
-# HartmutThomas, 2014
-# Hartmut Thomas, 2014
-# Herb, 2013
-# Herb, 2013
-# HartmutThomas, 2014
-# Jens Herb, 2013
-# mkandler <kandler.m@bartelt.at>, 2012
-# mkandler <kandler.m@bartelt.at>, 2012
-# kare <katharina.hubig@web.de>, 2012
-# kare <katharina.hubig@web.de>, 2012
-# kare <katharina.hubig@web.de>, 2012
-# lemoene Smit <admin@bikalabs.com>, 2012
-# Lutz Kogel <lkogel@koluma.de>, 2015
-# Lutz Kogel <lkogel@koluma.de>, 2015-2016
-# Mabuse <mabuse@byom.de>, 2014
-# Mabuse <mabuse@byom.de>, 2014
-# mkandler <kandler.m@bartelt.at>, 2012
-# Ramon Bartl <rb@ridingbytes.com>, 2016-2017
-# Stefan Gruber <st.gruber@t-online.de>, 2015
+# Ramon Bartl <rb@ridingbytes.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2018-06-01 18:03+0000\n"
-"PO-Revision-Date: 2018-02-13 21:56+0100\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
-"Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-06-01 19:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: bika\n"
+"Domain: DOMAIN\n"
 "Language: de\n"
-"X-Generator: Poedit 1.8.9\n"
 
 #: bika/lims/content/bikasetup.py:804
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
@@ -374,7 +346,6 @@ msgstr "Wiederholungsmessung hinzufügen"
 msgid "Add Reflex rule"
 msgstr ""
 
-# worksheet.js
 #: bika/lims/browser/analyses/view.py:1142
 msgid "Add Remark"
 msgstr "Bemerkung hinzufügen"
@@ -4830,7 +4801,6 @@ msgstr "Zurückgezogen"
 msgid "Retracted analyses"
 msgstr "Zurückgezogene Analysen"
 
-# Rücknahmen
 #: bika/lims/browser/instrument.py:567
 msgid "Retractions"
 msgstr "Rückzüge"
@@ -6872,10 +6842,9 @@ msgstr "${d}.${m}.${Y}"
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
-#. Default: "yy-mm-dd"
-#, fuzzy
+#. Default: "mm/dd/yy"
 msgid "date_format_short_datepicker"
-msgstr "dd.mm.yy"
+msgstr ""
 
 #: bika/lims/browser/templates/referencesample_view.pt:124
 msgid "deactivate"
@@ -6907,9 +6876,8 @@ msgstr "monatlich"
 #. notifications about new releases."
 #. Default: "Version ${new_version} was released on ${new_date}, and your current version is ${current_version}. ${click_here} to disable notifications about new releases."
 #: bika/lims/browser/viewlets/templates/new_versions.pt:16
-#, fuzzy
 msgid "new_version_available_description"
-msgstr "Version ${new_Version} wurde am ${new_date} veröffentlich und die derzeit installierte Version ist ${current_version}. Klicken Sie auf ${click_here} um Benachrichtigungen über neue Versionen auszulassen."
+msgstr ""
 
 #. Default: "New Bika LIMS release available"
 #: bika/lims/browser/viewlets/templates/new_versions.pt:8
@@ -6978,9 +6946,8 @@ msgstr ""
 #. upgrade."
 #. Default: "Your current database profile version is ${installed_version}, and the version installed on disk is ${new_version}. Please remember to ${backup_instructions_link}, and then ${click_here} to perform the upgrade."
 #: bika/lims/browser/viewlets/templates/new_versions.pt:34
-#, fuzzy
 msgid "upgrade_available_description"
-msgstr "upgrade_available_description"
+msgstr ""
 
 #. Default: "Upgrade step available"
 #: bika/lims/browser/viewlets/templates/new_versions.pt:25

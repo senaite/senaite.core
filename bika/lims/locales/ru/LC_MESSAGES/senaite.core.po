@@ -1,29 +1,20 @@
-# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
-# SOME DESCRIPTIVE TITLE.
 # Translators:
-# Oleksandr Fedorov <fedoroffall@yandex.ru>, 2013
-# Михаил Стручалин <m.struchalin@gmail.com>, 2017
-# nchrom <nchrom@gmail.com>, 2012
-# nchrom <nchrom@gmail.com>, 2012
-# nchrom <nchrom@gmail.com>, 2012
-# Oleksandr Fedorov <fedoroffall@yandex.ru>, 2013
-# Pavel Shuper <shuper@bionixlab.com>, 2012
-# Михаил Стручалин <m.struchalin@gmail.com>, 2017
+# Ramon Bartl <rb@ridingbytes.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2018-06-01 18:03+0000\n"
-"PO-Revision-Date: 2017-10-02 17:43+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
-"Language-Team: Russian (http://www.transifex.com/bikalabs/bika-lims/language/ru/)\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-06-01 19:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: Russian (https://www.transifex.com/senaite/teams/87045/ru/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: bika\n"
+"Domain: DOMAIN\n"
 "Language: ru\n"
 
 #: bika/lims/content/bikasetup.py:804
@@ -350,7 +341,6 @@ msgstr "Добавить повторный"
 msgid "Add Reflex rule"
 msgstr ""
 
-# worksheet.js
 #: bika/lims/browser/analyses/view.py:1142
 msgid "Add Remark"
 msgstr "Добавить замечание"

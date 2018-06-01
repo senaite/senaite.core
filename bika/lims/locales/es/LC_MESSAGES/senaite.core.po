@@ -1,34 +1,22 @@
-# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
-# SOME DESCRIPTIVE TITLE.
 # Translators:
-# Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2012-2013
-# Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
-# Chema Polo <chemapolo@gmail.com>, 2017
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2012,2013,2014,2016,2017,2018
-# lemoene Smit <admin@bikalabs.com>, 2012
-# Leonardo Rojas <leonardorojass@gmail.com>, 2014,2017
-# Luis Lorenzo Gomez Blanco <luislorenzogomezblanco@yahoo.es>, 2012
-# Michael Quintana <michaelquintana@gmail.com>, 2015
-# orestesmanolo <orestesmanolo@gmail.com>, 2012
-# SSchott <sschottv@gmail.com>, 2013-2014
-# Pau Soliva <psoliva@naralabs.com>, 2018
+# Ramon Bartl <rb@ridingbytes.com>, 2018
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2018-06-01 18:03+0000\n"
-"PO-Revision-Date: 2018-05-10 17:05+0200\n"
-"Last-Translator: Pau Soliva <psoliva@naralabs.com>\n"
-"Language-Team: Spanish\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-06-01 19:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2018\n"
+"Language-Team: Spanish (https://www.transifex.com/senaite/teams/87045/es/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: bika\n"
+"Domain: DOMAIN\n"
 "Language: es\n"
-"X-Generator: Poedit 1.8.7.1\n"
 
 #: bika/lims/content/bikasetup.py:804
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
@@ -354,7 +342,6 @@ msgstr "Añadir duplicado"
 msgid "Add Reflex rule"
 msgstr "Añadir una regla dinámica"
 
-# worksheet.js
 #: bika/lims/browser/analyses/view.py:1142
 msgid "Add Remark"
 msgstr "Añadir comentario"
@@ -1948,9 +1935,8 @@ msgid "Description of the site"
 msgstr "Descripción del sitio"
 
 #: bika/lims/content/analysisrequest.py:1036
-#, fuzzy
 msgid "Deviation between the sample and how it was sampled"
-msgstr "Error entre la manera en que se esperaba el muestreo y en cómo finalmente se muestreó"
+msgstr ""
 
 #: bika/lims/config.py:124
 msgid "Disable multi-verification for the same user"
@@ -1978,7 +1964,7 @@ msgid "Dispatched"
 msgstr "Enviado"
 
 msgid "Display Columns"
-msgstr ""
+msgstr "Mostrar columnas"
 
 #: bika/lims/content/abstractbaseanalysis.py:546
 msgid "Display Value"
@@ -3155,9 +3141,8 @@ msgid "Linked Sample"
 msgstr "Muestra vinculada"
 
 #: bika/lims/controlpanel/bika_identifiertypes.py:35
-#, fuzzy
 msgid "List of types of identifiers for multiple identifier records"
-msgstr "Tipos de identificadores para múltiples registros de identificación"
+msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity.pt:102
 msgid "Lists all samples received for a date range"
@@ -4094,9 +4079,8 @@ msgid "Precision as number of decimals"
 msgstr "Precisión en el número de decimales"
 
 #: bika/lims/content/abstractbaseanalysis.py:507
-#, fuzzy
 msgid "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
-msgstr "Precisión como el número de dígitos significativos según la incertidumbre. La posición decimal estará dada por el primer número diferente de cero en la incertidumbre, en esa posición el sistema redondeará la incertidumbre y los resultados. Por ejemplo, con un resultado de 5.243 y una incertidumbre de 0.22, el sistema se mostrará correctamente como 5.2 + -0.2. Si no se establece un rango de incertidumbre para el resultado, el sistema usará el conjunto de precisión fijo."
+msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:32
 msgid "Predefined reasons of rejection"
@@ -5084,14 +5068,12 @@ msgstr "Fecha prevista de muestreo"
 #: bika/lims/browser/analysisrequest/analysisrequests.py:179
 #: bika/lims/browser/sample/view.py:125
 #: bika/lims/content/analysisrequest.py:1035
-#, fuzzy
 msgid "Sampling Deviation"
-msgstr "Diferencias entre el muestreo previsto y el realizado"
+msgstr ""
 
 #: bika/lims/controlpanel/bika_samplingdeviations.py:32
-#, fuzzy
 msgid "Sampling Deviations"
-msgstr "Diferencias entre el muestreo previsto y el realizado"
+msgstr ""
 
 #: bika/lims/content/samplepoint.py:70
 #: bika/lims/content/srtemplate.py:61

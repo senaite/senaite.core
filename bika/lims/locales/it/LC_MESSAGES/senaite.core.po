@@ -1,29 +1,20 @@
-# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
-# SOME DESCRIPTIVE TITLE.
 # Translators:
-# warfox <a.deboni@neobe.it>, 2014
-# Alberto De Boni <albertodeboni@gmail.com>, 2012
-# Alberto De Boni <albertodeboni@gmail.com>, 2012
-# Alberto De Boni <albertodeboni@gmail.com>, 2012
-# Alessandro Ciai <a.ciai@btree.it>, 2016
-# Raffaele Filannino <raffaele.filannino@gmail.com>, 2013
-# Raffaele Filannino <raffaele.filannino@gmail.com>, 2013
-# warfox <a.deboni@neobe.it>, 2014
+# Ramon Bartl <rb@ridingbytes.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2018-06-01 18:03+0000\n"
-"PO-Revision-Date: 2017-10-02 17:43+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
-"Language-Team: Italian (http://www.transifex.com/bikalabs/bika-lims/language/it/)\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-06-01 19:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: Italian (https://www.transifex.com/senaite/teams/87045/it/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: bika\n"
+"Domain: DOMAIN\n"
 "Language: it\n"
 
 #: bika/lims/content/bikasetup.py:804
@@ -352,7 +343,6 @@ msgstr "Aggiungi duplicato"
 msgid "Add Reflex rule"
 msgstr ""
 
-# worksheet.js
 #: bika/lims/browser/analyses/view.py:1142
 msgid "Add Remark"
 msgstr ""
@@ -6883,9 +6873,8 @@ msgstr ""
 #. notifications about new releases."
 #. Default: "Version ${new_version} was released on ${new_date}, and your current version is ${current_version}. ${click_here} to disable notifications about new releases."
 #: bika/lims/browser/viewlets/templates/new_versions.pt:16
-#, fuzzy
 msgid "new_version_available_description"
-msgstr "new_version_available_description"
+msgstr ""
 
 #. Default: "New Bika LIMS release available"
 #: bika/lims/browser/viewlets/templates/new_versions.pt:8
@@ -6954,9 +6943,8 @@ msgstr ""
 #. upgrade."
 #. Default: "Your current database profile version is ${installed_version}, and the version installed on disk is ${new_version}. Please remember to ${backup_instructions_link}, and then ${click_here} to perform the upgrade."
 #: bika/lims/browser/viewlets/templates/new_versions.pt:34
-#, fuzzy
 msgid "upgrade_available_description"
-msgstr "upgrade_available_description"
+msgstr ""
 
 #. Default: "Upgrade step available"
 #: bika/lims/browser/viewlets/templates/new_versions.pt:25

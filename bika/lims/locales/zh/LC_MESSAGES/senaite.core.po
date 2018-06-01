@@ -1,25 +1,20 @@
-# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
-# SOME DESCRIPTIVE TITLE.
 # Translators:
-# Rui Tang <bio.nanoparticle@gmail.com>, 2012
-# Rui Tang <bio.nanoparticle@gmail.com>, 2012
-# Rui Tang <bio.nanoparticle@gmail.com>, 2012
-# Rui Tang <bio.nanoparticle@gmail.com>, 2012
+# Ramon Bartl <rb@ridingbytes.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2018-06-01 18:03+0000\n"
-"PO-Revision-Date: 2017-10-02 17:43+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
-"Language-Team: Chinese (http://www.transifex.com/bikalabs/bika-lims/language/zh/)\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-06-01 19:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: Chinese (https://www.transifex.com/senaite/teams/87045/zh/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: bika\n"
+"Domain: DOMAIN\n"
 "Language: zh\n"
 
 #: bika/lims/content/bikasetup.py:804
@@ -346,7 +341,6 @@ msgstr "添加重复样"
 msgid "Add Reflex rule"
 msgstr ""
 
-# worksheet.js
 #: bika/lims/browser/analyses/view.py:1142
 msgid "Add Remark"
 msgstr ""
