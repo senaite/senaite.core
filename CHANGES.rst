@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #846 Transifex integration
+
 
 **Changed**
 
