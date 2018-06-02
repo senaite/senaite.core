@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-06-02 06:37+0000\n"
+"POT-Creation-Date: 2018-06-02 06:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/senaite/teams/87045/zh_TW/)\n"
@@ -1956,6 +1956,7 @@ msgstr ""
 msgid "Dispatched"
 msgstr "已發送"
 
+# bika.lims.bikalisting.js
 msgid "Display Columns"
 msgstr ""
 
