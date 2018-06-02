@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-06-01 19:09+0000\n"
+"POT-Creation-Date: 2018-06-02 06:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -168,12 +168,6 @@ msgstr "<max"
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:480
 msgid "<min"
 msgstr ""
-
-msgid "<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>"
-msgstr "<p>${service} benötigt die folgenden ausgewählten Dienste: </p><br/><p>${deps}</p><br/><p>Wollen Sie diese Auswahl zuweisen?</p>"
-
-msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
-msgstr "<p>Die folgenden Dienste hängen von ${service} ab, und werden deselektiert wenn Sie fortfahren:</p><br/><p>${deps}</p><br/><p>Wollen Sie die Auswahl jetzt löschen?</p>"
 
 #: bika/lims/content/calculation.py:104
 msgid "<p>The formula you type here will be dynamically calculated when an analysis using this calculation is displayed.</p><p>To enter a Calculation, use standard maths operators,  + - * / ( ), and all keywords available, both from other Analysis Services and the Interim Fields specified here, as variables. Enclose them in square brackets [ ].</p><p>E.g, the calculation for Total Hardness, the total of Calcium (ppm) and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG are the keywords for those two Analysis Services.</p>"
@@ -2329,10 +2323,6 @@ msgstr "Exponentielle Darstellung der Präzision"
 msgid "Exponential format threshold"
 msgstr "Exponentielle Darstellung des Schwellwerts"
 
-#: Profile description in configure.zcml
-msgid "Extension profile for the Bika LIMS"
-msgstr "Erweiterungsprofil für Bika LIMS"
-
 #: bika/lims/browser/clientfolder.py:79
 #: bika/lims/browser/supplier.py:70
 #: bika/lims/content/organisation.py:43
@@ -2731,9 +2721,6 @@ msgstr "Zeigt an, ob der letzte AR-Bericht gedruckt ist,"
 msgid "Indicates whether file attachments, e.g. microscope images, are required for this analysis and whether file upload function will be available for it on data capturing screens"
 msgstr "Zeigt an, ob Dateianhänge, z. B. Mikroskopbilder, für diese Analyse erforderlich sind und ob die Dateiuploadfunktion auf der Datenerfassungsseite zur Verfügung steht"
 
-msgid "Info"
-msgstr "Info"
-
 #: bika/lims/content/batch.py:177
 msgid "Inherit From"
 msgstr "Übernehmen von"
@@ -2934,9 +2921,6 @@ msgstr "Annullierter Analysenauftrag neu getestet"
 #: bika/lims/utils/analysis.py:456
 msgid "Invalid instruments are not displayed: %s"
 msgstr "Ungültige Geräte werden nicht angezeigt: %s"
-
-msgid "Invalid instruments are not shown: ${invalid_list}"
-msgstr "Ungültige Geräte nicht angezeigt: ${invalid_list}"
 
 #: bika/lims/validators.py:1351
 msgid "Invalid value: Please enter a value without spaces."
@@ -3312,15 +3296,9 @@ msgstr "Manueller Eintrag"
 msgid "Manual entry of results"
 msgstr "Manuelle Ergebniserfassung"
 
-msgid "Manual entry of results for method ${methodname} is not allowed"
-msgstr "Manuelle Ergebniserfassung ist für die Methode ${methodname} nicht erlaubt"
-
 #: bika/lims/utils/analysis.py:459
 msgid "Manual entry of results for method %s is not allowed and no valid instruments found: %s"
 msgstr "Manuelle Ergebniseingabe ist für die Methode %s nicht erlaubt und es wurden keine gültigen Geräte gefunden: %s"
-
-msgid "Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}"
-msgstr "Die manuelle Ergebniserfassung ist für die Methode {methodname} nicht erlaubt und es wurden keine gültigen Geräte gefunden: ${invalid_list}"
 
 #: bika/lims/browser/referencesample.py:298
 #: bika/lims/browser/templates/referencesample_sticker.pt:51
@@ -3681,9 +3659,6 @@ msgstr "Es konnte kein Benutzerprofil für den verknüpften Benutzer gefunden we
 msgid "No valid instruments available: %s "
 msgstr "Keine gültigen Geräte verfügbar: %s "
 
-msgid "No valid instruments found: ${invalid_list}"
-msgstr "Keine gültigen Geräte gefunden: ${invalid_list}"
-
 #: bika/lims/browser/analyses/view.py:318
 #: bika/lims/content/analysisservice.py:517
 #: bika/lims/content/bikasetup.py:137
@@ -3840,9 +3815,6 @@ msgstr "Nur die Geräte-Datenerfassung ist für diese Analyse erlaubt, aber es w
 msgid "Only lab managers can create and manage worksheets"
 msgstr "Nur Laborleiter können Arbeitsblätter erstellen und verwalten"
 
-msgid "Only the analyses for which the selected instrument is allowed will be added automatically."
-msgstr "Nur die Analysen die das ausgewählte Gerät erlaubt werden automatisch hinzugefügt. "
-
 #: bika/lims/browser/worksheet/templates/results.pt:130
 msgid "Only to empty or zero fields"
 msgstr "Nur für leere oder Null-Felder"
@@ -3920,9 +3892,6 @@ msgstr "Ausgabeformat"
 #: bika/lims/vocabularies/__init__.py:556
 msgid "PDF"
 msgstr "PDF"
-
-msgid "Parent"
-msgstr "Übergeordnet"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:518
 msgid "Part"
@@ -5381,10 +5350,6 @@ msgstr "Service"
 msgid "Service cannot be deselected. Please click the info button for further details"
 msgstr "Diese Analysenleistung kann nicht entfernt werden. Bitte klicken Sie auf den Info Button für weitere Details."
 
-# ../browser/js/analysisrequest.js
-msgid "Service dependencies"
-msgstr "Leistungs-Abhängigkeiten"
-
 #: bika/lims/browser/templates/analysisservice_popup.pt:53
 msgid "Service is included in the ${accreditation_body_abbrev}"
 msgstr "Leistung ist enthalten im ${accreditation_body_abbrev}"
@@ -5501,10 +5466,6 @@ msgstr "Standortname"
 msgid "Size"
 msgstr "Größe"
 
-# ../browser/js/attachments.js
-msgid "Slot"
-msgstr "Einschub"
-
 #: bika/lims/content/bikasetup.py:709
 msgid "Small sticker"
 msgstr "Kleines Etikett"
@@ -5597,9 +5558,6 @@ msgstr "Einreichen"
 #: bika/lims/exportimport/import.pt:59
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 msgstr "Geben Sie eine gültige Open XML (.XLSX) Datei an, um mit den LIMS-Einstellungen fortzufahren."
-
-msgid "Submit for verification"
-msgstr "Zur Verifikation einreichen"
 
 #: bika/lims/browser/analyses/view.py:965
 msgid "Submitted and verified by the same user: {}"
@@ -6110,10 +6068,6 @@ msgstr "Dieser Text wird an Ergebnisreports angehängt."
 msgid "This value is reported at the bottom of all published results"
 msgstr "Dieser Wert wird am unteren Rand aller veröffentlichten Ergebnisse angezeigt"
 
-# ../browser/js/client.js
-msgid "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
-msgstr "Dies entfernt alle existierenden Analysenspezifikationen des Kunden und erstellt Kopien aller Laborspezifikationen. Sind Sie sicher?"
-
 #: bika/lims/browser/worksheet/tools.py:64
 msgid "This worksheet has been created to replace the rejected worksheet at ${ws_id}"
 msgstr "Dieses Arbeitsblatt ersetzt das zurückgezogene von ${ws_id}"
@@ -6271,12 +6225,6 @@ msgstr "Art des Dokuments (z.B. Bedienungsanleitung, Gerätespezifikation, Bild,
 #: bika/lims/content/storagelocation.py:67
 msgid "Type of location"
 msgstr "Art des Standortes"
-
-msgid "Unable to apply the selected instrument"
-msgstr "Das ausgewählte Gerät kann nicht zugewiesen werden"
-
-msgid "Unable to load instruments: ${invalid_list}"
-msgstr "Geräte konnten nicht geladen werden: ${invalid_list}"
 
 #: bika/lims/browser/analysisrequest/publish.py:213
 #: bika/lims/browser/sample/printform.py:508
