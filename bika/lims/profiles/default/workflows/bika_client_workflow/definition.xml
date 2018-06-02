@@ -6,7 +6,7 @@
              state_variable="review_state"
              initial_state="active"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <!-- This governs whether you are allowed to view some content. -->
   <permission>View</permission>

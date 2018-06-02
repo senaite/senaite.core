@@ -1,7 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
   <genericsetup:registerProfile
       name="default"

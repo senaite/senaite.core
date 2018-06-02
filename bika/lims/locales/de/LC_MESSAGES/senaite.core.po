@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-06-02 06:44+0000\n"
+"POT-Creation-Date: 2018-06-02 07:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -2464,7 +2464,7 @@ msgstr "Bericht erzeugen"
 
 #: bika/lims/configure.zcml:102
 msgid "Generates an ID with the IDServer"
-msgstr "Erzeugt eine ID mit dem ID-Server"
+msgstr ""
 
 #: bika/lims/content/person.py:26
 msgid "Greeting title eg. Mr, Mrs, Dr"

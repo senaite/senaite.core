@@ -34,7 +34,7 @@
 
   <form name="bika_listing_form"
         method="post"
-        i18n:domain="bika"
+        i18n:domain="senaite.core"
         tal:attributes="id form_id;
                         action python:view.bika_listing.getPOSTAction() if hasattr(view.bika_listing, 'getPOSTAction') else 'workflow_action';"
         tal:omit-tag="table_only"
@@ -309,7 +309,7 @@
                   </td>
                   <td class="batching" style="text-align:right">
 
-                    <span class='number-items' i18n:domain="bika" i18n:translate="" tal:condition="python:len(view.items) != 1">
+                    <span class='number-items' i18n:domain="senaite.core" i18n:translate="" tal:condition="python:len(view.items) != 1">
                       <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Items
                     </span>
                     <span class='number-items' i18n:translate="" tal:condition="python:len(view.items) == 1">

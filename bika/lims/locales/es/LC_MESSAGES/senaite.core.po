@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-06-02 06:44+0000\n"
+"POT-Creation-Date: 2018-06-02 07:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2018\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/87045/es/)\n"
@@ -901,7 +901,7 @@ msgstr "Registros de la importación automática de resultados de %s"
 
 #: bika/lims/configure.zcml:102
 msgid "Auto generate ID Behavior for Dexterity contents"
-msgstr "Generación automática de IDs para contenidos de tipo Dexterity"
+msgstr ""
 
 #: bika/lims/browser/worksheet/templates/results.pt:94
 msgid "Autofill"
@@ -2460,7 +2460,7 @@ msgstr "Generar reporte"
 
 #: bika/lims/configure.zcml:102
 msgid "Generates an ID with the IDServer"
-msgstr "Genera una ID con el IDServer"
+msgstr ""
 
 #: bika/lims/content/person.py:26
 msgid "Greeting title eg. Mr, Mrs, Dr"
@@ -3828,7 +3828,7 @@ msgstr "Open Source LIMS Core"
 
 #: bika/lims/profiles.zcml:11
 msgid "Open Source Web based Laboratory Information Management System"
-msgstr "Open Source Web based Laboratory Information Management System"
+msgstr ""
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:65
 msgid "Order"
@@ -4781,15 +4781,15 @@ msgstr "Análisis rutinarios"
 
 #: bika/lims/profiles.zcml:11
 msgid "SENAITE Core"
-msgstr "SENAITE Core"
+msgstr ""
 
 #: bika/lims/browser/senaite-frontpage.zcml:35
 msgid "SENAITE LIMS front-page"
-msgstr "SENAITE LIMS front-page"
+msgstr ""
 
 #: bika/lims/browser/senaite-frontpage.zcml:35
 msgid "SENAITE front-page"
-msgstr "SENAITE LIMS front-page"
+msgstr ""
 
 #: bika/lims/browser/contact.py:292
 msgid "SMTP server disconnected. User creation aborted."

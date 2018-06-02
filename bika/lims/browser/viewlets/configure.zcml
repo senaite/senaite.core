@@ -1,6 +1,6 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser"
-           i18n_domain="bika">
+           i18n_domain="senaite.core">
 
   <!-- AR Attachments Viewlet -->
   <browser:viewlet

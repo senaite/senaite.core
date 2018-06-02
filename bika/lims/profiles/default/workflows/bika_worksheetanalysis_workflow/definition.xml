@@ -6,7 +6,7 @@
              state_variable="worksheetanalysis_review_state"
              initial_state="unassigned"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
     <exit-transition transition_id="unassign" />
