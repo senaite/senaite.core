@@ -56,7 +56,7 @@ find $LOCALES -name "*.mo" -delete
 tx_pull
 
 # Generate the Bika Domain
-DOMAIN=bika
+DOMAIN=senaite.core
 echo "Processing Domain $DOMAIN"
 # Flush the english (transifex source language) po files
 # If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
