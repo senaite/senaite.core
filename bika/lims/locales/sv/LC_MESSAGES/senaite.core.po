@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-06-02 07:31+0000\n"
+"POT-Creation-Date: 2018-06-02 07:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swedish (https://www.transifex.com/senaite/teams/87045/sv/)\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
+"Domain: senaite.core\n"
 "Language: sv\n"
 
 #: bika/lims/content/bikasetup.py:804
