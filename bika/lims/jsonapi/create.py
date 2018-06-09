@@ -5,27 +5,28 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl import getSecurityManager
+import json
+
+import transaction
 from AccessControl import Unauthorized
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.jsonapi import set_fields_from_request
-from bika.lims.jsonapi import resolve_request_lookup
-from bika.lims.permissions import AccessJSONAPI
-from bika.lims.utils import tmpID, dicts_to_dict
-from bika.lims.utils.analysisrequest import get_services_uids
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getReviewHistoryActionsList
-from plone.jsonapi.core import router
-from plone.jsonapi.core.interfaces import IRouteProvider
+from AccessControl import getSecurityManager
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.jsonapi import resolve_request_lookup
+from bika.lims.jsonapi import set_fields_from_request
+from bika.lims.permissions import AccessJSONAPI
+from bika.lims.utils import dicts_to_dict, tmpID
+from bika.lims.utils.analysisrequest import get_services_uids
+from bika.lims.workflow import doActionFor, doActionsFor, isTransitionAllowed
+from bika.lims.workflow import getReviewHistoryActionsList
+from plone.jsonapi.core import router
+from plone.jsonapi.core.interfaces import IRouteProvider
 from zExceptions import BadRequest
 from zope import event
 from zope import interface
 
-import json
-import transaction
 
 class Create(object):
     interface.implements(IRouteProvider)
@@ -418,9 +419,11 @@ class Create(object):
                 analysis.setSamplePartition(part)
             part.setAnalyses(analyses)
 
-        action = 'no_sampling_workflow'
-        if SamplingWorkflowEnabled:
-            action = 'sampling_workflow'
+        action = 'sampling_workflow' if SamplingWorkflowEnabled else \
+            'no_sampling_workflow'
+        auto = ar.bika_setup.getAutoReceiveSamples()
+        if auto and isTransitionAllowed(ar, 'receive'):
+            action = 'receive'
         wftool.doActionFor(ar, action)
 
         if secondary:
@@ -453,7 +456,7 @@ class Create(object):
             for p in parts:
                 if 'prepreserved' in p and p['prepreserved']:
                     part = p['object']
-                    state = workflow.getInfoFor(part, 'review_state')
+                    state = wftool.getInfoFor(part, 'review_state')
                     if state == 'to_be_preserved':
                         doActionFor(part, 'preserve')
 

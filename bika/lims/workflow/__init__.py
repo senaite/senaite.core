@@ -5,25 +5,24 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import enum, api, deprecated
-from bika.lims import PMF
-from bika.lims.browser import ulocalized_time
-from bika.lims.interfaces import IJSONReadExtender
-from bika.lims.jsonapi import get_include_fields
-from bika.lims.utils import changeWorkflowState
-from bika.lims.utils import t
-from bika.lims import logger
-from Products.CMFCore.interfaces import IContentish
+import traceback
+
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces import IWorkflowChain
 from Products.CMFPlone.workflow import ToolWorkflowChain
 from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
-from zope.component import adapts
+from bika.lims import PMF
+from bika.lims import api
+from bika.lims import enum
+from bika.lims import logger
+from bika.lims.browser import ulocalized_time
+from bika.lims.interfaces import IJSONReadExtender
+from bika.lims.jsonapi import get_include_fields
+from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import t
 from zope.interface import implementer
 from zope.interface import implements
-from zope.interface import Interface
-import traceback
 
 
 def skip(instance, action, peek=False, unskip=False):

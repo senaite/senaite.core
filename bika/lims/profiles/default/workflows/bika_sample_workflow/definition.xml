@@ -76,6 +76,13 @@
     <exit-transition transition_id="preserve" />
     <exit-transition transition_id="receive" />
     <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -99,11 +106,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
@@ -176,9 +178,15 @@
   </state>
 
   <state state_id="sample_registered" title="Sample registered" i18n:attributes="title">
+    <exit-transition transition_id="receive" />
     <exit-transition transition_id="sampling_workflow" />
     <exit-transition transition_id="no_sampling_workflow" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
@@ -187,8 +195,6 @@
     <permission-map name="BIKA: Edit Sample" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Sample Sample" acquired="False">
     </permission-map>
@@ -210,7 +216,15 @@
   <state state_id="sampled" title="Sampled" i18n:attributes="title">
     <exit-transition transition_id="to_be_preserved" />
     <exit-transition transition_id="sample_due" />
+    <exit-transition transition_id="receive" />
     <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -235,8 +249,6 @@
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>

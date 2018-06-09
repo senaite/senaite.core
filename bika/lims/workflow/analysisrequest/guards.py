@@ -5,16 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-
-from bika.lims import logger
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isActive
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import guards as analysis_guards
 
 
 def to_be_preserved(obj):
@@ -42,7 +37,20 @@ def schedule_sampling(obj):
 
 
 def receive(obj):
-    return isBasicTransitionAllowed(obj)
+    """In addition to workflow permissions, here we must respect
+    SamplingWorkflowEnabled and AutoReceiveSamples settings.
+    """
+    if not isBasicTransitionAllowed(obj):
+        return False
+
+    # If SamplingWorkflowEnabled, we must specifically reverse
+    # workflow permission and deny `receive` transition.
+    samplingworkflow = obj.getSamplingWorkflowEnabled()
+    currentstate = getCurrentState(obj)
+    if samplingworkflow and currentstate == 'sample_registered':
+        return False
+
+    return True
 
 
 def sample_prep(obj):

@@ -30,6 +30,11 @@ def upgrade(tool):
     # -------- ADD YOUR STUFF HERE --------
     rename_bika_setup()
 
+    # Permission for "Receive Sample" added to some states,
+    # https://github.com/senaite/senaite.core/pull/742
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, 'workflow')
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
