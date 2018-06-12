@@ -595,7 +595,7 @@ class AnalysisResultsImporter(Logger):
                                 importedars[ar.getId()] = importedar
 
                         if ws:
-                            self.attach_attachment(
+                            self.attach_attachments(
                                 analysis, attachments[ws.getId()])
                         else:
                             self.warn(
@@ -662,21 +662,26 @@ class AnalysisResultsImporter(Logger):
             attachment.reindexObject()
         return attachment
 
-    def attach_attachment(self, analysis, attachment):
-        if attachment:
+    def attach_attachments(self, analysis, attachments):
+        # Sometime we get a list and sometimes an object of 1 attachment
+        import pdb; pdb.set_trace()
+        if not isinstance(attachments, list):
+            attachments = [attachments, ]
+        if not attachments:
+            self.warn("Attachment %s was not linked to analysis %s" %
+                      (attachments, analysis))
+        for attachment in attachments:
             an_atts = analysis.getAttachment()
-            attachments = []
+            attachments_to_be_attached = []
             for an_att in an_atts:
                 if an_att.getAttachmentFile().filename != \
                         attachment.getAttachmentFile().filename:
-                    logger.info(
-                            "Attaching %s to %s" % (an_att.UID(), analysis))
-                    attachments.append(attachment.UID())
-                    analysis.setAttachment(attachments)
-                    break
-            else:
-                self.warn("Attachment %s was not linked to analysis %s" %
-                          (attachment, analysis))
+                    logger.info("Attaching %s to %s" % (an_att.UID(), analysis))
+                    attachments_to_be_attached.append(an_att.UID())
+            logger.info("Attaching %s to %s" % (attachment.UID(), analysis))
+            attachments_to_be_attached.append(attachment.UID())
+            analysis.setAttachment(attachments_to_be_attached)
+            analysis.reindexObject(idxs='Attachment')
 
     def get_attachment_filenames(self, ws):
         fn_attachments = {}
