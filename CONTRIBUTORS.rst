@@ -61,6 +61,7 @@ Translators
 - Leonardo Rojas, leonardorojass@gmail.com, Spanish (es)
 - Carlos Javier García Quintana, garciaquintana_carlos@yahoo.com.mx, Spanish (es)
 - Alfonso de la Guarda Reyes, alfonsodg@gmail.com, Spanish (es)
+- Pau Soliva, psoliva@naralabs.com, Spanish (es)
 - Luis Lorenzo Gomez Blanco, luislorenzogomezblanco@yahoo.es, Spanish (es)
 - Jordi Puiggené, jpuiggene@naralabs.com, Spanish (es)
 - Chema Polo, chemapolo@gmail.com, Spanish (es)

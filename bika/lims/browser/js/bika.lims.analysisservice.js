@@ -1,137 +1,120 @@
-(function() {
-  /* Please use this command to compile this file into the parent `js` directory:
-      coffee --no-header -w -o ../ -c bika.lims.analysisservice.coffee
-  */
-  var indexOf = [].indexOf;
 
-  window.AnalysisServiceEditView = class AnalysisServiceEditView {
-    constructor() {
-      this.load = this.load.bind(this);
-      /* INITIALIZERS */
-      this.bind_eventhandler = this.bind_eventhandler.bind(this);
-      this.init = this.init.bind(this);
-      /* FIELD GETTERS/SETTERS/SELECTORS */
-      this.is_manual_entry_of_results_allowed = this.is_manual_entry_of_results_allowed.bind(this);
-      this.toggle_manual_entry_of_results_allowed = this.toggle_manual_entry_of_results_allowed.bind(this);
-      this.get_methods = this.get_methods.bind(this);
-      this.set_methods = this.set_methods.bind(this);
-      this.select_methods = this.select_methods.bind(this);
-      this.is_instrument_assignment_allowed = this.is_instrument_assignment_allowed.bind(this);
-      this.toggle_instrument_assignment_allowed = this.toggle_instrument_assignment_allowed.bind(this);
-      this.get_instruments = this.get_instruments.bind(this);
-      this.set_instruments = this.set_instruments.bind(this);
-      this.select_instruments = this.select_instruments.bind(this);
-      this.get_default_method = this.get_default_method.bind(this);
-      this.set_default_method = this.set_default_method.bind(this);
-      this.select_default_method = this.select_default_method.bind(this);
-      this.get_default_instrument = this.get_default_instrument.bind(this);
-      this.set_default_instrument = this.set_default_instrument.bind(this);
-      this.select_default_instrument = this.select_default_instrument.bind(this);
-      this.use_default_calculation_of_method = this.use_default_calculation_of_method.bind(this);
-      this.toggle_use_default_calculation_of_method = this.toggle_use_default_calculation_of_method.bind(this);
-      this.get_calculation = this.get_calculation.bind(this);
-      this.set_calculation = this.set_calculation.bind(this);
-      this.select_calculation = this.select_calculation.bind(this);
-      this.get_interims = this.get_interims.bind(this);
-      this.set_interims = this.set_interims.bind(this);
-      this.flush_interims = this.flush_interims.bind(this);
-      this.set_method_calculation = this.set_method_calculation.bind(this);
-      this.set_instrument_methods = this.set_instrument_methods.bind(this);
-      this.display_detection_limit_selector = this.display_detection_limit_selector.bind(this);
-      this.toggle_display_detection_limit_selector = this.toggle_display_detection_limit_selector.bind(this);
-      this.show_alert = this.show_alert.bind(this);
-      /* ASYNC DATA LOADERS */
-      this.load_available_instruments = this.load_available_instruments.bind(this);
-      this.load_instrument_methods = this.load_instrument_methods.bind(this);
-      this.load_method_calculation = this.load_method_calculation.bind(this);
-      this.load_calculation = this.load_calculation.bind(this);
-      this.load_manual_interims = this.load_manual_interims.bind(this);
-      this.load_object_by_uid = this.load_object_by_uid.bind(this);
-      /* HELPERS */
-      this.ajax_submit = this.ajax_submit.bind(this);
-      this.get_url = this.get_url.bind(this);
-      this.get_portal_url = this.get_portal_url.bind(this);
-      this.is_uid = this.is_uid.bind(this);
-      this.add_select_option = this.add_select_option.bind(this);
-      this.parse_select_options = this.parse_select_options.bind(this);
-      this.parse_select_option = this.parse_select_option.bind(this);
-      this.select_options = this.select_options.bind(this);
-      this.toggle_checkbox = this.toggle_checkbox.bind(this);
-      /* EVENT HANDLER */
-      this.on_manual_entry_of_results_change = this.on_manual_entry_of_results_change.bind(this);
-      this.on_methods_change = this.on_methods_change.bind(this);
-      this.on_instrument_assignment_allowed_change = this.on_instrument_assignment_allowed_change.bind(this);
-      this.on_instruments_change = this.on_instruments_change.bind(this);
-      this.on_default_instrument_change = this.on_default_instrument_change.bind(this);
-      this.on_default_method_change = this.on_default_method_change.bind(this);
-      this.on_use_default_calculation_change = this.on_use_default_calculation_change.bind(this);
-      this.on_calculation_change = this.on_calculation_change.bind(this);
-      this.on_display_detection_limit_selector_change = this.on_display_detection_limit_selector_change.bind(this);
-      this.on_separate_container_change = this.on_separate_container_change.bind(this);
-      this.on_default_preservation_change = this.on_default_preservation_change.bind(this);
-      this.on_default_container_change = this.on_default_container_change.bind(this);
-      this.on_partition_sampletype_change = this.on_partition_sampletype_change.bind(this);
-      this.on_partition_separate_container_change = this.on_partition_separate_container_change.bind(this);
-      this.on_partition_container_change = this.on_partition_container_change.bind(this);
-      this.on_partition_required_volume_change = this.on_partition_required_volume_change.bind(this);
+/* Please use this command to compile this file into the parent `js` directory:
+    coffee --no-header -w -o ../ -c bika.lims.analysisservice.coffee
+ */
+
+(function() {
+  var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  window.AnalysisServiceEditView = (function() {
+    function AnalysisServiceEditView() {
+      this.on_partition_required_volume_change = bind(this.on_partition_required_volume_change, this);
+      this.on_partition_container_change = bind(this.on_partition_container_change, this);
+      this.on_partition_separate_container_change = bind(this.on_partition_separate_container_change, this);
+      this.on_partition_sampletype_change = bind(this.on_partition_sampletype_change, this);
+      this.on_default_container_change = bind(this.on_default_container_change, this);
+      this.on_default_preservation_change = bind(this.on_default_preservation_change, this);
+      this.on_separate_container_change = bind(this.on_separate_container_change, this);
+      this.on_display_detection_limit_selector_change = bind(this.on_display_detection_limit_selector_change, this);
+      this.on_calculation_change = bind(this.on_calculation_change, this);
+      this.on_use_default_calculation_change = bind(this.on_use_default_calculation_change, this);
+      this.on_default_method_change = bind(this.on_default_method_change, this);
+      this.on_default_instrument_change = bind(this.on_default_instrument_change, this);
+      this.on_instruments_change = bind(this.on_instruments_change, this);
+      this.on_instrument_assignment_allowed_change = bind(this.on_instrument_assignment_allowed_change, this);
+      this.on_methods_change = bind(this.on_methods_change, this);
+      this.on_manual_entry_of_results_change = bind(this.on_manual_entry_of_results_change, this);
+      this.toggle_checkbox = bind(this.toggle_checkbox, this);
+      this.select_options = bind(this.select_options, this);
+      this.parse_select_option = bind(this.parse_select_option, this);
+      this.parse_select_options = bind(this.parse_select_options, this);
+      this.add_select_option = bind(this.add_select_option, this);
+      this.is_uid = bind(this.is_uid, this);
+      this.get_portal_url = bind(this.get_portal_url, this);
+      this.get_url = bind(this.get_url, this);
+      this.ajax_submit = bind(this.ajax_submit, this);
+      this.load_object_by_uid = bind(this.load_object_by_uid, this);
+      this.load_manual_interims = bind(this.load_manual_interims, this);
+      this.load_calculation = bind(this.load_calculation, this);
+      this.load_method_calculation = bind(this.load_method_calculation, this);
+      this.load_instrument_methods = bind(this.load_instrument_methods, this);
+      this.load_available_instruments = bind(this.load_available_instruments, this);
+      this.show_alert = bind(this.show_alert, this);
+      this.toggle_display_detection_limit_selector = bind(this.toggle_display_detection_limit_selector, this);
+      this.display_detection_limit_selector = bind(this.display_detection_limit_selector, this);
+      this.set_instrument_methods = bind(this.set_instrument_methods, this);
+      this.set_method_calculation = bind(this.set_method_calculation, this);
+      this.flush_interims = bind(this.flush_interims, this);
+      this.set_interims = bind(this.set_interims, this);
+      this.get_interims = bind(this.get_interims, this);
+      this.select_calculation = bind(this.select_calculation, this);
+      this.set_calculation = bind(this.set_calculation, this);
+      this.get_calculation = bind(this.get_calculation, this);
+      this.toggle_use_default_calculation_of_method = bind(this.toggle_use_default_calculation_of_method, this);
+      this.use_default_calculation_of_method = bind(this.use_default_calculation_of_method, this);
+      this.select_default_instrument = bind(this.select_default_instrument, this);
+      this.set_default_instrument = bind(this.set_default_instrument, this);
+      this.get_default_instrument = bind(this.get_default_instrument, this);
+      this.select_default_method = bind(this.select_default_method, this);
+      this.set_default_method = bind(this.set_default_method, this);
+      this.get_default_method = bind(this.get_default_method, this);
+      this.select_instruments = bind(this.select_instruments, this);
+      this.set_instruments = bind(this.set_instruments, this);
+      this.get_instruments = bind(this.get_instruments, this);
+      this.toggle_instrument_assignment_allowed = bind(this.toggle_instrument_assignment_allowed, this);
+      this.is_instrument_assignment_allowed = bind(this.is_instrument_assignment_allowed, this);
+      this.select_methods = bind(this.select_methods, this);
+      this.set_methods = bind(this.set_methods, this);
+      this.get_methods = bind(this.get_methods, this);
+      this.toggle_manual_entry_of_results_allowed = bind(this.toggle_manual_entry_of_results_allowed, this);
+      this.is_manual_entry_of_results_allowed = bind(this.is_manual_entry_of_results_allowed, this);
+      this.init = bind(this.init, this);
+      this.bind_eventhandler = bind(this.bind_eventhandler, this);
+      this.load = bind(this.load, this);
     }
 
-    load() {
+    AnalysisServiceEditView.prototype.load = function() {
       var d1, d2;
       console.debug("AnalysisServiceEditView::load");
-      // load translations
       jarn.i18n.loadCatalog("bika");
       this._ = window.jarn.i18n.MessageFactory("bika");
-      // All available instruments by UID
       this.all_instruments = {};
-      // All invalid instruments by UID
       this.invalid_instruments = {};
-      // Load available instruments
       d1 = this.load_available_instruments().done(function(instruments) {
         var me;
         me = this;
         return $.each(instruments, function(index, instrument) {
           var uid;
           uid = instrument.UID;
-          // remember the instrument
           me.all_instruments[uid] = instrument;
           if (instrument.Valid !== "1") {
-            // remember invalid instrument
             return me.invalid_instruments[uid] = instrument;
           }
         });
       });
-      // Interim values defined by the user (not part of the current calculation)
       this.manual_interims = [];
-      // Calculate manual set interims
       d2 = this.load_manual_interims().done(function(manual_interims) {
         return this.manual_interims = manual_interims;
       });
-      // UIDs of the initial selected methods
       this.selected_methods = this.get_methods();
-      // UIDs of the initial selected instruments
       this.selected_instruments = this.get_instruments();
-      // UID of the initial selected calculation
       this.selected_calculation = this.get_calculation();
-      // UID of the initial selected default instrument
       this.selected_default_instrument = this.get_default_instrument();
-      // UID of the initial selected default method
       this.selected_default_method = this.get_default_method();
-      // Array of UID/Title objects of the initial options from the methods field
       this.methods = this.parse_select_options($("#archetypes-fieldname-Methods #Methods"));
-      // Array of UID/Title objects of the initial options from the instrument field
       this.instruments = this.parse_select_options($("#archetypes-fieldname-Instruments #Instruments"));
-      // Array of UID/Title objects of the initial options from the calculations field
       this.calculations = this.parse_select_options($("#archetypes-fieldname-Calculation #Calculation"));
-      // bind the event handler to the elements
       this.bind_eventhandler();
-      // initialize the form when all data is loaded
       $.when(d1, d2).then(this.init);
-      // Dev only
       return window.asv = this;
-    }
+    };
 
-    bind_eventhandler() {
+
+    /* INITIALIZERS */
+
+    AnalysisServiceEditView.prototype.bind_eventhandler = function() {
+
       /*
        * Binds callbacks on elements
        *
@@ -139,74 +122,54 @@
        * delegate the event: https://learn.jquery.com/events/event-delegation/
        */
       console.debug("AnalysisServiceEditView::bind_eventhandler");
-      /* METHODS TAB */
-      // The "Instrument assignment is not required" checkbox changed
-      $("body").on("change", "#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults", this.on_manual_entry_of_results_change);
-      // The "Methods" multiselect changed
-      $("body").on("change", "#archetypes-fieldname-Methods #Methods", this.on_methods_change);
-      // The "Instrument assignment is allowed" checkbox changed
-      $("body").on("change", "#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults", this.on_instrument_assignment_allowed_change);
-      // The "Instruments" multiselect changed
-      $("body").on("change", "#archetypes-fieldname-Instruments #Instruments", this.on_instruments_change);
-      // The "Default Instrument" selector changed
-      $("body").on("change", "#archetypes-fieldname-Instrument #Instrument", this.on_default_instrument_change);
-      // The "Default Method" select changed
-      $("body").on("change", "#archetypes-fieldname-Method #Method", this.on_default_method_change);
-      // The "Use the Default Calculation of Method" checkbox changed
-      $("body").on("change", "#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation", this.on_use_default_calculation_change);
-      // The "Calculation" selector changed
-      $("body").on("change", "#archetypes-fieldname-Calculation #Calculation", this.on_calculation_change);
-      /* ANALYSIS TAB */
-      // The "Display a Detection Limit selector" checkbox changed
-      $("body").on("change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", this.on_display_detection_limit_selector_change);
-      /* CONTAINER AND PRESERVATION TAB */
-      // The "Separate Container" checkbox changed
-      $("body").on("change", "#archetypes-fieldname-Separate #Separate", this.on_separate_container_change);
-      // The "Default Preservation" select changed
-      $("body").on("change", "#archetypes-fieldname-Preservation #Preservation", this.on_default_preservation_change);
-      // The "Default Container" select changed
-      $("body").on("selected", "#archetypes-fieldname-Container #Container", this.on_default_container_change);
-      // The "Sample Type" select changed in the Partition setup
-      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.sampletype']", this.on_partition_sampletype_change);
-      // The "Separate Container" checkbox changed in the Partition setup
-      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.separate']", this.on_partition_separate_container_change);
-      // The "Container" checkbox changed in the Partition setup
-      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.container']", this.on_partition_container_change);
-      // The "Required Volume" value changed in the Partition setup
-      return $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.vol']", this.on_partition_required_volume_change);
-    }
 
-    init() {
+      /* METHODS TAB */
+      $("body").on("change", "#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults", this.on_manual_entry_of_results_change);
+      $("body").on("change", "#archetypes-fieldname-Methods #Methods", this.on_methods_change);
+      $("body").on("change", "#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults", this.on_instrument_assignment_allowed_change);
+      $("body").on("change", "#archetypes-fieldname-Instruments #Instruments", this.on_instruments_change);
+      $("body").on("change", "#archetypes-fieldname-Instrument #Instrument", this.on_default_instrument_change);
+      $("body").on("change", "#archetypes-fieldname-Method #Method", this.on_default_method_change);
+      $("body").on("change", "#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation", this.on_use_default_calculation_change);
+      $("body").on("change", "#archetypes-fieldname-Calculation #Calculation", this.on_calculation_change);
+
+      /* ANALYSIS TAB */
+      $("body").on("change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", this.on_display_detection_limit_selector_change);
+
+      /* CONTAINER AND PRESERVATION TAB */
+      $("body").on("change", "#archetypes-fieldname-Separate #Separate", this.on_separate_container_change);
+      $("body").on("change", "#archetypes-fieldname-Preservation #Preservation", this.on_default_preservation_change);
+      $("body").on("selected", "#archetypes-fieldname-Container #Container", this.on_default_container_change);
+      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.sampletype']", this.on_partition_sampletype_change);
+      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.separate']", this.on_partition_separate_container_change);
+      $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.container']", this.on_partition_container_change);
+      return $("body").on("change", "#archetypes-fieldname-PartitionSetup [name^='PartitionSetup.vol']", this.on_partition_required_volume_change);
+    };
+
+    AnalysisServiceEditView.prototype.init = function() {
+
       /**
        * Initialize Form
        */
-      // Set "Instrument assignment is not required" checkbox
       if (this.is_manual_entry_of_results_allowed()) {
         console.debug("--> Manual Entry of Results is allowed");
-        // restore all initial set methods in the method multi-select
         this.set_methods(this.methods);
       } else {
         console.debug("--> Manual Entry of Results is **not** allowed");
-        // flush all methods and add only the "None" option
         this.set_methods(null);
       }
-      // Set "Instrument assignment is allowed" checkbox
       if (this.is_instrument_assignment_allowed()) {
         console.debug("--> Instrument assignment is allowed");
-        // restore all initial set instruments
         this.set_instruments(this.instruments);
       } else {
         console.debug("--> Instrument assignment is **not** allowed");
-        // flush all instruments and add only the "None" option
         this.set_instruments(null);
       }
-      // Set "Use the Default Calculation of Method" checkbox
       if (this.use_default_calculation_of_method()) {
         console.debug("--> Use default calculation of method");
       } else {
         console.debug("--> Use default calculation of instrument");
       }
-      // Set "Display a Detection Limit selector" checkbox
       if (this.display_detection_limit_selector()) {
         console.debug("--> Allow detection limit selector");
         return this.toggle_display_detection_limit_selector(true);
@@ -214,9 +177,13 @@
         console.debug("--> Disallow detection limit selector");
         return this.toggle_display_detection_limit_selector(false);
       }
-    }
+    };
 
-    is_manual_entry_of_results_allowed() {
+
+    /* FIELD GETTERS/SETTERS/SELECTORS */
+
+    AnalysisServiceEditView.prototype.is_manual_entry_of_results_allowed = function() {
+
       /**
        * Get the value of the checkbox "Instrument assignment is not required"
        *
@@ -225,18 +192,23 @@
       var field;
       field = $("#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults");
       return field.is(":checked");
-    }
+    };
 
-    toggle_manual_entry_of_results_allowed(toggle, silent = true) {
+    AnalysisServiceEditView.prototype.toggle_manual_entry_of_results_allowed = function(toggle, silent) {
+      var field;
+      if (silent == null) {
+        silent = true;
+      }
+
       /**
        * Toggle the "Instrument assignment is not required" checkbox
        */
-      var field;
       field = $("#archetypes-fieldname-ManualEntryOfResults #ManualEntryOfResults");
       return this.toggle_checkbox(field, toggle, silent);
-    }
+    };
 
-    get_methods() {
+    AnalysisServiceEditView.prototype.get_methods = function() {
+
       /**
        * Get all selected method UIDs from the multiselect field
        *
@@ -245,9 +217,14 @@
       var field;
       field = $("#archetypes-fieldname-Methods #Methods");
       return $.extend([], field.val());
-    }
+    };
 
-    set_methods(methods, flush = true) {
+    AnalysisServiceEditView.prototype.set_methods = function(methods, flush) {
+      var field, me;
+      if (flush == null) {
+        flush = true;
+      }
+
       /**
        * Set the methods multiselect field with the given methods
        *
@@ -257,11 +234,8 @@
        * @param {boolean} flush
        *    True to empty all instruments first
        */
-      var field, me;
       field = $("#archetypes-fieldname-Methods #Methods");
-      // create a copy of the methods array
       methods = $.extend([], methods);
-      // empty the field if the `flush` flag is set
       if (flush) {
         field.empty();
       }
@@ -271,7 +245,6 @@
         me = this;
         $.each(methods, function(index, method) {
           var title, uid;
-          // ensure only "methods with allow manual entry"
           if (method.ManualEntryOfResults === false) {
             return;
           }
@@ -280,49 +253,43 @@
           return me.add_select_option(field, title, uid);
         });
       }
-      // restore initial selection
       return this.select_methods(this.selected_methods);
-    }
+    };
 
-    select_methods(uids) {
-      var field, me;
+    AnalysisServiceEditView.prototype.select_methods = function(uids) {
+
       /**
        * Select methods by UID
        *
        * @param {Array} uids
        *    UIDs of Methods to select
        */
+      var field, me;
       if (!this.is_manual_entry_of_results_allowed()) {
         console.debug("Manual entry of results is not allowed");
         return;
       }
       field = $("#archetypes-fieldname-Methods #Methods");
-      // set selected attribute to the options
       this.select_options(field, uids);
-      // Set selected value to the default method select box
       me = this;
       $.each(uids, function(index, uid) {
         var flush, method, option;
-        // flush the field for the first element
         flush = index === 0 && true || false;
-        // extract the title and uid from the option element
-        option = field.find(`option[value=${uid}]`);
+        option = field.find("option[value=" + uid + "]");
         method = {
           uid: option.val(),
           title: option.text()
         };
-        // append option to the default method select box
         return me.set_default_method(method, flush = flush);
       });
-      // restore initial selected default method
       this.select_default_method(this.selected_default_method);
       if (this.use_default_calculation_of_method()) {
-        // set the calculation of the default method
         return this.set_method_calculation(this.get_default_method());
       }
-    }
+    };
 
-    is_instrument_assignment_allowed() {
+    AnalysisServiceEditView.prototype.is_instrument_assignment_allowed = function() {
+
       /**
        * Get the value of the checkbox "Instrument assignment is allowed"
        *
@@ -331,18 +298,23 @@
       var field;
       field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults");
       return field.is(":checked");
-    }
+    };
 
-    toggle_instrument_assignment_allowed(toggle, silent = true) {
+    AnalysisServiceEditView.prototype.toggle_instrument_assignment_allowed = function(toggle, silent) {
+      var field;
+      if (silent == null) {
+        silent = true;
+      }
+
       /**
        * Toggle the "Instrument assignment is allowed" checkbox
        */
-      var field;
       field = $("#archetypes-fieldname-InstrumentEntryOfResults #InstrumentEntryOfResults");
       return this.toggle_checkbox(field, toggle, silent);
-    }
+    };
 
-    get_instruments() {
+    AnalysisServiceEditView.prototype.get_instruments = function() {
+
       /**
        * Get all selected instrument UIDs from the multiselect
        *
@@ -351,9 +323,14 @@
       var field;
       field = $("#archetypes-fieldname-Instruments #Instruments");
       return $.extend([], field.val());
-    }
+    };
 
-    set_instruments(instruments, flush = true) {
+    AnalysisServiceEditView.prototype.set_instruments = function(instruments, flush) {
+      var field, me;
+      if (flush == null) {
+        flush = true;
+      }
+
       /*
        * Set the instruments to the field
        *
@@ -363,18 +340,14 @@
        * @param {boolean} flush
        *    True to empty all instruments first
        */
-      var field, me;
       field = $("#archetypes-fieldname-Instruments #Instruments");
-      // create a copy of the instruments array
       instruments = $.extend([], instruments);
-      // empty the field if the `flush` flag is set
       if (flush) {
         field.empty();
       }
       if (instruments.length === 0) {
         this.add_select_option(field, null);
       } else {
-        // set the instruments
         me = this;
         $.each(instruments, function(index, instrument) {
           var title, uid;
@@ -383,45 +356,41 @@
           return me.add_select_option(field, title, uid);
         });
       }
-      // restore initial selection
       return this.select_instruments(this.selected_instruments);
-    }
+    };
 
-    select_instruments(uids) {
-      var field, invalid_instruments, me, notification, title;
+    AnalysisServiceEditView.prototype.select_instruments = function(uids) {
+
       /**
        * Select instruments by UID
        *
        * @param {Array} uids
        *    UIDs of Instruments to select
        */
+      var field, invalid_instruments, me, notification, title;
       if (!this.is_instrument_assignment_allowed()) {
         console.debug("Instrument assignment not allowed");
         this.set_default_instrument(null);
         return;
       }
       field = $("#archetypes-fieldname-Instruments #Instruments");
-      // set selected attribute to the options
       this.select_options(field, uids);
       invalid_instruments = [];
-      // Set selected instruments to the list of the default instruments
       me = this;
       $.each(uids, function(index, uid) {
         var flush, instrument;
         flush = index === 0 && true || false;
-        // get the instrument
         instrument = me.all_instruments[uid];
         if (uid in me.invalid_instruments) {
-          console.warn(`Instrument '${instrument.Title}' is invalid`);
+          console.warn("Instrument '" + instrument.Title + "' is invalid");
           invalid_instruments.push(instrument);
         }
         return me.set_default_instrument(instrument, flush = flush);
       });
-      // show invalid instruments
       if (invalid_instruments.length > 0) {
         notification = $("<dl/>");
         $.each(invalid_instruments, function(index, instrument) {
-          return notification.append(`<dd>⚠ ${instrument.Title}</dd>`);
+          return notification.append("<dd>⚠ " + instrument.Title + "</dd>");
         });
         title = this._("Some of the selected instruments are out-of-date, with failed calibration tests or under maintenance");
         this.show_alert({
@@ -433,13 +402,12 @@
           message: ""
         });
       }
-      // restore initially selected default instrument
       this.select_default_instrument(this.selected_default_instrument);
-      // set the instrument methods of the default instrument
       return this.set_instrument_methods(this.get_default_instrument());
-    }
+    };
 
-    get_default_method() {
+    AnalysisServiceEditView.prototype.get_default_method = function() {
+
       /**
        * Get the UID of the selected default method
        *
@@ -448,17 +416,19 @@
       var field;
       field = $("#archetypes-fieldname-Method #Method");
       return field.val();
-    }
+    };
 
-    set_default_method(method, flush = true) {
+    AnalysisServiceEditView.prototype.set_default_method = function(method, flush) {
+      var field, title, uid;
+      if (flush == null) {
+        flush = true;
+      }
+
       /**
        * Set options for the default method select
        */
-      var field, title, uid;
       field = $("#archetypes-fieldname-Method #Method");
-      // create a copy of the method
       method = $.extend({}, method);
-      // empty the field first
       if (flush) {
         field.empty();
       }
@@ -469,9 +439,10 @@
       } else {
         return this.add_select_option(field, null);
       }
-    }
+    };
 
-    select_default_method(uid) {
+    AnalysisServiceEditView.prototype.select_default_method = function(uid) {
+
       /**
        * Select method by UID
        *
@@ -481,9 +452,10 @@
       var field;
       field = $("#archetypes-fieldname-Method #Method");
       return this.select_options(field, [uid]);
-    }
+    };
 
-    get_default_instrument() {
+    AnalysisServiceEditView.prototype.get_default_instrument = function() {
+
       /**
        * Get the UID of the selected default instrument
        *
@@ -492,17 +464,19 @@
       var field;
       field = $("#archetypes-fieldname-Instrument #Instrument");
       return field.val();
-    }
+    };
 
-    set_default_instrument(instrument, flush = true) {
+    AnalysisServiceEditView.prototype.set_default_instrument = function(instrument, flush) {
+      var field, title, uid;
+      if (flush == null) {
+        flush = true;
+      }
+
       /*
        * Set options for the default instrument select
        */
-      var field, title, uid;
       field = $("#archetypes-fieldname-Instrument #Instrument");
-      // create a copy of the instrument
       instrument = $.extend({}, instrument);
-      // empty the field first
       if (flush) {
         field.empty();
       }
@@ -513,9 +487,10 @@
       } else {
         return this.add_select_option(field, null);
       }
-    }
+    };
 
-    select_default_instrument(uid) {
+    AnalysisServiceEditView.prototype.select_default_instrument = function(uid) {
+
       /**
        * Select instrument by UID
        *
@@ -525,9 +500,10 @@
       var field;
       field = $("#archetypes-fieldname-Instrument #Instrument");
       return this.select_options(field, [uid]);
-    }
+    };
 
-    use_default_calculation_of_method() {
+    AnalysisServiceEditView.prototype.use_default_calculation_of_method = function() {
+
       /**
        * Get the value of the checkbox "Use the Default Calculation of Method"
        *
@@ -536,18 +512,23 @@
       var field;
       field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation");
       return field.is(":checked");
-    }
+    };
 
-    toggle_use_default_calculation_of_method(toggle, silent = true) {
+    AnalysisServiceEditView.prototype.toggle_use_default_calculation_of_method = function(toggle, silent) {
+      var field;
+      if (silent == null) {
+        silent = true;
+      }
+
       /**
        * Toggle the "Use the Default Calculation of Method" checkbox
        */
-      var field;
       field = $("#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation");
       return this.toggle_checkbox(field, toggle, silent);
-    }
+    };
 
-    get_calculation() {
+    AnalysisServiceEditView.prototype.get_calculation = function() {
+
       /**
        * Get the UID of the selected default calculation
        *
@@ -556,15 +537,18 @@
       var field;
       field = $("#archetypes-fieldname-Calculation #Calculation");
       return field.val();
-    }
+    };
 
-    set_calculation(calculation, flush = true) {
+    AnalysisServiceEditView.prototype.set_calculation = function(calculation, flush) {
+      var field, title, uid;
+      if (flush == null) {
+        flush = true;
+      }
+
       /**
        * Set the calculation field with the given calculation data
        */
-      var field, title, uid;
       field = $("#archetypes-fieldname-Calculation #Calculation");
-      // create a copy of the calculation
       calculation = $.extend({}, calculation);
       if (flush) {
         field.empty();
@@ -576,9 +560,10 @@
       } else {
         return this.add_select_option(field, null);
       }
-    }
+    };
 
-    select_calculation(uid) {
+    AnalysisServiceEditView.prototype.select_calculation = function(uid) {
+
       /**
        * Select calculation by UID
        *
@@ -588,13 +573,13 @@
       var field;
       field = $("#archetypes-fieldname-Calculation #Calculation");
       this.select_options(field, [uid]);
-      // load the calculation now, to set the interims
       return this.load_calculation(uid).done(function(calculation) {
         return this.set_interims(calculation.InterimFields);
       });
-    }
+    };
 
-    get_interims() {
+    AnalysisServiceEditView.prototype.get_interims = function() {
+
       /**
        * Extract the interim field values as a list of objects
        *
@@ -609,8 +594,6 @@
         values = {};
         $.each($(row).find("td input"), function(index, input) {
           var key, value;
-          // Extract the key from the element name
-          // InterimFields.keyword:records:ignore_empty
           key = this.name.split(":")[0].split(".")[1];
           value = input.value;
           if (input.type === "checkbox") {
@@ -618,43 +601,39 @@
           }
           return values[key] = value;
         });
-        // Only rows with Keyword set
         if (values.keyword !== "") {
           return interims.push(values);
         }
       });
       return interims;
-    }
+    };
 
-    set_interims(interims, flush = true) {
+    AnalysisServiceEditView.prototype.set_interims = function(interims, flush) {
       var field, interim_keys, more_button;
+      if (flush == null) {
+        flush = true;
+      }
+
       /**
        * Set the interim field values
        *
        * Note: This method takes the same input format as returned from get_interims
        */
-      // create a copy of the calculation interims
       interims = $.extend([], interims);
       field = $("#archetypes-fieldname-InterimFields");
       more_button = field.find("#InterimFields_more");
-      // empty all interims
       if (flush) {
         this.flush_interims();
       }
-      // extract the keys of the calculation interims
       interim_keys = interims.map(function(v) {
         return v.keyword;
       });
-      // always keep manual set interims
       $.each(this.manual_interims, function(index, interim) {
         var i;
-        // the keyword of the manual interim is in the keys of the calculation
-        // interims -> overwrite calculation interim with the manual interim
         i = interim_keys.indexOf(interim.keyword);
         if (i >= 0) {
           return interims[i] = interim;
         } else {
-          // append the manual interim at the end
           return interims.push(interim);
         }
       });
@@ -663,13 +642,11 @@
         last_row = field.find("tr.records_row_InterimFields").last();
         more_button.click();
         inputs = last_row.find("input");
-        // iterate over all inputs of the interim field
         return $.each(inputs, function(index, input) {
           var key, value;
           key = this.name.split(":")[0].split(".")[1];
           value = interim[key];
           if (input.type === "checkbox") {
-            // transform to bool value
             if (value) {
               value = true;
             } else {
@@ -684,9 +661,10 @@
           }
         });
       });
-    }
+    };
 
-    flush_interims() {
+    AnalysisServiceEditView.prototype.flush_interims = function() {
+
       /**
        * Flush interim field
        */
@@ -696,9 +674,10 @@
       more_button.click();
       rows = field.find("tr.records_row_InterimFields");
       return rows.not(":last").remove();
-    }
+    };
 
-    set_method_calculation(method_uid) {
+    AnalysisServiceEditView.prototype.set_method_calculation = function(method_uid) {
+
       /**
        * Loads the calculation of the method and set the interims of it
        *
@@ -706,51 +685,47 @@
        *    The UID of the method to set the calculations from
        */
       if (!this.is_uid(method_uid)) {
-        // remove all calculation interims
         this.set_interims(null);
-        // Set empty calculation
         return this.set_calculation(null);
       } else {
-        // load the assigned calculation of the method
         return this.load_method_calculation(method_uid).done(function(calculation) {
-          // set the default calculation
           this.set_calculation(calculation);
-          // set the interims of the default calculation
           return this.set_interims(calculation.InterimFields);
         });
       }
-    }
+    };
 
-    set_instrument_methods(instrument_uid, flush = true) {
+    AnalysisServiceEditView.prototype.set_instrument_methods = function(instrument_uid, flush) {
+      var me;
+      if (flush == null) {
+        flush = true;
+      }
+
       /**
        * Loads the methods of the instrument
        *
        * @param {string} instrument_uid
        *    The UID of the instrument to set the method from
        */
-      var me;
       me = this;
-      // Leave default method if the "None" instrument was selected
       if (!this.is_uid(instrument_uid)) {
         return;
       }
       return this.load_instrument_methods(instrument_uid).done(function(methods) {
         methods = $.extend([], methods);
-        // Extend the default methods with the instrument methods
         $.each(methods, function(index, method) {
           flush = index === 0 ? true : false;
           return me.set_default_method(method, flush = flush);
         });
-        // restore the initially selected method
         this.select_default_method(this.selected_default_method);
-        // set the calculation of the method
         if (this.use_default_calculation_of_method()) {
           return this.set_method_calculation(this.get_default_method());
         }
       });
-    }
+    };
 
-    display_detection_limit_selector() {
+    AnalysisServiceEditView.prototype.display_detection_limit_selector = function() {
+
       /**
        * Get the value of the checkbox "Display a Detection Limit selector"
        *
@@ -759,18 +734,21 @@
       var field;
       field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector");
       return field.is(":checked");
-    }
+    };
 
-    toggle_display_detection_limit_selector(toggle, silent = true) {
+    AnalysisServiceEditView.prototype.toggle_display_detection_limit_selector = function(toggle, silent) {
+      var field, field2;
+      if (silent == null) {
+        silent = true;
+      }
+
       /**
        * Toggle the "Display detection limit selector" checkbox
        *
        * If it is checked, display the "Allow manual detection limit input" field below
        * If it is unchecked, hide and uncheck the "Allow manual detection limit input" field below
        */
-      var field, field2;
       field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector");
-      // control the visiblity of the dependent field
       field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit");
       if (toggle === true) {
         field2.parent().show();
@@ -779,9 +757,10 @@
         field2.prop("checked", false);
       }
       return this.toggle_checkbox(field, toggle, silent);
-    }
+    };
 
-    show_alert(options) {
+    AnalysisServiceEditView.prototype.show_alert = function(options) {
+
       /*
        * Display a notification box above the content
        */
@@ -801,11 +780,15 @@
       if (message === "") {
         alerts.remove();
       }
-      html = `<div class="alert alert-${level} errorbox" role="alert">\n  <h3>${title}</h3>\n  <div>${message}</div>\n</div>`;
+      html = "<div class=\"alert alert-" + level + " errorbox\" role=\"alert\">\n  <h3>" + title + "</h3>\n  <div>" + message + "</div>\n</div>";
       return alerts.append(html);
-    }
+    };
 
-    load_available_instruments() {
+
+    /* ASYNC DATA LOADERS */
+
+    AnalysisServiceEditView.prototype.load_available_instruments = function() {
+
       /**
        * Load all available and valid instruments
        *
@@ -823,16 +806,15 @@
       };
       this.ajax_submit(options).done(function(data) {
         if (!data.objects) {
-          // resolve with an empty array
           return deferred.resolveWith(this, [[]]);
         }
-        // resolve with data objects
         return deferred.resolveWith(this, [data.objects]);
       });
       return deferred.promise();
-    }
+    };
 
-    load_instrument_methods(instrument_uid) {
+    AnalysisServiceEditView.prototype.load_instrument_methods = function(instrument_uid) {
+
       /**
        * Load assigned methods of the instrument
        *
@@ -842,7 +824,6 @@
        */
       var deferred, options;
       deferred = $.Deferred();
-      // return immediately if we do not have a valid UID
       if (!this.is_uid(instrument_uid)) {
         deferred.resolveWith(this, [[]]);
         return deferred.promise();
@@ -854,18 +835,16 @@
         }
       };
       this.ajax_submit(options).done(function(data) {
-        // {instrument: "51ebff9bf1314d00a7731b2f765dac37", methods: Array(3), title: "My Instrument"}
-        // where `methods` is an array of {uid: "3a85b7bc0430496ba7d0a6bcb9cdc5d5", title: "My Method"}
         if (!data.methods) {
-          // resolve with an empty array
           deferred.resolveWith(this, [[]]);
         }
         return deferred.resolveWith(this, [data.methods]);
       });
       return deferred.promise();
-    }
+    };
 
-    load_method_calculation(method_uid) {
+    AnalysisServiceEditView.prototype.load_method_calculation = function(method_uid) {
+
       /**
        * Load assigned calculation of the given method UID
        *
@@ -875,7 +854,6 @@
        */
       var deferred, options;
       deferred = $.Deferred();
-      // return immediately if we do not have a valid UID
       if (!this.is_uid(method_uid)) {
         deferred.resolveWith(this, [{}]);
         return deferred.promise();
@@ -887,21 +865,18 @@
         }
       };
       this.ajax_submit(options).done(function(data) {
-        // /get_method_calculation returns just this structure:
-        // {uid: "488400e9f5e24a4cbd214056e6b5e2aa", title: "My Calculation"}
         if (!this.is_uid(data.uid)) {
           return deferred.resolveWith(this, [{}]);
         }
-        // load the full calculation object
         return this.load_calculation(data.uid).done(function(calculation) {
-          // resolve with the full calculation object
           return deferred.resolveWith(this, [calculation]);
         });
       });
       return deferred.promise();
-    }
+    };
 
-    load_calculation(calculation_uid) {
+    AnalysisServiceEditView.prototype.load_calculation = function(calculation_uid) {
+
       /*
        * Load calculation object from the JSON API for the given UID
        *
@@ -911,7 +886,6 @@
        */
       var deferred, options;
       deferred = $.Deferred();
-      // return immediately if we do not have a valid UID
       if (!this.is_uid(calculation_uid)) {
         deferred.resolveWith(this, [{}]);
         return deferred.promise();
@@ -929,19 +903,18 @@
       this.ajax_submit(options).done(function(data) {
         var calculation;
         calculation = {};
-        // Parse the calculation object from the response data
         if (data.objects.length === 1) {
           calculation = data.objects[0];
         } else {
-          console.warn(`Invalid data returned for calculation UID ${calculation_uid}: `, data);
+          console.warn("Invalid data returned for calculation UID " + calculation_uid + ": ", data);
         }
-        // Resolve the deferred with the parsed calculation
         return deferred.resolveWith(this, [calculation]);
       });
       return deferred.promise();
-    }
+    };
 
-    load_manual_interims() {
+    AnalysisServiceEditView.prototype.load_manual_interims = function() {
+
       /**
        * 1. Load the default calculation
        * 2. Subtract calculation interims from the current active interims
@@ -954,31 +927,21 @@
       deferred = $.Deferred();
       this.load_calculation(this.get_calculation()).done(function(calculation) {
         var calculation_interim_keys, calculation_interims, manual_interims;
-        // interims of this calculation
         calculation_interims = $.extend([], calculation.InterimFields);
-        // extract the keys of the calculation interims
         calculation_interim_keys = calculation_interims.map(function(v) {
           return v.keyword;
         });
-        // separate manual interims from calculation interims
         manual_interims = [];
         $.each(this.get_interims(), function(index, value) {
           var calculation_interim, i, ref;
-          // manual interim is not part of the calculation interims
           if (ref = value.keyword, indexOf.call(calculation_interim_keys, ref) < 0) {
             return manual_interims.push(value);
           } else {
-            // manual interim is also located in the calculaiton interims
-            // -> check for interim override, e.g. different value, unit etc.
-
-            // get the calculation interim
             i = calculation_interim_keys.indexOf(value.keyword);
             calculation_interim = calculation_interims[i];
-            // check for different values
             return $.each(calculation_interim, function(k, v) {
               if (v !== value[k]) {
                 manual_interims.push(value);
-                // stop iteration
                 return false;
               }
             });
@@ -987,9 +950,10 @@
         return deferred.resolveWith(this, [manual_interims]);
       });
       return deferred.promise();
-    }
+    };
 
-    load_object_by_uid(uid) {
+    AnalysisServiceEditView.prototype.load_object_by_uid = function(uid) {
+
       /*
        * Load object by UID
        *
@@ -1011,14 +975,16 @@
         if (data.objects.length === 1) {
           object = data.objects[0];
         }
-        // Resolve the deferred with the parsed calculation
         return deferred.resolveWith(this, [object]);
       });
       return deferred.promise();
-    }
+    };
 
-    ajax_submit(options) {
-      var base, done;
+
+    /* HELPERS */
+
+    AnalysisServiceEditView.prototype.ajax_submit = function(options) {
+
       /**
        * Ajax Submit with automatic event triggering and some sane defaults
        *
@@ -1026,8 +992,8 @@
        *    jQuery ajax options
        * @returns {Deferred} XHR request
        */
+      var base, done;
       console.debug("°°° ajax_submit °°°");
-      // some sane option defaults
       if (options == null) {
         options = {};
       }
@@ -1055,9 +1021,10 @@
         return $(this).trigger("ajax:submit:end");
       };
       return $.ajax(options).done(done);
-    }
+    };
 
-    get_url() {
+    AnalysisServiceEditView.prototype.get_url = function() {
+
       /**
        * Return the current absolute url
        *
@@ -1068,47 +1035,50 @@
       protocol = location.protocol;
       host = location.host;
       pathname = location.pathname;
-      return `${protocol}//${host}${pathname}`;
-    }
+      return protocol + "//" + host + pathname;
+    };
 
-    get_portal_url() {
+    AnalysisServiceEditView.prototype.get_portal_url = function() {
+
       /**
        * Return the portal url
        *
        * @returns {string} portal url
        */
       return window.portal_url;
-    }
+    };
 
-    is_uid(str) {
-      var match;
+    AnalysisServiceEditView.prototype.is_uid = function(str) {
+
       /**
        * Validate valid UID
        *
        * @returns {boolean} True if the argument is a UID
        */
+      var match;
       if (typeof str !== "string") {
         return false;
       }
       match = str.match(/[a-z0-9]{32}/);
       return match !== null;
-    }
+    };
 
-    add_select_option(select, name, value) {
-      var option;
+    AnalysisServiceEditView.prototype.add_select_option = function(select, name, value) {
+
       /**
        * Adds an option to the select
        */
+      var option;
       if (value) {
-        option = `<option value='${value}'>${this._(name)}</option>`;
+        option = "<option value='" + value + "'>" + (this._(name)) + "</option>";
       } else {
-        // empty option (selected by default)
-        option = `<option selected='selected' value=''>${this._("None")}</option>`;
+        option = "<option selected='selected' value=''>" + (this._("None")) + "</option>";
       }
       return $(select).append(option);
-    }
+    };
 
-    parse_select_options(select) {
+    AnalysisServiceEditView.prototype.parse_select_options = function(select) {
+
       /**
        * Parse UID/Title from the select field
        *
@@ -1129,22 +1099,24 @@
         });
       });
       return options;
-    }
+    };
 
-    parse_select_option(select, value) {
+    AnalysisServiceEditView.prototype.parse_select_option = function(select, value) {
+
       /**
        * Return the option by value
        */
       var data, option;
-      option = field.find(`option[value=${uid}]`);
+      option = field.find("option[value=" + uid + "]");
       data = {
         uid: option.val() || "",
         title: option.text() || ""
       };
       return data;
-    }
+    };
 
-    select_options(select, values) {
+    AnalysisServiceEditView.prototype.select_options = function(select, values) {
+
       /**
        * Select the options of the given select field where the value is in values
        */
@@ -1156,9 +1128,14 @@
         }
         return option.selected = "selected";
       });
-    }
+    };
 
-    toggle_checkbox(checkbox, toggle, silent = true) {
+    AnalysisServiceEditView.prototype.toggle_checkbox = function(checkbox, toggle, silent) {
+      var field;
+      if (silent == null) {
+        silent = true;
+      }
+
       /**
        * Toggle the checkbox
        *
@@ -1171,142 +1148,133 @@
        * @param {boolean} silent
        *    True to trigger a "change" event after set
        */
-      var field;
       field = $(checkbox);
       if (toggle === void 0) {
         toggle = !field.is(":checked");
       }
       field.prop("checked", toggle);
-      // trigger change event
       if (!silent) {
         return field.trigger("change");
       }
-    }
+    };
 
-    on_manual_entry_of_results_change(event) {
+
+    /* EVENT HANDLER */
+
+    AnalysisServiceEditView.prototype.on_manual_entry_of_results_change = function(event) {
+
       /**
        * Eventhandler when the "Instrument assignment is not required" checkbox changed
        */
       console.debug("°°° AnalysisServiceEditView::on_manual_entry_of_results_change °°°");
-      // Results can be set by "hand"
       if (this.is_manual_entry_of_results_allowed()) {
         console.debug("Manual entry of results is allowed");
-        // restore all initial set methods
         return this.set_methods(this.methods);
       } else {
-        // Results can be only set by an instrument
         console.debug("Manual entry of results is **not** allowed");
-        // flush all methods and add only the "None" option
         return this.set_methods(null);
       }
-    }
+    };
 
-    on_methods_change(event) {
-      var method_uids;
+    AnalysisServiceEditView.prototype.on_methods_change = function(event) {
+
       /**
        * Eventhandler when the "Methods" multiselect changed
        */
+      var method_uids;
       console.debug("°°° AnalysisServiceEditView::on_methods_change °°°");
-      // selected method UIDs
       method_uids = this.get_methods();
-      // All methods deselected
       if (method_uids.length === 0) {
         console.warn("All methods deselected");
       }
-      // Select the methods
       return this.select_methods(method_uids);
-    }
+    };
 
-    on_instrument_assignment_allowed_change(event) {
+    AnalysisServiceEditView.prototype.on_instrument_assignment_allowed_change = function(event) {
+
       /**
        * Eventhandler when the "Instrument assignment is allowed" checkbox changed
        */
       console.debug("°°° AnalysisServiceEditView::on_instrument_assignment_allowed_change °°°");
       if (this.is_instrument_assignment_allowed()) {
         console.debug("Instrument assignment is allowed");
-        // restore the instruments multi-select to the initial value
         return this.set_instruments(this.instruments);
       } else {
         console.debug("Instrument assignment is **not** allowed");
         return this.set_instruments(null);
       }
-    }
+    };
 
-    on_instruments_change(event) {
-      var instrument_uids;
+    AnalysisServiceEditView.prototype.on_instruments_change = function(event) {
+
       /**
        * Eventhandler when the "Instruments" multiselect changed
        */
+      var instrument_uids;
       console.debug("°°° AnalysisServiceEditView::on_instruments_change °°°");
-      // selected instrument UIDs
       instrument_uids = this.get_instruments();
       if (instrument_uids.length === 0) {
         console.warn("All instruments deselected");
       }
-      // Select the instruments
       return this.select_instruments(instrument_uids);
-    }
+    };
 
-    on_default_instrument_change(event) {
+    AnalysisServiceEditView.prototype.on_default_instrument_change = function(event) {
+
       /**
        * Eventhandler when the "Default Instrument" selector changed
        */
       console.debug("°°° AnalysisServiceEditView::on_default_instrument_change °°°");
-      // set the instrument methods of the default instrument
       return this.set_instrument_methods(this.get_default_instrument());
-    }
+    };
 
-    on_default_method_change(event) {
+    AnalysisServiceEditView.prototype.on_default_method_change = function(event) {
+
       /**
        * Eventhandler when the "Default Method" selector changed
        */
       console.debug("°°° AnalysisServiceEditView::on_default_method_change °°°");
-      // Load the calculation of the method if the checkbox "Use the Default
-      // Calculation of Method" is checked
       if (this.use_default_calculation_of_method()) {
-        // set the calculation of the method
         return this.set_method_calculation(this.get_default_method());
       }
-    }
+    };
 
-    on_use_default_calculation_change(event) {
-      var me;
+    AnalysisServiceEditView.prototype.on_use_default_calculation_change = function(event) {
+
       /**
        * Eventhandler when the "Use the Default Calculation of Method" checkbox changed
        */
+      var me;
       console.debug("°°° AnalysisServiceEditView::on_use_default_calculation_change °°°");
-      // "Use the Default Calculation of Method" checkbox checked
       if (this.use_default_calculation_of_method()) {
         console.debug("Use default calculation");
-        // set the calculation of the method
         return this.set_method_calculation(this.get_default_method());
       } else {
-        // restore all initial set calculations
         me = this;
         $.each(this.calculations, function(index, calculation) {
           var flush;
           flush = index === 0 ? true : false;
           return me.set_calculation(calculation, flush = flush);
         });
-        // select initial set calculation
         if (this.selected_calculation) {
           return this.select_calculation(this.selected_calculation);
         } else {
-          // select first calculation in list
           return this.select_calculation(this.get_calculation());
         }
       }
-    }
+    };
 
-    on_calculation_change(event) {
+    AnalysisServiceEditView.prototype.on_calculation_change = function(event) {
+
       /**
        * Eventhandler when the "Calculation" selector changed
        */
       console.debug("°°° AnalysisServiceEditView::on_calculation_change °°°");
       return this.select_calculation(this.get_calculation());
-    }
+    };
 
-    on_display_detection_limit_selector_change(event) {
+    AnalysisServiceEditView.prototype.on_display_detection_limit_selector_change = function(event) {
+
       /**
        * Eventhandler when the "Display a Detection Limit selector" checkbox changed
        *
@@ -1320,35 +1288,38 @@
         console.debug("Disallow detection limit selector");
         return this.toggle_display_detection_limit_selector(false);
       }
-    }
+    };
 
-    on_separate_container_change(event) {
-      var value;
+    AnalysisServiceEditView.prototype.on_separate_container_change = function(event) {
+
       /**
        * Eventhandler when the "Separate Container" checkbox changed
        *
        * This checkbox is located on the "Container and Preservation" Tab
        */
+      var value;
       console.debug("°°° AnalysisServiceEditView::on_separate_container_change °°°");
       return value = event.currentTarget.checked;
-    }
+    };
 
-    on_default_preservation_change(event) {
+    AnalysisServiceEditView.prototype.on_default_preservation_change = function(event) {
+
       /**
        * Eventhandler when the "Default Preservation" selection changed
        *
        * This field is located on the "Container and Preservation" Tab
        */
       return console.debug("°°° AnalysisServiceEditView::on_default_preservation_change °°°");
-    }
+    };
 
-    on_default_container_change(event) {
-      var el, field, uid;
+    AnalysisServiceEditView.prototype.on_default_container_change = function(event) {
+
       /**
        * Eventhandler when the "Default Container" selection changed
        *
        * This field is located on the "Container and Preservation" Tab
        */
+      var el, field, uid;
       console.debug("°°° AnalysisServiceEditView::on_default_container_change °°°");
       el = event.currentTarget;
       uid = el.getAttribute("uid");
@@ -1362,42 +1333,44 @@
           return field.prop("disabled", false);
         }
       });
-    }
+    };
 
-    on_partition_sampletype_change(event) {
-      var el, uid;
+    AnalysisServiceEditView.prototype.on_partition_sampletype_change = function(event) {
+
       /**
        * Eventhandler when the "Sample Type" selection changed
        *
        * This field is located on the "Container and Preservation" Tab
        */
+      var el, uid;
       console.debug("°°° AnalysisServiceEditView::on_partition_sampletype_change °°°");
       el = event.currentTarget;
       uid = el.value;
       return this.load_object_by_uid(uid).done(function(sampletype) {
         var minvol;
         minvol = sampletype.MinimumVolume || "";
-        // set the minimum volume to the partition
         return $(el).parents("tr").find("[name^='PartitionSetup.vol']").val(minvol);
       });
-    }
+    };
 
-    on_partition_separate_container_change(event) {
+    AnalysisServiceEditView.prototype.on_partition_separate_container_change = function(event) {
+
       /**
        * Eventhandler when the "Separate Container" checkbox changed
        *
        * This checkbox is located on the "Container and Preservation" Tab
        */
       return console.debug("°°° AnalysisServiceEditView::on_partition_separate_container_change °°°");
-    }
+    };
 
-    on_partition_container_change(event) {
-      var el, field, uid;
+    AnalysisServiceEditView.prototype.on_partition_container_change = function(event) {
+
       /**
        * Eventhandler when the "Container" multi-select changed
        *
        * This multi select is located on the "Container and Preservation" Tab
        */
+      var el, field, uid;
       console.debug("°°° AnalysisServiceEditView::on_partition_container_change °°°");
       el = event.currentTarget;
       uid = el.value;
@@ -1411,17 +1384,20 @@
           return $(field).prop("disabled", false);
         }
       });
-    }
+    };
 
-    on_partition_required_volume_change(event) {
+    AnalysisServiceEditView.prototype.on_partition_required_volume_change = function(event) {
+
       /**
        * Eventhandler when the "Required Volume" value changed
        *
        * This field is located on the "Container and Preservation" Tab
        */
       return console.debug("°°° AnalysisServiceEditView::on_partition_required_volume_change °°°");
-    }
+    };
 
-  };
+    return AnalysisServiceEditView;
+
+  })();
 
 }).call(this);

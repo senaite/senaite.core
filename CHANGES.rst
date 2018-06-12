@@ -1,11 +1,26 @@
 Changelog
 =========
 
-1.2.6 (unreleased)
+1.2.7 (unreleased)
 ------------------
 
 **Added**
 
+
+**Changed**
+
+
+**Removed**
+
+
+**Fixed**
+
+
+**Security**
+
+
+1.2.6 (2018-06-08)
+------------------
 
 **Changed**
 
@@ -15,11 +30,9 @@ Changelog
 - #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
 - #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
 
-**Removed**
-
-
 **Fixed**
 
+- #842 Re-compiled Coffee-Scripts with version 1.12.7 
 - #824 Instrument Listing Views Fixes and Refactoring
 - #840 Fix date range filter for "Data entry day book" report
 - #828 Traceback when removing a retracted analysis through Manage Analyses view
@@ -29,8 +42,6 @@ Changelog
 - #835 List only published ARs when "Published" Filter is active
 - #825 Error when exporting Worksheets list with `senaite.exporter`
 - #821 Cannot retract single analysis services
-
-**Security**
 
 
 1.2.5 (2018-05-05)
