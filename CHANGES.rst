@@ -9,6 +9,7 @@ Changelog
 
 **Changed**
 
+- #817 If transition rejection is due to missing sampler use a clearer message so that the user knows the transition rejection reason
 
 **Removed**
 
@@ -54,7 +55,6 @@ Changelog
 
 **Changed**
 
-- #817 If transition rejection is due to missing sampler use a clearer message so that the user knows the transition rejection reason
 - #815 Change description and title of the invalidation notification option
 
 **Removed**
