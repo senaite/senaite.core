@@ -25,7 +25,6 @@ class FrontPageView(BrowserView):
         bika_setup = getToolByName(self.context, "bika_setup")
         login_url = '{}/{}'.format(self.portal_url, 'login')
         landingpage = bika_setup.getLandingPage()
-
         # Anonymous Users get either redirected to the std. bika-frontpage or
         # to the custom landing page, which is set in bika_setup. If no landing
         # page setup, then redirect to login page.
@@ -57,10 +56,9 @@ class FrontPageView(BrowserView):
         # Second precedence: Dashboard enabled
         if self.is_dashboard_enabled():
             roles = self.get_user_roles()
-            if 'Manager' in roles or 'LabManager' in roles:
-                return self.request.response.redirect(self.portal_url + "/bika-dashboard")
             if 'Sampler' in roles or 'SampleCoordinator' in roles:
                 return self.request.response.redirect(self.portal_url + "/samples?samples_review_state=to_be_sampled")
+            return self.request.response.redirect(self.portal_url + "/bika-dashboard")
 
         # Third precedence: Custom Landing Page
         if landingpage:
