@@ -92,7 +92,14 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     sample.reindexObject()
 
                 # write them to the sample
-                if not sample.getSampler() or not sample.getDateSampled():
+                if not sample.getSampler():
+                    # Make the message more specific if the reason for not
+                    # transitioning is that no Sampler has been selected
+                    message = _('Sampler is required for the Sampling transition of ${sample}',
+                                mapping={'sample': sample.Title()})
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+                    continue
+                if not sample.getDateSampled():
                     continue
                 Sampler = sample.getSampler()
                 DateSampled = sample.getDateSampled()
@@ -133,12 +140,9 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                         message = _('${item} is waiting to be received.',
                                     mapping={'item': ', '.join(tlist)})
                     self.context.plone_utils.addPortalMessage(message, 'info')
+
             if not message:
                 message = _('No changes made.')
-                # Make the message more specific if the reason for not
-                # transitioning is that no Sampler has been selected
-                if not Sampler:
-                    message = _('Sampler is required for the Sampling transition')
                 self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                                            context_url)
