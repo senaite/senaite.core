@@ -664,7 +664,6 @@ class AnalysisResultsImporter(Logger):
 
     def attach_attachments(self, analysis, attachments):
         # Sometime we get a list and sometimes an object of 1 attachment
-        import pdb; pdb.set_trace()
         if not isinstance(attachments, list):
             attachments = [attachments, ]
         if not attachments:

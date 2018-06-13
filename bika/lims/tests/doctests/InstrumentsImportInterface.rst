@@ -176,6 +176,21 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     >>> ar.getReceivedBy()
     'test_user_1_'
 
+Create a new `Worksheet` and add the analyses::
+    >>> worksheet = api.create(portal.worksheets, "Worksheet", Analyst='test_user_1_') # doctest: +SKIP
+    >>> worksheet # doctest: +SKIP
+    <Worksheet at /plone/worksheets/WS-001>
+    >>> transaction.commit() # doctest: +SKIP
+    >>> worksheets_url = worksheet.absolute_url() + '/manage_results' # doctest: +SKIP
+    >>> analyses = map(api.get_object, ar.getAnalyses()) # doctest: +SKIP
+    >>> for analysis in analyses: # doctest: +SKIP
+    ...     worksheet.addAnalysis(analysis)
+    >>> transaction.commit() # doctest: +SKIP
+    >>> for analysis in analyses: # doctest: +SKIP
+    ...     if api.get_workflow_status_of(analysis, state_var='worksheetanalysis_review_state') != 'assigned':
+    ...         self.fail('{} not assigned to the worksheet'.format(analysis))
+
+
 
 Instruments files path
 ----------------------
