@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #852 Cannot attach files to analysis on a worksheet when results import is used 
 
 **Security**
 
