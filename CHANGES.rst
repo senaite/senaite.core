@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
 
 **Security**
 
