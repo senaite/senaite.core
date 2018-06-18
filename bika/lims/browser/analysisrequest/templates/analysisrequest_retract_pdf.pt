@@ -62,7 +62,8 @@
     labreasons  python:[alllabreas[key] for key in alllabreas.keys() if key != 'checkbox'];
     client      python:ar.getClient();
     rej_widg    python:ar.getRejectionReasons();
-    reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else [];">
+    reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else [];
+    otherreas   python:ar.getRejectionReasons()[0].get('other', '') if rej_widg else '';">
     <div class="header">
         <h1 tal:content="lab/Title"></h1>
         <div class="header-logo">
@@ -147,6 +148,10 @@
                 tal:attributes="class python: 'check checked' if reason in reasons else 'check'"
                 tal:content="python: 'X' if reason in reasons else '  '">&nbsp;</span>&nbsp;<span tal:replace="reason"></span><br/>
             </tal:reason>
+            <span
+                tal:condition="python:otherreas"
+                tal:attributes="class python: 'check checked' if otherreas else 'check'"
+                tal:content="python: 'X' if otherreas else '  '">&nbsp;</span>&nbsp;<span tal:replace="otherreas"></span><br/>
         </div>
     </div>
 
