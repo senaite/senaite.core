@@ -7,6 +7,7 @@ Changelog
 **Added**
 
 - #844 Missing interface for AR Report added
+- #858 Only Lab Managers sees rejected analysis requests
 
 
 **Changed**
