@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #817 Make warn message clearer if transition rejection is due to missing sampler
 
 **Removed**
 
