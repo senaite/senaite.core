@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #848 Show icon on the Supply Order View
 - #844 Missing interface for AR Report added
 
 
