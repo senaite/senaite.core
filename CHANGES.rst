@@ -13,6 +13,7 @@ Changelog
 
 **Changed**
 
+- #868 AR Add Form: Refactoring and Styling
 - #817 Make warn message clearer if transition rejection is due to missing sampler
 
 **Removed**
