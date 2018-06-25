@@ -20,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #865 AR VAT Amount when using Profiles is not calculated correctly
 - #851 Fix worksheet verification with retracted results
 
 **Security**

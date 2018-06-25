@@ -1633,9 +1633,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     continue
 
                 profile_price = float(profile.getAnalysisProfilePrice())
-                profile_vat = float(profile.getAnalysisProfileVAT())
                 arprofiles_price += profile_price
-                arprofiles_vat_amount += profile_vat
+                arprofiles_vat_amount += profile.getVATAmount()
                 profile_services = profile.getService()
                 services_from_priced_profile.extend(profile_services)
 
