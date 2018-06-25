@@ -102,7 +102,7 @@
 
       <!-- Service Info Template -->
       <script id="service-info" type="text/x-handlebars-template">
-        <table class="service-info-table">
+        <table class="service-info-table table table-condensed table-bordered">
           <tr>
             <td class="service-info-key"
                 i18n:translate="">Analysis Service</td>
@@ -230,18 +230,19 @@
   <body>
 
     <metal:title fill-slot="content-title">
+
       <h1 id="ar-header">
         <img tal:condition="view/icon | nothing" tal:attributes="src view/icon"/>
         <span i18n:translate="">Request new analyses</span>
-        <span style="display:inline-block;padding-left:0.5em;">
+        <div class="pull-right" style="padding-left:0.5em;">
           <form method="GET" class="form-inline">
             <input type="hidden"
                    name="copy_from" tal:attributes="value request/copy_from|nothing"/>
             <input type="number"
                    name="ar_count"
                    min="1"
-                   class="form-control context_action_link"
-                   style="width:4em;border-radius:0;border:1px solid #ddd;padding:2px;"
+                   style="width:4em"
+                   class="form-control input-sm"
                    tal:attributes="value view/ar_count|1"/>
             <button type="submit"
                     class="btn btn-link context_action_link">
@@ -249,8 +250,10 @@
                    tal:attributes="src string:${context/absolute_url}/++resource++bika.lims.images/add.png"/>
             </button>
           </form>
-        </span>
+        </div>
       </h1>
+
+
     </metal:title>
     <metal:description fill-slot="content-description">
     </metal:description>
@@ -273,7 +276,7 @@
                tal:attributes="value view/ar_count"/>
 
         <!-- ADD Form -->
-        <table class="ar-table grid">
+        <table class="ar-table grid table table-sm table-condensed table-bordered">
 
           <tr>
             <td>
@@ -301,18 +304,23 @@
           <!-- All edit fields with fields with add=visible -->
           <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
             <tal:def define="fieldName python:field.getName();
+                             required field/required;
                              widget python:field.widget;
                              errors python:{};
                              mode string:edit;">
               <tr tal:attributes="fieldName fieldName;">
                 <td>
                   <label class="formQuestion">
-                    <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                    <span
+                      tal:attributes="class python:required and 'text-primary' or ''"
+                      tal:content="python:view.context.translate(widget.Label(here))">
+                      Label
+                    </span>
                     <span class="fieldRequired"
-                          tal:condition="field/required"
+                          tal:condition="required"
                           title="Required"
                           i18n:attributes="title title_required;">&nbsp;</span>
-                    <span class="formHelp discreet"
+                    <span class="formHelp discreet help-block small"
                           tal:define="description python:view.context.translate(widget.Description(here))"
                           tal:content="structure description"
                           tal:attributes="id string:${fieldName}_help">Help</span>
@@ -320,14 +328,15 @@
                 </td>
                 <td>
                   <!-- Copy Button -->
-                  <img class="copybutton"
-                        tal:condition="python:view.ar_count > 1"
-                        tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                  <img class="copybutton btn btn-link"
+                       tal:condition="python:view.ar_count > 1"
+                       tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
                 </td>
 
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, arnum)"
                       tal:attributes="arnum arnum; fieldName newFieldName">
+                    <!-- The input field is rendered here -->
                     <metal:field use-macro="python:view.get_input_widget(fieldName, arnum, mode='edit')"/>
                   </td>
                 </tal:columns>
@@ -420,7 +429,7 @@
                                         poc poc;
                                         fieldname string:Analyses;">
                       <td class="service-header">
-                        <div class="service-title"
+                        <div class="service-title small"
                              i18n:translate=""
                              tal:content="service_title">
                           Service Title
@@ -456,6 +465,7 @@
                           <div tal:attributes="id string:${service_uid}-${arnum}-analysisservice;
                                                class string:analysisservice ${service_uid}-analysisservice;">
                             <input type="checkbox"
+                                   style="height:auto;"
                                    tal:attributes="name string:${fieldname}:list;
                                                    value string:${service_uid};
                                                    id string:cb_${service_uid};
