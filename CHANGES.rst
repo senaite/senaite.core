@@ -1,11 +1,28 @@
 Changelog
 =========
 
-1.2.6 (unreleased)
+1.2.7 (unreleased)
 ------------------
 
 **Added**
 
+- #844 Missing interface for AR Report added
+
+
+**Changed**
+
+
+**Removed**
+
+
+**Fixed**
+
+
+**Security**
+
+
+1.2.6 (2018-06-08)
+------------------
 
 **Changed**
 
@@ -14,9 +31,6 @@ Changelog
 - #826 Display signatures of verifiers instead of dept managers in results report
 - #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
 - #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
-
-**Removed**
-
 
 **Fixed**
 
@@ -30,8 +44,6 @@ Changelog
 - #835 List only published ARs when "Published" Filter is active
 - #825 Error when exporting Worksheets list with `senaite.exporter`
 - #821 Cannot retract single analysis services
-
-**Security**
 
 
 1.2.5 (2018-05-05)
