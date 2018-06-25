@@ -1029,8 +1029,12 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
     <permission-map name="View" acquired="False">
+      <permission-role>Client</permission-role>
+      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
   </state>
 
