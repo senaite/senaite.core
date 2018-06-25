@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+#855 Dashboard is displayed to Lab clerks after login only
 
 **Security**
 
