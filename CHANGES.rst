@@ -19,6 +19,7 @@ Changelog
 
 **Fixed**
 
+- #851 Fix worksheet verification with retracted results
 
 **Security**
 
