@@ -9,7 +9,7 @@ Changelog
 
 **Changed**
 
-- #817 If transition rejection is due to missing sampler use a clearer message so that the user knows the transition rejection reason
+- #817 Make warn message clearer if transition rejection is due to missing sampler
 
 **Removed**
 
