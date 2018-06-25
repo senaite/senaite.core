@@ -31,6 +31,7 @@ from bika.lims import logger
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from bika.lims import POINTS_OF_CAPTURE
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample"]
@@ -504,6 +505,10 @@ class AnalysisRequestAddView(BrowserView):
             if restricted_category_ids:
                 categories = filter(lambda c: c.getId in restricted_category_ids, categories)
         return categories
+
+    def get_points_of_capture(self):
+        items = POINTS_OF_CAPTURE.items()
+        return OrderedDict(items)
 
     def get_services(self, poc="lab"):
         """Return all Services

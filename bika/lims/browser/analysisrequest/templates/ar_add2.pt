@@ -358,7 +358,7 @@
           </tal:field>
 
           <!-- POCs (Field/Lab) -->
-          <tal:poc tal:repeat="poc python:['field', 'lab']">
+          <tal:poc tal:repeat="poc python:view.get_points_of_capture()">
             <!-- Services in POC -->
             <tal:services_in_poc tal:define="services python:view.get_services(poc);
                                              categories python:view.get_service_categories();
