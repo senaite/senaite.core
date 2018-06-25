@@ -1045,7 +1045,7 @@ class BikaListingView(BrowserView):
         key = "{}_sort_order".format(form_id)
         sort_order = self.request.get(key, None)
 
-        if sort_order is None:
+        if not sort_order:
             sort_order = self.contentFilter.get("sort_order", self.sort_order)
         if sort_order not in ["ascending", "descending"]:
             sort_order = "descending"

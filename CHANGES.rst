@@ -20,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #864 Sort order in setup of analysis services wrong
 - #851 Fix worksheet verification with retracted results
 
 **Security**
