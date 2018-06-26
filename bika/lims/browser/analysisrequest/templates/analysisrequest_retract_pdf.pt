@@ -75,11 +75,11 @@
     <div class="client">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="label" i18n:translate="">Referring Facility/Requestor</td>
+                <td class="label" i18n:translate="">Client</td>
                 <td tal:content="python: client.Title()"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Unique ID/Facility Code</td>
+                <td class="label" i18n:translate="">Client ID</td>
                 <td tal:content="python: client.getClientID()"></td>
             </tr>
             <tr>
