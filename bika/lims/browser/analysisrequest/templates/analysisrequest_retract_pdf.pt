@@ -99,7 +99,7 @@
     <div class="sample">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="label" i18n:translate="">Nature of specimen</td>
+                <td class="label" i18n:translate="">Sample type</td>
                 <td tal:content="python: sample.getSampleType().Title()"></td>
                 <td class="label" i18n:translate="">Date collected</td>
                 <td tal:content="python:plone_view.toLocalizedTime(sample.getDateSampled())"></td>
@@ -107,7 +107,7 @@
                 <td tal:content="python:plone_view.toLocalizedTime(sample.getDateReceived())"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Sample Number/NMRL Number</td>
+                <td class="label" i18n:translate="">Sample ID</td>
                 <td tal:condition="python: sample.getClientSampleID()"
                     tal:content="python:'%s / %s' % (sample.getClientSampleID(), sample.getSampleID())" colspan="5"></td>
                 <td tal:condition="python: not sample.getClientSampleID()"
