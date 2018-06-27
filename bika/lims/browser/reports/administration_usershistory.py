@@ -7,9 +7,9 @@
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from DateTime import DateTime
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
@@ -151,7 +151,12 @@ class Report(BrowserView):
                     if (user == '' or meta['principal'] == user):
                         actorfullname = userfullname == '' and \
                             mt.getMemberById(user) or userfullname
-                        action_date = api.to_date(meta['timestamp'], DateTime())
+                        action_date = api.to_date(meta['timestamp'], None)
+                        if not action_date:
+                            logger.warn("Cannot convert date {}").format(meta['timestamp'])
+                            action_date = "???"
+                        else:
+                            action_date = self.ulocalized_time(action_date, long_format=1)
                         dataline = {'EntityNameOrId': entity.title_or_id(),
                                     'EntityAbsoluteUrl': entity.absolute_url(),
                                     'EntityCreationDate': entity.CreationDate(),
@@ -160,7 +165,7 @@ class Report(BrowserView):
                                     'Workflow': '',
                                     'Action': metatitle,
                                     'ActionDate': meta['timestamp'],
-                                    'ActionDateStr': self.ulocalized_time(action_date, 1),
+                                    'ActionDateStr': action_date,
                                     'ActionActor': meta['principal'],
                                     'ActionActorFullName': actorfullname,
                                     'ActionComments': ''
