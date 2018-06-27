@@ -13,6 +13,8 @@ Changelog
 
 **Changed**
 
+- #873 Sample Type field editable in AR and Sample edit views before receive
+- #868 AR Add Form: Refactoring and Styling
 - #817 Make warn message clearer if transition rejection is due to missing sampler
 
 **Removed**
@@ -21,6 +23,10 @@ Changelog
 **Fixed**
 
 - #864 Sort order in setup of analysis services wrong
+- #872 Date format appears wrong in Users history administrative report
+- #855 Dashboard is displayed to Lab clerks after login only
+- #871 Fix OpenTagError for i18ndude
+- #865 AR VAT Amount when using Profiles is not calculated correctly
 - #851 Fix worksheet verification with retracted results
 
 **Security**
