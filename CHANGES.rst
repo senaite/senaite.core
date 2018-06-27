@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #872 Date format appears wrong in Users history administrative report
 - #851 Fix worksheet verification with retracted results
 
 **Security**
