@@ -21,6 +21,7 @@ Changelog
 
 **Fixed**
 
+- #871 Fix OpenTagError for i18ndude
 - #851 Fix worksheet verification with retracted results
 
 **Security**
