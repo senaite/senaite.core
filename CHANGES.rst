@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #871 Fix OpenTagError for i18ndude
 - #865 AR VAT Amount when using Profiles is not calculated correctly
 - #851 Fix worksheet verification with retracted results
 
