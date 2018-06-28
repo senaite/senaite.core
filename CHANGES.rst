@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #877 Worksheet's attachment column is empty after results import from file
 - #872 Date format appears wrong in Users history administrative report
 - #855 Dashboard is displayed to Lab clerks after login only
 - #871 Fix OpenTagError for i18ndude
