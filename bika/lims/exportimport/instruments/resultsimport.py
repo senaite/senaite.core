@@ -565,7 +565,7 @@ class AnalysisResultsImporter(Logger):
                         if ws.getId() not in attachments:
                             fn = infile.filename
                             fn_attachments = self.get_attachment_filenames(ws)
-                            if fn in fn_attachments:
+                            if fn in fn_attachments.keys():
                                 attachments[ws.getId()] = fn_attachments[fn]
                             else:
                                 attachments[ws.getId()] = \
@@ -664,19 +664,20 @@ class AnalysisResultsImporter(Logger):
 
     def attach_attachment(self, analysis, attachment):
         if attachment:
+            if isinstance(attachment, list):
+                attachment = attachment[0]
+            # current attachments
             an_atts = analysis.getAttachment()
-            attachments = []
-            for an_att in an_atts:
-                if an_att.getAttachmentFile().filename != \
-                        attachment.getAttachmentFile().filename:
-                    logger.info(
-                            "Attaching %s to %s" % (an_att.UID(), analysis))
-                    attachments.append(attachment.UID())
-                    analysis.setAttachment(attachments)
-                    break
+            atts_filenames = [att.getAttachmentFile().filename for att in an_atts]
+            if attachment.getAttachmentFile().filename not in atts_filenames:
+                an_atts.append(attachment)
+                logger.info(
+                    "Attaching %s to %s" % (attachment.UID(), analysis))
+                analysis.setAttachment([att.UID() for att in an_atts])
+                analysis.reindexObject()
             else:
                 self.warn("Attachment %s was not linked to analysis %s" %
-                          (attachment, analysis))
+                          (attachment.UID(), analysis))
 
     def get_attachment_filenames(self, ws):
         fn_attachments = {}
