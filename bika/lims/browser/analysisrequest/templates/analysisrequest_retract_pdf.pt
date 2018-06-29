@@ -134,7 +134,7 @@
             <span
                 tal:condition="python:otherreas"
                 tal:attributes="class python: 'check checked' if otherreas else 'check'"
-                tal:content="python: 'X' if otherreas else '  '">&nbsp;</span>&nbsp;<span tal:replace="python:otherreas[0]"></span><br/>
+                tal:content="python: 'X' if otherreas else '  '">&nbsp;</span>&nbsp;<span tal:replace="python: otherreas and otherreas[0] or ''"></span><br/>
         </div>
     </div>
 
