@@ -80,7 +80,7 @@ class HeaderTableView(BrowserView):
                    'mode': 'structure',
                    'html': adapter(field)}
         else:
-            if field.getType().find("ool") > -1:
+            if field.getWidgetName() == "BooleanWidget":
                 value = field.get(self.context)
                 ret = {
                     "fieldName": fieldname,
