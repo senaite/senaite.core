@@ -23,6 +23,23 @@ class AnalysisRequestRejectEmailView(BrowserView):
     def __call__(self):
         return self.template()
 
+    def get_rejection_reasons(self, keyword=None):
+        """
+
+        :param keyword:
+        :return:
+        """
+        keys = ['selected', 'other']
+        if keyword is None:
+            return sum(map(self.get_rejection_reasons, keys), [])
+        if keyword not in keys:
+            return []
+        rejection_reasons = self.context.getRejectionReasons()
+        rejection_reasons = rejection_reasons and rejection_reasons[0] or {}
+        if keyword == 'other':
+            return rejection_reasons.get(keyword, '') and [rejection_reasons.get(keyword, '')] or []
+        return rejection_reasons.get(keyword, [])
+
 
 class AnalysisRequestRejectPdfView(BrowserView):
     """
@@ -38,3 +55,20 @@ class AnalysisRequestRejectPdfView(BrowserView):
 
     def __call__(self):
         return self.template()
+
+    def get_rejection_reasons(self, keyword=None):
+        """
+
+        :param keyword:
+        :return:
+        """
+        keys = ['selected', 'other']
+        if keyword is None:
+            return sum(map(self.get_rejection_reasons, keys), [])
+        if keyword not in keys:
+            return []
+        rejection_reasons = self.context.getRejectionReasons()
+        rejection_reasons = rejection_reasons and rejection_reasons[0] or {}
+        if keyword == 'other':
+            return rejection_reasons.get(keyword, '') and [rejection_reasons.get(keyword, '')] or []
+        return rejection_reasons.get(keyword, [])
