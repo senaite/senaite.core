@@ -6,11 +6,14 @@ Changelog
 
 **Added**
 
+- #848 Show icon on the Supply Order View
 - #844 Missing interface for AR Report added
+- #858 Only Lab Managers sees rejected analysis requests
 
 
 **Changed**
 
+- #817 Make warn message clearer if transition rejection is due to missing sampler
 
 **Removed**
 
@@ -18,6 +21,7 @@ Changelog
 **Fixed**
 
 - #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
+- #851 Fix worksheet verification with retracted results
 
 **Security**
 
