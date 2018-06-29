@@ -102,13 +102,22 @@ class HeaderTableView(BrowserView):
                         targets = [targets, ]
                     sm = getSecurityManager()
                     if all([sm.checkPermission(view, ta) for ta in targets]):
-                        a = ["<a href='%s'>%s</a>" % (target.absolute_url(),
-                                                      target.Title())
-                             for target in targets]
+                        elements = [
+                            "<div id='{id}' class='field reference'>"
+                            "  <a class='link' uid='{uid}' href='{url}'>"
+                            "    {title}"
+                            "  </a>"
+                            "</div>"
+                            .format(id=target.getId(),
+                                    uid=target.UID(),
+                                    url=target.absolute_url(),
+                                    title=target.Title())
+                            for target in targets]
+
                         ret = {
                             "fieldName": fieldname,
                             "mode": "structure",
-                            "html": ", ".join(a),
+                            "html": "".join(elements),
                         }
                     else:
                         ret = {
