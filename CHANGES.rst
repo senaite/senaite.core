@@ -1,13 +1,42 @@
 Changelog
 =========
 
-1.2.6 (unreleased)
+1.2.7 (unreleased)
 ------------------
 
 **Added**
 
 - #846 Transifex integration
+- #848 Show icon on the Supply Order View
+- #844 Missing interface for AR Report added
+- #858 Only Lab Managers sees rejected analysis requests
 
+
+**Changed**
+
+- #873 Sample Type field editable in AR and Sample edit views before receive
+- #868 AR Add Form: Refactoring and Styling
+- #817 Make warn message clearer if transition rejection is due to missing sampler
+
+**Removed**
+
+
+**Fixed**
+
+- #878 Fix AR Header Table Styles and Ajax Failures
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
+- #875 Fix Batch AR View
+- #872 Date format appears wrong in Users history administrative report
+- #855 Dashboard is displayed to Lab clerks after login only
+- #871 Fix OpenTagError for i18ndude
+- #865 AR VAT Amount when using Profiles is not calculated correctly
+- #851 Fix worksheet verification with retracted results
+
+**Security**
+
+
+1.2.6 (2018-06-08)
+------------------
 
 **Changed**
 
@@ -16,9 +45,6 @@ Changelog
 - #826 Display signatures of verifiers instead of dept managers in results report
 - #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
 - #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
-
-**Removed**
-
 
 **Fixed**
 
@@ -32,8 +58,6 @@ Changelog
 - #835 List only published ARs when "Published" Filter is active
 - #825 Error when exporting Worksheets list with `senaite.exporter`
 - #821 Cannot retract single analysis services
-
-**Security**
 
 
 1.2.5 (2018-05-05)
