@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
         metal:use-macro="here/main_template/macros/master"
-        i18n:domain="bika">
+        i18n:domain="senaite.core">
 <body>
 
 <metal:content-title fill-slot="content-title">

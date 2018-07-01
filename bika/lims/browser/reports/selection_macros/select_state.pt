@@ -1,4 +1,4 @@
-<div class="field" tal:attributes="style view/style|nothing" i18n:domain="bika">
+<div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core">
 
     <label tal:content="view/field_title">Status</label>
     <br/>

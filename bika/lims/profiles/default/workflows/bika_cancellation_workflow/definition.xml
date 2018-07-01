@@ -6,7 +6,7 @@
              state_variable="cancellation_state"
              initial_state="active"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="cancel" />

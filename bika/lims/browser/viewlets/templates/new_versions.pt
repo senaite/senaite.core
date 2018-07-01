@@ -1,4 +1,4 @@
-<div tal:omit-tag="" i18n:domain="bika">
+<div tal:omit-tag="" i18n:domain="senaite.core">
 
     <div class="visualClear"><!-- --></div>
 
