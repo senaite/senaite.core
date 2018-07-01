@@ -23,6 +23,7 @@ Changelog
 **Fixed**
 
 - #878 Fix AR Header Table Styles and Ajax Failures
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
 - #875 Fix Batch AR View
 - #872 Date format appears wrong in Users history administrative report
 - #855 Dashboard is displayed to Lab clerks after login only
