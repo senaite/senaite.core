@@ -24,6 +24,7 @@ Changelog
 **Fixed**
 
 - #881 Fixed JS i18n catalog names
+- #880 Fix message factory
 - #878 Fix AR Header Table Styles and Ajax Failures
 - #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
 - #875 Fix Batch AR View
