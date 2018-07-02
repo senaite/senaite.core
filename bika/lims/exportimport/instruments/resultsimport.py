@@ -663,6 +663,14 @@ class AnalysisResultsImporter(Logger):
         return attachment
 
     def attach_attachment(self, analysis, attachment):
+        """
+        Attach a file or a given set of files to an analysis
+
+        :param analysis: analysis where the files are to be attached
+        :param attachment: files to be attached. This can be either a
+        single file or a list of files
+        :return: None
+        """
         if not attachment:
             return
         if isinstance(attachment, list):
