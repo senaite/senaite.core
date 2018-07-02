@@ -1,12 +1,14 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# Ramon Bartl <rb@ridingbytes.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 16:26+0000\n"
+"POT-Creation-Date: 2018-07-02 16:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -155,7 +157,7 @@ msgstr "Anhänge"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
-msgstr ""
+msgstr "Auto-Import Logs"
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
@@ -380,6 +382,10 @@ msgstr "Annullieren"
 msgid "Invoice"
 msgstr "Rechnung"
 
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Invoices"
+msgstr "Rechnungen"
+
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr "Laborkontakt"
@@ -574,15 +580,15 @@ msgstr "Referenzwerte"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Reflex Rules"
-msgstr ""
+msgstr "Reflex Regeln"
 
 #: bika/lims/profiles/default/types/ReflexRuleFolder.xml
 msgid "Reflex Rules Folder"
-msgstr ""
+msgstr "Reflex-Regel Ordner"
 
 #: bika/lims/profiles/default/types/ReflexRule.xml
 msgid "ReflexRule"
-msgstr ""
+msgstr "Reflex Regel"
 
 msgid "Registered"
 msgstr "Registriert"
@@ -751,10 +757,6 @@ msgstr "Zugriff"
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Kleiner Aufkleber"
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Statements"
-msgstr "Angaben"
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml

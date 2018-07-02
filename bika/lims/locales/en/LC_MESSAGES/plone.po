@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 16:26+0000\n"
+"POT-Creation-Date: 2018-07-02 16:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -376,6 +376,10 @@ msgstr ""
 msgid "Invoice"
 msgstr ""
 
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Invoices"
+msgstr ""
+
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr ""
@@ -746,10 +750,6 @@ msgstr ""
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
-msgstr ""
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Statements"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Batch.xml

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 16:26+0000\n"
+"POT-Creation-Date: 2018-07-02 16:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -529,7 +529,7 @@ msgstr "Wiederholte Analysen"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:116
 msgid "Analyses requested"
-msgstr ""
+msgstr "Analysen angefragt"
 
 #: bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:34
 msgid "Analyses results out of specified range"
@@ -898,11 +898,11 @@ msgstr "Genehmigt von"
 
 #: bika/lims/exportimport/import.pt:89
 msgid "Auto Import Instrument Results"
-msgstr ""
+msgstr "Auto-Import Instrumentenergebnisse"
 
 #: bika/lims/browser/instrument.py:717
 msgid "Auto Import Logs of %s"
-msgstr ""
+msgstr "Auto-Import Logs von %s "
 
 #: bika/lims/configure.zcml:102
 msgid "Auto generate ID Behavior for Dexterity contents"
@@ -1964,7 +1964,7 @@ msgstr "Ausgeliefert"
 
 # bika.lims.bikalisting.js
 msgid "Display Columns"
-msgstr ""
+msgstr "Spalten anzeigen"
 
 #: bika/lims/content/abstractbaseanalysis.py:546
 msgid "Display Value"
@@ -2134,7 +2134,7 @@ msgstr "E-Mail Adresse"
 
 #: bika/lims/content/bikasetup.py:659
 msgid "Email notification on AR invalidation"
-msgstr ""
+msgstr "E-Mail Benachrichtigung beim invalidieren von Analysenaufträgen"
 
 #: bika/lims/content/bikasetup.py:895
 msgid "Email notification on rejection"
@@ -6768,7 +6768,7 @@ msgstr "${d}.${m}.${Y}"
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
-#. Default: "yy-mm-dd"
+#. Default: "mm/dd/yy"
 msgid "date_format_short_datepicker"
 msgstr ""
 
