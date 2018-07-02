@@ -16,8 +16,8 @@ except TypeError:
 
 # import this to create messages in the bika domain.
 from zope.i18nmessageid import MessageFactory
-bikaMessageFactory = MessageFactory('bika')
-_ = MessageFactory('bika.lims')
+bikaMessageFactory = MessageFactory('senaite.core')
+_ = MessageFactory('senaite.core')
 from Products.Archetypes import PloneMessageFactory as PMF
 
 # import this to log messages
