@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #846 Transifex integration
 - #848 Show icon on the Supply Order View
 - #844 Missing interface for AR Report added
 - #858 Only Lab Managers sees rejected analysis requests
@@ -23,6 +24,11 @@ Changelog
 **Fixed**
 
 - #864 Sort order in setup of analysis services wrong
+- #881 Fixed JS i18n catalog names
+- #880 Fix message factory
+- #878 Fix AR Header Table Styles and Ajax Failures
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
+- #875 Fix Batch AR View
 - #872 Date format appears wrong in Users history administrative report
 - #855 Dashboard is displayed to Lab clerks after login only
 - #871 Fix OpenTagError for i18ndude

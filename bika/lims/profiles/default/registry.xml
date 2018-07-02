@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- Operation Definitions -->
-<registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="bika">
+<registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
 
     <record name="bika.lims.client.default_landing_page">
       <field type="plone.registry.field.Choice">

@@ -621,8 +621,8 @@
 
     WorksheetManageResultsView.prototype.load = function() {
       console.debug("WorksheetManageResultsView::load");
-      jarn.i18n.loadCatalog('bika');
-      this._ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this._pmf = window.jarn.i18n.MessageFactory('plone');
       this.bind_eventhandler();
       this.constraints = null;

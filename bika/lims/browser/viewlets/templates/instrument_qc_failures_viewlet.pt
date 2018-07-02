@@ -1,6 +1,6 @@
 <div tal:omit-tag=""
      tal:condition="python:view.nr_failed > 0"
-     i18n:domain="bika">
+     i18n:domain="senaite.core">
 
     <div class="visualClear"><!-- --></div>
 

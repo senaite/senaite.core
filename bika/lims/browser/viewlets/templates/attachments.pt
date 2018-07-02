@@ -1,6 +1,6 @@
 <div class="attachments"
      tal:define="attachments_view python:view.get_attachments_view()"
-     i18n:domain="bika">
+     i18n:domain="senaite.core">
 
   <script type="text/javascript">
    jQuery(document).ready(function($) {

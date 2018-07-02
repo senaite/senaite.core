@@ -1,5 +1,5 @@
 <tal:define
-    i18n:domain="bika"
+    i18n:domain="senaite.core"
 	define="
 		portal_state context/@@plone_portal_state;
 		currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;

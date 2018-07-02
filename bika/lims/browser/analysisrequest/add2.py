@@ -76,15 +76,10 @@ class AnalysisRequestAddView(BrowserView):
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/analysisrequest_big.png"
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
-
-    @property
-    def icon(self):
-        icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/analysisrequest_big.png")
-        return icon
 
     def get_view_url(self):
         """Return the current view url including request parameters

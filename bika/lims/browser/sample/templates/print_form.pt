@@ -7,7 +7,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       tal:attributes="lang default_language|default;
                       xml:lang default_language|default;"
-      i18n:domain="bika"
+      i18n:domain="senaite.core"
       tal:define="portal_state context/@@plone_portal_state;
                   portal_url portal_state/portal_url;
                   plone_view context/@@plone;

@@ -2,7 +2,7 @@
 <object name="InstrumentLocation"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        i18n:domain="bika"
+        i18n:domain="senaite.core"
         purge="True">
 
   <property name="title" i18n:translate="">Instrument Location</property>

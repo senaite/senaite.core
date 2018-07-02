@@ -261,9 +261,9 @@ window.bika.lims.initialize = function() {
     return window.bika.lims.initview();
 };
 
-window.jarn.i18n.loadCatalog("bika");
+window.jarn.i18n.loadCatalog("senaite.core");
 window.jarn.i18n.loadCatalog("plone");
-var _ = window.jarn.i18n.MessageFactory("bika");
+var _ = window.jarn.i18n.MessageFactory("senaite.core");
 var PMF = jarn.i18n.MessageFactory('plone');
 
 

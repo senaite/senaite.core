@@ -61,8 +61,8 @@
 
     AnalysisRequestAdd.prototype.load = function() {
       console.debug("AnalysisRequestAdd::load");
-      jarn.i18n.loadCatalog('bika');
-      this._ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       $('input[type=text]').prop('autocomplete', 'off');
       this.global_settings = {};
       this.records_snapshot = {};

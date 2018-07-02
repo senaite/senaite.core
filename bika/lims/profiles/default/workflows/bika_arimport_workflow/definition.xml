@@ -6,7 +6,7 @@
              state_variable="review_state"
              initial_state="invalid"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <permission>Modify portal content</permission>
   <permission>BIKA: Manage ARImport</permission>
