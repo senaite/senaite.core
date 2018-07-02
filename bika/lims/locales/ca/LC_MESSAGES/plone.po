@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 16:51+0000\n"
+"POT-Creation-Date: 2018-07-02 20:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2018\n"
 "Language-Team: Catalan (https://www.transifex.com/senaite/teams/87045/ca/)\n"
@@ -382,10 +382,6 @@ msgstr ""
 msgid "Invoice"
 msgstr "Factura"
 
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Invoices"
-msgstr ""
-
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr "Contacte del laboratori"
@@ -757,6 +753,10 @@ msgstr ""
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Etiqueta petita"
+
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Statements"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
