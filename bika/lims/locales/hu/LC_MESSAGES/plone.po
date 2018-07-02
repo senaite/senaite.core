@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-02-09 12:39+0000\n"
+"POT-Creation-Date: 2018-07-02 16:51+0000\n"
 "PO-Revision-Date: 2017-09-23 01:43+0000\n"
 "Last-Translator: Alphons Senki <senki.alphons@gmail.com>\n"
 "Language-Team: Hungarian (https://www.transifex.com/senaite/teams/87045/hu/)\n"
@@ -381,6 +381,10 @@ msgstr "Érvénytelenít"
 msgid "Invoice"
 msgstr "Számla"
 
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Invoices"
+msgstr ""
+
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr "Labor kapcsolat"
@@ -752,10 +756,6 @@ msgstr "Megosztás"
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Kis címke"
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Statements"
-msgstr "Megállapítások"
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml

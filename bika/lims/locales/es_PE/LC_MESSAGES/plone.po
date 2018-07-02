@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-02-09 12:39+0000\n"
+"POT-Creation-Date: 2018-07-02 16:51+0000\n"
 "PO-Revision-Date: 2017-09-19 18:55+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Spanish (Peru) (https://www.transifex.com/senaite/teams/87045/es_PE/)\n"
@@ -386,6 +386,10 @@ msgstr ""
 msgid "Invoice"
 msgstr "Factura"
 
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Invoices"
+msgstr ""
+
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr "Contacto del laboratorio"
@@ -757,10 +761,6 @@ msgstr ""
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Etiqueta pequeña"
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Statements"
-msgstr ""
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
