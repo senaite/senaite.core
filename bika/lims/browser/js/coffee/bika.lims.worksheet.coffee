@@ -528,7 +528,7 @@ class window.WorksheetManageResultsView
 
     # load translations
     jarn.i18n.loadCatalog 'bika'
-    @_ = window.jarn.i18n.MessageFactory('bika')
+    @_ = window.jarn.i18n.MessageFactory("senaite.core")
     @_pmf = window.jarn.i18n.MessageFactory('plone')
 
     # bind the event handler to the elements

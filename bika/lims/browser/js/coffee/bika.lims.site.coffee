@@ -10,7 +10,7 @@ class window.SiteView
 
     # load translations
     jarn.i18n.loadCatalog 'bika'
-    @_ = window.jarn.i18n.MessageFactory('bika')
+    @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
     # initialze the loading spinner
     @init_spinner()

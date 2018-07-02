@@ -77,8 +77,8 @@
     AnalysisServiceEditView.prototype.load = function() {
       var d1, d2;
       console.debug("AnalysisServiceEditView::load");
-      jarn.i18n.loadCatalog("bika");
-      this._ = window.jarn.i18n.MessageFactory("bika");
+      jarn.i18n.loadCatalog("senaite.core");
+      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this.all_instruments = {};
       this.invalid_instruments = {};
       d1 = this.load_available_instruments().done(function(instruments) {
