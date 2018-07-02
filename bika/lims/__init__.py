@@ -12,13 +12,14 @@ import pkg_resources
 
 import App
 from AccessControl import allow_module
-from bika.lims.config import PROJECTNAME
 from bika.lims.permissions import ADD_CONTENT_PERMISSION
 from bika.lims.permissions import ADD_CONTENT_PERMISSIONS
 from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.utils import ContentInit
 from zope.i18nmessageid import MessageFactory
+
+PROJECTNAME = "bika.lims"
 
 try:
     __version__ = pkg_resources.get_distribution("senaite.core").version
@@ -33,6 +34,7 @@ _ = MessageFactory("senaite.core")
 # import this to log messages
 logger = logging.getLogger("senaite.core")
 
+# XXX: Do we really need all of these in templates?
 allow_module("AccessControl")
 allow_module("bika.lims")
 allow_module("bika.lims.config")
@@ -46,6 +48,14 @@ allow_module("plone.registry.interfaces")
 debug_mode = App.config.getConfiguration().debug_mode
 if debug_mode:
     allow_module("pdb")
+
+
+# Implicit module imports used by others
+# XXX Refactor these dependencies to explicit imports!
+from bika.lims.config import *  # noqa
+from bika.lims.permissions import *  # noqa
+from bika.lims.validators import *  # noqa
+from Products.Archetypes import PloneMessageFactory as PMF  # noqa
 
 
 def initialize(context):

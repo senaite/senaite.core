@@ -5,11 +5,15 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.Archetypes.public import DisplayList
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.permissions import *
+from Products.Archetypes.public import DisplayList
 from zope.i18n.locales import locales
+
+# Implicit module imports used by others
+# XXX Refactor these dependencies to explicit imports!
+from bika.lims.utils import t  # noqa
+from bika.lims.permissions import *  # noqa
+
 
 PROJECTNAME = "bika.lims"
 
@@ -66,7 +70,7 @@ DEFAULT_AR_SPECS = DisplayList((
 ARIMPORT_OPTIONS = DisplayList((
     ('c', _('Classic')),
     ('p', _('Profiles')),
-#    ('s', _('Special')),
+    # ('s', _('Special')),
 ))
 EMAIL_SUBJECT_OPTIONS = DisplayList((
     ('ar', _('Analysis Request ID')),
@@ -94,7 +98,7 @@ QCANALYSIS_TYPES = DisplayList((
 ))
 
 currencies = locales.getLocale('en').numbers.currencies.values()
-currencies.sort(lambda x,y:cmp(x.displayName, y.displayName))
+currencies.sort(lambda x, y: cmp(x.displayName, y.displayName))
 
 CURRENCIES = DisplayList(
     [(c.type, "%s (%s)" % (c.displayName, c.symbol))
