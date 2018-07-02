@@ -51,16 +51,6 @@
   <permission value="View"/>
  </action>
 
- <action title="WINE-40: Do not move or remove this entry."
-         action_id="view"
-         category="object"
-         url_expr="string:${object_url}/view"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="False">
-  <permission value="Modify portal content"/>
- </action>
-
  <action title="Analysis Requests"
          action_id="view"
          category="object"
