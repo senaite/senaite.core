@@ -23,6 +23,7 @@ Changelog
 
 **Fixed**
 
+- #864 Sort order in setup of analysis services wrong
 - #881 Fixed JS i18n catalog names
 - #880 Fix message factory
 - #878 Fix AR Header Table Styles and Ajax Failures
