@@ -51,8 +51,8 @@
 
     BikaListingTableView.prototype.load = function() {
       console.debug("ListingTableView::load");
-      jarn.i18n.loadCatalog('bika');
-      this._ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this.bind_eventhandler();
       this.loading_transitions = false;
       this.toggle_cols_cookie = "toggle_cols";

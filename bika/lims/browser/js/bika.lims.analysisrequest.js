@@ -592,8 +592,8 @@
       /*jshint validthis:true */
       var Dependants, Dependencies, _, cb, dep, dep_services, dep_titles, element, elements_i, html, i, lims, service_uid;
       auto_yes = auto_yes || false;
-      jarn.i18n.loadCatalog('bika');
-      _ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      _ = window.jarn.i18n.MessageFactory("senaite.core");
       dep = void 0;
       i = void 0;
       cb = void 0;
