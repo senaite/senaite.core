@@ -1,17 +1,21 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
-# Ramon Bartl <rb@ridingbytes.com>, 2018
+# Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2013
+# campbell_bika <campbell@bikalabs.com>, 2012
+# Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
+# Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
+# Fernando Sánchez <nando@liberorbis.com>, 2015
+# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 16:51+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"POT-Creation-Date: 2018-02-09 12:39+0000\n"
+"PO-Revision-Date: 2017-09-19 18:55+0000\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Spanish (Peru) (https://www.transifex.com/senaite/teams/87045/es_PE/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
@@ -381,10 +385,6 @@ msgstr ""
 #: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
 msgstr "Factura"
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Invoices"
-msgstr ""
 
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
@@ -757,6 +757,10 @@ msgstr ""
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Etiqueta pequeña"
+
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Statements"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
