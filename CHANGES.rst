@@ -14,7 +14,7 @@ Changelog
 
 **Changed**
 
-- #879 Upgrade lxml version from 2.3.6 to 3.6.0 forbeing compatible with Plone 4.3.17
+- #879 Upgrade lxml version from 2.3.6 to 3.6.0 and  Plone from 4.3.15 to 4.3.17
 - #873 Sample Type field editable in AR and Sample edit views before receive
 - #868 AR Add Form: Refactoring and Styling
 - #817 Make warn message clearer if transition rejection is due to missing sampler
