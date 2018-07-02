@@ -1,5 +1,5 @@
 <html xmlns:tal="http://xml.zope.org/namespaces/tal"
-  xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="bika">
+  xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="senaite.core">
 
 <metal:view_macro define-macro="view"
   tal:define="innerJoin field/innerJoin;

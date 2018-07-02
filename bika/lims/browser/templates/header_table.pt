@@ -2,7 +2,7 @@
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   xmlns:metal="http://xml.zope.org/namespaces/metal"
   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-  i18n:domain="bika">
+  i18n:domain="senaite.core">
 
   <head tal:define="portal context/@@plone_portal_state/portal;">
       <script type="text/javascript"
@@ -24,7 +24,7 @@
     <form method="post" name="header_form">
       <input type="hidden" name="header_table_submitted" value="1" />
 
-      <table class="header_table">
+      <table class="header_table table table-condensed table-bordered table-sm">
 
         <tr tal:repeat="action prominent">
           <tal:def define="mode python:action['mode'];
@@ -34,8 +34,8 @@
                            widget python:field.widget;
                            accessor python:field.getAccessor(context);
                            errors python:{};">
-            <td>
-              <span tal:replace="python:widget.label"/>&nbsp;
+            <td class="active">
+              <span tal:replace="python:widget.label"/>
               <span class="fieldRequired"
                     tal:condition="python:field.required and mode == 'edit'"
                     title="Required"
@@ -43,8 +43,7 @@
             </td>
             <td colspan="5">
               <tal:x condition="python:mode!='structure'">
-                <metal:field
-                  use-macro="python:context.widget(fieldName, mode=mode)"/>
+                <metal:field use-macro="python:context.widget(fieldName, mode=mode)"/>
               </tal:x>
               <span
                 tal:condition="python:mode=='structure' and action['html']"
@@ -56,8 +55,8 @@
         <tr tal:repeat="row_nr python:range(len(sublists[0]))">
           <tal:repeat repeat="col_nr python:range(3)">
             <tal:print_blanks condition="python:len(sublists[col_nr]) <= row_nr">
-              <td tal:attributes="class python:row_nr%2 and 'key odd' or 'key even'">&nbsp;</td>
-              <td tal:attributes="class python:row_nr%2 and 'value odd' or 'value even'">&nbsp;</td>
+              <td tal:attributes="class python:row_nr%2 and 'key odd' or 'key even'"></td>
+              <td tal:attributes="class python:row_nr%2 and 'value odd' or 'value even'"></td>
             </tal:print_blanks>
             <tal:skip_blanks condition="python:len(sublists[col_nr]) > row_nr">
               <tal:def define="action python:sublists[col_nr][row_nr];
@@ -68,8 +67,8 @@
                                widget python:field.widget;
                                accessor python:field.getAccessor(context);
                                errors python:{};">
-                <td tal:attributes="class python:row_nr%2 and 'key odd' or 'key even'">
-                  <span tal:replace="python:widget.label"/>&nbsp;
+                <td tal:attributes="class python:row_nr%2 and 'key odd active' or 'key even active'">
+                  <span tal:replace="python:widget.label"/>
                   <span class="fieldRequired"
                         tal:condition="python:field.required and mode == 'edit'"
                         title="Required"
@@ -89,7 +88,7 @@
           </tal:repeat>
         </tr>
       </table>
-      <input class="context"
+      <input class="context btn btn-sm btn-primary"
              type="submit"
              name="form.button.save"
              value="Save"

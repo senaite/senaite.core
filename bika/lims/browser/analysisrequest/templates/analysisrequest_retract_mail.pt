@@ -1,11 +1,10 @@
 
 <tal:retraction define="
-        portal_url nocall:context/portal_url;
-        portal portal_url/getPortalObject;
-        ar python:view.context;
-        rej_widg    python:ar.getRejectionReasons();
-        reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else [];
-        lab python:ar.bika_setup.laboratory;">
+        portal_url  nocall:context/portal_url;
+        portal      portal_url/getPortalObject;
+        ar          python:view.context;
+        reasons     python: view.get_rejection_reasons();
+        lab         python:ar.bika_setup.laboratory;">
 
     <tal:multiplereasons condition="python:len(reasons)&gt;1">
     <p tal:content="python: 'The analysis request %s has been rejected because of the following reasons: ' % ar.id"></p>

@@ -7,7 +7,7 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:monkey="http://namespaces.plone.org/monkey"
     xmlns:plone="http://namespaces.plone.org/plone"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
   <i18n:registerTranslations directory="locales" />
 

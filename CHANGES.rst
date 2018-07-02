@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #846 Transifex integration
 - #848 Show icon on the Supply Order View
 - #844 Missing interface for AR Report added
 - #858 Only Lab Managers sees rejected analysis requests
@@ -22,7 +23,10 @@ Changelog
 
 **Fixed**
 
-- #877 Worksheet's attachment column is empty after results import from file
+- #878 Fix AR Header Table Styles and Ajax Failures
+- #877 Worksheet's attachments column is empty after results import from file
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
+- #875 Fix Batch AR View
 - #872 Date format appears wrong in Users history administrative report
 - #855 Dashboard is displayed to Lab clerks after login only
 - #871 Fix OpenTagError for i18ndude

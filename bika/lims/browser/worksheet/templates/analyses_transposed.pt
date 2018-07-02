@@ -1,5 +1,5 @@
 <form name="bika_listing_form" method="post" action="workflow_action"
-      i18n:domain="bika"
+      i18n:domain="senaite.core"
       tal:attributes="id view/bika_listing/form_id"
       tal:define="form_id view/bika_listing/form_id;
                   review_state_id python:request.get(form_id+'_review_state', 'default');

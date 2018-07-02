@@ -1,4 +1,4 @@
-<html i18n:domain="bika"
+<html i18n:domain="senaite.core"
       tal:define="portal_state context/@@plone_portal_state;
                   portal_url portal_state/portal_url;
                   locale portal_state/locale;

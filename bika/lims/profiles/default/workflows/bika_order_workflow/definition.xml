@@ -6,7 +6,7 @@
              state_variable="review_state"
              initial_state="pending"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <permission>Delete objects</permission>
   <permission>Modify portal content</permission>
