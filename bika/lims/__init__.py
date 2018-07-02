@@ -22,7 +22,7 @@ from Products.Archetypes import PloneMessageFactory as PMF
 
 # import this to log messages
 import logging
-logger = logging.getLogger('Bika')
+logger = logging.getLogger('senaite.core')
 
 from bika.lims.validators import *
 from bika.lims.config import *
