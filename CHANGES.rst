@@ -6,7 +6,7 @@ Changelog
 
 **Added**
 
-- #836: Allow (Multi-)Attachment upload available in AR Add
+- #836 Allow (Multi-)Attachment upload available in AR Add
 - #846 Transifex integration
 - #848 Show icon on the Supply Order View
 - #844 Missing interface for AR Report added
@@ -15,6 +15,7 @@ Changelog
 **Changed**
 
 - #891 Better default styles for listing tables
+- #887 New icon set
 - #879 Upgrade lxml version from 2.3.6 to 3.6.0 and  Plone from 4.3.15 to 4.3.17
 - #873 Sample Type field editable in AR and Sample edit views before receive
 - #868 AR Add Form: Refactoring and Styling
