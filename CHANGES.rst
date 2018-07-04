@@ -11,9 +11,9 @@ Changelog
 - #844 Missing interface for AR Report added
 - #858 Only Lab Managers sees rejected analysis requests
 
-
 **Changed**
 
+- #891 Better default styles for listing tables
 - #879 Upgrade lxml version from 2.3.6 to 3.6.0 and  Plone from 4.3.15 to 4.3.17
 - #873 Sample Type field editable in AR and Sample edit views before receive
 - #868 AR Add Form: Refactoring and Styling
