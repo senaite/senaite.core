@@ -809,7 +809,7 @@ class AnalysesView(BikaListingView):
                 attachments_html.append(html)
 
             url = '{}/at_download/AttachmentFile'
-            url = url.format(attachment.absolute_url)
+            url = url.format(attachment.absolute_url())
             link = get_link(url, at_file.filename)
             attachments_html.append(link)
 

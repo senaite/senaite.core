@@ -30,6 +30,7 @@ Changelog
 - #881 Fixed JS i18n catalog names
 - #880 Fix message factory
 - #878 Fix AR Header Table Styles and Ajax Failures
+- #877 Worksheet's attachments column is empty after results import from file
 - #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
 - #875 Fix Batch AR View
 - #872 Date format appears wrong in Users history administrative report
