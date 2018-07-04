@@ -1845,7 +1845,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             for attachment in attachments.get(n, []):
                 if not attachment.filename:
                     continue
-                att = _createObjectByType("Attachment", self.context, tmpID())
+                att = _createObjectByType("Attachment", client, tmpID())
                 att.setAttachmentFile(attachment)
                 att.processForm()
                 _attachments.append(att)

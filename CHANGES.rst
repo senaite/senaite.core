@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #836: Allow (Multi-)Attachment upload available in AR Add
 - #846 Transifex integration
 - #848 Show icon on the Supply Order View
 - #844 Missing interface for AR Report added
