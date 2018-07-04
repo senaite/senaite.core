@@ -13,7 +13,7 @@ class window.BikaListingTableView
 
     # load translations
     jarn.i18n.loadCatalog "senaite.core"
-    @_ = window.jarn.i18n.MessageFactory("senaite.core")
+    @_ = window.jarn.i18n.MessageFactory "senaite.core"
 
     # bind the event handler to the elements
     @bind_eventhandler()
