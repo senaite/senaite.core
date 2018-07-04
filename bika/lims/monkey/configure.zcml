@@ -6,7 +6,7 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:monkey="http://namespaces.plone.org/monkey"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
   <monkey:patch
       description="This adds the bika.lims category to controlpanel-overview."

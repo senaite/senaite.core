@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
-        i18n:domain="bika"
+        i18n:domain="senaite.core"
         tal:define="portal_url nocall:context/portal_url;
         portal portal_url/getPortalObject;">
 <head>

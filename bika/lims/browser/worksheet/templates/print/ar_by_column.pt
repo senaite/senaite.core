@@ -12,7 +12,7 @@
 
 -->
 <tal:print
-  i18n:domain="bika"
+  i18n:domain="senaite.core"
   tal:define="worksheet       python:view.getWorksheet();
               laboratory      worksheet/laboratory;
               portal          worksheet/portal;

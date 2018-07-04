@@ -12,8 +12,8 @@ class window.BikaListingTableView
     console.debug "ListingTableView::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
-    @_ = window.jarn.i18n.MessageFactory('bika')
+    jarn.i18n.loadCatalog "senaite.core"
+    @_ = window.jarn.i18n.MessageFactory "senaite.core"
 
     # bind the event handler to the elements
     @bind_eventhandler()
@@ -222,13 +222,13 @@ class window.BikaListingTableView
           columns.push name
 
     # Set default toggle columns
-    if col_id == _('Default')
+    if col_id == @_('Default')
       console.debug "*** Set DEFAULT toggle columns ***"
       # delete the settings for this page
       delete cookie[cookie_key]
 
     # Set all toggle columns
-    else if col_id == _('All')
+    else if col_id == @_('All')
       console.debug "*** Set ALL toggle columns ***"
       # add all possible columns which have the toggle state
       all_cols = []
@@ -667,9 +667,10 @@ class window.BikaListingTableView
 
     sorted_toggle_cols = []
 
+    me = this
     $.each $.parseJSON(toggle_cols.val()), (column, record) ->
       record.id = column
-      record.title = _(record.title) or _(record.id)
+      record.title = me._(record.title) or me._(record.id)
       sorted_toggle_cols.push record
       return
 
@@ -706,16 +707,16 @@ class window.BikaListingTableView
       <div class="tooltip-inner">
         <table class="contextmenu" cellpadding="0" cellspacing="0">
           <tr>
-            <th colspan="2">#{_("Display columns")}</th>
+            <th colspan="2">#{@_("Display Columns")}</th>
           </tr>
           #{toggleable_columns}
-          <tr col_id="#{_("All")}" form_id="#{form_id}">
+          <tr col_id="#{@_("All")}" form_id="#{form_id}">
             <td style="border-top:1px solid #ddd;">&nbsp;</td>
-            <td style="border-top:1px solid #ddd;">#{_("All")}</td>
+            <td style="border-top:1px solid #ddd;">#{@_("All")}</td>
           </tr>
-          <tr col_id="#{_("Default")}" form_id="#{form_id}">
+          <tr col_id="#{@_("Default")}" form_id="#{form_id}">
             <td>&nbsp;</td>
-            <td>#{_("Default")}</td>
+            <td>#{@_("Default")}</td>
           </tr>
         </table>
       </div>
@@ -890,9 +891,10 @@ class window.BikaListingTableView
 
     # If a custom_transitions action with a URL is clicked the form will be
     # submitted there
-    if $el.attr("url") != ""
+    url = $el.attr "url"
+    if url != ""
       form = $el.parents("form")
-      $(form).attr "action", $(this).attr("url")
+      $(form).attr "action", url
       $(form).submit()
 
 

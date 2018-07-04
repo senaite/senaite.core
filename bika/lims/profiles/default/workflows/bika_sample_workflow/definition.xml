@@ -6,7 +6,7 @@
              state_variable="review_state"
              initial_state="sample_registered"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <permission>BIKA: Cancel and reinstate</permission>
   <permission>BIKA: Edit Field Results</permission>

@@ -2,7 +2,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bika">
+      i18n:domain="senaite.core">
 
   <head>
     <metal:block fill-slot="javascript_head_slot"
@@ -102,7 +102,7 @@
 
       <!-- Service Info Template -->
       <script id="service-info" type="text/x-handlebars-template">
-        <table class="service-info-table">
+        <table class="service-info-table table table-condensed table-bordered">
           <tr>
             <td class="service-info-key"
                 i18n:translate="">Analysis Service</td>
@@ -230,27 +230,32 @@
   <body>
 
     <metal:title fill-slot="content-title">
+
       <h1 id="ar-header">
         <img tal:condition="view/icon | nothing" tal:attributes="src view/icon"/>
         <span i18n:translate="">Request new analyses</span>
-        <span style="display:inline-block;padding-left:0.5em;">
+        <span style="padding-left:0.5em;display:inline-block;">
           <form method="GET" class="form-inline">
             <input type="hidden"
                    name="copy_from" tal:attributes="value request/copy_from|nothing"/>
             <input type="number"
                    name="ar_count"
                    min="1"
-                   class="form-control context_action_link"
-                   style="width:4em;border-radius:0;border:1px solid #ddd;padding:2px;"
+                   style="width:4em;vertical-align:middle;"
+                   class="form-control input-sm"
                    tal:attributes="value view/ar_count|1"/>
             <button type="submit"
-                    class="btn btn-link context_action_link">
+                    class="btn btn-link">
               <img src="#"
+                   style="height:16px;width:auto;"
                    tal:attributes="src string:${context/absolute_url}/++resource++bika.lims.images/add.png"/>
+              <span i18n:translate="">Add</span>
             </button>
           </form>
         </span>
       </h1>
+
+
     </metal:title>
     <metal:description fill-slot="content-description">
     </metal:description>
@@ -273,7 +278,7 @@
                tal:attributes="value view/ar_count"/>
 
         <!-- ADD Form -->
-        <table class="ar-table grid">
+        <table class="ar-table grid table table-sm table-condensed table-bordered">
 
           <tr>
             <td>
@@ -301,18 +306,23 @@
           <!-- All edit fields with fields with add=visible -->
           <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
             <tal:def define="fieldName python:field.getName();
+                             required field/required;
                              widget python:field.widget;
                              errors python:{};
                              mode string:edit;">
               <tr tal:attributes="fieldName fieldName;">
                 <td>
                   <label class="formQuestion">
-                    <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                    <span
+                      tal:attributes="class python:required and 'text-primary' or ''"
+                      tal:content="python:view.context.translate(widget.Label(here))">
+                      Label
+                    </span>
                     <span class="fieldRequired"
-                          tal:condition="field/required"
+                          tal:condition="required"
                           title="Required"
                           i18n:attributes="title title_required;">&nbsp;</span>
-                    <span class="formHelp discreet"
+                    <span class="formHelp discreet help-block small"
                           tal:define="description python:view.context.translate(widget.Description(here))"
                           tal:content="structure description"
                           tal:attributes="id string:${fieldName}_help">Help</span>
@@ -320,14 +330,15 @@
                 </td>
                 <td>
                   <!-- Copy Button -->
-                  <img class="copybutton"
-                        tal:condition="python:view.ar_count > 1"
-                        tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                  <img class="copybutton btn btn-link"
+                       tal:condition="python:view.ar_count > 1"
+                       tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
                 </td>
 
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                   <td tal:define="newFieldName python:view.get_fieldname(field, arnum)"
                       tal:attributes="arnum arnum; fieldName newFieldName">
+                    <!-- The input field is rendered here -->
                     <metal:field use-macro="python:view.get_input_widget(fieldName, arnum, mode='edit')"/>
                   </td>
                 </tal:columns>
@@ -357,371 +368,207 @@
             </tal:def>
           </tal:field>
 
-          <!-- Field Services -->
-          <tal:fieldservices tal:define="poc string:field;
-                                         services python:view.get_services(poc);
-                                         categories python:view.get_service_categories();
-                                         ar_count python:view.ar_count;"
-                             tal:condition="python:any(services.values())">
+          <!-- POCs (Field/Lab) -->
+          <tal:poc tal:repeat="poc python:view.get_points_of_capture()">
+            <!-- Services in POC -->
+            <tal:services_in_poc tal:define="services python:view.get_services(poc);
+                                             categories python:view.get_service_categories();
+                                             ar_count python:view.ar_count;"
+                                 tal:condition="python:any(services.values())">
 
-            <tr class="field service-listing-header field-services-header"
-                tal:attributes="poc poc;data-poc poc">
-              <td tal:attributes="colspan python:2 + ar_count">
-                <div class="poc-service-title"
-                     i18n:translate="">Field Analyses</div>
-              </td>
-            </tr>
-
-            <tal:categories tal:repeat="category categories;">
-              <tal:category tal:condition="python:services[category_title]"
-                            tal:define="category_id python:category.getId;
-                                        category_title python:category.Title;">
-                <tr class="field category"
-                    title="Click to expand this category"
-                    i18n:attributes="title"
-                    tal:attributes="data-category category_id;
-                                    poc poc;
-                                    category string:field;">
-                  <td class="services-category-header">
-                    <span class="services-category-title"
-                          tal:content="category_title">
-                      Category Title
+              <tr tal:attributes="poc poc;
+                                  data-poc poc;
+                                  class string:${poc} service-listing-header field-services-header">
+                <td tal:attributes="colspan python:2 + ar_count">
+                  <div class="poc-service-title">
+                    <span tal:condition="python:poc=='field'"
+                          i18n:translate="">
+                      Field Analyses
                     </span>
-                  </td>
+                    <span tal:condition="python:poc=='lab'"
+                          i18n:translate="">
+                      Lab Analyses
+                    </span>
+                  </div>
+                </td>
+              </tr>
 
-                  <td>
-                    <button tal:attributes="data-category category_id"
-                            class="btn btn-default btn-xs service-category-toggle">+</button>
-                  </td>
-                  <!-- span over all sample columns -->
-                  <td tal:attributes="colspan ar_count"></td>
-                </tr>
-
-                <tal:services tal:repeat="service python:services[category_title];">
-                  <tr tal:define="service_uid service/UID;
-                                  service_id service/getId;
-                                  service_acc service/getAccredited;
-                                  service_keyword service/getKeyword;
-                                  service_title service/Title;"
-                      tal:attributes="id string:${service_id};
-                                      class string:${category_id} field service;
+              <tal:categories tal:repeat="category categories;">
+                <tal:category tal:condition="python:services[category_title]"
+                              tal:define="category_id python:category.getId;
+                                          category_title python:category.Title;">
+                  <tr title="Click to expand this category"
+                      i18n:attributes="title"
+                      tal:attributes="data-category category_id;
                                       poc poc;
-                                      fieldname string:Analyses;">
-
-                    <td class="service-header">
-                      <div class="service-title"
-                            tal:content="service_title">
-                        Service Title
-                      </div>
+                                      category string:field;
+                                      class string:${poc} category;">
+                    <td class="services-category-header">
+                      <span class="services-category-title"
+                            tal:content="category_title"
+                            i18n:translate="">
+                        Category Title
+                      </span>
                     </td>
-
                     <td>
-                      <img class="copybutton"
-                            tal:condition="python:view.ar_count > 1"
-                            tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                      <button tal:attributes="data-category category_id"
+                              class="btn btn-default btn-xs service-category-toggle">
+                        &plus;
+                      </button>
                     </td>
+                    <!-- span over all sample columns -->
+                    <td tal:attributes="colspan ar_count"></td>
+                  </tr>
 
-                    <tal:columns tal:repeat="arnum python:range(ar_count)">
-                      <td tal:define="fieldname string:Analyses-${arnum};
-                                      analyses python:view.fieldvalues.get(fieldname) or [];
-                                      service_uids python:map(view.get_service_uid_from, analyses);
-                                      checked python:service_uid in service_uids;"
-                          tal:attributes="fieldname string:Analyses-${arnum};
-                                          uid service_uid;
-                                          class string:${service_uid}-column service-column;
-                                          arnum arnum;">
-
-                        <!-- Service locked button -->
-                        <div tal:attributes="uid service_uid;
-                                             arnum arnum;
-                                             id string:${service_uid}-${arnum}-lockbtn;
-                                             class string:service-lockbtn ${service_uid}-lockbtn;"
-                              title="Service cannot be deselected. Please click the info button for further details"
-                              i18n:attributes="title">
-                          &#128274;
+                  <tal:services tal:repeat="service python:services[category_title];">
+                    <tr tal:define="service_uid service/UID;
+                                    service_id service/getId;
+                                    service_acc service/getAccredited;
+                                    service_keyword service/getKeyword;
+                                    service_title service/Title;"
+                        tal:attributes="id string:${service_id};
+                                        class string:${category_id} ${poc} service;
+                                        poc poc;
+                                        fieldname string:Analyses;">
+                      <td class="service-header">
+                        <div class="service-title small"
+                             i18n:translate=""
+                             tal:content="service_title">
+                          Service Title
                         </div>
+                      </td>
+                      <td>
+                        <img class="copybutton"
+                             tal:condition="python:view.ar_count > 1"
+                             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                      </td>
 
-                        <!-- Service checkbox -->
-                        <div tal:attributes="id string:${service_uid}-${arnum}-analysisservice;
-                                             class string:analysisservice ${service_uid}-analysisservice;">
-                          <input type="checkbox"
-                                 tal:attributes="name string:${fieldname}:list;
-                                                 value string:${service_uid};
-                                                 id string:cb_${service_uid};
-                                                 class string:analysisservice-cb analysisservice-cb-${arnum};
-                                                 alt service_title;
-                                                 checked python:checked and 'checked' or '';"/>
-                        </div>
+                      <tal:columns tal:repeat="arnum python:range(ar_count)">
+                        <td tal:define="fieldname string:Analyses-${arnum};
+                                        analyses python:view.fieldvalues.get(fieldname) or [];
+                                        service_uids python:map(view.get_service_uid_from, analyses);
+                                        checked python:service_uid in service_uids;"
+                            tal:attributes="fieldname string:Analyses-${arnum};
+                                            uid service_uid;
+                                            class string:${service_uid}-column service-column;
+                                            arnum arnum;">
 
-                        <!-- Service info button -->
-                        <div tal:attributes="uid service_uid;
-                                             arnum arnum;
-                                             id string:${service_uid}-infobtn;
-                                             class string:service-infobtn ${service_uid}-infobtn;">
-                          &#9432;
-                        </div>
+                          <!-- Service locked button -->
+                          <div tal:attributes="uid service_uid;
+                                               arnum arnum;
+                                               id string:${service_uid}-${arnum}-lockbtn;
+                                               class string:service-lockbtn ${service_uid}-lockbtn;"
+                               title="Service cannot be deselected. Please click the info button for further details"
+                               i18n:attributes="title">
+                            &#128274;
+                          </div>
 
-                        <tal:specifications tal:condition="python:view.is_ar_specs_allowed()">
-                          <!-- Specifications -->
-                          <div tal:define="fieldname string:Specifications-${arnum};
-                                           specifications python:view.specifications.get(arnum);
-                                           service_spec python:specifications.get(service_keyword, {})"
+                          <!-- Service checkbox -->
+                          <div tal:attributes="id string:${service_uid}-${arnum}-analysisservice;
+                                               class string:analysisservice ${service_uid}-analysisservice;">
+                            <input type="checkbox"
+                                   style="height:auto;"
+                                   tal:attributes="name string:${fieldname}:list;
+                                                   value string:${service_uid};
+                                                   id string:cb_${service_uid};
+                                                   class string:analysisservice-cb analysisservice-cb-${arnum};
+                                                   alt service_title;
+                                                   checked python:checked and 'checked' or '';"/>
+                          </div>
+
+                          <!-- Service info button -->
+                          <div tal:attributes="uid service_uid;
+                                               arnum arnum;
+                                               id string:${service_uid}-infobtn;
+                                               class string:service-infobtn ${service_uid}-infobtn;">
+                            &#9432;
+                          </div>
+
+                          <tal:specifications tal:condition="python:view.is_ar_specs_allowed()">
+                            <!-- Specifications -->
+                            <div tal:define="fieldname string:Specifications-${arnum};
+                                             specifications python:view.specifications.get(arnum);
+                                             service_spec python:specifications.get(service_keyword, {})"
+                                 tal:attributes="fieldname string:${fieldname};
+                                                 uid service_uid;
+                                                 arnum arnum;
+                                                 id string:${service_uid}-${arnum}-specifications;
+                                                 class string:service-specifications ${service_uid}-specifications;">
+                              <input type="hidden"
+                                     tal:attributes="name string:${fieldname}.uid:records;
+                                           value string:${service_uid}"/>
+                              <input type="hidden"
+                                     tal:attributes="name string:${fieldname}.keyword:records;
+                                           value string:${service_keyword}"/>
+                              <input type="text"
+                                     class="warn_min" size="1"
+                                     placeholder="&lt;min"
+                                     i18n:attributes="placeholder"
+                                     tal:attributes="name string:${fieldname}.warn_min:records;
+                                           value python:service_spec.get('warn_min');"/>
+                              <input type="text"
+                                     class="min"
+                                     size="1"
+                                     placeholder="&gt;min"
+                                     i18n:attributes="placeholder"
+                                     tal:attributes="name string:${fieldname}.min:records;
+                                                     value python:service_spec.get('min');"/>
+                              <input type="text"
+                                     class="max"
+                                     size="1"
+                                     placeholder="&lt;max"
+                                     i18n:attributes="placeholder"
+                                     tal:attributes="name string:${fieldname}.max:records;
+                                                     value python:service_spec.get('max');"/>
+                              <input type="text"
+                                     class="warn_max"
+                                     size="1"
+                                     placeholder="&gt;max"
+                                     i18n:attributes="placeholder"
+                                     tal:attributes="name string:${fieldname}.warn_max:records;
+                                                     value python:service_spec.get('warn_max');"/>
+                            </div>
+                          </tal:specifications>
+
+                          <!-- Partitions -->
+                          <div tal:define="fieldname string:Parts-${arnum};"
                                tal:attributes="fieldname string:${fieldname};
                                                uid service_uid;
                                                arnum arnum;
-                                               id string:${service_uid}-${arnum}-specifications;
-                                               class string:service-specifications ${service_uid}-specifications;">
+                                               id string:${service_uid}-${arnum}-part;
+                                               class string:part ${service_uid}-part;">
+                            <!-- Service UID -->
                             <input type="hidden"
-                                    tal:attributes="name string:${fieldname}.uid:records;
-                                                    value string:${service_uid}"/>
-                            <input type="hidden"
-                                    tal:attributes="name string:${fieldname}.keyword:records;
-                                                    value string:${service_keyword}"/>
-                            <input type="text"
-                                   class="warn_min" size="1"
-                                   placeholder="&lt;min"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.warn_min:records;
-                                                   value python:service_spec.get('warn_min');"/>
-                            <input type="text"
-                                   class="min" size="1"
-                                   placeholder="&gt;min"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.min:records;
-                                                   value python:service_spec.get('min');"/>
-                            <input type="text"
-                                   class="max" size="1"
-                                   placeholder="&lt;max"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.max:records;
-                                                   value python:service_spec.get('max');"/>
-                            <input type="text"
-                                   class="warn_max" size="1"
-                                   placeholder="&gt;max"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.warn_max:records;
-                                                   value python:service_spec.get('warn_max');"/>
+                                   tal:attributes="name string:${fieldname}.uid:records;
+                                                   value string:${service_uid}"/>
+                            <span class="partition-label"
+                                  i18n:translate="">
+                              Part
+                            </span>
+                            <!-- Part ID -->
+                            <select tal:attributes="name string:${fieldname}.part:records;
+                                                    class string:part-select-${arnum} part-select;
+                                                    uid string:${service_uid};
+                                                    id string:part-select-${service_uid};">
+                              <option value="part-1">part-1</option>
+                            </select>
                           </div>
-                        </tal:specifications>
 
-                        <!-- Partitions -->
-                        <div tal:define="fieldname string:Parts-${arnum};"
-                             tal:attributes="fieldname string:${fieldname};
-                                             uid service_uid;
-                                             arnum arnum;
-                                             id string:${service_uid}-${arnum}-part;
-                                             class string:part ${service_uid}-part;">
-                          <!-- Service UID -->
-                          <input type="hidden"
-                                 tal:attributes="name string:${fieldname}.uid:records;
-                                                 value string:${service_uid}"/>
-                          <span class="partition-label"
-                                i18n:translate="">Part</span>
-                          <!-- Part ID -->
-                          <select tal:attributes="name string:${fieldname}.part:records;
-                                                  class string:part-select-${arnum} part-select;
-                                                  uid string:${service_uid};
-                                                  id string:part-select-${service_uid};">
-                            <option value="part-1">part-1</option>
-                          </select>
-                        </div>
-
-                        <!-- Service Info Box -->
-                        <div tal:attributes="id string:${service_uid}-info;
-                                             class string:${service_uid}-info service-info;">
-                        </div>
-
-                      </td>
-                    </tal:columns>
-                  </tr>
-                </tal:services>
-              </tal:category>
-            </tal:categories>
-          </tal:fieldservices>
-          <!-- /Field Services -->
-
-          <!-- Lab Services -->
-          <tal:labservices tal:define="poc string:lab;
-                                       services python:view.get_services(poc);
-                                       categories python:view.get_service_categories();
-                                       ar_count python:view.ar_count;"
-                           tal:condition="python:any(services.values())">
-
-            <tr class="lab service-listing-header lab-services-header"
-                tal:attributes="poc poc;data-poc poc">
-              <td tal:attributes="colspan python:2 + ar_count">
-                <div class="poc-service-title"
-                     i18n:translate="">Lab Analyses</div>
-              </td>
-            </tr>
-
-            <tal:categories tal:repeat="category categories;">
-              <tal:category tal:condition="python:services[category_title]"
-                            tal:define="category_id python:category.getId;
-                                        category_title python:category.Title;">
-                <tr class="lab category"
-                    title="Click to expand this category"
-                    i18n:attributes="title"
-                    tal:attributes="data-category category_id;
-                                    poc poc;
-                                    category string:lab;">
-                  <td class="services-category-header">
-                    <span class="services-category-title"
-                          tal:content="category_title">
-                      Category Title
-                    </span>
-                  </td>
-
-                  <td>
-                    <button tal:attributes="data-category category_id"
-                            class="btn btn-default btn-xs service-category-toggle">+</button>
-                  </td>
-                  <!-- span over all sample columns -->
-                  <td tal:attributes="colspan ar_count"></td>
-                </tr>
-
-                <tal:services tal:repeat="service python:services[category_title];">
-                  <tr tal:define="service_uid service/UID;
-                                  service_id service/getId;
-                                  service_acc service/getAccredited;
-                                  service_keyword service/getKeyword;
-                                  service_title service/Title;"
-                      tal:attributes="id string:${service_id};
-                                      class string:${category_id} lab service;
-                                      poc poc;
-                                      fieldname string:Analyses;">
-
-                    <td class="service-header">
-                      <div class="service-title"
-                            tal:content="service_title">
-                        Service Title
-                      </div>
-                    </td>
-
-                    <td>
-                      <img class="copybutton"
-                            tal:condition="python:view.ar_count > 1"
-                            tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
-                    </td>
-
-                    <tal:columns tal:repeat="arnum python:range(ar_count)">
-                      <td tal:define="fieldname string:Analyses-${arnum};
-                                      analyses python:view.fieldvalues.get(fieldname) or [];
-                                      service_uids python:map(view.get_service_uid_from, analyses);
-                                      checked python:service_uid in service_uids;"
-                          tal:attributes="fieldname string:${fieldname};
-                                          uid service_uid;
-                                          class string:${service_uid}-column service-column;
-                                          arnum arnum;">
-
-                        <!-- Service locked button -->
-                        <div tal:attributes="uid service_uid;
-                                             arnum arnum;
-                                             id string:${service_uid}-${arnum}-lockbtn;
-                                             class string:service-lockbtn ${service_uid}-lockbtn;"
-                              title="Service cannot be deselected. Please click the info button for further details"
-                              i18n:attributes="title">
-                          &#128274;
-                        </div>
-
-                        <!-- Service checkbox -->
-                        <div tal:attributes="id string:${service_uid}-${arnum}-analysisservice;
-                                             class string:analysisservice ${service_uid}-analysisservice;">
-                          <input type="checkbox"
-                                 tal:attributes="name string:${fieldname}:list;
-                                                 value string:${service_uid};
-                                                 id string:cb_${service_uid};
-                                                 class string:analysisservice-cb analysisservice-cb-${arnum};
-                                                 alt service_title;
-                                                 checked python:checked and 'checked' or '';"/>
-                        </div>
-
-                        <!-- Service info button -->
-                        <div tal:attributes="uid service_uid;
-                                             arnum arnum;
-                                             id string:${service_uid}-infobtn;
-                                             class string:service-infobtn ${service_uid}-infobtn;">
-                          &#9432;
-                        </div>
-
-                        <tal:specifications tal:condition="python:view.is_ar_specs_allowed()">
-                          <!-- Specifications -->
-                          <div tal:define="fieldname string:Specifications-${arnum};
-                                           specifications python:view.specifications.get(arnum);
-                                           service_spec python:specifications.get(service_keyword, {})"
-                               tal:attributes="fieldname string:${fieldname};
-                                               uid service_uid;
-                                               arnum arnum;
-                                               id string:${service_uid}-${arnum}-specifications;
-                                               class string:service-specifications ${service_uid}-specifications;">
-                            <input type="hidden"
-                                    tal:attributes="name string:${fieldname}.uid:records;
-                                                    value string:${service_uid}"/>
-                            <input type="hidden"
-                                    tal:attributes="name string:${fieldname}.keyword:records;
-                                                    value string:${service_keyword}"/>
-                            <input type="text"
-                                   class="warn_min" size="1"
-                                   placeholder="&lt;min"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.warn_min:records;
-                                                   value python:service_spec.get('warn_min');"/>
-                            <input type="text"
-                                   class="min" size="1"
-                                   placeholder="&gt;min"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.min:records;
-                                                   value python:service_spec.get('min');"/>
-                            <input type="text"
-                                   class="max" size="1"
-                                   placeholder="&lt;max"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.max:records;
-                                                   value python:service_spec.get('max');"/>
-                            <input type="text"
-                                   class="warn_max" size="1"
-                                   placeholder="&gt;max"
-                                   i18n:attributes="placeholder"
-                                   tal:attributes="name string:${fieldname}.warn_max:records;
-                                                   value python:service_spec.get('warn_max');"/>
+                          <!-- Service Info Box -->
+                          <div tal:attributes="id string:${service_uid}-info;
+                                               class string:${service_uid}-info service-info;">
                           </div>
-                        </tal:specifications>
 
-                        <!-- Partitions -->
-                        <div tal:define="fieldname string:Parts-${arnum};"
-                             tal:attributes="fieldname string:${fieldname};
-                                             uid service_uid;
-                                             arnum arnum;
-                                             id string:${service_uid}-${arnum}-part;
-                                             class string:part ${service_uid}-part;">
-                          <!-- Service UID -->
-                          <input type="hidden"
-                                 tal:attributes="name string:${fieldname}.uid:records;
-                                                 value string:${service_uid}"/>
-                          <span class="partition-label"
-                                i18n:translate="">Part</span>
-                          <!-- Part ID -->
-                          <select tal:attributes="name string:${fieldname}.part:records;
-                                                  class string:part-select-${arnum} part-select;
-                                                  uid string:${service_uid};
-                                                  id string:part-select-${service_uid};">
-                            <option value="part-1">part-1</option>
-                          </select>
-                        </div>
-
-                        <!-- Service Info Box -->
-                        <div tal:attributes="id string:${service_uid}-info;
-                                             class string:${service_uid}-info service-info;">
-                        </div>
-
-                      </td>
-                    </tal:columns>
-                  </tr>
-                </tal:services>
-              </tal:category>
-            </tal:categories>
-          </tal:labservices>
-          <!-- /Lab Services -->
+                        </td>
+                      </tal:columns>
+                    </tr>
+                  </tal:services>
+                </tal:category>
+              </tal:categories>
+            </tal:services_in_poc>
+            <!-- /Services in POC -->
+          </tal:poc>
+          <!-- /POCs -->
 
           <!-- Prices -->
           <tal:prices tal:condition="view/ShowPrices">

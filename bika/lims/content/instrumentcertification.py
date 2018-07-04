@@ -273,7 +273,7 @@ class InstrumentCertification(BaseFolder):
 
         delta = 0
         today = DateTime()
-        valid_from = self.getValidFrom()
+        valid_from = self.getValidFrom() or today
         valid_to = self.getValidTo()
 
         # one of the fields is not set, return 0 days

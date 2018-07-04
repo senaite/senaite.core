@@ -1984,8 +1984,8 @@ function AnalysisRequestAddByCol() {
          * initiator - the service or control that initiated this check.
          *             used for a more pretty dialog box header.
          */
-        jarn.i18n.loadCatalog('bika')
-        var _ = window.jarn.i18n.MessageFactory("bika")
+        jarn.i18n.loadCatalog("senaite.core")
+        var _ = window.jarn.i18n.MessageFactory("senaite.core")
 
         var Dep
         var i, cb, dep_element

@@ -1,26 +1,69 @@
 Changelog
 =========
 
-1.2.6 (unreleased)
+1.2.7 (unreleased)
 ------------------
 
 **Added**
 
 - #836: Allow (Multi-)Attachment upload available in AR Add
-
+- #846 Transifex integration
+- #848 Show icon on the Supply Order View
+- #844 Missing interface for AR Report added
+- #858 Only Lab Managers sees rejected analysis requests
 
 **Changed**
 
-- #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
-- #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
+- #891 Better default styles for listing tables
+- #879 Upgrade lxml version from 2.3.6 to 3.6.0 and  Plone from 4.3.15 to 4.3.17
+- #873 Sample Type field editable in AR and Sample edit views before receive
+- #868 AR Add Form: Refactoring and Styling
+- #817 Make warn message clearer if transition rejection is due to missing sampler
 
 **Removed**
 
 
 **Fixed**
 
+- #889 Fix override order of message catalogs
+- #864 Sort order in setup of analysis services wrong
+- #881 Fixed JS i18n catalog names
+- #880 Fix message factory
+- #878 Fix AR Header Table Styles and Ajax Failures
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
+- #875 Fix Batch AR View
+- #872 Date format appears wrong in Users history administrative report
+- #855 Dashboard is displayed to Lab clerks after login only
+- #871 Fix OpenTagError for i18ndude
+- #865 AR VAT Amount when using Profiles is not calculated correctly
+- #851 Fix worksheet verification with retracted results
 
 **Security**
+
+
+1.2.6 (2018-06-08)
+------------------
+
+**Changed**
+
+- #838 Unpinned WeasyPrint to allow Addon to use newer version
+- #820 Always allow interim fields to be added to Analysis Services
+- #826 Display signatures of verifiers instead of dept managers in results report
+- #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
+- #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
+
+**Fixed**
+
+- #842 Re-compiled Coffee-Scripts with version 1.12.7 
+- #824 Instrument Listing Views Fixes and Refactoring
+- #840 Fix date range filter for "Data entry day book" report
+- #828 Traceback when removing a retracted analysis through Manage Analyses view
+- #832 Set new calculation Interims to dependant services
+- #833 Fix sort order of interims in Calculations and Analysis Services
+- #834 Fix Duplication Action for Analysis Services
+- #835 List only published ARs when "Published" Filter is active
+- #825 Error when exporting Worksheets list with `senaite.exporter`
+- #821 Cannot retract single analysis services
 
 
 1.2.5 (2018-05-05)

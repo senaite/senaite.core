@@ -1,21 +1,23 @@
+
 /* Please use this command to compile this file into the parent `js` directory:
     coffee --no-header -w -o ../ -c bika.lims.analysisrequest.coffee
  */
+
+
 /**
  * Controller class for Analysis Request View/s
  */
+
 (function() {
   window.AnalysisRequestView = function() {
+    var that, transition_schedule_sampling, transition_with_publication_spec, workflow_transition_sample;
+    that = this;
+
     /**
      * Entry-point method for AnalysisRequestView
      */
-    var that, transition_schedule_sampling, transition_with_publication_spec, workflow_transition_sample;
-    that = this;
     transition_with_publication_spec = function(event) {
       var element, href;
-      // Pass the Publication Spec UID (if present) into the WorkflowAction handler
-      // Force the transition to use the "workflow_action" url instead of content_status_modify.
-      // TODO This should be using content_status_modify!  modifying the href is silly.
       event.preventDefault();
       href = event.currentTarget.href.replace('content_status_modify', 'workflow_action');
       element = $('#PublicationSpecification_uid');
@@ -25,23 +27,23 @@
       window.location.href = href;
     };
     transition_schedule_sampling = function() {
+
       /* Force the transition to use the "workflow_action" url instead of content_status_modify. workflow_action triggers a class from
       analysisrequest/workflow/AnalysisRequestWorkflowAction which manage
       workflow_actions from analysisrequest/sample/samplepartition objects.
       It is not possible to abort a transition using "workflow_script_*".
       The recommended way is to set a guard instead.
-
+      
       The guard expression should be able to look up a view to facilitate more complex guard code, but when a guard returns False the transition isn't even listed as available. It is listed after saving the fields.
-
+      
       TODO This should be using content_status_modify!  modifying the href
       is silly.
-      */
+       */
       var new_url, url;
       url = $('#workflow-transition-schedule_sampling').attr('href');
       if (url) {
         new_url = url.replace('content_status_modify', 'workflow_action');
         $('#workflow-transition-schedule_sampling').attr('href', new_url);
-        // When user clicks on the transition
         $('#workflow-transition-schedule_sampling').click(function() {
           var date, message, sampler;
           date = $('#SamplingDate').val();
@@ -78,7 +80,6 @@
         sampler = $('#Sampler').val();
         if (date && sampler) {
           form = $('form[name=\'header_form\']');
-          // this 'transition' key is scanned for in header_table.py/__call__
           form.append('<input type=\'hidden\' name=\'transition\' value=\'sample\'/>');
           form.submit();
         } else {
@@ -103,24 +104,24 @@
       });
     };
     that.load = function() {
-      // fires for all AR workflow transitions fired using the plone contentmenu workflow actions
       $('a[id^=\'workflow-transition\']').not('#workflow-transition-schedule_sampling').not('#workflow-transition-sample').click(transition_with_publication_spec);
-      // fires AR workflow transitions when using the schedule samplign transition
       transition_schedule_sampling();
     };
   };
 
+
   /**
    * Controller class for Analysis Request View View
    */
+
   window.AnalysisRequestViewView = function() {
+    var build_typical_save_request, filter_CCContacts, filter_by_client, getClientUID, parse_CCClist, resultsinterpretation_move_below, save_elements, set_autosave_input, that;
+    that = this;
+
     /**
      * Entry-point method for AnalysisRequestView
      */
-    var build_typical_save_request, filter_CCContacts, filter_by_client, getClientUID, parse_CCClist, resultsinterpretation_move_below, save_elements, set_autosave_input, that;
-    that = this;
     resultsinterpretation_move_below = function() {
-      // By default show only the Results Interpretation for the whole AR, not Dept specific
       $('a.department-tab').click(function(e) {
         var uid;
         e.preventDefault();
@@ -131,7 +132,6 @@
         $(this).addClass('selected');
       });
       $('a.department-tab[data-uid="ResultsInterpretationDepts-general"]').click();
-      //Remove buttons from TinyMCE
       setTimeout((function() {
         $('div.arresultsinterpretation-container .fieldTextFormat').remove();
         $('table.mceToolbar a.mce_image').remove();
@@ -140,10 +140,11 @@
       }), 1500);
     };
     filter_CCContacts = function() {
-      var clientUID, element;
+
       /**
        * Filter the CCContacts dropdown list by the current client.
        */
+      var clientUID, element;
       if ($('#CCContact').length > 0) {
         element = $('#CCContact');
         clientUID = getClientUID();
@@ -151,12 +152,12 @@
       }
     };
     getClientUID = function() {
+
       /**
        * Return the AR client's UID.
        */
       var clientid, clientuid;
       clientid = window.location.href.split('clients')[1].split('/')[1];
-      // ajax petition to obtain the current client info
       clientuid = '';
       $.ajax({
         url: window.portal_url + '/clients/' + clientid + '/getClientInfo',
@@ -175,11 +176,11 @@
       return clientuid;
     };
     filter_by_client = function(element, filterkey, filtervalue) {
-      var base_query, options;
+
       /**
        * Filter the dropdown's results (called element) by current client contacts.
        */
-      // Get the base_query data in array format
+      var base_query, options;
       base_query = $.parseJSON($(element).attr('base_query'));
       base_query[filterkey] = filtervalue;
       $(element).attr('base_query', $.toJSON(base_query));
@@ -189,12 +190,12 @@
       referencewidget_lookups($(element));
     };
     set_autosave_input = function() {
+
       /**
        * Set an event for each input field in the AR header. After write something in the input field and
        * focus out it, the event automatically saves the change.
        */
       $('table.header_table input').not('[attr="referencewidget"]').not('[type="hidden"]').not('.rejectionwidget-field').each(function(i) {
-        // Save input fields
         $(this).change(function() {
           var pointer;
           pointer = this;
@@ -202,7 +203,6 @@
         });
       });
       $('table.header_table select').not('[type="hidden"]').not('.rejectionwidget-field').each(function(i) {
-        // Save select fields
         $(this).change(function() {
           var pointer;
           pointer = this;
@@ -210,7 +210,6 @@
         });
       });
       $('table.header_table input.referencewidget').not('[type="hidden"]').not('[id="CCContact"]').each(function(i) {
-        // Save referencewidget inputs.
         $(this).bind('selected', function() {
           var fieldname, fieldvalue, pointer, requestdata;
           requestdata = {};
@@ -220,16 +219,12 @@
           setTimeout((function() {
             fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
             fieldvalue = $(pointer).attr('uid');
-            // To search by uid, we should follow this array template:
-            // { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
-            // This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
             requestdata[fieldname] = 'uid:' + fieldvalue;
             save_elements(requestdata);
           }), 500);
         });
       });
       $('table.header_table input#CCContact.referencewidget').not('[type="hidden"]').each(function(i) {
-        // CCContact works different.
         $(this).bind('selected', function() {
           var fieldname, fieldvalue, pointer, requestdata;
           pointer = this;
@@ -237,9 +232,6 @@
           fieldname = void 0;
           requestdata = {};
           setTimeout((function() {
-            // To search by uid, we should follow this array template:
-            // { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
-            // This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
             fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
             fieldvalue = parse_CCClist();
             requestdata[fieldname] = fieldvalue;
@@ -249,7 +241,6 @@
       });
       $('img[fieldname="CCContact"]').each(function() {
         var fieldname, fieldvalue, requestdata;
-        // If a delete cross is clicked on CCContact-listing, we should update the saved list.
         fieldvalue = void 0;
         requestdata = {};
         fieldname = void 0;
@@ -264,6 +255,7 @@
       });
     };
     build_typical_save_request = function(pointer) {
+
       /**
        * Build an array with the data to be saved for the typical data fields.
        * @pointer is the object which has been modified and we want to save its new data.
@@ -272,9 +264,7 @@
       fieldvalue = void 0;
       fieldname = void 0;
       requestdata = {};
-      // Checkbox
       if ($(pointer).attr('type') === 'checkbox') {
-        // Checkboxes name is located in its parent div, but its value is located inside the input.
         fieldvalue = $(pointer).prop('checked');
         fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
       } else {
@@ -285,6 +275,7 @@
       save_elements(requestdata);
     };
     save_elements = function(requestdata) {
+
       /**
        * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
        * @requestdata should has the format  {fieldname=fieldvalue}
@@ -292,7 +283,6 @@
       var anch, ar, element, name, obj_path, url;
       url = window.location.href.replace('/base_view', '');
       obj_path = url.replace(window.portal_url, '');
-      // Staff for the notification
       element = void 0;
       name = $.map(requestdata, function(element, index) {
         element;
@@ -301,7 +291,6 @@
       name = $.trim($('[data-fieldname="' + name + '"]').closest('td').prev().text());
       ar = $.trim($('.documentFirstHeading').text());
       anch = '<a href=\'' + url + '\'>' + ar + '</a>';
-      // Needed fot the ajax petition
       requestdata['obj_path'] = obj_path;
       $.ajax({
         type: 'POST',
@@ -310,7 +299,6 @@
       }).done(function(data) {
         var msg;
         var msg;
-        //success alert
         if (data !== null && data['success'] === true) {
           bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', 'succeed');
         } else if (data === null) {
@@ -326,7 +314,6 @@
         }
       }).fail(function(xhr, textStatus, errorThrown) {
         var msg;
-        //error
         bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for ' + anch, 'error');
         msg = '[bika.lims.analysisrequest.js] Error in AJAX call' + 'while updating ' + name + ' for ' + ar + '. Error: ' + xhr.responseText;
         console.warn(msg);
@@ -334,6 +321,7 @@
       });
     };
     parse_CCClist = function() {
+
       /**
        * It parses the CCContact-listing, where are located the CCContacts, and build the fieldvalue list.
        * @return: the builed field value -> "uid:TheValueOfuid1|uid:TheValueOfuid2..."
@@ -372,14 +360,6 @@
               base_query['getClientUID'] = [data['ClientUID'], setup_uid];
               $(spelement).attr('base_query', $.toJSON(base_query));
               options = $.parseJSON($(spelement).attr('combogrid_options'));
-              // Getting the url like that will return the query
-              // part of it:
-              // http://localhost:8080/Plone/clients/client17-14/..
-              //    ..OA17-0030-R01
-              // In order to create a correct ajax call
-              // we only need until the pathname of that url:
-              // http://localhost:8080/Plone/clients/client17-14/..
-              //    ..OA17-0030-R01
               simple_url = window.location.href.split('/ar')[0];
               simple_url = simple_url.split('?')[0];
               options.url = simple_url + '/' + options.url;
@@ -401,17 +381,19 @@
     };
   };
 
+
   /**
    * Controller class for Analysis Request Manage Results view
    */
+
   window.AnalysisRequestManageResultsView = function() {
     var that;
     that = this;
+
     /**
      * Entry-point method for AnalysisRequestManageResultsView
      */
     that.load = function() {
-      // Set the analyst automatically when selected in the picklist
       $('.portaltype-analysisrequest .bika-listing-table td.Analyst select').change(function() {
         var analyst, key, obj_path, obj_path_split;
         analyst = $(this).val();
@@ -436,50 +418,23 @@
     };
   };
 
+
   /**
    * Controller class for Analysis Request Analyses view
    */
+
   window.AnalysisRequestAnalysesView = function() {
-    /**
-    * Given a selected service, this function selects the dependencies for
-    * the selected service.
-    * @param {String} dlg: The dialog to display (Not working!)
-    * @param {DOM object} element: The checkbox object.
-    * @param {Object} dep_services: A list of UIDs.
-    * @return {None} nothing.
-     */
-    /**
-    * Once a checkbox has been selected, this functions finds out which are
-    * the dependencies and dependants related to it.
-    * @param {elements} The selected element, a checkbox.
-    * @param {auto_yes} A boolean. If 'true', the dependants and dependencies
-    * will be automatically selected/unselected.
-     */
-    /**
-    * This functions runs the logic needed after setting the checkbox of a
-    * service.
-    * @param {service_uid} the service uid checked.
-     */
-    /**
-    * Given an analysis service UID, this function expands the category for
-    * that service and selects it.
-    * @param {String} serv_uid: uid of the analysis service.
-    * @return {None} nothing.
-     */
-    /**
-    * This functions runs the logic needed after unsetting the checkbox of a
-    * service.
-    * @param {service_uid} the service uid unchecked.
-     */
+    var add_No, add_Yes, calcdependencies, check_service, expand_category_for_service, that, uncheck_service, validate_spec_field_entry;
+    that = this;
+
     /**
      * Entry-point method for AnalysisRequestAnalysesView
      */
+
     /**
     * This function validates specification inputs
     * @param {element} The input field from specifications (min, max, err)
      */
-    var add_No, add_Yes, calcdependencies, check_service, expand_category_for_service, that, uncheck_service, validate_spec_field_entry;
-    that = this;
     validate_spec_field_entry = function(element) {
       var error, error_element, max, max_element, min, min_element, uid;
       uid = $(element).attr('uid');
@@ -507,25 +462,31 @@
         }
       }
     };
-    check_service = function(service_uid) {
-      /* Check if this row is disabled. row_data has the attribute "disabled"
-      as true if the analysis service has been submitted. So, in this case
-      no further action will take place.
 
-      "allow_edit" attribute in bika_listing displays the editable fields.
-      Since the object keeps this attr even if the row is disabled; price,
-      partition, min,max and error will be displayed (but disabled).
-      */
+    /**
+    * This functions runs the logic needed after setting the checkbox of a
+    * service.
+    * @param {service_uid} the service uid checked.
+     */
+    check_service = function(service_uid) {
       var element, i, logged_in_client, new_element, row_data, specfields;
       new_element = void 0;
       element = void 0;
+
+      /* Check if this row is disabled. row_data has the attribute "disabled"
+      as true if the analysis service has been submitted. So, in this case
+      no further action will take place.
+      
+      "allow_edit" attribute in bika_listing displays the editable fields.
+      Since the object keeps this attr even if the row is disabled; price,
+      partition, min,max and error will be displayed (but disabled).
+       */
       row_data = $.parseJSON($('#' + service_uid + '_row_data').val());
       if (row_data !== '' && row_data !== void 0 && row_data !== null) {
         if ('disabled' in row_data && row_data.disabled === true) {
           return;
         }
       }
-      // Add partition dropdown
       element = $('[name=\'Partition.' + service_uid + ':records\']');
       new_element = '' + '<select class=\'listing_select_entry\' ' + 'name=\'Partition.' + service_uid + ':records\' ' + 'field=\'Partition\' uid=\'' + service_uid + '\' ' + 'style=\'font-size: 100%\'>';
       $.each($('td.PartTitle'), function(i, v) {
@@ -535,7 +496,6 @@
       });
       new_element = new_element + '</select>';
       $(element).replaceWith(new_element);
-      // Add price field
       logged_in_client = $('input[name=\'logged_in_client\']').val();
       if (logged_in_client !== '1') {
         element = $('[name=\'Price.' + service_uid + ':records\']');
@@ -543,7 +503,6 @@
         $($(element).siblings()[1]).remove();
         $(element).replaceWith(new_element);
       }
-      // spec fields
       specfields = ['min', 'max', 'error'];
       for (i in specfields) {
         element = $('[name=\'' + specfields[i] + '.' + service_uid + ':records\']');
@@ -551,6 +510,12 @@
         $(element).replaceWith(new_element);
       }
     };
+
+    /**
+    * This functions runs the logic needed after unsetting the checkbox of a
+    * service.
+    * @param {service_uid} the service uid unchecked.
+     */
     uncheck_service = function(service_uid) {
       var element, i, logged_in_client, new_element, specfields;
       new_element = void 0;
@@ -572,6 +537,15 @@
         $(element).replaceWith(new_element);
       }
     };
+
+    /**
+    * Given a selected service, this function selects the dependencies for
+    * the selected service.
+    * @param {String} dlg: The dialog to display (Not working!)
+    * @param {DOM object} element: The checkbox object.
+    * @param {Object} dep_services: A list of UIDs.
+    * @return {None} nothing.
+     */
     add_Yes = function(dlg, element, dep_services) {
       var dep_cb, i, service_uid;
       service_uid = void 0;
@@ -605,11 +579,21 @@
         $('#messagebox').remove();
       }
     };
+
+    /**
+    * Once a checkbox has been selected, this functions finds out which are
+    * the dependencies and dependants related to it.
+    * @param {elements} The selected element, a checkbox.
+    * @param {auto_yes} A boolean. If 'true', the dependants and dependencies
+    * will be automatically selected/unselected.
+     */
     calcdependencies = function(elements, auto_yes) {
+
+      /*jshint validthis:true */
       var Dependants, Dependencies, _, cb, dep, dep_services, dep_titles, element, elements_i, html, i, lims, service_uid;
       auto_yes = auto_yes || false;
-      jarn.i18n.loadCatalog('bika');
-      _ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      _ = window.jarn.i18n.MessageFactory("senaite.core");
       dep = void 0;
       i = void 0;
       cb = void 0;
@@ -617,11 +601,9 @@
       elements_i = 0;
       while (elements_i < elements.length) {
         dep_services = [];
-        // actionable services
         dep_titles = [];
         element = elements[elements_i];
         service_uid = $(element).attr('value');
-        // selecting a service; discover dependencies
         if ($(element).prop('checked')) {
           Dependencies = lims.AnalysisService.Dependencies(service_uid);
           i = 0;
@@ -631,7 +613,6 @@
               i++;
               continue;
             }
-            // skip if checked already
             dep_services.push(dep);
             dep_titles.push(dep.Service);
             i++;
@@ -723,9 +704,15 @@
         elements_i++;
       }
     };
+
+    /**
+    * Given an analysis service UID, this function expands the category for
+    * that service and selects it.
+    * @param {String} serv_uid: uid of the analysis service.
+    * @return {None} nothing.
+     */
     expand_category_for_service = function(serv_uid) {
       var request_data;
-      // Ajax getting the category from uid
       request_data = {
         catalog_name: 'uid_catalog',
         UID: serv_uid,
@@ -739,9 +726,7 @@
           window.bika.lims.warning(msg);
         } else {
           cat_title = data.objects[0].getCategoryTitle;
-          // Expand category by uid and select the service
           element = $('th[cat=\'' + cat_title + '\']');
-          //category_header_expand_handler(element, arnum, serv_uid);
           window.bika.lims.BikaListingTableView.category_header_expand_handler(element).done(function() {
             check_service(serv_uid);
             $('#list_cb_' + serv_uid).prop('checked', true);
@@ -753,15 +738,11 @@
       $('[name^=\'min\\.\'], [name^=\'max\\.\'], [name^=\'error\\.\']').live('change', function() {
         validate_spec_field_entry(this);
       });
-      ////////////////////////////////////////
-      // disable checkboxes for eg verified analyses.
       $.each($('[name=\'uids:list\']'), function(x, cb) {
         var cbid, cbname, el, element, elname, elval, i, new_element, row_data, service_uid, specfields;
         service_uid = $(cb).val();
         row_data = $.parseJSON($('#' + service_uid + '_row_data').val());
         if (row_data.disabled === true) {
-          // disabled fields must be shadowed by hidden fields,
-          // or they don't appear in the submitted form.
           $(cb).prop('disabled', true);
           cbname = $(cb).attr('name');
           cbid = $(cb).attr('id');
@@ -785,8 +766,6 @@
           }
         }
       });
-      ////////////////////////////////////////
-      // checkboxes in services list
       $('[name=\'uids:list\']').live('click', function() {
         var service_uid;
         calcdependencies([this], true);

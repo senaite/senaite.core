@@ -109,7 +109,7 @@ class AnalysisRequestsView(BikaListingView):
             ("getClientOrderNumber", {
                 "title": _("Client Order"),
                 "sortable": True,
-                "toggle": True}),
+                "toggle": False}),
             ("Creator", {
                 "title": PMF("Creator"),
                 "index": "getCreatorFullName",
@@ -124,12 +124,12 @@ class AnalysisRequestsView(BikaListingView):
                 "attr": "getSampleID",
                 "index": "getSampleID",
                 "replace_url": "getSampleURL",
-                "toggle": True, }),
+                "toggle": False}),
             ("BatchID", {
                 "title": _("Batch ID"),
                 "index": "getBatchID",
                 "sortable": True,
-                "toggle": True}),
+                "toggle": False}),
             ("Client", {
                 "title": _("Client"),
                 "index": "getClientTitle",
@@ -141,21 +141,21 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "index": "getProvince",
                 "attr": "getProvince",
-                "toggle": True}),
+                "toggle": False}),
             ("District", {
                 "title": _("District"),
                 "sortable": True,
                 "index": "getDistrict",
                 "attr": "getDistrict",
-                "toggle": True}),
+                "toggle": False}),
             ("getClientReference", {
                 "title": _("Client Ref"),
                 "sortable": True,
                 "index": "getClientReference",
-                "toggle": True}),
+                "toggle": False}),
             ("getClientSampleID", {
                 "title": _("Client SID"),
-                "toggle": True}),
+                "toggle": False}),
             ("ClientContact", {
                 "title": _("Contact"),
                 "sortable": True,
@@ -191,7 +191,9 @@ class AnalysisRequestsView(BikaListingView):
                 "input_width": "10"}),
             ("getDateVerified", {
                 "title": _("Date Verified"),
-                "input_width": "10"}),
+                "input_width": "10",
+                "toggle": False,
+            }),
             ("getSampler", {
                 "title": _("Sampler"),
                 "toggle": SamplingWorkflowEnabled}),
@@ -377,7 +379,7 @@ class AnalysisRequestsView(BikaListingView):
                 "id": "published",
                 "title": _("Published"),
                 "contentFilter": {
-                    "review_state": ("published", "invalid"),
+                    "review_state": ("published"),
                     "sort_on": "created",
                     "sort_order": "descending",
                 },

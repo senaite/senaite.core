@@ -24,7 +24,7 @@
            tal:attributes="src string:${context/absolute_url}/++resource++senaite-core-logo.png"
            alt="SENAITE Core"/>
       <div id="text">
-        <h1 i18n:translate="" i18n:domain="bika">
+        <h1 i18n:translate="" i18n:domain="senaite.core">
           Open Source LIMS Core
         </h1>
         <ul>

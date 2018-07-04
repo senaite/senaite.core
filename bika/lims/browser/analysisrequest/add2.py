@@ -6,31 +6,30 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
-from datetime import datetime
 from collections import OrderedDict
+from datetime import datetime
 
-import magnitude
-from BTrees.OOBTree import OOBTree
-from DateTime import DateTime
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone import protect
-from plone.memoize.volatile import DontCache
-from plone.memoize.volatile import cache
-from zope.annotation.interfaces import IAnnotations
-from zope.component import queryAdapter
-from zope.i18n.locales import locales
-from zope.interface import implements
-from zope.publisher.interfaces import IPublishTraverse
-
+from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from BTrees.OOBTree import OOBTree
+from DateTime import DateTime
+from plone import protect
+from plone.memoize.volatile import DontCache
+from plone.memoize.volatile import cache
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.annotation.interfaces import IAnnotations
+from zope.component import queryAdapter
+from zope.i18n.locales import locales
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample"]
@@ -54,22 +53,6 @@ def cache_key(method, self, obj):
     return api.get_cache_key(obj)
 
 
-def mg(value):
-    """Copied from bika.lims.jsonapi.v1.calculate_partitions
-    """
-    tokens = value.split(" ") if value else [0, '']
-    val = float(tokens[0]) if isinstance(tokens[0], (int, long)) else 0
-    unit = tokens[1] if len(tokens) > 1 else ''
-    # Magnitude doesn't support mL units.
-    # Since mL is commonly used instead of ml to avoid confusion with the
-    # number one, add "L" (for liter) as a 'recognizable' unit.
-    # L unit as liter is also recommended by the NIST Guide
-    # http://physics.nist.gov/Pubs/SP811/sec05.html#table6
-    # Further info: https://jira.bikalabs.com/browse/LIMS-1441
-    unit = unit[:-1] + 'l' if unit.endswith('L') else unit
-    return magnitude.mg(val, unit)
-
-
 class AnalysisRequestAddView(BrowserView):
     """AR Add view
     """
@@ -87,13 +70,14 @@ class AnalysisRequestAddView(BrowserView):
         self.portal_url = self.portal.absolute_url()
         self.bika_setup = api.get_bika_setup()
         self.request.set('disable_plone.rightcolumn', 1)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/analysisrequest_big.png"
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 
@@ -145,7 +129,8 @@ class AnalysisRequestAddView(BrowserView):
         """
         if not self.tmp_ar:
             logger.info("*** CREATING TEMPORARY AR ***")
-            self.tmp_ar = self.context.restrictedTraverse("portal_factory/AnalysisRequest/Request new analyses")
+            self.tmp_ar = self.context.restrictedTraverse(
+                "portal_factory/AnalysisRequest/Request new analyses")
         return self.tmp_ar
 
     def get_ar_schema(self):
@@ -238,7 +223,7 @@ class AnalysisRequestAddView(BrowserView):
         kw["fieldName"] = new_fieldname
 
         # make the field available with this name
-        # XXX: This is actually a hack to make the widget available in the template
+        # XXX: This is a hack to make the widget available in the template
         schema._fields[new_fieldname] = new_field
         new_field.getAccessor = getAccessor
 
@@ -246,9 +231,9 @@ class AnalysisRequestAddView(BrowserView):
         form = dict()
         form[new_fieldname] = value
         self.request.form.update(form)
-
-        logger.info("get_input_widget: fieldname={} arnum={} -> new_fieldname={} value={}".format(
-            fieldname, arnum, new_fieldname, value))
+        logger.info("get_input_widget: fieldname={} arnum={} "
+                    "-> new_fieldname={} value={}".format(
+                        fieldname, arnum, new_fieldname, value))
         widget = context.widget(new_fieldname, **kw)
         return widget
 
@@ -402,7 +387,8 @@ class AnalysisRequestAddView(BrowserView):
                     value = self.get_field_value(field, context)
                 else:
                     # get the default value of this field
-                    value = self.get_default_value(field, ar_context, arnum=arnum)
+                    value = self.get_default_value(
+                        field, ar_context, arnum=arnum)
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
                 out[new_fieldname] = value
@@ -499,11 +485,17 @@ class AnalysisRequestAddView(BrowserView):
         client = self.get_client()
         if client and restricted:
             restricted_categories = client.getRestrictedCategories()
-            restricted_category_ids = map(lambda c: c.getId(), restricted_categories)
+            restricted_category_ids = map(
+                lambda c: c.getId(), restricted_categories)
             # keep correct order of categories
             if restricted_category_ids:
-                categories = filter(lambda c: c.getId in restricted_category_ids, categories)
+                categories = filter(
+                    lambda c: c.getId in restricted_category_ids, categories)
         return categories
+
+    def get_points_of_capture(self):
+        items = POINTS_OF_CAPTURE.items()
+        return OrderedDict(items)
 
     def get_services(self, poc="lab"):
         """Return all Services
@@ -628,7 +620,8 @@ class AnalysisRequestAddView(BrowserView):
                 dep_methods = dep_calc.getBackReferences('MethodCalculation')
                 for dep_method in dep_methods:
                     # Get the services that have this method linked
-                    dep_services = dep_method.getBackReferences('AnalysisServiceMethod')
+                    dep_services = dep_method.getBackReferences(
+                        'AnalysisServiceMethod')
                     for dep_service in dep_services:
 
                         # get the UID of the dependent service
@@ -646,8 +639,8 @@ class AnalysisRequestAddView(BrowserView):
                         yield dep_service
 
                         # check the dependants of the dependant services
-                        for ddep_service in calc_dependants_gen(dep_service,
-                                                                collector=collector):
+                        for ddep_service in calc_dependants_gen(
+                                dep_service, collector=collector):
                             yield ddep_service
 
         dependants = {}
@@ -711,7 +704,8 @@ class AnalysisRequestManageView(BrowserView):
 
     def get_ar(self):
         if not self.tmp_ar:
-            self.tmp_ar = self.context.restrictedTraverse("portal_factory/AnalysisRequest/Request new analyses")
+            self.tmp_ar = self.context.restrictedTraverse(
+                "portal_factory/AnalysisRequest/Request new analyses")
         return self.tmp_ar
 
     def get_annotation(self):
@@ -865,8 +859,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def get_records(self):
         """Returns a list of AR records
 
-        All fields coming from `request.form` have a number prefix, e.g. `Contact-0`.
-        All fields with the same suffix number are grouped together in a record.
+        Fields coming from `request.form` have a number prefix, e.g. Contact-0.
+        Fields with the same suffix number are grouped together in a record.
         Each record represents the data for one column in the AR Add form and
         contains a mapping of the fieldName (w/o prefix) -> value.
 
@@ -890,7 +884,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return records
 
     def get_uids_from_record(self, record, key):
-        """Returns a list of parsed UIDs from a single form field identified by the given key.
+        """Returns a list of parsed UIDs from a single form field identified by
+        the given key.
 
         A form field ending with `_uid` can contain an empty value, a
         single UID or multiple UIDs separated by a comma.
@@ -1203,13 +1198,17 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # sample condition
         sample_condition = obj.getSampleCondition()
-        sample_condition_uid = sample_condition and sample_condition.UID() or ""
-        sample_condition_title = sample_condition and sample_condition.Title() or ""
+        sample_condition_uid = sample_condition \
+            and sample_condition.UID() or ""
+        sample_condition_title = sample_condition \
+            and sample_condition.Title() or ""
 
         # storage location
         storage_location = obj.getStorageLocation()
-        storage_location_uid = storage_location and storage_location.UID() or ""
-        storage_location_title = storage_location and storage_location.Title() or ""
+        storage_location_uid = storage_location \
+            and storage_location.UID() or ""
+        storage_location_title = storage_location \
+            and storage_location.Title() or ""
 
         # sample point
         sample_point = obj.getSamplePoint()
@@ -1274,7 +1273,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         for spec in results_range:
             service_uid = spec.get("uid")
             if service_uid is None:
-                # service spec is not attached to a specific service, but to a keyword
+                # service spec is not attached to a specific service, but to a
+                # keyword
                 for service in get_service_by_keyword(spec.get("keyword")):
                     service_uid = api.get_uid(service)
                     specifications[service_uid] = spec
@@ -1313,8 +1313,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         sampletype_uid = api.get_uid(sampletype)
         # partition setup of this service
-        partition_setup = filter(lambda p: p.get("sampletype") == sampletype_uid,
-                                 service.getPartitionSetup())
+        partition_setup = filter(
+            lambda p: p.get("sampletype") == sampletype_uid,
+            service.getPartitionSetup())
 
         def get_containers(container_uids):
             containers = []
@@ -1328,11 +1329,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         for partition in partition_setup:
             containers = get_containers(partition.get("container", []))
-            preservations = map(api.get_object_by_uid, partition.get("preservation", []))
+            preservations = map(
+                api.get_object_by_uid, partition.get("preservation", []))
             partitions.append({
                 "separate": partition.get("separate", False) and True or False,
                 "container": map(self.get_container_info, containers),
-                "preservations": map(self.get_preservation_info, preservations),
+                "preservations": map(
+                    self.get_preservation_info, preservations),
                 "minvol": partition.get("vol", ""),
             })
         else:
@@ -1341,7 +1344,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             partitions.append({
                 "separate": service.getSeparate(),
                 "container": map(self.get_container_info, containers),
-                "preservations": map(self.get_preservation_info, preservations),
+                "preservations": map(
+                    self.get_preservation_info, preservations),
                 "minvol": sampletype.getMinimumVolume() or "",
             })
 
@@ -1420,10 +1424,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # mapping of service UID -> unmet service dependency UIDs
             unmet_dependencies = {}
 
-            # Internal mappings of UID -> object of selected items in this record
+            # Mappings of UID -> object of selected items in this record
             _clients = self.get_objs_from_record(record, "Client_uid")
             _contacts = self.get_objs_from_record(record, "Contact_uid")
-            _specifications = self.get_objs_from_record(record, "Specification_uid")
+            _specifications = self.get_objs_from_record(
+                record, "Specification_uid")
             _templates = self.get_objs_from_record(record, "Template_uid")
             _samples = self.get_objs_from_record(record, "Sample_uid")
             _profiles = self.get_objs_from_record(record, "Profiles_uid")
@@ -1476,11 +1481,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     _profiles[profile_uid] = profile
 
                 # get the template analyses
-                # [{'partition': 'part-1', 'service_uid': 'a6c5ff56a00e427a884e313d7344f966'},
-                # {'partition': 'part-1', 'service_uid': 'dd6b0f756a5b4b17b86f72188ee81c80'}]
+                # [{'partition': 'part-1', 'service_uid': '...'},
+                # {'partition': 'part-1', 'service_uid': '...'}]
                 analyses = obj.getAnalyses() or []
                 # get all UIDs of the template records
-                service_uids = map(lambda rec: rec.get("service_uid"), analyses)
+                service_uids = map(
+                    lambda rec: rec.get("service_uid"), analyses)
                 # remember a mapping of template uid -> service
                 template_to_services[uid] = service_uids
                 # remember a mapping of service uid -> templates
@@ -1541,7 +1547,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # # Partition setup for the give sample type
                 # for st_uid, st_obj in _sampletypes.iteritems():
                 #     # remember the partition setup for this service
-                #     metadata["partitions"] = self.get_service_partitions(obj, st_obj)
+                #     metadata["partitions"] = self.get_service_partitions(
+                #         obj, st_obj)
 
                 # remember the services' metadata
                 service_metadata[uid] = metadata
@@ -1557,13 +1564,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     dep_uid = api.get_uid(dep)
                     if dep_uid not in _services.keys():
                         if uid in unmet_dependencies:
-                            unmet_dependencies[uid].append(self.get_base_info(dep))
+                            unmet_dependencies[uid].append(
+                                self.get_base_info(dep))
                         else:
                             unmet_dependencies[uid] = [self.get_base_info(dep)]
                 # remember the dependencies in the service metadata
                 service_metadata[uid].update({
-                    "dependencies": map(self.get_base_info, deps["dependencies"]),
-                    "dependants": map(self.get_base_info, deps["dependants"]),
+                    "dependencies": map(
+                        self.get_base_info, deps["dependencies"]),
+                    "dependants": map(
+                        self.get_base_info, deps["dependants"]),
                 })
 
             # Each key `n` (1,2,3...) contains the form data for one AR Add
@@ -1633,9 +1643,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     continue
 
                 profile_price = float(profile.getAnalysisProfilePrice())
-                profile_vat = float(profile.getAnalysisProfileVAT())
                 arprofiles_price += profile_price
-                arprofiles_vat_amount += profile_vat
+                arprofiles_vat_amount += profile.getVATAmount()
                 profile_services = profile.getService()
                 services_from_priced_profile.extend(profile_services)
 
@@ -1653,7 +1662,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Calculate the member discount if it applies
             if member_discount and member_discount_applies:
-                logger.info("Member discount applies with {}%".format(member_discount))
+                logger.info("Member discount applies with {}%".format(
+                    member_discount))
                 ardiscount_amount = base_price * member_discount / 100
 
             subtotal = base_price - ardiscount_amount
@@ -1707,11 +1717,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
             # Process Specifications field (dictionary like records instance).
             # -> Convert to a standard Python dictionary.
-            specifications = map(lambda x: dict(x), record.pop("Specifications", []))
+            specifications = map(
+                lambda x: dict(x), record.pop("Specifications", []))
             record["Specifications"] = specifications
 
             # Required fields and their values
-            required_keys = [field.getName() for field in fields if field.required]
+            required_keys = [field.getName() for field in fields
+                             if field.required]
             required_values = [record.get(key) for key in required_keys]
             required_fields = dict(zip(required_keys, required_values))
 
@@ -1722,7 +1734,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 required_fields.pop('Client', None)
 
             # Contacts get pre-filled out if only one contact exists.
-            # We won't force those columns with only the Contact filled out to be required.
+            # We won't force those columns with only the Contact filled out to
+            # be required.
             contact = required_fields.pop("Contact", None)
 
             # None of the required fields are filled, skip this record
@@ -1781,7 +1794,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 else:
                     partitions[part_id]["services"].append(service_uid)
 
-            # Inject the Partitions to the record (will be picked up during the AR creation)
+            # Inject the Partitions to the record (will be picked up during the
+            # AR creation)
             record["Partitions"] = partitions.values()
 
             # Process valid record
@@ -1809,12 +1823,17 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             if not client:
                 raise RuntimeError("No client found")
 
-            # get the specifications and pass them directly to the AR create function.
+            # get the specifications and pass them to the AR create function.
             specifications = record.pop("Specifications", {})
 
             # Create the Analysis Request
             try:
-                ar = crar(client, self.request, record, specifications=specifications)
+                ar = crar(
+                    client,
+                    self.request,
+                    record,
+                    specifications=specifications
+                )
             except (KeyError, RuntimeError) as e:
                 errors["message"] = e.message
                 return {"errors": errors}
@@ -1846,7 +1865,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Display a portal message
         self.context.plone_utils.addPortalMessage(message, level)
-        # Automatic label printing won't print "register" labels for Secondary. ARs
+        # Automatic label printing won't print "register" labels for sec. ARs
         bika_setup = api.get_bika_setup()
         auto_print = bika_setup.getAutoPrintStickers()
 
@@ -1857,7 +1876,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {
                 'success': message,
                 'stickers': new_ars,
-                'stickertemplate': self.context.bika_setup.getAutoStickerTemplate()
+                'stickertemplate': bika_setup.getAutoStickerTemplate()
             }
         else:
             return {'success': message}

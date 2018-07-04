@@ -1,20 +1,17 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
-# Lutz Kogel <lkogel@koluma.de>, 2015-2016
-# Mabuse <mabuse@byom.de>, 2014
-# Mabuse <mabuse@byom.de>, 2014
-# Ramon Bartl <rb@ridingbytes.com>, 2017
-# Stefan Gruber <st.gruber@t-online.de>, 2015
+# Ramon Bartl <rb@ridingbytes.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2018-02-09 12:39+0000\n"
-"PO-Revision-Date: 2017-09-23 18:12+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
-"Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-07-02 20:01+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
@@ -160,7 +157,7 @@ msgstr "Anhänge"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
-msgstr ""
+msgstr "Auto-Import Logs"
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
@@ -579,15 +576,15 @@ msgstr "Referenzwerte"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Reflex Rules"
-msgstr ""
+msgstr "Reflex Regeln"
 
 #: bika/lims/profiles/default/types/ReflexRuleFolder.xml
 msgid "Reflex Rules Folder"
-msgstr ""
+msgstr "Reflex-Regel Ordner"
 
 #: bika/lims/profiles/default/types/ReflexRule.xml
 msgid "ReflexRule"
-msgstr ""
+msgstr "Reflex Regel"
 
 msgid "Registered"
 msgstr "Registriert"
@@ -759,7 +756,7 @@ msgstr "Kleiner Aufkleber"
 
 #: bika/lims/profiles/default/types/InvoiceFolder.xml
 msgid "Statements"
-msgstr "Angaben"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml

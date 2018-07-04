@@ -74,8 +74,11 @@
 .ar-table tr.category.visible {
     display: table-row;
 }
-.ar-table tr.category td {
+.ar-table tr.category td:nth-child(1) {
     cursor: pointer;
+}
+.ar-table tr.category td:nth-child(1) {
+    padding-left: 2em;
 }
 .ar-table tr.category.field td:nth-child(1),
 .ar-table tr.category.lab td:nth-child(1) {
@@ -97,7 +100,7 @@
 .ar-table tr td.service-header {
     font-weight: normal;
     background-color: transparent;
-    padding-left: 2em;
+    padding-left: 4em;
     color: grey;
 }
 .ar-table tr td.service-column div {

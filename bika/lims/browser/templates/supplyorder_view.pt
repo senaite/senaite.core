@@ -3,7 +3,7 @@
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	metal:use-macro="here/main_template/macros/master"
-	i18n:domain="bika">
+	i18n:domain="senaite.core">
 
 	<head></head>
 
@@ -11,6 +11,8 @@
 
 		<metal:title fill-slot="content-title">
 			<h1>
+                <img tal:condition="view/icon | nothing"
+                     src="" tal:attributes="src view/icon"/>
 				<span class="documentFirstHeading" tal:content="view/title" />
 			</h1>
 		</metal:title>
