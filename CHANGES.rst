@@ -24,6 +24,7 @@ Changelog
 
 **Fixed**
 
+- #889 Fix override order of message catalogs
 - #864 Sort order in setup of analysis services wrong
 - #881 Fixed JS i18n catalog names
 - #880 Fix message factory
