@@ -1,12 +1,13 @@
 # Translators:
 # Stefan Gruber <st.gruber@t-online.de>, 2018
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+# Marc Jedrzejas <marc.jedr@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2018-07-02 20:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Last-Translator: Marc Jedrzejas <marc.jedr@gmail.com>, 2018\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -168,7 +169,7 @@ msgstr "<max"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:501
 msgid "<min"
-msgstr ""
+msgstr "<min"
 
 #: bika/lims/content/calculation.py:104
 msgid "<p>The formula you type here will be dynamically calculated when an analysis using this calculation is displayed.</p><p>To enter a Calculation, use standard maths operators,  + - * / ( ), and all keywords available, both from other Analysis Services and the Interim Fields specified here, as variables. Enclose them in square brackets [ ].</p><p>E.g, the calculation for Total Hardness, the total of Calcium (ppm) and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG are the keywords for those two Analysis Services.</p>"
@@ -190,7 +191,7 @@ msgstr "> Max"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:521
 msgid ">max"
-msgstr ""
+msgstr ">max"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:507
 msgid ">min"
@@ -339,7 +340,7 @@ msgstr "Wiederholungsmessung hinzufügen"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:73
 msgid "Add Reflex rule"
-msgstr ""
+msgstr "Überprüfungschleife hinzufügen"
 
 #: bika/lims/browser/analyses/view.py:1142
 msgid "Add Remark"
@@ -369,7 +370,7 @@ msgstr "Zusätzliche Python-Bibliotheken"
 
 #: bika/lims/content/analysisservice.py:371
 msgid "Additional Values"
-msgstr ""
+msgstr "Weitere Werte"
 
 #: bika/lims/content/analysisrequest.py:188
 msgid "Additional email addresses to be notified"
@@ -390,11 +391,11 @@ msgstr "Verwaltungs-Berichte"
 
 #: bika/lims/content/sampletype.py:162
 msgid "Admitted sticker templates"
-msgstr ""
+msgstr "Vorgegebene Etikettvorlagen"
 
 #: bika/lims/content/sampletype.py:135
 msgid "Admitted stickers for the sample type"
-msgstr ""
+msgstr "Vorgegebene Etiketten für Probetypen"
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:354
 msgid "After ${end_date}"
@@ -906,7 +907,7 @@ msgstr "Auto-Import Logs von %s "
 
 #: bika/lims/configure.zcml:102
 msgid "Auto generate ID Behavior for Dexterity contents"
-msgstr ""
+msgstr "Automatisch generierte ID für Dexterity Inhalte"
 
 #: bika/lims/browser/worksheet/templates/results.pt:94
 msgid "Autofill"
@@ -1050,11 +1051,11 @@ msgstr "CC E-Mails"
 
 #: bika/lims/content/bikasetup.py:669
 msgid "COC Attestation Statement"
-msgstr ""
+msgstr "Konformitätszertifikat Bestätigung"
 
 #: bika/lims/content/bikasetup.py:676
 msgid "COC Footer"
-msgstr ""
+msgstr "Konformitätszertifikat Fußzeile"
 
 #: bika/lims/content/abstractbaseanalysis.py:506
 msgid "Calculate Precision from Uncertainties"
@@ -1115,7 +1116,7 @@ msgstr "kann verifiziert werden, wurde aber vom aktuellen Benutzer eingereicht"
 
 #: bika/lims/browser/analyses/view.py:1031
 msgid "Can verify, but was already verified by current user"
-msgstr ""
+msgstr "Kann erneut verifiziert werden, wurde bereits durch aktuellen Benutzer verifiziert"
 
 #: bika/lims/browser/worksheet/templates/print.pt:143
 #: bika/lims/profiles/default/workflows/bika_cancellation_workflow/definition.xml
@@ -1138,15 +1139,15 @@ msgstr "Berechnung kann nicht verwendet da sie von folgender Leistung verwendet 
 
 #: bika/lims/browser/analyses/view.py:1037
 msgid "Cannot verify, last verified by current user"
-msgstr ""
+msgstr "Kann nicht verifiziert werden, es wurde bereits durch den aktuellen Benutzer verifiziert"
 
 #: bika/lims/browser/analyses/view.py:1014
 msgid "Cannot verify, submitted by current user"
-msgstr ""
+msgstr "Kann nicht verifiziert werden, es wurde bereits durch den aktuellen Benutzer eingereicht"
 
 #: bika/lims/browser/analyses/view.py:1023
 msgid "Cannot verify, was verified by current user"
-msgstr ""
+msgstr "Kann nicht verifiziert werden, es wurde durch den aktuellen Benutzer verifiziert"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:879
 msgid "Cannot verify: Submitted by current user"
@@ -1870,7 +1871,7 @@ msgstr "Definieren Sie den Probenehmer für den geplanten Termin"
 
 #: bika/lims/browser/fields/reflexrulefield.py:32
 msgid "Define the sets of actions"
-msgstr ""
+msgstr "Maßnahmen definieren"
 
 #: bika/lims/content/sample.py:315
 msgid "Define when the sampler has to take the samples"
@@ -2150,7 +2151,7 @@ msgstr "Analysenauftragsspezifikationen aktivieren."
 
 #: bika/lims/content/worksheettemplate.py:114
 msgid "Enable Multiple Use of Instrument in Worksheets."
-msgstr ""
+msgstr "Mehrfachverwendung von Geräten in Arbeitsblättern zulassen."
 
 #: bika/lims/content/bikasetup.py:602
 msgid "Enable Sample Preservation"
@@ -2385,7 +2386,7 @@ msgstr "Filter"
 
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:65
 msgid "Filter Analyses"
-msgstr ""
+msgstr "Analysen filtern"
 
 #: bika/lims/browser/sample/templates/print_form.pt:58
 msgid "Filter by client:"
@@ -2418,7 +2419,7 @@ msgstr ""
 
 #: bika/lims/content/instrument.py:210
 msgid "Folder that results will be saved"
-msgstr ""
+msgstr "Folgender Ordner wird gespeichert"
 
 #: bika/lims/content/instrument.py:215
 msgid "For each interface of this instrument,                       you can define a folder where                       the system should look for the results files while                       automatically importing results. Having a folder                       for each Instrument and inside that folder creating                       different folders for each of its Interfaces                       can be a good approach. You can use Interface codes                       to be sure that folder names are unique."
@@ -2426,7 +2427,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:802
 msgid "Formatting Configuration"
-msgstr ""
+msgstr "Konfiguration formatieren"
 
 #: bika/lims/controlpanel/bika_calculations.py:50
 msgid "Formula"
@@ -2671,7 +2672,7 @@ msgstr "Importiere Analysenauftragsdaten"
 
 #: bika/lims/content/instrument.py:197
 msgid "Import Data Interface"
-msgstr ""
+msgstr "Datenschnittstelle importieren"
 
 #: bika/lims/browser/arimports.py:84
 #: bika/lims/profiles/default/workflows/bika_arimport_workflow/definition.xml
@@ -2737,7 +2738,7 @@ msgstr "Installieren"
 
 #: bika/lims/browser/templates/plone-addsite.pt:13
 msgid "Install SENAITE"
-msgstr ""
+msgstr "Installiere SENAITE"
 
 #: bika/lims/content/instrument.py:338
 msgid "Installation Certificate"
@@ -2884,11 +2885,11 @@ msgstr "Geräte Kalibrierungszertifikate abgelaufen:"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:40
 msgid "Interface"
-msgstr ""
+msgstr "Schnittstelle"
 
 #: bika/lims/content/instrument.py:209
 msgid "Interface Code"
-msgstr ""
+msgstr "Schnittstellencode"
 
 #: bika/lims/browser/instrument.py:474
 msgid "Internal Calibration Tests"
@@ -2908,7 +2909,7 @@ msgstr "Intervall"
 
 #: bika/lims/content/bikasetup.py:504
 msgid "Interval of Auto-Importing Files in minutes"
-msgstr ""
+msgstr "Intervall für das automatische Importieren von Dateien, in Minuten"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:447
 #: bika/lims/browser/dashboard/dashboard.py:703
@@ -2966,7 +2967,7 @@ msgstr "RechnungsBatch hat keinen Titel"
 
 #: bika/lims/browser/analyses/view.py:1081
 msgid "It comes form a reflex rule"
-msgstr ""
+msgstr "Es folgt aus einer Überprüfungsschleife"
 
 #: bika/lims/content/artemplate.py:91
 msgid "It's a composite sample"
@@ -3013,7 +3014,7 @@ msgstr "Schlüsselwörter"
 
 #: bika/lims/monkey/controlpanel.py:19
 msgid "LIMS Configuration"
-msgstr ""
+msgstr "LIMS Konfiguration"
 
 #: bika/lims/browser/analysisrequest/view.py:262
 #: bika/lims/config.py:32
@@ -3073,7 +3074,7 @@ msgstr "Großes Etikett"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:32
 msgid "Last Auto-Import Logs"
-msgstr ""
+msgstr "Vorherige Auto-Import-Protokolle"
 
 #: bika/lims/browser/templates/login_details.pt:97
 msgid "Last Login Time"
@@ -3263,7 +3264,7 @@ msgstr "Formularfelder verwalten"
 
 #: bika/lims/browser/idserver/templates/numbergenerator.pt:14
 msgid "Manage Numbergenerator"
-msgstr ""
+msgstr "Nummerngenerator verwalten"
 
 #: bika/lims/browser/templates/login_details.pt:41
 msgid "Manage linked User"
@@ -3331,7 +3332,7 @@ msgstr "Max Zeit"
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:60
 #: bika/lims/content/analysisspec.py:83
 msgid "Max warn"
-msgstr ""
+msgstr "Hinweisen auf max. "
 
 #: bika/lims/content/bikasetup.py:312
 msgid "Maximum columns per results email"
@@ -3426,7 +3427,7 @@ msgstr "Min"
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:51
 #: bika/lims/content/analysisspec.py:82
 msgid "Min warn"
-msgstr ""
+msgstr "Hinweisen auf min."
 
 #: bika/lims/browser/dashboard/dashboard.py:340
 #: bika/lims/browser/worksheet/views/folder.py:116
@@ -3616,7 +3617,7 @@ msgstr "Nichts ausgewählt"
 
 #: bika/lims/browser/analyses/workflow.py:35
 msgid "No items selected."
-msgstr ""
+msgstr "Keine Objekte ausgewählt"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:136
 msgid "No new items were created."
@@ -3795,7 +3796,7 @@ msgstr "Einmal konserviert muss die Probe innerhalb dieser Zeit entsorgt werden.
 
 #: bika/lims/browser/analysisrequest/add.py:593
 msgid "One job added to the Analysis Request creation queue"
-msgstr ""
+msgstr "Eine Auftragauftragsanfrage wurde in der Warteschlange eingereiht "
 
 #: bika/lims/browser/templates/login_details.pt:153
 msgid "Only existing users in \"Client\" group are displayed."

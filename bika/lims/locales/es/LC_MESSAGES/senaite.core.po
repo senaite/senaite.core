@@ -21,7 +21,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:804
 msgid " <p>The Bika LIMS ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client</td><td>{client}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, client, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
-msgstr ""
+msgstr " <p>El servidor de Identificadores (IDs) de Senaite LIMS proporciona identificadores secuenciales únicos para objetos como muestras, hojas de trabajo, peticiones de análisis, etc., en función del formato especificado para cada tipo de contenido.</p><p>La sintaxis es similar a la de Python, utilizando variables predefinidas por tipo de contenido y avanzando los IDs a partir de un número de secuencia 'seq' para definir el número de dígitos a utilizar. Por ejemplo: '03d' para una secuencia de IDs de 001 a 999.</p><p>Los prefijos alfanuméricos para IDs se incluirán como se haya definido en el formato, p. WS para Hoja de trabajo en WS- {seq: 03d} produce identificadores para las hojas de trabajo de forma secuencial: WS-001, WS-002, WS-003, etc.</p><p>Las variables que se pueden usar son:<table><tr><th style='width:150px'>Tipo de contenido (Content Type)</th><th>Variables</th></tr><tr><td>Cliente</td><td>{client}</td></tr><tr><td>Año</td><td>{year}</td></tr><tr><td>Identificador de muestra</td><td>{sampleId}</td></tr><tr><td>Tipo de muestra</td><td>{sampleType}</td></tr><tr><td>Fecha de muestreo (futuro)</td><td>{samplingDate}</td></tr><tr><td>Fecha en que se ha realizado el muestreo (pasado)</td><td>{dateSampled}</td></tr></table></p><p>Elementos de configuración:<ul><li>Formato:<ul><li>una cadena en formato Python construida a partir de variables predefinidas como sampleId, client, sampleType.</li><li>La variable especial 'seq' debe colocarse en último lugar de la cadena que define el formato</li></ul></li><li>Tipo de secuéncia: [Generada|Contador]</li><li>Contexto: si el tipo de secuéncia es 'Contador', proporciona el contexto para la función contador</li><li>Tipo de cuenta: [retroreferencia|contenida]</li><li>Referencia para cuenta: un parámetro para la función de conteo</li><li>Prefijo: prefijo predeterminado si no se proporciona el formato en cadena</li><li>Longitud de la división: la cantidad de partes que se incluirán en el prefijo</li></ul></p>"
 
 #: bika/lims/browser/templates/login_details.pt:32
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
@@ -525,7 +525,7 @@ msgstr "Análisis repetidos"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:116
 msgid "Analyses requested"
-msgstr ""
+msgstr "Análisis solicitados"
 
 #: bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:34
 msgid "Analyses results out of specified range"
@@ -3494,7 +3494,7 @@ msgstr "Se requiere verificación múltiple"
 
 #: bika/lims/content/supplier.py:46
 msgid "NIB"
-msgstr ""
+msgstr "Código Cuenta Cliente (IBAN/CCC/BIC)"
 
 #: bika/lims/browser/clientfolder.py:60
 #: bika/lims/browser/department/labcontacts.py:35

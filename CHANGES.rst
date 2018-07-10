@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.7 (unreleased)
+1.2.7 (2018-07-10)
 ------------------
 
 **Added**
@@ -21,9 +21,6 @@ Changelog
 - #868 AR Add Form: Refactoring and Styling
 - #817 Make warn message clearer if transition rejection is due to missing sampler
 
-**Removed**
-
-
 **Fixed**
 
 - #892 Display only active Analyses for new Profiles
@@ -40,8 +37,6 @@ Changelog
 - #871 Fix OpenTagError for i18ndude
 - #865 AR VAT Amount when using Profiles is not calculated correctly
 - #851 Fix worksheet verification with retracted results
-
-**Security**
 
 
 1.2.6 (2018-06-08)
