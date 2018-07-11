@@ -29,7 +29,9 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
-    client_contact_permissions_on_batches_folder(portal)
+    setup.runImportStepFromProfile(profile, 'workflow')
+
+    client_contact_permissions_on_batches(portal, ut)
 
     # -------- ADD YOUR STUFF HERE --------
 
@@ -37,7 +39,7 @@ def upgrade(tool):
     return True
 
 
-def client_contact_permissions_on_batches_folder(portal):
+def client_contact_permissions_on_batches(portal, ut):
     """
     Grants view permissions on batches folder in navtree
     :param portal: portal object
@@ -46,3 +48,30 @@ def client_contact_permissions_on_batches_folder(portal):
     mp = portal.batches.manage_permission
     mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector', 'Client'], 0)
     portal.batches.reindexObject()
+
+    # Update batch object permissions
+    workflow_tool = api.get_tool("portal_workflow")
+    workflow = workflow_tool.getWorkflowById('bika_batch_workflow')
+    catalog = api.get_tool('portal_catalog')
+
+    # Update permissions programmatically
+
+    brains = catalog(portal_type='Batch')
+    counter = 0
+    total = len(brains)
+    logger.info(
+        "Changing permissions for Batch objects: {0}".format(total))
+    for brain in brains:
+        allowed = brain.allowedRolesAndUsers or []
+        if 'Client' not in allowed:
+            obj = api.get_object(brain)
+            workflow.updateRoleMappingsFor(obj)
+            obj.reindexObject()
+        counter += 1
+        if counter % 100 == 0:
+            logger.info(
+                "Changing permissions for Batch objects: " +
+                "{0}/{1}".format(counter, total))
+    logger.info(
+        "Changed permissions for Batch objects: " +
+        "{0}/{1}".format(counter, total))
