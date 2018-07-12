@@ -5,12 +5,14 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import logger
+from Products.AdvancedQuery import Eq
+
 from bika.lims import api
+from bika.lims import logger
+from bika.lims import permissions
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims import permissions
 
 version = '1.2.8'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -55,18 +57,16 @@ def client_contact_permissions_on_batches(portal, ut):
     catalog = api.get_tool('portal_catalog')
 
     # Update permissions programmatically
-
-    brains = catalog(portal_type='Batch')
+    query = Eq('portal_type', 'Batch') & ~ Eq('allowedRolesAndUsers', 'Client')
+    brains = catalog.evalAdvancedQuery(query)
     counter = 0
     total = len(brains)
     logger.info(
         "Changing permissions for Batch objects: {0}".format(total))
     for brain in brains:
-        allowed = brain.allowedRolesAndUsers or []
-        if 'Client' not in allowed:
-            obj = api.get_object(brain)
-            workflow.updateRoleMappingsFor(obj)
-            obj.reindexObject()
+        obj = api.get_object(brain)
+        workflow.updateRoleMappingsFor(obj)
+        obj.reindexObject()
         counter += 1
         if counter % 100 == 0:
             logger.info(
