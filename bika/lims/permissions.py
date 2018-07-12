@@ -346,7 +346,7 @@ def setup_permissions(portal):
     mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
     mp(permissions.ListFolderContents, ['Authenticated'], 0)
     mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector', 'Client'], 0)
     mp('Access contents information', ['Authenticated'], 0)
     mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
     portal.batches.reindexObject()
