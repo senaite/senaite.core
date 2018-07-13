@@ -47,13 +47,13 @@ def revert_client_permissions_for_batches(portal):
     # and review state is 'open'
     remopen = del_permissions_for_role_in_workflow('bika_batch_workflow',
                                                    'open', ['Client'],
-                                                   permissions.View)
+                                                   [permissions.View])
 
     # Remove permission View for role Client in workflow bika_batch_workflow
     # and review state is 'open'
     remclos = del_permissions_for_role_in_workflow('bika_batch_workflow',
                                                    'closed', ['Client'],
-                                                   permissions.View)
+                                                   [permissions.View])
     if remopen or remclos:
         # Update rolemappings for batches, but only if necessary
         wtool = api.get_tool("portal_workflow")
@@ -130,7 +130,7 @@ def del_permissions_for_role_in_workflow(wfid, wfstate, roles, permissions):
         st_roles = permission_info['roles']
         ef_roles = filter(lambda role: role not in roles, st_roles)
         if len(ef_roles) == len(st_roles):
-            return False
+            continue
 
         logger.info("Removing roles {} from permission {} in {} with state {}"
                     .format(repr(roles), repr(permission), wfid, wfstate))
