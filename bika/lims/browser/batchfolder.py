@@ -9,15 +9,13 @@ import json
 from operator import itemgetter
 
 import plone
-from plone.app.content.browser.interfaces import IFolderContentsView
-from zope.interface import implements
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.interfaces import IClient, ILabContact
 from bika.lims.permissions import AddBatch
+from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.interface import implements
 
 
 class BatchFolderContentsView(BikaListingView):
@@ -111,7 +109,6 @@ class BatchFolderContentsView(BikaListingView):
             self.context_actions[_('Add')] = \
                 {'url': 'createObject?type_name=Batch',
                  'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
-        self._apply_filter_by_client()
         return super(BatchFolderContentsView, self).__call__()
 
     def isItemAllowed(self, obj):
@@ -178,39 +175,6 @@ class BatchFolderContentsView(BikaListingView):
         item['BatchDate'] = date
         item['replace']['BatchDate'] = self.ulocalized_time(date)
         return item
-
-    def _apply_filter_by_client(self):
-        """
-        If the user has the role Client, the user can not see batches
-        from client objects he/she does not belong to.
-        """
-        # If the current context is a Client, filter Batches by Client UID
-        if IClient.providedBy(self.context):
-            client_uid = api.get_uid(self.context)
-            self.contentFilter['getClientUID'] = client_uid
-            return
-
-        # If the current user is a Client contact, filter the Batches in
-        # accordance. For the rest of users (LabContacts), the visibility of
-        # the Batches depend on their permissions
-        user = api.get_current_user()
-        roles = user.getRoles()
-        if 'Client' not in roles:
-            return
-
-        # Are we sure this a ClientContact?
-        # May happen that this is a Plone member, w/o having a ClientContact
-        # assigned or having a LabContact assigned... weird
-        contact = api.get_user_contact(user)
-        if not contact or ILabContact.providedBy(contact):
-            return
-
-        # Is the parent from the Contact a Client?
-        client = api.get_parent(contact)
-        if not client or not IClient.providedBy(client):
-            return
-        client_uid = api.get_uid(client)
-        self.contentFilter['getClientUID'] = client_uid
 
 
 class ajaxGetBatches(BrowserView):

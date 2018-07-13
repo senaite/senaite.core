@@ -6,7 +6,6 @@ Changelog
 
 **Added**
 
-- #893 Allow Client contact to access to batches
 
 **Changed**
 
