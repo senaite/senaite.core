@@ -13,6 +13,7 @@ Changelog
 
 **Removed**
 
+- #901 Remove explicit permission settings for clients
 
 **Fixed**
 
