@@ -556,6 +556,7 @@ class AnalysisRequestsView(BikaListingView):
                 (self.mtool.checkPermission(AddAnalysisRequest, self.context)):
             self.context_actions[_("Add")] = \
                 {"url": "ar_add?ar_count=1",
+                 'permission': 'Add portal content',
                  "icon": "++resource++bika.lims.images/add.png"}
 
         self.editresults = -1

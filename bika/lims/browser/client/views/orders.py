@@ -28,6 +28,7 @@ class ClientOrdersView(SupplyOrderFolderView):
         self.context_actions = {
             _('Add'): {
                 'url': 'createObject?type_name=SupplyOrder',
+                'permission': 'Add portal content',
                 'icon': '++resource++bika.lims.images/add.png'
             }
         }

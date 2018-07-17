@@ -76,6 +76,7 @@ class ClientAnalysisSpecsView(BikaListingView):
             if checkPermission(AddAnalysisSpec, self.context):
                 self.context_actions[_('Add')] = \
                     {'url': 'createObject?type_name=AnalysisSpec',
+                     'permission': 'Add portal content',
                      'icon': '++resource++bika.lims.images/add.png'}
                 #
                 # @lemoene with the changes made in AR-specs, I dont know how much

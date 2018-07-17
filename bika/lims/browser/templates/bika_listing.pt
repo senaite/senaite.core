@@ -23,10 +23,13 @@
         <tal:contextactions repeat="key python:view.context_actions.keys()">
           <!-- Context Actions -->
           <tal:contextaction define="url python:view.context_actions[key]['url'];
+                                     checkPermission nocall: context/portal_membership/checkPermission;
                                      icon python:view.context_actions[key]['icon'];
+                                     permission python:view.context_actions[key].get('permission', 'View');
                                      css_class python:view.context_actions[key].get('class', '');">
-            <a tal:attributes="href url;
-                               class python:'context_action_link %s btn btn-link' % css_class">
+            <a tal:condition="python:checkPermission(permission, context)"
+               tal:attributes="href url;
+                              class python:'context_action_link %s btn btn-link' % css_class">
               <img tal:condition="icon|nothing"
                    tal:attributes="src icon"
                    style="height:16px;width:auto;"/>
