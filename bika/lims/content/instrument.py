@@ -720,7 +720,7 @@ class Instrument(ATFolder):
                 # This is a reference analysis attached directly to the
                 # Instrument, we apply the assign state
                 wf.doActionFor(ref_analysis, 'assign')
-            ref_analysis.setInstrument(self.context)
+            ref_analysis.setInstrument(self)
             ref_analysis.reindexObject()
             addedanalyses.append(ref_analysis)
 
