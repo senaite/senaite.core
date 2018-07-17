@@ -25,6 +25,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api import get_object
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
 from plone.memoize import ram
@@ -368,6 +369,12 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
     # Map changes to the catalogs
     content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
     return
+
+def fix_AR_workflow(brain_or_object):
+    """Re-set the state of an AR to match the lowest state of all contained
+    valid/current analyses.  Ignores retracted/rejected/cancelled analyses.
+    """
+    ar = get_object(brain_or_object)
 
 
 def tmpID():
