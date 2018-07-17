@@ -12,6 +12,8 @@
   <permission>Delete objects</permission>
   <!-- This governs whether you are allowed to modify some content. -->
   <permission>Modify portal content</permission>
+  <!-- This governs whether you are allowed to add some content. -->
+  <permission>Add portal content</permission>
   <!-- This governs whether you are allowed to view some content. -->
   <permission>View</permission>
   <!-- This permission allows access to an object, without necessarily viewing
@@ -23,9 +25,19 @@
        it doesn't check whether you have the right to view the objects listed. -->
   <permission>List folder contents</permission>
 
+  <!-- Transitions Permissions -->
+  <permission>Activate client</permission>
+  <permission>Deactivate client</permission>
+
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="deactivate" />
+
+    <!-- Deactivate client -->
+    <permission-map name="Deactivate client" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
 
     <!-- Delete objects -->
     <permission-map name="Delete objects" acquired="False">
@@ -34,9 +46,17 @@
 
     <!-- Modify portal content -->
     <permission-map name="Modify portal content" acquired="False">
-      <permission-role>LabClerk</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+
+    <!-- Add portal content -->
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
 
@@ -77,6 +97,12 @@
   <state state_id="inactive" title="Inactive" i18n:attributes="title">
     <exit-transition transition_id="activate" />
 
+    <!-- Activate client -->
+    <permission-map name="Activate client" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+
     <!-- Delete objects -->
     <permission-map name="Delete objects" acquired="False">
       <permission-role>Manager</permission-role>
@@ -88,22 +114,31 @@
       <permission-role>LabManager</permission-role>
     </permission-map>
 
+    <!-- Add portal content -->
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+
     <!-- View -->
     <permission-map name="View" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
     </permission-map>
 
     <!-- Access contents information -->
     <permission-map name="Access contents information" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
     </permission-map>
 
     <!-- List folder contents -->
     <permission-map name="List folder contents" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
     </permission-map>
   </state>
   <!-- /State: inactive -->
@@ -113,7 +148,7 @@
     <action url="" category="workflow" icon="">Activate</action>
     <guard>
       <guard-expression>python:here.guard_activate_transition()</guard-expression>
-      <guard-permission>Modify portal content</guard-permission>
+      <guard-permission>Activate client</guard-permission>
     </guard>
   </transition>
   <!-- /Transition: activate -->
@@ -123,7 +158,7 @@
     <action url="" category="workflow" icon="">Deactivate</action>
     <guard>
       <guard-expression>python:here.guard_deactivate_transition()</guard-expression>
-      <guard-permission>Modify portal content</guard-permission>
+      <guard-permission>Deactivate client</guard-permission>
     </guard>
   </transition>
   <!-- /Transition: deactivate -->
