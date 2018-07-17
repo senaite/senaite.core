@@ -10,7 +10,7 @@ from Products.Archetypes.public import Schema, registerType
 from bika.lims import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
-from bika.lims.interfaces import IRoutineAnalysis, ISamplePrepWorkflow
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.workflow import getCurrentState, in_state
 from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from zope.interface import implements
@@ -21,7 +21,7 @@ schema = schema.copy() + Schema((
 
 
 class Analysis(AbstractRoutineAnalysis):
-    implements(IRoutineAnalysis, ISamplePrepWorkflow)
+    implements(IRoutineAnalysis)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

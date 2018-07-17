@@ -45,16 +45,6 @@ def receive(obj):
     return isBasicTransitionAllowed(obj)
 
 
-def sample_prep(obj):
-    sample = obj.getSample()
-    return sample.guard_sample_prep_transition()
-
-
-def sample_prep_complete(obj):
-    sample = obj.getSample()
-    return sample.guard_sample_prep_complete_transition()
-
-
 def verify(obj):
     """Returns True if 'verify' transition can be applied to the Analysis
     Request passed in. This is, returns true if all the analyses that contains

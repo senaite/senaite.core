@@ -24,7 +24,7 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import DateTimeWidget, RecordsWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.interfaces import ISamplePrepWorkflow, IDuplicateAnalysis
+from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import formatDecimalMark
@@ -152,7 +152,6 @@ schema = schema.copy() + Schema((
 
 
 class AbstractAnalysis(AbstractBaseAnalysis):
-    implements(ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -1259,14 +1258,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def guard_retract_transition(self):
         return guards.retract(self)
-
-    @security.public
-    def guard_sample_prep_transition(self):
-        return guards.sample_prep(self)
-
-    @security.public
-    def guard_sample_prep_complete_transition(self):
-        return guards.sample_prep_complete(self)
 
     @security.public
     def guard_receive_transition(self):

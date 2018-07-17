@@ -311,16 +311,10 @@
     </permission-map>
   </state>
 
-  <state state_id="sample_prep" title="Sample preparation" i18n:attributes="title">
-    <description>A sample preparation workflow is in progress</description>
-    <exit-transition transition_id="sample_prep_complete" />
-  </state>
-
   <state state_id="sample_received" title="Received" i18n:attributes="title">
     <description>Sample is 'in the lab'</description>
     <exit-transition transition_id="prepublish" />
     <exit-transition transition_id="submit" />
-    <exit-transition transition_id="sample_prep" />
     <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -1117,20 +1111,6 @@
   <transition transition_id="sample_due" title="Sample due" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample due</action>
     <guard>
-    </guard>
-  </transition>
-
-  <transition transition_id="sample_prep" title="Sample preparation" new_state="sample_prep" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Sample Preparation</action>
-    <guard>
-      <guard-expression>python:here.guard_sample_prep_transition()</guard-expression>
-    </guard>
-  </transition>
-
-  <transition transition_id="sample_prep_complete" title="Sample preparation complete" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Sample Preparation Complete</action>
-    <guard>
-      <guard-expression>python:here.guard_sample_prep_complete_transition()</guard-expression>
     </guard>
   </transition>
 

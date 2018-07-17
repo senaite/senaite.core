@@ -12,7 +12,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISamplePartition, ISamplePrepWorkflow
+from bika.lims.interfaces import ISamplePartition
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
@@ -66,7 +66,7 @@ schema['title'].required = False
 
 
 class SamplePartition(BaseContent, HistoryAwareMixin):
-    implements(ISamplePartition, ISamplePrepWorkflow)
+    implements(ISamplePartition)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
