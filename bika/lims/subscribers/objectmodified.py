@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims.permissions import ManageLoginDetails
-from bika.lims.permissions import ManageSupplyOrders
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 
@@ -40,14 +39,6 @@ def ObjectModifiedEventHandler(obj, event):
         # https://github.com/senaite/senaite.core/issues/780
         can_delete = ["Manager", "LabManager", "Owner"]
         mp(permissions.DeleteObjects, can_delete, 0)
-
-    elif obj.portal_type == 'Client':
-        mp = obj.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk',  'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(ManageSupplyOrders, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
 
     elif obj.portal_type == 'Contact':
         # Contacts need to be given "Owner" local-role on their Client.
