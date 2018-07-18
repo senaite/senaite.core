@@ -19,11 +19,11 @@
              tal:attributes="src view/icon"
              style="height:32px;width:auto;"/>
         <span class="documentFirstHeading"
+              tal:define="checkPermission nocall: context/portal_membership/checkPermission;"
               tal:content="python:view.context.translate(view.title)"/>
         <tal:contextactions repeat="key python:view.context_actions.keys()">
           <!-- Context Actions -->
           <tal:contextaction define="url python:view.context_actions[key]['url'];
-                                     checkPermission nocall: context/portal_membership/checkPermission;
                                      icon python:view.context_actions[key]['icon'];
                                      permission python:view.context_actions[key].get('permission', 'View');
                                      css_class python:view.context_actions[key].get('class', '');">
