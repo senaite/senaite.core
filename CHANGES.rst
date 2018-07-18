@@ -70,6 +70,85 @@ Changelog
 - #826 Display signatures of verifiers instead of dept managers in results report
 - #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
 - #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
+
+**Fixed**
+
+- #842 Re-compiled Coffee-Scripts with version 1.12.7
+- #824 Instrument Listing Views Fixes and Refactoring
+- #840 Fix date range filter for "Data entry day book" report
+- #828 Traceback when removing a retracted analysis through Manage Analyses view
+- #832 Set new calculation Interims to dependant services
+- #833 Fix sort order of interims in Calculations and Analysis Services
+- #834 Fix Duplication Action for Analysis Services
+- #835 List only published ARs when "Published" Filter is active
+- #825 Error when exporting Worksheets list with `senaite.exporter`
+- #821 Cannot retract single analysis services
+
+
+1.2.5 (2018-05-05)
+------------------
+
+**Added**
+
+- #777 Delay option for searches in reference widget combos
+- #806 Include Client ID when setting up ARReport on the IDServer
+
+**Changed**
+
+- #815 Change description and title of the invalidation notification option
+
+**Removed**
+
+- #811 Remove senaite.api import in printform
+- #807 Remove "queued_ars" JS call to avoid 404
+- #800 Remove Dry Matter from tests
+- #779 Remove Dry Matter functionality
+
+**Fixed**
+
+- #813 Saving AR results gives TypeError: can only compare to a set
+- #799 On AR Listing, edit for Date Sampled not working when Sampler has a value
+- #776 Analyses submission in Worksheet is slow
+- #726 404 Error raised when clicking Print Samples Sheets from within a client
+- #802 Remove Dry Matter remainders
+- #781 Delete Permission on ARs for Lab Managers
+- #784 Fix workflow state filter not kept when expanding categories in AS listing
+- #786 Fix inactive services listed in AR "Manage Analyses" forms
+- #775 Analyses on Analysis Requests are hyperlinked to their Worksheets
+- #769 Traceback when submitting duplicate when Duplicate Variation is not set
+- #771 Slow Searches in Listing Views
+- #774 When retracting an Analysis Requests its analyses are also retracted
+- #772 Improved UID check in API
+
+
+1.2.4 (2018-04-06)
+------------------
+
+**Added**
+
+- #741 CSV Importer for 'Cobas Taqman 48' Instrument Interface
+- #737 Added Instrument: Metler Toledo DL55
+- #730 Added Instrument: LaChat QuickChem FIA
+- #729 Added Instrument: Varian Vista-PRO ICP
+- #694 Added "Warn Min" and "Warn Max" subfields in Analysis Specifications
+- #710 Added more builtin functions for Calculations
+
+**Changed**
+
+- #765 Department Filtering Improvements
+- #746 StringField to UIDReferenceField for Default Department of Lab Contact
+- #744 Updated WeasyPrint to 0.42.2
+- #694 Out of range/shoulders logic redux, ported to `api.analysis`
+- #694 Make getResultRange functions from Analysis-types consistent
+- #694 Out of range/shoulders icons are rendered in AnalysesView
+
+**Removed**
+
+- #694 Removal of "Permitted % Error" subfield in Analysis Specifications
+- #694 Removal of Adapters for out of range icons
+
+**Fixed**
+
 - #763 Datetime conversion error in CSV Importer of Taqman 48
 - #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #735 Interim fields not created for QC Analyses on WSs
