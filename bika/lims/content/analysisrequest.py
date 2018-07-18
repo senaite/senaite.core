@@ -6,20 +6,59 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import sys
-from AccessControl import ClassSecurityInfo
 from decimal import Decimal
 from operator import methodcaller
-from plone import api as ploneapi
+
+from AccessControl import ClassSecurityInfo
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims import logger
+# Bika Fields
+from bika.lims.browser.fields import ARAnalysesField
+from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.fields import ProxyField
+from bika.lims.browser.fields import UIDReferenceField
+# Bika Widgets
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import DecimalWidget
+from bika.lims.browser.widgets import PrioritySelectionWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import RejectionWidget
+from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.config import PRIORITIES
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+# Bika Interfaces
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import ISamplePrepWorkflow
+# Bika Permissions
+from bika.lims.permissions import EditARContact
+from bika.lims.permissions import ManageInvoices
+from bika.lims.permissions import SampleSample
+from bika.lims.permissions import ScheduleSampling
+from bika.lims.permissions import Verify as VerifyPermission
+# Bika Utils
+from bika.lims.utils import getUsers
+from bika.lims.utils import user_email
+from bika.lims.utils import user_fullname
+# Bika Workflow
+from bika.lims.workflow import getReviewHistoryActionsList
+from bika.lims.workflow import getTransitionDate
+from bika.lims.workflow import getTransitionUsers
+from bika.lims.workflow.analysisrequest import events
+from bika.lims.workflow.analysisrequest import guards
 from DateTime import DateTime
-# AT Fields and AT Widgets
-from Products.ATExtensions.field import RecordsField
-from Products.Archetypes.Widget import RichWidget
+from plone import api as ploneapi
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import FileField
+from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import FixedPointField
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import StringField
@@ -30,50 +69,16 @@ from Products.Archetypes.atapi import registerType
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import Schema
 from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.Widget import RichWidget
+# AT Fields and AT Widgets
+from Products.ATExtensions.field import RecordsField
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
-from bika.lims import logger
-# Bika Fields
-from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
-from bika.lims.browser.fields import DateTimeField
-from bika.lims.browser.fields import ProxyField
-# Bika Widgets
-from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
-from bika.lims.browser.widgets import PrioritySelectionWidget
-from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import RejectionWidget
-from bika.lims.browser.widgets import SelectionWidget
-from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.config import PRIORITIES
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-# Bika Interfaces
-from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
-# Bika Permissions
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-# Bika Utils
-from bika.lims.utils import dicts_to_dict, getUsers
-from bika.lims.utils import user_email
-from bika.lims.utils import user_fullname
-# Bika Workflow
-from bika.lims.workflow import getReviewHistoryActionsList
-from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import getTransitionUsers
-from bika.lims.workflow import isActive
-from bika.lims.workflow.analysisrequest import events
-from bika.lims.workflow.analysisrequest import guards
-
-
-"""The request for analysis by a client. It contains analysis instances.
-"""
 
 # SCHEMA DEFINITION
 schema = BikaSchema.copy() + Schema((
@@ -84,7 +89,7 @@ schema = BikaSchema.copy() + Schema((
         default_method='getContactUIDForUser',
         allowed_types=('Contact',),
         mode="rw",
-        read_permission=permissions.View,
+        read_permission=View,
         write_permission=EditARContact,
         widget=ReferenceWidget(
             label=_("Contact"),
@@ -92,14 +97,16 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             helper_js=("bika_widgets/referencewidget.js",
                        "++resource++bika.lims.js/contact.js"),
-            description=_("The primary contact of this analysis request, " \
-                          "who will receive notifications and publications via email"),
+            description=_("The primary contact of this analysis request, "
+                          "who will receive notifications and publications "
+                          "via email"),
             visible={
                 'edit': 'visible',
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'prominent',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -135,7 +142,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
         mode="rw",
-        read_permission=permissions.View,
+        read_permission=View,
         write_permission=EditARContact,
         widget=ReferenceWidget(
             label=_("CC Contacts"),
@@ -147,7 +154,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'prominent',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -178,7 +186,7 @@ schema = BikaSchema.copy() + Schema((
     StringField(
         'CCEmails',
         mode="rw",
-        read_permission=permissions.View,
+        read_permission=View,
         write_permission=EditARContact,
         acquire=True,
         acquire_fieldname="CCEmails",
@@ -190,7 +198,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'prominent',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -214,8 +223,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('Client',),
         relationship='AnalysisRequestClient',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Client"),
             description=_("The assigned client of this request"),
@@ -226,9 +235,11 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'invisible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling': {'view': 'invisible', 'edit': 'invisible'},
+                'scheduled_sampling': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'sampled': {'view': 'invisible', 'edit': 'invisible'},
                 'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
                 'sample_received': {'view': 'invisible', 'edit': 'invisible'},
@@ -255,8 +266,8 @@ schema = BikaSchema.copy() + Schema((
         'Sample',
         allowed_types=('Sample',),
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sample"),
             description=_("Select a sample to create a secondary AR"),
@@ -267,7 +278,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
                 'sampled': {'view': 'visible', 'edit': 'invisible'},
@@ -294,8 +306,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('Batch',),
         relationship='AnalysisRequestBatch',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Batch"),
             size=20,
@@ -306,7 +318,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -333,8 +346,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('SamplingRound',),
         relationship='AnalysisRequestSamplingRound',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sampling Round"),
             description=_("The assigned sampling round of this request"),
@@ -345,7 +358,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -382,7 +396,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -419,11 +434,12 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestARTemplate',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("AR Template"),
-            description=_("The predefined values of the AR template are set in the request"),
+            description=_("The predefined values of the AR template are set "
+                          "in the request"),
             size=20,
             render_own_label=True,
             visible={
@@ -432,7 +448,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
                 'sampled': {'view': 'visible', 'edit': 'invisible'},
@@ -460,8 +477,8 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestAnalysisProfile',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Analysis Profile"),
             description=_("Analysis profiles apply a certain set of analyses"),
@@ -482,8 +499,8 @@ schema = BikaSchema.copy() + Schema((
         vocabulary_display_path_bound=sys.maxsize,
         relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Analysis Profiles"),
             description=_("Analysis profiles apply a certain set of analyses"),
@@ -494,7 +511,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
                 'sampled': {'view': 'visible', 'edit': 'invisible'},
@@ -519,8 +537,8 @@ schema = BikaSchema.copy() + Schema((
         'DateSampled',
         proxy="context.getSample()",
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=DateTimeWidget(
             label=_("Date Sampled"),
             description=_("The date when the sample was taken"),
@@ -533,7 +551,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'prominent',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'to_be_sampled': {'view': 'invisible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'invisible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'invisible'},
@@ -556,7 +575,7 @@ schema = BikaSchema.copy() + Schema((
         'Sampler',
         proxy="context.getSample()",
         mode="rw",
-        read_permission=permissions.View,
+        read_permission=View,
         write_permission=SampleSample,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
@@ -569,7 +588,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'prominent',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'to_be_sampled': {'view': 'invisible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'invisible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'invisible'},
@@ -593,7 +613,7 @@ schema = BikaSchema.copy() + Schema((
         'ScheduledSamplingSampler',
         proxy="context.getSample()",
         mode="rw",
-        read_permission=permissions.View,
+        read_permission=View,
         write_permission=ScheduleSampling,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
@@ -605,7 +625,8 @@ schema = BikaSchema.copy() + Schema((
                 'edit': 'visible',
                 'view': 'visible',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'invisible', 'edit': 'invisible'},
@@ -617,7 +638,7 @@ schema = BikaSchema.copy() + Schema((
             },
             render_own_label=True,
         ),
-    ),# This field is a mirror of a Sample field with the same name
+    ),  # This field is a mirror of a Sample field with the same name
 
     # Sample field
     ProxyField(
@@ -625,8 +646,8 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         proxy="context.getSample()",
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=DateTimeWidget(
             label=_("Expected Sampling Date"),
             description=_("The date when the sample will be taken"),
@@ -634,8 +655,8 @@ schema = BikaSchema.copy() + Schema((
             show_time=True,
             render_own_label=True,
             datepicker_nopast=1,
-            # We must use SamplingWOrkflowWidgetVisibility soon. For now we will
-            # handle it through JS
+            # We must use SamplingWOrkflowWidgetVisibility soon.
+            # For now we will handle it through JS
             # see SamplingWOrkflowWidgetVisibility
             visible={
                 'edit': 'visible',
@@ -643,7 +664,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'visible',
                 'secondary': 'disabled',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'invisible'},
@@ -669,8 +691,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SampleType',
         relationship='AnalysisRequestSampleType',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sample Type"),
             description=_("Create a new sample of this type"),
@@ -683,12 +705,12 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
                 'header_table': 'visible',
                 'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
-                'scheduled_sampling': {'view': 'invisible', 'edit': 'invisible'},
-                'sampled': {'view': 'visible', 'edit': 'invisible'},
-                'to_be_preserved': {'view': 'visible', 'edit': 'invisible'},
-                'sample_due': {'view': 'visible', 'edit': 'invisible'},
-                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
+                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
+                'scheduled_sampling': {'view': 'invisible', 'edit': 'visible'},
+                'sampled': {'view': 'visible', 'edit': 'visible'},
+                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
+                'sample_due': {'view': 'visible', 'edit': 'visible'},
+                'sample_prep': {'view': 'visible', 'edit': 'visible'},
                 'sample_received': {'view': 'visible', 'edit': 'invisible'},
                 'attachment_due': {'view': 'visible', 'edit': 'invisible'},
                 'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
@@ -715,7 +737,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
                 'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
@@ -737,8 +760,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='AnalysisSpec',
         relationship='AnalysisRequestAnalysisSpec',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Analysis Specification"),
             description=_("Choose default AR specification values"),
@@ -749,7 +772,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -786,7 +810,8 @@ schema = BikaSchema.copy() + Schema((
         'ResultsRange',
         required=0,
         type='resultsrange',
-        subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax', 'rangecomment'),
+        subfields=('keyword', 'min', 'max', 'warn_min', 'warn_max', 'hidemin',
+                   'hidemax', 'rangecomment'),
         widget=ComputedWidget(visible=False),
     ),
 
@@ -796,8 +821,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='AnalysisSpec',
         relationship='AnalysisRequestPublicationSpec',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.View,
+        read_permission=View,
+        write_permission=View,
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
@@ -808,9 +833,11 @@ schema = BikaSchema.copy() + Schema((
                 'edit': 'visible',
                 'view': 'visible',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling': {'view': 'invisible', 'edit': 'invisible'},
+                'scheduled_sampling': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'sampled': {'view': 'invisible', 'edit': 'invisible'},
                 'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
                 'sample_due': {'view': 'invisible', 'edit': 'invisible'},
@@ -836,8 +863,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SamplePoint',
         relationship='AnalysisRequestSamplePoint',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sample Point"),
             description=_("Location where sample was taken"),
@@ -849,7 +876,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 # LIMS-1159
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
@@ -878,8 +906,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='StorageLocation',
         relationship='AnalysisRequestStorageLocation',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Storage Location"),
             description=_("Location where sample is kept"),
@@ -916,8 +944,8 @@ schema = BikaSchema.copy() + Schema((
     StringField(
         'ClientOrderNumber',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=StringWidget(
             label=_("Client Order Number"),
             description=_("The client side order number for this request"),
@@ -928,7 +956,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -951,8 +980,8 @@ schema = BikaSchema.copy() + Schema((
         'ClientReference',
         proxy="context.getSample()",
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=StringWidget(
             label=_("Client Reference"),
             description=_("The client side reference for this request"),
@@ -988,8 +1017,8 @@ schema = BikaSchema.copy() + Schema((
         'ClientSampleID',
         proxy="context.getSample()",
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=StringWidget(
             label=_("Client Sample ID"),
             description=_("The client side identifier of the sample"),
@@ -1027,11 +1056,12 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSamplingDeviation',
         referenceClass=HoldingReference,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sampling Deviation"),
-            description=_("Deviation between the sample and how it was sampled"),
+            description=_("Deviation between the sample and how it "
+                          "was sampled"),
             size=20,
             render_own_label=True,
             visible={
@@ -1040,7 +1070,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -1069,8 +1100,8 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSampleCondition',
         referenceClass=HoldingReference,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sample condition"),
             description=_("The current condition of the sample"),
@@ -1082,7 +1113,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -1108,8 +1140,8 @@ schema = BikaSchema.copy() + Schema((
         default='3',
         vocabulary=PRIORITIES,
         mode='rw',
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=PrioritySelectionWidget(
             label=_('Priority'),
             format='select',
@@ -1141,8 +1173,8 @@ schema = BikaSchema.copy() + Schema((
         'EnvironmentalConditions',
         proxy="context.getSample()",
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=StringWidget(
             label=_("Environmental conditions"),
             description=_("The environmental condition during sampling"),
@@ -1151,7 +1183,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'prominent',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -1175,8 +1208,8 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestContainerType',
         referenceClass=HoldingReference,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Default Container"),
             description=_("Default container for new sample partitions"),
@@ -1188,7 +1221,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
                 'sampled': {'view': 'visible', 'edit': 'invisible'},
@@ -1215,8 +1249,8 @@ schema = BikaSchema.copy() + Schema((
         proxy="context.getSample()",
         default=False,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=BooleanWidget(
             label=_("Sampled AdHoc"),
             description=_("Was the sample taken in non-scheduled matter, " \
@@ -1253,8 +1287,8 @@ schema = BikaSchema.copy() + Schema((
         proxy="context.getSample()",
         default=False,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=BooleanWidget(
             label=_("Composite"),
             render_own_label=True,
@@ -1264,40 +1298,8 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'secondary': 'disabled',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
-                'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
-                'sampled': {'view': 'visible', 'edit': 'visible'},
-                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
-                'sample_due': {'view': 'visible', 'edit': 'visible'},
-                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
-                'sample_received': {'view': 'visible', 'edit': 'visible'},
-                'attachment_due': {'view': 'visible', 'edit': 'visible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'visible'},
-                'verified': {'view': 'visible', 'edit': 'invisible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'visible', 'edit': 'invisible'},
-            },
-        ),
-    ),
-
-    BooleanField(
-        'ReportDryMatter',
-        default=False,
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=BooleanWidget(
-            label=_("Report as Dry Matter"),
-            render_own_label=True,
-            description=_("These results can be reported as dry matter"),
-            visible={
-                'edit': 'visible',
-                'view': 'visible',
-                'add': 'edit',
-                'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -1319,8 +1321,8 @@ schema = BikaSchema.copy() + Schema((
         'InvoiceExclude',
         default=False,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=BooleanWidget(
             label=_("Invoice Exclude"),
             description=_("Should the analyses be excluded from the invoice?"),
@@ -1330,7 +1332,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
@@ -1352,13 +1355,14 @@ schema = BikaSchema.copy() + Schema((
         'Analyses',
         required=1,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ComputedWidget(
             visible={
                 'edit': 'invisible',
                 'view': 'invisible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
             }
         ),
     ),
@@ -1370,12 +1374,30 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestAttachment',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ComputedWidget(
             visible={
                 'edit': 'invisible',
                 'view': 'invisible',
+            },
+        )
+    ),
+
+    # This is a virtual field and handled only by AR Add View to allow multi
+    # attachment upload in AR Add. It should never contain an own value!
+    FileField(
+        '_ARAttachment',
+        widget=FileWidget(
+            label=_("Attachment"),
+            description=_("Add one or more attachments to describe the "
+                          "sample in this analysis request, or to specify "
+                          "your request."),
+            render_own_label=True,
+            visible={
+                'view': 'invisible',
+                'add': 'edit',
+                'header_table': 'invisible',
             },
         )
     ),
@@ -1387,8 +1409,8 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestInvoice',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ComputedWidget(
             visible={
                 'edit': 'invisible',
@@ -1405,8 +1427,8 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         'DateReceived',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=DateTimeWidget(
             label=_("Date Received"),
             description=_("The date when the sample was received"),
@@ -1414,9 +1436,11 @@ schema = BikaSchema.copy() + Schema((
                 'edit': 'visible',
                 'view': 'visible',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling': {'view': 'invisible', 'edit': 'invisible'},
+                'scheduled_sampling': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'sampled': {'view': 'invisible', 'edit': 'invisible'},
                 'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
                 'sample_due': {'view': 'invisible', 'edit': 'invisible'},
@@ -1435,7 +1459,7 @@ schema = BikaSchema.copy() + Schema((
     ComputedField(
         'DatePublished',
         mode="r",
-        read_permission=permissions.View,
+        read_permission=View,
         expression="here.getDatePublished().strftime('%Y-%m-%d %H:%M %p') if here.getDatePublished() else ''",
         widget=DateTimeWidget(
             label=_("Date Published"),
@@ -1445,9 +1469,11 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'invisible',
                 'secondary': 'invisible',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling': {'view': 'invisible', 'edit': 'invisible'},
+                'scheduled_sampling': {
+                    'view': 'invisible', 'edit': 'invisible'},
                 'sampled': {'view': 'invisible', 'edit': 'invisible'},
                 'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
                 'sample_due': {'view': 'invisible', 'edit': 'invisible'},
@@ -1468,8 +1494,8 @@ schema = BikaSchema.copy() + Schema((
         allowable_content_types=('text/plain',),
         default_output_type="text/plain",
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=TextAreaWidget(
             macro="bika_widgets/remarks",
             label=_("Remarks"),
@@ -1489,8 +1515,8 @@ schema = BikaSchema.copy() + Schema((
         'MemberDiscount',
         default_method='getDefaultMemberDiscount',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=DecimalWidget(
             label=_("Member discount %"),
             description=_("Enter percentage value eg. 33.0"),
@@ -1499,7 +1525,8 @@ schema = BikaSchema.copy() + Schema((
                 'edit': 'visible',
                 'view': 'visible',
                 'add': 'invisible',
-                'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_registered': {
+                    'view': 'invisible', 'edit': 'invisible'},
             },
         ),
     ),
@@ -1556,7 +1583,8 @@ schema = BikaSchema.copy() + Schema((
 
     ComputedField(
         'ProfilesUID',
-        expression="[p.UID() for p in here.getProfiles()] if here.getProfiles() else []",
+        expression="[p.UID() for p in here.getProfiles()] " \
+                   "if here.getProfiles() else []",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -1588,12 +1616,14 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SamplingRoundUID',
-        expression="here.getSamplingRound().UID() if here.getSamplingRound() else ''",
+        expression="here.getSamplingRound().UID() " \
+                   "if here.getSamplingRound() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'SampleURL',
-        expression="here.getSample().absolute_url_path() if here.getSample() else ''",
+        expression="here.getSample().absolute_url_path() " \
+                   "if here.getSample() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1613,7 +1643,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'BatchURL',
-        expression="here.getBatch().absolute_url_path() if here.getBatch() else ''",
+        expression="here.getBatch().absolute_url_path() " \
+                   "if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1628,52 +1659,62 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ClientURL',
-        expression="here.getClient().absolute_url_path() if here.getClient() else ''",
+        expression="here.getClient().absolute_url_path() " \
+                   "if here.getClient() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ContactUsername',
-        expression="here.getContact().getUsername() if here.getContact() else ''",
+        expression="here.getContact().getUsername() " \
+                   "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ContactFullName',
-        expression="here.getContact().getFullname() if here.getContact() else ''",
+        expression="here.getContact().getFullname() " \
+                   "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ContactEmail',
-        expression="here.getContact().getEmailAddress() if here.getContact() else ''",
+        expression="here.getContact().getEmailAddress() " \
+                   "if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'SampleTypeUID',
-        expression="here.getSampleType().UID() if here.getSampleType() else ''",
+        expression="here.getSampleType().UID() " \
+                   "if here.getSampleType() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'SamplePointUID',
-        expression="here.getSamplePoint().UID() if here.getSamplePoint() else ''",
+        expression="here.getSamplePoint().UID() " \
+                   "if here.getSamplePoint() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'StorageLocationUID',
-        expression="here.getStorageLocation().UID() if here.getStorageLocation() else ''",
+        expression="here.getStorageLocation().UID() " \
+                   "if here.getStorageLocation() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ProfilesURL',
-        expression="[p.absolute_url_path() for p in here.getProfiles()] if here.getProfiles() else []",
+        expression="[p.absolute_url_path() for p in here.getProfiles()] " \
+                   "if here.getProfiles() else []",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ProfilesTitle',
-        expression="[p.Title() for p in here.getProfiles()] if here.getProfiles() else []",
+        expression="[p.Title() for p in here.getProfiles()] " \
+                   "if here.getProfiles() else []",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ProfilesTitleStr',
-        expression="', '.join([p.Title() for p in here.getProfiles()]) if here.getProfiles() else ''",
+        expression="', '.join([p.Title() for p in here.getProfiles()]) " \
+                   "if here.getProfiles() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1683,7 +1724,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'TemplateURL',
-        expression="here.getTemplate().absolute_url_path() if here.getTemplate() else ''",
+        expression="here.getTemplate().absolute_url_path() " \
+                   "if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1697,8 +1739,8 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestChildAnalysisRequest',
         referenceClass=HoldingReference,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             visible=False,
         ),
@@ -1710,8 +1752,8 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestParentAnalysisRequest',
         referenceClass=HoldingReference,
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             visible=False,
         ),
@@ -1720,11 +1762,11 @@ schema = BikaSchema.copy() + Schema((
     StringField(
         'PreparationWorkflow',
         mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         vocabulary='getPreparationWorkflows',
         acquire=True,
-        widget=SelectionWidget(
+        widget=BikaSelectionWidget(
             format="select",
             label=_("Preparation Workflow"),
             visible={
@@ -1732,7 +1774,8 @@ schema = BikaSchema.copy() + Schema((
                 'view': 'visible',
                 'add': 'edit',
                 'header_table': 'visible',
-                'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                'sample_registered': {
+                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                 'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
                 'sampled': {'view': 'visible', 'edit': 'visible'},
                 'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
@@ -1762,8 +1805,8 @@ schema = BikaSchema.copy() + Schema((
         default_output_type='text/x-html-safe',
         # getResultsInterpretation returns a str with html tags
         # to conserve the txt format in the report.
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        read_permission=View,
+        write_permission=ModifyPortalContent,
         widget=RichWidget(
             description=_("Comments or results interpretation"),
             label=_("Results Interpretation"),
@@ -1795,9 +1838,9 @@ schema = BikaSchema.copy() + Schema((
     StringField(
         'Printed',
         mode="rw",
-        read_permission=permissions.View,
+        read_permission=View,
         widget=StringWidget(
-            label = _("Printed"),
+            label=_("Printed"),
             description=_("Indicates if the last ARReport is printed,"),
             visible={'view': 'invisible',
                      'edit': 'invisible'},
@@ -1872,7 +1915,6 @@ class AnalysisRequest(BaseFolder):
     def getProfilesTitle(self):
         return [profile.Title() for profile in self.getProfiles()]
 
-
     def setPublicationSpecification(self, value):
         """Never contains a value; this field is here for the UI." \
         """
@@ -1940,15 +1982,18 @@ class AnalysisRequest(BaseFolder):
             different statuses, like follows:
                 [verified, total, not_submitted, to_be_verified]
         """
-        an_nums = [0,0,0,0]
+        an_nums = [0, 0, 0, 0]
         for analysis in self.getAnalyses():
             review_state = analysis.review_state
-            analysis_object = analysis.getObject()
-            if review_state in ['retracted', 'rejected'] or \
-                    not isActive(analysis_object):
-                # Discard retracted analyses and non-active analyses
+            if review_state in ['retracted', 'rejected']:
+                # Discard retracted analyses
                 continue
 
+            if not api.is_active(analysis):
+                # Discard non-active analyses
+                continue
+
+            analysis_object = api.get_object(analysis)
             actions = getReviewHistoryActionsList(analysis_object)
             if 'verify' in actions:
                 # Assume the "last" state of analysis is verified
@@ -2056,10 +2101,11 @@ class AnalysisRequest(BaseFolder):
         review_state = workflow.getInfoFor(self, 'review_state', '')
         if review_state not in ['published']:
             return "0"
-        report_list=sorted(self.objectValues('ARReport'),key=lambda report: report.getDatePublished())
+        report_list = sorted(self.objectValues('ARReport'),
+                             key=lambda report: report.getDatePublished())
         if not report_list:
             return "0"
-        last_report=report_list[-1]
+        last_report = report_list[-1]
         if last_report.getDatePrinted():
             return "1"
         else:
@@ -2069,12 +2115,14 @@ class AnalysisRequest(BaseFolder):
         return "0"
 
     def printLastReport(self):
-        """ Setting Printed Time of the last report, so its Printed value will be 1"""
+        """Setting Printed Time of the last report, so its Printed value will be 1
+        """
         workflow = getToolByName(self, 'portal_workflow')
         review_state = workflow.getInfoFor(self, 'review_state', '')
         if review_state not in ['published']:
             return
-        last_report=sorted(self.objectValues('ARReport'),key=lambda report: report.getDatePublished())[-1]
+        last_report = sorted(self.objectValues('ARReport'),
+                             key=lambda report: report.getDatePublished())[-1]
         if last_report and not last_report.getDatePrinted():
             last_report.setDatePrinted(DateTime())
             self.reindexObject(idxs=['getPrinted'])
@@ -2114,7 +2162,8 @@ class AnalysisRequest(BaseFolder):
             if profile.getUseAnalysisProfilePrice():
                 analysis_profiles.append(profile)
             else:
-                # we only need the analysis service keywords from these profiles
+                # we only need the analysis service keywords from these
+                # profiles
                 to_be_billed += [service.getKeyword() for service in
                                  profile.getService()]
         # So far we have three arrays:
@@ -2234,7 +2283,7 @@ class AnalysisRequest(BaseFolder):
         """It gets the discounted price from analyses and profiles to obtain the
         total value with the VAT and the discount applied
 
-        :returns: the analysis request's total price including the VATs and discounts
+        :returns: analysis request's total price including VATs and discounts
         """
         price = (self.getSubtotal() - self.getDiscountAmount() +
                  self.getVATAmount())
@@ -2296,6 +2345,7 @@ class AnalysisRequest(BaseFolder):
         invoice_url = invoice.absolute_url()
         RESPONSE.redirect('{}/invoice_print'.format(invoice_url))
 
+    @deprecated("addARAttachment will be removed in senaite.core 1.3.0")
     def addARAttachment(self, REQUEST=None, RESPONSE=None):
         """Add the file as an attachment
         """
@@ -2343,6 +2393,7 @@ class AnalysisRequest(BaseFolder):
         else:
             RESPONSE.redirect(self.absolute_url())
 
+    @deprecated("delARAttachment will be removed in senaite.core 1.3.0")
     def delARAttachment(self, REQUEST=None, RESPONSE=None):
         """Delete the attachment
         """
@@ -2376,7 +2427,7 @@ class AnalysisRequest(BaseFolder):
         # noinspection PyBroadException
         try:
             review_history = wtool.getInfoFor(self, 'review_history')
-        except:
+        except:  # noqa FIXME: remove blind except!
             return 'access denied'
 
         if not review_history:
@@ -2513,67 +2564,65 @@ class AnalysisRequest(BaseFolder):
         """Obtains the sampling round UID
         :returns: UID
         """
-        if self.getSamplingRound():
-            return self.getSamplingRound().UID()
+        sr = self.getSamplingRound()
+        if sr:
+            return sr.UID()
         else:
             return ''
 
-    def setResultsRange(self, value=None):
-        """Sets the spec values for this AR.
-        1 - Client specs where (spec.Title) matches (ar.SampleType.Title)
-        2 - Lab specs where (spec.Title) matches (ar.SampleType.Title)
-        3 - Take override values from instance.Specification
-        4 - Take override values from the form (passed here as parameter
-        'value').
-
-        The underlying field value is a list of dictionaries.
-
-        The value parameter may be a list of dictionaries, or a dictionary (of
-        dictionaries).  In the last case, the keys are irrelevant, but in both
-        cases the specs must contain, at minimum, the "keyword", "min", "max",
-        and "error" fields.
-
-        Value will be stored in ResultsRange field as list of dictionaries
+    def getStorageLocationTitle(self):
+        """ A method for AR listing catalog metadata
+        :return: Title of Storage Location
         """
-        rr = {}
-        sample = self.getSample()
-        if not sample:
-            # portal_factory
-            return []
-        stt = self.getSample().getSampleType().Title()
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        # 1 or 2: rr = Client specs where (spec.Title) matches (
-        # ar.SampleType.Title)
-        for folder in self.aq_parent, self.bika_setup.bika_analysisspecs:
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getSampleTypeTitle=stt,
-                          ClientUID=folder.UID())
-            if proxies:
-                rr = dicts_to_dict(proxies[0].getObject().getResultsRange(),
-                                   'keyword')
-                break
-        # 3: rr += override values from instance.Specification
-        ar_spec = self.getSpecification()
-        if ar_spec:
-            ar_spec_rr = ar_spec.getResultsRange()
-            rr.update(dicts_to_dict(ar_spec_rr, 'keyword'))
-        # 4: rr += override values from the form (value=dict key=service_uid)
-        if value:
-            if type(value) in (list, tuple):
-                value = dicts_to_dict(value, "keyword")
-            elif type(value) == dict:
-                value = dicts_to_dict(value.values(), "keyword")
-            rr.update(value)
-        return self.Schema()['ResultsRange'].set(self, rr.values())
+        sl = self.getStorageLocation()
+        if sl:
+            return sl.Title()
+        return ''
 
-    security.declarePublic('getDatePublished')
+    @security.public
+    def getResultsRange(self):
+        """Returns the valid result ranges for the analyses this Analysis
+        Request contains.
+
+        By default uses the result ranges defined in the Analysis Specification
+        set in "Specification" field if any. Values manually set through
+        `ResultsRange` field for any given analysis keyword have priority over
+        the result ranges defined in "Specification" field.
+
+        :return: A list of dictionaries, where each dictionary defines the
+            result range to use for any analysis contained in this Analysis
+            Request for the keyword specified. Each dictionary has, at least,
+                the following keys: "keyword", "min", "max"
+        :rtype: dict
+        """
+        specs_range = []
+        specification = self.getSpecification()
+        if specification:
+            specs_range = specification.getResultsRange()
+            specs_range = specs_range and specs_range or []
+
+        # Override with AR's custom ranges
+        ar_range = self.Schema().getField("ResultsRange").get(self)
+        if not ar_range:
+            return specs_range
+
+        # Remove those analysis ranges that neither min nor max are floatable
+        an_specs = [an for an in ar_range if
+                    api.is_floatable(an.get('min', None)) or
+                    api.is_floatable(an.get('max', None))]
+        # Want to know which are the analyses that needs to be overriden
+        keywords = map(lambda item: item.get('keyword'), an_specs)
+        # Get rid of those analyses to be overriden
+        out_specs = [sp for sp in specs_range if sp['keyword'] not in keywords]
+        # Add manually set ranges
+        out_specs.extend(an_specs)
+        return out_specs
 
     def getDatePublished(self):
         """
         Returns the transition date from the Analysis Request object
         """
         return getTransitionDate(self, 'publish', return_as_datetime=True)
-
 
     security.declarePublic('getSamplingDeviationTitle')
 
@@ -2618,6 +2667,7 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSamplingWorkflowEnabled()
         return ''
+
     def getSamplers(self):
         return getUsers(self, ['Sampler', ])
 
@@ -2768,7 +2818,7 @@ class AnalysisRequest(BaseFolder):
         # noinspection PyBroadException
         try:
             review_history = wtool.getInfoFor(self, 'review_history')
-        except:
+        except:  # noqa FIXME: remove blind except!
             return None
         for items in review_history:
             action = items.get('action')
@@ -2794,10 +2844,9 @@ class AnalysisRequest(BaseFolder):
 
     @security.public
     def getPrioritySortkey(self):
-        """
-        Returns the key that will be used to sort the current Analysis Request
-        based on both its priority and creation date. On ASC sorting, the oldest
-        item with highest priority will be displayed.
+        """Returns the key that will be used to sort the current Analysis
+        Request based on both its priority and creation date. On ASC sorting,
+        the oldest item with highest priority will be displayed.
         :return: string used for sorting
         """
         priority = self.getPriority()
@@ -2922,7 +2971,8 @@ class AnalysisRequest(BaseFolder):
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
-        allowed = ploneapi.user.has_permission(VerifyPermission, username=username)
+        allowed = ploneapi.user.has_permission(VerifyPermission,
+                                               username=username)
         if not allowed:
             return False
         # Check if the user is allowed to verify all the contained analyses
@@ -3020,6 +3070,10 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_reject(self):
         events.after_reject(self)
 
+    @security.public
+    def workflow_script_retract(self):
+        events.after_retract(self)
+
     def SearchableText(self):
         """
         Override searchable text logic based on the requirements.
@@ -3044,10 +3098,9 @@ class AnalysisRequest(BaseFolder):
             try:
                 val = acc()
             except Exception as e:
-                message = \
-                    "Error getting the accessor parameter in SearchableText " \
-                    "from the Analysis Request Object {}: {}"\
-                        .format(self.getId(), e.message)
+                message = "Error getting the accessor parameter in " \
+                          "SearchableText from the Analysis Request Object " \
+                          "{}: {}".format(self.getId(), e.message)
                 logger.error(message)
                 val = ""
 
@@ -3071,7 +3124,8 @@ class AnalysisRequest(BaseFolder):
         #     value = read(accessor)
         #
         #     if value != "":
-        #         stream = transforms.convertTo('text/plain', value, mimetype='text/html')
+        #         stream = transforms.convertTo('text/plain', value,
+        #                                       mimetype='text/html')
         #         value = stream.getData()
         #
         #     entries.append(value)
@@ -3095,6 +3149,16 @@ class AnalysisRequest(BaseFolder):
         if self.getPriority():
             return PRIORITIES.getValue(self.getPriority())
         return ''
+
+    def get_ARAttachment(self):
+        logger.warn("_ARAttachment is a virtual field used in AR Add. "
+                    "It can not hold an own value!")
+        return None
+
+    def set_ARAttachment(self, value):
+        logger.warn("_ARAttachment is a virtual field used in AR Add. "
+                    "It can not hold an own value!")
+        return None
 
 
 registerType(AnalysisRequest, PROJECTNAME)

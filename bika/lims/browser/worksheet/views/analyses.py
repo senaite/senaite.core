@@ -44,7 +44,6 @@ class AnalysesView(BaseView):
                        'input_class': 'ajax_calculate numeric',
                        'sortable': False},
             'Uncertainty': {'title': _('+-')},
-            'ResultDM': {'title': _('Dry')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
             'Attachments': {'title': _('Attachments')},

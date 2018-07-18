@@ -183,7 +183,9 @@ def set_fields_from_request(obj, request):
     for fieldname, value in request.items():
         if fieldname not in schema:
             continue
-        if schema[fieldname].type in ('reference'):
+        field = schema[fieldname]
+        widget = field.getWidgetName()
+        if widget in ["ReferenceWidget"]:
             brains = []
             if value:
                 brains = resolve_request_lookup(obj, request, fieldname)

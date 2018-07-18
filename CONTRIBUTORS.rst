@@ -9,20 +9,22 @@ contributions descending.
 - Campbell McKellar-Basset, rockfruit@users.noreply.github.com
 - Jordi Puiggené, jpuiggene@naralabs.com
 - Pau Soliva, psoliva@naralabs.com
-- Nihad Mammadli, 1992.nihad@gmail.com
 - Ramon Bartl, rb@ridingbytes.com
+- Nihad Mammadli, 1992.nihad@gmail.com
 - Anneline Sweetname, anneline@bikalabs.com
-- Godfrey Leibbrandt, godfrey@bikalabs.com
-- Mike Metcalfe, mike@webtide.co.za
-- Jurie-Jan Botha, juriejanbotha@gmail.com
 - Juan Gallostra, jgallostra@naralabs.com
+- Godfrey Leibbrandt, godfrey@bikalabs.com
+- Mike Metcalfe, mike@metcalfe.co.za
+- Jurie-Jan Botha, juriejanbotha@gmail.com
 - Inus Scheepers, inus@bikalabs.com
+- Lunga Baliwe, lunga001@gmail.com
 - Oliver Roch, oliver.roch@d9t.de
 - Alexander Karlsson, ak.zylinx@gmail.com
 - Anton Feun, anton@satides.co.za
 - Jayadeep Karnati, karnatijayadeep@gmail.com
 - Lemoene, lemoene@bikalabs.com
 - Dhruv Khattar, dhruv@khattarindia.com
+- witekdev, witekdev@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
 - Anderson Smith, andersonsmith183@gmail.com
@@ -59,6 +61,7 @@ Translators
 - Leonardo Rojas, leonardorojass@gmail.com, Spanish (es)
 - Carlos Javier García Quintana, garciaquintana_carlos@yahoo.com.mx, Spanish (es)
 - Alfonso de la Guarda Reyes, alfonsodg@gmail.com, Spanish (es)
+- Pau Soliva, psoliva@naralabs.com, Spanish (es)
 - Luis Lorenzo Gomez Blanco, luislorenzogomezblanco@yahoo.es, Spanish (es)
 - Jordi Puiggené, jpuiggene@naralabs.com, Spanish (es)
 - Chema Polo, chemapolo@gmail.com, Spanish (es)

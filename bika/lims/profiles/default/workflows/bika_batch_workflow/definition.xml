@@ -6,7 +6,7 @@
              state_variable="review_state"
              initial_state="open"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <permission>BIKA: Add Analysis Request</permission>
   <permission>BIKA: Close Batch</permission>
@@ -36,6 +36,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Client</permission-role>
     </permission-map>
   </state>
 
@@ -71,6 +72,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Verifier</permission-role>
+      <permission-role>Client</permission-role>
     </permission-map>
   </state>
 

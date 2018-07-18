@@ -11,32 +11,28 @@ import math
 import re
 
 import transaction
-
-from zope.interface import implements
-
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.field import RecordsField
+from bika.lims import bikaMessageFactory as _
+from bika.lims.api import get_object_by_uid
+from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces.calculation import ICalculation
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import ReferenceWidget
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
-
-from bika.lims import bikaMessageFactory as _
-from bika.lims.api import get_object_by_uid
-from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces.calculation import ICalculation
+from zope.interface import implements
 
 
 schema = BikaSchema.copy() + Schema((
@@ -83,7 +79,7 @@ schema = BikaSchema.copy() + Schema((
         subfield_validators={
             'module': 'importvalidator',
         },
-        widget=RecordsWidget(
+        widget=BikaRecordsWidget(
             label=_("Additional Python Libraries"),
             description=_(
                 "If your formula needs a special function from an external "
@@ -127,7 +123,7 @@ schema = BikaSchema.copy() + Schema((
         subfield_readonly={'keyword': True, 'value': False},
         subfield_types={'keyword': 'string', 'value': 'float'},
         default=[{'keyword': '', 'value': 0}],
-        widget=RecordsWidget(
+        widget=BikaRecordsWidget(
             label=_("Test Parameters"),
             description=_("To test the calculation, enter values here for all "
                           "calculation parameters.  This includes Interim "
@@ -180,6 +176,25 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                 row['value'] = 0
             new_value.append(row)
 
+        # extract the keywords from the new calculation interims
+        calculation_interim_keys = map(lambda i: i.get("keyword"), value)
+
+        # update all service interims
+        for service in self.getCalculationDependants():
+            # get the interims of the dependant service
+            service_interims = service.getInterimFields()
+            # extract the keywords from the service interims
+            service_interim_keys = map(lambda i: i.get("keyword"),
+                                       service_interims)
+            # sync new interims from the calculation -> service
+            new_interims = set(calculation_interim_keys).difference(
+                set(service_interim_keys))
+            for key in new_interims:
+                new_interim = value[calculation_interim_keys.index(key)]
+                service_interims.append(new_interim)
+            if new_interims:
+                service.setInterimFields(service_interims)
+
         self.getField('InterimFields').set(self, new_value)
 
     def setFormula(self, Formula=None):
@@ -206,7 +221,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.
-            The return value is dictionary of dictionaries (of dictionaries....)
+            The return value is dictionary of dictionaries (of dictionaries...)
 
             {service_UID1:
                 {service_UID2:
@@ -231,7 +246,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                 deps[service.UID()] = {}
         return deps
 
-    def getCalculationDependants(self):
+    def getCalculationDependants(self, deps=None):
         """Return a flat list of services who depend on this calculation.
 
         This refers only to services who's Calculation UIDReferenceField have
@@ -240,7 +255,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         It has nothing to do with the services referenced in the calculation's
         Formula.
         """
-        deps = []
+        if deps is None:
+            deps = []
         backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
         services = map(get_object_by_uid, backrefs)
         for service in services:
@@ -318,12 +334,35 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         # Default globals
         globs = {
             "__builtins__": None,
-            "math": math,
-            "round": round,
+            "all": all,
+            "any": any,
+            "bool": bool,
+            "chr": chr,
+            "cmp": cmp,
+            "complex": complex,
             "divmod": divmod,
+            "enumerate": enumerate,
             "float": float,
+            "format": format,
+            "frozenset": frozenset,
+            "hex": hex,
             "int": int,
+            "len": len,
+            "list": list,
+            "long": long,
+            "math": math,
             "max": max,
+            "min": min,
+            "oct": oct,
+            "ord": ord,
+            "pow": pow,
+            "range": range,
+            "reversed": reversed,
+            "round": round,
+            "str": str,
+            "sum": sum,
+            "tuple": tuple,
+            "xrange": xrange,
         }
         # Update with keyword arguments
         globs.update(kwargs)

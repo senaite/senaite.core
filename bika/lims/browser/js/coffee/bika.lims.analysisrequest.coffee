@@ -277,7 +277,7 @@ window.AnalysisRequestViewView = ->
 
     ###*
     # Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
-    # @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
+    # @requestdata should has the format  {fieldname=fieldvalue}
     ###
 
     url = window.location.href.replace('/base_view', '')
@@ -590,7 +590,7 @@ window.AnalysisRequestAnalysesView = ->
 
     auto_yes = auto_yes or false
     jarn.i18n.loadCatalog 'bika'
-    _ = window.jarn.i18n.MessageFactory('bika')
+    _ = window.jarn.i18n.MessageFactory("senaite.core")
     dep = undefined
     i = undefined
     cb = undefined

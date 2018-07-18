@@ -7,20 +7,21 @@
 
 """ LaChat QuickChem FIA
 """
-import csv
 import json
 import logging
 import re
 import traceback
 
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims import api
 from bika.lims.browser import BrowserView
+from bika.lims.exportimport.instruments.utils import \
+    (get_instrument_import_search_criteria,
+     get_instrument_import_override,
+     get_instrument_import_ar_allowed_states)
 from bika.lims.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentResultsFileParser
-from bika.lims.utils import t
-from cStringIO import StringIO
+    InstrumentCSVResultsFileParser, AnalysisResultsImporter
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
 
@@ -29,34 +30,59 @@ logger = logging.getLogger(__name__)
 title = "LaChat QuickChem FIA"
 
 
-class Parser(InstrumentResultsFileParser):
+class LaChatQuickCheckFIAParser(InstrumentCSVResultsFileParser):
     """ Instrument Parser
     """
 
-    def __init__(self, rsf):
-        InstrumentResultsFileParser.__init__(self, rsf, 'CSV')
+    def __init__(self, csv):
+        InstrumentCSVResultsFileParser.__init__(self, csv)
+        self._end_header = False
+        self._resultsheader = []
+        self._numline = 0
 
-    def parse(self):
-        """ CSV Parser
+    def _parseline(self, line):
+        if self._end_header is False:
+            return self.parse_headerline(line)
+        else:
+            return self.parse_resultsline(line)
+
+    def parse_headerline(self, line):
+        """ Parses header lines
+        """
+        if self._end_header is True:
+            # Header already processed
+            return 0
+
+        splitted = [token.strip() for token in line.split(',')]
+        if splitted[1] == 'Sample ID':
+            self._resultsheader = splitted
+            self._end_header = True
+        return 0
+
+    def parse_resultsline(self, line):
+        """
         """
 
-        reader = csv.DictReader(self.getInputFile(), delimiter='\t')
-
-        for row in reader:
+        splitted = [token.strip() for token in line.split(',')]
+        if self._end_header:
             # in Sample ID column, we may find format: '[SampleID] samplepoint'
-            sampleid = row['Sample ID']
-            if sampleid.startswith('['):
+            # the part between brackets is the sample id:
+            resid = splitted[1]
+            if resid.startswith('['):
                 # the part between brackets is the sample id:
-                row['Sample ID'] = sampleid[1:].split(']')[0]
+                resid = resid[1:].split(']')[0]
 
-            # Strip all special chars from the service name (Analyte Name col)
-            row['Analyte Name'] = re.sub(r"\W", "", row['Analyte Name'])
+        rawdict = {'DefaultResult': 'Peak Concentration'}
+        rawdict.update(dict(zip(self._resultsheader, splitted)))
+        val = re.sub(r"\W", "", rawdict['Analyte Name'])
 
-            row['DefaultResult'] = 'Peak Concentration'
-            self._addRawResult(row['Sample ID'],
-                               values={row['Analyte Name']: row},
-                               override=False)
-
+        # Set DefaultResult to 0.0 if result is "0" or "--" or '' or 'ND'
+        result = rawdict[rawdict['DefaultResult']]
+        column_name = rawdict['DefaultResult']
+        result = self.get_result(column_name, result, line)
+        rawdict[rawdict['DefaultResult']] = result
+        #
+        self._addRawResult(resid, values={val: rawdict}, override=False)
         self.log(
             "End of file reached successfully: ${total_objects} objects, "
             "${total_analyses} analyses, ${total_results} results",
@@ -65,7 +91,19 @@ class Parser(InstrumentResultsFileParser):
                      "total_results": self.getResultsTotalCount()}
         )
 
-        return True
+    def get_result(self, column_name, result, line):
+        result = str(result)
+        if result.startswith('--') or result == '' or result == 'ND':
+            return 0.0
+
+        if api.is_floatable(result):
+            result = api.to_float(result)
+            return result > 0.0 and result or 0.0
+        self.err("No valid number ${result} in column (${column_name})",
+                 mapping={"result": result,
+                          "column_name": column_name},
+                 numline=self._numline, line=line)
+        return
 
 
 class Importer(AnalysisResultsImporter):
@@ -88,12 +126,16 @@ class Importer(AnalysisResultsImporter):
 def Import(context, request):
     """ Import Form
     """
-    infile = request.form['lachat_quickchem_fia_file']
-    fileformat = request.form['lachat_quickchem_fia_format']
-    artoapply = request.form['lachat_quickchem_fia_artoapply']
-    override = request.form['lachat_quickchem_fia_override']
-    sample = request.form.get('lachat_quickchem_fia_sample', 'requestid')
-    instrument = request.form.get('lachat_quickchem_fia_instrument', None)
+    form = request.form
+    # form['file'] sometimes returns a list
+    infile = form['instrument_results_file'][0] if \
+        isinstance(form['instrument_results_file'], list) \
+        else form['instrument_results_file']
+    # fileformat = form['instrument_results_file_format']
+    override = form['results_override']
+    artoapply = form['artoapply']
+    sample = form.get('sample', 'requestid')
+    instrument = form.get('instrument', None)
     errors = []
     logs = []
     warns = []
@@ -102,55 +144,29 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    if fileformat == 'csv':
-        parser = Parser(infile)
-    else:
-        errors.append(t(_("Unrecognized file format ${fileformat}",
-                          mapping={"fileformat": fileformat})))
 
-    if parser:
-        # Load the importer
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
-        if artoapply == 'received':
-            status = ['sample_received']
-        elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
+    parser = LaChatQuickCheckFIAParser(infile)
+    status = get_instrument_import_ar_allowed_states(artoapply)
+    over = get_instrument_import_override(override)
+    sam = get_instrument_import_search_criteria(sample)
 
-        over = [False, False]
-        if override == 'nooverride':
-            over = [False, False]
-        elif override == 'override':
-            over = [True, False]
-        elif override == 'overrideempty':
-            over = [True, True]
-
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
-        importer = Importer(parser=parser,
-                            context=context,
-                            idsearchcriteria=sam,
-                            allowed_ar_states=status,
-                            allowed_analysis_states=None,
-                            override=over,
-                            instrument_uid=instrument)
-        tbex = ''
-        try:
-            importer.process()
-        except:
-            tbex = traceback.format_exc()
-        errors = importer.errors
-        logs = importer.logs
-        warns = importer.warns
-        if tbex:
-            errors.append(tbex)
+    importer = Importer(parser=parser,
+                        context=context,
+                        idsearchcriteria=sam,
+                        allowed_ar_states=status,
+                        allowed_analysis_states=None,
+                        override=over,
+                        instrument_uid=instrument)
+    tbex = ''
+    try:
+        importer.process()
+    except:
+        tbex = traceback.format_exc()
+    errors = importer.errors
+    logs = importer.logs
+    warns = importer.warns
+    if tbex:
+        errors.append(tbex)
 
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
@@ -171,19 +187,19 @@ class Export(BrowserView):
         instrument = self.context.getInstrument()
         norm = getUtility(IIDNormalizer).normalize
         filename = '{}-{}.csv'.format(self.context.getId(),
-                                       norm(instrument.getDataInterface()))
+                                      norm(instrument.getDataInterface()))
 
         # write rows, one per Sample, including including refs and duplicates.
-        #Start Column A at 1 or 9? (the examples given used 9, no clues.)
-        #If routine analysis, Column B is the AR ID + sample type.
-        #If Reference analysis, Column B is the Ref Sample.
-        #If Duplicate analysis, column B is the Worksheet.
-        #Column C is the well number
-        #Column D empty
-        #Column E should always be 1 (2 indicates a duplicate from the same cup)
+        # Start Column A at 1 or 9? (the examples given used 9, no clues.)
+        # If routine analysis, Column B is the AR ID + sample type.
+        # If Reference analysis, Column B is the Ref Sample.
+        # If Duplicate analysis, column B is the Worksheet.
+        # Column C is the well number
+        # Column D empty
+        # Column E should always be 1 (2 indicates a duplicate from the same cup)
         layout = self.context.getLayout()
         rows = []
-        tmprows = []
+        # tmprows = []
         col_a = 1
         result = ''
         # We don't want to include every single slot!  Just one entry

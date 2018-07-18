@@ -20,7 +20,7 @@
            lab             python:portal['obj'].bika_setup.laboratory;
            showqcanalyses  python:view.isQCAnalysesVisible();
            remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
-
+<div>
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td colspan="2" id="section-info-heading" i18n:translate="section-info-heading">
@@ -55,7 +55,7 @@
             </tr>
             <tr>
               <th i18n:translate="" class="label">Address</th>
-              <td tal:content="structure python:view._client_address(client)"/>
+              <td tal:content="structure python:analysisrequest['client']['address']"/>
             </tr>
           </table>
         </td>
@@ -139,13 +139,11 @@
         </div>
 
     </div>
-
-    <tal:comment replace="nothing">
-        Break before first AR section.
-        Subsequent AR sections have page breaks after each one.
-    </tal:comment>
-    <div class='manual-page-break'></div>
-
+</div>
+<div>
+<p>&nbsp;</p>
+<h2>RESULTS</h2>
+</div>
     <tal:page_iter repeat="ars arspage">
         <tal:page tal:define="
             firstar         python:ars[0];
@@ -168,7 +166,8 @@
                                 </a>
                             </td>
                             <td>
-                                <img tal:attributes="src python:lab.getAccreditationBodyLogo().absolute_url() if lab.getAccreditationBodyLogo() else ''"/>
+                                <img tal:attributes="src python:lab.getAccreditationBodyLogo().absolute_url() if lab.getAccreditationBodyLogo() else ''"
+                                     tal:condition="python:lab.getAccreditationBodyLogo()"/>
                             </td>
                         </tr>
                     </table>
@@ -269,13 +268,13 @@
                                 condition="interps">
                         <div tal:repeat="interp interps" class="resultsinterpretation">
                             <div class="resultsinterpretation_heading"
-                                 tal:condition="python:interp['uid'] == 'general'">
+                                 tal:condition="python:interp['uid'] == 'general' and 'richtext' in interp">
                                 General results interpretation for <span tal:replace="python:ar.id"/>
                             </div>
                             <div class="resultsinterpretation_heading"
-                                 tal:condition="python:interp['uid'] != 'general'"
+                                 tal:condition="python:interp['uid'] != 'general' and 'richtext' in interp"
                                  tal:content="python:'Interpreted results for %s (%s)'%(ar.id, uc(UID=interp['uid'])[0].title)"></div>
-                                <span tal:content="structure python:interp['richtext']"/>
+                                <span tal:content="structure python:interp.get('richtext', '')"/>
                         </div>
                     </tal:ri_def>
                 </tal:ri_ars>

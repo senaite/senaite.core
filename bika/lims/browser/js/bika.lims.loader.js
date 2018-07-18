@@ -89,6 +89,10 @@ window.bika.lims.controllers =  {
     ".template-bika-lims-content-samplingsround.portaltype-client":
         ['ClientSamplingRoundAddEditView'],
 
+    // Client Samples View
+    ".portaltype-client.template-samples":
+        ['PrintSamplesSheetView'],
+
     // Sampling Rounds PrintView
     "#sr_publish_container":
         ['SamplingRoundPrintView'],
@@ -104,7 +108,7 @@ window.bika.lims.controllers =  {
         'RejectionKickOff'],
     // Samples fodler
     ".portaltype-samplesfolder":
-        ['SamplesFolderView'],
+        ['PrintSamplesSheetView'],
 
     // Analysis Request Templates
     ".portaltype-artemplate.template-base_edit":
@@ -257,9 +261,9 @@ window.bika.lims.initialize = function() {
     return window.bika.lims.initview();
 };
 
-window.jarn.i18n.loadCatalog("bika");
+window.jarn.i18n.loadCatalog("senaite.core");
 window.jarn.i18n.loadCatalog("plone");
-var _ = window.jarn.i18n.MessageFactory("bika");
+var _ = window.jarn.i18n.MessageFactory("senaite.core");
 var PMF = jarn.i18n.MessageFactory('plone');
 
 

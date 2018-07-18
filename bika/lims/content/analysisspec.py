@@ -64,22 +64,23 @@ schema = Schema((
             'keyword',
             'min',
             'max',
-            'error',
+            'warn_min',
+            'warn_max',
             'hidemin',
             'hidemax',
             'rangecomment'
         ),
-        required_subfields=('keyword', 'error'),
+        required_subfields=('keyword', 'min', 'max'),
         subfield_validators={
             'min': 'analysisspecs_validator',
             'max': 'analysisspecs_validator',
-            'error': 'analysisspecs_validator',
         },
         subfield_labels={
             'keyword': _('Analysis Service'),
             'min': _('Min'),
             'max': _('Max'),
-            'error': _('% Error'),
+            'warn_min': _('Min warn'),
+            'warn_max': _('Max warn'),
             'hidemin': _('< Min'),
             'hidemax': _('> Max'),
             'rangecomment': _('Range Comment'),
@@ -88,17 +89,13 @@ schema = Schema((
             checkbox_bound=0,
             label=_("Specifications"),
             description=_(
-                "Click on Analysis Categories (against shaded background" \
-                "to see Analysis Services in each category. Enter minimum " \
-                "and maximum values to indicate a valid results range. " \
-                "Any result outside this range will raise an alert. " \
-                "The % Error field allows for an % uncertainty to be " \
-                "considered when evaluating results against minimum and " \
-                "maximum values. A result out of range but still in range " \
-                "if the % error is taken into consideration, will raise a " \
-                "less severe alert. If the result is below '< Min' " \
-                "the result will be shown as '< [min]'. The same " \
-                "applies for results above '> Max'"),
+                "'Min' and 'Max' values indicate a valid results range. Any "
+                "result outside this results range will raise an alert. 'Min "
+                "warn' and 'Max warn' values indicate a shoulder range. Any "
+                "result outside the results range but within the shoulder "
+                "range will raise a less severe alert. If the result is out of "
+                "range, the value set for '< Min' or '< Max' will be displayed "
+                "in lists and results reports instead of the real result.")
         ),
     ),
 
@@ -133,14 +130,13 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         """ Return the title if possible, else return the Sample type.
         Fall back on the instance's ID if there's no sample type or title.
         """
+        title = ''
         if self.title:
             title = self.title
         else:
             sampletype = self.getSampleType()
             if sampletype:
                 title = sampletype.Title()
-            else:
-                title = self.id
         return safe_unicode(title).encode('utf-8')
 
     def contextual_title(self):
@@ -149,19 +145,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
             return self.title + " (" + translate(_("Lab")) + ")"
         else:
             return self.title + " (" + translate(_("Client")) + ")"
-
-    security.declarePublic('getSpecCategories')
-
-    def getSpecCategories(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        categories = []
-        for spec in self.getResultsRange():
-            keyword = spec['keyword']
-            service = bsc(portal_type="AnalysisService",
-                          getKeyword=keyword)
-            if service.getCategoryUID() not in categories:
-                categories.append(service.getCategoryUID())
-        return categories
 
     security.declarePublic('getResultsRangeDict')
 
@@ -172,7 +155,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
            each key is the name of the spec field:
            specs['keyword'] = {'min': value,
                                'max': value,
-                               'error': value,
+                               'warnmin': value,
                                ... }
         """
         specs = {}
@@ -184,54 +167,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
                 if key not in ['uid', 'keyword']:
                     specs[keyword][key] = spec.get(key, '')
         return specs
-
-    security.declarePublic('getResultsRangeSorted')
-
-    def getResultsRangeSorted(self):
-        """Return an array of dictionaries, sorted by AS title:
-
-            [{'category': <title of AS category>
-              'service': <title of AS>,
-              'id': <ID of AS>
-              'uid': <UID of AS>
-              'min': <min range spec value>
-              'max': <max range spec value>
-              'error': <error spec value>
-              ...}]
-        """
-        tool = getToolByName(self, REFERENCE_CATALOG)
-
-        cats = {}
-        subfields = self.Schema()['ResultsRange'].subfields
-        for spec in self.getResultsRange():
-            service = tool.lookupObject(spec['uid'])
-            service_title = service.Title()
-            category_title = service.getCategoryTitle()
-            if category_title not in cats:
-                cats[category_title] = {}
-            cat = cats[category_title]
-            cat[service_title] = {
-                'category': category_title,
-                'service': service_title,
-                'id': service.getId(),
-                'uid': spec['uid'],
-                'min': spec['min'],
-                'max': spec['max'],
-                'error': spec['error']
-            }
-            for key in subfields:
-                if key not in ['uid', 'keyword']:
-                    cat[service_title][key] = spec.get(key, '')
-        cat_keys = cats.keys()
-        cat_keys.sort(lambda x, y: cmp(x.lower(), y.lower()))
-        sorted_specs = []
-        for cat in cat_keys:
-            services = cats[cat]
-            service_keys = services.keys()
-            service_keys.sort(lambda x, y: cmp(x.lower(), y.lower()))
-            for service_key in service_keys:
-                sorted_specs.append(services[service_key])
-        return sorted_specs
 
     security.declarePublic('getRemainingSampleTypes')
 
@@ -250,3 +185,44 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
+
+class ResultsRangeDict(dict):
+
+    def __init__(self, *arg, **kw):
+        super(ResultsRangeDict, self).__init__(*arg, **kw)
+        self["min"] = self.min
+        self["max"] = self.max
+        self["warn_min"] = self.warn_min
+        self["warn_max"] = self.warn_max
+
+    @property
+    def min(self):
+        return self.get("min", '')
+
+    @property
+    def max(self):
+        return self.get("max", '')
+
+    @property
+    def warn_min(self):
+        return self.get("warn_min", self.min)
+
+    @property
+    def warn_max(self):
+        return self.get('warn_max', self.max)
+
+    @min.setter
+    def min(self, value):
+        self["min"] = value
+
+    @max.setter
+    def max(self, value):
+        self["max"] = value
+
+    @warn_min.setter
+    def warn_min(self, value):
+        self['warn_min'] = value
+
+    @warn_max.setter
+    def warn_max(self, value):
+        self['warn_max'] = value

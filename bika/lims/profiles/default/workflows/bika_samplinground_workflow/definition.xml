@@ -6,7 +6,7 @@
              state_variable="review_state"
              initial_state="open"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <permission>Add portal content</permission>
   <permission>BIKA: Add Analysis Request</permission>

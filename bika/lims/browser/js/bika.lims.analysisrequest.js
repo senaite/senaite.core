@@ -278,7 +278,7 @@
 
       /**
        * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
-       * @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
+       * @requestdata should has the format  {fieldname=fieldvalue}
        */
       var anch, ar, element, name, obj_path, url;
       url = window.location.href.replace('/base_view', '');
@@ -483,8 +483,8 @@
        */
       row_data = $.parseJSON($('#' + service_uid + '_row_data').val());
       if (row_data !== '' && row_data !== void 0 && row_data !== null) {
-        if ("disabled" in row_data && row_data.disabled === true) {
-            return;
+        if ('disabled' in row_data && row_data.disabled === true) {
+          return;
         }
       }
       element = $('[name=\'Partition.' + service_uid + ':records\']');
@@ -592,8 +592,8 @@
       /*jshint validthis:true */
       var Dependants, Dependencies, _, cb, dep, dep_services, dep_titles, element, elements_i, html, i, lims, service_uid;
       auto_yes = auto_yes || false;
-      jarn.i18n.loadCatalog('bika');
-      _ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      _ = window.jarn.i18n.MessageFactory("senaite.core");
       dep = void 0;
       i = void 0;
       cb = void 0;

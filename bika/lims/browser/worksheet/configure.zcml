@@ -2,7 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
 
     <!-- Workflow actions -->
@@ -137,13 +137,6 @@
       class="bika.lims.browser.worksheet.ajax.SetInstrument"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-
-    <!-- Adapters -->
-    <adapter
-      for="bika.lims.interfaces.IWorksheet"
-      factory="bika.lims.browser.worksheet.adapters.ResultOutOfRangeAdapter"
     />
 
 </configure>

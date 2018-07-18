@@ -326,6 +326,7 @@ class BikaGenerator(object):
         addIndex(bc, 'getSamplingDate', 'DateIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
         addIndex(bc, 'BatchUID', 'FieldIndex')
+        addIndex(bc, 'getBatchUIDs', 'KeywordIndex')
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
         addColumn(bc, 'id')
@@ -342,6 +343,7 @@ class BikaGenerator(object):
         addColumn(bc, 'cancellation_state')
         addColumn(bc, 'getAnalysts')
         addColumn(bc, 'getSampleID')
+        addColumn(bc, 'getBatchUIDs')
         addColumn(bc, 'getClientOrderNumber')
         addColumn(bc, 'getClientReference')
         addColumn(bc, 'getClientSampleID')
@@ -577,7 +579,7 @@ def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
     setuphandlers during site initialisation.
     """
-    bsc = getToolByName(portal, 'bika_catalog', None)
+    bsc = getToolByName(portal, 'bika_setup_catalog', None)
     idtypes = bsc(portal_type='IdentifierType', title='CAS Nr')
     if not idtypes:
         folder = portal.bika_setup.bika_identifiertypes

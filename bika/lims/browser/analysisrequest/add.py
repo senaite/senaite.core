@@ -219,7 +219,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.came_from = "add"
         self.can_edit_sample = True
         self.can_edit_ar = True
-        self.DryMatterService = self.context.bika_setup.getDryMatterService()
         request.set('disable_plone.rightcolumn', 1)
         self.layout = "columns"
         self.ar_count = self.request.get('ar_count', 4)

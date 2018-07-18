@@ -3,7 +3,7 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bika">
+      i18n:domain="senaite.core">
 
   <body
     tal:define="form_id view/form_id;
@@ -16,15 +16,24 @@
                          tal:condition="python:not table_only">
       <h1>
         <img tal:condition="view/icon | nothing"
-             src="" tal:attributes="src view/icon"/>
-        <span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="python:view.context.translate(view.title)"/>
-        <tal:add_actions repeat="add_item python:view.context_actions.keys()">
-          <a tal:attributes="style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
-                             href python:view.context_actions[add_item]['url'];
-                             class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
-            <span tal:replace="python:add_item"/>
+             tal:attributes="src view/icon"
+             style="height:32px;width:auto;"/>
+        <span class="documentFirstHeading"
+              tal:content="python:view.context.translate(view.title)"/>
+        <tal:contextactions repeat="key python:view.context_actions.keys()">
+          <!-- Context Actions -->
+          <tal:contextaction define="url python:view.context_actions[key]['url'];
+                                     icon python:view.context_actions[key]['icon'];
+                                     css_class python:view.context_actions[key].get('class', '');">
+            <a tal:attributes="href url;
+                               class python:'context_action_link %s btn btn-link' % css_class">
+              <img tal:condition="icon|nothing"
+                   tal:attributes="src icon"
+                   style="height:16px;width:auto;"/>
+              <span tal:replace="key"/>
           </a>
-        </tal:add_actions>
+          </tal:contextaction>
+        </tal:contextactions>
       </h1>
     </metal:content-title>
 

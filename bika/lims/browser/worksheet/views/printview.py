@@ -10,17 +10,16 @@ import glob
 import traceback
 
 from DateTime import DateTime
+from bika.lims.api.analysis import is_out_of_range
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.component import getAdapters
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import format_supsub
 from bika.lims.utils import to_utf8
@@ -405,7 +404,6 @@ class PrintView(BrowserView):
             'formatted_uncertainty': '',
             'retested': analysis.getRetested(),
             'remarks': to_utf8(analysis.getRemarks()),
-            'resultdm': to_utf8(analysis.getResultDM()),
             'outofrange': False,
             'type': analysis.portal_type,
             'reftype': analysis.getReferenceType() if hasattr(
@@ -420,20 +418,7 @@ class PrintView(BrowserView):
             if analysis.portal_type == 'Analysis' \
             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
 
-        # Which analysis specs must be used?
-        # Try first with those defined at AR Publish Specs level
-        if analysis.portal_type == 'ReferenceAnalysis':
-            # The analysis is a Control or Blank. We might use the
-            # reference results instead other specs
-            uid = analysis.getServiceUID()
-            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
-
-        else:
-            # Get the specs directly from the analysis. The getResultsRange
-            # function already takes care about which are the specs to be used:
-            # AR, client or lab.
-            specs = analysis.getResultsRange()
-
+        specs = analysis.getResultsRange()
         andict['specs'] = specs
         scinot = self.context.bika_setup.getScientificNotationReport()
         andict['formatted_result'] = analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
@@ -449,13 +434,7 @@ class PrintView(BrowserView):
         andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
 
         # Out of range?
-        if specs:
-            adapters = getAdapters((analysis, ), IResultOutOfRange)
-            for name, adapter in adapters:
-                ret = adapter(specification=specs)
-                if ret and ret['out_of_range']:
-                    andict['outofrange'] = True
-                    break
+        andict['outofrange'] = is_out_of_range(analysis)[0]
         return andict
 
     def _sample_data(self, sample):

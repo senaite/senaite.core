@@ -5,6 +5,7 @@
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    slice = [].slice,
     hasProp = {}.hasOwnProperty,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -18,7 +19,6 @@
       this.on_copy_button_click = bind(this.on_copy_button_click, this);
       this.on_service_category_click = bind(this.on_service_category_click, this);
       this.on_service_listing_header_click = bind(this.on_service_listing_header_click, this);
-      this.on_reportdrymatter_click = bind(this.on_reportdrymatter_click, this);
       this.on_analysis_checkbox_click = bind(this.on_analysis_checkbox_click, this);
       this.on_analysis_profile_removed = bind(this.on_analysis_profile_removed, this);
       this.on_analysis_profile_selected = bind(this.on_analysis_profile_selected, this);
@@ -54,14 +54,15 @@
       this.get_global_settings = bind(this.get_global_settings, this);
       this.render_template = bind(this.render_template, this);
       this.template_dialog = bind(this.template_dialog, this);
+      this.debounce = bind(this.debounce, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
 
     AnalysisRequestAdd.prototype.load = function() {
       console.debug("AnalysisRequestAdd::load");
-      jarn.i18n.loadCatalog('bika');
-      this._ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       $('input[type=text]').prop('autocomplete', 'off');
       this.global_settings = {};
       this.records_snapshot = {};
@@ -80,38 +81,69 @@
 
       /*
        * Binds callbacks on elements
+       *
+       * N.B. We attach all the events to the body and refine the selector to
+       * delegate the event: https://learn.jquery.com/events/event-delegation/
+       *
        */
       console.debug("AnalysisRequestAdd::bind_eventhandler");
-      $(".service-listing-header").on("click", this.on_service_listing_header_click);
-      $("tr.category").on("click", this.on_service_category_click);
-      $("[name='save_button']").on("click", this.on_form_submit);
-      $("tr[fieldname=AdHoc] input[type='checkbox']").on("click", this.recalculate_records);
-      $("tr[fieldname=Composite] input[type='checkbox']").on("click", this.recalculate_records);
-      $("tr[fieldname=InvoiceExclude] input[type='checkbox']").on("click", this.recalculate_records);
-      $("tr[fieldname=Analyses] input[type='checkbox']").on("click", this.on_analysis_checkbox_click);
-      $("tr[fieldname=Client] input[type='text']").on("selected change", this.on_client_changed);
-      $("tr[fieldname=Contact] input[type='text']").on("selected change", this.on_contact_changed);
-      $("tr[fieldname=ReportDryMatter] input[type='checkbox']").on("click", this.on_reportdrymatter_click);
-      $("input.min").on("change", this.on_analysis_specification_changed);
-      $("input.max").on("change", this.on_analysis_specification_changed);
-      $("input.err").on("change", this.on_analysis_specification_changed);
-      $(".service-lockbtn").on("click", this.on_analysis_lock_button_click);
-      $(".service-infobtn").on("click", this.on_analysis_details_click);
-      $("tr[fieldname=Sample] input[type='text']").on("selected change", this.on_sample_changed);
-      $("tr[fieldname=SampleType] input[type='text']").on("selected change", this.on_sampletype_changed);
-      $("tr[fieldname=Specification] input[type='text']").on("selected change", this.on_specification_changed);
-      $("tr[fieldname=Template] input[type='text']").on("selected change", this.on_analysis_template_changed);
-      $("tr[fieldname=Profiles] input[type='text']").on("selected", this.on_analysis_profile_selected);
-      $("tr[fieldname=Profiles] img.deletebtn").live("click", this.on_analysis_profile_removed);
-      $("img.copybutton").on("click", this.on_copy_button_click);
+      $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
+      $("body").on("click", "tr.category", this.on_service_category_click);
+      $("body").on("click", "[name='save_button']", this.on_form_submit);
+      $("body").on("click", "tr[fieldname=AdHoc] input[type='checkbox']", this.recalculate_records);
+      $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
+      $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
+      $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
+      $("body").on("selected change", "tr[fieldname=Client] input[type='text']", this.on_client_changed);
+      $("body").on("selected change", "tr[fieldname=Contact] input[type='text']", this.on_contact_changed);
+      $("body").on("change", "input.min", this.on_analysis_specification_changed);
+      $("body").on("change", "input.max", this.on_analysis_specification_changed);
+      $("body").on("change", "input.warn_min", this.on_analysis_specification_changed);
+      $("body").on("change", "input.warn_max", this.on_analysis_specification_changed);
+      $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
+      $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
+      $("body").on("selected change", "tr[fieldname=Sample] input[type='text']", this.on_sample_changed);
+      $("body").on("selected change", "tr[fieldname=SampleType] input[type='text']", this.on_sampletype_changed);
+      $("body").on("selected change", "tr[fieldname=Specification] input[type='text']", this.on_specification_changed);
+      $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
+      $("body").on("selected", "tr[fieldname=Profiles] input[type='text']", this.on_analysis_profile_selected);
+      $("body").on("click", "tr[fieldname=Profiles] img.deletebtn", this.on_analysis_profile_removed);
+      $("body").on("click", "img.copybutton", this.on_copy_button_click);
 
       /* internal events */
-      $(this).on("form:changed", this.recalculate_records);
-      $(this).on("data:updated", this.update_form);
-      $(this).on("data:updated", this.recalculate_prices);
-      $(this).on("data:updated", this.hide_all_service_info);
+      $(this).on("form:changed", this.debounce(this.recalculate_records, 500));
+      $(this).on("data:updated", this.debounce(this.recalculate_prices, 3000));
+      $(this).on("data:updated", this.debounce(this.update_form, 300));
+      $(this).on("data:updated", this.debounce(this.hide_all_service_info, 300));
       $(this).on("ajax:start", this.on_ajax_start);
       return $(this).on("ajax:end", this.on_ajax_end);
+    };
+
+    AnalysisRequestAdd.prototype.debounce = function(func, threshold, execAsap) {
+
+      /*
+       * Debounce a function call
+       * See: https://coffeescript-cookbook.github.io/chapters/functions/debounce
+       */
+      var timeout;
+      timeout = null;
+      return function() {
+        var args, delayed, obj;
+        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        obj = this;
+        delayed = function() {
+          if (!execAsap) {
+            func.apply(obj, args);
+          }
+          return timeout = null;
+        };
+        if (timeout) {
+          clearTimeout(timeout);
+        } else if (execAsap) {
+          func.apply(obj, args);
+        }
+        return timeout = setTimeout(delayed, threshold || 100);
+      };
     };
 
     AnalysisRequestAdd.prototype.template_dialog = function(template_id, context, buttons) {
@@ -228,9 +260,6 @@
           var lock;
           lock = $("#" + uid + "-" + arnum + "-lockbtn");
           if (uid in record.service_to_profiles) {
-            lock.show();
-          }
-          if (uid in record.service_to_dms) {
             lock.show();
           }
           return me.set_service(arnum, uid, true);
@@ -456,10 +485,17 @@
        * Filter Specification
        * Filter SamplingRound
        */
-      var field, query;
+      var contact_title, contact_uid, field, query;
       field = $("#Contact-" + arnum);
       query = client.filter_queries.contact;
       this.set_reference_field_query(field, query);
+      if (document.URL.indexOf("analysisrequests") > -1) {
+        contact_title = client.default_contact.title;
+        contact_uid = client.default_contact.uid;
+        if (contact_title && contact_uid) {
+          this.set_reference_field(field, contact_uid, contact_title);
+        }
+      }
       field = $("#CCContact-" + arnum);
       query = client.filter_queries.cc_contact;
       this.set_reference_field_query(field, query);
@@ -509,6 +545,9 @@
       var field, title, uid, value;
       field = $("#SamplingDate-" + arnum);
       value = sample.sampling_date;
+      field.val(value);
+      field = $("#DateSampled-" + arnum);
+      value = sample.date_sampled;
       field.val(value);
       field = $("#SampleType-" + arnum);
       uid = sample.sample_type_uid;
@@ -603,8 +642,6 @@
       field.text(template.remarks);
       field = $("#Composite-" + arnum);
       field.prop("checked", template.composite);
-      field = $("#ReportDryMatter-" + arnum);
-      field.prop("checked", template.report_dry_matter);
       $.each(template.service_uids, function(index, uid) {
         return me.set_service(arnum, uid, true);
       });
@@ -657,15 +694,17 @@
       /*
        * Set the specification of the service
        */
-      var el, err, max, min;
+      var el, max, min, warn_max, warn_min;
       console.debug("*** set_service_spec::AR=" + arnum + " UID=" + uid + " spec=", spec);
       el = $("div#" + uid + "-" + arnum + "-specifications");
       min = $(".min", el);
       max = $(".max", el);
-      err = $(".err", el);
+      warn_min = $(".warn_min", el);
+      warn_max = $(".warn_max", el);
       min.val(spec.min);
       max.val(spec.max);
-      return err.val(spec.error);
+      warn_min.val(spec.warn_min);
+      return warn_max.val(spec.warn_max);
     };
 
     AnalysisRequestAdd.prototype.get_service = function(uid) {
@@ -797,7 +836,7 @@
       /*
        * Eventhandler when the user clicked on the info icon of a service.
        */
-      var $el, arnum, context, data, dms, el, extra, info, profiles, record, specifications, template, templates, uid;
+      var $el, arnum, context, data, el, extra, info, profiles, record, specifications, template, templates, uid;
       el = event.currentTarget;
       $el = $(el);
       uid = $el.attr("uid");
@@ -809,16 +848,9 @@
       extra = {
         profiles: [],
         templates: [],
-        specifications: [],
-        drymatter: []
+        specifications: []
       };
       record = this.records_snapshot[arnum];
-      if (uid in record.service_to_dms) {
-        dms = record.service_to_dms[uid];
-        $.each(dms, function(index, uid) {
-          return extra["drymatter"].push(record.dms_metadata[uid]);
-        });
-      }
       if (uid in record.service_to_profiles) {
         profiles = record.service_to_profiles[uid];
         $.each(profiles, function(index, uid) {
@@ -859,7 +891,7 @@
       /*
        * Eventhandler when an Analysis Profile was removed.
        */
-      var $el, arnum, buttons, context, dialog, dms_uid, el, me, profile_uid, record, template_uid, uid;
+      var $el, arnum, buttons, context, dialog, el, me, profile_uid, record, template_uid, uid;
       console.debug("°°° on_analysis_lock_button_click °°°");
       me = this;
       el = event.currentTarget;
@@ -871,7 +903,6 @@
       context["service"] = record.service_metadata[uid];
       context["profiles"] = [];
       context["templates"] = [];
-      context["drymatter"] = [];
       if (uid in record.service_to_profiles) {
         profile_uid = record.service_to_profiles[uid];
         context["profiles"].push(record.profile_metadata[profile_uid]);
@@ -879,10 +910,6 @@
       if (uid in record.service_to_templates) {
         template_uid = record.service_to_templates[uid];
         context["templates"].push(record.template_metadata[template_uid]);
-      }
-      if (uid in record.service_to_dms) {
-        dms_uid = record.service_to_dms[uid];
-        context["drymatter"].push(record.dms_metadata[dms_uid]);
       }
       buttons = {
         OK: function() {
@@ -1063,46 +1090,6 @@
       $el = $(el);
       uid = $el.val();
       console.debug("°°° on_analysis_click::UID=" + uid + " checked=" + checked + "°°°");
-      return $(me).trigger("form:changed");
-    };
-
-    AnalysisRequestAdd.prototype.on_reportdrymatter_click = function(event) {
-
-      /*
-       * Eventhandler for ReportDryMatter Checkbox.
-       */
-      var $el, arnum, checked, context, dialog, dms_metadata, dms_services, el, me, record;
-      me = this;
-      el = event.currentTarget;
-      checked = el.checked;
-      $el = $(el);
-      arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug("°°° on_reportdrymatter_click:: checked=" + checked + "°°°");
-      if (!checked) {
-        record = this.records_snapshot[arnum];
-        dms_metadata = {};
-        dms_services = [];
-        $.each(record.dms_to_services, function(dms_uid, service_uids) {
-          dms_metadata = record.dms_metadata[dms_uid];
-          return $.each(service_uids, function(index, service_uid) {
-            return dms_services.push(record.service_metadata[service_uid]);
-          });
-        });
-        context = {};
-        context["drymatter"] = dms_metadata;
-        context["services"] = dms_services;
-        me = this;
-        dialog = this.template_dialog("drymatter-remove-template", context);
-        dialog.on("yes", function() {
-          $.each(dms_services, function(index, service) {
-            return me.set_service(arnum, service.uid, false);
-          });
-          return $(me).trigger("form:changed");
-        });
-        dialog.on("no", function() {
-          return $(me).trigger("form:changed");
-        });
-      }
       return $(me).trigger("form:changed");
     };
 

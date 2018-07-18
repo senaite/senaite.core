@@ -16,6 +16,6 @@ def overview_controlpanel_categories(self):
     """
     return [
         {'id': 'Plone', 'title': PMF(u'Plone Configuration')},
-        {'id': 'bika', 'title': _(u'Bika LIMS Configuration')},
+        {'id': 'bika', 'title': _(u'LIMS Configuration')},
         {'id': 'Products', 'title': PMF(u'Add-on Configuration')},
     ]

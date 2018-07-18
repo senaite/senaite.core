@@ -6,24 +6,29 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from plone.resource.utils import iterDirectoriesOfType
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+
+from plone.resource.utils import iterDirectoriesOfType
+
+from bika.lims import api
+from bika.lims.browser import BrowserView
 from bika.lims.utils import createPdf
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.permissions import *
+
 from DateTime import DateTime
-from Products.CMFPlone.utils import safe_unicode
-import datetime
 from calendar import monthrange
+import datetime
 import os
 import glob
 import traceback
 import App
 import tempfile
+import json
 
 
 class SamplesPrint(BrowserView):
@@ -51,7 +56,7 @@ class SamplesPrint(BrowserView):
     _TEMPLATES_DIR = 'templates/print'
     _TEMPLATES_ADDON_DIR = 'samples'
     # selected samples
-    _items = []
+    _samples_to_print = []
     _filter_sampler = ''
     _filter_client = ''
     _filter_date_from = ''
@@ -59,22 +64,8 @@ class SamplesPrint(BrowserView):
     _avoid_filter_by_date = False
 
     def __call__(self):
-        if self.context.portal_type == 'SamplesFolder':
-            if self.request.get('items', ''):
-                uids = self.request.get('items').split(',')
-                uc = getToolByName(self.context, 'uid_catalog')
-                self._items = [obj.getObject() for obj in uc(UID=uids)]
-            else:
-                catalog = getToolByName(self.context, 'portal_catalog')
-                contentFilter = {
-                    'portal_type': 'Sample',
-                    'sort_on': 'created',
-                    'sort_order': 'reverse',
-                    'review_state': ['to_be_sampled', 'scheduled_sampling'],
-                    'path': {'query': "/", 'level': 0}
-                    }
-                brains = catalog(contentFilter)
-                self._items = [obj.getObject() for obj in brains]
+        if self.context.portal_type in ['SamplesFolder', 'Client']:
+            self._samples_to_print = self.get_samples_to_print()
         else:
             # Warn and redirect to referer
             logger.warning(
@@ -98,9 +89,78 @@ class SamplesPrint(BrowserView):
         else:
             return self.template()
 
+    def get_samples_to_print(self):
+        """
+        Get the list of sample objects that fulfill the requirements
+        to be printed, i.e, whose workflow status is either to_be_sampled
+        or to_be_scheduled. If several samples from the samples list has
+        been selected only those selected will be considered. If no samples
+        have been selected then all samples will be taken into account.
+        :return: list with the sample objects that will be rendered in
+        the print samples sheet view
+        """
+        uids = self.get_uids()
+        if uids:
+            return self.get_samples_from_uids(uids)
+        # if no samples have been selected assume the user wants
+        # to print all the samples with a valid workflow status
+        return self.get_samples_from_catalog()
+
+    def get_samples_from_uids(self, uids):
+        """
+        Filter a list of sample uids by workflow status and return the list
+        of sample objects with a valid workflow status for printing.
+        :param uids: list of sample uids selected by the user in the samples
+        listing
+        :return: list of sample objects with a valid workflow status for
+        printing
+        """
+        samples = map(api.get_object_by_uid, uids)
+        return filter(lambda obj: api.get_workflow_status_of(obj) in ["to_be_sampled", "to_be_scheduled"], samples)
+
+    def get_samples_from_catalog(self):
+        """
+        From all the samples get those whose workflow status is either
+        to_be_sampled or to_be_scheduled. If the call is being made from
+        inside a client then also filter the samples to be printed by client.
+        :return: list of sample objects with a valid workflow status
+        for printing
+        """
+        catalog = getToolByName(self.context, 'portal_catalog')
+        content_filter = {
+            'portal_type': 'Sample',
+            'sort_on': 'created',
+            'sort_order': 'reverse',
+            'review_state': ['to_be_sampled', 'scheduled_sampling'],
+            'path': {'query': "/", 'depth': 0}
+        }
+        # if we are printing from inside a client then limit
+        # the results to the samples under that client
+        samples = [sample.getObject() for sample in catalog(content_filter)]
+        if self.context.portal_type == 'Client':
+            client_uid = api.get_uid(self.context)
+            return filter(lambda obj: obj.getClientUID() == client_uid, samples)
+        return samples
+
+    def get_uids(self, jsonify=False):
+        """
+        Get the list of selected samples' uids from the request
+        :param jsonify: boolean value specifying if the uids should
+        be returned as a string representing a json object
+        :return: uids to be printed
+        """
+        uids = self.request.form.get("uids", [])
+        # When only one uid has been selected it comes from the
+        # ajax post as a string and not as a list
+        if isinstance(uids, str):
+            uids = [uids]
+        if jsonify:
+            return json.dumps(uids)
+        return uids
+
     def _rise_error(self):
         """
-        Give the error missage
+        Give the error message
         """
         tbex = traceback.format_exc()
         logger.error(
@@ -111,8 +171,8 @@ class SamplesPrint(BrowserView):
     def _get_contacts_for_sample(self, sample, contacts_list):
         """
         This function returns the contacts defined in each analysis request.
-        :sample: a sample object
-        :old_list: A list with the contact names
+        :param sample: a sample object
+        :param contacts_list: A list with the contact names
         Returns a sorted list with the complete names.
         """
         ars = sample.getAnalysisRequests()
@@ -142,8 +202,8 @@ class SamplesPrint(BrowserView):
             }
         }
         """
-        samples = self._items
-        if not(self._avoid_filter_by_date):
+        samples = self._samples_to_print
+        if not self._avoid_filter_by_date:
             self._filter_date_from = \
                 self.ulocalized_time(self._filter_date_from) if\
                 self._filter_date_from else self.default_from_date()
@@ -507,7 +567,7 @@ class SamplesPrint(BrowserView):
         """
         samplers = {}
         pc = getToolByName(self, 'portal_catalog')
-        for sample in self._items:
+        for sample in self._samples_to_print:
             sampler_id = sample.getScheduledSamplingSampler()
             sampler_brain = pc(
                 portal_type='LabContact', getUsername=sampler_id)
@@ -531,7 +591,7 @@ class SamplesPrint(BrowserView):
             'uid': {'name':'xxx'}, ...}
         """
         clients = {}
-        for sample in self._items:
+        for sample in self._samples_to_print:
             if sample.getClientUID() not in clients.keys():
                 clients[sample.getClientUID()] = {
                     'name': sample.getClientTitle()
@@ -551,7 +611,7 @@ class SamplesPrint(BrowserView):
         # Checking if the day is correct after been computed
         if (day - default) <= 0:
             # substract a month
-            if (month-1) < 0:
+            if (month-1) <= 0:
                 year -= 1
                 month = 12
             else:

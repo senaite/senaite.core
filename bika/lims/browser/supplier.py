@@ -23,7 +23,7 @@ class SupplierInstrumentsView(InstrumentsView):
 
     def isItemAllowed(self, obj):
         supp = obj.getRawSupplier() if obj else None
-        return supp.UID() == self.context.UID() if supp else False
+        return supp == self.context.UID() if supp else False
 
 
 class SupplierReferenceSamplesView(ReferenceSamplesView):

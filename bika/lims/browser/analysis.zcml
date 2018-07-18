@@ -2,19 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika">
-
-    <adapter
-      for="bika.lims.interfaces.IAnalysis"
-      provides="bika.lims.interfaces.IFieldIcons"
-      factory="bika.lims.browser.analysis.ResultOutOfRangeIcons"
-    />
-
-    <adapter
-      for="bika.lims.interfaces.IRoutineAnalysis"
-      provides="bika.lims.interfaces.IResultOutOfRange"
-      factory="bika.lims.browser.analysis.ResultOutOfRange"
-    />
+    i18n_domain="senaite.core">
 
     <adapter
     factory="bika.lims.browser.analysis.JSONReadExtender"

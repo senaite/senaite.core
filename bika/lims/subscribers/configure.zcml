@@ -2,7 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
   <!-- Debug logging event handler for all transitions -->
   <subscriber
@@ -46,12 +46,12 @@
 
   <subscriber
       for="Products.PlonePAS.events.UserLoggedOutEvent"
-      handler="bika.lims.subscribers.dep_cookie.ClearDepartmentCookies"
+      handler="bika.lims.subscribers.dep_cookie.clear_department_cookies"
       />
 
   <subscriber
       for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
-      handler="bika.lims.subscribers.dep_cookie.SetDepartmentCookies"
+      handler="bika.lims.subscribers.dep_cookie.set_department_cookies"
       />
 
 </configure>

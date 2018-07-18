@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
-        i18n:domain="bika"
+        i18n:domain="senaite.core"
         tal:define="portal_url nocall:context/portal_url;
         portal portal_url/getPortalObject;">
 
@@ -63,8 +63,8 @@ Available attributes:
 
    footlines {
        Total: {
-           Requested,    	-- total requested analyses count
-           Published,		-- total published analyses count
+           Requested,    	- total requested analyses count
+           Published,		- total published analyses count
            PerformedRequestedRatio,
            PerformedRequestedRatioPercentage,
            PublishedPerformedRatio,
