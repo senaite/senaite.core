@@ -329,13 +329,7 @@ def wasTransitionPerformed(instance, transition_id):
 def isActive(instance):
     """Returns True if the object is neither in a cancelled nor inactive state
     """
-    state = getCurrentState(instance, 'cancellation_state')
-    if state == 'cancelled':
-        return False
-    state = getCurrentState(instance, 'inactive_state')
-    if state == 'inactive':
-        return False
-    return True
+    return api.is_active(instance)
 
 
 def getReviewHistoryActionsList(instance):
