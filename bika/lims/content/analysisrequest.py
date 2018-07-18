@@ -1455,7 +1455,6 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
-
     ComputedField(
         'DatePublished',
         mode="r",
