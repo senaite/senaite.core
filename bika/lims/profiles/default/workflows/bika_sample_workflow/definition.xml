@@ -19,8 +19,9 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
-  <state state_id="disposed" title="Disposed" i18n:attributes="title">
-    <exit-transition transition_id="reject" />
+  <state state_id="sample_registered" title="Sample registered" i18n:attributes="title">
+    <exit-transition transition_id="sampling_workflow"/>
+    <exit-transition transition_id="no_sampling_workflow"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
@@ -33,6 +34,8 @@
     </permission-map>
     <permission-map name="BIKA: Receive Sample" acquired="False">
     </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="Modify portal content" acquired="False">
@@ -40,21 +43,154 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="View" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
-  <state state_id="expired" title="Expired" i18n:attributes="title">
-    <exit-transition transition_id="dispose" />
-    <exit-transition transition_id="reject" />
+  <state state_id="scheduled_sampling" title="Scheduled sampling" i18n:attributes="title">
+    <exit-transition transition_id="sample"/>
+    <exit-transition transition_id="reject"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="to_be_sampled" title="To be sampled" i18n:attributes="title">
+    <exit-transition transition_id="sample"/>
+    <exit-transition transition_id="schedule_sampling"/>
+    <exit-transition transition_id="reject"/>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="sampled" title="Sampled" i18n:attributes="title">
+    <exit-transition transition_id="to_be_preserved"/>
+    <exit-transition transition_id="sample_due"/>
+    <exit-transition transition_id="reject"/>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
     </permission-map>
@@ -63,12 +199,20 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="View" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
   </state>
 
@@ -169,144 +313,6 @@
     </permission-map>
   </state>
 
-  <state state_id="sample_registered" title="Sample registered" i18n:attributes="title">
-    <exit-transition transition_id="sampling_workflow" />
-    <exit-transition transition_id="no_sampling_workflow" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Sample Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="View" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-  </state>
-
-  <state state_id="sampled" title="Sampled" i18n:attributes="title">
-    <exit-transition transition_id="to_be_preserved" />
-    <exit-transition transition_id="sample_due" />
-    <exit-transition transition_id="reject" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Sample" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="View" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-  </state>
-
-  <state state_id="scheduled_sampling" title="Scheduled sampling" i18n:attributes="title">
-    <exit-transition transition_id="sample" />
-    <exit-transition transition_id="reject" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Sample" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Sample Sample" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-      <permission-role>Manager</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="View" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-  </state>
-
   <state state_id="to_be_preserved" title="To be preserved" i18n:attributes="title">
     <exit-transition transition_id="preserve" />
     <exit-transition transition_id="reject" />
@@ -361,65 +367,6 @@
     </permission-map>
   </state>
 
-  <state state_id="to_be_sampled" title="To be sampled" i18n:attributes="title">
-    <exit-transition transition_id="sample" />
-    <exit-transition transition_id="schedule_sampling" />
-    <exit-transition transition_id="reject" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Sample" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Sample Sample" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-      <permission-role>Manager</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-    <permission-map name="View" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-  </state>
-
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
@@ -437,6 +384,59 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="expired" title="Expired" i18n:attributes="title">
+    <exit-transition transition_id="dispose"/>
+    <exit-transition transition_id="reject"/>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False">
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="disposed" title="Disposed" i18n:attributes="title">
+    <exit-transition transition_id="reject"/>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Edit Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False">
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="View" acquired="False">
       <permission-role>LabManager</permission-role>
