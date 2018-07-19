@@ -17,7 +17,7 @@ Changelog
 **Fixed**
 
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
-- Do not automatically add LabContact users to the 'Clients' group
+- #905 Users created through LabContact's Login Details view are added to "Clients" group
 
 **Security**
 
