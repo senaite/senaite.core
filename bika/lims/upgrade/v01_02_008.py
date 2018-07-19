@@ -15,7 +15,6 @@ from bika.lims import permissions
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from Products.AdvancedQuery import Eq
 
 version = '1.2.8'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)

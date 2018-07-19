@@ -72,7 +72,7 @@
          url_expr="string:${object_url}/samples"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Samples"/>
+  <permission value="View"/>
  </action>
 
  <action title="Imports"
@@ -84,7 +84,7 @@
          url_expr="string:${object_url}/arimports"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage ARImport"/>
+  <permission value="View"/>
  </action>
 
  <action title="SamplePoints"
@@ -96,7 +96,7 @@
          url_expr="string:${object_url}/samplepoints"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Samples"/>
+  <permission value="View"/>
  </action>
 
  <action title="Analysis Profiles"
@@ -180,7 +180,7 @@
          url_expr="string:${object_url}/orders"
          i18n:attributes="title"
          visible="True">
-    <permission value="BIKA: Manage Supply Orders"/>
+    <permission value="View"/>
  </action>
 
  <action title="Edit"
@@ -190,7 +190,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-    <permission value="BIKA: Edit Client"/>
+   <permission value="Modify portal content"/>
  </action>
 
  <action title="Contacts"
@@ -200,7 +200,7 @@
          url_expr="string:${object_url}/contacts"
          i18n:attributes="title"
          visible="True">
-    <permission value="Modify portal content"/>
+    <permission value="View"/>
  </action>
 
 </object>

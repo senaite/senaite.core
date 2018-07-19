@@ -30,6 +30,7 @@ class ClientContactsView(BikaListingView):
         self.context_actions = {
             _('Add'):
                 {'url': 'createObject?type_name=Contact',
+                 'permission': 'Add portal content',
                  'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
         self.show_select_row = False

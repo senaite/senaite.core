@@ -11,6 +11,7 @@
 
     <metal:content-title fill-slot="content-title"
                          tal:define="form_id view/form_id;
+                                     checkPermission nocall: context/portal_membership/checkPermission;
                                      table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
                          tal:condition="python:not table_only">
       <h1>
@@ -18,7 +19,8 @@
              tal:attributes="src view/icon"
              style="height:32px;width:auto;"/>
         <span tal:content="python:view.context.translate(view.title)"/>
-        <span style="padding-left:0.5em;display:inline-block;">
+          <span tal:condition="python:checkPermission('Add portal content', context)"
+                style="padding-left:0.5em;display:inline-block;">
           <form method="GET" class="form-inline" action="ar_add">
             <input type="number"
                    name="ar_count"

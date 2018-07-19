@@ -23,7 +23,7 @@ from Products.Archetypes.public import DisplayList
 from Products.Archetypes.interfaces.field import IComputedField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api as api
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
@@ -143,10 +143,7 @@ def getUsers(context, roles, allow_empty=True):
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """
-    # The import is performed here because if placed
-    # at the beginning of the file we get circular imports
-    from bika.lims.workflow import isActive as is_active
-    return is_active(obj)
+    return api.is_active(obj)
 
 
 def formatDateQuery(context, date_id):

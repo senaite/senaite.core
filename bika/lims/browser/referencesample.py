@@ -279,7 +279,6 @@ class ReferenceSamplesView(BikaListingView):
                               'path': {"query": ["/"], "level": 0}, }
         self.context_actions = {}
         self.show_select_column = True
-        request.set('disable_border', 1)
 
         self.columns = {
             'ID': {
