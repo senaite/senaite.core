@@ -205,6 +205,33 @@ The user can not access the `client` anymore::
     ...
     Unauthorized: ...
 
+LabContact users
+================
+
+All non-client lab users should be created as Lab Contacts in site-setup:
+
+.. code ::
+
+    >>> labcontact = create(portal.bika_setup.bika_labcontacts, "LabContact")
+
+And a new user for the labcontact:
+
+.. code ::
+
+    >>> user3 = ploneapi.user.create(email="labmanager@example.com", username="labmanager1", password="secret", properties=dict(fullname="Lab Manager 1"))
+
+Link the user to the labcontact:
+
+.. code ::
+
+    >>> labcontact.setUser(user3)
+    True
+
+Linking a user to a LabContact does not give any client group membership:
+
+    >>> 'Client' in sorted(ploneapi.user.get_roles(user=user3)) and "Labcontact should not have the Client role!" or False
+    False
+
 
 Login Details View
 ------------------
