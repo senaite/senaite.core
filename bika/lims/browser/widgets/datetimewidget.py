@@ -25,7 +25,7 @@ class DateTimeWidget(TypesWidget):
 
     def ulocalized_time(self, time, context, request):
         val = ut(time,
-                 long_format=self._properties['show_time'],
+                 long_format=self.show_time,
                  time_only=False,
                  context=context,
                  request=request)
