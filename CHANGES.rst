@@ -21,6 +21,7 @@ Changelog
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
 - #906 DateTime Widget does not display the Time
+- #909 List of clients cannot sort by Client ID
 
 **Security**
 
