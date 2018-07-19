@@ -36,6 +36,7 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    setup.runImportStepFromProfile(profile, 'workflow')
     # Revert upgrade actions performed due to #893 (reverted)
     revert_client_permissions_for_batches(portal)
 
