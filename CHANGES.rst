@@ -20,7 +20,7 @@ Changelog
 - #456 Date Published appears two times on the header table of AR view
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
-- DateTime Widget does not display the Time
+- #906 DateTime Widget does not display the Time
 
 **Security**
 
