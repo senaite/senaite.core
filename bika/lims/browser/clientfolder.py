@@ -62,26 +62,34 @@ class ClientFolderContentsView(BikaListingView):
             ("getClientID", {
                 "title": _("Client ID")}),
             ("EmailAddress", {
-                "title": _("Email Address")}),
+                "title": _("Email Address"),
+                "sortable": False}),
             ("getCountry", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Country")}),
             ("getProvince", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Province")}),
             ("getDistrict", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("District")}),
             ("Phone", {
-                "title": _("Phone")}),
+                "title": _("Phone"),
+                "sortable": False}),
             ("Fax", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Fax")}),
             ("BulkDiscount", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Bulk Discount")}),
             ("MemberDiscountApplies", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Member Discount")}),
         ))
 
