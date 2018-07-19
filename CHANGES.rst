@@ -17,6 +17,7 @@ Changelog
 **Fixed**
 
 - #902 Attribute error when updating QC results using an import interface
+- #456 Date Published appears two times on the header table of AR view
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
 
 **Security**
@@ -73,7 +74,7 @@ Changelog
 
 **Fixed**
 
-- #842 Re-compiled Coffee-Scripts with version 1.12.7 
+- #842 Re-compiled Coffee-Scripts with version 1.12.7
 - #824 Instrument Listing Views Fixes and Refactoring
 - #840 Fix date range filter for "Data entry day book" report
 - #828 Traceback when removing a retracted analysis through Manage Analyses view
