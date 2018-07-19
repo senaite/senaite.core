@@ -15,7 +15,6 @@ from bika.lims import permissions
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from Products.AdvancedQuery import Eq
 
 version = '1.2.8'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -36,8 +35,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
-    setup.runImportStepFromProfile(profile, 'workflow')
-    client_contact_permissions_on_batches(portal, ut)
+
+    # Revert upgrade actions performed due to #893 (reverted)
+    revert_client_permissions_for_batches(portal)
 
     # re-apply the permission for the view tabs on clients
     setup.runImportStepFromProfile(profile, 'typeinfo')
@@ -92,37 +92,29 @@ def fix_client_permissions(portal):
     transaction.commit()
 
 
-def client_contact_permissions_on_batches(portal, ut):
-    """
-    Grants view permissions on batches folder in navtree
-    :param portal: portal object
-    :return: None
-    """
+def revert_client_permissions_for_batches(portal):
     mp = portal.batches.manage_permission
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector', 'Client'], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'], 0)
     portal.batches.reindexObject()
 
-    # Update batch object permissions
-    workflow_tool = api.get_tool("portal_workflow")
-    workflow = workflow_tool.getWorkflowById('bika_batch_workflow')
-    catalog = api.get_tool('portal_catalog')
+    wftool = api.get_tool("portal_workflow")
+    batch_wf = wftool.getWorkflowById("bika_batch_workflow")
+    acquire = False
 
-    # Update permissions programmatically
-    query = Eq('portal_type', 'Batch') & ~ Eq('allowedRolesAndUsers', 'Client')
-    brains = catalog.evalAdvancedQuery(query)
-    counter = 0
-    total = len(brains)
-    logger.info(
-        "Changing permissions for Batch objects: {0}".format(total))
+    grant = ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'RegulatoryInspector', 'Verifier']
+    batch_wf.states.open.setPermission("View", acquire, grant)
+
+    grant = ['LabClerk', 'LabManager', 'Manager', 'RegulatoryInspector']
+    batch_wf.states.closed.setPermission("View", acquire, grant)
+
+    catalog = api.get_tool('portal_catalog')
+    brains = catalog(portal_type='Batch')
     for brain in brains:
+        allowed = brain.allowedRolesAndUsers or []
+        if 'Client' not in allowed:
+            # No need to do rolemapping + reindex if not necessary
+            continue
         obj = api.get_object(brain)
-        workflow.updateRoleMappingsFor(obj)
-        obj.reindexObject()
-        counter += 1
-        if counter % 100 == 0:
-            logger.info(
-                "Changing permissions for Batch objects: " +
-                "{0}/{1}".format(counter, total))
-    logger.info(
-        "Changed permissions for Batch objects: " +
-        "{0}/{1}".format(counter, total))
+        batch_wf.updateRoleMappingsFor(obj)
+        obj.reindexObject(idxs=['allowedRolesAndUsers'])
+        logger.info("Role mappings updated for {}".format(obj))
