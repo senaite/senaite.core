@@ -59,7 +59,7 @@ class ClientFolderContentsView(BikaListingView):
             ("title", {
                 "title": _("Name"),
                 "index": "sortable_title"},),
-            ("ClientID", {
+            ("getClientID", {
                 "title": _("Client ID")}),
             ("EmailAddress", {
                 "title": _("Email Address")}),
@@ -148,7 +148,7 @@ class ClientFolderContentsView(BikaListingView):
         # render a link to the defined start page
         link_url = "{}/{}".format(item["url"], self.landing_page)
         item["replace"]["title"] = get_link(link_url, item["title"])
-        item["replace"]["ClientID"] = get_link(link_url, item["ClientID"])
+        item["replace"]["getClientID"] = get_link(link_url, item["getClientID"])
         # render an email link
         item["replace"]["EmailAddress"] = get_email_link(item["EmailAddress"])
         # translate True/FALSE values
