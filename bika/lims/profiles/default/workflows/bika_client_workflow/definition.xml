@@ -8,29 +8,57 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <!-- This governs whether you are allowed to view some content. -->
-  <permission>View</permission>
-  <!-- This permission allows access to an object, without necessarily viewing the -->
-  <!-- object. For example, a user may want to see the object's title in a list of -->
-  <!-- results, even though the user can't view the contents of that file. -->
-  <permission>Access contents information</permission>
-  <!-- This governs whether you can get a listing of the contents of a folder; it -->
-  <!-- doesn't check whether you have the right to view the objects listed. -->
-  <permission>List folder contents</permission>
+  <!-- This governs whether you are allowed to delete objects *inside* this folder. -->
+  <permission>Delete objects</permission>
   <!-- This governs whether you are allowed to modify some content. -->
   <permission>Modify portal content</permission>
-  <!-- This governs whether you are allowed to see the Edit tab of a client. -->
-  <permission>BIKA: Edit Client</permission>
-  <!-- This governs whether you are allowed to add a Supply Order. -->
-  <permission>BIKA: Add SupplyOrder</permission>
-  <!-- This governs whether you are allowed to see the Supply Order tab (see: types/Client.xml) -->
-  <permission>BIKA: Manage Supply Orders</permission>
+  <!-- This governs whether you are allowed to add some content. -->
+  <permission>Add portal content</permission>
+  <!-- This governs whether you are allowed to view some content. -->
+  <permission>View</permission>
+  <!-- This permission allows access to an object, without necessarily viewing
+       the object. For example, a user may want to see the object's title in a
+       list of results, even though the user can't view the contents of that
+       file. -->
+  <permission>Access contents information</permission>
+  <!-- This governs whether you can get a listing of the contents of a folder;
+       it doesn't check whether you have the right to view the objects listed. -->
+  <permission>List folder contents</permission>
 
-  <!-- State: active
-       N.B. All permissions need to be in sync with bika.lims.subscribers.objectmodified.py
-  -->
+  <!-- Transitions Permissions -->
+  <permission>Activate client</permission>
+  <permission>Deactivate client</permission>
+
+  <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
-    <exit-transition transition_id="" />
+    <exit-transition transition_id="deactivate" />
+
+    <!-- Deactivate client -->
+    <permission-map name="Deactivate client" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+
+    <!-- Delete objects -->
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <!-- Modify portal content -->
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+
+    <!-- Add portal content -->
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
 
     <!-- View -->
     <permission-map name="View" acquired="False">
@@ -39,9 +67,7 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>Analyst</permission-role>
       <permission-role>Sampler</permission-role>
-      <permission-role>Preserver</permission-role>
       <permission-role>Owner</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
 
     <!-- Access contents information -->
@@ -51,9 +77,7 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>Analyst</permission-role>
       <permission-role>Sampler</permission-role>
-      <permission-role>Preserver</permission-role>
       <permission-role>Owner</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
 
     <!-- List folder contents -->
@@ -63,48 +87,76 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>Analyst</permission-role>
       <permission-role>Sampler</permission-role>
-      <permission-role>Preserver</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
-
-    <!-- BIKA: Edit Client
-         Please see types/Client.xml
-         -> The edit tab is secured with that permission and thus, need to be
-            aligned with the `Modify portal content` permission below.
-    -->
-    <permission-map name="BIKA: Edit Client" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-
-    <!-- Modify portal content -->
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-
-    <!-- Add Supply Order -->
-    <permission-map name="BIKA: Add SupplyOrder" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-
-    <!-- Manage Supply Orders -->
-    <permission-map name="BIKA: Manage Supply Orders" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>LabManager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
 
   </state>
+  <!-- /State: active -->
+
+  <!-- State: inactive -->
+  <state state_id="inactive" title="Inactive" i18n:attributes="title">
+    <exit-transition transition_id="activate" />
+
+    <!-- Activate client -->
+    <permission-map name="Activate client" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+
+    <!-- Delete objects -->
+    <permission-map name="Delete objects" acquired="False">
+    </permission-map>
+
+    <!-- Modify portal content -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <!-- Add portal content -->
+    <permission-map name="Add portal content" acquired="False">
+    </permission-map>
+
+    <!-- View -->
+    <permission-map name="View" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+
+    <!-- Access contents information -->
+    <permission-map name="Access contents information" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+
+    <!-- List folder contents -->
+    <permission-map name="List folder contents" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+  </state>
+  <!-- /State: inactive -->
+
+  <!-- Transition: activate -->
+  <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Activate</action>
+    <guard>
+      <guard-expression>python:here.guard_activate_transition()</guard-expression>
+      <guard-permission>Activate client</guard-permission>
+    </guard>
+  </transition>
+  <!-- /Transition: activate -->
+
+  <!-- Transition: deactivate -->
+  <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Deactivate</action>
+    <guard>
+      <guard-expression>python:here.guard_deactivate_transition()</guard-expression>
+      <guard-permission>Deactivate client</guard-permission>
+    </guard>
+  </transition>
+  <!-- /Transition: deactivate -->
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>

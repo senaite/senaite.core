@@ -5,14 +5,17 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.AdvancedQuery import Eq
+import time
 
+import transaction
+from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
 from bika.lims import permissions
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.AdvancedQuery import Eq
 
 version = '1.2.8'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -31,14 +34,62 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
-    setup.runImportStepFromProfile(profile, 'workflow')
-
-    client_contact_permissions_on_batches(portal, ut)
 
     # -------- ADD YOUR STUFF HERE --------
+    setup.runImportStepFromProfile(profile, 'workflow')
+    client_contact_permissions_on_batches(portal, ut)
+
+    # re-apply the permission for the view tabs on clients
+    setup.runImportStepFromProfile(profile, 'typeinfo')
+    # re-apply the permissions from the client workflow + reindex
+    fix_client_permissions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def get_workflows():
+    """Returns a mapping of id->workflow
+    """
+    wftool = api.get_tool("portal_workflow")
+    wfs = {}
+    for wfid in wftool.objectIds():
+        wf = wftool.getWorkflowById(wfid)
+        if hasattr(aq_base(wf), "updateRoleMappingsFor"):
+            wfs[wfid] = wf
+    return wfs
+
+
+def update_role_mappings(obj, wfs=None, reindex=True):
+    """Update the role mappings of the given object
+    """
+    wftool = api.get_tool("portal_workflow")
+    if wfs is None:
+        wfs = get_workflows()
+    chain = wftool.getChainFor(obj)
+    for wfid in chain:
+        wf = wfs[wfid]
+        wf.updateRoleMappingsFor(obj)
+    if reindex is True:
+        obj.reindexObject(idxs=["allowedRolesAndUsers"])
+    return obj
+
+
+def fix_client_permissions(portal):
+    """Fix client permissions
+    """
+    wfs = get_workflows()
+
+    start = time.time()
+    clients = portal.clients.objectValues()
+    total = len(clients)
+    for num, client in enumerate(clients):
+        logger.info("Fixing permission for client {}/{} ({})"
+                    .format(num, total, client.getName()))
+        update_role_mappings(client, wfs=wfs)
+    end = time.time()
+    logger.info("Fixing client permissions took %.2fs" % float(end-start))
+    transaction.commit()
 
 
 def client_contact_permissions_on_batches(portal, ut):

@@ -815,12 +815,20 @@ def get_cancellation_status(brain_or_object, default="active"):
     :returns: Value of the review_status variable
     :rtype: String
     """
+
     if is_brain(brain_or_object):
-        return getattr(brain_or_object, "cancellation_state", default)
+        state = getattr(brain_or_object, "cancellation_state", None)
+        if state is not None:
+            return state
+
     workflows = get_workflows_for(brain_or_object)
-    if 'bika_cancellation_workflow' not in workflows:
+    if "bika_cancellation_workflow" in workflows:
+        return get_workflow_status_of(brain_or_object, "cancellation_state")
+
+    state = get_workflow_status_of(brain_or_object)
+    if state not in ("active", "inactive"):
         return default
-    return get_workflow_status_of(brain_or_object, 'cancellation_state')
+    return state
 
 
 def get_inactive_status(brain_or_object, default="active"):
@@ -831,12 +839,20 @@ def get_inactive_status(brain_or_object, default="active"):
     :returns: Value of the review_status variable
     :rtype: String
     """
+
     if is_brain(brain_or_object):
-        return getattr(brain_or_object, "inactive_state", default)
+        state = getattr(brain_or_object, "inactive_state", None)
+        if state is not None:
+            return state
+
     workflows = get_workflows_for(brain_or_object)
-    if 'bika_inactive_workflow' not in workflows:
+    if "bika_inactive_workflow" in workflows:
+        return get_workflow_status_of(brain_or_object, "inactive_state")
+
+    state = get_workflow_status_of(brain_or_object)
+    if state not in ("active", "inactive"):
         return default
-    return get_workflow_status_of(brain_or_object, 'inactive_state')
+    return state
 
 
 def is_active(brain_or_object):

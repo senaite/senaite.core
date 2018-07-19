@@ -168,7 +168,6 @@
     </type>
     <type type_id="Client">
       <bound-workflow workflow_id="bika_client_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
     </type>
 
     <!-- Client Types -->
