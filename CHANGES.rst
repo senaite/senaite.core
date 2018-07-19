@@ -16,7 +16,7 @@ Changelog
 
 **Fixed**
 
-- #902 Attribute error in function addReferences
+- #902 Attribute error when updating QC results using an import interface
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
 
 **Security**
