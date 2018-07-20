@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import mimetypes
 import os
 import re
 import tempfile
@@ -13,19 +14,16 @@ import urllib2
 from email import Encoders
 from time import time
 
-import mimetypes
-
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
 from DateTime import DateTime
-from Products.Archetypes.public import DisplayList
 from Products.Archetypes.interfaces.field import IComputedField
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.api import get_object
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
 from plone.memoize import ram
@@ -369,12 +367,6 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
     # Map changes to the catalogs
     content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
     return
-
-def fix_AR_workflow(brain_or_object):
-    """Re-set the state of an AR to match the lowest state of all contained
-    valid/current analyses.  Ignores retracted/rejected/cancelled analyses.
-    """
-    ar = get_object(brain_or_object)
 
 
 def tmpID():

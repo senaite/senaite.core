@@ -13,7 +13,6 @@ Changelog
 **Removed**
 
 - #901 Remove explicit permission settings for clients
-- Removed basic handling of custom Sample Preparation Workflows
 - #900 Removed basic handling of custom Sample Preparation Workflows
 
 **Fixed**
