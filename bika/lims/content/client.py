@@ -102,16 +102,6 @@ schema = Organisation.schema.copy() + atapi.Schema((
             description=_("Show only selected categories in client views"),
         ),
     ),
-    atapi.StringField('DefaultARSpecs',
-        schemata = "Preferences",
-        default = 'ar_specs',
-        vocabulary = DEFAULT_AR_SPECS,
-        widget = atapi.SelectionWidget(
-            label=_("Default AR Specifications"),
-            description=_("DefaultARSpecs_description"),
-            format='select',
-        )
-    ),
     atapi.BooleanField('DefaultDecimalMark',
         schemata = "Preferences",
         default = True,
