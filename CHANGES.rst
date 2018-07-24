@@ -9,6 +9,8 @@ Changelog
 
 **Changed**
 
+- #915 Refactored SamplePoints Listing
+
 
 **Removed**
 
