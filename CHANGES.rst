@@ -9,6 +9,8 @@ Changelog
 
 **Changed**
 
+- #916 Refactored Instruments Listing
+
 
 **Removed**
 
