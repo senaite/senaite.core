@@ -9,6 +9,8 @@ Changelog
 
 **Changed**
 
+- #914 Refactored Sampletypes Listing
+
 
 **Removed**
 
