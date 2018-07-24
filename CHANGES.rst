@@ -9,6 +9,8 @@ Changelog
 
 **Changed**
 
+- #919: Refactored Profiles Listing
+
 
 **Removed**
 
