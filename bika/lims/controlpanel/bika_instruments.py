@@ -21,6 +21,9 @@ from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
+# TODO: Separate content and view into own modules!
+
+
 class InstrumentsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
 
@@ -108,7 +111,7 @@ class InstrumentsView(BikaListingView):
     def before_render(self):
         """Before template render hook
         """
-        # Don't allow any context actions on the Methods folder
+        # Don't allow any context actions on the Instruments folder
         self.request.set("disable_border", 1)
 
     def folderitem(self, obj, item, index):
