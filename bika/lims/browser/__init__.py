@@ -214,8 +214,8 @@ class BrowserView(BaseBrowserView):
         if time_only:
             msgid = 'time_format'
         # get the formatstring
-        request = self.request
-        formatstring = translate(msgid, domain="senaite.core", context=request)
+        formatstring = translate(msgid, domain="senaite.core",
+                                 context=self.request)
 
         if formatstring is None or formatstring.startswith(
                 'date_') or formatstring.startswith('time_'):
