@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #924 Added ExtProxyField for its use in SchemaExtender
 
 **Changed**
 
