@@ -101,14 +101,6 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="set_to_lab_defaults"
-      class="bika.lims.browser.client.SetSpecsToLabDefaults"
-      permission="cmf.ModifyPortalContent"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IClient"
       name="attachments"
       class="bika.lims.browser.client.ClientAttachmentsView"
       permission="zope2.View"
