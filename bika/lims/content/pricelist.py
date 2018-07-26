@@ -6,25 +6,22 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.Archetypes.public import *
+from Products.CMFCore import permissions
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PRICELIST_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IPricelist
-from DateTime import DateTime
 from persistent.mapping import PersistentMapping
 from plone.app.folder import folder
-from Products.Archetypes.public import *
-from Products.CMFCore import permissions
 from zope.interface import implements
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore import permissions
-
-
 
 schema = BikaFolderSchema.copy() + Schema((
-    StringField('Type',
+    StringField(
+        'Type',
         required=1,
         vocabulary=PRICELIST_TYPES,
         widget=SelectionWidget(
@@ -32,34 +29,33 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Pricelist for"),
         ),
     ),
-    BooleanField('BulkDiscount',
+    BooleanField(
+        'BulkDiscount',
         default=False,
         widget=SelectionWidget(
             label=_("Bulk discount applies"),
         ),
     ),
-    FixedPointField('BulkPrice',
+    FixedPointField(
+        'BulkPrice',
         widget=DecimalWidget(
             label=_("Discount %"),
             description=_("Enter discount percentage value"),
         ),
     ),
-    BooleanField('Descriptions',
+    BooleanField(
+        'Descriptions',
         default=False,
         widget=BooleanWidget(
             label=_("Include descriptions"),
             description=_("Select if the descriptions should be included"),
         ),
     ),
-    TextField('Remarks',
+    RemarksField(
+        'Remarks',
         searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
 ),
@@ -71,13 +67,13 @@ Field.widget.visible = True
 
 Field = schema['effectiveDate']
 Field.schemata = 'default'
-Field.required = 0 # "If no date is selected the item will be published
-                   #immediately."
+Field.required = 0  # "If no date is selected the item will be published
+# immediately."
 Field.widget.visible = True
 
 Field = schema['expirationDate']
 Field.schemata = 'default'
-Field.required = 0 # "If no date is chosen, it will never expire."
+Field.required = 0  # "If no date is chosen, it will never expire."
 Field.widget.visible = True
 
 
@@ -114,9 +110,11 @@ class Pricelist(folder.ATFolder):
     security.declareProtected(permissions.ModifyPortalContent,
                               'processForm')
 
+
 registerType(Pricelist, PROJECTNAME)
 
 
+# noinspection PyUnusedLocal
 def ObjectModifiedEventHandler(instance, event):
     """ Various types need automation on edit.
     """
@@ -128,11 +126,16 @@ def ObjectModifiedEventHandler(instance, event):
         """
         # Remove existing line items
         instance.pricelist_lineitems = []
-        for p in instance.portal_catalog(portal_type=instance.getType(),
-                                         inactive_state="active"):
+        for p in instance.portal_catalog(
+                portal_type=instance.getType(), inactive_state="active"):
             obj = p.getObject()
             itemDescription = None
             itemAccredited = False
+            price = ''
+            vat = ''
+            totalprice = ''
+            cat = ''
+            itemTitle = ''
             if instance.getType() == "LabProduct":
                 print_detail = ""
                 if obj.getVolume():
@@ -164,9 +167,9 @@ def ObjectModifiedEventHandler(instance, event):
                 #
                 cat = obj.getCategoryTitle()
                 if instance.getBulkDiscount():
-                        price = float(obj.getBulkPrice())
-                        vat = get_vat_amount(price, obj.getVAT())
-                        totalprice = price + vat
+                    price = float(obj.getBulkPrice())
+                    vat = get_vat_amount(price, obj.getVAT())
+                    totalprice = price + vat
                 else:
                     if instance.getBulkPrice():
                         discount = instance.getBulkPrice()

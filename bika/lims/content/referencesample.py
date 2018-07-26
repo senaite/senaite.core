@@ -19,10 +19,12 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import PMF, bikaMessageFactory as _, api
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -84,16 +86,12 @@ schema = BikaSchema.copy() + Schema((
             label=_("Lot Number"),
         ),
     ),
-    TextField('Remarks',
-        schemata = 'Description',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
+    RemarksField(
+        'Remarks',
+        schemata='Description',
+        searchable=True,
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only = True,
         ),
     ),
     DateTimeField('DateSampled',

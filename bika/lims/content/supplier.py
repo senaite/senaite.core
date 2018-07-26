@@ -7,6 +7,8 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME, ManageSuppliers
 from bika.lims.content.bikaschema import BikaSchema
@@ -18,15 +20,11 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 schema = Organisation.schema.copy() + ManagedSchema((
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type = "text/html",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
+    RemarksField(
+        'Remarks',
+        searchable=True,
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only = True,
         ),
     ),
     StringField('Website',
