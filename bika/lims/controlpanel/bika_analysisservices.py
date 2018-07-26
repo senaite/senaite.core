@@ -150,16 +150,29 @@ class AnalysisServicesView(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisServicesView, self).__init__(context, request)
+
         self.an_cats = None
         self.an_cats_order = None
         self.catalog = "bika_setup_catalog"
-        self.contentFilter = {"portal_type": "AnalysisService"}
+
+        self.contentFilter = {
+            "portal_type": "AnalysisService",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+
         self.context_actions = {
-            _("Add"):
-                {"url": "createObject?type_name=AnalysisService",
-                 "icon": "++resource++bika.lims.images/add.png"}}
-        self.icon = self.portal_url + \
+            _("Add"): {
+                "url": "createObject?type_name=AnalysisService",
+                "permission": "Add portal content",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
             "/++resource++bika.lims.images/analysisservice_big.png"
+        )
+
         self.title = self.context.translate(_("Analysis Services"))
         self.form_id = "list_analysisservices"
         self.show_sort_column = False
@@ -293,11 +306,11 @@ class AnalysisServicesView(BikaListingView):
     def format_price(self, price):
         """Formats the price with the set decimal mark and correct currency
         """
-        return u"{}{}{:02d} {}".format(
+        return u"{} {}{}{:02d}".format(
+            self.currency_symbol,
             price[0],
             self.decimal_mark,
             price[1],
-            self.currency_symbol
         )
 
     def format_maxtime(self, maxtime):
