@@ -38,9 +38,8 @@
   </metal:remarks_edit>
 
   <metal:remarks_history define-macro="remarks_history">
-    <fieldset tal:define="history accessor"
-              tal:condition="history">
-      <legend i18n:translate="" i18n:domain="plone">History</legend>
+    <fieldset tal:define="history accessor">
+      <legend i18n:translate="" i18n:domain="senaite.core">History</legend>
       <span class="remarks_history" tal:content="structure python:history.replace('\n', '<br/>')">
         content
       </span>
