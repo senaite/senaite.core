@@ -242,72 +242,30 @@ class AnalysisServicesView(BikaListingView):
                 "id": "default",
                 "title": _("Active"),
                 "contentFilter": {"inactive_state": "active"},
-                "columns": [
-                    "Title",
-                    "Category",
-                    "Keyword",
-                    "Methods",
-                    "Department",
-                    "CommercialID",
-                    "ProtocolID",
-                    "Unit",
-                    "Price",
-                    "MaxTimeAllowed",
-                    "DuplicateVariation",
-                    "Calculation",
-                    "SortKey",
-                ],
+                "columns": self.columns,
                 "custom_transitions": [copy_transition]
             }, {
                 "id": "inactive",
                 "title": _("Dormant"),
                 "contentFilter": {"inactive_state": "inactive"},
-                "columns": [
-                    "Title",
-                    "Category",
-                    "Keyword",
-                    "Methods",
-                    "Department",
-                    "CommercialID",
-                    "ProtocolID",
-                    "Unit",
-                    "Price",
-                    "MaxTimeAllowed",
-                    "DuplicateVariation",
-                    "Calculation",
-                    "SortKey",
-                ],
+                "columns": self.columns,
                 "custom_transitions": [copy_transition]
             }, {
                 "id": "all",
                 "title": _("All"),
                 "contentFilter": {},
-                "columns": [
-                    "Title",
-                    "Keyword",
-                    "Category",
-                    "Methods",
-                    "Department",
-                    "CommercialID",
-                    "ProtocolID",
-                    "Unit",
-                    "Price",
-                    "MaxTimeAllowed",
-                    "DuplicateVariation",
-                    "Calculation",
-                    "SortKey",
-                ],
+                "columns": self.columns,
                 "custom_transitions": [copy_transition]
             },
         ]
 
+    def before_render(self):
+        """Before template render hook
+        """
         if not self.context.bika_setup.getShowPrices():
             for i in range(len(self.review_states)):
                 self.review_states[i]["columns"].remove("Price")
 
-    def before_render(self):
-        """Before template render hook
-        """
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
