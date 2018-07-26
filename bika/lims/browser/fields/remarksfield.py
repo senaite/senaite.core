@@ -53,7 +53,7 @@ class RemarksField(ObjectField):
         """Returns raw field value; the widget is responsible for converting
         from newlines to breaks, or other clever formatting.
         """
-        text = self.format_remarks(self.getRaw(instance, **kwargs))
+        text = self.getRaw(instance, **kwargs)
         return text.replace('\n', '<br/>')
 
     def getRaw(self, instance, **kwargs):
