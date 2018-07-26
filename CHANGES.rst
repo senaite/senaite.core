@@ -6,16 +6,19 @@ Changelog
 
 **Added**
 
+- #924 Added ExtProxyField for its use in SchemaExtender
 
 **Changed**
 
 
 **Removed**
 
+- #912 Remove "Default AR Specifications" Selection from Setup
 - #901 Remove explicit permission settings for clients
 
 **Fixed**
 
+- #917 Localization of date and time strings in listings
 - #902 Attribute error when updating QC results using an import interface
 - #456 Date Published appears two times on the header table of AR view
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
