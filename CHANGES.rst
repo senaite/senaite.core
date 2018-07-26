@@ -10,6 +10,8 @@ Changelog
 
 **Changed**
 
+- #926: Refactored Analysis Services Listing
+
 
 **Removed**
 
