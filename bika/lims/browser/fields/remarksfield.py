@@ -54,6 +54,8 @@ class RemarksField(ObjectField):
         from newlines to breaks, or other clever formatting.
         """
         text = self.getRaw(instance, **kwargs)
+        if not text:
+            return ""
         return text.replace('\n', '<br/>')
 
     def getRaw(self, instance, **kwargs):
