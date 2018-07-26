@@ -39,7 +39,6 @@
 
   <metal:remarks_history define-macro="remarks_history">
     <fieldset tal:define="history accessor">
-      <legend i18n:translate="" i18n:domain="senaite.core">History</legend>
       <span class="remarks_history" tal:content="structure history">
         content
       </span>
