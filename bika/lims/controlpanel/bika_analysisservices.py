@@ -6,11 +6,14 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import collections
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
 from bika.lims.utils import tmpID
 from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -25,6 +28,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from transaction import savepoint
+from zope.i18n.locales import locales
 from zope.interface.declarations import implements
 
 
@@ -167,6 +171,8 @@ class AnalysisServicesView(BikaListingView):
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         self.can_sort = not self.do_cats
+        self.currency_symbol = self.get_currency_symbol()
+        self.decimal_mark = self.get_decimal_mark()
         if self.do_cats:
             self.pagesize = 999999  # hide batching controls
             self.show_categories = True
@@ -259,15 +265,59 @@ class AnalysisServicesView(BikaListingView):
             },
         ]
 
-    def before_render(self):
-        """Before template render hook
-        """
         if not self.context.bika_setup.getShowPrices():
             for i in range(len(self.review_states)):
                 self.review_states[i]["columns"].remove("Price")
 
+    def before_render(self):
+        """Before template render hook
+        """
         # Don't allow any context actions
         self.request.set("disable_border", 1)
+
+    def get_decimal_mark(self):
+        """Returns the decimal mark
+        """
+        return self.context.bika_setup.getDecimalMark()
+
+    def get_currency_symbol(self):
+        """Returns the locale currency symbol
+        """
+        currency = self.context.bika_setup.getCurrency()
+        locale = locales.getLocale("en")
+        locale_currency = locale.numbers.currencies.get(currency)
+        if locale_currency is None:
+            return "$"
+        return locale_currency.symbol
+
+    def format_price(self, price):
+        """Formats the price with the set decimal mark and correct currency
+        """
+        return u"{}{}{:02d} {}".format(
+            price[0],
+            self.decimal_mark,
+            price[1],
+            self.currency_symbol
+        )
+
+    def format_maxtime(self, maxtime):
+        """Formats the max time record to a days, hours, minutes string
+        """
+        minutes = maxtime.get("minutes", "0")
+        hours = maxtime.get("hours", "0")
+        days = maxtime.get("days", "0")
+        # days, hours, minutes
+        return u"{}: {} {}: {} {}: {}".format(
+            _("days"), days, _("hours"), hours, _("minutes"), minutes)
+
+    def format_duplication_variation(self, variation):
+        """Format duplicate variation
+        """
+        return u"{}{}{:02d}".format(
+            variation[0],
+            self.decimal_mark,
+            variation[1]
+        )
 
     def isItemAllowed(self, obj):
         """It checks if the item can be added to the list depending on the
@@ -292,67 +342,80 @@ class AnalysisServicesView(BikaListingView):
         return result
 
     def folderitem(self, obj, item, index):
+        """Service triggered each time an item is iterated in folderitems.
+        The use of this service prevents the extra-loops in child objects.
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
+        """
+
         cat = obj.getCategoryTitle()
         cat_order = self.an_cats_order.get(cat)
         if self.do_cats:
-            # category is for bika_listing to groups entries
+            # category groups entries
             item["category"] = cat
             if (cat, cat_order) not in self.categories:
                 self.categories.append((cat, cat_order))
 
+        # Category
+        category = obj.getCategory()
+        if category:
+            title = category.Title()
+            url = category.absolute_url()
+            item["Category"] = title
+            item["replace"]["Category"] = get_link(url, value=title)
+
+        # Calculation
         calculation = obj.getCalculation()
-        item["Calculation"] = calculation.Title() if calculation else ""
         if calculation:
-            item["replace"]["Calculation"] = "<a href='%s'>%s</a>" % (
-                calculation.absolute_url() + "/edit", calculation.Title())
+            title = calculation.Title()
+            url = calculation.absolute_url()
+            item["Calculation"] = title
+            item["replace"]["Calculation"] = get_link(url, value=title)
 
-        item['Price'] = "%s.%02d" % obj.Price
-
-        # Fill Methods column
+        # Methods
         methods = obj.getMethods()
-        m_dict = {method.Title(): method.absolute_url() for method in methods}
-        m_titles = sorted(m_dict.keys())
-        m_anchors = []
-        for title in m_titles:
-            url = m_dict[title]
-            anchor = "<a href='{}'>{}</a>".format(url, title)
-            m_anchors.append(anchor)
-        item["Methods"] = ", ".join(m_titles)
-        item["replace"]["Methods"] = ", ".join(m_anchors)
+        if methods:
+            links = map(
+                lambda m: get_link(
+                    m.absolute_url(), value=m.Title(), css_class="link"),
+                methods)
+            item["replace"]["Methods"] = ", ".join(links)
 
+        # Max time allowed
         maxtime = obj.MaxTimeAllowed
-        maxtime_string = ""
-        for field in ("days", "hours", "minutes"):
-            if field in maxtime:
-                try:
-                    val = int(maxtime[field])
-                    if val > 0:
-                        maxtime_string += "%s%s " % (val, _(field[0]))
-                except:  # noqa FIXME remove blind except
-                    pass
-        item["MaxTimeAllowed"] = maxtime_string
+        if maxtime:
+            item["MaxTimeAllowed"] = self.format_maxtime(maxtime)
 
-        if obj.DuplicateVariation:
-            item["DuplicateVariation"] = "%s.%02d" % obj.DuplicateVariation
-        else:
-            item["DuplicateVariation"] = ""
+        # Price
+        item["Price"] = self.format_price(obj.Price)
 
+        # Duplicate Variation
+        dup_variation = obj.DuplicateVariation
+        if dup_variation:
+            item["DuplicateVariation"] = self.format_duplication_variation(
+                dup_variation)
+
+        # Icons
         after_icons = ""
-        ipath = "++resource++bika.lims.images"
         if obj.getAccredited():
-            after_icons += "<img src='%s/accredited.png' title='%s'>" % (
-                ipath, _("Accredited"))
+            after_icons += get_image(
+                "accredited.png", title=_("Accredited"))
         if obj.getAttachmentOption() == "r":
-            after_icons += "<img src='%s/attach_reqd.png' title='%s'>" % (
-                ipath, _("Attachment required"))
+            after_icons += get_image(
+                "attach_reqd.png", title=_("Attachment required"))
         if obj.getAttachmentOption() == "n":
-            after_icons += "<img src='%s/attach_no.png' title='%s'>" % (
-                ipath, _("Attachment not permitted"))
+            after_icons += get_image(
+                "attach_no.png", title=_("Attachment not permitted"))
         if after_icons:
             item["after"]["Title"] = after_icons
+
         return item
 
     def folderitems(self, full_objects=False, classic=True):
+        """Sort by Categories
+        """
         bsc = getToolByName(self.context, "bika_setup_catalog")
         self.an_cats = bsc(
             portal_type="AnalysisCategory",
