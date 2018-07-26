@@ -21,7 +21,7 @@
     <script type="text/javascript"
             tal:define="portal context/@@plone_portal_state/portal;"
             tal:attributes="src python:portal.absolute_url() + '/bika_widgets/remarkswidget.js'"></script>
-    <textarea class="firstToFocus"
+    <textarea class="form-control"
               tal:attributes="name fieldName;
                               id fieldName;"></textarea>
     <tal:comment tal:replace="nothing">
@@ -29,7 +29,7 @@
       XXX Need some abstracted way to instruct the widget to hide the save button
     </tal:comment>
     <div tal:condition="python: 'portal_factory' not in context.absolute_url()">
-      <input class="saveRemarks context allowMultiSubmit"
+      <input class="saveRemarks allowMultiSubmit btn btn-secondary btn-xs"
              type="submit"
              value="Save remarks"
              i18n:attributes="value"
