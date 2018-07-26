@@ -25,6 +25,7 @@ Changelog
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
 - #906 DateTime Widget does not display the Time
 - #909 List of clients cannot sort by Client ID
+- #921 Missing interim fields in worksheet/analyses_transposed view
 - #920 Refactored Remarks and created RemarksField and RemarksWidget
 
 **Security**
