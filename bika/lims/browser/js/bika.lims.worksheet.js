@@ -592,6 +592,7 @@
       this.on_wideinterims_apply_click = bind(this.on_wideinterims_apply_click, this);
       this.on_wideiterims_interims_change = bind(this.on_wideiterims_interims_change, this);
       this.on_wideiterims_analyses_change = bind(this.on_wideiterims_analyses_change, this);
+      this.on_remarks_th_click = bind(this.on_remarks_th_click, this);
       this.on_remarks_balloon_clicked = bind(this.on_remarks_balloon_clicked, this);
       this.on_detection_limit_change = bind(this.on_detection_limit_change, this);
       this.on_analysis_instrument_change = bind(this.on_analysis_instrument_change, this);
@@ -621,7 +622,7 @@
 
     WorksheetManageResultsView.prototype.load = function() {
       console.debug("WorksheetManageResultsView::load");
-      jarn.i18n.loadCatalog("senaite.core");
+      jarn.i18n.loadCatalog('bika');
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this._pmf = window.jarn.i18n.MessageFactory('plone');
       this.bind_eventhandler();
@@ -651,6 +652,7 @@
       $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_change);
       $("body").on("change", "select[name^='DetectionLimit.']", this.on_detection_limit_change);
       $("body").on("click", "a.add-remark", this.on_remarks_balloon_clicked);
+      $("body").on("click", "th#foldercontents-Remarks-column", this.on_remarks_th_click);
       $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
       $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
       $("body").on("click", "#wideinterims_apply", this.on_wideinterims_apply_click);
@@ -1082,6 +1084,22 @@
       event.preventDefault();
       remarks = $el.closest("tr").next("tr").find("td.remarks");
       return $(remarks).find("div.remarks-placeholder").toggle();
+    };
+
+    WorksheetManageResultsView.prototype.on_remarks_th_click = function(event) {
+
+      /*
+       * Eventhandler when the remarks balloon was clicked
+       */
+      var $el;
+      console.debug("°°° WorksheetManageResultsView::on_remarks_th_click °°°");
+      $el = $(event.currentTarget);
+      event.preventDefault();
+      if ($("td.Remarks.hidden").length > 0) {
+        return $("td.Remarks.hidden").removeClass('hidden');
+      } else {
+        return $("td.Remarks").addClass('hidden');
+      }
     };
 
     WorksheetManageResultsView.prototype.on_wideiterims_analyses_change = function(event) {

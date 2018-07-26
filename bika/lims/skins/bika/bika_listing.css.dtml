@@ -522,9 +522,34 @@ tfoot td.batching a {
 .template-batchbook .item-listing-tbody td {
   border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
+
+table.bika-listing-table td.Remarks {
+  overflow:hidden
+}
+
+table.bika-listing-table td.Remarks div{
+  overflow-y:scroll;
+  overflow-x:hidden;
+}
 table.bika-listing-table-transposed {
     width: inherit;
+    table-layout: fixed;
 }
+table.bika-listing-table-transposed td.Remarks {
+  overflow:hidden
+}
+th#foldercontents-Remarks-column {
+  cursor: pointer;
+}
+table.bika-listing-table-transposed td.Remarks div{
+  max-height:12em;
+  overflow-y:scroll;
+  overflow-x:hidden;
+}
+table.bika-listing-table-transposed td.Remarks.hidden {
+  display:none;
+}
+
 table.bika-listing-table-transposed tbody tr th {
     vertical-align:top;
     width: 125px;

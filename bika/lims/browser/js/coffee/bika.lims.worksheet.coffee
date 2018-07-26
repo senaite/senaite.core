@@ -580,6 +580,9 @@ class window.WorksheetManageResultsView
     # Remarks balloon clicked
     $("body").on "click", "a.add-remark", @on_remarks_balloon_clicked
 
+    # Remarks row/column clicked
+    $("body").on "click", "th#foldercontents-Remarks-column", @on_remarks_th_click
+
     # Wide interims changed
     $("body").on "change", "#wideinterims_analyses", @on_wideiterims_analyses_change
     $("body").on "change", "#wideinterims_interims", @on_wideiterims_interims_change
@@ -1009,6 +1012,21 @@ class window.WorksheetManageResultsView
     event.preventDefault()
     remarks = $el.closest("tr").next("tr").find("td.remarks")
     $(remarks).find("div.remarks-placeholder").toggle()
+
+
+  on_remarks_th_click: (event) =>
+    ###
+     * Eventhandler when the remarks balloon was clicked
+    ###
+    console.debug "°°° WorksheetManageResultsView::on_remarks_th_click °°°"
+    $el = $(event.currentTarget)
+
+    event.preventDefault()
+
+    if $("td.Remarks.hidden").length > 0
+      $("td.Remarks.hidden").removeClass('hidden')
+    else
+      $("td.Remarks").addClass('hidden')
 
 
   on_wideiterims_analyses_change: (event) =>
