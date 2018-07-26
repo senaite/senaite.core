@@ -13,7 +13,7 @@
           class="remarks_history">
       <span metal:define-slot="inside"
             tal:define="history accessor"
-            tal:replace="structure python:history.replace('\n', '<br/>')">textarea</span>
+            tal:replace="structure history">textarea</span>
     </span>
   </metal:view_macro>
 
@@ -40,7 +40,7 @@
   <metal:remarks_history define-macro="remarks_history">
     <fieldset tal:define="history accessor">
       <legend i18n:translate="" i18n:domain="senaite.core">History</legend>
-      <span class="remarks_history" tal:content="structure python:history.replace('\n', '<br/>')">
+      <span class="remarks_history" tal:content="structure history">
         content
       </span>
     </fieldset>

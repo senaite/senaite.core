@@ -15,6 +15,13 @@ from bika.lims.interfaces import IRemarksField
 from zope.interface import implements
 
 
+def format_remarks(text):
+    """Simple helper to convert plain text to HTML for Remarks rendering
+    """
+    if not isinstance(text, basestring):
+        return ""
+    return text.replace('\n', '<br/>')
+
 class RemarksField(ObjectField):
     """A field that stores remarks.  The value submitted to the setter
     will always be appended to the actual value of the field.
@@ -53,7 +60,7 @@ class RemarksField(ObjectField):
         """Returns raw field value; the widget is responsible for converting
         from newlines to breaks, or other clever formatting.
         """
-        return self.getRaw(instance, **kwargs)
+        return format_remarks(self.getRaw(instance, **kwargs))
 
     def getRaw(self, instance, **kwargs):
         """Returns raw field value (possible wrapped in BaseUnit)
