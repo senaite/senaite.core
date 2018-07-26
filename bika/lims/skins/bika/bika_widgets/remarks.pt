@@ -70,7 +70,7 @@
                 type="submit"
                 value="Save remarks"
                 i18n:attributes="value"
-				i18n:domain="bika"/>
+				i18n:domain="senaite.core"/>
             </div>
 
             <fieldset tal:condition="python:append_only and 'portal_factory' not in context.absolute_url()" >

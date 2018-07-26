@@ -56,19 +56,19 @@ find $LOCALES -name "*.mo" -delete
 tx_pull
 
 # Generate the Bika Domain
-DOMAIN=bika
+DOMAIN=senaite.core
 echo "Processing Domain $DOMAIN"
 # Flush the english (transifex source language) po files
 # If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
-echo -n "" > $LOCALES/en/LC_MESSAGES/$DOMAIN.po
+echo -n "" > $LOCALES/en/LC_MESSAGES/senaite.core.po
 # Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude "build" --create $DOMAIN bika
+$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "build" --create $DOMAIN bika
 # Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
-$I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $LOCALES/$DOMAIN-manual.pot
+$I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-manual.pot
 # Overwrite the existing $DOMAIN.pot
-mv $LOCALES/$DOMAIN-tmp.pot $LOCALES/$DOMAIN.pot
+mv $LOCALES/senaite.core-tmp.pot $LOCALES/senaite.core.pot
 # Synchronize all .po files with the new $DOMAIN.pot
-$I18N sync --pot $LOCALES/$DOMAIN.pot $LOCALES/*/LC_MESSAGES/$DOMAIN.po
+$I18N sync --pot $LOCALES/senaite.core.pot $LOCALES/*/LC_MESSAGES/senaite.core.po
 echo "Domain $DOMAIN [DONE]"
 
 # Generate Plone Domain

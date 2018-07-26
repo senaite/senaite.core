@@ -1042,15 +1042,11 @@ class BikaListingView(BrowserView):
         """Get the sort_order criteria from the request or view
         """
         form_id = self.get_form_id()
-        key = "{}_sort_order".format(form_id)
-        sort_order = self.request.get(key, None)
-
-        if sort_order is None:
-            sort_order = self.contentFilter.get("sort_order", self.sort_order)
-        if sort_order not in ["ascending", "descending"]:
-            sort_order = "descending"
-
-        return sort_order
+        allowed = ["ascending", "descending"]
+        sort_order = [self.request.get("{}_sort_order".format(form_id), None),
+                      self.contentFilter.get("sort_order", None)]
+        sort_order = filter(lambda order: order in allowed, sort_order)
+        return sort_order and sort_order[0] or "descending"
 
     def is_valid_sort_index(self, sort_on):
         """Checks if the sort_on index is capable for a sort_

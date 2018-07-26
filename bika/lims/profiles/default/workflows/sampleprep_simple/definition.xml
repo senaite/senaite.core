@@ -6,7 +6,7 @@
              state_variable="sampleprep_review_state"
              initial_state="pending"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <state state_id="complete" title="Complete" i18n:attributes="title">
     <description>Complete</description>

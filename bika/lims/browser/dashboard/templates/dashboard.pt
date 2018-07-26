@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
         metal:use-macro="here/main_template/macros/master"
-        i18n:domain="bika">
+        i18n:domain="senaite.core">
 
 <metal:content-title fill-slot="content-title">
 <a href=""

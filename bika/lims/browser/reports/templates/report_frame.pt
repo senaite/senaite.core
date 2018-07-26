@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
-        i18n:domain="bika"
+        i18n:domain="senaite.core"
         tal:define="plone_view context/@@plone;
         portal_url nocall:context/portal_url">
 

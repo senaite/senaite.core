@@ -76,15 +76,10 @@ class AnalysisRequestAddView(BrowserView):
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/analysisrequest_big.png"
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
-
-    @property
-    def icon(self):
-        icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/analysisrequest_big.png")
-        return icon
 
     def get_view_url(self):
         """Return the current view url including request parameters
@@ -1648,9 +1643,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     continue
 
                 profile_price = float(profile.getAnalysisProfilePrice())
-                profile_vat = float(profile.getAnalysisProfileVAT())
                 arprofiles_price += profile_price
-                arprofiles_vat_amount += profile_vat
+                arprofiles_vat_amount += profile.getVATAmount()
                 profile_services = profile.getService()
                 services_from_priced_profile.extend(profile_services)
 
@@ -1851,7 +1845,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             for attachment in attachments.get(n, []):
                 if not attachment.filename:
                     continue
-                att = _createObjectByType("Attachment", self.context, tmpID())
+                att = _createObjectByType("Attachment", client, tmpID())
                 att.setAttachmentFile(attachment)
                 att.processForm()
                 _attachments.append(att)

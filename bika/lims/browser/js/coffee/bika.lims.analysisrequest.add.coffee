@@ -10,7 +10,7 @@ class window.AnalysisRequestAdd
 
     # load translations
     jarn.i18n.loadCatalog 'bika'
-    @_ = window.jarn.i18n.MessageFactory('bika')
+    @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
     # disable browser autocomplete
     $('input[type=text]').prop 'autocomplete', 'off'

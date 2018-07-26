@@ -72,7 +72,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {},
+                "contentFilter": {"inactive_state": "active"},
                 "columns": [
                     "Title",
                     "Unit",

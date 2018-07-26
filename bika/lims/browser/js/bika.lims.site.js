@@ -50,8 +50,8 @@
 
     SiteView.prototype.load = function() {
       console.debug("SiteView::load");
-      jarn.i18n.loadCatalog('bika');
-      this._ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this.init_spinner();
       this.init_client_add_overlay();
       this.init_client_combogrid();

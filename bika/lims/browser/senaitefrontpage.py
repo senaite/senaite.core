@@ -57,8 +57,10 @@ class FrontPageView(BrowserView):
         # Second precedence: Dashboard enabled
         if self.is_dashboard_enabled():
             roles = self.get_user_roles()
-            if 'Manager' in roles or 'LabManager' in roles:
-                return self.request.response.redirect(self.portal_url + "/bika-dashboard")
+            allowed = ['Manager', 'LabManager', 'LabClerk']
+            if set(roles).intersection(allowed):
+                return self.request.response.redirect(
+                    self.portal_url + "/bika-dashboard")
             if 'Sampler' in roles or 'SampleCoordinator' in roles:
                 return self.request.response.redirect(self.portal_url + "/samples?samples_review_state=to_be_sampled")
 

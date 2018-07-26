@@ -24,7 +24,7 @@ from plone import api
 from zope.interface import implements
 
 from bika.lims.utils import isActive
-from bika.lims.interfaces import IContact
+from bika.lims.interfaces import IContact, IClient
 from bika.lims.content.person import Person
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import ManageClients
@@ -252,11 +252,11 @@ class Contact(Person):
         # Update the Email address from the user
         self.setEmailAddress(user.getProperty("email"))
 
-        # Grant local Owner role
-        self._addLocalOwnerRole(username)
-
-        # Add user to "Clients" group
-        self._addUserToGroup(username, group="Clients")
+        if IClient.providedBy(self.aq_parent):
+            # Grant local Owner role
+            self._addLocalOwnerRole(username)
+            # Add user to "Clients" group
+            self._addUserToGroup(username, group="Clients")
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()

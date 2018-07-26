@@ -76,46 +76,6 @@ class ClientAnalysisSpecsView(BikaListingView):
             if checkPermission(AddAnalysisSpec, self.context):
                 self.context_actions[_('Add')] = \
                     {'url': 'createObject?type_name=AnalysisSpec',
+                     'permission': 'Add portal content',
                      'icon': '++resource++bika.lims.images/add.png'}
-                #
-                # @lemoene with the changes made in AR-specs, I dont know how much
-                # sense this makes anymore.
-                # if checkPermission("Modify portal content", self.context):
-                #     self.context_actions[_('Set to lab defaults')] = \
-                #         {'url': 'set_to_lab_defaults',
-                #          'icon': '++resource++bika.lims.images/analysisspec.png'}
         return super(ClientAnalysisSpecsView, self).__call__()
-
-
-class SetSpecsToLabDefaults(BrowserView):
-    """ Remove all client specs, and add copies of all lab specs
-    """
-
-    def __call__(self):
-        form = self.request.form
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-
-        # find and remove existing specs
-        cs = bsc(portal_type='AnalysisSpec',
-                 getClientUID=self.context.UID())
-        if cs:
-            self.context.manage_delObjects([s.id for s in cs])
-
-        # find and duplicate lab specs
-        ls = bsc(portal_type='AnalysisSpec',
-                 getClientUID=self.context.bika_setup.bika_analysisspecs.UID())
-        ls = [s.getObject() for s in ls]
-        for labspec in ls:
-            clientspec = _createObjectByType(
-                "AnalysisSpec", self.context, tmpID())
-            clientspec.processForm()
-            clientspec.edit(
-                SampleType=labspec.getSampleType(),
-                ResultsRange=labspec.getResultsRange(),
-            )
-        translate = self.context.translate
-        message = _("Analysis specifications reset to lab defaults.")
-        self.context.plone_utils.addPortalMessage(message, 'info')
-        self.request.RESPONSE.redirect(self.context.absolute_url() +
-                                       "/analysisspecs")
-        return

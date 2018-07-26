@@ -113,7 +113,7 @@ jQuery(function($){
         var as_uid = $(as).find(":selected").attr('value');
         var as_info = setupdata[method].analysisservices[as_uid];
         if (as_info === undefined){
-            var _ = window.jarn.i18n.MessageFactory("bika");
+            var _ = window.jarn.i18n.MessageFactory("senaite.core");
             window.bika.lims.portalMessage(_('An analysis service must be selected'));
         }
         else{
@@ -756,7 +756,7 @@ jQuery(function($){
         var setupdata = $.parseJSON($('#rules-setup-data').html());
         var as_info = setupdata[method].analysisservices[as_uid];
         if (as_info === undefined){
-            var _ = window.jarn.i18n.MessageFactory("bika");
+            var _ = window.jarn.i18n.MessageFactory("senaite.core");
             window.bika.lims.portalMessage(_('An analysis service must be selected'));
         }
         var resultoptions = as_info.resultoptions;

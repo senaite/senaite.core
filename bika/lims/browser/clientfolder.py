@@ -59,43 +59,51 @@ class ClientFolderContentsView(BikaListingView):
             ("title", {
                 "title": _("Name"),
                 "index": "sortable_title"},),
-            ("ClientID", {
+            ("getClientID", {
                 "title": _("Client ID")}),
             ("EmailAddress", {
-                "title": _("Email Address")}),
+                "title": _("Email Address"),
+                "sortable": False}),
             ("getCountry", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Country")}),
             ("getProvince", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Province")}),
             ("getDistrict", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("District")}),
             ("Phone", {
-                "title": _("Phone")}),
+                "title": _("Phone"),
+                "sortable": False}),
             ("Fax", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Fax")}),
             ("BulkDiscount", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Bulk Discount")}),
             ("MemberDiscountApplies", {
                 "toggle": False,
+                "sortable": False,
                 "title": _("Member Discount")}),
         ))
 
         self.review_states = [
             {
                 "id": "default",
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"review_state": "active"},
                 "title": _("Active"),
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns,
             }, {
                 "id": "inactive",
                 "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "contentFilter": {"review_state": "inactive"},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns,
             }, {
@@ -148,7 +156,7 @@ class ClientFolderContentsView(BikaListingView):
         # render a link to the defined start page
         link_url = "{}/{}".format(item["url"], self.landing_page)
         item["replace"]["title"] = get_link(link_url, item["title"])
-        item["replace"]["ClientID"] = get_link(link_url, item["ClientID"])
+        item["replace"]["getClientID"] = get_link(link_url, item["getClientID"])
         # render an email link
         item["replace"]["EmailAddress"] = get_email_link(item["EmailAddress"])
         # translate True/FALSE values

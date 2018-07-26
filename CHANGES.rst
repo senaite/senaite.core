@@ -1,30 +1,72 @@
 Changelog
 =========
 
-1.2.7 (unreleased)
+1.2.8 (unreleased)
 ------------------
 
 **Added**
 
+- #924 Added ExtProxyField for its use in SchemaExtender
+
+**Changed**
+
+
+**Removed**
+
+- #912 Remove "Default AR Specifications" Selection from Setup
+- #901 Remove explicit permission settings for clients
+
+**Fixed**
+
+- #917 Localization of date and time strings in listings
+- #902 Attribute error when updating QC results using an import interface
+- #456 Date Published appears two times on the header table of AR view
+- #898 Cannot view/edit Supplier.  Tabs for different views now visible.
+- #905 Users created through LabContact's Login Details view are added to "Clients" group
+- #906 DateTime Widget does not display the Time
+- #909 List of clients cannot sort by Client ID
+- #921 Missing interim fields in worksheet/analyses_transposed view
+
+**Security**
+
+
+1.2.7 (2018-07-10)
+------------------
+
+**Added**
+
+- #836 Allow (Multi-)Attachment upload available in AR Add
+- #846 Transifex integration
 - #848 Show icon on the Supply Order View
 - #844 Missing interface for AR Report added
 - #858 Only Lab Managers sees rejected analysis requests
 
-
 **Changed**
 
 - #873 Generalize the assignment of values into fields for Setup on import
+- #891 Better default styles for listing tables
+- #887 New icon set
+- #879 Upgrade lxml version from 2.3.6 to 3.6.0 and  Plone from 4.3.15 to 4.3.17
+- #873 Sample Type field editable in AR and Sample edit views before receive
 - #868 AR Add Form: Refactoring and Styling
 - #817 Make warn message clearer if transition rejection is due to missing sampler
 
-**Removed**
-
-
 **Fixed**
 
+- #892 Display only active Analyses for new Profiles
+- #889 Fix override order of message catalogs
+- #864 Sort order in setup of analysis services wrong
+- #881 Fixed JS i18n catalog names
+- #880 Fix message factory
+- #878 Fix AR Header Table Styles and Ajax Failures
+- #877 Worksheet's attachments column is empty after results import from file
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
+- #875 Fix Batch AR View
+- #872 Date format appears wrong in Users history administrative report
+- #855 Dashboard is displayed to Lab clerks after login only
+- #871 Fix OpenTagError for i18ndude
+- #865 AR VAT Amount when using Profiles is not calculated correctly
 - #851 Fix worksheet verification with retracted results
-
-**Security**
 
 
 1.2.6 (2018-06-08)
@@ -40,7 +82,7 @@ Changelog
 
 **Fixed**
 
-- #842 Re-compiled Coffee-Scripts with version 1.12.7 
+- #842 Re-compiled Coffee-Scripts with version 1.12.7
 - #824 Instrument Listing Views Fixes and Refactoring
 - #840 Fix date range filter for "Data entry day book" report
 - #828 Traceback when removing a retracted analysis through Manage Analyses view

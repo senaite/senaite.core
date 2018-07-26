@@ -6,7 +6,7 @@
              state_variable="review_state"
              initial_state="open"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <permission>BIKA: Add Attachment</permission>
   <permission>BIKA: Assign analyses</permission>

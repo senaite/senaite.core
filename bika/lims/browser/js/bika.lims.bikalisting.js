@@ -51,8 +51,8 @@
 
     BikaListingTableView.prototype.load = function() {
       console.debug("ListingTableView::load");
-      jarn.i18n.loadCatalog('bika');
-      this._ = window.jarn.i18n.MessageFactory('bika');
+      jarn.i18n.loadCatalog("senaite.core");
+      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this.bind_eventhandler();
       this.loading_transitions = false;
       this.toggle_cols_cookie = "toggle_cols";
@@ -246,10 +246,10 @@
           }
         });
       }
-      if (col_id === _('Default')) {
+      if (col_id === this._('Default')) {
         console.debug("*** Set DEFAULT toggle columns ***");
         delete cookie[cookie_key];
-      } else if (col_id === _('All')) {
+      } else if (col_id === this._('All')) {
         console.debug("*** Set ALL toggle columns ***");
         all_cols = [];
         $.each(toggle_cols, function(name, record) {
@@ -612,7 +612,7 @@
       /*
        * Build context menu HTML
        */
-      var form, form_id, menu, portal_url, sorted_toggle_cols, toggle_cols, toggleable_columns;
+      var form, form_id, me, menu, portal_url, sorted_toggle_cols, toggle_cols, toggleable_columns;
       console.debug("°°° ListingTableView::make_context_menu °°°");
       $(".tooltip").remove();
       form = $(table).parents("form");
@@ -624,9 +624,10 @@
         return false;
       }
       sorted_toggle_cols = [];
+      me = this;
       $.each($.parseJSON(toggle_cols.val()), function(column, record) {
         record.id = column;
-        record.title = _(record.title) || _(record.id);
+        record.title = me._(record.title) || me._(record.id);
         sorted_toggle_cols.push(record);
       });
       sorted_toggle_cols.sort(function(a, b) {
@@ -652,7 +653,7 @@
         }
         return toggleable_columns += col;
       });
-      menu = "<div class=\"tooltip bottom\">\n  <div class=\"tooltip-inner\">\n    <table class=\"contextmenu\" cellpadding=\"0\" cellspacing=\"0\">\n      <tr>\n        <th colspan=\"2\">" + (_("Display columns")) + "</th>\n      </tr>\n      " + toggleable_columns + "\n      <tr col_id=\"" + (_("All")) + "\" form_id=\"" + form_id + "\">\n        <td style=\"border-top:1px solid #ddd;\">&nbsp;</td>\n        <td style=\"border-top:1px solid #ddd;\">" + (_("All")) + "</td>\n      </tr>\n      <tr col_id=\"" + (_("Default")) + "\" form_id=\"" + form_id + "\">\n        <td>&nbsp;</td>\n        <td>" + (_("Default")) + "</td>\n      </tr>\n    </table>\n  </div>\n  <div class=\"tooltip-arrow\"></div>\n</div>";
+      menu = "<div class=\"tooltip bottom\">\n  <div class=\"tooltip-inner\">\n    <table class=\"contextmenu\" cellpadding=\"0\" cellspacing=\"0\">\n      <tr>\n        <th colspan=\"2\">" + (this._("Display Columns")) + "</th>\n      </tr>\n      " + toggleable_columns + "\n      <tr col_id=\"" + (this._("All")) + "\" form_id=\"" + form_id + "\">\n        <td style=\"border-top:1px solid #ddd;\">&nbsp;</td>\n        <td style=\"border-top:1px solid #ddd;\">" + (this._("All")) + "</td>\n      </tr>\n      <tr col_id=\"" + (this._("Default")) + "\" form_id=\"" + form_id + "\">\n        <td>&nbsp;</td>\n        <td>" + (this._("Default")) + "</td>\n      </tr>\n    </table>\n  </div>\n  <div class=\"tooltip-arrow\"></div>\n</div>";
       return menu;
     };
 

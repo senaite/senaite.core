@@ -2,7 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
     <adapter
       factory="bika.lims.browser.client.ClientContactVocabularyFactory"
@@ -96,14 +96,6 @@
       name="analysisspecs"
       class="bika.lims.browser.client.ClientAnalysisSpecsView"
       permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IClient"
-      name="set_to_lab_defaults"
-      class="bika.lims.browser.client.SetSpecsToLabDefaults"
-      permission="cmf.ModifyPortalContent"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

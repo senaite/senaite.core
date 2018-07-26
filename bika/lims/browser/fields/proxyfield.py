@@ -14,6 +14,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import ObjectField
 from Products.Archetypes.Registry import registerField
 
+from bika.lims.fields import ExtensionField
 from bika.lims.interfaces import IProxyField
 from bika.lims import logger
 
@@ -122,3 +123,7 @@ registerField(
     title='Proxy',
     description=('Used to proxy a value to a similar field on another object.')
 )
+
+
+class ExtProxyField(ExtensionField, ProxyField):
+    """An Extended Proxy Field for its use in SchemaExtender"""
