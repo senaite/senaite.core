@@ -316,6 +316,12 @@ class AnalysisServicesView(BikaListingView):
             for i in range(len(self.review_states)):
                 self.review_states[i]["columns"].remove("Price")
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
+
     def isItemAllowed(self, obj):
         """It checks if the item can be added to the list depending on the
         department filter.
