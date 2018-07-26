@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -165,6 +166,7 @@ class AnalysisServicesView(BikaListingView):
         self.sort_on = "sortable_title"
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
+        self.can_sort = not self.do_cats
         if self.do_cats:
             self.pagesize = 999999  # hide batching controls
             self.show_categories = True
@@ -172,75 +174,62 @@ class AnalysisServicesView(BikaListingView):
             self.ajax_categories = True
             self.category_index = "getCategoryTitle"
 
-        self.columns = {
-            "Title": {
+        self.columns = collections.OrderedDict((
+            ("Title", {
                 "title": _("Service"),
                 "index": "sortable_title",
                 "replace_url": "absolute_url",
-                "sortable": not self.do_cats,
-            },
-            "Keyword": {
+                "sortable": self.can_sort}),
+            ("Keyword", {
                 "title": _("Keyword"),
                 "index": "getKeyword",
                 "attr": "getKeyword",
-                "sortable": not self.do_cats,
-            },
-            "Category": {
+                "sortable": self.can_sort}),
+            ("Category", {
                 "title": _("Category"),
                 "attr": "getCategoryTitle",
-                "sortable": not self.do_cats,
-            },
-            "Methods": {
+                "sortable": self.can_sort}),
+            ("Methods", {
                 "title": _("Methods"),
-                "sortable": not self.do_cats,
-            },
-            "Department": {
+                "sortable": self.can_sort}),
+            ("Department", {
                 "title": _("Department"),
                 "toggle": False,
                 "attr": "getDepartment.Title",
-                "sortable": not self.do_cats,
-            },
-            "Unit": {
+                "sortable": self.can_sort}),
+            ("Unit", {
                 "title": _("Unit"),
                 "attr": "getUnit",
-                "sortable": False,
-            },
-            "Price": {
+                "sortable": False}),
+            ("Price", {
                 "title": _("Price"),
-                "sortable": not self.do_cats,
-            },
-            "MaxTimeAllowed": {
+                "sortable": self.can_sort}),
+            ("MaxTimeAllowed", {
                 "title": _("Max Time"),
                 "toggle": False,
-                "sortable": not self.do_cats,
-            },
-            "DuplicateVariation": {
+                "sortable": self.can_sort}),
+            ("DuplicateVariation", {
                 "title": _("Dup Var"),
                 "toggle": False,
-                "sortable": False,
-             },
-            "Calculation": {
+                "sortable": False}),
+            ("Calculation", {
                 "title": _("Calculation"),
-                "sortable": False,
-            },
-            "CommercialID": {
+                "sortable": False}),
+            ("CommercialID", {
                 "title": _("Commercial ID"),
                 "attr": "getCommercialID",
                 "toggle": False,
-                "sortable": not self.do_cats,
-            },
-            "ProtocolID": {
+                "sortable": self.can_sort}),
+            ("ProtocolID", {
                 "title": _("Protocol ID"),
                 "attr": "getProtocolID",
                 "toggle": False,
-                "sortable": not self.do_cats,
-            },
-            "SortKey": {
+                "sortable": self.can_sort}),
+            ("SortKey", {
                 "title": _("Sort Key"),
                 "attr": "getSortKey",
-                "sortable": False,
-            },
-        }
+                "sortable": False}),
+        ))
 
         copy_transition = {
             "id": "duplicate",
