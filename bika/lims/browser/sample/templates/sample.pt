@@ -44,7 +44,7 @@
         <span tal:replace="structure python: table[1]"/>
     </tal:tables>
 
-  <tal:remarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')"
+  <tal:remarks tal:condition="python:hasattr(context.aq_inner, 'schema') and 'Remarks' in context.schema"
                tal:define="checkPermission nocall: context/portal_membership/checkPermission;
                            mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
                            field python:context.Schema()['Remarks'];
