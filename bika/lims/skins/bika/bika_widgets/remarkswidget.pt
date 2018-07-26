@@ -48,7 +48,6 @@
   <metal:edit define-macro="edit">
     <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
       <metal:fill fill-slot="widget_body">
-        <input tal:replace="structure context/@@authenticator/authenticator"/>
         <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_edit"/>
         <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_history"/>
       </metal:fill>
