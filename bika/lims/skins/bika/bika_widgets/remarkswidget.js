@@ -80,7 +80,6 @@
 
       /*
        * Output HTML string.
-       *
        */
       var remarks;
       remarks = value.replace(new RegExp("\n", "g"), "<br/>");
@@ -91,10 +90,12 @@
 
       /*
        * Clear and update the widget's History with the provided value.
-       *
        */
       var el, widget;
       widget = this.get_remarks_widget(uid);
+      if (widget === null) {
+        return;
+      }
       el = widget.find('.remarks_history');
       return el.html(this.format(value));
     };
@@ -103,10 +104,12 @@
 
       /*
        * Clear textarea contents
-       *
        */
       var el, widget;
       widget = this.get_remarks_widget(uid);
+      if (widget === null) {
+        return;
+      }
       el = widget.find('textarea');
       return el.val("");
     };
@@ -120,6 +123,9 @@
        */
       var widget;
       widget = this.get_remarks_widget(uid);
+      if (widget === null) {
+        return;
+      }
       return widget.find('.remarks_history').html();
     };
 
@@ -133,7 +139,11 @@
         return this.fetch_remarks(uid).done(function(remarks) {
           this.update_remarks_history(remarks, uid);
           return this.clear_remarks_textarea(uid);
+        }).fail(function() {
+          return console.warn("Failed to get remarks");
         });
+      }).fail(function() {
+        return console.warn("Failed to set remarks");
       });
     };
 
@@ -148,6 +158,9 @@
       var deferred, fieldname, widget;
       deferred = $.Deferred();
       widget = this.get_remarks_widget(uid);
+      if (widget === null) {
+        return deferred.reject();
+      }
       fieldname = widget.attr("data-fieldname");
       this.ajax_submit({
         url: this.get_portal_url() + "/@@API/read",
@@ -169,9 +182,12 @@
        *
        */
       var deferred, fieldname, options, widget;
-      widget = this.get_remarks_widget(uid);
-      fieldname = widget.attr("data-fieldname");
       deferred = $.Deferred();
+      widget = this.get_remarks_widget(uid);
+      if (widget === null) {
+        return deferred.reject();
+      }
+      fieldname = widget.attr("data-fieldname");
       options = {
         url: this.get_portal_url() + "/@@API/update",
         data: {

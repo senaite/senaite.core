@@ -54,7 +54,6 @@ class window.RemarksWidgetView
   format: (value) =>
     ###
      * Output HTML string.
-     *
     ###
     remarks = value.replace(new RegExp("\n", "g"), "<br/>")
     return remarks
@@ -62,18 +61,18 @@ class window.RemarksWidgetView
   update_remarks_history: (value, uid) =>
     ###
      * Clear and update the widget's History with the provided value.
-     *
     ###
     widget = @get_remarks_widget(uid)
+    return if widget is null
     el = widget.find('.remarks_history')
     el.html(@format value)
 
   clear_remarks_textarea: (uid) =>
     ###
      * Clear textarea contents
-     *
     ###
     widget = @get_remarks_widget(uid)
+    return if widget is null
     el = widget.find('textarea')
     el.val("")
 
@@ -84,6 +83,7 @@ class window.RemarksWidgetView
      *
     ###
     widget = @get_remarks_widget(uid)
+    return if widget is null
     return widget.find('.remarks_history').html()
 
   set_remarks: (value, uid) =>
@@ -97,6 +97,10 @@ class window.RemarksWidgetView
       .done (remarks) ->
         @update_remarks_history(remarks, uid)
         @clear_remarks_textarea(uid)
+      .fail ->
+        console.warn "Failed to get remarks"
+    .fail ->
+      console.warn "Failed to set remarks"
 
   ### ASYNC DATA METHODS ###
 
@@ -106,7 +110,11 @@ class window.RemarksWidgetView
     ###
 
     deferred = $.Deferred()
+
     widget = @get_remarks_widget(uid)
+
+    if widget is null
+      return deferred.reject()
 
     fieldname = widget.attr("data-fieldname")
 
@@ -125,10 +133,15 @@ class window.RemarksWidgetView
      * Submit the value to the field setter via /@@API/update.
      *
     ###
+    deferred = $.Deferred()
+
     widget = @get_remarks_widget(uid)
+
+    if widget is null
+      return deferred.reject()
+
     fieldname = widget.attr("data-fieldname")
 
-    deferred = $.Deferred()
     options =
       url: @get_portal_url() + "/@@API/update"
       data:
