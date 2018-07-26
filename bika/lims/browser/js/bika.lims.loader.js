@@ -204,6 +204,10 @@ window.bika.lims.controllers =  {
     ".portaltype-reportfolder":
         ['ReportFolderView'],
 
+    // If RemarksWidget is in use on this page,
+    // load RemarksWIdgetview
+    ".ArchetypesRemarksWidget": ["RemarksWidgetView"],
+
     // Add here your view-controller/s assignment
 
 };
