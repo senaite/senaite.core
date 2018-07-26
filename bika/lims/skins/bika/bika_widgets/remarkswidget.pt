@@ -7,7 +7,7 @@
   <metal:view_macro define-macro="view">
     <span metal:define-macro="textarea-field-view"
           tal:define="uid context/UID|nothing;
-                      history accessor"
+                      history python:field.get_cooked_remarks(context)"
           tal:condition="history"
           tal:attributes="id string:parent-fieldname-$fieldName-$uid"
           class="remarks_history">
@@ -38,7 +38,7 @@
   </metal:remarks_edit>
 
   <metal:remarks_history define-macro="remarks_history">
-    <fieldset tal:define="history accessor">
+    <fieldset tal:define="history python:field.get_cooked_remarks(context)">
       <span class="remarks_history" tal:content="structure history">
         content
       </span>

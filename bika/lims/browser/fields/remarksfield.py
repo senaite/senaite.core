@@ -49,13 +49,16 @@ class RemarksField(ObjectField):
         remarks = '\n'.join([divider, value, existing_remarks])
         return ObjectField.set(self, instance, remarks)
 
-    def get(self, instance, **kwargs):
-        """Returns raw field value.
-        """
-        text = self.getRaw(instance, **kwargs)
+    def get_cooked_remarks(self, instance):
+        text = self.get(instance)
         if not text:
             return ""
         return text.replace('\n', '<br/>')
+
+    def get(self, instance, **kwargs):
+        """Returns raw field value.
+        """
+        return self.getRaw(instance, **kwargs)
 
     def getRaw(self, instance, **kwargs):
         """Returns raw field value (possible wrapped in BaseUnit)
