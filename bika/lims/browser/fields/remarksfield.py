@@ -53,16 +53,16 @@ class RemarksField(ObjectField):
         """Returns raw field value; the widget is responsible for converting
         from newlines to breaks, or other clever formatting.
         """
-        value = ObjectField.get(self, instance, **kwargs)
-        # If field contains BaseUnit, then calling it returns the value.
-        if callable(value):
-            value = value()
-        return value
+        return self.getRaw(instance, **kwargs)
 
     def getRaw(self, instance, **kwargs):
         """Returns raw field value (possible wrapped in BaseUnit)
         """
         value = ObjectField.get(self, instance, **kwargs)
+        # getattr(instance, "Remarks") returns a BaseUnit
+        if callable(value):
+            value = value()
         return value
+
 
 registerField(RemarksField, title='Remarks', description='')
