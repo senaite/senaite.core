@@ -111,13 +111,14 @@
     <tal:parts replace="structure view/riview"/>
 
 
-    <tal:remarks define="
-        field python:context.Schema()['Remarks'];
-        errors python:{};">
-        <p style="margin-top:2em;"/>
-         <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
+    <tal:remarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')"
+                 tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                             mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                             field python:context.Schema()['Remarks'];
+                             errors python:{};">
+      <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
     </tal:remarks>
 
-</metal:content-core>
+  </metal:content-core>
 </body>
 </html>
