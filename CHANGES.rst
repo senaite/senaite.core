@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #933 Refactored SampleConditions Listing
 - #916 Refactored Instruments Listing
 - #919 Refactored Profiles Listing
 - #915 Refactored SamplePoints Listing
