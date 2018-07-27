@@ -79,7 +79,7 @@ class InstrumentsView(BikaListingView):
                 "toggle": True}),
             ("WeeksToExpire", {
                 "title": _("Weeks To Expire"),
-                "index": "getModel",
+                "sortable": False,
                 "toggle": False}),
             ("Methods", {
                 "title": _("Methods"),
