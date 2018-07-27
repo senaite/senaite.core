@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="senaite.core">
+
+  <metal:view_macro define-macro="view">
+    <span metal:define-macro="textarea-field-view"
+          tal:define="uid context/UID|nothing;
+                      history python:field.get_cooked_remarks(context)"
+          tal:condition="history"
+          tal:attributes="id string:parent-fieldname-$fieldName-$uid"
+          class="remarks_history">
+      <span metal:define-slot="inside"
+            tal:define="history accessor"
+            tal:replace="structure history">textarea</span>
+    </span>
+  </metal:view_macro>
+
+  <metal:remarks_edit define-macro="remarks_edit">
+    <script type="text/javascript"
+            tal:define="portal context/@@plone_portal_state/portal;"
+            tal:attributes="src python:portal.absolute_url() + '/bika_widgets/remarkswidget.js'"></script>
+    <textarea class="form-control"
+              tal:attributes="name fieldName;
+                              id fieldName;"></textarea>
+    <tal:comment tal:replace="nothing">
+      Hide the widget's save button when rendering in portal_factory URLs:
+      XXX Need some abstracted way to instruct the widget to hide the save button
+    </tal:comment>
+    <div tal:condition="python: 'portal_factory' not in context.absolute_url()">
+      <input class="saveRemarks allowMultiSubmit btn btn-secondary btn-xs"
+             type="submit"
+             value="Save remarks"
+             i18n:attributes="value"
+             i18n:domain="senaite.core"/>
+    </div>
+  </metal:remarks_edit>
+
+  <metal:remarks_history define-macro="remarks_history">
+    <fieldset tal:define="history python:field.get_cooked_remarks(context)">
+      <span class="remarks_history" tal:content="structure history">
+        content
+      </span>
+    </fieldset>
+  </metal:remarks_history>
+
+  <metal:edit define-macro="edit">
+    <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+      <metal:fill fill-slot="widget_body">
+        <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_edit"/>
+        <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_history"/>
+      </metal:fill>
+    </metal:use>
+  </metal:edit>
+
+  <metal:search define-macro="search">
+    <metal:use use-macro="context/widgets/field/macros/edit">
+      <metal:fill fill-slot="widget_body">
+        <metal:block use-macro="context/widgets/remarkswidget/macros/remarks_edit"/>
+      </metal:fill>
+    </metal:use>
+  </metal:search>
+
+</html>

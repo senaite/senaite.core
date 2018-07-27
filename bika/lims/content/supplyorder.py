@@ -11,7 +11,9 @@ from Products.Archetypes.public import *
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -81,15 +83,11 @@ schema = BikaSchema.copy() + Schema((
                       label=_("Date Dispatched"),
                       ),
                   ),
-    TextField('Remarks',
+    RemarksField(
+        'Remarks',
         searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
     ComputedField('ClientUID',
