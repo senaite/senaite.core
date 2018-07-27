@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #913 Refactored Methods Listing View
 
 **Removed**
 
