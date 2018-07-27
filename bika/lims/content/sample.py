@@ -11,12 +11,14 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.api import get_object_by_uid
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.utils import t, getUsers
 from Products.ATExtensions.field import RecordsField
 from bika.lims import deprecated
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.browser.widgets import RejectionWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample, ISamplePrepWorkflow
@@ -606,17 +608,11 @@ schema = BikaSchema.copy() + Schema((
            render_own_label=True,
         ),
     ),
-    TextField('Remarks',
-        default_content_type='text/x-web-intelligent',
-        allowable_content_types = ('text/plain', ),
-        default_output_type="text/plain",
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+    RemarksField(
+        'Remarks',
+        searchable=True,
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
     RecordsField('RejectionReasons',
