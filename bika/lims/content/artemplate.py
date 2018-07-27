@@ -21,7 +21,7 @@ from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.interfaces import IARTemplate
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.browser.widgets import RecordsWidget as RemarksWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
 from bika.lims.browser.widgets import RecordsWidget
