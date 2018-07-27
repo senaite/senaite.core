@@ -68,9 +68,7 @@ class AnalysisSpecsView(BikaListingView):
                 "index": "sortable_title"}),
             ("SampleType", {
                 "title": _("Sample Type"),
-                "index": "getSampleTypeTitle",
-                "attr": "getSampleType.Title",
-                "replace_url": "getSampleType.absolute_url"}),
+                "index": "getSampleTypeTitle"}),
         ))
 
         self.review_states = [
