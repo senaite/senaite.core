@@ -10,8 +10,8 @@ Changelog
 
 **Changed**
 
+- #936 Refactored AR Templates Listing
 - #926 Refactored Analysis Services Listing
-
 - #916 Refactored Instruments Listing
 - #919 Refactored Profiles Listing
 - #915 Refactored SamplePoints Listing
