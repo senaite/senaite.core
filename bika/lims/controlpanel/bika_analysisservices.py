@@ -234,16 +234,6 @@ class AnalysisServicesView(BikaListingView):
             ("Calculation", {
                 "title": _("Calculation"),
                 "sortable": False}),
-            ("CommercialID", {
-                "title": _("Commercial ID"),
-                "attr": "getCommercialID",
-                "toggle": False,
-                "sortable": self.can_sort}),
-            ("ProtocolID", {
-                "title": _("Protocol ID"),
-                "attr": "getProtocolID",
-                "toggle": False,
-                "sortable": self.can_sort}),
             ("SortKey", {
                 "title": _("Sort Key"),
                 "attr": "getSortKey",
