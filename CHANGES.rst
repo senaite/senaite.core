@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #931 Refactored AnalysisSpecs Listing
 - #919 Refactored Profiles Listing
 - #915 Refactored SamplePoints Listing
 - #914 Refactored Sampletypes Listing
