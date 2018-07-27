@@ -12,6 +12,11 @@ Changelog
 
 - #926 Refactored Analysis Services Listing
 
+- #916 Refactored Instruments Listing
+- #919 Refactored Profiles Listing
+- #915 Refactored SamplePoints Listing
+- #914 Refactored Sampletypes Listing
+- #913 Refactored Methods Listing View
 
 **Removed**
 
@@ -28,6 +33,7 @@ Changelog
 - #906 DateTime Widget does not display the Time
 - #909 List of clients cannot sort by Client ID
 - #921 Missing interim fields in worksheet/analyses_transposed view
+- #920 Refactored Remarks and created RemarksField and RemarksWidget
 
 **Security**
 
