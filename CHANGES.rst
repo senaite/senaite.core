@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #914 Refactored Sampletypes Listing
 - #913 Refactored Methods Listing View
 
 **Removed**
