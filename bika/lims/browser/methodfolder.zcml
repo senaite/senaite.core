@@ -5,10 +5,10 @@
     i18n_domain="senaite.core">
 
     <browser:page
-      for="*"
-      name="setRemarksField"
-      class="bika.lims.browser.remarks.ajaxSetRemarks"
-      permission="zope.Public"
+      for="bika.lims.interfaces.IMethods"
+      name="folder_view"
+      class=".methodfolder.MethodFolderContentsView"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

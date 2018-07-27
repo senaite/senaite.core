@@ -52,15 +52,7 @@
     <metal:content-core fill-slot="content-core">
       <div id="folderlisting-main-table"
            tal:content="structure view/contents_table"/>
-      <tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')
-                                     and context.Schema()
-                                     and context.Schema().get('Remarks','')">
-        <tal:remarks define="field python:context.Schema()['Remarks'];
-                             errors python:{};">
-          <p style="margin-top:2em;"/>
-          <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
-        </tal:remarks>
-      </tal:hasremarks>
+
     </metal:content-core>
 
   </body>
