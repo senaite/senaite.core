@@ -101,8 +101,8 @@
 
             <!-- Calculated result -->
             <tal:calculated_result
-                condition="python:item.get('interim_fields', {})">
-                <tal:interim repeat="interim python:item.get('interim_fields',{})">
+                condition="python:item.get('interimfields', {})">
+                <tal:interim repeat="interim python:item.get('interimfields',{})">
                 <div class='interim'>
                     <div tal:content="interim/title" class='interim-title'></div>
                     <tal:edit condition="python:allow_edit">
@@ -149,7 +149,7 @@
                         uid item/uid;
                         objectId string:${item/id};
                         size input_width;"
-                    tal:content="structure python:item['formatted_result']"/>
+                    tal:content="structure python:item.get('formatted_result', '')"/>
                 <input
                     type="hidden"
                     tal:attributes="
@@ -165,7 +165,7 @@
 
             <!-- Regular result -->
             <tal:regular_result
-                condition="python:not item.get('interim_fields', {})">
+                condition="python:not item.get('interimfields', {})">
                 <tal:edit condition="python:allow_edit">
                     <!-- String result -->
                     <input
