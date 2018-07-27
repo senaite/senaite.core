@@ -10,7 +10,7 @@ Changelog
 
 **Changed**
 
-- #919: Refactored Profiles Listing
+- #919 Refactored Profiles Listing
 - #915 Refactored SamplePoints Listing
 - #914 Refactored Sampletypes Listing
 - #913 Refactored Methods Listing View
