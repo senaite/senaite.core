@@ -19,7 +19,7 @@
     <div id="pricelist_content"
       tal:content="structure view/pricelist_content"/>
 
-    <tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')">
+    <tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'schema') and 'Remarks' in context.schema">
       <tal:remarks define="
         field python:context.Schema()['Remarks'];">
         <p style="margin-top:2em;" tal:content="structure python:field.get(context)"/>

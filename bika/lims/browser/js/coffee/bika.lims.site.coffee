@@ -118,7 +118,7 @@ class window.SiteView
         closeOnEsc: false
         onLoad: ->
           # manually remove remarks
-          @getOverlay().find('#archetypes-fieldname-Remarks').remove()
+          @getOverlay().find('.ArchetypesRemarksWidget').remove()
           return
         onClose: ->
           # here is where we'd populate the form controls, if we cared to.
