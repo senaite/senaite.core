@@ -15,6 +15,8 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME, WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import (IAnalysisRequest, IDuplicateAnalysis,
                                   IReferenceAnalysis, IReferenceSample,
                                   IRoutineAnalysis, IWorksheet)
@@ -97,16 +99,11 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
     ),
 
-    TextField(
+    RemarksField(
         'Remarks',
         searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
 

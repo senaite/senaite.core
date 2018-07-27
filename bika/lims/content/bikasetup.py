@@ -40,7 +40,6 @@ from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
-from bika.lims.config import DEFAULT_AR_SPECS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
@@ -348,21 +347,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Analysis specifications which are edited directly on the "
                 "Analysis Request."),
         ),
-    ),
-    StringField(
-        'DefaultARSpecs',
-        schemata="Analyses",
-        default='ar_specs',
-        vocabulary=DEFAULT_AR_SPECS,
-        widget=SelectionWidget(
-            label=_("Default AR Specifications"),
-            description=_(
-                "Choose the default specifications used for all AR views "
-                "to display alerts and notifications.  These will also be "
-                "applied when an AR is published in permanent media, "
-                "e.g. PDF."),
-            format='select',
-        )
     ),
     IntegerField(
         'ExponentialFormatThreshold',
