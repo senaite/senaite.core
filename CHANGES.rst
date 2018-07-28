@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #943 AnalysisRequest View Remarks Field Style
 - #938 Refactored Analysis Profiles Widget
 - #937 Refactored Analysis Specifications Widget
 - #936 Refactored AR Templates Listing
