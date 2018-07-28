@@ -219,11 +219,6 @@ class AnalysisSpecificationView(BikaListingView):
             "table_row_class": "even",
         }
 
-        # Title
-        item["replace"]["service"] = get_link(
-            service.absolute_url(),
-            value=service.Title())
-
         # Add methods
         methods = service.getMethods()
         if methods:
@@ -285,6 +280,7 @@ class AnalysisSpecificationWidget(TypesWidget):
         hidemin and/or hidemax specified, results might contain empty min
         and/or max fields.
         """
+
         values = []
         if "service" not in form:
             return values, {}
