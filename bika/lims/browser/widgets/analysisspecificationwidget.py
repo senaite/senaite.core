@@ -131,8 +131,8 @@ class AnalysisSpecificationView(BikaListingView):
         # correct and that no inactive services are displayed.
         query.update({
             "inactive_state": "active",
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
+            "sort_on": self.sort_on,
+            "sort_order": self.sort_order,
         })
         logger.info("AnalysisSpecificationWidget::query=%r" % query)
         return catalog(query)
@@ -239,8 +239,6 @@ class AnalysisSpecificationView(BikaListingView):
 
     def folderitems(self):
         """Custom folderitems
-
-        N.B. This does *not* call `folderitem` method
 
         :returns: listing items
         """
