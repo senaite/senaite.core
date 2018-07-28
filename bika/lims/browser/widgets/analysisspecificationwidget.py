@@ -107,7 +107,7 @@ class AnalysisSpecificationView(BikaListingView):
                 "title": _("All"),
                 "contentFilter": {"inactive_state": "active"},
                 "transitions": [],
-                "columns": self.columns
+                "columns": self.columns.keys(),
             },
         ]
 
