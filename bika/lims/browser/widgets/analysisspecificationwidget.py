@@ -175,13 +175,6 @@ class AnalysisSpecificationView(BikaListingView):
             after_icons += get_image(
                 "attach_no.png", title=_("Attachment not permitted"))
 
-        # TRICK for AS keyword retrieval on form POST
-        keyword_input_field = "<input type='hidden' " \
-                              "name='keyword.{}:records' " \
-                              "value='{}'/>".format(
-                                  service.UID(), service.getKeyword())
-        after_icons += keyword_input_field
-
         state = api.get_workflow_status_of(service, state_var="inactive_state")
         unit = service.getUnit()
 
