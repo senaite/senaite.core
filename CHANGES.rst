@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #937 Refactored Analysis Specifications Widget
 - #931 Refactored AnalysisSpecs Listing
 - #935 Refactored SamplingDeviations Listing
 - #926 Refactored Analysis Services Listing
