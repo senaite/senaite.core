@@ -29,6 +29,7 @@ Changelog
 
 **Fixed**
 
+- #940 Label "Date Received" appears twice in Analysis Request view
 - #917 Localization of date and time strings in listings
 - #902 Attribute error when updating QC results using an import interface
 - #456 Date Published appears two times on the header table of AR view
