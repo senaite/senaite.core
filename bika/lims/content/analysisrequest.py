@@ -1434,6 +1434,7 @@ schema = BikaSchema.copy() + Schema((
         widget=DateTimeWidget(
             label=_("Date Received"),
             description=_("The date when the sample was received"),
+            render_own_label=True,
             visible={
                 'edit': 'visible',
                 'view': 'visible',
