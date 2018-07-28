@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #933 Refactored SampleConditions Listing
 - #932 Refactored Calculation Listing
 - #931 Refactored AnalysisSpecs Listing
 - #935 Refactored SamplingDeviations Listing
