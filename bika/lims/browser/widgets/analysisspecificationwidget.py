@@ -340,17 +340,15 @@ class AnalysisSpecificationWidget(TypesWidget):
 
         :param field: Contains the schema field with a list of services in it
         """
-
-        # get the view via adapter lookup
-        view = api.get_view("analysis_spec_widget_view")
-
-        context = api.get_object(field.aq_parent)
-        request = api.get_request()
         fieldvalue = getattr(field, field.accessor)()
 
-        # initialize the view with the right parameters
-        view.__init__(context, request,
-                      fieldvalue=fieldvalue, allow_edit=allow_edit)
+        # N.B. we do not want to pass the field as the context to
+        # AnalysisProfileAnalysesView, but rather the holding instance
+        instance = getattr(self, "instance", field.aq_parent)
+        view = AnalysisSpecificationView(instance,
+                                         self.REQUEST,
+                                         fieldvalue=fieldvalue,
+                                         allow_edit=allow_edit)
 
         return view.contents_table(table_only=True)
 
