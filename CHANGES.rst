@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #937 Refactored Analysis Specifications Widget
 - #936 Refactored AR Templates Listing
 - #933 Refactored SampleConditions Listing
 - #932 Refactored Calculation Listing
