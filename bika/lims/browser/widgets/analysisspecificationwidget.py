@@ -114,6 +114,8 @@ class AnalysisSpecificationView(BikaListingView):
     def get_sorted_categories(self, items):
         """Extracts the categories from the items
         """
+
+        # XXX should be actually following the sortKey as well
         categories = filter(
             None, set(map(lambda item: item.get("category"), items)))
 
@@ -265,7 +267,6 @@ class AnalysisSpecificationView(BikaListingView):
         return items
 
 
-
 class AnalysisSpecificationWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
@@ -345,13 +346,18 @@ class AnalysisSpecificationWidget(TypesWidget):
 
         :param field: Contains the schema field with a list of services in it
         """
+
+        # get the view via adapter lookup
+        view = api.get_view("analysis_spec_widget_view")
+
+        context = api.get_object(field.aq_parent)
+        request = api.get_request()
         fieldvalue = getattr(field, field.accessor)()
-        # get the context of this field, otherwise the listing view might fail
-        # when getting the widget as the context
-        view = AnalysisSpecificationView(field.aq_parent,
-                                         self.REQUEST,
-                                         fieldvalue=fieldvalue,
-                                         allow_edit=allow_edit)
+
+        # initialize the view with the right parameters
+        view.__init__(context, request,
+                      fieldvalue=fieldvalue, allow_edit=allow_edit)
+
         return view.contents_table(table_only=True)
 
 
