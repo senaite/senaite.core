@@ -34,7 +34,6 @@
 
   <table
     tal:attributes="class python:'bika-listing-table bika-listing-table-transposed';
-                    style string:table-layout:fixed;
                     form_id form_id"
     i18n:attributes="summary summary_content_listing;"
     tal:define="rows python:[r for r in view.rows_headers if r.get('hidden', False) == False];"
@@ -61,6 +60,16 @@
           </tal:cell>
         </tal:analysis>
       </tr>
+
+      <tr class="slot-remarks slot-remarks-hidden">
+        <th i18n:translate="">Remarks</th>
+        <tal:cell tal:repeat="position view/positions">
+          <td>
+            <div tal:content="structure python:view.render_slot_remarks(position)"/>
+          </td>
+        </tal:cell>
+      </tr>
+
     </tbody>
     <tfoot>
       <!-- Workflow actions -->

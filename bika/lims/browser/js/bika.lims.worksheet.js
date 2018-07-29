@@ -652,7 +652,7 @@
       $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_change);
       $("body").on("change", "select[name^='DetectionLimit.']", this.on_detection_limit_change);
       $("body").on("click", "a.add-remark", this.on_remarks_balloon_clicked);
-      $("body").on("click", "th#foldercontents-Remarks-column", this.on_remarks_th_click);
+      $("body").on("click", "tr.slot-remarks", this.on_remarks_th_click);
       $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
       $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
       $("body").on("click", "#wideinterims_apply", this.on_wideinterims_apply_click);
@@ -1095,10 +1095,10 @@
       console.debug("°°° WorksheetManageResultsView::on_remarks_th_click °°°");
       $el = $(event.currentTarget);
       event.preventDefault();
-      if ($("td.Remarks.hidden").length > 0) {
-        return $("td.Remarks.hidden").removeClass('hidden');
+      if ($el.hasClass("slot-remarks-hidden")) {
+        return $el.removeClass("slot-remarks-hidden");
       } else {
-        return $("td.Remarks").addClass('hidden');
+        return $el.addClass("slot-remarks-hidden");
       }
     };
 

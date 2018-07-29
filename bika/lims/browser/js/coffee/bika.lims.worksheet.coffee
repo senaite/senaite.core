@@ -581,7 +581,7 @@ class window.WorksheetManageResultsView
     $("body").on "click", "a.add-remark", @on_remarks_balloon_clicked
 
     # Remarks row/column clicked
-    $("body").on "click", "th#foldercontents-Remarks-column", @on_remarks_th_click
+    $("body").on "click", "tr.slot-remarks", @on_remarks_th_click
 
     # Wide interims changed
     $("body").on "change", "#wideinterims_analyses", @on_wideiterims_analyses_change
@@ -1023,10 +1023,10 @@ class window.WorksheetManageResultsView
 
     event.preventDefault()
 
-    if $("td.Remarks.hidden").length > 0
-      $("td.Remarks.hidden").removeClass('hidden')
+    if $el.hasClass("slot-remarks-hidden")
+      $el.removeClass("slot-remarks-hidden")
     else
-      $("td.Remarks").addClass('hidden')
+      $el.addClass("slot-remarks-hidden")
 
 
   on_wideiterims_analyses_change: (event) =>
