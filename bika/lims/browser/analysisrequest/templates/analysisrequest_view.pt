@@ -76,16 +76,17 @@
 
     <!-- Refactored Remarks Widget
          https://github.com/senaite/senaite.core/pull/920 -->
-    <div id="remarks-widget">
-      <tal:remarks tal:condition="python:hasattr(context.aq_inner, 'schema') and 'Remarks' in context.schema"
-                   tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-                                  mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
-                                  field python:context.Schema()['Remarks'];
-                                  errors python:{};">
+    <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                                     mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                                     field python:context.Schema()['Remarks'];
+                                     errors python:{};">
+        <h3>
+          <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+          <span i18n:translate="">Remarks</span>
+        </h3>
         <div class="well">
           <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
         </div>
-      </tal:remarks>
     </div>
 
     <h3 style="margin-top:2em;"
