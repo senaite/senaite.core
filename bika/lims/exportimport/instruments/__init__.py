@@ -43,7 +43,6 @@ from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
 from varian.vistapro import icp
-from taqman.dna212bs import dna212bs
 from cobasintegra.model_400_plus import model_400_plus
 
 __all__ = ['abaxis.vetscan.vs2',
@@ -87,7 +86,6 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
            'varian.vistapro.icp',
-           'taqman.dna212bs.dna212bs',
            'cobasintegra.model_400_plus.model_400_plus'
            ]
 
@@ -135,7 +133,6 @@ PARSERS = [
            ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
            ['varian.vistapro.icp', 'VistaPROICPParser'],
-           ['taqman.dna212bs.dna212bs','TaqMan96DNA212BS2CSVParser'],
            ['cobasintegra.model_400_plus.model_400_plus','CobasIntegra400plus2CSVParser'],
            ]
 

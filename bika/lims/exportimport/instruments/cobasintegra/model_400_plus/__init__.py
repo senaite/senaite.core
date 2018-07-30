@@ -5,9 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-""" Beckman Couter Access
+""" Cobas Integra 400 plus
 """
-from datetime import datetime
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
@@ -51,10 +50,8 @@ class CobasIntegra400plusCSVParser(InstrumentCSVResultsFileParser):
         del rawdict['order_id']
         testname = rawdict['test_name']
         del rawdict['test_name']
-
         # Building the new dict
         rawdict['DefaultResult'] = 'result_concentration'
-
         self._addRawResult(resid, {testname: rawdict}, False)
         return 0
 

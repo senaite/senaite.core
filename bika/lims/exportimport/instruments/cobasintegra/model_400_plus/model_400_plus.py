@@ -5,7 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-""" Beckman Coulter Access 2
+""" Cobas Integra 400 plus
 """
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -13,7 +13,7 @@ from . import CobasIntegra400plusImporter, CobasIntegra400plusCSVParser
 import json
 import traceback
 
-title = "Cobas Integra 400+"
+title = "Cobas Integra 400 plus"
 
 
 def Import(context, request):
@@ -91,7 +91,7 @@ def Import(context, request):
 
 class CobasIntegra400plus2CSVParser(CobasIntegra400plusCSVParser):
     def getAttachmentFileType(self):
-        return "Cobas Integra 400+ "
+        return "Cobas Integra 400 plus"
 
 
 class CobasIntegra400plus2Importer(CobasIntegra400plusImporter):
