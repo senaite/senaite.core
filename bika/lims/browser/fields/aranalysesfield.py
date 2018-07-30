@@ -322,7 +322,8 @@ class ARAnalysesField(ObjectField):
         if specs is None:
             return
 
-        # Ensure we have copies of the result ranges
+        # N.B. we copy the records here, otherwise the spec will be written to
+        #      the attached specification of this AR
         rr = {item["keyword"]: item.copy()
               for item in instance.getResultsRange()}
         for spec in specs:
