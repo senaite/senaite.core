@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
@@ -171,14 +172,23 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
     security.declarePublic('getRemainingSampleTypes')
 
-    def getSampleTypes(self):
+    def getSampleTypes(self, active_only=True):
         """Return all sampletypes
         """
-        sampletypes = []
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        for st in bsc(portal_type='SampleType', sort_on='sortable_title'):
-            sampletypes.append((st.UID, st.Title))
-
+        catalog = api.get_tool("bika_setup_catalog")
+        query = {
+            "portal_type": "SampleType",
+            # N.B. The `sortable_title` index sorts case sensitive. Since there
+            #      is no sort key for sample types, it makes more sense to sort
+            #      them alphabetically in the selection
+            "sort_on": "title",
+            "sort_order": "ascending"
+        }
+        results = catalog(query)
+        if active_only:
+            results = filter(api.is_active, results)
+        sampletypes = map(
+            lambda brain: (brain.UID, brain.Title), results)
         return DisplayList(sampletypes)
 
     def getClientUID(self):
@@ -186,6 +196,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
+
 
 class ResultsRangeDict(dict):
 
