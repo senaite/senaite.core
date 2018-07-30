@@ -806,7 +806,7 @@ def render_html_attributes(**kwargs):
     attr = list()
     if kwargs:
         attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
-    return " ".join(attr)
+    return " ".join(attr).replace("css_class", "class")
 
 
 def get_registry_value(key, default=None):

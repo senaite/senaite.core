@@ -6,23 +6,44 @@ Changelog
 
 **Added**
 
+- #924 Added ExtProxyField for its use in SchemaExtender
 
 **Changed**
 
+- #944 Remarks style in Manage Results/Analyses
+- #943 AnalysisRequest View Remarks Field Style
+- #938 Refactored Analysis Profiles Widget
+- #937 Refactored Analysis Specifications Widget
+- #936 Refactored AR Templates Listing
+- #933 Refactored SampleConditions Listing
+- #932 Refactored Calculation Listing
+- #931 Refactored AnalysisSpecs Listing
+- #935 Refactored SamplingDeviations Listing
+- #926 Refactored Analysis Services Listing
+- #916 Refactored Instruments Listing
+- #919 Refactored Profiles Listing
+- #915 Refactored SamplePoints Listing
+- #914 Refactored Sampletypes Listing
+- #913 Refactored Methods Listing View
 
 **Removed**
 
+- #912 Remove "Default AR Specifications" Selection from Setup
 - #901 Remove explicit permission settings for clients
 - #900 Removed basic handling of custom Sample Preparation Workflows
 
 **Fixed**
 
+- #940 Label "Date Received" appears twice in Analysis Request view
+- #917 Localization of date and time strings in listings
 - #902 Attribute error when updating QC results using an import interface
 - #456 Date Published appears two times on the header table of AR view
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
 - #906 DateTime Widget does not display the Time
 - #909 List of clients cannot sort by Client ID
+- #921 Missing interim fields in worksheet/analyses_transposed view
+- #920 Refactored Remarks and created RemarksField and RemarksWidget
 
 **Security**
 

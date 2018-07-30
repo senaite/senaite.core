@@ -109,7 +109,7 @@
         config: {
           closeOnEsc: false,
           onLoad: function() {
-            this.getOverlay().find('#archetypes-fieldname-Remarks').remove();
+            this.getOverlay().find('.ArchetypesRemarksWidget').remove();
           },
           onClose: function() {}
         }

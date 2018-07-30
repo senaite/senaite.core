@@ -1,73 +1,102 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal"
-    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    metal:use-macro="here/main_template/macros/master"
-    i18n:domain="senaite.core">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
 
-<body tal:define="
-    portal context/@@plone_portal_state/portal;
-    global out_of_range python:0;
-    global late python:0;
-    tabindex view/tabindex;
-    now view/now">
+  <head>
+    <title></title>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
 
-<metal:content-title fill-slot="content-title">
-    <h1>
-    <img tal:condition="view/icon | nothing"
-         src="" tal:attributes="src view/icon"/>
-    <span class="documentFirstHeading" tal:content="context/title_or_id"></span>
-	<img tal:condition="python:context.getSample().getSampleType().getHazardous()"
-		title="Hazardous"
-		i18n:attributes="value"
-		tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
-	<img tal:condition="python:context.getInvoiceExclude()"
-		title="Exclude from invoice"
-		i18n:attributes="value"
-		tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
-    </h1>
-</metal:content-title>
+      <!-- TODO move to senaite.lims bootstrap css -->
+      <style type="text/css">
+       #remarks-widget {
+         padding-top: 2em;
+       }
+       #archetypes-fieldname-Remarks {
+         padding: 0!important;
+       }
+       #remarks-widget fieldset legend {
+         display: none;
+       }
+       #remarks-widget input.saveRemarks {
+         margin-top: 1em;
+       }
+      </style>
+    </metal:block>
+  </head>
 
-<metal:content-description fill-slot="content-description">
-</metal:content-description>
+  <body tal:define="ortal context/@@plone_portal_state/portal;
+                    global out_of_range python:0;
+                    global late python:0;
+                    tabindex view/tabindex;
+                    now view/now">
 
-<metal:content-core fill-slot="content-core" tal:define="
-	tabindex view/tabindex;
-	portal context/@@plone_portal_state/portal;">
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <span class="documentFirstHeading" tal:content="context/title_or_id"></span>
+        <img tal:condition="python:context.getSample().getSampleType().getHazardous()"
+                            title="Hazardous"
+                            i18n:attributes="value"
+                            tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
+        <img tal:condition="python:context.getInvoiceExclude()"
+                            title="Exclude from invoice"
+                            i18n:attributes="value"
+                            tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
+      </h1>
+    </metal:content-title>
 
-    <tal:tables tal:repeat="table python:view.tables.items()" tal:condition="python:hasattr(view, 'tables')">
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core" tal:define="
+                                   tabindex view/tabindex;
+                                   portal context/@@plone_portal_state/portal;">
+
+      <tal:tables tal:repeat="table python:view.tables.items()" tal:condition="python:hasattr(view, 'tables')">
         <h3>
-            <img
-				i18n:attributes="title"
-				title="Analyses"
-				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
-            <span tal:content="python: table[0]"/>
+          <img
+            i18n:attributes="title"
+                             title="Analyses"
+                             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+          <span tal:content="python: table[0]"/>
         </h3>
         <span tal:replace="structure python: table[1]"/>
-    </tal:tables>
+      </tal:tables>
 
-	<tal:remarks define="
-		field python:context.Schema()['Remarks'];
-		errors python:{};">
-		<p style="margin-top:2em;"/>
-		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
-	</tal:remarks>
+      <!-- Refactored Remarks Widget
+           https://github.com/senaite/senaite.core/pull/920 -->
+      <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+               mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+               field python:context.Schema()['Remarks'];
+               errors python:{};">
+        <h3>
+          <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+          <span i18n:translate="">Remarks</span>
+        </h3>
+        <div class="well">
+          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+        </div>
+      </div>
 
-    <tal:rejection define="
-        field python:context.Schema()['RejectionReasons'];
-        widget python:field.widget;
-        errors python:{};">
+      <tal:rejection define="field python:context.Schema()['RejectionReasons'];
+                             widget python:field.widget;
+                             errors python:{};">
         <table style="display: none;">
-            <td>
-                <span tal:replace="python:widget.label"/>
-            </td>
-            <td>
-                <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
-            </td>
+          <td>
+            <span tal:replace="python:widget.label"/>
+          </td>
+          <td>
+            <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
+          </td>
         </table>
-    </tal:rejection>
+      </tal:rejection>
 
-</metal:content-core>
+    </metal:content-core>
 
-</body>
+  </body>
 </html>

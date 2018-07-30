@@ -4,7 +4,28 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     metal:use-macro="here/main_template/macros/master"
     i18n:domain="senaite.core">
-<head><title></title></head>
+  <head>
+    <title></title>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+
+      <!-- TODO move to senaite.lims bootstrap css -->
+      <style type="text/css">
+       #remarks-widget {
+         padding-top: 2em;
+       }
+       #archetypes-fieldname-Remarks {
+         padding: 0!important;
+       }
+       #remarks-widget fieldset legend {
+         display: none;
+       }
+       #remarks-widget input.saveRemarks {
+         margin-top: 1em;
+       }
+      </style>
+    </metal:block>
+  </head>
 
 <body>
 
@@ -51,6 +72,21 @@
             <span tal:replace="structure python:cfields[cfield]['title']"/>&nbsp;
             <span tal:replace="structure python:cfields[cfield]['value']"/>
         </tal:customfields>
+    </div>
+
+    <!-- Refactored Remarks Widget
+         https://github.com/senaite/senaite.core/pull/920 -->
+    <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                                     mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                                     field python:context.Schema()['Remarks'];
+                                     errors python:{};">
+        <h3>
+          <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+          <span i18n:translate="">Remarks</span>
+        </h3>
+        <div class="well">
+          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+        </div>
     </div>
 
     <h3 style="margin-top:2em;"
@@ -110,14 +146,6 @@
     </h3>
     <tal:parts replace="structure view/riview"/>
 
-
-    <tal:remarks define="
-        field python:context.Schema()['Remarks'];
-        errors python:{};">
-        <p style="margin-top:2em;"/>
-         <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
-    </tal:remarks>
-
-</metal:content-core>
+  </metal:content-core>
 </body>
 </html>

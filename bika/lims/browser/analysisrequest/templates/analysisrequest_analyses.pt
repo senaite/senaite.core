@@ -1,145 +1,128 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal"
-    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    metal:use-macro="here/main_template/macros/master"
-    i18n:domain="senaite.core">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
 
-<body
-    tal:define="
-        form_id view/form_id;
-        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+  <body
+    tal:define="form_id view/form_id;
+                table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
     tal:omit-tag="python:table_only">
 
-<metal:content-title fill-slot="content-title"
-    tal:define="
-        form_id view/form_id;
-        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-    tal:condition="python:not table_only">
-    <h1>
+    <metal:content-title fill-slot="content-title"
+                         tal:define="form_id view/form_id;
+                                     table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+                         tal:condition="python:not table_only">
+      <h1>
         <img tal:condition="view/icon | nothing"
              src="" tal:attributes="src view/icon"/>
         <span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="view/title"/>
         <tal:add_actions repeat="add_item python:view.context_actions.keys()">
-            <a tal:attributes="
-                style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
-                href python:view.context_actions[add_item]['url'];
-                class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
-                <span tal:replace="python:add_item"/>
-            </a>
-        </tal:add_actions>
-
-    </h1>
-</metal:content-title>
-
-<metal:content-description fill-slot="content-description"
-    tal:define="
-        form_id view/form_id;
-        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-    tal:condition="python:not table_only">
-    <div class="documentDescription"
-        tal:content="structure view/description"
-        tal:condition="view/description"/>
-</metal:content-description>
-
-<metal:content-core fill-slot="content-core">
-
-<span id="bika_setup" style="display:none;"
-    tal:define="bs python: context.bika_setup;"
-    tal:attributes="EnableARSpecs python: 'true' if bs.getEnableARSpecs() else '';
-                    ShowPartitions python: 'true' if bs.getShowPartitions() else '';
-                    SHowPrices python: 'true' if bs.getShowPartitions() else '';">
-</span>
-
-<h3 style="margin-top:1em;" tal:condition="python:context.bika_setup.getShowPartitions()">
-    <img
-        i18n:attributes="title"
-        title="Partitions"
-        tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/samplepartition.png"/>
-    <span i18n:translate="">Sample Partitions</span>
-    <tal:add_actions repeat="add_item python:view.context_actions.keys()">
-        <a tal:attributes="
-            style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
-            href python:view.context_actions[add_item]['url'];
-            class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+          <a tal:attributes="style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+                             href python:view.context_actions[add_item]['url'];
+                             class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
             <span tal:replace="python:add_item"/>
-        </a>
-    </tal:add_actions>
-</h3>
+          </a>
+        </tal:add_actions>
+      </h1>
+    </metal:content-title>
 
-<form id="list" action="workflow_action" method="post" name="bika_listing_form">
-    <input tal:replace="structure context/@@authenticator/authenticator"/>
-    <input type="hidden"
-        name="logged_in_client"
-        tal:define="groups_tool python:context.portal_groups;
-                    membership_tool python:context.portal_membership;
-                    member python:membership_tool.getAuthenticatedMember();
-                    member_groups python:[groups_tool.getGroupById(group.id).getGroupName() for group in groups_tool.getGroupsByUserId(member.id)];
-                    logged_in_client python:'Clients' in member_groups;"
-         tal:condition="logged_in_client"
-         value="1"
-    />
-    <input type="hidden" value="1" name="submitted">
-    <input type="hidden" value="list" name="form_id">
-    <input type="hidden" tal:attributes="value view/view_url" name="view_url">
-    <input type="hidden" tal:attributes="value context/portal_type" name="portal_type">
-    <input type="hidden" value="id" name="list_sort_on">
-    <input type="hidden" value="ascending" name="list_sort_order">
-    <input type="hidden" value="default" name="list_review_state">
-    <input type="hidden" value="1000" name="list_pagesize">
-    <input type="hidden" value="1" name="list_pagenumber">
-    <input type="hidden" value="[]" name="specs">
-    <input id="item_data" type="hidden" value="[]" name="item_data">
-    <input type="hidden" id="ResultsRange" name="ResultsRange"
-            tal:attributes="value view/getResultsRange"/>
+    <metal:content-description fill-slot="content-description"
+                               tal:define="form_id view/form_id;
+                                           table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+                               tal:condition="python:not table_only">
+      <div class="documentDescription"
+           tal:content="structure view/description"
+           tal:condition="view/description"/>
+    </metal:content-description>
 
-    <span style="display:none"
-        id="st_title"
-        tal:attributes="st_title python:context.getSample().getSampleType().Title()">
-    </span>
+    <metal:content-core fill-slot="content-core">
 
-    <span id="partitions" tal:condition="python:context.bika_setup.getShowPartitions()">
-        <tal:parts replace="structure view/parts"/>
-    </span>
+      <span id="bika_setup" style="display:none;"
+            tal:define="bs python: context.bika_setup;"
+            tal:attributes="EnableARSpecs python: 'true' if bs.getEnableARSpecs() else '';
+                            ShowPartitions python: 'true' if bs.getShowPartitions() else '';
+                            SHowPrices python: 'true' if bs.getShowPartitions() else '';">
+      </span>
 
-    <h3 style="margin-top:1em;">
+      <h3 style="margin-top:1em;" tal:condition="python:context.bika_setup.getShowPartitions()">
         <img
+          i18n:attributes="title"
+          title="Partitions"
+          tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/samplepartition.png"/>
+        <span i18n:translate="">Sample Partitions</span>
+        <tal:add_actions repeat="add_item python:view.context_actions.keys()">
+          <a tal:attributes="style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+                             href python:view.context_actions[add_item]['url'];
+                             class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+            <span tal:replace="python:add_item"/>
+          </a>
+        </tal:add_actions>
+      </h3>
+
+      <form id="list" action="workflow_action" method="post" name="bika_listing_form">
+        <input tal:replace="structure context/@@authenticator/authenticator"/>
+        <input type="hidden"
+               name="logged_in_client"
+               tal:define="groups_tool python:context.portal_groups;
+                           membership_tool python:context.portal_membership;
+                           member python:membership_tool.getAuthenticatedMember();
+                           member_groups python:[groups_tool.getGroupById(group.id).getGroupName() for group in groups_tool.getGroupsByUserId(member.id)];
+                           logged_in_client python:'Clients' in member_groups;"
+               tal:condition="logged_in_client"
+               value="1" />
+
+        <input type="hidden" value="1" name="submitted">
+        <input type="hidden" value="list" name="form_id">
+        <input type="hidden" tal:attributes="value view/view_url" name="view_url">
+        <input type="hidden" tal:attributes="value context/portal_type" name="portal_type">
+        <input type="hidden" value="id" name="list_sort_on">
+        <input type="hidden" value="ascending" name="list_sort_order">
+        <input type="hidden" value="default" name="list_review_state">
+        <input type="hidden" value="1000" name="list_pagesize">
+        <input type="hidden" value="1" name="list_pagenumber">
+        <input type="hidden" value="[]" name="specs">
+        <input id="item_data" type="hidden" value="[]" name="item_data">
+        <input type="hidden" id="ResultsRange" name="ResultsRange"
+               tal:attributes="value view/getResultsRange"/>
+
+        <span style="display:none"
+              id="st_title"
+              tal:attributes="st_title python:context.getSample().getSampleType().Title()">
+        </span>
+
+        <span id="partitions" tal:condition="python:context.bika_setup.getShowPartitions()">
+          <tal:parts replace="structure view/parts"/>
+        </span>
+
+        <h3 style="margin-top:1em;">
+          <img
             i18n:attributes="title"
             title="Analyses"
             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
-        <span i18n:translate="">Analyses</span>
-    </h3>
+          <span i18n:translate="">Analyses</span>
+        </h3>
 
-    <div id="folderlisting-main-table"
-        tal:content="structure view/contents_table"/>
+        <div id="folderlisting-main-table"
+             tal:content="structure view/contents_table"/>
 
-    </form>
+      </form>
 
-    <tal:hasremarks tal:condition="python:hasattr(context, 'Remarks')">
-        <p style="margin-top:2em;"/>
-        <tal:remarks define="
-            field python:context.Schema()['Remarks'];
-            errors python:{};">
-        <p style="margin-top:2em;"/>
-             <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
-        </tal:remarks>
-    </tal:hasremarks>
-
-    <tal:rejection define="
-        field python:context.Schema()['RejectionReasons'];
-        widget python:field.widget;
-        errors python:{};">
+      <tal:rejection define="field python:context.Schema()['RejectionReasons'];
+                             widget python:field.widget;
+                             errors python:{};">
         <table style="display: none;">
-            <td>
-                <span tal:replace="python:widget.label"/>
-            </td>
-            <td>
-                <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
-            </td>
+          <td>
+            <span tal:replace="python:widget.label"/>
+          </td>
+          <td>
+            <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
+          </td>
         </table>
-    </tal:rejection>
+      </tal:rejection>
 
-</metal:content-core>
+    </metal:content-core>
 
-</body>
+  </body>
 </html>

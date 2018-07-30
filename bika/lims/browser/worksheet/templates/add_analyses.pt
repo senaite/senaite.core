@@ -127,12 +127,6 @@
       <div id="folderlisting-main-table"
            tal:content="structure view/contents_table"/>
 
-      <tal:remarks define="field python:context.Schema()['Remarks'];
-                           errors python:{};">
-        <p style="margin-top:2em;"/>
-        <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
-      </tal:remarks>
-
     </metal:content-core>
   </body>
 </html>
