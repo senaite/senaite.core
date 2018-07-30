@@ -21,7 +21,6 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.utils import changeWorkflowState
-from typing import Mapping, Any
 from zope.event import notify
 
 version = '1.2.8'  # Remember version number in metadata.xml and setup.py
@@ -134,7 +133,6 @@ def revert_client_permissions_for_batches(portal):
 
 
 def fix_ar_sample_workflow(brain_or_object):
-    # type: (Any) -> None
     """Re-set the state of an AR, Sample and SamplePartition to match the
     least-early state of all contained valid/current analyses. Ignores
     retracted/rejected/cancelled analyses.
@@ -156,35 +154,35 @@ def fix_ar_sample_workflow(brain_or_object):
     ignored = ['retracted', 'rejected']
 
     tmp = filter(lambda x: x[0] not in ignored, arwf.states.items())
-    arstates = OrderedDict(tmp)  # type: Mapping[str: StateDefinition]
+    arstates = OrderedDict(tmp)
     tmp = filter(lambda x: x[0] not in ignored, swf.states.items())
-    samplestates = OrderedDict(tmp)  # type: Mapping[str: StateDefinition]
+    samplestates = OrderedDict(tmp)
     tmp = filter(lambda x: x[0] in arstates, anwf.states.items())
-    anstates = OrderedDict(tmp)  # type: Mapping[str: StateDefinition]
+    anstates = OrderedDict(tmp)
 
     # find least-early analysis state
     # !!! Assumes states in definitions are roughly ordered earliest to latest
-    ar_dest_state = arstates.items()[0][0]  # type: str
+    ar_dest_state = arstates.items()[0][0]
     for anstate in anstates:
         if ar.getAnalyses(review_state=anstate):
             ar_dest_state = anstate
 
     # Force state of AR
-    ar_state = get_review_status(ar)  # type: str
+    ar_state = get_review_status(ar)
     if ar_state != ar_dest_state:
         changeWorkflowState(ar, arwf.id, ar_dest_state)
         log_change_state(ar.id, ar.id, ar_state, ar_dest_state)
 
     # Force state of Sample
     sample = ar.getSample()
-    sample_state = get_review_status(sample)  # type: str
+    sample_state = get_review_status(sample)
     if ar_dest_state in samplestates:
         changeWorkflowState(sample, swf.id, ar_dest_state)
         log_change_state(ar.id, sample.id, sample_state, ar_dest_state)
 
         # Force states of Partitions
         for part in sample.objectValues():
-            part_state = get_review_status(part)  # type: str
+            part_state = get_review_status(part)
             if get_review_status(part) != ar_dest_state:
                 changeWorkflowState(sample, swf.id, ar_dest_state)
                 log_change_state(ar.id, part.id, part_state, ar_dest_state)
