@@ -13,10 +13,11 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisSpec
 from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import (BaseFolder, ComputedField,
-                                        ComputedWidget, ReferenceWidget,
-                                        Schema)
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import Schema
 from Products.Archetypes.utils import DisplayList
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field.records import RecordsField
