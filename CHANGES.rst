@@ -21,7 +21,8 @@ Changelog
 - #915 Refactored SamplePoints Listing
 - #914 Refactored Sampletypes Listing
 - #913 Refactored Methods Listing View
-- AnalysisRequest remarks displayed in worksheet results views
+- #945 Show AR Remarks in Worksheet ManageResults views
+
 
 **Removed**
 
