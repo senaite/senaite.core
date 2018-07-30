@@ -534,6 +534,9 @@ class window.WorksheetManageResultsView
     # bind the event handler to the elements
     @bind_eventhandler()
 
+    # Initialize overlays
+    @init_overlays()
+
     # method instrument constraints
     @constraints = null
 
@@ -580,8 +583,11 @@ class window.WorksheetManageResultsView
     # Remarks balloon clicked
     $("body").on "click", "a.add-remark", @on_remarks_balloon_clicked
 
-    # Remarks row/column clicked
-    $("body").on "click", "tr.slot-remarks", @on_remarks_th_click
+    # Remarks row clicked (transposed view)
+    $("body").on "click", "tr.slot-remarks", @on_slot_remarks_th_click
+
+    # Remarks icon clicked (table view)
+    $("body").on "click", "img.slot-remarks", @on_slot_remarks_icon_click
 
     # Wide interims changed
     $("body").on "change", "#wideinterims_analyses", @on_wideiterims_analyses_change
@@ -592,6 +598,20 @@ class window.WorksheetManageResultsView
 
     # handle value changes in the form
     $(this).on "constraints:loaded", @on_constraints_loaded
+
+  init_overlays: =>
+    ###
+     * Initialize all overlays for later loading
+     *
+    ###
+    console.debug "WorksheetManageResultsView::bind_eventhandler"
+    $('a.slot-remarks').prepOverlay
+      subtype: 'ajax'
+      config:
+        closeOnEsc: true
+        onBeforeLoad: (evt) ->
+          data = $.parseJSON($(evt.target).children('.pb-ajax').children('div')[0].innerText)
+          $(evt.target).children('.pb-ajax').children('div')[0].innerText = data['objects'][0]['Remarks']
 
 
   init_instruments_and_methods: =>
@@ -1014,11 +1034,11 @@ class window.WorksheetManageResultsView
     $(remarks).find("div.remarks-placeholder").toggle()
 
 
-  on_remarks_th_click: (event) =>
+  on_slot_remarks_th_click: (event) =>
     ###
-     * Eventhandler when the remarks balloon was clicked
+     * Eventhandler when the remarks row was clicked in transposed layout
     ###
-    console.debug "°°° WorksheetManageResultsView::on_remarks_th_click °°°"
+    console.debug "°°° WorksheetManageResultsView::on_slot_remarks_th_click °°°"
     $el = $(event.currentTarget)
 
     event.preventDefault()
@@ -1028,6 +1048,18 @@ class window.WorksheetManageResultsView
     else
       $el.addClass("slot-remarks-hidden")
 
+
+  on_slot_remarks_icon_click: (event) =>
+    ###
+     * Eventhandler when the remarks balloon was clicked next to an AR
+     * in standard table layout.
+    ###
+    console.debug "°°° WorksheetManageResultsView::on_slot_remarks_icon_click °°°"
+    $el = $(event.currentTarget)
+
+    event.preventDefault()
+
+    xxx
 
   on_wideiterims_analyses_change: (event) =>
     ###

@@ -592,7 +592,8 @@
       this.on_wideinterims_apply_click = bind(this.on_wideinterims_apply_click, this);
       this.on_wideiterims_interims_change = bind(this.on_wideiterims_interims_change, this);
       this.on_wideiterims_analyses_change = bind(this.on_wideiterims_analyses_change, this);
-      this.on_remarks_th_click = bind(this.on_remarks_th_click, this);
+      this.on_slot_remarks_icon_click = bind(this.on_slot_remarks_icon_click, this);
+      this.on_slot_remarks_th_click = bind(this.on_slot_remarks_th_click, this);
       this.on_remarks_balloon_clicked = bind(this.on_remarks_balloon_clicked, this);
       this.on_detection_limit_change = bind(this.on_detection_limit_change, this);
       this.on_analysis_instrument_change = bind(this.on_analysis_instrument_change, this);
@@ -611,6 +612,7 @@
       this.get_portal_url = bind(this.get_portal_url, this);
       this.ajax_submit = bind(this.ajax_submit, this);
       this.init_instruments_and_methods = bind(this.init_instruments_and_methods, this);
+      this.init_overlays = bind(this.init_overlays, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
@@ -626,6 +628,7 @@
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this._pmf = window.jarn.i18n.MessageFactory('plone');
       this.bind_eventhandler();
+      this.init_overlays();
       this.constraints = null;
       this.init_instruments_and_methods();
       return window.ws = this;
@@ -652,13 +655,34 @@
       $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_change);
       $("body").on("change", "select[name^='DetectionLimit.']", this.on_detection_limit_change);
       $("body").on("click", "a.add-remark", this.on_remarks_balloon_clicked);
-      $("body").on("click", "tr.slot-remarks", this.on_remarks_th_click);
+      $("body").on("click", "tr.slot-remarks", this.on_slot_remarks_th_click);
+      $("body").on("click", "img.slot-remarks", this.on_slot_remarks_icon_click);
       $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
       $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
       $("body").on("click", "#wideinterims_apply", this.on_wideinterims_apply_click);
 
       /* internal events */
       return $(this).on("constraints:loaded", this.on_constraints_loaded);
+    };
+
+    WorksheetManageResultsView.prototype.init_overlays = function() {
+
+      /*
+       * Initialize all overlays for later loading
+       *
+       */
+      console.debug("WorksheetManageResultsView::bind_eventhandler");
+      return $('a.slot-remarks').prepOverlay({
+        subtype: 'ajax',
+        config: {
+          closeOnEsc: true,
+          onBeforeLoad: function(evt) {
+            var data;
+            data = $.parseJSON($(evt.target).children('.pb-ajax').children('div')[0].innerText);
+            return $(evt.target).children('.pb-ajax').children('div')[0].innerText = data['objects'][0]['Remarks'];
+          }
+        }
+      });
     };
 
     WorksheetManageResultsView.prototype.init_instruments_and_methods = function() {
@@ -1086,13 +1110,13 @@
       return $(remarks).find("div.remarks-placeholder").toggle();
     };
 
-    WorksheetManageResultsView.prototype.on_remarks_th_click = function(event) {
+    WorksheetManageResultsView.prototype.on_slot_remarks_th_click = function(event) {
 
       /*
-       * Eventhandler when the remarks balloon was clicked
+       * Eventhandler when the remarks row was clicked in transposed layout
        */
       var $el;
-      console.debug("°°° WorksheetManageResultsView::on_remarks_th_click °°°");
+      console.debug("°°° WorksheetManageResultsView::on_slot_remarks_th_click °°°");
       $el = $(event.currentTarget);
       event.preventDefault();
       if ($el.hasClass("slot-remarks-hidden")) {
@@ -1100,6 +1124,19 @@
       } else {
         return $el.addClass("slot-remarks-hidden");
       }
+    };
+
+    WorksheetManageResultsView.prototype.on_slot_remarks_icon_click = function(event) {
+
+      /*
+       * Eventhandler when the remarks balloon was clicked next to an AR
+       * in standard table layout.
+       */
+      var $el;
+      console.debug("°°° WorksheetManageResultsView::on_slot_remarks_icon_click °°°");
+      $el = $(event.currentTarget);
+      event.preventDefault();
+      return xxx;
     };
 
     WorksheetManageResultsView.prototype.on_wideiterims_analyses_change = function(event) {

@@ -9,6 +9,7 @@ from operator import itemgetter
 
 from bika.lims import bikaMessageFactory as _, logger, api
 from bika.lims.browser.analyses import AnalysesView as BaseView
+from bika.lims.interfaces import IAnalysisRequest, IReferenceSample
 from bika.lims.utils import to_int
 
 
@@ -167,6 +168,10 @@ class AnalysesView(BaseView):
         # ReferenceSample), so the information about the parent must be
         # displayed in the first cell of each slot.
         self.fill_slots_headers(items)
+
+        # Perform the same trick to fill the Remarks from the AR into the
+        # remarks field of the analyses.
+        self.fill_remarks_cells(items)
 
         return items
 
@@ -384,11 +389,25 @@ class AnalysesView(BaseView):
         elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'c':
             pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/control.png'></a>" % (
             parent.absolute_url(), parent.Title())
+            api_url = self.portal_url + \
+                      "/@@API/read?catalog_name=uid_catalog" \
+                      "&include_fields=Remarks&UID=%s"%(parent.UID())
+            pos_text += "<a class='slot-remarks' href='%s'>" \
+                        "<img title='remarks' src=" \
+                        "'++resource++bika.lims.images/comment_ico.png'></a>" \
+                        % api_url
             pos_text += "<br/>"
         if parent.portal_type == 'AnalysisRequest':
             sample = parent.getSample()
             pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/sample.png'></a>" % (
             sample.absolute_url(), sample.Title())
+            api_url = \
+                self.portal_url + "/@@API/read?catalog_name=uid_catalog" \
+                      "&include_fields=Remarks&UID=%s" % (parent.UID())
+            pos_text += "<a class='slot-remarks' href='%s'>" \
+                        "<img title='remarks' src=" \
+                        "'++resource++bika.lims.images/comment_ico.png'></a>" \
+                        % api_url
         pos_text += "</td></tr>"
 
         pos_text += "<tr><td>"
@@ -439,3 +458,41 @@ class AnalysesView(BaseView):
 
         pos_text += "</table>"
         return pos_text
+
+    def fill_remarks_cells(self, items):
+        """Gets the Remarks from the parent AR for each slot.
+        :param items: dictionary with items to be rendered in the list
+        """
+        filled_slots = []
+        for item in items:
+            item_position = item['Pos']
+            if item_position in filled_slots:
+                # We've already filled the remarks cell for this slot
+                continue
+            if item['state_title'] == 's':
+                # This is an empty slot
+                continue
+            filled_slots.append(item_position)
+
+            # This is the first analysis found for the given position, add the
+            # parent's remarks and apply rowspan.
+            rowspan = self.items_rowspans.get(item_position, 1)
+            item['rowspan']['Remarks'] = rowspan
+            item['replace']['Remarks'] = self.get_slot_remarks(item)
+
+            # Set the css class to it's default hidden state
+            item['class']['Remarks'] = 'hidden'
+
+    def get_slot_remarks(self, item):
+        """Return the remarks for the analysis' parent.
+        No remarks are returned for Duplicate analyses.
+        :param item: the item for which the slot header is requested
+        :return: the html contents to be displayed in the remarks cell of a slot
+        """
+        instance = api.get_object(item['obj'])
+        parent = instance.aq_parent
+        if not IAnalysisRequest.providedBy(parent) \
+                or IReferenceSample.providedBy(parent):
+            return ""
+        cooked = parent.schema['Remarks'].get_cooked_remarks(parent)
+        return "<div>%s</div>" % cooked
