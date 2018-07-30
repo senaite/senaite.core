@@ -326,7 +326,12 @@ class ARAnalysesField(ObjectField):
         for spec in specs:
             keyword = spec.get("keyword")
             if keyword in rr:
-                rr[keyword].update(spec)
+                # overwrite the instance specification only, if the specific
+                # analysis spec has min/max values set
+                if all([spec.get("min"), spec.get("max")]):
+                    rr[keyword].update(spec)
+                else:
+                    rr[keyword] = spec
             else:
                 rr[keyword] = spec
         return instance.setResultsRange(rr.values())
