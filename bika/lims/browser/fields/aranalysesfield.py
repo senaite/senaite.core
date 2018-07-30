@@ -322,7 +322,9 @@ class ARAnalysesField(ObjectField):
         if specs is None:
             return
 
-        rr = {item["keyword"]: item for item in instance.getResultsRange()}
+        # Ensure we have copies of the result ranges
+        rr = {item["keyword"]: item.copy()
+              for item in instance.getResultsRange()}
         for spec in specs:
             keyword = spec.get("keyword")
             if keyword in rr:
