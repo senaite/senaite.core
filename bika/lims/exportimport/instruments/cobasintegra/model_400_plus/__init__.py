@@ -12,7 +12,7 @@ from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
 
-class TaqMan96DNA212BSCSVParser(InstrumentCSVResultsFileParser):
+class CobasIntegra400plusCSVParser(InstrumentCSVResultsFileParser):
     def __init__(self, csv):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._columns = []  # The different columns names
@@ -48,13 +48,13 @@ class TaqMan96DNA212BSCSVParser(InstrumentCSVResultsFileParser):
         for idx, result in enumerate(sline):
             rawdict[self._columns[idx]] = result
         # Getting key values
-        resid = rawdict['Sample ID']
-        del rawdict['Sample ID']
-        testname = rawdict['Test']
-        del rawdict['Test']
+        resid = rawdict['order_id']
+        del rawdict['order_id']
+        testname = rawdict['test_name']
+        del rawdict['test_name']
 
         # Building the new dict
-        rawdict['DefaultResult'] = 'Result'
+        rawdict['DefaultResult'] = 'result_concentration'
         rawdict['Remarks'] = rawdict['Comment']
         del rawdict['Comment']
         print rawdict
@@ -63,7 +63,7 @@ class TaqMan96DNA212BSCSVParser(InstrumentCSVResultsFileParser):
         return 0
 
 
-class TaqMan96DNA212BSImporter(AnalysisResultsImporter):
+class CobasIntegra400plusImporter(AnalysisResultsImporter):
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):

@@ -12,7 +12,7 @@ from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
 
-class TaqMan96DNA212BSCSVParser(InstrumentCSVResultsFileParser):
+class FacsCaliburParser(InstrumentCSVResultsFileParser):
     def __init__(self, csv):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._columns = []  # The different columns names
@@ -63,7 +63,7 @@ class TaqMan96DNA212BSCSVParser(InstrumentCSVResultsFileParser):
         return 0
 
 
-class TaqMan96DNA212BSImporter(AnalysisResultsImporter):
+class FacsCaliburImporter(AnalysisResultsImporter):
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):

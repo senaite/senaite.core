@@ -9,7 +9,7 @@
 """
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from . import TaqMan96DNA212BSCSVParser, TaqMan96DNA212BSImporter
+from . import FacsCaliburParser, FacsCaliburImporter
 import json
 import traceback
 
@@ -35,7 +35,7 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     if fileformat == 'csv':
-        parser = TaqMan96DNA212BS2CSVParser(infile)
+        parser = FacsCalibur2Parser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
@@ -66,7 +66,7 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = TaqMan96DNA212BS2Importer(parser=parser,
+        importer = FacsCalibur2Importer(parser=parser,
                                               context=context,
                                               idsearchcriteria=sam,
                                               allowed_ar_states=status,
@@ -89,11 +89,11 @@ def Import(context, request):
     return json.dumps(results)
 
 
-class TaqMan96DNA212BS2CSVParser(TaqMan96DNA212BSCSVParser):
+class FacsCalibur2Parser(FacsCaliburCSVParser):
     def getAttachmentFileType(self):
         return "TaqMan96 DNA212BS "
 
 
-class TaqMan96DNA212BS2Importer(TaqMan96DNA212BSImporter):
+class FacsCalibur2Importer(FacsCaliburImporter):
     def getKeywordsToBeExcluded(self):
         return []

@@ -9,21 +9,21 @@
 """
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from . import TaqMan96DNA212BSCSVParser, TaqMan96DNA212BSImporter
+from . import CobasIntegra400plusImporter, CobasIntegra400plusCSVParser
 import json
 import traceback
 
-title = "TaqMan96 DNA212BS"
+title = "Cobas Integra 400+"
 
 
 def Import(context, request):
-    """ TaqMan96 DNA212BS analysis results
+    """ Cobas Integra analysis results
     """
-    infile = request.form['taqman96_dna212bs_file']
-    fileformat = request.form['taqman96_dna212bs_format']
-    artoapply = request.form['taqman96_dna212bs_artoapply']
-    override = request.form['taqman96_dna212bs_override']
-    sample = request.form.get('taqman96_dna212bs_sample',
+    infile = request.form['cobas_integra_400_plus_file']
+    fileformat = request.form['cobas_integra_400_plus_format']
+    artoapply = request.form['cobas_integra_400_plus_artoapply']
+    override = request.form['cobas_integra_400_plus_override']
+    sample = request.form.get('cobas_integra_400_plus_override_sample',
                               'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
@@ -35,7 +35,7 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     if fileformat == 'csv':
-        parser = TaqMan96DNA212BS2CSVParser(infile)
+        parser = CobasIntegra400plus2CSVParser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
@@ -66,7 +66,7 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = TaqMan96DNA212BS2Importer(parser=parser,
+        importer = CobasIntegra400plus2Importer(parser=parser,
                                               context=context,
                                               idsearchcriteria=sam,
                                               allowed_ar_states=status,
@@ -89,11 +89,11 @@ def Import(context, request):
     return json.dumps(results)
 
 
-class TaqMan96DNA212BS2CSVParser(TaqMan96DNA212BSCSVParser):
+class CobasIntegra400plus2CSVParser(CobasIntegra400plusCSVParser):
     def getAttachmentFileType(self):
-        return "TaqMan96 DNA212BS "
+        return "Cobas Integra 400+ "
 
 
-class TaqMan96DNA212BS2Importer(TaqMan96DNA212BSImporter):
+class CobasIntegra400plus2Importer(CobasIntegra400plusImporter):
     def getKeywordsToBeExcluded(self):
         return []
