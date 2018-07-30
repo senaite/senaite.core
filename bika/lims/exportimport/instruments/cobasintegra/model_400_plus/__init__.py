@@ -43,7 +43,6 @@ class CobasIntegra400plusCSVParser(InstrumentCSVResultsFileParser):
         if len(sline) != len(self._columns):
             self.err("One data line has the wrong number of items")
             return -1
-        #print self._columns
         rawdict = {}
         for idx, result in enumerate(sline):
             rawdict[self._columns[idx]] = result
@@ -55,9 +54,6 @@ class CobasIntegra400plusCSVParser(InstrumentCSVResultsFileParser):
 
         # Building the new dict
         rawdict['DefaultResult'] = 'result_concentration'
-        rawdict['Remarks'] = rawdict['Comment']
-        del rawdict['Comment']
-        print rawdict
 
         self._addRawResult(resid, {testname: rawdict}, False)
         return 0

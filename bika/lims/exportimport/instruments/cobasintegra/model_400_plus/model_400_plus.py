@@ -32,7 +32,7 @@ def Import(context, request):
 
     # Load the most suitable parser according to file extension/options/etc...
     parser = None
-    if not hasattr(infile, 'filename'):
+    if not hasattr(infile, 'cobas_integra_400_plus_file'):
         errors.append(_("No file selected"))
     if fileformat == 'csv':
         parser = CobasIntegra400plus2CSVParser(infile)
