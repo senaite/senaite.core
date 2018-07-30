@@ -34,6 +34,7 @@ Changelog
 **Fixed**
 
 - #949 Retain AR Spec if Analyses were added/removed
+- #948 Inactive Sample Types shown in Analysis Specifications
 - #940 Label "Date Received" appears twice in Analysis Request view
 - #917 Localization of date and time strings in listings
 - #902 Attribute error when updating QC results using an import interface
