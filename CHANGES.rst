@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #947 Instrument import interface: Cobas Integra 400plus
 
 **Changed**
 
