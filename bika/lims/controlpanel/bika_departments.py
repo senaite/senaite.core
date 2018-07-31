@@ -24,6 +24,9 @@ from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
+# TODO: Separate content and view into own modules!
+
+
 class DepartmentsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
 
