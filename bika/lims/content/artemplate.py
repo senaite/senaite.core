@@ -18,8 +18,10 @@ from Products.ATExtensions.field.records import RecordsField
 from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.interfaces import IARTemplate
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
 from bika.lims.browser.widgets import RecordsWidget
@@ -91,15 +93,11 @@ schema = BikaSchema.copy() + Schema((
             description=_("It's a composite sample"),
         ),
     ),
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _("Remarks"),
-            append_only = True,
+    RemarksField(
+        'Remarks',
+        searchable=True,
+        widget=RemarksWidget(
+            label=_("Remarks"),
         ),
     ),
     RecordsField('Partitions',

@@ -322,11 +322,19 @@ class ARAnalysesField(ObjectField):
         if specs is None:
             return
 
-        rr = {item["keyword"]: item for item in instance.getResultsRange()}
+        # N.B. we copy the records here, otherwise the spec will be written to
+        #      the attached specification of this AR
+        rr = {item["keyword"]: item.copy()
+              for item in instance.getResultsRange()}
         for spec in specs:
             keyword = spec.get("keyword")
             if keyword in rr:
-                rr[keyword].update(spec)
+                # overwrite the instance specification only, if the specific
+                # analysis spec has min/max values set
+                if all([spec.get("min"), spec.get("max")]):
+                    rr[keyword].update(spec)
+                else:
+                    rr[keyword] = spec
             else:
                 rr[keyword] = spec
         return instance.setResultsRange(rr.values())

@@ -5,13 +5,22 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
+
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
-from Products.CMFCore.utils import getToolByName
 from zope.i18n.locales import locales
+
+ALLOW_EDIT = ["LabManager", "Manager"]
+
+
+# TODO: Separate widget and view into own modules!
 
 
 class AnalysisProfileAnalysesView(BikaListingView):
@@ -24,9 +33,11 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             "portal_type": "AnalysisService",
-            "sort_on": "sortable_title",
             "inactive_state": "active",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
         }
+
         self.context_actions = {}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
@@ -39,9 +50,10 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.form_id = "analyses"
         self.profile = None
         self.pagesize = 999999
-
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
+        self.currency_symbol = self.get_currency_symbol()
+        self.decimal_mark = self.get_decimal_mark()
         if self.do_cats:
             self.pagesize = 999999  # hide batching controls
             self.show_categories = True
@@ -51,36 +63,35 @@ class AnalysisProfileAnalysesView(BikaListingView):
                 "/analysisprofile_analysesview"
             self.category_index = "getCategoryTitle"
 
-        self.columns = {
-            "Title": {
+        self.columns = collections.OrderedDict((
+            ("Title", {
                 "title": _("Service"),
                 "index": "sortable_title",
-                "sortable": False,
-            },
-            "Unit": {
+                "sortable": False}),
+            ("Keyword", {
+                "title": _("Keyword"),
+                "sortable": False}),
+            ("Methods", {
+                "title": _("Methods"),
+                "sortable": False}),
+            ("Unit", {
                 "title": _("Unit"),
                 "index": "getUnit",
                 "sortable": False,
-            },
-            "Price": {
+            }),
+            ("Price", {
                 "title": _("Price"),
                 "sortable": False,
-            },
-        }
+            }),
+        ))
 
         self.review_states = [
             {
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {"inactive_state": "active"},
-                "columns": [
-                    "Title",
-                    "Unit",
-                    "Price",
-                ],
-                "transitions": [
-                    {"id": "empty"},
-                ],
+                "transitions": [],
+                "columns": self.columns.keys(),
             },
         ]
 
@@ -100,15 +111,43 @@ class AnalysisProfileAnalysesView(BikaListingView):
                 "sortable": False,
                 "type": "boolean",
             }
-            self.review_states[0]["columns"].insert(1, "Hidden")
+            self.review_states[0]["columns"].append("Hidden")
+
+    def get_currency_symbol(self):
+        """Returns the locale currency symbol
+        """
+        currency = self.context.bika_setup.getCurrency()
+        locale = locales.getLocale("en")
+        locale_currency = locale.numbers.currencies.get(currency)
+        if locale_currency is None:
+            return "$"
+        return locale_currency.symbol
+
+    def format_price(self, price):
+        """Formats the price with the set decimal mark and correct currency
+        """
+        return u"{} {}{}{:02d}".format(
+            self.currency_symbol,
+            price[0],
+            self.decimal_mark,
+            price[1],
+        )
+
+    def get_decimal_mark(self):
+        """Returns the decimal mark
+        """
+        return self.context.bika_setup.getDecimalMark()
 
     def folderitems(self):
         """Processed once for all analyses
         """
-        mtool = getToolByName(self.context, "portal_membership")
-        member = mtool.getAuthenticatedMember()
+        # XXX: Should be done via the Worflow
+        # Check edit permissions
+        self.allow_edit = False
+        member = api.get_current_user()
         roles = member.getRoles()
-        self.allow_edit = "LabManager" in roles or "Manager" in roles
+        if set(roles).intersection(ALLOW_EDIT):
+            self.allow_edit = True
         items = super(AnalysisProfileAnalysesView, self).folderitems()
         self.categories.sort()
         return items
@@ -130,25 +169,21 @@ class AnalysisProfileAnalysesView(BikaListingView):
         item["selected"] = item["uid"] in analyses
         item["class"]["Title"] = "service_title"
 
-        calculation = obj.getCalculation()
-        item["Calculation"] = calculation and calculation.Title()
-
-        locale = locales.getLocale("en")
-        currency = self.context.bika_setup.getCurrency()
-        symbol = locale.numbers.currencies[currency].symbol
-        item["Price"] = u"{} {}".format(symbol, obj.getPrice())
+        # Price
+        item["Price"] = self.format_price(obj.Price)
         item["class"]["Price"] = "nowrap"
 
+        # Icons
         after_icons = ""
         if obj.getAccredited():
-            after_icons += u"<img src='{}/++resource++bika.lims.images/accredited.png' title='{}'>".format(
-                self.context.absolute_url(), _("Accredited"))
+            after_icons += get_image(
+                "accredited.png", title=_("Accredited"))
         if obj.getAttachmentOption() == "r":
-            after_icons += u"<img src='{}/++resource++bika.lims.images/attach_reqd.png' title='{}'>".format(
-                self.context.absolute_url(), _("Attachment required"))
+            after_icons += get_image(
+                "attach_reqd.png", title=_("Attachment required"))
         if obj.getAttachmentOption() == "n":
-            after_icons += u"<img src='%s/++resource++bika.lims.images/attach_no.png' title='%s'>".format(
-                self.context.absolute_url(), _('Attachment not permitted'))
+            after_icons += get_image(
+                "attach_no.png", title=_("Attachment not permitted"))
         if after_icons:
             item["after"]["Title"] = after_icons
 
@@ -157,6 +192,17 @@ class AnalysisProfileAnalysesView(BikaListingView):
             ser = self.profile.getAnalysisServiceSettings(obj.UID())
             item["allow_edit"] = ["Hidden", ]
             item["Hidden"] = ser.get("hidden", obj.getHidden())
+
+        # Add methods
+        methods = obj.getMethods()
+        if methods:
+            links = map(
+                lambda m: get_link(
+                    m.absolute_url(), value=m.Title(), css_class="link"),
+                methods)
+            item["replace"]["Methods"] = ", ".join(links)
+        else:
+            item["methods"] = ""
 
         return item
 
@@ -200,7 +246,9 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
     security.declarePublic("Analyses")
 
     def Analyses(self, field, allow_edit=False):
-        """ Print analyses table
+        """Render listing with categorized services.
+
+        :param field: Contains the schema field with a list of services in it
         """
         fieldvalue = getattr(field, field.accessor)()
 

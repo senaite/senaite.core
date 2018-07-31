@@ -26,7 +26,7 @@ def strptime(context, value):
     """
     val = ""
     for fmt in ['date_format_long', 'date_format_short']:
-        fmtstr = context.translate(fmt, domain='bika', mapping={})
+        fmtstr = context.translate(fmt, domain='senaite.core', mapping={})
         fmtstr = fmtstr.replace(r"${", '%').replace('}', '')
         try:
             val = _strptime(value, fmtstr)
@@ -85,7 +85,7 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     if time.second() + time.minute() + time.hour() == 0:
         long_format = False
     try:
-        time_str = _ut(time, long_format, time_only, context, 'bika', request)
+        time_str = _ut(time, long_format, time_only, context, 'senaite.core', request)
     except ValueError:
         err_msg = traceback.format_exc() + '\n'
         logger.warn(
@@ -214,8 +214,9 @@ class BrowserView(BaseBrowserView):
         if time_only:
             msgid = 'time_format'
         # get the formatstring
-        formatstring = translate(msgid, domain='bika', mapping={},
+        formatstring = translate(msgid, domain="senaite.core",
                                  context=self.request)
+
         if formatstring is None or formatstring.startswith(
                 'date_') or formatstring.startswith('time_'):
             self.logger.error("bika/%s/%s could not be translated" %
