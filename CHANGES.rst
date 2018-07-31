@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #955 Refactored Departments Listing
 - #944 Remarks style in Manage Results/Analyses
 - #943 AnalysisRequest View Remarks Field Style
 - #938 Refactored Analysis Profiles Widget
