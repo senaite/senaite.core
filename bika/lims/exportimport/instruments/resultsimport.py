@@ -973,9 +973,10 @@ class AnalysisResultsImporter(Logger):
                          "result": ""})
 
         if resultsaved:
-            doActionFor(analysis, 'submit')
-            self.calculateTotalResults(objid, analysis)
-            fields_to_reindex.append('Result')
+            if len([i.get('wide') for i in interimsout if i.get('wide')]) == 0:
+                doActionFor(analysis, 'submit')
+                self.calculateTotalResults(objid, analysis)
+                fields_to_reindex.append('Result')
 
         if (resultsaved) \
             and values.get('Remarks', '') \
