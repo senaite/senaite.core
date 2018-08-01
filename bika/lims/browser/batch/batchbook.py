@@ -184,7 +184,7 @@ class BatchBookView(BikaListingView):
                 'url': ar.absolute_url(),
                 'relative_url': ar.absolute_url(),
                 'view_url': ar.absolute_url(),
-                'created': self.ulocalized_time(ar.created()),
+                'created': self.ulocalized_time(ar.created(), long_format=1),
                 'sort_key': ar.created(),
                 'replace': {
                     'Batch': batchlink,

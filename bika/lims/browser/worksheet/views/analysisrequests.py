@@ -71,7 +71,7 @@ class AnalysisRequestsView(BikaListingView):
                 'Position': pos,
                 'RequestID': ar.id,
                 'Client': ar.aq_parent.Title(),
-                'created': self.ulocalized_time(ar.created()),
+                'created': self.ulocalized_time(ar.created(), long_format=1),
                 'replace': {},
                 'before': {},
                 'after': {},

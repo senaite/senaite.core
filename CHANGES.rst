@@ -34,6 +34,7 @@ Changelog
 
 **Fixed**
 
+- #959 Time not displayed for Date Created in Analysis Requests listings
 - #949 Retain AR Spec if Analyses were added/removed
 - #948 Inactive Sample Types shown in Analysis Specifications
 - #940 Label "Date Received" appears twice in Analysis Request view
