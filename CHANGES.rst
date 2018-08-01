@@ -46,6 +46,7 @@ Changelog
 - #909 List of clients cannot sort by Client ID
 - #921 Missing interim fields in worksheet/analyses_transposed view
 - #920 Refactored Remarks and created RemarksField and RemarksWidget
+- #958 Traceback on batch book view
 - #960 Traceback on AnalysisSpec Log
 
 **Security**

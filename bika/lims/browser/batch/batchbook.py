@@ -211,8 +211,10 @@ class BatchBookView(BikaListingView):
         # Insert columns for analyses
         for d_a in distinct:
             keyword = d_a.getKeyword()
+            short = d_a.getShortTitle()
+            title = d_a.Title()
             self.columns[keyword] = {
-                'title': d_a.ShortTitle if d_a.ShortTitle else d_a.Title,
+                'title':  short if short else title,
                 'sortable': True
             }
             self.review_states[0]['columns'].insert(
