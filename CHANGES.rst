@@ -49,6 +49,7 @@ Changelog
 - #920 Refactored Remarks and created RemarksField and RemarksWidget
 - #958 Traceback on batch book view
 - #960 Traceback on AnalysisSpec Log
+- #962 Calculated results not marked for submission if zero
 
 **Security**
 
