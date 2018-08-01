@@ -34,6 +34,7 @@ Changelog
 
 **Fixed**
 
+- #959 Time not displayed for Date Created in Analysis Requests listings
 - #949 Retain AR Spec if Analyses were added/removed
 - #948 Inactive Sample Types shown in Analysis Specifications
 - #940 Label "Date Received" appears twice in Analysis Request view
@@ -46,7 +47,6 @@ Changelog
 - #909 List of clients cannot sort by Client ID
 - #921 Missing interim fields in worksheet/analyses_transposed view
 - #920 Refactored Remarks and created RemarksField and RemarksWidget
-- #959 Time not displayed for Date Received in Analysis Requests listings
 
 **Security**
 
