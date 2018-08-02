@@ -107,8 +107,10 @@ class BikaContentVocabulary(object):
             folder = site.restrictedTraverse(folder)
             for portal_type in self.portal_types:
                 objects = list(folder.objectValues(portal_type))
-                objects = [o for o in objects if
-                           wf.getInfoFor(o, 'inactive_state') == 'active']
+                wf_ids = [x.id for x in wf.getWorkflowsFor(portal_type)]
+                if 'bika_inactive_workflow' in wf_ids:
+                    objects = [o for o in objects if
+                               wf.getInfoFor(o, 'inactive_state') == 'active']
                 if not objects:
                     continue
                 objects.sort(lambda x, y: cmp(x.Title().lower(),

@@ -98,7 +98,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Client"),
             size=30,
             visible=True,
-            base_query={'inactive_state': 'active'},
+            base_query={'review_state': 'active'},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},

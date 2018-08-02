@@ -252,7 +252,7 @@ schema = BikaSchema.copy() + Schema((
                 'invalid': {'view': 'invisible', 'edit': 'invisible'},
                 'rejected': {'view': 'invisible', 'edit': 'invisible'},
             },
-            base_query={'inactive_state': 'active'},
+            base_query={'review_state': 'active'},
             showOn=True,
             add_button={
                     'visible': True,
