@@ -50,7 +50,7 @@ Changelog
 - #958 Traceback on batch book view
 - #960 Traceback on AnalysisSpec Log
 - #962 Calculated results not marked for submission if zero
-- Dormant Analysis Services displayed in AR Templates
+- #964 Dormant Analysis Services displayed in AR Templates
 
 **Security**
 
