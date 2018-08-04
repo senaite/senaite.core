@@ -424,7 +424,7 @@ class SamplesView(BikaListingView):
         item['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
         item['AdHoc'] = obj.getAdHoc() and True or ''
 
-        item['Created'] = self.ulocalized_time(obj.created())
+        item['Created'] = self.ulocalized_time(obj.created(), long_format=1)
 
         sd = obj.getSamplingDate()
         item['SamplingDate'] = \
