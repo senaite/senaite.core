@@ -6,11 +6,6 @@
     />
 
   <utility
-    component="bika.lims.vocabularies.ClientVocabularyFactory"
-    name="bika.lims.vocabularies.Clients"
-    />
-
-  <utility
     component="bika.lims.vocabularies.ClientContactVocabularyFactory"
     name="bika.lims.vocabularies.ClientContacts"
     />
