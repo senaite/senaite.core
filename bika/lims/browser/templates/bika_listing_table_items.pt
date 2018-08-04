@@ -412,7 +412,7 @@
 
     <!-- Row Range comments field (for Analysis Specifications) -->
     <tal:rangecomments
-      condition="python:view.context.portal_type=='AnalysisSpec'"
+      condition="python:view.form_id=='analysisspecs'"
       define="column string:rangecomment;
               allow_edit python:view.bika_listing.allow_edit \
               and item.get('edit_condition', {}).get(column, True)">

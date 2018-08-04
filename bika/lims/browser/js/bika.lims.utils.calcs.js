@@ -201,7 +201,7 @@ function CalculationUtils() {
                         $("span[uid='"+result.uid+"']").filter("span[field='formatted_result']").empty().append(result.formatted_result);
 
                         // check box
-                        if (result.result != '' && result.result != ""){
+                        if (result.result == 0 || (result.result != "")){
                             if ($("[id*='cb_"+result.uid+"']").prop("checked") == false) {
                                 $("[id*='cb_"+result.uid+"']").prop('checked', true);
                             }
