@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #953 Refactored Analysis Categories Listing
 - #956 Refactored LabContacts Listing
 - #955 Refactored Departments Listing
 - #954 Refactored Attachment Types Listing
