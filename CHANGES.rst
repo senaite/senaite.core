@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #955 Refactored Departments Listing
 - #954 Refactored Attachment Types Listing
 - #944 Remarks style in Manage Results/Analyses
 - #943 AnalysisRequest View Remarks Field Style
