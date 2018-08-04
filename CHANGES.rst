@@ -6,11 +6,13 @@ Changelog
 
 **Added**
 
+- #947 Instrument import interface: Cobas Integra 400plus
 - #924 Added ExtProxyField for its use in SchemaExtender
 
 **Changed**
 
 - #955 Refactored Departments Listing
+- #954 Refactored Attachment Types Listing
 - #944 Remarks style in Manage Results/Analyses
 - #943 AnalysisRequest View Remarks Field Style
 - #938 Refactored Analysis Profiles Widget
@@ -34,6 +36,7 @@ Changelog
 
 **Fixed**
 
+- #959 Time not displayed for Date Created in Analysis Requests listings
 - #949 Retain AR Spec if Analyses were added/removed
 - #948 Inactive Sample Types shown in Analysis Specifications
 - #940 Label "Date Received" appears twice in Analysis Request view
@@ -46,6 +49,9 @@ Changelog
 - #909 List of clients cannot sort by Client ID
 - #921 Missing interim fields in worksheet/analyses_transposed view
 - #920 Refactored Remarks and created RemarksField and RemarksWidget
+- #958 Traceback on batch book view
+- #960 Traceback on AnalysisSpec Log
+- #962 Calculated results not marked for submission if zero
 
 **Security**
 

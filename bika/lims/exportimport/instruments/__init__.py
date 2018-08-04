@@ -43,7 +43,7 @@ from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
 from varian.vistapro import icp
-
+from cobasintegra.model_400_plus import model_400_plus
 
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
@@ -86,6 +86,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
            'varian.vistapro.icp',
+           'cobasintegra.model_400_plus.model_400_plus'
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
@@ -132,6 +133,7 @@ PARSERS = [
            ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
            ['varian.vistapro.icp', 'VistaPROICPParser'],
+           ['cobasintegra.model_400_plus.model_400_plus','CobasIntegra400plus2CSVParser'],
            ]
 
 
