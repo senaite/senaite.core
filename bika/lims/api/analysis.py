@@ -22,6 +22,8 @@ def is_out_of_range(brain_or_object, result=_marker):
     ----- out-of-range -----><----- in-range ------><----- out-of-range -----
              <-- shoulder --><----- in-range ------><-- shoulder -->
 
+    NOTE: min values are inclusive (<=) and max values are exclusive (>)
+
     :param brain_or_object: A single catalog brain or content object
     :param result: Tentative result. If None, use the analysis result
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
@@ -73,7 +75,7 @@ def is_out_of_range(brain_or_object, result=_marker):
     # the result will be in range also if no min/max values are defined
     specs_min = api.to_float(result_range.get('min', result), result)
     specs_max = api.to_float(result_range.get('max', result), result)
-    if specs_min <= result <= specs_max:
+    if specs_min <= result < specs_max:
         # In range, no need to check shoulders
         return False, False
 
@@ -82,5 +84,5 @@ def is_out_of_range(brain_or_object, result=_marker):
     # specs' min and max as default fallback values
     warn_min = api.to_float(result_range.get('warn_min', specs_min), specs_min)
     warn_max = api.to_float(result_range.get('warn_max', specs_max), specs_max)
-    in_shoulder = warn_min <= result <= warn_max
+    in_shoulder = warn_min <= result < warn_max
     return True, not in_shoulder

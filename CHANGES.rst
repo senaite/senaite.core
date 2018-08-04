@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #965 Specifications Max values are exclusive while Min values remain inclusive
 - #944 Remarks style in Manage Results/Analyses
 - #943 AnalysisRequest View Remarks Field Style
 - #938 Refactored Analysis Profiles Widget
