@@ -230,6 +230,16 @@ class AnalysisServiceVocabulary(BikaContentVocabulary):
 AnalysisServiceVocabularyFactory = AnalysisServiceVocabulary()
 
 
+class ClientVocabulary(BikaContentVocabulary):
+    def __init__(self):
+        BikaContentVocabulary.__init__(self,
+                                       ['clients', ],
+                                       ['Client', ])
+
+
+ClientVocabularyFactory = ClientVocabulary()
+
+
 class UserVocabulary(object):
     """ Present a vocabulary containing users in the specified
     list of roles
@@ -275,6 +285,8 @@ class UserVocabulary(object):
 
 
 UserVocabularyFactory = UserVocabulary()
+
+ClientVocabularyFactory = ClientVocabulary()
 
 
 class ClientContactVocabulary(object):
