@@ -11,6 +11,10 @@ Changelog
 
 **Changed**
 
+- #953 Refactored Analysis Categories Listing
+- #956 Refactored LabContacts Listing
+- #955 Refactored Departments Listing
+- #954 Refactored Attachment Types Listing
 - #944 Remarks style in Manage Results/Analyses
 - #943 AnalysisRequest View Remarks Field Style
 - #938 Refactored Analysis Profiles Widget
@@ -50,6 +54,7 @@ Changelog
 - #958 Traceback on batch book view
 - #960 Traceback on AnalysisSpec Log
 - #962 Calculated results not marked for submission if zero
+- #964 Dormant Analysis Services displayed in AR Templates
 
 **Security**
 
