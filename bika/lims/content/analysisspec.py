@@ -210,6 +210,8 @@ class ResultsRangeDict(dict):
         self["max"] = self.max
         self["warn_min"] = self.warn_min
         self["warn_max"] = self.warn_max
+        self["min_operator"] = self.min_operator
+        self["max_operator"] = self.max_operator
 
     @property
     def min(self):
@@ -229,11 +231,11 @@ class ResultsRangeDict(dict):
 
     @property
     def min_operator(self):
-        return self.get('min_operator', self.min_operator)
+        return self.get('min_operator', 'geq')
 
     @property
     def max_operator(self):
-        return self.get('max_operator', self.max_operator)
+        return self.get('max_operator', 'leq')
 
     @min.setter
     def min(self, value):
