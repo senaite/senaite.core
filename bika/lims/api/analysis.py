@@ -7,6 +7,8 @@
 
 from bika.lims import api
 from bika.lims.api import _marker
+from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
     IResultOutOfRange
 from zope.component._api import getAdapters
@@ -99,3 +101,39 @@ def is_out_of_range(brain_or_object, result=_marker):
     warn_max = api.to_float(result_range.get('warn_max', specs_max), specs_max)
     in_shoulder = warn_min <= result <= warn_max
     return True, not in_shoulder
+
+
+def get_formatted_interval(results_range, default=_marker):
+    """Returns a string representation of the interval defined by the results
+    range passed in
+    """
+    if type(results_range) is dict:
+        return get_formatted_interval(ResultsRangeDict(results_range),
+                                      default=default)
+
+    if not results_range or type(results_range) is not ResultsRangeDict:
+        if default is not _marker:
+            return default
+        api.fail("Empty results range or type not supported")
+
+    min_str = api.is_floatable(results_range.min) and results_range.min or ""
+    max_str = api.is_floatable(results_range.max) and results_range.max or ""
+    if not min_str and not max_str:
+        if default is not _marker:
+            return default
+        api.fail("Min and max values are not floatable or not defined")
+
+    min_operator = results_range.min_operator
+    max_operator = results_range.max_operator
+    if min_str and not max_str:
+        return "{}{}".format(MIN_OPERATORS.getKey(min_operator), min_str)
+    if not min_str and max_str:
+        return "{}{}".format(MAX_OPERATORS.getKey(max_operator), max_str)
+
+    # Both values set. Return an interval
+    min_bracket = min_operator == 'geq' and '[' or '('
+    max_bracket = max_operator == 'leq' and ']' or ')'
+    decimal_mark = api.get_bika_setup().getResultsDecimalMark()
+    sep = decimal_mark == "." and "," or ";"
+
+    return "{}{}{}{}{}".format(min_bracket, min_str, sep, max_str, max_bracket)
