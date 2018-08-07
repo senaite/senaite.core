@@ -838,7 +838,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         2. Print ResultText of matching ResultOptions
         3. If the result is not floatable, return it without being formatted
         4. If the analysis specs has hidemin or hidemax enabled and the
-           result is out of range, render result as '<min' or '>=max'
+           result is out of range, render result as '<min' or '>max'
         5. If the result is below Lower Detection Limit, show '<LDL'
         6. If the result is above Upper Detecion Limit, show '>UDL'
         7. Otherwise, render numerical value
@@ -900,7 +900,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         except (TypeError, ValueError):
             belowmin = False
         try:
-            abovemax = hidemax and result >= float(hidemax) or False
+            abovemax = hidemax and result > float(hidemax) or False
         except (TypeError, ValueError):
             abovemax = False
 
@@ -909,10 +909,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             fdm = formatDecimalMark('< %s' % hidemin, decimalmark)
             return fdm.replace('< ', '&lt; ', 1) if html else fdm
 
-        # 4.2. If result is above max and hidemax enabled, return '>=max'
+        # 4.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
-            fdm = formatDecimalMark('>= %s' % hidemax, decimalmark)
-            return fdm.replace('>= ', '&gt; ', 1) if html else fdm
+            fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
+            return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
