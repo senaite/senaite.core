@@ -55,7 +55,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         are read from the associated analysis service.
     """
     # Don't pollute the dict param passed in
-    values = deepcopy(values)
+    values = dict(values.items())
 
     # Create new sample or locate the existing for secondary AR
     secondary = False
