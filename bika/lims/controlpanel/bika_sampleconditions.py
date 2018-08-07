@@ -70,19 +70,19 @@ class SampleConditionsView(BikaListingView):
                 'title': _('All'),
                 'contentFilter': {},
                 'transitions': [{'id': 'empty'}, ],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 'id': 'active',
                 'title': _('Active'),
                 'contentFilter': {'inactive_state': 'active'},
                 'transitions': [{'id': 'deactivate'}, ],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 'id': 'inactive',
                 'title': _('Dormant'),
                 'contentFilter': {'inactive_state': 'inactive'},
                 'transitions': [{'id': 'activate'}, ],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
 
              }
         ]

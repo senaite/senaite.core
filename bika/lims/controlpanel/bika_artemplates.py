@@ -71,17 +71,17 @@ class TemplatesView(BikaListingView):
                 "id": "default",
                 "title": _("Active"),
                 "contentFilter": {"inactive_state": "active"},
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _("Dormant"),
                 "contentFilter": {"inactive_state": "inactive"},
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _("All"),
                 "contentFilter": {},
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             },
         ]
 

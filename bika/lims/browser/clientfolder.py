@@ -201,7 +201,7 @@ class ajaxGetClients(BrowserView):
         catalog = api.get_tool("portal_catalog")
         catalog_query = {
             "portal_type": "Client",
-            "inactive_state": "active",
+            "review_state": "active",
             "sort_on": sort_index,
             "sort_order": sort_order,
             "sort_limit": 500

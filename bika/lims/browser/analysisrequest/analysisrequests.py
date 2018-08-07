@@ -772,7 +772,7 @@ class AnalysisRequestsView(BikaListingView):
         if after_icons:
             item['after']['getId'] = after_icons
 
-        item['Created'] = self.ulocalized_time(obj.created)
+        item['Created'] = self.ulocalized_time(obj.created, long_format=1)
         if obj.getContactUID:
             item['ClientContact'] = obj.getContactFullName
             item['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \

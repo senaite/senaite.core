@@ -252,7 +252,7 @@ schema = BikaSchema.copy() + Schema((
                 'invalid': {'view': 'invisible', 'edit': 'invisible'},
                 'rejected': {'view': 'invisible', 'edit': 'invisible'},
             },
-            base_query={'inactive_state': 'active'},
+            base_query={'review_state': 'active'},
             showOn=True,
             add_button={
                     'visible': True,
@@ -1434,6 +1434,7 @@ schema = BikaSchema.copy() + Schema((
         widget=DateTimeWidget(
             label=_("Date Received"),
             description=_("The date when the sample was received"),
+            render_own_label=True,
             visible={
                 'edit': 'visible',
                 'view': 'visible',
