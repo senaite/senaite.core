@@ -592,7 +592,6 @@
       this.on_wideinterims_apply_click = bind(this.on_wideinterims_apply_click, this);
       this.on_wideiterims_interims_change = bind(this.on_wideiterims_interims_change, this);
       this.on_wideiterims_analyses_change = bind(this.on_wideiterims_analyses_change, this);
-      this.on_slot_remarks_icon_click = bind(this.on_slot_remarks_icon_click, this);
       this.on_slot_remarks_th_click = bind(this.on_slot_remarks_th_click, this);
       this.on_remarks_balloon_clicked = bind(this.on_remarks_balloon_clicked, this);
       this.on_detection_limit_change = bind(this.on_detection_limit_change, this);
@@ -656,7 +655,6 @@
       $("body").on("change", "select[name^='DetectionLimit.']", this.on_detection_limit_change);
       $("body").on("click", "a.add-remark", this.on_remarks_balloon_clicked);
       $("body").on("click", "tr.slot-remarks", this.on_slot_remarks_th_click);
-      $("body").on("click", "img.slot-remarks", this.on_slot_remarks_icon_click);
       $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
       $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
       $("body").on("click", "#wideinterims_apply", this.on_wideinterims_apply_click);
@@ -671,15 +669,38 @@
        * Initialize all overlays for later loading
        *
        */
-      console.debug("WorksheetManageResultsView::bind_eventhandler");
-      return $('a.slot-remarks').prepOverlay({
+      console.debug("WorksheetManageResultsView::init_overlays");
+      return $('img.slot-remarks').prepOverlay({
         subtype: 'ajax',
         config: {
           closeOnEsc: true,
           onBeforeLoad: function(evt) {
-            var data;
-            data = $.parseJSON($(evt.target).children('.pb-ajax').children('div')[0].innerText);
-            return $(evt.target).children('.pb-ajax').children('div')[0].innerText = data['objects'][0]['Remarks'];
+            var cell, col, div, portal_url, row, uid;
+            if ($("select#resultslayout").val() === "1") {
+              row = Number([evt.target.id.split("_")[1]]);
+              uid = $("table[data-pos='" + row + "']").attr('data-parent_uid');
+            } else {
+              col = Number([evt.target.id.split("_")[1]]) - 1;
+              cell = $("tr.slot-remarks td")[col];
+              div = $(cell).children('div');
+              uid = $(div).attr("data-uid");
+            }
+            portal_url = $("input[name=portal_url]").val();
+            portal_url = portal_url ? portal_url : window.portal_url;
+            return $.ajax({
+              url: portal_url + "/@@API/read",
+              type: 'POST',
+              async: false,
+              data: {
+                'catalog_name': 'uid_catalog',
+                'include_fields': 'Remarks',
+                'UID': uid
+              }
+            }).always(function(data) {
+              var t;
+              t = data['objects'][0]['Remarks'];
+              return $(evt.target).children('.pb-ajax').children('div')[0].innerText = t;
+            });
           }
         }
       });
@@ -1124,19 +1145,6 @@
       } else {
         return $el.addClass("slot-remarks-hidden");
       }
-    };
-
-    WorksheetManageResultsView.prototype.on_slot_remarks_icon_click = function(event) {
-
-      /*
-       * Eventhandler when the remarks balloon was clicked next to an AR
-       * in standard table layout.
-       */
-      var $el;
-      console.debug("°°° WorksheetManageResultsView::on_slot_remarks_icon_click °°°");
-      $el = $(event.currentTarget);
-      event.preventDefault();
-      return xxx;
     };
 
     WorksheetManageResultsView.prototype.on_wideiterims_analyses_change = function(event) {

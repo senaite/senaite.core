@@ -7,9 +7,9 @@
 
 from operator import itemgetter
 
-from bika.lims import bikaMessageFactory as _, logger, api
+from bika.lims import api, bikaMessageFactory as _, logger
 from bika.lims.browser.analyses import AnalysesView as BaseView
-from bika.lims.interfaces import IAnalysisRequest, IReferenceSample
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import to_int
 
 
@@ -362,8 +362,10 @@ class AnalysesView(BaseView):
             client = obj.getReferenceDefinition()
         else:
             client = parent.aq_parent
-        pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
-                   "<td class='pos' rowspan='3'>%s</td>" % item['Pos']
+        pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' " \
+                   "data-pos='{}' data-parent_uid={}><tr>" \
+                   "<td class='pos' rowspan='3'>{}</td>".format(
+            item['Pos'], parent.UID(), item['Pos'])
 
         if obj.portal_type == 'ReferenceAnalysis':
             pos_text += "<td class='pos_top'>%s</td>" % obj.getReferenceAnalysesGroupID()
@@ -389,25 +391,18 @@ class AnalysesView(BaseView):
         elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'c':
             pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/control.png'></a>" % (
             parent.absolute_url(), parent.Title())
-            api_url = self.portal_url + \
-                      "/@@API/read?catalog_name=uid_catalog" \
-                      "&include_fields=Remarks&UID=%s"%(parent.UID())
-            pos_text += "<a class='slot-remarks' href='%s'>" \
-                        "<img title='remarks' src=" \
-                        "'++resource++bika.lims.images/comment_ico.png'></a>" \
-                        % api_url
-            pos_text += "<br/>"
+            if parent.getRemarks():
+                pos_text += \
+                    "<img class='slot-remarks' title='remarks' " \
+                    "src='++resource++bika.lims.images/comment_ico.png'>"
         if parent.portal_type == 'AnalysisRequest':
             sample = parent.getSample()
             pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/sample.png'></a>" % (
             sample.absolute_url(), sample.Title())
-            api_url = \
-                self.portal_url + "/@@API/read?catalog_name=uid_catalog" \
-                      "&include_fields=Remarks&UID=%s" % (parent.UID())
-            pos_text += "<a class='slot-remarks' href='%s'>" \
-                        "<img title='remarks' src=" \
-                        "'++resource++bika.lims.images/comment_ico.png'></a>" \
-                        % api_url
+            if parent.getRemarks():
+                pos_text += \
+                    "<img class='slot-remarks' title='remarks' " \
+                    "src='++resource++bika.lims.images/comment_ico.png'>"
         pos_text += "</td></tr>"
 
         pos_text += "<tr><td>"
@@ -490,9 +485,9 @@ class AnalysesView(BaseView):
         :return: the html contents to be displayed in the remarks cell of a slot
         """
         instance = api.get_object(item['obj'])
-        parent = instance.aq_parent
-        if not IAnalysisRequest.providedBy(parent) \
-                or IReferenceSample.providedBy(parent):
+        if not IRequestAnalysis.providedBy(instance):
             return ""
+        parent = instance.getRequest() \
+            if hasattr(instance, 'getRequest') else instance.aq_parent
         cooked = parent.schema['Remarks'].get_cooked_remarks(parent)
-        return "<div>%s</div>" % cooked
+        return "<div data-uid='{}'>{}</div>".format(parent.UID(), cooked)

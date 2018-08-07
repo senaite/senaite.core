@@ -586,9 +586,6 @@ class window.WorksheetManageResultsView
     # Remarks row clicked (transposed view)
     $("body").on "click", "tr.slot-remarks", @on_slot_remarks_th_click
 
-    # Remarks icon clicked (table view)
-    $("body").on "click", "img.slot-remarks", @on_slot_remarks_icon_click
-
     # Wide interims changed
     $("body").on "change", "#wideinterims_analyses", @on_wideiterims_analyses_change
     $("body").on "change", "#wideinterims_interims", @on_wideiterims_interims_change
@@ -604,15 +601,33 @@ class window.WorksheetManageResultsView
      * Initialize all overlays for later loading
      *
     ###
-    console.debug "WorksheetManageResultsView::bind_eventhandler"
-    $('a.slot-remarks').prepOverlay
+    console.debug "WorksheetManageResultsView::init_overlays"
+
+    $('img.slot-remarks').prepOverlay
       subtype: 'ajax'
       config:
         closeOnEsc: true
         onBeforeLoad: (evt) ->
-          data = $.parseJSON($(evt.target).children('.pb-ajax').children('div')[0].innerText)
-          $(evt.target).children('.pb-ajax').children('div')[0].innerText = data['objects'][0]['Remarks']
-
+          if $("select#resultslayout").val() == "1"
+            row = Number([evt.target.id.split("_")[1]])
+            uid = $("table[data-pos='" + row + "']").attr('data-parent_uid')
+          else
+            col = Number([evt.target.id.split("_")[1]])-1
+            cell = $("tr.slot-remarks td")[col]
+            div = $(cell).children('div')
+            uid = $(div).attr("data-uid")
+          portal_url = $("input[name=portal_url]").val()
+          portal_url = if portal_url then portal_url else window.portal_url
+          $.ajax(
+            url: "#{portal_url}/@@API/read"
+            type: 'POST'
+            async: false
+            data:
+              'catalog_name': 'uid_catalog'
+              'include_fields': 'Remarks'
+              'UID': uid).always (data) ->
+            t = data['objects'][0]['Remarks']
+            $(evt.target).children('.pb-ajax').children('div')[0].innerText = t
 
   init_instruments_and_methods: =>
     ###
@@ -1048,18 +1063,6 @@ class window.WorksheetManageResultsView
     else
       $el.addClass("slot-remarks-hidden")
 
-
-  on_slot_remarks_icon_click: (event) =>
-    ###
-     * Eventhandler when the remarks balloon was clicked next to an AR
-     * in standard table layout.
-    ###
-    console.debug "°°° WorksheetManageResultsView::on_slot_remarks_icon_click °°°"
-    $el = $(event.currentTarget)
-
-    event.preventDefault()
-
-    xxx
 
   on_wideiterims_analyses_change: (event) =>
     ###

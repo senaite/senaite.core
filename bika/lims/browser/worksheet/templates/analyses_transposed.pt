@@ -64,9 +64,7 @@
       <tr class="slot-remarks slot-remarks-hidden">
         <th i18n:translate="">Remarks</th>
         <tal:cell tal:repeat="position view/positions">
-          <td>
-            <div tal:content="structure python:view.render_slot_remarks(position)"/>
-          </td>
+          <td tal:content="structure python:view.render_slot_remarks(position)"/>
         </tal:cell>
       </tr>
 
