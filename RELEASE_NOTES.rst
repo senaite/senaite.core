@@ -4,11 +4,9 @@ Release notes
 Update from 1.2.7 to 1.2.8
 --------------------------
 
-- Specification maximum values (`max`, `warn_max` and `hide_max`) become
-  exclusive, while min values (`min`, `warn_min` and `hide_min`) remain
-  inclusive: A result is in range if the value equals or is above min, and
-  below max: [min] <= [result] < [max]). Same rule applies for `min_warn`,
-  `max_warn`, `hide_min` and `hide_max` fields.
+- Operators for min and max values have been added. For specifications already
+  present in the system, the result ranges are considered as bounded and closed:
+  `[min,max] = {result | min <= result <= max}`.
   https://github.com/senaite/senaite.core/pull/965
 
 
