@@ -6,12 +6,12 @@ Changelog
 
 **Added**
 
+- #965 Added operators for max and min values in Specifications
 - #947 Instrument import interface: Cobas Integra 400plus
 - #924 Added ExtProxyField for its use in SchemaExtender
 
 **Changed**
 
-- #965 Specifications Max values are exclusive while Min values remain inclusive
 - #953 Refactored Analysis Categories Listing
 - #956 Refactored LabContacts Listing
 - #955 Refactored Departments Listing
