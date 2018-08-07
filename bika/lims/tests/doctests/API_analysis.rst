@@ -17,6 +17,7 @@ Needed Imports:
     >>> import re
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.api.analysis import get_formatted_interval
     >>> from bika.lims.api.analysis import is_out_of_range
     >>> from bika.lims.content.analysisrequest import AnalysisRequest
     >>> from bika.lims.content.sample import Sample
@@ -529,6 +530,7 @@ Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
     >>> is_out_of_range(au_analysis)
     (True, False)
 
+
 Check if results are out of range when left-open interval is used
 -----------------------------------------------------------------
 
@@ -556,10 +558,11 @@ Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
     >>> is_out_of_range(au_analysis)
     (True, False)
 
+
 Check if results are out of range when right-open interval is used
 ------------------------------------------------------------------
 
-Set left-open interval for min and max from water specification
+Set right-open interval for min and max from water specification
 
     >>> ranges = specification.getResultsRange()
     >>> for range in ranges:
@@ -582,3 +585,79 @@ Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
     >>> au_analysis.setResult(5)
     >>> is_out_of_range(au_analysis)
     (False, False)
+
+
+Check if formatted interval is rendered properly
+------------------------------------------------
+
+Set closed interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'geq'
+    ...     range['max_operator'] = 'leq'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '[-5,5]'
+
+And test after changing decimal mark
+
+    >>> bikasetup.setResultsDecimalMark(',')
+    >>> get_formatted_interval(res_range)
+    '[-5;5]'
+
+Reset decimal mark
+
+    >>> bikasetup.setResultsDecimalMark('.')
+    >>> get_formatted_interval(res_range)
+    '[-5,5]'
+
+Try now with left-open interval
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'leq'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '(-5,5]'
+
+Try now with right-open interval
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'geq'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '[-5,5)'
+
+Try now with open interval
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '(-5,5)'
