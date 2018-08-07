@@ -500,3 +500,85 @@ Now, check for out-of-range results:
     >>> cu_control.setResult("-1.09")
     >>> is_out_of_range(cu_control)
     (True, True)
+
+
+Check if results are out of range when open interval is used
+------------------------------------------------------------
+
+Set open interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+First, get the analyses from slot 1 and sort them asc:
+
+    >>> analyses = worksheet.get_analyses_at(1)
+    >>> analyses.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
+
+Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
+
+    >>> au_analysis = analyses[0]
+    >>> au_analysis.setResult(-5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+    >>> au_analysis.setResult(5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+Check if results are out of range when left-open interval is used
+-----------------------------------------------------------------
+
+Set left-open interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'geq'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+First, get the analyses from slot 1 and sort them asc:
+
+    >>> analyses = worksheet.get_analyses_at(1)
+    >>> analyses.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
+
+Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
+
+    >>> au_analysis = analyses[0]
+    >>> au_analysis.setResult(-5)
+    >>> is_out_of_range(au_analysis)
+    (False, False)
+
+    >>> au_analysis.setResult(5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+Check if results are out of range when right-open interval is used
+------------------------------------------------------------------
+
+Set left-open interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'leq'
+    >>> specification.setResultsRange(ranges)
+
+First, get the analyses from slot 1 and sort them asc:
+
+    >>> analyses = worksheet.get_analyses_at(1)
+    >>> analyses.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
+
+Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
+
+    >>> au_analysis = analyses[0]
+    >>> au_analysis.setResult(-5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+    >>> au_analysis.setResult(5)
+    >>> is_out_of_range(au_analysis)
+    (False, False)
