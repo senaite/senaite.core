@@ -38,6 +38,7 @@ Changelog
 
 **Fixed**
 
+- #966 Traceback in Analyses listings when analysis unit is a numeric value
 - #959 Time not displayed for Date Created in Analysis Requests listings
 - #949 Retain AR Spec if Analyses were added/removed
 - #948 Inactive Sample Types shown in Analysis Specifications
