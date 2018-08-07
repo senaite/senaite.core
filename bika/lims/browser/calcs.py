@@ -13,7 +13,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
 from bika.lims import bikaMessageFactory as _, api
-from bika.lims.api.analysis import is_out_of_range
+from bika.lims.api.analysis import is_out_of_range, get_formatted_interval
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import t, isnumber
@@ -281,9 +281,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             return
 
         result_range = analysis.getResultsRange()
-        rngstr = "{0} {1}, {2} {3}".format(
-            t(_("min")), result_range.get("min"),
-            t(_("max")), result_range.get("max"))
+        rngstr = get_formatted_interval(result_range, default="")
         message = "Result out of range"
         icon = "exclamation.png"
         if not out_of_shoulder:
@@ -293,7 +291,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         uid = api.get_uid(analysis)
         alert = self.alerts.get(uid, [])
         alert.append({'icon': "++resource++bika.lims.images/{}".format(icon),
-                      'msg': "{0} ({1})".format(t(_(message)), rngstr),
+                      'msg': "{0} {1}".format(t(_(message)), rngstr),
                       'field': "Result"})
         self.alerts[uid] = alert
 
