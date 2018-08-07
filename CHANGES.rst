@@ -35,6 +35,7 @@ Changelog
 
 - #912 Remove "Default AR Specifications" Selection from Setup
 - #901 Remove explicit permission settings for clients
+- #900 Removed basic handling of custom Sample Preparation Workflows
 
 **Fixed**
 

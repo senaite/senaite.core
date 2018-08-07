@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import mimetypes
 import os
 import re
 import tempfile
@@ -13,14 +14,12 @@ import urllib2
 from email import Encoders
 from time import time
 
-import mimetypes
-
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
 from DateTime import DateTime
-from Products.Archetypes.public import DisplayList
 from Products.Archetypes.interfaces.field import IComputedField
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api

@@ -1372,10 +1372,6 @@ msgstr ""
 msgid "Commercial ID"
 msgstr ""
 
-#: bika/lims/profiles/default/workflows/sampleprep_simple/definition.xml
-msgid "Complete"
-msgstr ""
-
 #: bika/lims/browser/sample/printform.py:345
 #: bika/lims/content/analysisrequest.py:1261
 #: bika/lims/content/artemplate.py:90
@@ -4889,18 +4885,6 @@ msgstr ""
 #: bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:105
 #: bika/lims/browser/reports/qualitycontrol_analysesrepeated.py:94
 msgid "Sample point"
-msgstr ""
-
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "Sample preparation"
-msgstr ""
-
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "Sample preparation complete"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:722
