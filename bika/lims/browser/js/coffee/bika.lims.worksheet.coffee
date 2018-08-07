@@ -527,7 +527,7 @@ class window.WorksheetManageResultsView
     console.debug "WorksheetManageResultsView::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog "senaite.core"
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
     @_pmf = window.jarn.i18n.MessageFactory('plone')
 
