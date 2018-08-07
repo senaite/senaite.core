@@ -22,8 +22,6 @@ def is_out_of_range(brain_or_object, result=_marker):
     ----- out-of-range -----><----- in-range ------><----- out-of-range -----
              <-- shoulder --><----- in-range ------><-- shoulder -->
 
-    NOTE: min values are inclusive (<=) and max values are exclusive (>)
-
     :param brain_or_object: A single catalog brain or content object
     :param result: Tentative result. If None, use the analysis result
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
@@ -75,12 +73,23 @@ def is_out_of_range(brain_or_object, result=_marker):
     # the result will be in range also if no min/max values are defined
     specs_min = api.to_float(result_range.get('min', result), result)
     specs_max = api.to_float(result_range.get('max', result), result)
-    if specs_min == result == specs_max:
-        # There is no range (a specific value instead)
-        return False, False
 
-    if specs_min <= result < specs_max:
-        # In range, no need to check shoulders
+    in_range = False
+    min_operator = result_range.get("min_operator", "geq")
+    if min_operator == "geq":
+        in_range = result >= specs_min
+    else:
+        in_range = result > specs_min
+
+    max_operator = result_range.get("max_operator", "leq")
+    if in_range:
+        if max_operator == "leq":
+            in_range = result <= specs_max
+        else:
+            in_range = result < specs_max
+
+    # If in range, no need to check shoulders
+    if in_range:
         return False, False
 
     # Out of range, check shoulders. If no explicit warn_min or warn_max have
@@ -88,9 +97,5 @@ def is_out_of_range(brain_or_object, result=_marker):
     # specs' min and max as default fallback values
     warn_min = api.to_float(result_range.get('warn_min', specs_min), specs_min)
     warn_max = api.to_float(result_range.get('warn_max', specs_max), specs_max)
-    if warn_min == result == warn_max:
-        # There is no range (a specific value instead)
-        return True, False
-
-    in_shoulder = warn_min <= result < warn_max
+    in_shoulder = warn_min <= result <= warn_max
     return True, not in_shoulder
