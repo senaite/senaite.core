@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from collections import Mapping
 from bika.lims import api
 from bika.lims.api import _marker
 from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
@@ -106,16 +107,14 @@ def is_out_of_range(brain_or_object, result=_marker):
 def get_formatted_interval(results_range, default=_marker):
     """Returns a string representation of the interval defined by the results
     range passed in
+    :param results_range: a dict or a ResultsRangeDict
     """
-    if type(results_range) is dict:
-        return get_formatted_interval(ResultsRangeDict(results_range),
-                                      default=default)
-
-    if not results_range or type(results_range) is not ResultsRangeDict:
+    if not isinstance(results_range, Mapping):
         if default is not _marker:
             return default
-        api.fail("Empty results range or type not supported")
+        api.fail("Type not supported")
 
+    results_range = ResultsRangeDict(results_range)
     min_str = api.is_floatable(results_range.min) and results_range.min or ""
     max_str = api.is_floatable(results_range.max) and results_range.max or ""
     if not min_str and not max_str:
