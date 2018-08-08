@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Update from 1.2.7 to 1.2.8
+--------------------------
+
+- Operators for min and max values have been added. For specifications already
+  present in the system, the result ranges are considered as bounded and closed:
+  `[min,max] = {result | min <= result <= max}`.
+  https://github.com/senaite/senaite.core/pull/965
+
+
 Update from 1.2.4 to 1.2.5
 --------------------------
 

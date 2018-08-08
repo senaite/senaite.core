@@ -12,7 +12,8 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import get_image
+from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
+from bika.lims.utils import get_image, to_choices
 from bika.lims.utils import get_link
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
@@ -80,8 +81,16 @@ class AnalysisSpecificationView(BikaListingView):
             ("warn_min", {
                 "title": _("Min warn"),
                 "sortable": False}),
+            ("min_operator", {
+                "title": _("Min operator"),
+                "type": "choices",
+                "sortable": False}),
             ("min", {
                 "title": _("Min"),
+                "sortable": False}),
+            ("max_operator", {
+                "title": _("Max operator"),
+                "type": "choices",
                 "sortable": False}),
             ("max", {
                 "title": _("Max"),
@@ -154,7 +163,9 @@ class AnalysisSpecificationView(BikaListingView):
         else:
             specresults = {
                 "keyword": service.getKeyword(),
+                "min_operator": "",
                 "min": "",
+                "max_operator": "",
                 "max": "",
                 "warn_min": "",
                 "warn_max": "",
@@ -192,7 +203,9 @@ class AnalysisSpecificationView(BikaListingView):
             "relative_url": service.absolute_url(),
             "view_url": service.absolute_url(),
             "service": service.Title(),
+            "min_operator": specresults.get("min_operator", "geq"),
             "min": specresults.get("min", ""),
+            "max_operator": specresults.get("max_operator", "leq"),
             "max": specresults.get("max", ""),
             "warn_min": specresults.get("warn_min", ""),
             "warn_max": specresults.get("warn_max", ""),
@@ -204,12 +217,17 @@ class AnalysisSpecificationView(BikaListingView):
             "after": {
                 "service": after_icons,
             },
-            "choices": {},
+            "choices": {
+                "min_operator": to_choices(MIN_OPERATORS),
+                "max_operator": to_choices(MAX_OPERATORS),
+            },
             "class": "state-%s" % (state),
             "state_class": "state-%s" % (state),
             "allow_edit": ["min", "max", "warn_min", "warn_max", "hidemin",
-                           "hidemax", "rangecomment"],
+                           "hidemax", "rangecomment", "min_operator",
+                           "max_operator"],
             "table_row_class": "even",
+            "required": ["min_operator", "max_operator"]
         }
 
         # Add methods
@@ -287,11 +305,20 @@ class AnalysisSpecificationWidget(TypesWidget):
                 # mandatory subfields, the following message will appear after
                 # submission: "Specifications is required, please correct."
                 continue
+            min_operator = self._get_spec_value(form, uid, "min_operator",
+                                                check_floatable=False)
+            max_operator = self._get_spec_value(form, uid, "max_operator",
+                                                check_floatable=False)
+            if not min_operator and not max_operator:
+                # Values for min operator and max operator are required
+                continue
 
             values.append({
                 "keyword": keyword,
                 "uid": uid,
+                "min_operator": min_operator,
                 "min": s_min,
+                "max_operator": max_operator,
                 "max": s_max,
                 "warn_min": self._get_spec_value(form, uid, "warn_min"),
                 "warn_max": self._get_spec_value(form, uid, "warn_max"),

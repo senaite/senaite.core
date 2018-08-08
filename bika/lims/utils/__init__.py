@@ -930,3 +930,16 @@ def get_display_list(brains_or_objects=None, none_item=False):
         items.insert(0, ('', t('Select...')))
 
     return DisplayList(items)
+
+
+def to_choices(display_list):
+    """Converts a display list to a choices list
+    """
+    if not display_list:
+        return []
+
+    return map(
+        lambda item: {
+            "ResultValue": item[0],
+            "ResultText": item[1]},
+        display_list.items())
