@@ -72,19 +72,21 @@ def is_out_of_range(brain_or_object, result=_marker):
         # Out of range, but in shoulders
         return True, False
 
+    result_range = ResultsRangeDict(result_range)
+
     # The assignment of result as default fallback for min and max guarantees
     # the result will be in range also if no min/max values are defined
-    specs_min = api.to_float(result_range.get('min', result), result)
-    specs_max = api.to_float(result_range.get('max', result), result)
+    specs_min = api.to_float(result_range.min, result)
+    specs_max = api.to_float(result_range.max, result)
 
     in_range = False
-    min_operator = result_range.get("min_operator", "geq")
+    min_operator = result_range.min_operator
     if min_operator == "geq":
         in_range = result >= specs_min
     else:
         in_range = result > specs_min
 
-    max_operator = result_range.get("max_operator", "leq")
+    max_operator = result_range.max_operator
     if in_range:
         if max_operator == "leq":
             in_range = result <= specs_max
@@ -98,8 +100,8 @@ def is_out_of_range(brain_or_object, result=_marker):
     # Out of range, check shoulders. If no explicit warn_min or warn_max have
     # been defined, no shoulders must be considered for this analysis. Thus, use
     # specs' min and max as default fallback values
-    warn_min = api.to_float(result_range.get('warn_min', specs_min), specs_min)
-    warn_max = api.to_float(result_range.get('warn_max', specs_max), specs_max)
+    warn_min = api.to_float(result_range.warn_min, specs_min)
+    warn_max = api.to_float(result_range.warn_max, specs_max)
     in_shoulder = warn_min <= result <= warn_max
     return True, not in_shoulder
 
