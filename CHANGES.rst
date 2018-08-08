@@ -57,6 +57,7 @@ Changelog
 - #960 Traceback on AnalysisSpec Log
 - #962 Calculated results not marked for submission if zero
 - #964 Dormant Analysis Services displayed in AR Templates
+- #967 Avoid deepcopy, "Can't pickle acquisition wrappers".
 
 **Security**
 
