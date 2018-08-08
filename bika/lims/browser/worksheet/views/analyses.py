@@ -464,5 +464,4 @@ class AnalysesView(BaseView):
             "href": "{}/base_view".format(url),
         }
 
-        tag = get_image("remarks_ico.png", **attrs)
-        return tag
+        return get_image("remarks_ico.png", **attrs)

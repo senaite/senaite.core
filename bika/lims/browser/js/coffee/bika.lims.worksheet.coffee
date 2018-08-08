@@ -604,15 +604,15 @@ class window.WorksheetManageResultsView
     # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
     $("img.slot-remarks").prepOverlay
       subtype: "ajax"
-      filter: "#archetypes-fieldname-Remarks span.remarks_history"
+      filter: "h1,#archetypes-fieldname-Remarks span.remarks_history"
       config:
-          closeOnClick: yes
-          closeOnEsc: yes
-          onBeforeLoad: (event) ->
-              overlay = this.getOverlay()
-              overlay.draggable()
-          onLoad: (event) ->
-              $.mask.close()
+        closeOnClick: yes
+        closeOnEsc: yes
+        onBeforeLoad: (event) ->
+          overlay = this.getOverlay()
+          overlay.draggable()
+        onLoad: (event) ->
+          $.mask.close()
 
 
   init_instruments_and_methods: =>

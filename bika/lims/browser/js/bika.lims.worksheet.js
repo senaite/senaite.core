@@ -669,7 +669,7 @@
       console.debug("WorksheetManageResultsView::init_overlays");
       return $("img.slot-remarks").prepOverlay({
         subtype: "ajax",
-        filter: "#archetypes-fieldname-Remarks span.remarks_history",
+        filter: "h1,#archetypes-fieldname-Remarks span.remarks_history",
         config: {
           closeOnClick: true,
           closeOnEsc: true,
