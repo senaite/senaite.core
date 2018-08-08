@@ -12,6 +12,7 @@ Changelog
 
 **Changed**
 
+- #945 Show AR Remarks in Worksheet ManageResults views
 - #953 Refactored Analysis Categories Listing
 - #956 Refactored LabContacts Listing
 - #955 Refactored Departments Listing

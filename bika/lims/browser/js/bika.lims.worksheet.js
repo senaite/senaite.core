@@ -625,6 +625,7 @@
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this._pmf = window.jarn.i18n.MessageFactory('plone');
       this.bind_eventhandler();
+      this.init_overlays();
       this.constraints = null;
       this.init_instruments_and_methods();
       return window.ws = this;
@@ -657,6 +658,31 @@
 
       /* internal events */
       return $(this).on("constraints:loaded", this.on_constraints_loaded);
+    };
+
+    WorksheetManageResultsView.prototype.init_overlays = function() {
+
+      /*
+       * Initialize all overlays for later loading
+       *
+       */
+      console.debug("WorksheetManageResultsView::init_overlays");
+      return $("img.slot-remarks").prepOverlay({
+        subtype: "ajax",
+        filter: "h1,#archetypes-fieldname-Remarks span.remarks_history",
+        config: {
+          closeOnClick: true,
+          closeOnEsc: true,
+          onBeforeLoad: function(event) {
+            var overlay;
+            overlay = this.getOverlay();
+            return overlay.draggable();
+          },
+          onLoad: function(event) {
+            return $.mask.close();
+          }
+        }
+      });
     };
 
     WorksheetManageResultsView.prototype.init_instruments_and_methods = function() {

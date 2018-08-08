@@ -7,8 +7,11 @@
 
 from operator import itemgetter
 
-from bika.lims import bikaMessageFactory as _, logger, api
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser.analyses import AnalysesView as BaseView
+from bika.lims.utils import get_image
 from bika.lims.utils import to_int
 
 
@@ -382,10 +385,14 @@ class AnalysesView(BaseView):
             parent.absolute_url(), parent.Title())
             pos_text += "<br/>"
         elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'c':
+            if parent.getRemarks():
+                pos_text += self.render_remarks_tag(parent)
             pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/control.png'></a>" % (
             parent.absolute_url(), parent.Title())
             pos_text += "<br/>"
         if parent.portal_type == 'AnalysisRequest':
+            if parent.getRemarks():
+                pos_text += self.render_remarks_tag(parent)
             sample = parent.getSample()
             pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/sample.png'></a>" % (
             sample.absolute_url(), sample.Title())
@@ -439,3 +446,22 @@ class AnalysesView(BaseView):
 
         pos_text += "</table>"
         return pos_text
+
+    def render_remarks_tag(self, ar):
+        """Renders a remarks image icon
+        """
+        uid = api.get_uid(ar)
+        url = ar.absolute_url()
+        title = ar.Title()
+        tooltip = _("Remarks of {}").format(title)
+
+        # Note: The 'href' is picked up by the overlay handler, see
+        #       bika.lims.worksheet.coffee
+        attrs = {
+            "css_class": "slot-remarks",
+            "title": tooltip,
+            "uid": uid,
+            "href": "{}/base_view".format(url),
+        }
+
+        return get_image("remarks_ico.png", **attrs)
