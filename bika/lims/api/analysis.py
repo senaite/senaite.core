@@ -133,7 +133,5 @@ def get_formatted_interval(results_range, default=_marker):
     # Both values set. Return an interval
     min_bracket = min_operator == 'geq' and '[' or '('
     max_bracket = max_operator == 'leq' and ']' or ')'
-    decimal_mark = api.get_bika_setup().getResultsDecimalMark()
-    sep = decimal_mark == "." and "," or ";"
 
-    return "{}{}{}{}{}".format(min_bracket, min_str, sep, max_str, max_bracket)
+    return "{}{};{}{}".format(min_bracket, min_str, max_str, max_bracket)

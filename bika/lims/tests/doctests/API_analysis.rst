@@ -603,19 +603,7 @@ Get the result range for `Au` (min: -5, max: 5)
     >>> rr = specification.getResultsRange()
     >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
     >>> get_formatted_interval(res_range)
-    '[-5,5]'
-
-And test after changing decimal mark
-
-    >>> bikasetup.setResultsDecimalMark(',')
-    >>> get_formatted_interval(res_range)
     '[-5;5]'
-
-Reset decimal mark
-
-    >>> bikasetup.setResultsDecimalMark('.')
-    >>> get_formatted_interval(res_range)
-    '[-5,5]'
 
 Try now with left-open interval
 
@@ -630,7 +618,7 @@ Get the result range for `Au` (min: -5, max: 5)
     >>> rr = specification.getResultsRange()
     >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
     >>> get_formatted_interval(res_range)
-    '(-5,5]'
+    '(-5;5]'
 
 Try now with right-open interval
 
@@ -645,7 +633,7 @@ Get the result range for `Au` (min: -5, max: 5)
     >>> rr = specification.getResultsRange()
     >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
     >>> get_formatted_interval(res_range)
-    '[-5,5)'
+    '[-5;5)'
 
 Try now with open interval
 
@@ -660,4 +648,4 @@ Get the result range for `Au` (min: -5, max: 5)
     >>> rr = specification.getResultsRange()
     >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
     >>> get_formatted_interval(res_range)
-    '(-5,5)'
+    '(-5;5)'
