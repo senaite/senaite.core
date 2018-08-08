@@ -7,7 +7,6 @@
 
 from views.batches import ClientBatchesView
 from views.analysisrequests import ClientAnalysisRequestsView
-from views.analysisrequests import ClientBatchAnalysisRequestsView
 from views.samples import ClientSamplesView
 from views.analysisprofiles import ClientAnalysisProfilesView
 from views.artemplates import ClientARTemplatesView
