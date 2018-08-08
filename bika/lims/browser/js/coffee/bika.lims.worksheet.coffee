@@ -583,9 +583,6 @@ class window.WorksheetManageResultsView
     # Remarks balloon clicked
     $("body").on "click", "a.add-remark", @on_remarks_balloon_clicked
 
-    # Remarks row clicked (transposed view)
-    $("body").on "click", "tr.slot-remarks", @on_slot_remarks_th_click
-
     # Wide interims changed
     $("body").on "change", "#wideinterims_analyses", @on_wideiterims_analyses_change
     $("body").on "change", "#wideinterims_interims", @on_wideiterims_interims_change
@@ -596,38 +593,27 @@ class window.WorksheetManageResultsView
     # handle value changes in the form
     $(this).on "constraints:loaded", @on_constraints_loaded
 
-  init_overlays: =>
+  init_overlays: ->
     ###
      * Initialize all overlays for later loading
      *
     ###
     console.debug "WorksheetManageResultsView::init_overlays"
 
-    $('img.slot-remarks').prepOverlay
-      subtype: 'ajax'
+    # https://jquerytools.github.io/documentation/overlay
+    # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
+    $("img.slot-remarks").prepOverlay
+      subtype: "ajax"
+      filter: "#archetypes-fieldname-Remarks span.remarks_history"
       config:
-        closeOnEsc: true
-        onBeforeLoad: (evt) ->
-          if $("select#resultslayout").val() == "1"
-            row = Number([evt.target.id.split("_")[1]])
-            uid = $("table[data-pos='" + row + "']").attr('data-parent_uid')
-          else
-            col = Number([evt.target.id.split("_")[1]])-1
-            cell = $("tr.slot-remarks td")[col]
-            div = $(cell).children('div')
-            uid = $(div).attr("data-uid")
-          portal_url = $("input[name=portal_url]").val()
-          portal_url = if portal_url then portal_url else window.portal_url
-          $.ajax(
-            url: "#{portal_url}/@@API/read"
-            type: 'POST'
-            async: false
-            data:
-              'catalog_name': 'uid_catalog'
-              'include_fields': 'Remarks'
-              'UID': uid).always (data) ->
-            t = data['objects'][0]['Remarks']
-            $(evt.target).children('.pb-ajax').children('div')[0].innerText = t
+          closeOnClick: yes
+          closeOnEsc: yes
+          onBeforeLoad: (event) ->
+              overlay = this.getOverlay()
+              overlay.draggable()
+          onLoad: (event) ->
+              $.mask.close()
+
 
   init_instruments_and_methods: =>
     ###
@@ -1047,21 +1033,6 @@ class window.WorksheetManageResultsView
     event.preventDefault()
     remarks = $el.closest("tr").next("tr").find("td.remarks")
     $(remarks).find("div.remarks-placeholder").toggle()
-
-
-  on_slot_remarks_th_click: (event) =>
-    ###
-     * Eventhandler when the remarks row was clicked in transposed layout
-    ###
-    console.debug "°°° WorksheetManageResultsView::on_slot_remarks_th_click °°°"
-    $el = $(event.currentTarget)
-
-    event.preventDefault()
-
-    if $el.hasClass("slot-remarks-hidden")
-      $el.removeClass("slot-remarks-hidden")
-    else
-      $el.addClass("slot-remarks-hidden")
 
 
   on_wideiterims_analyses_change: (event) =>

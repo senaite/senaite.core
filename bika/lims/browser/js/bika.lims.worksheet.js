@@ -592,7 +592,6 @@
       this.on_wideinterims_apply_click = bind(this.on_wideinterims_apply_click, this);
       this.on_wideiterims_interims_change = bind(this.on_wideiterims_interims_change, this);
       this.on_wideiterims_analyses_change = bind(this.on_wideiterims_analyses_change, this);
-      this.on_slot_remarks_th_click = bind(this.on_slot_remarks_th_click, this);
       this.on_remarks_balloon_clicked = bind(this.on_remarks_balloon_clicked, this);
       this.on_detection_limit_change = bind(this.on_detection_limit_change, this);
       this.on_analysis_instrument_change = bind(this.on_analysis_instrument_change, this);
@@ -611,7 +610,6 @@
       this.get_portal_url = bind(this.get_portal_url, this);
       this.ajax_submit = bind(this.ajax_submit, this);
       this.init_instruments_and_methods = bind(this.init_instruments_and_methods, this);
-      this.init_overlays = bind(this.init_overlays, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
@@ -654,7 +652,6 @@
       $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_change);
       $("body").on("change", "select[name^='DetectionLimit.']", this.on_detection_limit_change);
       $("body").on("click", "a.add-remark", this.on_remarks_balloon_clicked);
-      $("body").on("click", "tr.slot-remarks", this.on_slot_remarks_th_click);
       $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
       $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
       $("body").on("click", "#wideinterims_apply", this.on_wideinterims_apply_click);
@@ -670,37 +667,19 @@
        *
        */
       console.debug("WorksheetManageResultsView::init_overlays");
-      return $('img.slot-remarks').prepOverlay({
-        subtype: 'ajax',
+      return $("img.slot-remarks").prepOverlay({
+        subtype: "ajax",
+        filter: "#archetypes-fieldname-Remarks span.remarks_history",
         config: {
+          closeOnClick: true,
           closeOnEsc: true,
-          onBeforeLoad: function(evt) {
-            var cell, col, div, portal_url, row, uid;
-            if ($("select#resultslayout").val() === "1") {
-              row = Number([evt.target.id.split("_")[1]]);
-              uid = $("table[data-pos='" + row + "']").attr('data-parent_uid');
-            } else {
-              col = Number([evt.target.id.split("_")[1]]) - 1;
-              cell = $("tr.slot-remarks td")[col];
-              div = $(cell).children('div');
-              uid = $(div).attr("data-uid");
-            }
-            portal_url = $("input[name=portal_url]").val();
-            portal_url = portal_url ? portal_url : window.portal_url;
-            return $.ajax({
-              url: portal_url + "/@@API/read",
-              type: 'POST',
-              async: false,
-              data: {
-                'catalog_name': 'uid_catalog',
-                'include_fields': 'Remarks',
-                'UID': uid
-              }
-            }).always(function(data) {
-              var t;
-              t = data['objects'][0]['Remarks'];
-              return $(evt.target).children('.pb-ajax').children('div')[0].innerText = t;
-            });
+          onBeforeLoad: function(event) {
+            var overlay;
+            overlay = this.getOverlay();
+            return overlay.draggable();
+          },
+          onLoad: function(event) {
+            return $.mask.close();
           }
         }
       });
@@ -1129,22 +1108,6 @@
       event.preventDefault();
       remarks = $el.closest("tr").next("tr").find("td.remarks");
       return $(remarks).find("div.remarks-placeholder").toggle();
-    };
-
-    WorksheetManageResultsView.prototype.on_slot_remarks_th_click = function(event) {
-
-      /*
-       * Eventhandler when the remarks row was clicked in transposed layout
-       */
-      var $el;
-      console.debug("°°° WorksheetManageResultsView::on_slot_remarks_th_click °°°");
-      $el = $(event.currentTarget);
-      event.preventDefault();
-      if ($el.hasClass("slot-remarks-hidden")) {
-        return $el.removeClass("slot-remarks-hidden");
-      } else {
-        return $el.addClass("slot-remarks-hidden");
-      }
     };
 
     WorksheetManageResultsView.prototype.on_wideiterims_analyses_change = function(event) {

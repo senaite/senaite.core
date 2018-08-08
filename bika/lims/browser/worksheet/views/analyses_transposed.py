@@ -11,7 +11,6 @@ from bika.lims import PMF, logger
 from bika.lims.api import get_object
 from bika.lims.browser.bika_listing import BikaListingTable
 from bika.lims.browser.worksheet.views.analyses import AnalysesView
-from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import t
 
 
@@ -111,19 +110,6 @@ class AnalysesTransposedTable(BikaListingTable):
             return ''
 
         return self.render_cell()
-
-    def render_slot_remarks(self, position):
-        its = [i for i in self.items if i['Pos'] == position]
-        if not its:
-            return ""
-        instance = get_object(its[0]['obj'])
-        if not IRequestAnalysis.providedBy(instance):
-            return ""
-        parent = instance.getRequest() \
-            if hasattr(instance, 'getRequest') \
-            else instance.aq_parent    
-        remarks = parent.getField("Remarks").get_cooked_remarks(parent)
-        return "<div data-uid='{}'>{}</div>".format(parent.UID(),remarks)
 
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items

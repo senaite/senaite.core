@@ -19,9 +19,7 @@
                   nr_cols python:len(review_state['columns']);
                   nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
                   nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
-                  nr_cols python:str(nr_cols);
-                  th_width string:10em;
-                  td_width python:'calc((100% - {}) / {})'.format(th_width, len(view.positions));">
+                  nr_cols python:str(nr_cols);">
 
   <input tal:replace="structure context/@@authenticator/authenticator"/>
   <input type="hidden" name="submitted" value="1"/>
@@ -41,33 +39,16 @@
 
     <tbody class="item-listing-tbody" tal:condition="view/items">
       <tr tal:repeat="row rows">
-
-        <th tal:attributes="style python:'width:'+th_width;
-                            id python:'foldercontents-{}-column'.format(row['id'])">
-          <span tal:content="structure row/title"/>
-        </th>
-
+        <th><span tal:content="structure row/title"></span></th>
         <tal:analysis repeat="position view/positions">
-          <tal:cell define="cellhtml python:view.render_row_cell(row, position);
-                            td_class python:'%s %s %s %s'%(view.current_item.get('table_row_class',''),
-                                                           view.current_item.get('state_class', ''),
-                                                           view.current_item.get('class', {}).get(row['id']),
-                                                           row['id']);">
-            <td tal:condition="python:cellhtml" tal:attributes="class td_class">
-              <span tal:replace="structure cellhtml"/>
-            </td>
+          <tal:cell define="cellhtml python:view.render_row_cell(row, position)">
+            <td tal:condition="python:cellhtml"
+                tal:attributes="class python:'%s %s' % (view.current_item.get('table_row_class',''), view.current_item.get('state_class'));"
+                tal:content="structure cellhtml"></td>
             <td tal:condition="python:not cellhtml" class="filled-cell"></td>
           </tal:cell>
         </tal:analysis>
       </tr>
-
-      <tr class="slot-remarks slot-remarks-hidden">
-        <th i18n:translate="">Remarks</th>
-        <tal:cell tal:repeat="position view/positions">
-          <td tal:content="structure python:view.render_slot_remarks(position)"/>
-        </tal:cell>
-      </tr>
-
     </tbody>
     <tfoot>
       <!-- Workflow actions -->

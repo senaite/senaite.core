@@ -522,33 +522,9 @@ tfoot td.batching a {
 .template-batchbook .item-listing-tbody td {
   border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
-
 table.bika-listing-table-transposed {
     width: inherit;
-    table-layout: fixed;
 }
-.bika-listing-table-transposed img.slot-remarks {
-  cursor:pointer;
-}
-
-.bika-listing-table-transposed tr.slot-remarks {
-  cursor: pointer;
-}
-.bika-listing-table-transposed tr.slot-remarks td {
-  overflow:hidden
-}
-.bika-listing-table-transposed tr.slot-remarks div {
-  max-height:12em;
-  overflow-y:scroll;
-  overflow-x:hidden;
-}
-.bika-listing-table-transposed tr.slot-remarks-hidden td {
-  background:#dff0d8;
-}
-.bika-listing-table-transposed tr.slot-remarks-hidden div {
-  display:none
-}
-
 table.bika-listing-table-transposed tbody tr th {
     vertical-align:top;
     width: 125px;
