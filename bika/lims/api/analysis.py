@@ -115,21 +115,20 @@ def get_formatted_interval(results_range, default=_marker):
         if default is not _marker:
             return default
         api.fail("Type not supported")
-
     results_range = ResultsRangeDict(results_range)
-    min_str = api.is_floatable(results_range.min) and results_range.min or ""
-    max_str = api.is_floatable(results_range.max) and results_range.max or ""
-    if not min_str and not max_str:
+    min_str = results_range.min if api.is_floatable(results_range.min) else None
+    max_str = results_range.max if api.is_floatable(results_range.max) else None
+    if min_str is None and max_str is None:
         if default is not _marker:
             return default
         api.fail("Min and max values are not floatable or not defined")
 
     min_operator = results_range.min_operator
     max_operator = results_range.max_operator
-    if min_str and not max_str:
-        return "{}{}".format(MIN_OPERATORS.getKey(min_operator), min_str)
-    if not min_str and max_str:
-        return "{}{}".format(MAX_OPERATORS.getKey(max_operator), max_str)
+    if max_str is None:
+        return "{}{}".format(MIN_OPERATORS.getValue(min_operator), min_str)
+    if min_str is None:
+        return "{}{}".format(MAX_OPERATORS.getValue(max_operator), max_str)
 
     # Both values set. Return an interval
     min_bracket = min_operator == 'geq' and '[' or '('

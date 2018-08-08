@@ -649,3 +649,41 @@ Get the result range for `Au` (min: -5, max: 5)
     >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
     >>> get_formatted_interval(res_range)
     '(-5;5)'
+
+And if we set a 0 value as min or max?
+
+    >>> res_range['min'] = 0
+    >>> get_formatted_interval(res_range)
+    '(0;5)'
+
+    >>> res_range['max'] = 0
+    >>> res_range['min'] = -5
+    >>> get_formatted_interval(res_range)
+    '(-5;0)'
+
+And now, set no value for min and/or max
+
+    >>> res_range['min'] = ''
+    >>> res_range['max'] = 5
+    >>> get_formatted_interval(res_range)
+    '<5'
+
+    >>> res_range['max'] = ''
+    >>> res_range['min'] = -5
+    >>> get_formatted_interval(res_range)
+    '>-5'
+
+And change the operators
+
+    >>> res_range['min'] = ''
+    >>> res_range['max'] = 5
+    >>> res_range['max_operator'] = 'leq'
+    >>> get_formatted_interval(res_range)
+    '<=5'
+
+    >>> res_range['max'] = ''
+    >>> res_range['min'] = -5
+    >>> res_range['max_operator'] = 'lt'
+    >>> res_range['min_operator'] = 'geq'
+    >>> get_formatted_interval(res_range)
+    '>=-5'
