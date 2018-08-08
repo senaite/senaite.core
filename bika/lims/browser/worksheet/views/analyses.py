@@ -389,6 +389,7 @@ class AnalysesView(BaseView):
                 pos_text += self.render_remarks_tag(parent)
             pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/control.png'></a>" % (
             parent.absolute_url(), parent.Title())
+            pos_text += "<br/>"
         if parent.portal_type == 'AnalysisRequest':
             if parent.getRemarks():
                 pos_text += self.render_remarks_tag(parent)
