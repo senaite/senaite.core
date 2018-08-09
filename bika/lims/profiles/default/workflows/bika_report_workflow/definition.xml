@@ -40,6 +40,5 @@
       <permission-role>LabManager</permission-role>
     </permission-map>
   </state>
-  <!-- /State: active -->
 
 </dc-workflow>

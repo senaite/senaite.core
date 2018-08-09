@@ -60,6 +60,7 @@ Changelog
 - #962 Calculated results not marked for submission if zero
 - #964 Dormant Analysis Services displayed in AR Templates
 - #967 Avoid deepcopy, "Can't pickle acquisition wrappers".
+- #911 Users without privileges can create reports
 
 **Security**
 
