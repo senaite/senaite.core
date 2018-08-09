@@ -12,6 +12,7 @@ Changelog
 
 **Changed**
 
+- #971 Refactored Client's Analysis Requests, Samples and Batches listings
 - #945 Show AR Remarks in Worksheet ManageResults views
 - #953 Refactored Analysis Categories Listing
 - #956 Refactored LabContacts Listing
