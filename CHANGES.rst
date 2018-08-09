@@ -50,6 +50,7 @@ Changelog
 - #902 Attribute error when updating QC results using an import interface
 - #456 Date Published appears two times on the header table of AR view
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
+- #899 Secondary AR no longer changes received date of sample
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
 - #906 DateTime Widget does not display the Time
 - #909 List of clients cannot sort by Client ID
