@@ -123,11 +123,7 @@ def after_sample(obj):
     _cascade_transition(obj, 'sample')
 
     def next_transition(o):
-        # XXX The guard always returns true if state != 'sample_registered'.
-        # It makes no sense if AutoReceiveSamples is False.
-        auto_receive = o.bika_setup.getAutoReceiveSamples()
-        receive = isTransitionAllowed(o, 'receive') and auto_receive
-        return 'receive' if receive else 'sample_due'
+        return 'receive' if isTransitionAllowed(o, 'receive') else 'sample_due'
 
     low_state_action = next_transition(obj)
 

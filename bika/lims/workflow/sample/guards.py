@@ -30,10 +30,8 @@ def receive(obj):
     if not isBasicTransitionAllowed(obj):
         return False
 
-    # XXX This conflicts with the sample/events.py/after_sample handler.
-    # In that case, "sampled" state may prefer "sample_due" to "receive".
-    if getCurrentState(obj) != 'sample_registered':
-        return True
-    if obj.getSamplingWorkflowEnabled():
-        return False
-    return obj.bika_setup.getAutoReceiveSamples()
+    if getCurrentState(obj) == 'sample_registered':
+        if obj.getSamplingWorkflowEnabled():
+            return False
+        return obj.bika_setup.getAutoReceiveSamples()
+    return True
