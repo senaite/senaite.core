@@ -30,11 +30,10 @@ def receive(obj):
     if not isBasicTransitionAllowed(obj):
         return False
 
-    # If SamplingWorkflowEnabled, we must specifically reverse
-    # workflow permission and deny `receive` transition from
-    # `sample_registered` state.
-    if obj.getSamplingWorkflowEnabled() \
-            and getCurrentState(obj) == 'sample_registered':
+    # XXX This conflicts with the sample/events.py/after_sample handler.
+    # In that case, "sampled" state may prefer "sample_due" to "receive".
+    if getCurrentState(obj) != 'sample_registered':
+        return True
+    if obj.getSamplingWorkflowEnabled():
         return False
-    allowed = obj.bika_setup.getAutoReceiveSamples()
-    return allowed
+    return obj.bika_setup.getAutoReceiveSamples()
