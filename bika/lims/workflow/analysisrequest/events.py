@@ -102,9 +102,6 @@ def after_receive(obj):
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    obj.setDateReceived(DateTime())
-    obj.reindexObject(idxs=["getDateReceived", ])
-
     # Do note that the 'sample' transition for Sample already transitions
     # all the analyses associated to all the sample partitions, so there
     # is no need to transition neither the analyses nor partitions here
