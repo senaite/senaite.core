@@ -55,6 +55,9 @@ def upgrade(tool):
     # re-apply the permissions from the client workflow + reindex
     fix_client_permissions(portal)
 
+    # Apply restricted perms from bika_report_workflow
+    fix_report_permissions(portal)
+
     fix_items_stuck_in_sample_prep_states(portal, ut)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
@@ -225,3 +228,17 @@ def fix_items_stuck_in_sample_prep_states(portal, ut):
                 fix_ar_sample_workflow(instance)
         logger.info("Removed sample_prep state from {} items in {}."
                     .format(len(brains), catalog_id))
+
+
+def fix_report_permissions(portal):
+    wfs = get_workflows()
+    start = time.time()
+    reports = portal.reports.objectValues()
+    total = len(reports)
+    for num, report in enumerate(reports):
+        logger.info("Fixing permission for report {}/{} ({})"
+                    .format(num, total, report.id))
+        update_role_mappings(report, wfs=wfs)
+    end = time.time()
+    logger.info("Fixing report permissions took %.2fs" % float(end-start))
+    transaction.commit()

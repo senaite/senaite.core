@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_report_workflow"
+             title="Bika Report Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="registered"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <permission>Delete objects</permission>
+  <permission>Modify portal content</permission>
+  <permission>Add portal content</permission>
+  <permission>View</permission>
+  <permission>Access contents information</permission>
+  <permission>List folder contents</permission>
+
+  <state state_id="registered" title="Registered" i18n:attributes="title">
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+    <permission-map name="Access contents information" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+    <permission-map name="List folder contents" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
+  </state>
+  <!-- /State: active -->
+
+</dc-workflow>
