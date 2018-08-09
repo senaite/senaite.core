@@ -43,6 +43,7 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    setup.runImportStepFromProfile(profile, 'actions')
     setup.runImportStepFromProfile(profile, 'catalog')
     setup.runImportStepFromProfile(profile, 'workflow')
 

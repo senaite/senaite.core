@@ -153,7 +153,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="List portal members"/>
+				<element value="Modify portal content"/>
 			</property>
 			<property name="visible">True</property>
 		</object>
