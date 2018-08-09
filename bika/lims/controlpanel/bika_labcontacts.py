@@ -61,8 +61,11 @@ class LabContactsView(BikaListingView):
             ("Fullname", {
                 "title": _("Name"),
                 "index": "getFullname"}),
-            ("Department", {
-                "title": _("Department"),
+            ("DefaultDepartment", {
+                "title": _("Default Department"),
+                "toggle": False}),
+            ("Departments", {
+                "title": _("Departments"),
                 "toggle": True}),
             ("BusinessPhone", {
                 "title": _("Phone"),
@@ -122,6 +125,12 @@ class LabContactsView(BikaListingView):
         else:
             item["Fullname"] = ""
 
+        default_department = obj.getDefaultDepartment()
+        if default_department:
+            item["replace"]["DefaultDepartment"] = get_link(
+                default_department.absolute_url(),
+                value=default_department.Title())
+
         departments = obj.getDepartments()
         if departments:
             links = map(
@@ -129,7 +138,7 @@ class LabContactsView(BikaListingView):
                                    value=o.Title(),
                                    css_class="link"),
                 departments)
-            item["replace"]["Department"] = ", ".join(links)
+            item["replace"]["Departments"] = ", ".join(links)
 
         email = obj.getEmailAddress()
         if email:
