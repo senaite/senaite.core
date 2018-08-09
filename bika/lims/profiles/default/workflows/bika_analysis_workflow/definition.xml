@@ -22,7 +22,15 @@
   <state state_id="sample_registered" title="Registered" i18n:attributes="title">
     <exit-transition transition_id="sampling_workflow"/>
     <exit-transition transition_id="no_sampling_workflow"/>
+    <exit-transition transition_id="receive" />
     <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="not_requested" title="Not requested" i18n:attributes="title">
@@ -107,6 +115,8 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="True">
       <permission-role>LabClerk</permission-role>
@@ -172,9 +182,17 @@
   </state>
 
   <state state_id="sampled" title="Sampled" i18n:attributes="title">
-    <exit-transition transition_id="to_be_preserved" />
-    <exit-transition transition_id="sample_due" />
-    <exit-transition transition_id="reject" />
+    <exit-transition transition_id="to_be_preserved"/>
+    <exit-transition transition_id="sample_due"/>
+    <exit-transition transition_id="receive"/>
+    <exit-transition transition_id="reject"/>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="to_be_preserved" title="To be preserved" i18n:attributes="title">

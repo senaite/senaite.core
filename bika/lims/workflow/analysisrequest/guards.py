@@ -42,7 +42,12 @@ def schedule_sampling(obj):
 
 
 def receive(obj):
-    return isBasicTransitionAllowed(obj)
+    if not isBasicTransitionAllowed(obj):
+        return False
+    sample = obj.getSample()
+    allowed = isTransitionAllowed(sample, 'receive') \
+           or wasTransitionPerformed(sample, 'receive')
+    return allowed
 
 
 def verify(obj):

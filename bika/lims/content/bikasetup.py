@@ -558,6 +558,21 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        'AutoReceiveSamples',
+        schemata="Sampling and COC",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Automatically Receive Samples"),
+            description=_(
+                "If the sample collection workflow is enabled it will be used, "
+                "and samples will automatically enter 'received' state once "
+                "sampling is complete.  If the sampling workflow is not "
+                "enabled, then related workflows will use the 'received' "
+                "state as their default starting state."
+            )
+        ),
+    ),
+    BooleanField(
         'ScheduleSamplingEnabled',
         schemata="Sampling and COC",
         default=False,

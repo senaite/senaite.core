@@ -9,7 +9,7 @@ from Products.CMFCore.utils import getToolByName
 from DateTime import DateTime
 
 from bika.lims import logger
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, isTransitionAllowed
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 
@@ -122,23 +122,20 @@ def after_sample(obj):
     """
     _cascade_transition(obj, 'sample')
 
+    def next_transition(o):
+        return 'receive' if isTransitionAllowed(o, 'receive') else 'sample_due'
+
+    low_state_action = next_transition(obj)
+
     if obj.getSamplingWorkflowEnabled():
-        to_be_preserved = []
-        sample_due = []
-        lowest_state = 'sample_due'
         for p in obj.objectValues('SamplePartition'):
             if p.getPreservation():
-                lowest_state = 'to_be_preserved'
-                to_be_preserved.append(p)
+                low_state_action = 'to_be_preserved'
+                doActionFor(p, 'to_be_preserved')
             else:
-                sample_due.append(p)
-        for p in to_be_preserved:
-            doActionFor(p, 'to_be_preserved')
-        for p in sample_due:
-            doActionFor(p, 'sample_due')
-        doActionFor(obj, lowest_state)
-    else:
-        doActionFor(obj, 'sample_due')
+                doActionFor(p, next_transition(p))
+
+    doActionFor(obj, low_state_action)
 
 
 def after_sample_due(obj):
@@ -151,6 +148,8 @@ def after_sample_due(obj):
     :type obj: Sample
     """
     _cascade_transition(obj, 'sample_due')
+    if isTransitionAllowed(obj, 'receive'):
+        doActionFor(obj, 'receive')
 
 
 def after_receive(obj):

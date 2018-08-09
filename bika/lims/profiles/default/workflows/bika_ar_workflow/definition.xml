@@ -30,6 +30,7 @@
     <description>Creating an AR</description>
     <exit-transition transition_id="sampling_workflow"/>
     <exit-transition transition_id="no_sampling_workflow"/>
+    <exit-transition transition_id="receive" />
     <exit-transition transition_id="reject"/>
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -76,6 +77,13 @@
     </permission-map>
     <permission-map name="BIKA: Results not requested" acquired="False">
     </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+       <permission-role>LabClerk</permission-role>
+       <permission-role>LabManager</permission-role>
+       <permission-role>Manager</permission-role>
+       <permission-role>Sampler</permission-role>
+       <permission-role>SamplingCoordinator</permission-role>
+     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -286,6 +294,7 @@
     <description>Sampling completed, Sampler, Date Sampled and Field analysis results captured</description>
     <exit-transition transition_id="to_be_preserved" />
     <exit-transition transition_id="sample_due" />
+    <exit-transition transition_id="receive" />
     <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -330,6 +339,13 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: Results not requested" acquired="True">
     </permission-map>
@@ -421,6 +437,8 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: Results not requested" acquired="False">
     </permission-map>

@@ -13,7 +13,7 @@ from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID, dicts_to_dict
 from bika.lims.utils.analysisrequest import get_services_uids
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, isTransitionAllowed
 from bika.lims.workflow import getReviewHistoryActionsList
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
@@ -421,6 +421,8 @@ class Create(object):
         action = 'no_sampling_workflow'
         if SamplingWorkflowEnabled:
             action = 'sampling_workflow'
+        elif isTransitionAllowed(ar, 'receive'):
+            action = 'receive'
         wftool.doActionFor(ar, action)
 
         if secondary:
