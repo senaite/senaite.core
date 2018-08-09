@@ -434,6 +434,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label=_("Date Received"),
             show_time=True,
+            datepicker_nofuture=1,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
