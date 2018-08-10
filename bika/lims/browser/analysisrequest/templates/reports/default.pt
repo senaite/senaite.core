@@ -218,6 +218,7 @@
             <tr>
               <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
               <th tal:condition="hasprevresults" class="previous"><span i18n:translate="">Previous Results</span></th>
+              <th class="result"><span i18n:translate="">Interims</span></th>
               <th class="result"><span i18n:translate="">Result</span></th>
               <th class="specs"><span i18n:translate="">Value Range</span></th>
               <th class="outofrange"></th>
@@ -251,6 +252,13 @@
                   </td>
                   <td tal:condition="hasprevresults" class="prev">
                     <span tal:content="structure analysis/previous_results">1,2,3</span>
+                  </td>
+                  <td>
+                    <span tal:repeat="interim python:analysis['interims']">
+                        <span tal:content="interim/title"></span>
+                        <span tal:content="structure interim/formatted_value"/><span tal:content="structure interim/unit|nothing"/><br />
+                    </span>
+                    <span tal:condition="python:len(analysis['interims']) == 0">-</span>
                   </td>
                   <td>
                     <span class="result" tal:content="structure analysis/formatted_result">23</span>

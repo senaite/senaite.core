@@ -19,13 +19,14 @@ class InterimFieldsField(RecordsField):
         'minimalSize': 0,
         'maximalSize': 9999,
         'type': 'InterimFields',
-        'subfields': ('keyword', 'title', 'value', 'unit', 'hidden', 'wide'),
+        'subfields': ('keyword', 'title', 'value', 'unit', 'report', 'hidden', 'wide'),
         'required_subfields': ('keyword', 'title'),
         'subfield_labels': {
             'keyword': _('Keyword'),
             'title': _('Field Title'),
             'value': _('Default value'),
             'unit': _('Unit'),
+            'report': _('Report'),
             'hidden': _('Hidden Field'),
             'wide': _('Apply wide'),
         },
@@ -33,6 +34,7 @@ class InterimFieldsField(RecordsField):
             'hidden': 'boolean',
             'value': 'float',
             'wide': 'boolean',
+            'report': 'boolean',
         },
         'subfield_sizes': {
             'keyword': 20,

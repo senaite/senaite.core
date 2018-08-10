@@ -1391,6 +1391,10 @@ class AnalysisRequestDigester:
         # is out of range. The second value (dismissed here) is a bool that
         # indicates if the result is out of shoulders
         andict['outofrange'] = is_out_of_range(analysis)[0]
+        andict['interims'] = hasattr(analysis, 'getInterimFields') \
+                   and analysis.getInterimFields() or []
+        if len(andict['interims']) > 0:
+            andict['interims'] = [a for a in andict['interims'] if 'report' in a]
         return andict
 
     def _qcanalyses_data(self, ar, analysis_states=None):
