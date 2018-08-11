@@ -17,7 +17,6 @@ from bika.lims import bikaMessageFactory as _
 class SamplingRoundsView(BikaListingView):
     """Displays all system's sampling rounds
     """
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SamplingRoundsView, self).__init__(context, request)
