@@ -24,12 +24,10 @@ from zope.interface.declarations import implements
 
 # TODO: Separate content and view into own modules!
 
-
-class AnalysisSpecsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
+class BaseAnalysisSpecsView(BikaListingView):
 
     def __init__(self, context, request):
-        super(AnalysisSpecsView, self).__init__(context, request)
+        super(BaseAnalysisSpecsView, self).__init__(context, request)
 
         self.catalog = "bika_setup_catalog"
 
@@ -92,12 +90,6 @@ class AnalysisSpecsView(BikaListingView):
             },
         ]
 
-    def before_render(self):
-        """Before template render hook
-        """
-        # Don't allow any context actions
-        self.request.set("disable_border", 1)
-
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
         The use of this service prevents the extra-loops in child objects.
@@ -118,6 +110,16 @@ class AnalysisSpecsView(BikaListingView):
             item["replace"]["SampleType"] = get_link(url, value=title)
 
         return item
+
+
+class AnalysisSpecsView(BaseAnalysisSpecsView):
+    implements(IFolderContentsView, IViewView)
+
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
 
 
 schema = ATFolderSchema.copy()
