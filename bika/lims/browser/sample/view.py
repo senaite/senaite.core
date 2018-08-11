@@ -37,7 +37,6 @@ class SamplesView(BikaListingView):
     """
     A list of samples view (folder view)
     """
-    implements(IViewView)
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
