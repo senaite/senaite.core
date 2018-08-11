@@ -8,29 +8,27 @@
 import collections
 import json
 import traceback
-from DateTime import DateTime
 
-from bika.lims import bikaMessageFactory as _
+from DateTime import DateTime
+from Products.Archetypes import PloneMessageFactory as PMF
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
     AnalysisRequestsBikaListingFilterBar
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.permissions import (AddAnalysisRequest, ManageAnalysisRequests,
                                    SampleSample)
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import getUsers, t
 from collective.taskqueue.interfaces import ITaskQueue
 from plone.api import user
-from plone.app.layout.globals.interfaces import IViewView
 from plone.protect import CheckAuthenticator, PostOnly
-from Products.Archetypes import PloneMessageFactory as PMF
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import queryUtility
-from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):

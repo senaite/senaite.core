@@ -14,8 +14,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddBatch
-from plone.app.content.browser.interfaces import IFolderContentsView
-from zope.interface import implements
 
 
 class BatchFolderContentsView(BikaListingView):
