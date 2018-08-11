@@ -16,7 +16,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.analysis import is_out_of_range, get_formatted_interval
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
 from bika.lims.interfaces import (IAnalysisRequest, IFieldIcons,
                                   IRoutineAnalysis)
 from bika.lims.permissions import (EditFieldResults, EditResults,
@@ -26,7 +25,7 @@ from bika.lims.utils import (check_permission, format_supsub,
                              formatDecimalMark, get_image, get_link, getUsers,
                              t)
 from bika.lims.utils.analysis import format_uncertainty
-from bika.lims.workflow import isActive, wasTransitionPerformed
+from bika.lims.workflow import isActive
 from plone.memoize import view as viewcache
 from zope.component import getAdapters
 
