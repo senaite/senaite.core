@@ -172,11 +172,6 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        # This is used to cache analysis keywords with Point of Capture to
-        # reduce the number objects that need to be woken up
-        # Is managed by `is_analysis_edition_allowed` function
-        self._keywords_poc_map = dict()
-
         # This is used to display method and instrument columns if there is at
         # least one analysis to be rendered that allows the assignment of method
         # and/or instrument
