@@ -43,6 +43,7 @@ Changelog
 
 **Fixed**
 
+- #986 Result input fields are not read-only for analyst after submission
 - #985 Do not display content actions in listings from inside Client
 - #966 Traceback in Analyses listings when analysis unit is a numeric value
 - #959 Time not displayed for Date Created in Analysis Requests listings
