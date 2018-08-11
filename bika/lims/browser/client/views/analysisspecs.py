@@ -7,11 +7,11 @@
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.controlpanel.bika_analysisspecs import BaseAnalysisSpecsView
+from bika.lims.controlpanel.bika_analysisspecs import AnalysisSpecsView
 from bika.lims.permissions import AddAnalysisSpec
 
 
-class ClientAnalysisSpecsView(BaseAnalysisSpecsView):
+class ClientAnalysisSpecsView(AnalysisSpecsView):
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
@@ -20,6 +20,9 @@ class ClientAnalysisSpecsView(BaseAnalysisSpecsView):
     def before_render(self):
         """Before template render hook
         """
+        # We want to display the nav tabs, so we do NOT want disable_border in
+        # the request. Thus, do not call super.before_render
+
         mtool = api.get_tool("portal_membership")
         if not mtool.checkPermission(AddAnalysisSpec, self.context):
             del self.context_actions[_("Add")]
