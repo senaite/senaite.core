@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.8 (unreleased)
+1.2.8 (2018-08-11)
 ------------------
 
 **Added**
@@ -54,7 +54,7 @@ Changelog
 - #917 Localization of date and time strings in listings
 - #902 Attribute error when updating QC results using an import interface
 - #456 Date Published appears two times on the header table of AR view
-- #898 Cannot view/edit Supplier.  Tabs for different views now visible.
+- #898 Cannot view/edit Supplier. Tabs for different views now visible.
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
 - #906 DateTime Widget does not display the Time
 - #909 List of clients cannot sort by Client ID
@@ -64,9 +64,7 @@ Changelog
 - #960 Traceback on AnalysisSpec Log
 - #962 Calculated results not marked for submission if zero
 - #964 Dormant Analysis Services displayed in AR Templates
-- #967 Avoid deepcopy, "Can't pickle acquisition wrappers".
-
-**Security**
+- #967 Avoid deepcopy, "Can't pickle acquisition wrappers"
 
 
 1.2.7 (2018-07-10)

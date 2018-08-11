@@ -678,12 +678,6 @@ msgstr "Дээжийн төрлүүд"
 msgid "Sample due"
 msgstr ""
 
-msgid "Sample preparation"
-msgstr ""
-
-msgid "Sample preparation complete"
-msgstr ""
-
 msgid "Sample received"
 msgstr ""
 

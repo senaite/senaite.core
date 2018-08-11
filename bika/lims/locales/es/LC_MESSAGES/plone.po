@@ -678,12 +678,6 @@ msgstr "Tipos de muestras"
 msgid "Sample due"
 msgstr "Muestra pendiente de recepción"
 
-msgid "Sample preparation"
-msgstr "Preparación de la muestra"
-
-msgid "Sample preparation complete"
-msgstr "Preparación de la muestra completada"
-
 msgid "Sample received"
 msgstr "Muestra recibida"
 
