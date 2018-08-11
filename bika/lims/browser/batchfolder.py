@@ -20,8 +20,6 @@ from zope.interface import implements
 
 class BatchFolderContentsView(BikaListingView):
 
-    implements(IFolderContentsView)
-
     def __init__(self, context, request):
         super(BatchFolderContentsView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
