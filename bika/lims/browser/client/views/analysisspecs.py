@@ -21,5 +21,5 @@ class ClientAnalysisSpecsView(BaseAnalysisSpecsView):
         """Before template render hook
         """
         mtool = api.get_tool("portal_membership")
-        if mtool.checkPermission(AddAnalysisSpec, self.context):
+        if not mtool.checkPermission(AddAnalysisSpec, self.context):
             del self.context_actions[_("Add")]
