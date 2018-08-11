@@ -14,7 +14,7 @@ from zope.interface import implements
 
 
 class ClientContactsView(BikaListingView):
-    implements(IViewView, IContacts)
+    implements(IContacts)
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
