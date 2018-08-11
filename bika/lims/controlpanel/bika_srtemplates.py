@@ -22,7 +22,6 @@ from zope.interface.declarations import implements
 
 
 class SamplingRoundTemplatesView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
     """
     Displays the list of Sampling Round Templates registered in the system.
     For users with 'Bika: Add SRTemplate' permission granted (along with
