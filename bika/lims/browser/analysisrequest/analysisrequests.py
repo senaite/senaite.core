@@ -36,7 +36,6 @@ from zope.interface import implements
 class AnalysisRequestsView(BikaListingView):
     """Listing View for all Analysis Requests in the System
     """
-    implements(IViewView)
 
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
     ar_add = ViewPageTemplateFile("templates/ar_add.pt")
