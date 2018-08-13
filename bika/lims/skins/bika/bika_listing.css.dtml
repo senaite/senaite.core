@@ -84,6 +84,7 @@ table.bika-listing-table {
   color:#444;
   width:99%;
   margin:2px 0px;
+  height:4em;
 }
 
 .bika-listing-table thead {
