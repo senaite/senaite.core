@@ -761,12 +761,6 @@ class IHeaderTableFieldRenderer(Interface):
         """
 
 
-class ISamplePrepWorkflow(Interface):
-    """This flag enables the sample_prep workflow transitions to be inserted
-    into an object's workflow chain.
-    """
-
-
 class ICustomPubPref(Interface):
     """Marker interface for CustomPubPref
     """

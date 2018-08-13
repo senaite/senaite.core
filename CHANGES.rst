@@ -6,11 +6,18 @@ Changelog
 
 **Added**
 
+- #965 Added operators for max and min values in Specifications
 - #947 Instrument import interface: Cobas Integra 400plus
 - #924 Added ExtProxyField for its use in SchemaExtender
 
 **Changed**
 
+- #971 Refactored Client's Analysis Requests, Samples and Batches listings
+- #945 Show AR Remarks in Worksheet ManageResults views
+- #953 Refactored Analysis Categories Listing
+- #956 Refactored LabContacts Listing
+- #955 Refactored Departments Listing
+- #954 Refactored Attachment Types Listing
 - #944 Remarks style in Manage Results/Analyses
 - #943 AnalysisRequest View Remarks Field Style
 - #938 Refactored Analysis Profiles Widget
@@ -29,11 +36,14 @@ Changelog
 
 **Removed**
 
+- #972 Remove "Linked Sample" from Sample
 - #912 Remove "Default AR Specifications" Selection from Setup
 - #901 Remove explicit permission settings for clients
+- #900 Removed basic handling of custom Sample Preparation Workflows
 
 **Fixed**
 
+- #966 Traceback in Analyses listings when analysis unit is a numeric value
 - #959 Time not displayed for Date Created in Analysis Requests listings
 - #949 Retain AR Spec if Analyses were added/removed
 - #948 Inactive Sample Types shown in Analysis Specifications
@@ -50,6 +60,8 @@ Changelog
 - #958 Traceback on batch book view
 - #960 Traceback on AnalysisSpec Log
 - #962 Calculated results not marked for submission if zero
+- #964 Dormant Analysis Services displayed in AR Templates
+- #967 Avoid deepcopy, "Can't pickle acquisition wrappers".
 
 **Security**
 

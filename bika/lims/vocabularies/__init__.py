@@ -7,6 +7,7 @@
 
 from Acquisition import aq_get
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import is_active
 from bika.lims.utils import t
 from bika.lims.interfaces import IDisplayListVocabulary, ICustomPubPref
 from bika.lims.utils import to_utf8
@@ -107,8 +108,7 @@ class BikaContentVocabulary(object):
             folder = site.restrictedTraverse(folder)
             for portal_type in self.portal_types:
                 objects = list(folder.objectValues(portal_type))
-                objects = [o for o in objects if
-                           wf.getInfoFor(o, 'inactive_state') == 'active']
+                objects = filter(is_active, objects)
                 if not objects:
                     continue
                 objects.sort(lambda x, y: cmp(x.Title().lower(),

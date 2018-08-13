@@ -64,7 +64,9 @@ schema = Schema((
         type='resultsrange',
         subfields=(
             'keyword',
+            'min_operator',
             'min',
+            'max_operator',
             'max',
             'warn_min',
             'warn_max',
@@ -79,7 +81,9 @@ schema = Schema((
         },
         subfield_labels={
             'keyword': _('Analysis Service'),
+            'min_operator': _('Min operator'),
             'min': _('Min'),
+            'max_operator': _('Max operator'),
             'max': _('Max'),
             'warn_min': _('Min warn'),
             'warn_max': _('Max warn'),
@@ -206,6 +210,8 @@ class ResultsRangeDict(dict):
         self["max"] = self.max
         self["warn_min"] = self.warn_min
         self["warn_max"] = self.warn_max
+        self["min_operator"] = self.min_operator
+        self["max_operator"] = self.max_operator
 
     @property
     def min(self):
@@ -223,6 +229,14 @@ class ResultsRangeDict(dict):
     def warn_max(self):
         return self.get('warn_max', self.max)
 
+    @property
+    def min_operator(self):
+        return self.get('min_operator', 'geq')
+
+    @property
+    def max_operator(self):
+        return self.get('max_operator', 'leq')
+
     @min.setter
     def min(self, value):
         self["min"] = value
@@ -238,3 +252,11 @@ class ResultsRangeDict(dict):
     @warn_max.setter
     def warn_max(self, value):
         self['warn_max'] = value
+
+    @min_operator.setter
+    def min_operator(self, value):
+        self['min_operator'] = value
+
+    @max_operator.setter
+    def max_operator(self, value):
+        self['max_operator'] = value

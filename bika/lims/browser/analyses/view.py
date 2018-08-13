@@ -13,9 +13,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api, logger
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api.analysis import is_out_of_range
+from bika.lims.api.analysis import is_out_of_range, get_formatted_interval
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
 from bika.lims.interfaces import (IAnalysisRequest, IFieldIcons,
                                   IRoutineAnalysis)
 from bika.lims.permissions import (EditFieldResults, EditResults,
@@ -923,15 +924,9 @@ class AnalysesView(BikaListingView):
         results_range = analysis_brain.getResultsRange
         if not results_range:
             return
-        min_str = results_range.get('min', '')
-        max_str = results_range.get('max', '')
-        min_str = api.is_floatable(min_str) and "{0}".format(min_str) or ""
-        max_str = api.is_floatable(max_str) and "{0}".format(max_str) or ""
-        # Join with semi-colon to avoid confusion with commas as decimal mark
-        specs = "; ".join([val for val in [min_str, max_str] if val])
-        if not specs:
-            return
-        item["Specification"] = "[{}]".format(specs)
+
+        # Display the specification interval
+        item["Specification"] = get_formatted_interval(results_range, "")
 
         # Show an icon if out of range
         out_range, out_shoulders = is_out_of_range(analysis_brain)

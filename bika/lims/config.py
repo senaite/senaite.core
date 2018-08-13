@@ -129,3 +129,11 @@ PRIORITIES = DisplayList((
     ('4', _('Low')),
     ('5', _('Lowest')),
 ))
+MIN_OPERATORS = DisplayList((
+    ('geq', ">="),
+    ('gt', '>')
+))
+MAX_OPERATORS = DisplayList((
+    ('leq', "<="),
+    ('lt', '<')
+))

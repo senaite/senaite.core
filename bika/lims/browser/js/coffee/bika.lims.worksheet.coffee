@@ -527,12 +527,15 @@ class window.WorksheetManageResultsView
     console.debug "WorksheetManageResultsView::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog "senaite.core"
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
     @_pmf = window.jarn.i18n.MessageFactory('plone')
 
     # bind the event handler to the elements
     @bind_eventhandler()
+
+    # Initialize overlays
+    @init_overlays()
 
     # method instrument constraints
     @constraints = null
@@ -589,6 +592,27 @@ class window.WorksheetManageResultsView
 
     # handle value changes in the form
     $(this).on "constraints:loaded", @on_constraints_loaded
+
+  init_overlays: ->
+    ###
+     * Initialize all overlays for later loading
+     *
+    ###
+    console.debug "WorksheetManageResultsView::init_overlays"
+
+    # https://jquerytools.github.io/documentation/overlay
+    # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
+    $("img.slot-remarks").prepOverlay
+      subtype: "ajax"
+      filter: "h1,#archetypes-fieldname-Remarks span.remarks_history"
+      config:
+        closeOnClick: yes
+        closeOnEsc: yes
+        onBeforeLoad: (event) ->
+          overlay = this.getOverlay()
+          overlay.draggable()
+        onLoad: (event) ->
+          $.mask.close()
 
 
   init_instruments_and_methods: =>
