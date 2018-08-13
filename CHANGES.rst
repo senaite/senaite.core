@@ -14,6 +14,7 @@ Changelog
 
 
 **Fixed**
+- #990 Fix client analysisspecs view
 
 
 **Security**
