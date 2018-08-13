@@ -678,12 +678,6 @@ msgstr "Probetypen"
 msgid "Sample due"
 msgstr "Probe ausstehend"
 
-msgid "Sample preparation"
-msgstr "Probe präparieren"
-
-msgid "Sample preparation complete"
-msgstr "Probe präpariert"
-
 msgid "Sample received"
 msgstr "Probe empfangen"
 

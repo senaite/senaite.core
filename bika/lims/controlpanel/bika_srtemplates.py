@@ -5,24 +5,20 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplingRoundTemplates
 from bika.lims.permissions import AddSRTemplate
 from bika.lims.utils import checkPermissions
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
 from zope.interface.declarations import implements
 
 
 class SamplingRoundTemplatesView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
     """
     Displays the list of Sampling Round Templates registered in the system.
     For users with 'Bika: Add SRTemplate' permission granted (along with
