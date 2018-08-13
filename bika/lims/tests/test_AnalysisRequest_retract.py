@@ -34,8 +34,8 @@ class TestAnalysisRequestRetract(DataTestCase):
         }
         return api.search(query)
 
-    def timestamp(format="%Y-%m-%d"):
-        return DateTime().strftime(format)
+    def timestamp(self, fmt="%Y-%m-%d"):
+        return DateTime().strftime(fmt)
 
     def create_ar(self):
         client = self.portal.clients["client-1"]
