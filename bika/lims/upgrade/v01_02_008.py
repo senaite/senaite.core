@@ -120,12 +120,8 @@ def revert_client_permissions_for_batches(portal):
     batch_wf.states.closed.setPermission("View", acquire, grant)
 
     catalog = api.get_tool('portal_catalog')
-    brains = catalog(portal_type='Batch')
+    brains = catalog(portal_type='Batch', allowedRolesAndUsers=["Client"])
     for brain in brains:
-        allowed = brain.allowedRolesAndUsers or []
-        if 'Client' not in allowed:
-            # No need to do rolemapping + reindex if not necessary
-            continue
         obj = api.get_object(brain)
         batch_wf.updateRoleMappingsFor(obj)
         obj.reindexObject(idxs=['allowedRolesAndUsers'])

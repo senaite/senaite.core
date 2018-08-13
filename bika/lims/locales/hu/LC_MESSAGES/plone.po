@@ -678,12 +678,6 @@ msgstr "Minta típusok"
 msgid "Sample due"
 msgstr "Minta esedékes"
 
-msgid "Sample preparation"
-msgstr "Minta előkészítés"
-
-msgid "Sample preparation complete"
-msgstr "Minta előkészítés befejezve"
-
 msgid "Sample received"
 msgstr "Minta átvéve"
 

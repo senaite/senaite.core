@@ -26,7 +26,6 @@ from zope.interface.declarations import implements
 
 
 class AnalysisSpecsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(AnalysisSpecsView, self).__init__(context, request)
@@ -50,8 +49,6 @@ class AnalysisSpecsView(BikaListingView):
         }
 
         self.title = self.context.translate(_("Analysis Specifications"))
-        self.description = self.context.translate(_(
-            "Set up the laboratory analysis service results specifications"))
         self.icon = "{}/{}".format(
             self.portal_url,
             "/++resource++bika.lims.images/analysisspec_big.png"
