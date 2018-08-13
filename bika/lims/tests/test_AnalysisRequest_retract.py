@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
 from bika.lims.tests.base import DataTestCase
 from plone.app.testing import (TEST_USER_ID, TEST_USER_NAME, login, logout,
                                setRoles)
@@ -36,34 +37,33 @@ class TestAnalysisRequestRetract(DataTestCase):
                   'SampleType': sampletype.UID()}
         # Getting some services
         services = catalog(portal_type='AnalysisService',
-                            inactive_state='active')[:3]
+                           inactive_state='active')[:3]
         service_uids = [service.getObject().UID() for service in services]
         request = {}
         ar = create_analysisrequest(client, request, values, service_uids)
-        wf = getToolByName(ar, 'portal_workflow')
-        wf.doActionFor(ar, 'receive')
+        api.do_transition_for(ar, 'receive')
 
         # Cheking if everything is going OK
         self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
                           'sample_received')
         for analysis in ar.getAnalyses(full_objects=True):
             analysis.setResult('12')
-            wf.doActionFor(analysis, 'submit')
+            api.do_transition_for(analysis, 'submit')
             self.assertEquals(analysis.portal_workflow.getInfoFor(
                 analysis, 'review_state'), 'to_be_verified')
             # retracting results
-            wf.doActionFor(analysis, 'retract')
+            api.do_transition_for(analysis, 'retract')
             self.assertEquals(analysis.portal_workflow.getInfoFor(
                 analysis, 'review_state'), 'retracted')
         for analysis in ar.getAnalyses(full_objects=True):
             if analysis.portal_workflow.getInfoFor(
                     analysis, 'review_state') == 'retracted':
                 continue
-            wf.doActionFor(analysis, 'submit')
+            api.do_transition_for(analysis, 'submit')
             self.assertEquals(
                 analysis.portal_workflow.getInfoFor(analysis, 'review_state'),
                 'to_be_verified')
-        wf.doActionFor(ar, 'retract')
+        api.do_transition_for(ar, 'retract')
         self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
                           'sample_received')
 
