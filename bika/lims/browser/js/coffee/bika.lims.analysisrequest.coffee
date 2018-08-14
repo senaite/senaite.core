@@ -589,7 +589,7 @@ window.AnalysisRequestAnalysesView = ->
     ###jshint validthis:true ###
 
     auto_yes = auto_yes or false
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog 'senaite.core'
     _ = window.jarn.i18n.MessageFactory("senaite.core")
     dep = undefined
     i = undefined
