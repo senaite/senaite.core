@@ -98,7 +98,7 @@
                      name string:${view/bika_listing/form_id}_selected_obj_uids:list" />
         <label tal:content="item/title"
                tal:attributes="for string:${view/bika_listing/form_id}_cb_${item/uid}"
-               class="hiddenStructure"/>
+               class="hiddenStructure hidden"/>
       </tal:noreplace>
     </td>
 
