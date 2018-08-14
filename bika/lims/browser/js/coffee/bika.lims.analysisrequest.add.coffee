@@ -9,7 +9,7 @@ class window.AnalysisRequestAdd
     console.debug "AnalysisRequestAdd::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog 'senaite.core'
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
     # disable browser autocomplete
