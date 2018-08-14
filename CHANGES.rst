@@ -14,6 +14,8 @@ Changelog
 
 
 **Fixed**
+
+- #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
 
 
