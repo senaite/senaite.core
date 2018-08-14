@@ -14,6 +14,7 @@ Changelog
 
 
 **Fixed**
+- #996 Hide checkbox labels on category expansion
 
 
 **Security**
