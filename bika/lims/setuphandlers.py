@@ -568,6 +568,8 @@ class BikaGenerator(object):
             # noinspection PyBroadException
             try:
                 workflow.doActionFor(obj, "hide")
+                wf = workflow.getWorkflowById("bika_arimports_workflow")
+                wf.updateRoleMappingsFor(obj)
             except:
                 pass
             obj.setLayout('@@arimports')
