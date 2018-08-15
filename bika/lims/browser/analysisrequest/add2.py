@@ -13,6 +13,7 @@ from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
@@ -911,7 +912,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         })
 
-        dependencies = self.get_calculation_dependencies_for(obj).values()
+        dependencies = get_calculation_dependencies_for(obj).values()
         info["dependencies"] = map(self.get_base_info, dependencies)
         # dependants = self.get_calculation_dependants_for(obj).values()
         # info["dependendants"] = map(self.get_base_info, dependants)
