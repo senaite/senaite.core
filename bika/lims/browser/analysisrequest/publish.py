@@ -968,6 +968,9 @@ class AnalysisRequestDigester:
         data['batch'] = self._batch_data(ar)
         data['specifications'] = self._specs_data(ar)
         data['analyses'] = self._analyses_data(ar, ['verified', 'published'])
+        data['hasinterimfields'] = len(
+            [an['interims'] for an in data['analyses'] if
+             len(an['interims']) > 0]) > 0
         data['qcanalyses'] = self._qcanalyses_data(ar,
                                                    ['verified', 'published'])
         data['points_of_capture'] = sorted(

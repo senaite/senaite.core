@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1001 Option to show Interim fields on COA
 
 **Changed**
 
