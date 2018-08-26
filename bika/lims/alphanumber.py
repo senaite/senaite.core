@@ -99,6 +99,17 @@ def is_alphanumeric(alpha_number):
     return True
 
 
+def get_alphanumber(number, format, alphabet=ALPHABET):
+    match = re.match(r"(\d+)a(\d+)d", format)
+    if not match or not match.groups() or len(match.groups()) != 2:
+        raise ValueError("Format not supported: {}".format(format))
+    matches = match.groups()
+    num_chars = int(matches[0])
+    num_digits = int(matches[1])
+    return Alphanumber(number=number, num_chars=num_chars,
+                       num_digits=num_digits, alphabet=alphabet)
+
+
 def to_int10(alpha_number, alphabet=ALPHABET, default=_marker):
     """Converts the alphanumeric value to an int (base 10)
     """
