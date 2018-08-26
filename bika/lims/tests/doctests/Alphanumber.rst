@@ -177,6 +177,17 @@ We can also compare two Alphanumbers:
     >>> alpha3 == alpha4
     True
 
+Or get the max and the min:
+
+    >>> alphas = [alpha1, alpha3, alpha2]
+    >>> alpha_max = max(alphas)
+    >>> int(alpha_max)
+    4448
+
+    >>> alpha_min = min(alphas)
+    >>> int(alpha_min)
+    1752
+
 We can also convert to int directly:
 
     >>> int(alpha4)
