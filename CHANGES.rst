@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1003 Alphanumeric numbering in sequential IDs generator
 
 **Changed**
 
