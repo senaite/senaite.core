@@ -1230,6 +1230,25 @@ def to_date(value, default=None):
         return to_date(default)
 
 
+def to_int(value, default=_marker):
+    """Tries to convert the value to int.
+    Truncates at the decimal point if the value is a float
+
+    :param value: The value to be converted to an int
+    :return: The resulting int or default
+    """
+    if is_floatable(value):
+        value = to_float(value)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        if default is None:
+            return default
+        if default is not _marker:
+            return to_int(default)
+        fail("Value %s cannot be converted to int" % repr(value))
+
+
 def is_floatable(value):
     """Checks if the passed in value is a valid floatable number
 
