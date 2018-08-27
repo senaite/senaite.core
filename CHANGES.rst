@@ -12,7 +12,7 @@ Changelog
 
 **Removed**
 
-- #1003 Removed databasesanitize package
+- #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
 
 
