@@ -1351,3 +1351,41 @@ With default fallback:
 
     >>> api.to_float("2.1", "2")
     2.1
+
+Convert to an int number
+------------------------
+
+    >>> api.to_int(2)
+    2
+
+    >>> api.to_int("2")
+    2
+
+    >>> api.to_int(2.1)
+    2
+
+    >>> api.to_int("2.1")
+    2
+
+With default fallback:
+
+    >>> api.to_int(None, 2)
+    2
+
+    >>> api.to_int(None, "2")
+    2
+
+    >>> api.to_int("", 2)
+    2
+
+    >>> api.to_int("2", 0)
+    2
+
+    >>> api.to_int(2, 0)
+    2
+
+    >>> api.to_int("as", None) is None
+    True
+
+    >>> api.to_int("as", "2")
+    2

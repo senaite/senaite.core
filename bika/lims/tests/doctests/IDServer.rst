@@ -269,4 +269,101 @@ Re-seed and create a new `Batch`::
     >>> ar.getId()
     'RB-20170131-water-0002-R001'
 
+Change ID formats and use alphanumeric ids::
+    >>> sampletype2 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
+    >>> sampletype2
+    <...sampletype-2>
+
+    >>> values = [
+    ...            {'form': '{sampleType}-{alpha:3a1d}',
+    ...             'portal_type': 'Sample',
+    ...             'prefix': 'sample',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 1,
+    ...             'separator': '',
+    ...             'value': ''},
+    ...            {'context': 'sample',
+    ...             'counter_reference': 'AnalysisRequestSample',
+    ...             'counter_type': 'backreference',
+    ...             'form': '{sampleId}-R{seq:d}',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'sequence_type': 'counter',
+    ...             'separator': '',
+    ...             'value': ''},
+    ...            {'context': 'sample',
+    ...             'counter_reference': 'SamplePartition',
+    ...             'counter_type': 'contained',
+    ...             'form': '{sampleId}-P{seq:d}',
+    ...             'portal_type': 'SamplePartition',
+    ...             'sequence_type': 'counter',
+    ...             'separator': '',
+    ...             'value': ''},
+    ...          ]
+
+    >>> bika_setup.setIDFormatting(values)
+    >>> values = {'SampleType': sampletype2.UID(),}
+    >>> service_uids = [analysisservice.UID()]
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'WB-AAA1-R1'
+
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'WB-AAA2-R1'
+
+Now generate 8 more ARs to force the alpha segment to change
+    >>> for num in range(8):
+    ...     ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'WB-AAB1-R1'
+
+And try now without separators:
+
+    >>> sampletype3 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
+    >>> sampletype3
+    <...sampletype-3>
+
+    >>> values = [
+    ...            {'form': '{sampleType}{alpha:3a1d}',
+    ...             'portal_type': 'Sample',
+    ...             'prefix': 'sample',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 1,
+    ...             'separator': '',
+    ...             'value': ''},
+    ...            {'context': 'sample',
+    ...             'counter_reference': 'AnalysisRequestSample',
+    ...             'counter_type': 'backreference',
+    ...             'form': '{sampleId}R{seq:d}',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'sequence_type': 'counter',
+    ...             'separator': '',
+    ...             'value': ''},
+    ...            {'context': 'sample',
+    ...             'counter_reference': 'SamplePartition',
+    ...             'counter_type': 'contained',
+    ...             'form': '{sampleId}{seq:d}',
+    ...             'portal_type': 'SamplePartition',
+    ...             'sequence_type': 'counter',
+    ...             'separator': '',
+    ...             'value': ''},
+    ...          ]
+
+    >>> bika_setup.setIDFormatting(values)
+    >>> values = {'SampleType': sampletype3.UID(),}
+    >>> service_uids = [analysisservice.UID()]
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'WBAAA1R1'
+
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'WBAAA2R1'
+
+Now generate 8 more ARs to force the alpha segment to change
+    >>> for num in range(8):
+    ...     ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'WBAAB1R1'
+
 TODO: Test the case when numbers are exhausted in a sequence!
