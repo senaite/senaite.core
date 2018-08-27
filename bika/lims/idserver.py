@@ -272,9 +272,9 @@ def get_alpha_or_number(number, template):
     """Returns an Alphanumber that represents the number passed in, expressed
     as defined in the template. Otherwise, returns the number
     """
-    match = re.match(r".*\{alpha:(\d+a\d+d)\}$", template)
+    match = re.match(r".*\{alpha:(\d+a\d+d)\}$", template.strip())
     if match and match.groups():
-        format =  match.groups()[0]
+        format = match.groups()[0]
         return get_alphanumber(number, format)
     return number
 
