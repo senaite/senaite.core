@@ -420,16 +420,18 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
             label=_("Date Received"),
+            show_time=True,
+            datepicker_nofuture=1,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
-                     'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
-                     'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_registered': {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
+                     'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
                      'rejected':          {'view': 'visible', 'edit': 'invisible'},
@@ -753,12 +755,17 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     security.declarePublic('getAnalyses')
 
-    def getAnalyses(self, contentFilter):
+    def getAnalyses(self, contentFilter=None, **kwargs):
         """ return list of all analyses against this sample
         """
+        # contentFilter and kwargs are combined.  They both exist for
+        # compatibility between the two signatures; kwargs has been added
+        # to be compatible with how getAnalyses() is used everywhere else.
+        cf = contentFilter if contentFilter else {}
+        cf.update(kwargs)
         analyses = []
         for ar in self.getAnalysisRequests():
-            analyses += ar.getAnalyses(**contentFilter)
+            analyses.extend(ar.getAnalyses(**cf))
         return analyses
 
     def getSamplers(self):
