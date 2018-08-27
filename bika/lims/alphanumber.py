@@ -146,6 +146,3 @@ def to_decimal(alpha_number, alphabet=ALPHABET, default=_marker):
         number += (index_char * max_num * len_alphabet ** pos_char)
 
     return number
-
-
-
