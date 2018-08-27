@@ -11,6 +11,10 @@ class Alphanumber(object):
     """
 
     def __init__(self, number=0, num_chars=3, num_digits=3, alphabet=ALPHABET):
+        if num_chars < 1:
+            raise ValueError("num_chars param is lower than 1")
+        if num_digits < 1:
+            raise ValueError("num_digits param is lower than 1")
         self.alpha_str = None
         self.alphabet = alphabet
         self.num_chars = num_chars
