@@ -75,30 +75,6 @@ class Alphanumber(object):
         return self.__format__(format)
 
 
-def split_parts(alpha_number, default=_marker):
-    """Returns the two parts that conforms the alphanumeric number passed in
-    """
-    num = api.to_int(alpha_number, default=None)
-    if num is not None:
-        return ('', str(num))
-
-    regex = re.compile(r"([A-Z]+)(\d+)", re.IGNORECASE)
-    matches = re.findall(regex, alpha_number)
-    if not matches:
-        if default is not _marker:
-            return default
-        raise ValueError("Not a valid alpha number: {}".format(alpha_number))
-
-    return (matches[0][0], matches[0][1])
-
-
-def is_alphanumeric(alpha_number):
-    parts = split_parts(alpha_number, default=None)
-    if not parts or not parts[0]:
-        return False
-    return True
-
-
 def to_alpha(number, format, alphabet=ALPHABET):
     """Returns an Alphanumber object that represents the number in accordance
     with the format specified.
@@ -126,14 +102,21 @@ def to_decimal(alpha_number, alphabet=ALPHABET, default=_marker):
     :type number: int, string, Alphanumber, float
     :type alphabet: string
     """
-    parts = split_parts(alpha_number, default=None)
-    if not parts or parts is None:
+    num = api.to_int(alpha_number, default=None)
+    if num is not None:
+        return num
+
+    alpha_number = str(alpha_number)
+    regex = re.compile(r"([A-Z]+)(\d+)", re.IGNORECASE)
+    matches = re.findall(regex, alpha_number)
+    if not matches:
         if default is not _marker:
             return default
         raise ValueError("Not a valid alpha number: {}".format(alpha_number))
-    alpha = parts[0]
-    number = int(parts[1])
-    max_num = 10 ** len(parts[1]) - 1
+
+    alpha = matches[0][0]
+    number = int(matches[0][1])
+    max_num = 10 ** len(matches[0][1]) - 1
     len_alphabet = len(alphabet)
     for pos_char, alpha_char in enumerate(reversed(alpha)):
         index_char = alphabet.find(alpha_char)
