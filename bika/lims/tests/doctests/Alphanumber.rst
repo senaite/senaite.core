@@ -15,7 +15,7 @@ Needed Imports:
 
     >>> import re
     >>> from bika.lims import api
-    >>> from bika.lims.alphanumber import to_int10
+    >>> from bika.lims.alphanumber import to_decimal
     >>> from bika.lims.alphanumber import Alphanumber
 
 Create and test basic alphanumeric functions:
@@ -59,7 +59,7 @@ Addition of an integer:
     2675
     >>> str(alpha3)
     'ABB02'
-    >>> to_int10(str(alpha3))
+    >>> to_decimal(str(alpha3))
     2675
 
 Addition of another Alphanumber object:
@@ -74,7 +74,7 @@ Addition of another Alphanumber object:
     5348
     >>> str(alpha3)
     'ACC02'
-    >>> to_int10(str(alpha3))
+    >>> to_decimal(str(alpha3))
     5348
 
 Subtraction of an integer:
@@ -84,7 +84,7 @@ Subtraction of an integer:
     2673
     >>> str(alpha3)
     'ABA99'
-    >>> to_int10(str(alpha3))
+    >>> to_decimal(str(alpha3))
     2673
 
 Subtraction of another Alphanumber object:
@@ -99,7 +99,7 @@ Subtraction of another Alphanumber object:
     0
     >>> str(alpha3)
     'AAA00'
-    >>> to_int10(str(alpha3))
+    >>> to_decimal(str(alpha3))
     0
 
 We can also create the instance with a string representing an alpha number:
@@ -109,7 +109,7 @@ We can also create the instance with a string representing an alpha number:
     'ABB23'
     >>> int(alpha)
     2696
-    >>> to_int10(str(alpha))
+    >>> to_decimal(str(alpha))
     2696
 
 We can even change the number of digits to default (3 digits) and the result
@@ -136,7 +136,7 @@ We can also use our own alphabet:
     'yuy698'
     >>> int(alpha)
     2696
-    >>> to_int10(str(alpha), alphabet="yu")
+    >>> to_decimal(str(alpha), alphabet="yu")
     2696
 
 And we can add or subtract regardless of alphabet, number of digits and number

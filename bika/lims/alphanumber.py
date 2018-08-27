@@ -15,7 +15,7 @@ class Alphanumber(object):
         self.alphabet = alphabet
         self.num_chars = num_chars
         self.num_digits = num_digits
-        self.int10 = to_int10(number, alphabet=alphabet)
+        self.int10 = to_decimal(number, alphabet=alphabet)
         self.alpha_format = '%sa%sd' % (self.num_chars, self.num_digits)
         self.alpha_str = self.__format__(self.alpha_format)
 
@@ -99,7 +99,16 @@ def is_alphanumeric(alpha_number):
     return True
 
 
-def get_alphanumber(number, format, alphabet=ALPHABET):
+def to_alpha(number, format, alphabet=ALPHABET):
+    """Returns an Alphanumber object that represents the number in accordance
+    with the format specified.
+    :param number: a number representation used to create the Alphanumber
+    :param format: the format to use. eg. '2a3d' for 2 chars and 3 digits
+    :param alphabet: alphabet to use
+    :type number: int, string, Alphanumber, float
+    :type format: string
+    :type alphabet: string
+    """
     match = re.match(r"(\d+)a(\d+)d", format)
     if not match or not match.groups() or len(match.groups()) != 2:
         raise ValueError("Format not supported: {}".format(format))
@@ -110,8 +119,12 @@ def get_alphanumber(number, format, alphabet=ALPHABET):
                        num_digits=num_digits, alphabet=alphabet)
 
 
-def to_int10(alpha_number, alphabet=ALPHABET, default=_marker):
-    """Converts the alphanumeric value to an int (base 10)
+def to_decimal(alpha_number, alphabet=ALPHABET, default=_marker):
+    """Converts an alphanumeric code (e.g AB12) to an integer
+    :param alpha_number: representation of an alphanumeric code
+    :param alphabet: alphabet to use when alpha_number is a non-int string
+    :type number: int, string, Alphanumber, float
+    :type alphabet: string
     """
     parts = split_parts(alpha_number, default=None)
     if not parts or parts is None:

@@ -15,7 +15,7 @@ from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.alphanumber import get_alphanumber, Alphanumber
+from bika.lims.alphanumber import to_alpha, Alphanumber
 from bika.lims.browser.fields.uidreferencefield \
     import get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IIdServer
@@ -275,7 +275,7 @@ def get_alpha_or_number(number, template):
     match = re.match(r".*\{alpha:(\d+a\d+d)\}$", template)
     if match and match.groups():
         format =  match.groups()[0]
-        return get_alphanumber(number, format)
+        return to_alpha(number, format)
     return number
 
 
