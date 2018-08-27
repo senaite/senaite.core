@@ -128,6 +128,7 @@ def get_variables(context, **kw):
         'year': get_current_year(),
         'parent': api.get_parent(context),
         'seq': 0,
+        'alpha': Alphanumber(0),
     }
 
     # Augment the variables map depending on the portal type
