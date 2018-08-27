@@ -678,12 +678,6 @@ msgstr "Образец: Типы"
 msgid "Sample due"
 msgstr "Образец ожидается"
 
-msgid "Sample preparation"
-msgstr ""
-
-msgid "Sample preparation complete"
-msgstr ""
-
 msgid "Sample received"
 msgstr "Образец принят"
 

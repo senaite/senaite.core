@@ -678,12 +678,6 @@ msgstr "多个样品类型"
 msgid "Sample due"
 msgstr ""
 
-msgid "Sample preparation"
-msgstr ""
-
-msgid "Sample preparation complete"
-msgstr ""
-
 msgid "Sample received"
 msgstr ""
 

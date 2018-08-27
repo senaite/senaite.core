@@ -16,7 +16,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.analysis import is_out_of_range, get_formatted_interval
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
 from bika.lims.interfaces import (IAnalysisRequest, IFieldIcons,
                                   IRoutineAnalysis)
 from bika.lims.permissions import (EditFieldResults, EditResults,
@@ -26,7 +25,7 @@ from bika.lims.utils import (check_permission, format_supsub,
                              formatDecimalMark, get_image, get_link, getUsers,
                              t)
 from bika.lims.utils.analysis import format_uncertainty
-from bika.lims.workflow import isActive, wasTransitionPerformed
+from bika.lims.workflow import isActive
 from plone.memoize import view as viewcache
 from zope.component import getAdapters
 
@@ -173,11 +172,6 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        # This is used to cache analysis keywords with Point of Capture to
-        # reduce the number objects that need to be woken up
-        # Is managed by `is_analysis_edition_allowed` function
-        self._keywords_poc_map = dict()
-
         # This is used to display method and instrument columns if there is at
         # least one analysis to be rendered that allows the assignment of method
         # and/or instrument
@@ -196,7 +190,7 @@ class AnalysesView(BikaListingView):
             return False
         if obj is None:
             return check_permission(permission, self.context)
-        return check_permission(permission, obj)
+        return check_permission(permission, api.get_object(obj))
 
     @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
@@ -205,44 +199,21 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :return: True if the user can edit the analysis, otherwise False
         """
-
-        # TODO: Workflow. This function will be replaced by
-        # `isTransitionAllowed(submit)` as soon as all this logic gets moved
-        # into analysis' submit guard.... Very soon
         if not self.context_active:
             # The current context must be active. We cannot edit analyses from
             # inside a deactivated Analysis Request, for instance
             return False
 
-        if analysis_brain.review_state == 'retracted':
-            # Retracted analyses cannot be edited
-            return False
-
-        analysis_obj = None
-        analysis_keyword = analysis_brain.getKeyword
-        if analysis_keyword not in self._keywords_poc_map:
-            # Store the point of capture for this analysis keyword in cache, so
-            # waking up analyses with same keyword will not be longer required
-            analysis_obj = api.get_object(analysis_brain)
-            analysis_poc = analysis_obj.getPointOfCapture()
-            self._keywords_poc_map[analysis_keyword] = analysis_poc
-
-        poc = self._keywords_poc_map[analysis_keyword]
-        if poc == 'field':
+        analysis_obj = api.get_object(analysis_brain)
+        if analysis_obj.getPointOfCapture() == 'field':
             # This analysis must be captured on field, during sampling.
-            if not self.has_permission(EditFieldResults):
+            if not self.has_permission(EditFieldResults, analysis_obj):
                 # Current user cannot edit field analyses.
                 return False
 
-        elif not self.has_permission(EditResults):
+        elif not self.has_permission(EditResults, analysis_obj):
             # The Point of Capture is 'lab' and the current user cannot edit
             # lab analyses.
-            return False
-
-        analysis_obj = analysis_obj or api.get_object(analysis_brain)
-        if wasTransitionPerformed(analysis_obj, 'submit'):
-            # Analysis has been already submitted. This analysis cannot be
-            # edited anymore.
             return False
 
         # Is the instrument out of date?

@@ -49,6 +49,7 @@ class AnalysisSpecificationView(BikaListingView):
         self.pagesize = 999999
         self.allow_edit = allow_edit
         self.show_categories = True
+        self.form_id = "analysisspec"
         # self.expand_all_categories = False
         self.ajax_categories = True
         self.ajax_categories_url = "{}/{}".format(

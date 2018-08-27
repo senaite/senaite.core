@@ -5,10 +5,14 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
 from bika.lims.tests.base import DataTestCase
-from plone.app.testing import (TEST_USER_ID, TEST_USER_NAME, login, logout,
-                               setRoles)
-from Products.CMFCore.utils import getToolByName
+from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from DateTime import DateTime
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
 
 try:
     import unittest2 as unittest
@@ -20,56 +24,75 @@ class TestAnalysisRequestRetract(DataTestCase):
 
     def setUp(self):
         super(TestAnalysisRequestRetract, self).setUp()
-        setRoles(self.portal, TEST_USER_ID, ['Member', 'LabManager'])
+        setRoles(self.portal, TEST_USER_ID, ["Member", "LabManager"])
         login(self.portal, TEST_USER_NAME)
 
+    def get_services(self):
+        query = {
+            "portal_type": "AnalysisService",
+            "inactive_state": "active",
+        }
+        return api.search(query)
+
+    def timestamp(self, fmt="%Y-%m-%d"):
+        return DateTime().strftime(fmt)
+
+    def create_ar(self):
+        client = self.portal.clients["client-1"]
+        contacts = client.getContacts()
+        contact = contacts[0]
+        sampletype = self.portal.bika_setup.bika_sampletypes["sampletype-1"]
+        values = {
+            "Client": api.get_uid(client),
+            "Contact": api.get_uid(contact),
+            "SamplingDate": self.timestamp(),
+            "SampleType": api.get_uid(sampletype)}
+
+        services = self.get_services()[:3]
+        service_uids = map(api.get_uid, services)
+        return crar(client, self.request, values, service_uids)
+
     def test_retract_an_analysis_request(self):
-        # Test the retract process to avoid LIMS-1989
-        from bika.lims.utils.analysisrequest import create_analysisrequest
-        catalog = getToolByName(self.portal, 'portal_catalog')
-        # Getting the first client
-        client = self.portal.clients['client-1']
-        sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
-        values = {'Client': client.UID(),
-                  'Contact': client.getContacts()[0].UID(),
-                  'SamplingDate': '2015-01-01',
-                  'SampleType': sampletype.UID()}
-        # Getting some services
-        services = catalog(portal_type='AnalysisService',
-                            inactive_state='active')[:3]
-        service_uids = [service.getObject().UID() for service in services]
-        request = {}
-        ar = create_analysisrequest(client, request, values, service_uids)
-        wf = getToolByName(ar, 'portal_workflow')
-        wf.doActionFor(ar, 'receive')
+        ar = self.create_ar()
 
-        # Cheking if everything is going OK
-        self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
-                          'sample_received')
+        # Check "receive" transition -> sample_received
+        api.do_transition_for(ar, "receive")
+        self.assertEquals(
+            api.get_workflow_status_of(ar, "review_state"),
+            "sample_received"
+        )
+
         for analysis in ar.getAnalyses(full_objects=True):
-            analysis.setResult('12')
-            wf.doActionFor(analysis, 'submit')
-            self.assertEquals(analysis.portal_workflow.getInfoFor(
-                analysis, 'review_state'), 'to_be_verified')
-            # retracting results
-            wf.doActionFor(analysis, 'retract')
-            self.assertEquals(analysis.portal_workflow.getInfoFor(
-                analysis, 'review_state'), 'retracted')
-        for analysis in ar.getAnalyses(full_objects=True):
-            if analysis.portal_workflow.getInfoFor(
-                    analysis, 'review_state') == 'retracted':
-                continue
-            wf.doActionFor(analysis, 'submit')
+            analysis.setResult("12")
+
+            # Check "submit" transition -> to_be_verified
+            api.do_transition_for(analysis, "submit")
             self.assertEquals(
-                analysis.portal_workflow.getInfoFor(analysis, 'review_state'),
-                'to_be_verified')
-        wf.doActionFor(ar, 'retract')
-        self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
-                          'sample_received')
+                api.get_workflow_status_of(analysis, "review_state"),
+                "to_be_verified"
+            )
 
-    def tearDown(self):
-        logout()
-        super(TestAnalysisRequestRetract, self).tearDown()
+            # Check "retract" transition -> retracted
+            api.do_transition_for(analysis, "retract")
+            self.assertEquals(api.get_workflow_status_of(
+                analysis, "review_state"), "retracted")
+
+        for analysis in ar.getAnalyses(full_objects=True):
+            if api.get_workflow_status_of(
+                    analysis, "review_state") == "retracted":
+                continue
+
+            # Check "submit" transition -> to_be_verified
+            api.do_transition_for(analysis, "submit")
+            self.assertEquals(
+                api.get_workflow_status_of(analysis, "review_state"),
+                "to_be_verified")
+
+        # Check "retract" transition -> "sample_received"
+        api.do_transition_for(ar, "retract")
+        self.assertEquals(
+            api.get_workflow_status_of(ar, "review_state"),
+            "sample_received")
 
 
 def test_suite():

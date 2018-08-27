@@ -1,7 +1,33 @@
 Changelog
 =========
 
-1.2.8 (unreleased)
+1.2.9 (unreleased)
+------------------
+
+**Added**
+
+
+**Changed**
+
+
+**Removed**
+
+- #992 Removed "Attach" report option for Attachments
+
+
+**Fixed**
+
+- #991 New client contacts do not have access to their own AR Templates
+- #996 Hide checkbox labels on category expansion
+- #990 Fix client analysisspecs view
+- #899 Secondary AR changes received date of sample
+
+
+**Security**
+
+
+
+1.2.8 (2018-08-11)
 ------------------
 
 **Added**
@@ -12,6 +38,7 @@ Changelog
 
 **Changed**
 
+- #971 Refactored Client's Analysis Requests, Samples and Batches listings
 - #945 Show AR Remarks in Worksheet ManageResults views
 - #953 Refactored Analysis Categories Listing
 - #956 Refactored LabContacts Listing
@@ -35,12 +62,16 @@ Changelog
 
 **Removed**
 
+- #972 Remove "Linked Sample" from Sample
 - #912 Remove "Default AR Specifications" Selection from Setup
 - #901 Remove explicit permission settings for clients
 - #900 Removed basic handling of custom Sample Preparation Workflows
 
 **Fixed**
 
+- #983 Traceback in Client's Analysis Specs view
+- #986 Result input fields are not read-only for analyst after submission
+- #985 Do not display content actions in listings from inside Client
 - #966 Traceback in Analyses listings when analysis unit is a numeric value
 - #959 Time not displayed for Date Created in Analysis Requests listings
 - #949 Retain AR Spec if Analyses were added/removed
@@ -50,7 +81,7 @@ Changelog
 - #902 Attribute error when updating QC results using an import interface
 - #456 Date Published appears two times on the header table of AR view
 - #898 Cannot view/edit Supplier.  Tabs for different views now visible.
-- #899 Secondary AR changes received date of sample
+- #898 Cannot view/edit Supplier. Tabs for different views now visible.
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
 - #906 DateTime Widget does not display the Time
 - #909 List of clients cannot sort by Client ID
@@ -60,9 +91,7 @@ Changelog
 - #960 Traceback on AnalysisSpec Log
 - #962 Calculated results not marked for submission if zero
 - #964 Dormant Analysis Services displayed in AR Templates
-- #967 Avoid deepcopy, "Can't pickle acquisition wrappers".
-
-**Security**
+- #967 Avoid deepcopy, "Can't pickle acquisition wrappers"
 
 
 1.2.7 (2018-07-10)
