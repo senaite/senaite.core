@@ -98,7 +98,7 @@
                      name string:${view/bika_listing/form_id}_selected_obj_uids:list" />
         <label tal:content="item/title"
                tal:attributes="for string:${view/bika_listing/form_id}_cb_${item/uid}"
-               class="hiddenStructure"/>
+               class="hiddenStructure hidden"/>
       </tal:noreplace>
     </td>
 
@@ -412,7 +412,7 @@
 
     <!-- Row Range comments field (for Analysis Specifications) -->
     <tal:rangecomments
-      condition="python:view.form_id=='analysisspecs'"
+      condition="python:view.form_id=='analysisspec'"
       define="column string:rangecomment;
               allow_edit python:view.bika_listing.allow_edit \
               and item.get('edit_condition', {}).get(column, True)">
