@@ -33,7 +33,6 @@
   <include package=".catalog.indexers" />
   <include package=".jsonapi" />
   <include package=".locales" />
-  <include package=".databasesanitize" />
   <include package=".monkey" />
   <include package=".search" />
   <include package=".subscribers" />
