@@ -98,7 +98,7 @@ class Alphanumber(object):
         return alpha, alpha_number
 
 
-def to_alpha(number, format, alphabet=ALPHABET):
+def to_alpha(number, format, alphabet=ALPHABET, default=_marker):
     """Returns an Alphanumber object that represents the number in accordance
     with the format specified.
     :param number: a number representation used to create the Alphanumber
@@ -110,12 +110,19 @@ def to_alpha(number, format, alphabet=ALPHABET):
     """
     match = re.match(r"^(\d+)a(\d+)d", format)
     if not match or not match.groups() or len(match.groups()) != 2:
+        if default is not _marker:
+            return default
         raise ValueError("Format not supported: {}".format(format))
     matches = match.groups()
     num_chars = int(matches[0])
     num_digits = int(matches[1])
-    return Alphanumber(number=number, num_chars=num_chars,
-                       num_digits=num_digits, alphabet=alphabet)
+    try:
+        return Alphanumber(number=number, num_chars=num_chars,
+                           num_digits=num_digits, alphabet=alphabet)
+    except ValueError as e:
+        if default is not _marker:
+            return default
+        raise e
 
 
 def to_decimal(alpha_number, alphabet=ALPHABET, default=_marker):
