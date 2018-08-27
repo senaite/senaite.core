@@ -54,9 +54,6 @@ def upgrade(tool):
     # re-apply the permissions from the client workflow + reindex
     fix_client_permissions(portal)
 
-    # Reindex object security for client contents
-    reindex_client_local_owner_permissions(portal)
-
     fix_items_stuck_in_sample_prep_states(portal, ut)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
@@ -104,26 +101,6 @@ def fix_client_permissions(portal):
         update_role_mappings(client, wfs=wfs)
     end = time.time()
     logger.info("Fixing client permissions took %.2fs" % float(end-start))
-    transaction.commit()
-
-
-def reindex_client_local_owner_permissions(portal):
-    """https://github.com/senaite/senaite.core/issues/957 Reindex bika_setup
-    objects located in clients to give proper permissions to client contacts.
-    """
-    start = time.time()
-    bsc = portal.bika_setup_catalog
-    uids = [c.UID() for c in portal.clients.objectValues()]
-    brains = bsc(getClientUID=uids)
-    total = len(brains)
-    for num, brain in enumerate(brains):
-        ob = brain.getObject()
-        logger.info("Reindexing permission for {}/{} ({})"
-                    .format(num, total, ob.absolute_url()))
-        ob.reindexObjectSecurity()
-    end = time.time()
-    logger.info("Fixing local owner role on client objects took {:.2f}s"
-                .format(end-start))
     transaction.commit()
 
 
