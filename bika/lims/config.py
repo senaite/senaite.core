@@ -59,7 +59,6 @@ ATTACHMENT_OPTIONS = DisplayList((
 ))
 ATTACHMENT_REPORT_OPTIONS = DisplayList((
     ('r', _('Render in Report')),
-    ('a', _('Attach to Report')),
     ('i', _('Ignore in Report')),
 ))
 ARIMPORT_OPTIONS = DisplayList((

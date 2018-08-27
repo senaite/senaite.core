@@ -117,8 +117,7 @@
                 </td>
                 <td class="attachment-report-option">
                   <!-- Attachment Report Option
-                       a=Attach to Report (default)
-                       i=Ignore in Report
+                       i=Ignore in Report (default)
                        r=Render in Report
                     -->
                   <select name="ReportOption"

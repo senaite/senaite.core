@@ -12,6 +12,8 @@ Changelog
 
 **Removed**
 
+- #992 Removed "Attach" report option for Attachments
+
 
 **Fixed**
 - #991 New client contacts do not have access to their own AR Templates
