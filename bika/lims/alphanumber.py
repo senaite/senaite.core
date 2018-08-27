@@ -55,24 +55,43 @@ class Alphanumber(object):
             # no need to resolve parts again
             return self.alpha_str
 
-        # Resolve custom format
-        match = re.match(r"^(\d+)a(\d+)d", format)
-        if not match or not match.groups() or len(match.groups()) != 2:
-            raise ValueError("Not a valid format: {}".format(format))
+        elif self.alpha_format != format:
+            return to_alpha(self.int10, format, self.alphabet).format(format)
 
-        matches = match.groups()
-        num_chars = int(matches[0])
-        num_digits = int(matches[1])
         base_format = "{alpha:%s>%s}{number:0%sd}" % (self.alphabet[0],
-                                                      num_chars, num_digits)
-        alpha, number = get_alpha_parts(number=self.int10, num_chars=num_chars,
-                                        num_digits=num_digits,
-                                        alphabet=self.alphabet)
+                                                      self.num_chars,
+                                                      self.num_digits)
+        alpha, number = self.parts()
         values = dict(alpha=alpha, number=number)
         return base_format.format(**values)
 
     def format(self, format):
         return self.__format__(format)
+
+    def parts(self):
+        """Returns the alphanumeric parts (chars + digits) of this Alphanum
+        """
+        def get_alpha(alpha_index, alphabet):
+            if alpha_index >= len(alphabet):
+                lead = get_alpha(alpha_index / len(alphabet), alphabet)
+                trail = alphabet[alpha_index % len(alphabet)]
+                return "{}{}".format(lead, trail)
+            return alphabet[alpha_index]
+
+        max_digits = 10 ** self.num_digits - 1
+        alpha_number = max_digits
+        alpha_index = 0
+        while alpha_number < abs(self.int10):
+            alpha_number += max_digits
+            alpha_index += 1
+
+        alpha_number = abs(self.int10) - alpha_number + max_digits
+        alpha = get_alpha(alpha_index, self.alphabet)
+        if len(alpha) > self.num_chars:
+            raise ValueError("Out of bounds. Requires {} chars, {} set"
+                             .format(len(alpha), self.num_chars))
+
+        return alpha, alpha_number
 
 
 def to_alpha(number, format, alphabet=ALPHABET):
@@ -85,7 +104,7 @@ def to_alpha(number, format, alphabet=ALPHABET):
     :type format: string
     :type alphabet: string
     """
-    match = re.match(r"(\d+)a(\d+)d", format)
+    match = re.match(r"^(\d+)a(\d+)d", format)
     if not match or not match.groups() or len(match.groups()) != 2:
         raise ValueError("Format not supported: {}".format(format))
     matches = match.groups()
@@ -125,31 +144,4 @@ def to_decimal(alpha_number, alphabet=ALPHABET, default=_marker):
     return number
 
 
-def get_alpha_parts(number, num_chars, num_digits, alphabet=ALPHABET):
-    """Returns the alphanumeric parts that represents the number passed in
-    :param number: integer number
-    :param num_chars: number of characters to consider for the alpha part
-    :param num_digits: number of digits to consider for the numeric part
-    :param alphabet: alphabet to use for the alpha part
-    """
-    def get_alpha(alpha_index, alphabet):
-        if alpha_index >= len(alphabet):
-            lead = get_alpha(alpha_index / len(alphabet), alphabet)
-            trail = alphabet[alpha_index % len(alphabet)]
-            return "{}{}".format(lead, trail)
-        return alphabet[alpha_index]
 
-    max_digits = 10 ** num_digits - 1
-    alpha_number = max_digits
-    alpha_index = 0
-    while alpha_number < abs(number):
-        alpha_number += max_digits
-        alpha_index += 1
-
-    alpha_number = abs(number) - alpha_number + max_digits
-    alpha = get_alpha(alpha_index, alphabet)
-    if len(alpha) > num_chars:
-        raise ValueError("Out of bounds. Requires {} chars, {} set"
-                         .format(len(alpha), num_chars))
-
-    return alpha, alpha_number
