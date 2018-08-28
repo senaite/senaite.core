@@ -83,13 +83,13 @@ class Alphanumber(object):
             return alphabet[alpha_index]
 
         max_digits = 10 ** self.num_digits - 1
-        alpha_number = max_digits
-        alpha_index = 0
-        while alpha_number < abs(self.int10):
-            alpha_number += max_digits
-            alpha_index += 1
+        alpha_index = abs(self.int10) / max_digits
+        alpha_number = abs(self.int10) % max_digits
+        # Note the 1 digit leap e.g. AA99 + 1 == AB01 (not AB00)
+        if not alpha_number and abs(self.int10):
+            alpha_number = max_digits
+            alpha_index -= 1
 
-        alpha_number = abs(self.int10) - alpha_number + max_digits
         alpha = get_alpha(alpha_index, self.alphabet)
         if len(alpha) > self.num_chars:
             raise ValueError("Out of bounds. Requires {} chars, {} set"
