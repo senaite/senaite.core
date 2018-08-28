@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 import re
 
 from bika.lims import api
@@ -15,22 +22,28 @@ class Alphanumber(object):
             raise ValueError("num_chars param is lower than 1")
         if num_digits < 1:
             raise ValueError("num_digits param is lower than 1")
-        self.alpha_str = None
+
         self.alphabet = alphabet
         self.num_chars = num_chars
         self.num_digits = num_digits
-        self.int10 = to_decimal(number, alphabet=alphabet)
-        self.alpha_format = '%sa%sd' % (self.num_chars, self.num_digits)
-        self.alpha_str = self.__format__(self.alpha_format)
+        self.number = to_decimal(number, alphabet=alphabet)
+
+        if self.number < 0:
+            # TODO Support for negative values?
+            raise ValueError("number is lower than 0")
+
+    @property
+    def alpha_format(self):
+        return '%sa%sd' % (self.num_chars, self.num_digits)
 
     def __int__(self):
-        return self.int10
+        return self.number
 
     def __index__(self):
         return self.__int__()
 
     def __str__(self):
-        return self.alpha_str
+        return self.__format__(self.alpha_format)
 
     def __repr__(self):
         return self.__str__()
@@ -46,21 +59,17 @@ class Alphanumber(object):
                            num_digits=self.num_digits, alphabet=self.alphabet)
 
     def __lt__(self, other):
-        return self.int10 < int(other)
+        return self.__int__() < int(other)
 
     def __gt__(self, other):
-        return self.int10 > int(other)
+        return self.__int__() > int(other)
 
     def __eq__(self, other):
-        return self.int10 == int(other)
+        return self.__int__() == int(other)
 
     def __format__(self, format):
-        if self.alpha_str and self.alpha_format == format:
-            # no need to resolve parts again
-            return self.alpha_str
-
-        elif self.alpha_format != format:
-            return to_alpha(self.int10, format, self.alphabet).format(format)
+        if self.alpha_format != format:
+            return to_alpha(self.number, format, self.alphabet).format(format)
 
         base_format = "{alpha:%s>%s}{number:0%sd}" % (self.alphabet[0],
                                                       self.num_chars,
@@ -83,10 +92,10 @@ class Alphanumber(object):
             return alphabet[alpha_index]
 
         max_digits = 10 ** self.num_digits - 1
-        alpha_index = abs(self.int10) / max_digits
-        alpha_number = abs(self.int10) % max_digits
+        alpha_index = abs(self.number) / max_digits
+        alpha_number = abs(self.number) % max_digits
         # Note the 1 digit leap e.g. AA99 + 1 == AB01 (not AB00)
-        if not alpha_number and abs(self.int10):
+        if not alpha_number and abs(self.number):
             alpha_number = max_digits
             alpha_index -= 1
 
