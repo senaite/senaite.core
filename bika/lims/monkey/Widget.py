@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
+from bika.lims import logger
 from bika.lims.interfaces import IATWidgetVisibility
 from types import DictType
 from plone import api
@@ -28,6 +29,7 @@ def editableFields(self, instance, visible_only=False):
                 field.widget.testCondition(instance.aq_parent, portal, instance):
             ret.append(field)
     return ret
+
 
 # Products.Archetypes.Widget.TypesWidget#isVisible
 def isVisible(self, instance, mode='view', default=None, field=None):
@@ -62,8 +64,10 @@ def isVisible(self, instance, mode='view', default=None, field=None):
         for adapter in adapters[key]:
             oldstate = state
             state = adapter(instance, mode, field, state)
-            # if state != oldstate:
-            #     adapter_name = adapter[1].__repr__().split(" ")[0].split(".")[-1]
-            #     print "%-25s %-25s adapter:%s"%(field.getName(), "%s->%s"%(oldstate, state), adapter_name)
+            if state != oldstate:
+                adapter_name = adapter.__class__.__name__
+                msg = "IATWidgetVisibility rule {} for {}.{}: {} -> {}".format(
+                    adapter_name, instance.id, field.getName(), oldstate, state)
+                logger.debug(msg)
 
     return state

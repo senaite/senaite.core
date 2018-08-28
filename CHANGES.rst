@@ -6,12 +6,14 @@ Changelog
 
 **Added**
 
+- #1003 Alphanumeric numbering in sequential IDs generator
 
 **Changed**
 
 
 **Removed**
 
+- #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
 
 
@@ -21,6 +23,7 @@ Changelog
 - #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
 - #888 Order of Interim Fields not maintained on ARs
+- #899 Secondary AR changes received date of sample
 
 
 **Security**

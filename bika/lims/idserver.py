@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import re
 import urllib
 
 import transaction
@@ -14,6 +15,7 @@ from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.alphanumber import to_alpha, Alphanumber
 from bika.lims.browser.fields.uidreferencefield \
     import get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IIdServer
@@ -126,6 +128,7 @@ def get_variables(context, **kw):
         'year': get_current_year(),
         'parent': api.get_parent(context),
         'seq': 0,
+        'alpha': Alphanumber(0),
     }
 
     # Augment the variables map depending on the portal type
@@ -258,8 +261,22 @@ def get_seq_number_from_id(id, id_template, prefix, **kw):
     possible_seq_nums = filter(lambda n: n.isalnum(), postfix_segments)
     if possible_seq_nums:
         seq_number = possible_seq_nums[-1]
+
+    # Check if this id has to be expressed as an alphanumeric number
+    seq_number = get_alpha_or_number(seq_number, id_template)
     seq_number = to_int(seq_number)
     return seq_number
+
+
+def get_alpha_or_number(number, template):
+    """Returns an Alphanumber that represents the number passed in, expressed
+    as defined in the template. Otherwise, returns the number
+    """
+    match = re.match(r".*\{alpha:(\d+a\d+d)\}$", template.strip())
+    if match and match.groups():
+        format = match.groups()[0]
+        return to_alpha(number, format)
+    return number
 
 
 def get_counted_number(context, config, variables, **kw):
@@ -342,7 +359,9 @@ def get_generated_number(context, config, variables, **kw):
         # => This allows us to "preview" the next generated ID in the UI
         # TODO Show the user the next generated number somewhere in the UI
         number = number_generator.get(key, 1)
-    return number
+
+    # Return an int or Alphanumber
+    return get_alpha_or_number(number, id_template)
 
 
 def generateUniqueId(context, **kw):
@@ -372,7 +391,9 @@ def generateUniqueId(context, **kw):
         number = get_generated_number(context, config, variables, **kw)
 
     # store the new sequence number to the variables map for str interpolation
-    variables["seq"] = number
+    if isinstance(number, Alphanumber):
+        variables["alpha"] = number
+    variables["seq"] = int(number)
 
     # The ID formatting template from user config, e.g. {sampleId}-R{seq:02d}
     id_template = config.get("form", "")
