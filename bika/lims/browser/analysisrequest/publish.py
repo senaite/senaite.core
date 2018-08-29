@@ -1278,6 +1278,7 @@ class AnalysisRequestDigester:
         analyses = []
         dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
+        incl_prev_results = self.context.bika_setup.getIncludePreviousFromBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         showhidden = self.isHiddenAnalysesVisible()
 
@@ -1297,7 +1298,7 @@ class AnalysisRequestDigester:
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
             andict['previous_results'] = ""
-            if batch:
+            if batch and incl_prev_results:
                 keyword = an.getKeyword()
                 bars = [bar for bar in batch.getAnalysisRequests()
                         if an.aq_parent.UID() != bar.UID() and keyword in bar]
