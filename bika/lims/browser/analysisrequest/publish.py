@@ -50,7 +50,7 @@ from plone.registry import Record
 from plone.registry import field
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
-from zope.component import getAdapters, getUtility
+from zope.component import getUtility
 
 
 class AnalysisRequestPublishView(BrowserView):
@@ -659,8 +659,8 @@ class AnalysisRequestPublishView(BrowserView):
 
     def _lab_address(self, lab):
         lab_address = lab.getPostalAddress() \
-                      or lab.getBillingAddress() \
-                      or lab.getPhysicalAddress()
+            or lab.getBillingAddress() \
+            or lab.getPhysicalAddress()
         return _format_address(lab_address)
 
     def explode_data(self, data, padding=''):
@@ -941,10 +941,10 @@ class AnalysisRequestDigester:
                 'prepublish': False,
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None,
-                'resultsinterpretation':ar.getResultsInterpretation(),
+                'resultsinterpretation': ar.getResultsInterpretation(),
                 'ar_attachments': self._get_ar_attachments(ar),
                 'an_attachments': self._get_an_attachments(ar),
-        }
+                }
 
         # Sub-objects
         excludearuids.append(ar.UID())
@@ -1175,7 +1175,7 @@ class AnalysisRequestDigester:
             physical_address = _format_address(
                 contact.getPhysicalAddress()) if contact else ''
             postal_address =\
-                    _format_address(contact.getPostalAddress())\
+                _format_address(contact.getPostalAddress())\
                 if contact else ''
             data = {'id': member.id,
                     'fullname': to_utf8(cfullname) if cfullname else to_utf8(
@@ -1213,8 +1213,8 @@ class AnalysisRequestDigester:
 
     def _lab_address(self, lab):
         lab_address = lab.getPostalAddress() \
-                      or lab.getBillingAddress() \
-                      or lab.getPhysicalAddress()
+            or lab.getBillingAddress() \
+            or lab.getPhysicalAddress()
         return _format_address(lab_address)
 
     def _lab_data(self):
@@ -1300,8 +1300,7 @@ class AnalysisRequestDigester:
             if batch:
                 keyword = an.getKeyword()
                 bars = [bar for bar in batch.getAnalysisRequests()
-                        if an.aq_parent.UID() != bar.UID()
-                        and keyword in bar]
+                        if an.aq_parent.UID() != bar.UID() and keyword in bar]
                 for bar in bars:
                     pan = bar[keyword]
                     pan_state = workflow.getInfoFor(pan, 'review_state')
@@ -1471,7 +1470,7 @@ class AnalysisRequestDigester:
                 user_data = self._user_contact_data(user_id)
                 if not user_data:
                     continue
-                verifiers[user_id]=user_data
+                verifiers[user_id] = user_data
         return {'ids': verifiers.keys(),
                 'dict': verifiers}
 
