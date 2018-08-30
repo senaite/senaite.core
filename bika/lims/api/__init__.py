@@ -22,6 +22,7 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IClient, IContact, ILabContact
 
 from zope import globalrequest
 from zope.event import notify
@@ -1103,6 +1104,40 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         return None
 
     return get_object(brains[0])
+
+
+def get_user_client(user_or_contact):
+    """Returns the client of the contact of a Plone user
+
+    If the user passed in has no contact or does not belong to any client,
+    returns None.
+
+    :param: Plone user or contact
+    :returns: Client the contact of the Plone user belongs to
+    """
+    if not user_or_contact or ILabContact.providedBy(user_or_contact):
+        # Lab contacts cannot belong to a client
+        return None
+
+    if not IContact.providedBy(user_or_contact):
+        contact = get_user_contact(user_or_contact, contact_types=['Contact'])
+        if IContact.providedBy(contact):
+            return get_user_client(contact)
+        return None
+
+    client = get_parent(user_or_contact)
+    if client and IClient.providedBy(client):
+        return client
+
+    return None
+
+
+def get_current_client():
+    """Returns the current client the current logged in user belongs to, if any
+
+    :returns: Client the current logged in user belongs to or None
+    """
+    return get_user_client(get_current_user())
 
 
 def get_cache_key(brain_or_object):

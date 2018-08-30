@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
 
 **Removed**
@@ -21,6 +22,7 @@ Changelog
 **Fixed**
 
 - #1008 Previous results from same batch are always displayed in reports
+- #1012 ARs and Samples from other clients are listed when logged in as contact
 - #991 New client contacts do not have access to their own AR Templates
 - #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
