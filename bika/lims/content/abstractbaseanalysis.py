@@ -547,8 +547,9 @@ ResultOptions = RecordsField(
     subfield_validators={'ResultValue': 'resultoptionsvalidator',
                          'ResultText': 'resultoptionsvalidator'},
     subfield_sizes={'ResultValue': 5,
-                    'ResultText': 25,
-                    },
+                    'ResultText': 25,},
+    subfield_maxlength={'ResultValue': 5,
+                        'ResultText': 255,},
     widget=RecordsWidget(
         label=_("Result Options"),
         description=_(
