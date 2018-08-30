@@ -21,6 +21,7 @@ from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
+from bika.lims.interfaces import IClient
 from bika.lims.permissions import (AddAnalysisRequest, ManageAnalysisRequests,
                                    SampleSample)
 from bika.lims.permissions import Verify as VerifyPermission
@@ -617,6 +618,35 @@ class AnalysisRequestsView(BikaListingView):
                         state["hide_transitions"] = ["preserve", ]
             new_states.append(state)
         self.review_states = new_states
+
+    def before_render(self):
+        """Before template render hook
+        """
+        # If the current user is a client contact, display those analysis
+        # requests that belong to same client only
+        super(AnalysisRequestsView, self).before_render()
+        client = self.get_user_client()
+        if client:
+            self.contentFilter['path'] = {
+                "query": "/".join(client.getPhysicalPath()),
+                "level": 0 }
+            # No need to display the Client column
+            self.remove_column('Client')
+
+    def get_user_client(self, default=None):
+        """Returns the client the current user belongs to, if any
+        """
+        user = api.get_current_user()
+        contact = api.get_user_contact(user, contact_types=["Contact"])
+        if not contact:
+            return default
+
+        client = api.get_parent(contact)
+        if client and IClient.providedBy(client):
+            return client
+
+        return default
+
 
     def isItemAllowed(self, obj):
         """ If Adnvanced Filter bar is enabled, this method checks if the item
