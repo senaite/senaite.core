@@ -22,6 +22,7 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IClient
 
 from zope import globalrequest
 from zope.event import notify
@@ -1103,6 +1104,23 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         return None
 
     return get_object(brains[0])
+
+
+def get_current_client():
+    """Returns the current client the current logged in user belongs to, if any
+
+    :returns: Client the current logged in user belongs to or None
+    """
+    user = get_current_user()
+    contact = get_user_contact(user, contact_types=['Contact'])
+    if not contact:
+        return None
+
+    client = get_parent(contact)
+    if client and IClient.providedBy(client):
+        return client
+
+    return None
 
 
 def get_cache_key(brain_or_object):
