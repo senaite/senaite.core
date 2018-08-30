@@ -7,11 +7,13 @@
 
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.sample.samples_filter_bar \
     import SamplesBikaListingFilterBar
+from bika.lims.interfaces import IClient
 from bika.lims.permissions import *
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
@@ -384,6 +386,34 @@ class SamplesView(BikaListingView):
                          'getPreserver',
                          'state_title']},
         ]
+
+    def before_render(self):
+        """Before template render hook
+        """
+        # If the current user is a client contact, display those samples that
+        # belong to same client only
+        super(SamplesView, self).before_render()
+        client = self.get_user_client()
+        if client:
+            self.contentFilter['path'] = {
+                "query": "/".join(client.getPhysicalPath()),
+                "level": 0 }
+            # No need to display the Client column
+            self.remove_column('Client')
+
+    def get_user_client(self, default=None):
+        """Returns the client the current user belongs to, if any
+        """
+        user = api.get_current_user()
+        contact = api.get_user_contact(user, contact_types=["Contact"])
+        if not contact:
+            return default
+
+        client = api.get_parent(contact)
+        if client and IClient.providedBy(client):
+            return client
+
+        return default
 
     def folderitem(self, obj, item, index):
         workflow = getToolByName(self.context, "portal_workflow")
