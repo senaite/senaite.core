@@ -618,6 +618,20 @@ class AnalysisRequestsView(BikaListingView):
             new_states.append(state)
         self.review_states = new_states
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # If the current user is a client contact, display those analysis
+        # requests that belong to same client only
+        super(AnalysisRequestsView, self).before_render()
+        client = api.get_current_client()
+        if client:
+            self.contentFilter['path'] = {
+                "query": "/".join(client.getPhysicalPath()),
+                "level": 0 }
+            # No need to display the Client column
+            self.remove_column('Client')
+
     def isItemAllowed(self, obj):
         """ If Adnvanced Filter bar is enabled, this method checks if the item
         matches advanced filter bar criteria

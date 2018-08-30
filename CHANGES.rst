@@ -20,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #1012 ARs and Samples from other clients are listed when logged in as contact
 - #991 New client contacts do not have access to their own AR Templates
 - #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
