@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
 
 **Removed**
