@@ -28,6 +28,7 @@ Changelog
 - #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
 - #899 Secondary AR changes received date of sample
+- #888 Order of Interim Fields not maintained on ARs
 
 
 **Security**
