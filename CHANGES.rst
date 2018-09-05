@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1017 Instrument Results imports of analysis that have interim fields with apply wide must stay received
 - #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
 
