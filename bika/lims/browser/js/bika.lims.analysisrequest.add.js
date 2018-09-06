@@ -61,7 +61,7 @@
 
     AnalysisRequestAdd.prototype.load = function() {
       console.debug("AnalysisRequestAdd::load");
-      jarn.i18n.loadCatalog("senaite.core");
+      jarn.i18n.loadCatalog('senaite.core');
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       $('input[type=text]').prop('autocomplete', 'off');
       this.global_settings = {};
@@ -991,7 +991,7 @@
       /*
        * Eventhandler when an Analysis Template was changed.
        */
-      var $el, arnum, context, dialog, el, has_template_selected, me, record, template_metadata, template_services, uid, val;
+      var $el, arnum, context, dialog, el, field, has_template_selected, me, record, template_metadata, template_services, uid, val;
       me = this;
       el = event.currentTarget;
       $el = $(el);
@@ -1000,6 +1000,11 @@
       arnum = $el.closest("[arnum]").attr("arnum");
       has_template_selected = $el.val();
       console.debug("°°° on_analysis_template_change::UID=" + uid + " Template=" + val + "°°°");
+      if (uid) {
+        $el.attr("previous_uid", uid);
+      } else {
+        uid = $el.attr("previous_uid");
+      }
       if (!has_template_selected && uid) {
         this.applied_templates[arnum] = null;
         $("input[type=hidden]", $el.parent()).val("");
@@ -1011,7 +1016,7 @@
             return template_services.push(record.service_metadata[uid]);
           }
         });
-        if (template_services) {
+        if (template_services.length) {
           context = {};
           context["template"] = template_metadata;
           context["services"] = template_services;
@@ -1025,6 +1030,14 @@
           dialog.on("no", function() {
             return $(me).trigger("form:changed");
           });
+        }
+        if (template_metadata.sample_point_uid) {
+          field = $("#SamplePoint-" + arnum);
+          this.flush_reference_field(field);
+        }
+        if (template_metadata.sample_type_uid) {
+          field = $("#SampleType-" + arnum);
+          this.flush_reference_field(field);
         }
       }
       return $(me).trigger("form:changed");

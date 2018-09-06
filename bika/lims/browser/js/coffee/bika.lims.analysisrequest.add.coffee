@@ -1104,6 +1104,12 @@ class window.AnalysisRequestAdd
     has_template_selected = $el.val()
     console.debug "°°° on_analysis_template_change::UID=#{uid} Template=#{val}°°°"
 
+    # remember the set uid to handle later removal
+    if uid
+      $el.attr "previous_uid", uid
+    else
+      uid = $el.attr "previous_uid"
+
     # deselect the template if the field is empty
     if not has_template_selected and uid
       # forget the applied template
@@ -1122,7 +1128,7 @@ class window.AnalysisRequestAdd
         if uid of record.service_metadata
           template_services.push record.service_metadata[uid]
 
-      if template_services
+      if template_services.length
         context = {}
         context["template"] = template_metadata
         context["services"] = template_services
@@ -1137,6 +1143,16 @@ class window.AnalysisRequestAdd
         dialog.on "no", ->
           # trigger form:changed event
           $(me).trigger "form:changed"
+
+      # deselect the samplepoint
+      if template_metadata.sample_point_uid
+        field = $("#SamplePoint-#{arnum}")
+        @flush_reference_field(field)
+
+      # deselect the sampletype
+      if template_metadata.sample_type_uid
+        field = $("#SampleType-#{arnum}")
+        @flush_reference_field(field)
 
     # trigger form:changed event
     $(me).trigger "form:changed"
