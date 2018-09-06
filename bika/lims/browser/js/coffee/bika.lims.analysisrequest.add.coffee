@@ -1144,6 +1144,30 @@ class window.AnalysisRequestAdd
           # trigger form:changed event
           $(me).trigger "form:changed"
 
+      # deselect the profile coming from the template
+      # XXX: This is crazy and need to get refactored!
+      if template_metadata.analysis_profile_uid
+        field = $("#Profiles-#{arnum}")
+
+        # uid and title of the selected profile
+        uid = template_metadata.analysis_profile_uid
+        title = template_metadata.analysis_profile_title
+
+        # get the parent field wrapper (field is only the input)
+        $parent = field.closest("div.field")
+
+        # search for the multi item and remove it
+        item = $(".reference_multi_item[uid=#{uid}]", $parent)
+        if item.length
+          item.remove()
+          # remove the uid from the hidden field
+          uids_field = $("input[type=hidden]", $parent)
+          existing_uids = uids_field.val().split(",")
+          remove_index = existing_uids.indexOf(uid)
+          if remove_index > -1
+            existing_uids.splice remove_index, 1
+          uids_field.val existing_uids.join ","
+
       # deselect the samplepoint
       if template_metadata.sample_point_uid
         field = $("#SamplePoint-#{arnum}")
@@ -1153,6 +1177,16 @@ class window.AnalysisRequestAdd
       if template_metadata.sample_type_uid
         field = $("#SampleType-#{arnum}")
         @flush_reference_field(field)
+
+      # flush the remarks field
+      if template_metadata.remarks
+        field = $("#Remarks-#{arnum}")
+        field.text ""
+
+      # reset the composite checkbox
+      if template_metadata.composite
+        field = $("#Composite-#{arnum}")
+        field.prop "checked", no
 
     # trigger form:changed event
     $(me).trigger "form:changed"
