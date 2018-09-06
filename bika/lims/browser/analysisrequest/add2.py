@@ -1499,6 +1499,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     else:
                         service_to_templates[service_uid] = [uid]
 
+                    # remember the service metadata
+                    if service_uid not in service_metadata:
+                        metadata = self.get_service_info(service)
+                        service_metadata[service_uid] = metadata
+
             # PROFILES
             for uid, obj in _profiles.iteritems():
                 # get the profile metadata
