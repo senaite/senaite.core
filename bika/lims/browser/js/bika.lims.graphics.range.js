@@ -8,41 +8,89 @@ function RangeGraph() {
     that.load = function() {
         $(".range-chart").each(function(e) {
           var width = Number($(this).css('width').replace(/[^\d\.\-]/g, ''));
-          loadRangeChart($(this).get(0),
-              width,
-              $.parseJSON($(this).attr('data-specs')));
+          loadRangeChart($(this).get(0), width,
+              $.parseJSON($(this).attr('data-range')),
+              $.parseJSON($(this).attr('data-result')));
           $(this).removeClass('range-chart');
         });
     }
 
-    function loadRangeChart(canvas, wdth, data) {
-        var width = wdth;
+    function to_dict_of_floats(range, result) {
+        if (!$.isNumeric(result)) {
+            return null;
+        }
+        var result = parseFloat(result);
+        if (!('min' in range) || !('max' in range)) {
+            return null;
+        }
+        var range_min = $.isNumeric(range.min) ? parseFloat(range.min) : result;
+        var range_max = $.isNumeric(range.max) ? parseFloat(range.max) : result;
+        if (range_min == range_max) {
+            return null;
+        }
+        var warn_min = range_min;
+        var warn_max = range_max;
+        if ('warn_min' in range && $.isNumeric(range.warn_min)) {
+            warn_min = parseFloat(range.warn_min);
+            warn_min = (warn_min < range_min) ? warn_min : range_min;
+        }
+        if ('warn_max' in range && $.isNumeric(range.warn_max)) {
+            warn_max = parseFloat(range.warn_max);
+            warn_max = (warn_max > range_max) ? warn_max : range_max;
+        }
+        return {'result': result,
+                'min': range_min,
+                'max': range_max,
+                'warn_min': warn_min,
+                'warn_max': warn_max}
+    }
+
+    function loadRangeChart(canvas, width, range, result) {
+        var specs = to_dict_of_floats(range, result)
+        if (!specs) {
+            return
+        }
+        console.log($.toJSON(specs));
+
         var radius = width*0.03;
         var height = radius*2;
         width -= radius*2;
-
-        var result = data[0];
-        var range_min = data[1];
-        var range_max = data[2];
-        var warn_min = data[3];
-        var warn_max = data[4];
-        if (warn_min == 0 && warn_max == 0) {
-            warn_min = range_min;
-            warn_max = range_max;
-        } else {
-            warn_min = data[3] < range_min ? data[3] : range_min;
-            warn_max = data[4] > range_max ? data[4] : range_max;
-        }
+        var range_min = specs.min;
+        var range_max = specs.max;
+        var warn_min = specs.warn_min;
+        var warn_max = specs.warn_max;
+        var result = specs.result;
+        var min_operator = 'min_operator' in range ? range.min_operator : 'geq';
+        var max_operator = 'max_operator' in range ? range.max_operator : 'leq';
 
         // We want 1/3 of the whole scale length at left and right
         var extra = (warn_max - warn_min)/3;
         var x_min = result < warn_min ? result : warn_min - extra;
         var x_max = result > warn_max ? result : warn_max + extra;
-        var inrange = result >= range_min && result < range_max;
-        var inshoulder = (result < range_min && result >= warn_min) ||
-                         (result >= range_max && result < warn_max);
+        var inrange = (result >= range_min);
+        if (min_operator == 'gt') {
+            inrange = result > range_min;
+        }
+        if (max_operator == 'lt') {
+            inrange = inrange && (result < range_max);
+        } else {
+            inrange = inrange && (result <= range_max);
+        }
+        var inshoulder = false;
+        if (!inrange) {
+            var in_warn_min = (result < range_min);
+            if (min_operator == 'gt') {
+                in_warn_min = (result <= range_min);
+            }
+            in_warn_min = in_warn_min && (result >= warn_min);
+            var in_warn_max = (result > range_max);
+            if (max_operator == 'lt') {
+                in_warn_max = (result >= range_max);
+            }
+            in_warn_max = in_warn_max && (result <= warn_max);
+            inshoulder = in_warn_min || in_warn_max;
+        }
         var outofrange = !inrange && !inshoulder;
-
         var color_range = (inrange || inshoulder) ? "#a8d6cf" : "#cdcdcd";
         var color_dot = inrange ? "#279989" : (inshoulder ? "#ffae00" : "#ff0000");
         var color_shoulder = (inrange || inshoulder) ? "#d9e9e6" : "#dcdcdc";
