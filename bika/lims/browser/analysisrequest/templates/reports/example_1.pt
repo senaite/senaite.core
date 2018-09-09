@@ -266,11 +266,13 @@
                              min python: min if min else 0;
                              max python: str(rr.get('max',0)).replace(',','.');
                              max python: max if max else 0;
-                             err python: str(rr.get('error',0)).replace(',','.');
-                             err python: err if err else 0;
+                             warn_min python: str(rr.get('warn_min',0)).replace(',','.');
+                             warn_min python: warn_min if warn_min else 0;
+                             warn_max python: str(rr.get('warn_max',0)).replace(',','.');
+                             warn_max python: warn_max if warn_max else 0;
                              res python: str(analysis.get('result',0)).replace(',','.');
                              res python: res if res else 0;
-                             dataspecs python: '[%s,%s,%s,%s]' % (res,min,max,err);"
+                             dataspecs python: '[%s,%s,%s,%s,%s]' % (res,min,max,warn_min,warn_max);"
                       tal:condition="rr">
                     <div class="range-chart"
                          tal:attributes="data-specs python:dataspecs"></div>

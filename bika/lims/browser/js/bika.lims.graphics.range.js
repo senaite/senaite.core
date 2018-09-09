@@ -11,6 +11,7 @@ function RangeGraph() {
           loadRangeChart($(this).get(0),
               width,
               $.parseJSON($(this).attr('data-specs')));
+          $(this).removeClass('range-chart');
         });
     }
 
@@ -23,21 +24,23 @@ function RangeGraph() {
         var result = data[0];
         var range_min = data[1];
         var range_max = data[2];
-        var error_min = data[3];
-        var error_max = data[3];
-        var range_min_shoulder = range_min - calc_shoulder(range_min, error_min);
-        var range_max_shoulder = range_max + calc_shoulder(range_max, error_max);
-        var result_min_shoulder = result - calc_shoulder(result, error_min);
-        var result_max_shoulder = result + calc_shoulder(result, error_max);
+        var warn_min = data[3];
+        var warn_max = data[4];
+        if (warn_min == 0 && warn_max == 0) {
+            warn_min = range_min;
+            warn_max = range_max;
+        } else {
+            warn_min = data[3] < range_min ? data[3] : range_min;
+            warn_max = data[4] > range_max ? data[4] : range_max;
+        }
 
-        var x_min = range_min_shoulder - (range_max_shoulder - range_min_shoulder)/3;
-        x_min = result_min_shoulder < x_min ? result_min_shoulder : x_min;
-        var x_max = range_max_shoulder + (range_max_shoulder - range_min_shoulder)/3;
-        x_max = result_max_shoulder > x_max ? result_max_shoulder : x_max;
-
-        var inrange = result >= range_min && result <= range_max;
-        var inshoulder = (result <= range_min && result >= range_min_shoulder)
-                        || (result >= range_max && result <= range_max_shoulder);
+        // We want 1/3 of the whole scale length at left and right
+        var extra = (warn_max - warn_min)/3;
+        var x_min = result < warn_min ? result : warn_min - extra;
+        var x_max = result > warn_max ? result : warn_max + extra;
+        var inrange = result >= range_min && result < range_max;
+        var inshoulder = (result < range_min && result >= warn_min) ||
+                         (result >= range_max && result < warn_max);
         var outofrange = !inrange && !inshoulder;
 
         var color_range = (inrange || inshoulder) ? "#a8d6cf" : "#cdcdcd";
@@ -65,7 +68,7 @@ function RangeGraph() {
         chart.append("rect")
             .attr("x", x(x_min))
             .attr("y", bar_y)
-            .attr("width", x(range_min_shoulder)+bar_radius)
+            .attr("width", x(warn_min)-x(x_min)+bar_radius)
             .attr("height", bar_height)
             .attr("rx", bar_radius)
             .attr("ry", bar_radius)
@@ -73,17 +76,25 @@ function RangeGraph() {
 
         // Left shoulder
         chart.append("rect")
-            .attr("x", x(range_min_shoulder))
+            .attr("x", x(warn_min))
             .attr("y", bar_y)
-            .attr("width", x(range_min)-x(range_min_shoulder))
+            .attr("width", x(range_min)-x(warn_min))
+            .attr("height", bar_height)
+            .style("fill", color_shoulder);
+
+        // Right shoulder
+        chart.append("rect")
+            .attr("x", x(range_max))
+            .attr("y", bar_y)
+            .attr("width", x(warn_max)-x(range_max))
             .attr("height", bar_height)
             .style("fill", color_shoulder);
 
         // Out-of-range right
         chart.append("rect")
-            .attr("x", x(range_max_shoulder)-bar_radius)
+            .attr("x", x(warn_max)-bar_radius)
             .attr("y", bar_y)
-            .attr("width", x(x_max)-x(range_max_shoulder)+bar_radius)
+            .attr("width", x(x_max)-x(warn_max)+bar_radius)
             .attr("height", bar_height)
             .attr("rx", bar_radius)
             .attr("ry", bar_radius)
@@ -97,14 +108,6 @@ function RangeGraph() {
             .attr("width", x(range_max)-x(range_min))
             .attr("height", bar_height)
             .style("fill", color_range);
-
-        // Right shoulder
-        chart.append("rect")
-            .attr("x", x(range_max))
-            .attr("y", bar_y)
-            .attr("width", x(range_max_shoulder)-x(range_max))
-            .attr("height", bar_height)
-            .style("fill", color_shoulder);
 
         // Min shoulder line
       /*  chart.append("rect")
@@ -152,8 +155,5 @@ function RangeGraph() {
             .attr("r", radius-1)
             .style("fill", color_dot);
 
-    }
-    function calc_shoulder(value, error_percentage) {
-        return Math.abs(error_percentage) > 0 ? value*(Math.abs(error_percentage)/100) : 0;
     }
 }
