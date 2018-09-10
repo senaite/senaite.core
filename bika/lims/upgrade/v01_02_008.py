@@ -212,9 +212,10 @@ def fix_items_stuck_in_sample_prep_states(portal, ut):
             changeWorkflowState(instance, wfid, state_id)
             # fire transition handler for the action that originally was fired.
             old_sdef = new_sdef = wf.states[state_id]
-            tdef = wf.transitions[action_id]
-            notify(AfterTransitionEvent(
-                instance, wf, old_sdef, new_sdef, tdef, event, {}))
+            if action_id is not None:
+                tdef = wf.transitions[action_id]
+                notify(AfterTransitionEvent(
+                    instance, wf, old_sdef, new_sdef, tdef, event, {}))
             # check AR state matches the analyses
             if IAnalysisRequest.providedBy(instance):
                 fix_ar_sample_workflow(instance)
