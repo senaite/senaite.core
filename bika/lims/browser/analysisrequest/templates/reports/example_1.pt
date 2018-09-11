@@ -33,7 +33,8 @@
                         hasqcanalyses   python:len(qcanalyses) &gt; 0;
                         hasprevresults  analysisrequest/haspreviousresults;
                         showqcanalyses  python:view.isQCAnalysesVisible();
-                        remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
+                        remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();
+                        json modules/json">
 
   <!--
        Page Header
@@ -260,20 +261,11 @@
                   <td class="outofrange">
                     <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
                   </td>
-                  <td class="specs-graphs"
-                      tal:define="rr analysis/specs;
-                             min python: str(rr.get('min',0)).replace(',','.');
-                             min python: min if min else 0;
-                             max python: str(rr.get('max',0)).replace(',','.');
-                             max python: max if max else 0;
-                             err python: str(rr.get('error',0)).replace(',','.');
-                             err python: err if err else 0;
-                             res python: str(analysis.get('result',0)).replace(',','.');
-                             res python: res if res else 0;
-                             dataspecs python: '[%s,%s,%s,%s]' % (res,min,max,err);"
-                      tal:condition="rr">
+                  <td class="specs-graphs">
                     <div class="range-chart"
-                         tal:attributes="data-specs python:dataspecs"></div>
+                         style="width:150px;"
+                         tal:attributes="data-range python: json.dumps(analysis.getResultsRange());
+                                         data-result python: analysis.getResult();"></div>
                   </td>
                 </tr>
                 <tr tal:condition="python:remarksenabled==True and analysis['remarks']">
