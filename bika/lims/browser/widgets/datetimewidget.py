@@ -41,17 +41,6 @@ class DateTimeWidget(TypesWidget):
         value = value.toZone("GMT+0")
         return self.ulocalized_time(value, context, request)
 
-    security.declarePublic('process_form')
-    def process_form(self, instance, field, form, empty_marker=None,
-                     emptyReturnsMarker=False, validating=True):
-        """Basic impl for form processing in a widget"""
-        value = form.get(field.getName(), empty_marker)
-        if value is empty_marker:
-            return empty_marker
-        if emptyReturnsMarker and value == '':
-            return empty_marker
-        return value, {}
-
 
 registerWidget(
     DateTimeWidget,
