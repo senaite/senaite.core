@@ -41,6 +41,34 @@ class DateTimeField(DTF):
 
     security.declarePrivate('set')
 
+
+    def get_datetime_from_locale_format(self, instance, date_string):
+        """Converts a date string to a datetime object
+        """
+        default_format = "%Y-%m-%d"
+        locale_key = "date_format_short"
+        if self.widget.show_time:
+            locale_key = "date_format_long"
+            default_format += " %H:%M"
+
+        locale_format = instance.translate(locale_key, domain="senaite.core",
+                                           mapping={})
+        if locale_format != locale_key:
+            # Custom format set. Try to convert
+            # e.g: locale format is "%b %d, %Y %I:$M %p" and the date_string
+            # passed in is "Sep 12, 2018 12:46 PM"
+            try:
+                struct_time = strptime(date_string, locale_format)
+                return datetime.datetime(*struct_time[:6])
+            except ValueError:
+                logger.warn("Unable to convert to DateTime {} using format {}".
+                            format(date_string, locale_format))
+
+        # Try with default format used by DateTimeWidget
+        struct_time = strptime(date_string, default_format)
+        return datetime.datetime(*struct_time[:6])
+
+
     def set(self, instance, value, **kwargs):
         """
         Check if value is an actual date/time value. If not, attempt
@@ -50,33 +78,18 @@ class DateTimeField(DTF):
         val = value
         if not value:
             val = None
-        elif isinstance(value, basestring):
-            for fmt in ['date_format_long', 'date_format_short']:
-                fmtstr = instance.translate(fmt, domain='bika', mapping={})
-                fmtstr = fmtstr.replace(r"${", '%').replace('}', '')
-                try:
-                    val = strptime(value, fmtstr)
-                except ValueError:
-                    continue
-                try:
-                    val = DateTime(*list(val)[:-6])
-                except DateTimeError:
-                    continue
-                if val.timezoneNaive():
-                    # Use local timezone for tz naive strings
-                    # see http://dev.plone.org/plone/ticket/10141
-                    zone = val.localZone(safelocaltime(val.timeTime()))
-                    parts = val.parts()[:-1] + (zone,)
-                    val = DateTime(*parts)
-                break
-            else:
-                try:
-                    # The following will handle an rfc822 string.
-                    value = value.split(" +", 1)[0]
-                    val = DateTime(value)
-                except:
-                    logger.warning("DateTimeField failed to format date "
-                                   "string '%s' with '%s'" % (value, fmtstr))
+
+        if isinstance(value, basestring):
+            # Try to translate to clo
+            val = self.get_datetime_from_locale_format(instance, value)
+            val = dt2DT(val)
+            if val.timezoneNaive():
+                # Use local timezone for tz naive strings
+                # see http://dev.plone.org/plone/ticket/10141
+                zone = val.localZone(safelocaltime(val.timeTime()))
+                parts = val.parts()[:-1] + (zone,)
+                val = DateTime(*parts)
+
         elif isinstance(value, datetime.datetime):
             val = dt2DT(value)
 
