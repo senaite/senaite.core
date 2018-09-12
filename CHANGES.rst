@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #1022 Date Received saved as UTC time
 - #1018 Fix AR Add cleanup after template removal
 - #1014 ReferenceWidget does not handle searches with null/None
 - #1008 Previous results from same batch are always displayed in reports
