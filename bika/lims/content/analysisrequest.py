@@ -2335,7 +2335,11 @@ class AnalysisRequest(BaseFolder):
 
     @deprecated("Use getVerifiers instead")
     def getVerifier(self):
-        """Returns the """
+        """Returns the user that verified the whole Analysis Request. Since the
+        verification is done automatically as soon as all the analyses it
+        contains are verified, this function returns the user that verified the
+        last analysis pending.
+        """
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
 
