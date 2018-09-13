@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1024 Function to get the Verifiers from an Analysis Request
 - #1019 Support for min and max warns in range charts
 - #1003 Alphanumeric numbering in sequential IDs generator
 

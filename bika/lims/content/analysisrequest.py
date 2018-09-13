@@ -2333,7 +2333,13 @@ class AnalysisRequest(BaseFolder):
 
     security.declarePublic('getVerifier')
 
+    @deprecated("Use getVerifiers instead")
     def getVerifier(self):
+        """Returns the user that verified the whole Analysis Request. Since the
+        verification is done automatically as soon as all the analyses it
+        contains are verified, this function returns the user that verified the
+        last analysis pending.
+        """
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
 
@@ -2356,6 +2362,30 @@ class AnalysisRequest(BaseFolder):
             if verifier is None or verifier == '':
                 verifier = actor
         return verifier
+
+    @security.public
+    def getVerifiersIDs(self):
+        """Returns the ids from users that have verified at least one analysis
+        from this Analysis Request
+        """
+        verifiers_ids = list()
+        for brain in self.getAnalyses():
+            verifiers = brain.getVerificators or ""
+            verifiers_ids += verifiers.split(",")
+        return list(set(verifiers_ids))
+
+    @security.public
+    def getVerifiers(self):
+        """Returns the list of lab contacts that have verified at least one
+        analysis from this Analysis Request
+        """
+        contacts = list()
+        for verifier in self.getVerifiersIDs():
+            user = api.get_user(verifier)
+            contact = api.get_user_contact(user, ["LabContact"])
+            if contact:
+                contacts.append(contact)
+        return contacts
 
     security.declarePublic('getContactUIDForUser')
 
