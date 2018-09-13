@@ -6,9 +6,10 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.Widget import TypesWidget
-from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Registry import registerPropertyType
+from Products.Archetypes.Registry import registerWidget
+from Products.Archetypes.Widget import TypesWidget
+from bika.lims.browser import get_date
 from bika.lims.browser import ulocalized_time as ut
 
 
@@ -24,12 +25,21 @@ class DateTimeWidget(TypesWidget):
     security = ClassSecurityInfo()
 
     def ulocalized_time(self, time, context, request):
-        val = ut(time,
-                 long_format=self.show_time,
-                 time_only=False,
-                 context=context,
-                 request=request)
-        return val
+        """Returns the localized time in string format
+        """
+        value = ut(time, long_format=self.show_time, time_only=False,
+                   context=context, request=request)
+        return value or ""
+
+    def ulocalized_gmt0_time(self, time, context, request):
+        """Returns the localized time in string format, but in GMT+0
+        """
+        value = get_date(context, time)
+        if not value:
+            return ""
+        # DateTime is stored with TimeZone, but DateTimeWidget omits TZ
+        value = value.toZone("GMT+0")
+        return self.ulocalized_time(value, context, request)
 
 
 registerWidget(
