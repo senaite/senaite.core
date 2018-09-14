@@ -38,7 +38,7 @@
            size="30"
            tal:attributes="name fieldName;
                            id fieldName;
-                           value python: widget.ulocalized_time(value, context=context, request=request) if value else '';
+                           value python: widget.ulocalized_gmt0_time(value, context=context, request=request) if value else '';
                            size widget/size|nothing;
                            datepicker python:1 if not widget.show_time else 0;
                            datetimepicker python:1 if widget.show_time else 0;

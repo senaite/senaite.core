@@ -26,6 +26,7 @@ from bika.lims.utils import (check_permission, format_supsub,
                              t)
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import isActive
+from collections import OrderedDict
 from plone.memoize import view as viewcache
 from zope.component import getAdapters
 
@@ -63,7 +64,7 @@ class AnalysesView(BikaListingView):
         self.form_id = 'analyses_form'
         self.context_active = isActive(context)
         self.interim_fields = {}
-        self.interim_columns = {}
+        self.interim_columns = OrderedDict()
         self.specs = {}
         self.bsc = getToolByName(context, 'bika_setup_catalog')
         self.portal = getToolByName(context, 'portal_url').getPortalObject()

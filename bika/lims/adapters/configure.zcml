@@ -93,6 +93,13 @@
       name="HideClientDiscountFields"
     />
 
+    <adapter
+        factory=".widgetvisibility.SampleDateReceived"
+        provides="bika.lims.interfaces.IATWidgetVisibility"
+        for="bika.lims.interfaces.ISample"
+        name="SampleDateReceived"
+    />
+
     <adapter name='bika.lims.IHaveIdentifiersExtender' factory=".identifiers.IHaveIdentifiersSchemaExtender"/>
     <adapter name='bika.lims.IHaveIdentifiersModifier' factory=".identifiers.IHaveIdentifiersSchemaModifier"/>
 

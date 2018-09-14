@@ -1394,40 +1394,22 @@ schema = BikaSchema.copy() + Schema((
             },
         )
     ),
-    # Another way to obtain a transition date is using getTransitionDate
-    # function. We are using a DateTimeField/Widget here because in some
-    # cases the user may want to change the Received Date.
-    # AnalysisRequest and Sample's DateReceived fields needn't to have
-    # the same value.
-    # This field is updated in workflow_script_receive method.
-    DateTimeField(
+    # This field is a mirror of a field in Sample with the same name
+    ProxyField(
         'DateReceived',
+        proxy="context.getSample()",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=DateTimeWidget(
-            label=_("Date Received"),
+            label=_("Date Sample Received"),
+            show_time=True,
             description=_("The date when the sample was received"),
             render_own_label=True,
             visible={
-                'edit': 'visible',
+                'edit': 'invisible',
                 'view': 'visible',
                 'header_table': 'visible',
-                'sample_registered': {
-                    'view': 'invisible', 'edit': 'invisible'},
-                'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling': {
-                    'view': 'invisible', 'edit': 'invisible'},
-                'sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_due': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_received': {'view': 'visible', 'edit': 'invisible'},
-                'attachment_due': {'view': 'visible', 'edit': 'invisible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
-                'verified': {'view': 'visible', 'edit': 'invisible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'visible', 'edit': 'invisible'},
             },
         ),
     ),
@@ -2351,7 +2333,13 @@ class AnalysisRequest(BaseFolder):
 
     security.declarePublic('getVerifier')
 
+    @deprecated("Use getVerifiers instead")
     def getVerifier(self):
+        """Returns the user that verified the whole Analysis Request. Since the
+        verification is done automatically as soon as all the analyses it
+        contains are verified, this function returns the user that verified the
+        last analysis pending.
+        """
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
 
@@ -2374,6 +2362,30 @@ class AnalysisRequest(BaseFolder):
             if verifier is None or verifier == '':
                 verifier = actor
         return verifier
+
+    @security.public
+    def getVerifiersIDs(self):
+        """Returns the ids from users that have verified at least one analysis
+        from this Analysis Request
+        """
+        verifiers_ids = list()
+        for brain in self.getAnalyses():
+            verifiers = brain.getVerificators or ""
+            verifiers_ids += verifiers.split(",")
+        return list(set(verifiers_ids))
+
+    @security.public
+    def getVerifiers(self):
+        """Returns the list of lab contacts that have verified at least one
+        analysis from this Analysis Request
+        """
+        contacts = list()
+        for verifier in self.getVerifiersIDs():
+            user = api.get_user(verifier)
+            contact = api.get_user_contact(user, ["LabContact"])
+            if contact:
+                contacts.append(contact)
+        return contacts
 
     security.declarePublic('getContactUIDForUser')
 

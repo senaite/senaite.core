@@ -947,7 +947,8 @@ So first I'll add some users with some different roles:
 
     >>> for user in [{'username': 'labmanager_1', 'roles': ['LabManager']},
     ...              {'username': 'labmanager_2', 'roles': ['LabManager']},
-    ...              {'username': 'sampler_1', 'roles': ['Sampler']}]:
+    ...              {'username': 'sampler_1', 'roles': ['Sampler']},
+    ...              {'username': 'client_1', 'roles': ['Client']}]:
     ...    member = portal.portal_registration.addMember(
     ...        user['username'], user['username'],
     ...        properties={'username': user['username'],
@@ -1014,6 +1015,35 @@ But fails if we specify only `Contact` type:
     >>> nuser is None
     True
 
+
+Getting the Contact Client
+--------------------------
+
+Getting the current client the current user belongs to::
+
+    >>> api.get_current_client() is None
+    True
+
+And still fails if we use a user that is not associated to a client::
+
+    >>> api.get_user_client(user) is None
+    True
+
+    >>> api.get_user_client(labcontact) is None
+    True
+
+Try now with a valid contact::
+
+    >>> client_user = api.get_user('client_1')
+    >>> contact1 = api.create(client, "Contact", Firstname="Lost", Lastname="Nomad")
+    >>> contact1.setUser(client_user)
+    True
+
+    >>> api.get_user_client(contact1)
+    <Client at /plone/clients/client-1>
+
+    >>> api.get_user_client(client_user)
+    <Client at /plone/clients/client-1>
 
 
 Creating a Cache Key
@@ -1351,3 +1381,41 @@ With default fallback:
 
     >>> api.to_float("2.1", "2")
     2.1
+
+Convert to an int number
+------------------------
+
+    >>> api.to_int(2)
+    2
+
+    >>> api.to_int("2")
+    2
+
+    >>> api.to_int(2.1)
+    2
+
+    >>> api.to_int("2.1")
+    2
+
+With default fallback:
+
+    >>> api.to_int(None, 2)
+    2
+
+    >>> api.to_int(None, "2")
+    2
+
+    >>> api.to_int("", 2)
+    2
+
+    >>> api.to_int("2", 0)
+    2
+
+    >>> api.to_int(2, 0)
+    2
+
+    >>> api.to_int("as", None) is None
+    True
+
+    >>> api.to_int("as", "2")
+    2
