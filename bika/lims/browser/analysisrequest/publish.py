@@ -614,6 +614,9 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-1)>],
                              'ar2_id': [<Analysis (for as-1)>]
                             },
+                     'interims': {'ar1_id': [an_interims],
+                                  'ar2_id': [an_interims]
+                                 },
                     },
                 },
             {'service_2_title':
@@ -623,6 +626,9 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-2)>],
                              'ar2_id': [<Analysis (for as-2)>]
                             },
+                     'interims': {'ar1_id': [an_interims],
+                                  'ar2_id': [an_interims]
+                                 },
                     },
                 },
             ...
@@ -630,7 +636,9 @@ class AnalysisRequestPublishView(BrowserView):
         }
         """
         analyses = {}
+        all_interims = {}
         for ar in ars:
+            an_interims = []
             ans = [an.getObject() for an in ar.getAnalyses()]
             for an in ans:
                 cat = an.getCategoryTitle()
@@ -642,19 +650,27 @@ class AnalysisRequestPublishView(BrowserView):
                             # here - service fields are all inside!
                             'service': an,
                             'accredited': an.getAccredited(),
-                            'ars': {ar.id: an.getFormattedResult()}
+                            'ars': {ar.id: an.getFormattedResult()},
                         }
                     }
                 elif an_title not in analyses[cat]:
                     analyses[cat][an_title] = {
                         'service': an,
                         'accredited': an.getAccredited(),
-                        'ars': {ar.id: an.getFormattedResult()}
+                        'ars': {ar.id: an.getFormattedResult()},
                     }
                 else:
                     d = analyses[cat][an_title]
                     d['ars'][ar.id] = an.getFormattedResult()
                     analyses[cat][an_title] = d
+
+                interims = hasattr(an, 'getInterimFields') \
+                    and an.getInterimFields() or []
+                analyses[cat][an_title]['interims'] = {}
+                if len(interims) > 0:
+                    an_interims = [a for a in interims if 'report' in a]
+                    all_interims.update({ar.id: an_interims})
+                    analyses[cat][an_title]['interims'] = all_interims
         return analyses
 
     def _lab_address(self, lab):
