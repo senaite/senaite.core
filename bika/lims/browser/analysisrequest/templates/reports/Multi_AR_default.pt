@@ -255,8 +255,9 @@
                                 <span class="td unit">
                                     <span tal:attributes="style string:width:${unitcol_width}%"
                                           tal:content="python:transposed[cat_title][service_title]['service'].getUnit()" />
-                                    <span tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
-                                          tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ars[0].id]"> <br />
+                                    <span class="new_line"
+                                          tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
+                                          tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ars[0].id]">
                                         <span tal:content="structure interim/unit|nothing"/>
                                     </span>
                                 </span>
@@ -264,8 +265,9 @@
                                     <span class="td result">
                                         <span tal:attributes="style string:width:${arcol_width}%"
                                               tal:content="structure python:transposed[cat_title][service_title]['ars'].get(ar.id,'')"/>
-                                        <span tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
-                                              tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ar.id]"> <br />
+                                        <span class="new_line"
+                                              tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
+                                              tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ar.id]">
                                             <span tal:content="interim/formatted_value"></span>
                                         </span>
                                     </span>
