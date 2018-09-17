@@ -251,7 +251,7 @@
                     <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
                     <span tal:condition="hasinterimfields">
                       <span class='new_line' tal:repeat="interim python:analysis['interims']">
-                          <span style="padding-left:10px"
+                          <span class="interims_title"
                               tal:content="interim/title"></span>
                       </span>
                     </span>

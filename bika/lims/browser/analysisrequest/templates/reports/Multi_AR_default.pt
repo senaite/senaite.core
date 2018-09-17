@@ -246,7 +246,7 @@
                                          class="accredited-ico"/>
                                     <span tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
                                           tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ars[0].id]"> <br />
-                                        <span tal:content="structure interim/title|nothing"/>
+                                        <span class="interims_title" tal:content="structure interim/title|nothing"/>
                                     </span>
                                 </span>
                                 <span class="td method_title"
