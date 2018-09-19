@@ -24,6 +24,18 @@ from zope.interface import implementer
 from zope.interface import implements
 from zope.interface import Interface
 import traceback
+import sys
+from AccessControl import ClassSecurityInfo
+
+# This is required to authorize AccessControl.ZopeGuards to access to this
+# module (bika.lims.workflow) and function/s via skin's python scripts.
+# In this particular case, the function guard_handler is accessed through
+# bika/lims/skins/bika/guard_handler.py, which is called by guard expressions
+# from workflows:
+#       python: here.guard_handler(state_change.transition.id)
+from AccessControl.SecurityInfo import ModuleSecurityInfo
+security = ModuleSecurityInfo('bika.lims.workflow')
+security.declarePublic('guard_handler')
 
 
 def skip(instance, action, peek=False, unskip=False):
@@ -432,6 +444,87 @@ def getTransitionUsers(obj, action_id, last_user=False):
             if last_user:
                 return users
     return users
+
+
+def guard_handler(instance, transition_id):
+    """Generic workflow guard handler that returns true if the transition_id
+    passed in can be performed to the instance passed in.
+
+    This function is called automatically by a Script (Python) located at
+    bika/lims/skins/guard_handler.py, which in turn is fired by Zope when an
+    expression like "python:here.guard_handler('<transition_id>')" is set to
+    any given guard (used by default in all bika's DC Workflow guards).
+
+    Walks through bika.lims.workflow.<obj_type>.guards and looks for a function
+    that matches with 'guard_<transition_id>'. If found, calls the function and
+    returns its value (true or false). If not found, returns True by default.
+
+    :param instance: the object for which the transition_id has to be evaluated
+    :param transition_id: the id of the transition
+    :type instance: ATContentType
+    :type transition_id: string
+    :return: true if the transition can be performed to the passed in instance
+    :rtype: bool
+    """
+    if not instance:
+        return True
+
+    clazz_name = instance.portal_type
+    # Inspect if bika.lims.workflow.<clazzname>.<guards> module exists
+    wf_module = _load_wf_module('{0}.guards'.format(clazz_name.lower()))
+    if not wf_module:
+        return True
+
+    # Inspect if guard_<transition_id> function exists in the above module
+    key = 'guard_{0}'.format(transition_id)
+    guard = getattr(wf_module, key, False)
+    if not guard:
+        return True
+
+    #logger.info('{0}.guards.{1}'.format(clazz_name.lower(), key))
+    return guard(instance)
+
+
+def _load_wf_module(module_relative_name):
+    """Loads a python module based on the module relative name passed in.
+
+    At first, tries to get the module from sys.modules. If not found there, the
+    function tries to load it by using importlib. Returns None if no module
+    found or importlib is unable to load it because of errors.
+    Eg:
+        _load_wf_module('sample.events')
+
+    will try to load the module 'bika.lims.workflow.sample.events'
+
+    :param modrelname: relative name of the module to be loaded
+    :type modrelname: string
+    :return: the module
+    :rtype: module
+    """
+    if not module_relative_name:
+        return None
+    if not isinstance(module_relative_name, basestring):
+        return None
+
+    rootmodname = __name__
+    modulekey = '{0}.{1}'.format(rootmodname, module_relative_name)
+    if modulekey in sys.modules:
+        return sys.modules.get(modulekey, None)
+
+    # Try to load the module recursively
+    modname = None
+    tokens = module_relative_name.split('.')
+    for part in tokens:
+        modname = '.'.join([modname, part]) if modname else part
+        import importlib
+        try:
+            _module = importlib.import_module('.'+modname, package=rootmodname)
+            if not _module:
+                return None
+        except Exception:
+            return None
+    return sys.modules.get(modulekey, None)
+
 
 # Enumeration of the available status flows
 StateFlow = enum(review='review_state',
