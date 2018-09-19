@@ -614,8 +614,8 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-1)>],
                              'ar2_id': [<Analysis (for as-1)>]
                             },
-                     'interims': {'ar1_id': [an_interims],
-                                  'ar2_id': [an_interims]
+                     'interims': {'ar1_id': [an_interims_report],
+                                  'ar2_id': [an_interims_report]
                                  },
                     },
                 },
@@ -626,8 +626,8 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-2)>],
                              'ar2_id': [<Analysis (for as-2)>]
                             },
-                     'interims': {'ar1_id': [an_interims],
-                                  'ar2_id': [an_interims]
+                     'interims': {'ar1_id': [an_interims_report],
+                                  'ar2_id': [an_interims_report]
                                  },
                     },
                 },
@@ -636,9 +636,9 @@ class AnalysisRequestPublishView(BrowserView):
         }
         """
         analyses = {}
-        all_interims = {}
         for ar in ars:
-            an_interims = []
+            an_interims_report = []
+            interims_per_ar = {}
             ans = [an.getObject() for an in ar.getAnalyses()]
             for an in ans:
                 cat = an.getCategoryTitle()
@@ -668,9 +668,11 @@ class AnalysisRequestPublishView(BrowserView):
                     and an.getInterimFields() or []
                 analyses[cat][an_title]['interims'] = {}
                 if len(interims) > 0:
-                    an_interims = [a for a in interims if 'report' in a]
-                    all_interims.update({ar.id: an_interims})
-                    analyses[cat][an_title]['interims'] = all_interims
+                    an_interims_report = [a for a in interims if 'report' in a]
+                    interims_per_ar.update({ar.id: an_interims_report})
+                    analyses[cat][an_title]['interims'] = interims_per_ar
+                an_interims_report = []
+                interims_per_ar = {}
         return analyses
 
     def _lab_address(self, lab):
