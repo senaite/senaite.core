@@ -45,6 +45,22 @@ def receive(obj):
     return isBasicTransitionAllowed(obj)
 
 
+def guard_create_partitions(analysis_request):
+    """Returns true if partitions can be created using the analysis request
+    passed in as the source.
+    """
+    if not analysis_request.bika_setup.getShowPartitions():
+        # If partitions are disabled in Setup, return False
+        return False
+
+    if not isBasicTransitionAllowed(analysis_request):
+        return False
+
+    # TODO Do not allow the creation of partitions from partitions or primary
+
+    return True
+
+
 def verify(obj):
     """Returns True if 'verify' transition can be applied to the Analysis
     Request passed in. This is, returns true if all the analyses that contains
@@ -134,3 +150,4 @@ def publish(obj):
     :returns: true or false
     """
     return isBasicTransitionAllowed(obj)
+
