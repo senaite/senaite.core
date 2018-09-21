@@ -40,6 +40,9 @@ def upgrade(tool):
     # Reindex object security for client contents (see #991)
     reindex_client_local_owner_permissions(portal)
 
+    # Rebind ARs that were generated because of the retraction of other ARs
+    rebind_retracted_ars(portal)
+
     # Add "Create partition" transition
     add_create_partition_transition(portal)
 
@@ -128,3 +131,23 @@ def add_create_partition_transition(portal):
         workflow.updateRoleMappingsFor(api.get_object(ar))
         if num % 100 == 0:
             logger.info("Updating role mappings: {0}/{1}".format(num, total))
+
+
+def rebind_retracted_ars(portal):
+    """Rebind the ARs automatically generated because of the retraction of their
+    parent to the new field 'ParentRetracted'. The field used until now
+    'ParentAnalysisRequest' will be used for partitioning
+    """
+    logger.info("Rebinding retracted/invalidated ARs")
+    query = dict(portal_type="AnalysisRequest", review_state="invalid")
+    ars_retracted = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(ars_retracted)
+    for num, ar_retracted in enumerate(ars_retracted, start=1):
+        ar_retracted = api.get_object(ar_retracted)
+        retest = ar_retracted.getChildAnalysisRequest()
+        if retest:
+            retest = api.get_object(retest)
+            retest.setParentAnalysisRequest(None)
+            retest.setParentRetracted(ar_retracted)
+        if num % 100 == 0:
+            logger.info("Rebinding retracted ARs: {0}/{1}".format(num, total))

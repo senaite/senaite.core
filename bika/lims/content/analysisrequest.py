@@ -1708,6 +1708,21 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
+    # The Parent Analysis Request the current was automatically generated from
+    # because of a retraction.
+    ReferenceField(
+        'ParentRetracted',
+        allowed_types=('AnalysisRequest',),
+        relationship='AnalysisRequestRetractedParent',
+        referenceClass=HoldingReference,
+        mode="rw",
+        read_permission=View,
+        write_permission=ModifyPortalContent,
+        widget=ReferenceWidget(
+            visible=False,
+        ),
+    ),
+
     # For comments or results interpretation
     # Old one, to be removed because of the incorporation of
     # ResultsInterpretationDepts (due to LIMS-1628)

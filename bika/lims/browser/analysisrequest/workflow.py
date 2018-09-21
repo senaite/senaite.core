@@ -437,7 +437,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
     def cloneAR(self, ar):
         newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
         newar.setSample(ar.getSample())
-        ignore_fieldnames = ['Analyses', 'DatePublished',
+        ignore_fieldnames = ['Analyses', 'DatePublished', 'ParentRetracted',
                              'ParentAnalysisRequest', 'ChildAnaysisRequest',
                              'Digest', 'Sample']
         copy_field_values(ar, newar, ignore_fieldnames=ignore_fieldnames)
@@ -475,7 +475,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
 
         if hasattr(ar, 'setChildAnalysisRequest'):
             ar.setChildAnalysisRequest(newar)
-        newar.setParentAnalysisRequest(ar)
+        newar.setParentRetracted(ar)
         return newar
 
     def workflow_action_schedule_sampling(self):

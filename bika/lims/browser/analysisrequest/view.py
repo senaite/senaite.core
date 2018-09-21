@@ -158,14 +158,13 @@ class AnalysisRequestViewView(BrowserView):
             self.addMessage(message, 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        if hasattr(ar, 'getParentAnalysisRequest') \
-            and ar.getParentAnalysisRequest():
-            par = ar.getParentAnalysisRequest()
+        parent_retracted = ar.getParentRetracted()
+        if parent_retracted:
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': par.getId()})
+                        mapping={'retracted_request_id': parent_retracted.getId()})
             self.addMessage(message, 'info')
         self.renderMessages()
         return self.template()
@@ -478,10 +477,10 @@ class AnalysisRequestViewView(BrowserView):
                 }
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        if hasattr(ar, 'getParentAnalysisRequest') \
-            and ar.getParentAnalysisRequest():
-            par = ar.getParentAnalysisRequest()
-            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getId())
+        parent_retracted = ar.getParentRetracted()
+        if parent_retracted:
+            anchor = "<a href='%s'>%s</a>" % (parent_retracted.absolute_url(),
+                                              parent_retracted.getId())
             custom['ParentAR'] = {
                 'title': t(_("Invalid AR retested")),
                 'value': anchor
