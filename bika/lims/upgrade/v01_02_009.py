@@ -10,6 +10,8 @@ import transaction
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -36,6 +38,9 @@ def upgrade(tool):
 
     # Reindex object security for client contents (see #991)
     reindex_client_local_owner_permissions(portal)
+
+    # Rebind ARs that were generated because of the retraction of other ARs
+    rebind_retracted_ars(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -77,3 +82,22 @@ def migrate_attachment_report_options(portal):
             obj.reindexObject()
             logger.info("Migrated Attachment %s" % obj.getTextTitle())
 
+
+def rebind_retracted_ars(portal):
+    """Rebind the ARs automatically generated because of the retraction of their
+    parent to the new field 'ParentRetracted'. The field used until now
+    'ParentAnalysisRequest' will be used for partitioning
+    """
+    logger.info("Rebinding retracted/invalidated ARs")
+    query = dict(portal_type="AnalysisRequest", review_state="invalid")
+    ars_retracted = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(ars_retracted)
+    for num, ar_retracted in enumerate(ars_retracted, start=1):
+        ar_retracted = api.get_object(ar_retracted)
+        retest = ar_retracted.getChildAnalysisRequest()
+        if retest:
+            retest = api.get_object(retest)
+            retest.setParentAnalysisRequest(None)
+            retest.setParentRetracted(ar_retracted)
+        if num % 100 == 0:
+            logger.info("Rebinding retracted ARs: {0}/{1}".format(num, total))

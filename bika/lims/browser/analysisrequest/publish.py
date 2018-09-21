@@ -948,10 +948,10 @@ class AnalysisRequestDigester:
 
         # Sub-objects
         excludearuids.append(ar.UID())
-        puid = ar.getRawParentAnalysisRequest()
+        puid = ar.getRawParentRetracted()
         if puid and puid not in excludearuids:
             data['parent_analysisrequest'] = self._ar_data(
-                ar.getParentAnalysisRequest(), excludearuids)
+                ar.getParentRetracted(), excludearuids)
         cuid = ar.getRawChildAnalysisRequest()
         if cuid and cuid not in excludearuids:
             data['child_analysisrequest'] = self._ar_data(

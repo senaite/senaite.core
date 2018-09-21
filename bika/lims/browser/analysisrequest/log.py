@@ -30,14 +30,14 @@ class AnalysisRequestLog(LogView):
             self.context.plone_utils.addPortalMessage(message, 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        if hasattr(ar, 'getParentAnalysisRequest') \
-            and ar.getParentAnalysisRequest():
-            par = ar.getParentAnalysisRequest()
+        parent_retracted = ar.getParentRetracted()
+        if parent_retracted:
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': safe_unicode(par.getId())})
+                        mapping={'retracted_request_id': safe_unicode(
+                            parent_retracted.getId())})
             self.context.plone_utils.addPortalMessage(
                 t(message), 'info')
         template = LogView.__call__(self)
