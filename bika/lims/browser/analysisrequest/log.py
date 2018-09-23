@@ -20,8 +20,7 @@ class AnalysisRequestLog(LogView):
         workflow = getToolByName(ar, 'portal_workflow')
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = hasattr(ar, 'getChildAnalysisRequest') \
-                        and ar.getChildAnalysisRequest() or None
+            childar = ar.getRetest() or None
             childid = childar and childar.getId() or None
             message = _('This Analysis Request has been withdrawn and is shown '
                           'for trace-ability purposes only. Retest: '
@@ -30,7 +29,7 @@ class AnalysisRequestLog(LogView):
             self.context.plone_utils.addPortalMessage(message, 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        parent_retracted = ar.getParentRetracted()
+        parent_retracted = ar.getRetracted()
         if parent_retracted:
             message = _('This Analysis Request has been '
                         'generated automatically due to '

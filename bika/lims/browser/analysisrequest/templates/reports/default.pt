@@ -123,11 +123,11 @@
   <!-- Alert section (invalidated ar, etc.) -->
   <div id="section-alert" tal:condition="analysisrequest/invalid">
     <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
-    <tal:invalidreport tal:define="child python:analysisrequest['obj'].getChildAnalysisRequest()"
+    <tal:invalidreport tal:define="retest python:analysisrequest['obj'].getRetest()"
                        tal:condition="child">
       <span i18n:translate="">This Analysis request has been replaced by</span>&nbsp;
-      <a tal:attributes="href child/absolute_url"
-         tal:content="child/id"></a>
+      <a tal:attributes="href retest/absolute_url"
+         tal:content="retest/id"></a>
     </tal:invalidreport>
   </div>
   <div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">

@@ -1682,18 +1682,6 @@ schema = BikaSchema.copy() + Schema((
         expression="here.getTemplate().Title() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
-    ReferenceField(
-        'ChildAnalysisRequest',
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestChildAnalysisRequest',
-        referenceClass=HoldingReference,
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            visible=False,
-        ),
-    ),
 
     ReferenceField(
         'ParentAnalysisRequest',
@@ -1708,12 +1696,12 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    # The Parent Analysis Request the current was automatically generated from
-    # because of a retraction.
+    # The Analysis Request the current Analysis Request comes from because of
+    # a retraction of the former
     ReferenceField(
-        'ParentRetracted',
+        'Retracted',
         allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestRetractedParent',
+        relationship='AnalysisRequestRetracted',
         referenceClass=HoldingReference,
         mode="rw",
         read_permission=View,
@@ -1721,6 +1709,14 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible=False,
         ),
+    ),
+
+    # The Analysis Request that was automatically generated due to the
+    # retraction of the current Analysis Request
+    ComputedField(
+        'Retest',
+        expression="here.get_retest()",
+        widget=ComputedWidget(visible=False)
     ),
 
     # For comments or results interpretation
@@ -2484,14 +2480,6 @@ class AnalysisRequest(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(self, 'review_state') == 'invalid'
 
-    def getLastChild(self):
-        """return the last child Request due to invalidation
-        """
-        child = self.getChildAnalysisRequest()
-        while child and child.getChildAnalysisRequest():
-            child = child.getChildAnalysisRequest()
-        return child
-
     def getRequestedAnalyses(self):
         """It returns all requested analyses, even if they belong to an
         analysis profile or not.
@@ -3098,5 +3086,14 @@ class AnalysisRequest(BaseFolder):
                     "It can not hold an own value!")
         return None
 
+    def get_retest(self):
+        """Returns the Analysis Request automatically generated because of the
+        retraction of the current analysis request
+        """
+        relationship = "AnalysisRequestRetracted"
+        retest = self.getBackReferences(relationship=relationship)
+        if retest and len(retest) > 1:
+            logger.warn("More than one retest for {0}".format(self.getId()))
+        return retest and retest[0] or None
 
 registerType(AnalysisRequest, PROJECTNAME)

@@ -397,13 +397,13 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
 
         # 1. Copies the AR linking the original one and viceversa
         ar = self.context
-        newar = self.cloneAR(ar)
+        retest = self.create_retest(ar)
 
         # 2. The old AR gets a status of 'invalid'
         api.do_transition_for(ar, 'retract_ar')
 
         # 3. The new AR copy opens in status 'to be verified'
-        changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
+        changeWorkflowState(retest, 'bika_ar_workflow', 'to_be_verified')
 
         # 4. The system immediately alerts the client contacts who ordered
         # the results, per email and SMS, that a possible mistake has been
@@ -412,12 +412,12 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         # to the AR online.
         bika_setup = api.get_bika_setup()
         if bika_setup.getNotifyOnARRetract():
-            self.notify_ar_retract(ar, newar)
+            self.notify_ar_retract(ar, retest)
 
         message = _('${items} invalidated.',
                     mapping={'items': ar.getId()})
         self.context.plone_utils.addPortalMessage(message, 'warning')
-        self.request.response.redirect(newar.absolute_url())
+        self.request.response.redirect(retest.absolute_url())
 
     def workflow_action_copy_to_new(self):
         # Pass the selected AR UIDs in the request, to ar_add.
@@ -434,13 +434,12 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         self.request.response.redirect(url)
         return
 
-    def cloneAR(self, ar):
-        newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
-        newar.setSample(ar.getSample())
-        ignore_fieldnames = ['Analyses', 'DatePublished', 'ParentRetracted',
-                             'ParentAnalysisRequest', 'ChildAnaysisRequest',
+    def create_retest(self, ar):
+        retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
+        retest.setSample(ar.getSample())
+        ignore_fieldnames = ['Analyses', 'DatePublished', 'Retracted',
                              'Digest', 'Sample']
-        copy_field_values(ar, newar, ignore_fieldnames=ignore_fieldnames)
+        copy_field_values(ar, retest, ignore_fieldnames=ignore_fieldnames)
 
         # Set the results for each AR analysis
         ans = ar.getAnalyses(full_objects=True)
@@ -454,11 +453,11 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                 # We don't want reflex analyses to be copied
                 continue
             try:
-                nan = _createObjectByType("Analysis", newar, an.getKeyword())
+                nan = _createObjectByType("Analysis", retest, an.getKeyword())
             except Exception as e:
                 from bika.lims import logger
                 logger.warn('Cannot create analysis %s inside %s (%s)'%
-                            an.getAnalysisService().Title(), newar, e)
+                            an.getAnalysisService().Title(), retest, e)
                 continue
             # Make a copy
             ignore_fieldnames = ['Verificators', 'DataAnalysisPublished']
@@ -469,14 +468,11 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                                 'to_be_verified')
             nan.reindexObject()
 
-        newar.reindexObject()
-        newar.aq_parent.reindexObject()
-        renameAfterCreation(newar)
-
-        if hasattr(ar, 'setChildAnalysisRequest'):
-            ar.setChildAnalysisRequest(newar)
-        newar.setParentRetracted(ar)
-        return newar
+        retest.setRetracted(ar)
+        retest.reindexObject()
+        retest.aq_parent.reindexObject()
+        renameAfterCreation(retest)
+        return retest
 
     def workflow_action_schedule_sampling(self):
         """

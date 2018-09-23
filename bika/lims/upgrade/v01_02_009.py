@@ -7,6 +7,7 @@
 
 import time
 import transaction
+from Products.Archetypes.config import REFERENCE_CATALOG
 
 from bika.lims import api
 from bika.lims import logger
@@ -135,19 +136,23 @@ def add_create_partition_transition(portal):
 
 def rebind_retracted_ars(portal):
     """Rebind the ARs automatically generated because of the retraction of their
-    parent to the new field 'ParentRetracted'. The field used until now
+    parent to the new field 'Retracted'. The field used until now
     'ParentAnalysisRequest' will be used for partitioning
     """
     logger.info("Rebinding retracted/invalidated ARs")
-    query = dict(portal_type="AnalysisRequest", review_state="invalid")
-    ars_retracted = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
-    total = len(ars_retracted)
-    for num, ar_retracted in enumerate(ars_retracted, start=1):
-        ar_retracted = api.get_object(ar_retracted)
-        retest = ar_retracted.getChildAnalysisRequest()
-        if retest:
-            retest = api.get_object(retest)
-            retest.setParentAnalysisRequest(None)
-            retest.setParentRetracted(ar_retracted)
+
+    # Walk through the Analysis Requests that were generated because of a
+    # retraction, get the source AR and rebind the fields
+    relationship = "AnalysisRequestChildAnalysisRequest"
+    ref_catalog = api.get_tool(REFERENCE_CATALOG)
+    retests = ref_catalog(relationship=relationship)
+    total = len(retests)
+    for num, retest in enumerate(retests, start=1):
+        retest = retest.getObject()
+        retracted = retest.getParentAnalysisRequest()
+        retest.setRetracted(retracted)
+        # Set ParentAnalysisRequest field to None, cause we will use this field
+        # for storing Primary-Partitions relationship.
+        retest.setParentAnalysisRequest(None)
         if num % 100 == 0:
             logger.info("Rebinding retracted ARs: {0}/{1}".format(num, total))
