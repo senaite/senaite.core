@@ -12,7 +12,7 @@ Changelog
 
 **Changed**
 
-- #1026 Refactored relationship between invalidated ARs and retests
+- #1027 Refactored relationship between invalidated ARs and retests
 - #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
 
