@@ -148,9 +148,9 @@ def after_retract(obj):
         doActionFor(analysis, 'retract')
 
 
-def after_retract_ar(obj):
-    """Function triggered after a 'retract_ar' (invalidate) transition for the
-    Analysis Request passed in is performed. Creates a retest
+def after_invalidate(obj):
+    """Function triggered after 'invalidate' transition for the Analysis
+    Request passed in is performed. Creates a retest
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """

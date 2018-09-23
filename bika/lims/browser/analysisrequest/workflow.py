@@ -377,7 +377,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             came_from = came_from[0]
         return self.workflow_action_default(action='verify', came_from=came_from)
 
-    def workflow_action_retract_ar(self):
+    def workflow_action_invalidate(self):
 
         # AR should be retracted
         # Can't transition inactive ARs
@@ -388,7 +388,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             return
 
         # Retract the AR and get the retest
-        api.do_transition_for(self.context, 'retract_ar')
+        api.do_transition_for(self.context, 'invalidate')
         retest = self.context.getRetest()
 
         # 4. The system immediately alerts the client contacts who ordered

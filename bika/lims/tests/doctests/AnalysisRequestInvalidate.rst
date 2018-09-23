@@ -195,7 +195,7 @@ When an Analysis Request is invalidated two things should happen:
 
 Invalidate the Analysis Request:
 
-    >>> transitioned = do_action_for(ar, 'retract_ar')
+    >>> transitioned = do_action_for(ar, 'invalidate')
     >>> transitioned[0]
     True
     >>> api.get_workflow_status_of(ar)
@@ -254,7 +254,7 @@ First, verify all analyses from the retest:
 
 Invalidate the Retest:
 
-    >>> transitioned = do_action_for(retest, 'retract_ar')
+    >>> transitioned = do_action_for(retest, 'invalidate')
     >>> transitioned[0]
     True
     >>> api.get_workflow_status_of(retest)

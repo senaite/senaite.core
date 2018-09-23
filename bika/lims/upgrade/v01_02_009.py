@@ -8,6 +8,7 @@
 import time
 import transaction
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.DCWorkflow.Guard import Guard
 
 from bika.lims import api
 from bika.lims import logger
@@ -38,8 +39,11 @@ def upgrade(tool):
     # Reindex object security for client contents (see #991)
     reindex_client_local_owner_permissions(portal)
 
-    # Rebind ARs that were generated because of the retraction of other ARs
-    rebind_retracted_ars(portal)
+    # Rename "retract_ar" transition to "invalidate"
+    rename_retract_ar_transition(portal)
+
+    # Rebind ARs that were generated because of the invalidation of other ARs
+    rebind_invalidated_ars(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -82,15 +86,48 @@ def migrate_attachment_report_options(portal):
             logger.info("Migrated Attachment %s" % obj.getTextTitle())
 
 
-def rebind_retracted_ars(portal):
+def rename_retract_ar_transition(portal):
+    """Renames retract_ar transition to invalidate
+    """
+    logger.info("Renaming 'retract_ar' transition to 'invalidate'")
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
+
+    if "invalidate" not in workflow.transitions:
+        workflow.transitions.addTransition("invalidate")
+    transition = workflow.transitions.invalidate
+    transition.setProperties(
+        title="Invalidate",
+        new_state_id="invalid",
+        after_script_name="",
+        actbox_name="Invalidate",
+    )
+    guard = transition.guard or Guard()
+    guard_props = {'guard_permissions': 'BIKA: Retract',
+                   'guard_roles': '',
+                   'guard_expr': 'python:here.guard_cancelled_object()'}
+    guard.changeFromProperties(guard_props)
+    transition.guard = guard
+
+    for state in workflow.states.values():
+        if 'retract_ar' in state.transitions:
+            trans = filter(lambda id: id != 'retract_ar', state.transitions)
+            trans += ('invalidate', )
+            state.transitions = trans
+
+    if "retract_ar" in workflow.transitions:
+        workflow.transitions.deleteTransitions(["retract_ar"])
+
+
+def rebind_invalidated_ars(portal):
     """Rebind the ARs automatically generated because of the retraction of their
-    parent to the new field 'Retracted'. The field used until now
+    parent to the new field 'Invalidated'. The field used until now
     'ParentAnalysisRequest' will be used for partitioning
     """
     logger.info("Rebinding retracted/invalidated ARs")
 
-    # Walk through the Analysis Requests that were generated because of a
-    # retraction, get the source AR and rebind the fields
+    # Walk through the Analysis Requests that were generated because of an
+    # invalidation, get the source AR and rebind the fields
     relationship = "AnalysisRequestChildAnalysisRequest"
     ref_catalog = api.get_tool(REFERENCE_CATALOG)
     retests = ref_catalog(relationship=relationship)

@@ -2995,8 +2995,8 @@ class AnalysisRequest(BaseFolder):
         events.after_retract(self)
 
     @security.public
-    def workflow_script_retract_ar(self):
-        events.after_retract_ar(self)
+    def workflow_script_invalidate(self):
+        events.after_invalidate(self)
 
     def SearchableText(self):
         """
