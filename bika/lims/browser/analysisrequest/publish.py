@@ -948,14 +948,14 @@ class AnalysisRequestDigester:
 
         # Sub-objects
         excludearuids.append(ar.UID())
-        puid = ar.getRawParentRetracted()
+        puid = ar.getRawRetracted()
         if puid and puid not in excludearuids:
             data['parent_analysisrequest'] = self._ar_data(
-                ar.getParentRetracted(), excludearuids)
-        cuid = ar.getRawChildAnalysisRequest()
+                ar.getRetracted(), excludearuids)
+        cuid = ar.getRawRetest()
         if cuid and cuid not in excludearuids:
             data['child_analysisrequest'] = self._ar_data(
-                ar.getChildAnalysisRequest(), excludearuids)
+                ar.getRetest(), excludearuids)
 
         wf = ar.portal_workflow
         allowed_states = ['verified', 'published']

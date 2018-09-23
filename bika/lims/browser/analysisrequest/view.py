@@ -146,8 +146,7 @@ class AnalysisRequestViewView(BrowserView):
 
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = hasattr(ar, 'getChildAnalysisRequest') \
-                        and ar.getChildAnalysisRequest() or None
+            childar = ar.getRetest() or None
             message = _('These results have been withdrawn and are '
                         'listed here for trace-ability purposes. Please follow '
                         'the link to the retest')
@@ -158,7 +157,7 @@ class AnalysisRequestViewView(BrowserView):
             self.addMessage(message, 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        parent_retracted = ar.getParentRetracted()
+        parent_retracted = ar.getRetracted()
         if parent_retracted:
             message = _('This Analysis Request has been '
                         'generated automatically due to '
@@ -467,8 +466,7 @@ class AnalysisRequestViewView(BrowserView):
         workflow = getToolByName(self.context, 'portal_workflow')
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = hasattr(ar, 'getChildAnalysisRequest') \
-                        and ar.getChildAnalysisRequest() or None
+            childar = ar.getRetest() or None
             anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getId())) or None
             if anchor:
                 custom['ChildAR'] = {
@@ -477,7 +475,7 @@ class AnalysisRequestViewView(BrowserView):
                 }
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        parent_retracted = ar.getParentRetracted()
+        parent_retracted = ar.getRetracted()
         if parent_retracted:
             anchor = "<a href='%s'>%s</a>" % (parent_retracted.absolute_url(),
                                               parent_retracted.getId())
