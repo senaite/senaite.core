@@ -952,10 +952,9 @@ class AnalysisRequestDigester:
         if puid and puid not in excludearuids:
             data['parent_analysisrequest'] = self._ar_data(
                 ar.getRetracted(), excludearuids)
-        cuid = ar.getRawRetest()
-        if cuid and cuid not in excludearuids:
-            data['child_analysisrequest'] = self._ar_data(
-                ar.getRetest(), excludearuids)
+        retest = ar.getRetest()
+        if retest and api.get_uid(retest) not in excludearuids:
+            data['child_analysisrequest'] = self._ar_data(retest, excludearuids)
 
         wf = ar.portal_workflow
         allowed_states = ['verified', 'published']
