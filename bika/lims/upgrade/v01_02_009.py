@@ -95,6 +95,7 @@ def rebind_retracted_ars(portal):
     ref_catalog = api.get_tool(REFERENCE_CATALOG)
     retests = ref_catalog(relationship=relationship)
     total = len(retests)
+    to_remove = list()
     num = 0
     for num, relation in enumerate(retests, start=1):
         relation = relation.getObject()
@@ -108,9 +109,15 @@ def rebind_retracted_ars(portal):
         retest.setParentAnalysisRequest(None)
 
         # Remove the relationship!
-        relation.aq_parent.manage_delObjects([relation.id])
+        to_remove.append((relation.aq_parent, relation.id))
 
         if num % 100 == 0:
             logger.info("Rebinding retracted ARs: {0}/{1}".format(num, total))
+
+    # Remove relationships
+    for relation_to_remove in to_remove:
+        folder = relation_to_remove[0]
+        rel_id = relation_to_remove[1]
+        folder.manage_delObjects([rel_id])
 
     logger.info("{} retracted ARs have been rebinded".format(num))
