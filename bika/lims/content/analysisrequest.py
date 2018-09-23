@@ -3000,6 +3000,10 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_retract(self):
         events.after_retract(self)
 
+    @security.public
+    def workflow_script_retract_ar(self):
+        events.after_retract_ar(self)
+
     def SearchableText(self):
         """
         Override searchable text logic based on the requirements.
