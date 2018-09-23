@@ -147,12 +147,23 @@ def rebind_retracted_ars(portal):
     ref_catalog = api.get_tool(REFERENCE_CATALOG)
     retests = ref_catalog(relationship=relationship)
     total = len(retests)
-    for num, retest in enumerate(retests, start=1):
-        retest = retest.getObject()
-        retracted = retest.getParentAnalysisRequest()
+    num = 0
+    for num, relation in enumerate(retests, start=1):
+        relation = relation.getObject()
+        if not relation:
+            continue
+        retest = relation.getTargetObject()
+        retracted = relation.getSourceObject()
         retest.setRetracted(retracted)
         # Set ParentAnalysisRequest field to None, cause we will use this field
         # for storing Primary-Partitions relationship.
         retest.setParentAnalysisRequest(None)
+
+        # Remove the relationship!
+        relation.aq_parent.manage_delObjects([relation.id])
+
         if num % 100 == 0:
             logger.info("Rebinding retracted ARs: {0}/{1}".format(num, total))
+
+
+    logger.info("{} retracted ARs have been rebinded".format(num))
