@@ -614,6 +614,9 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-1)>],
                              'ar2_id': [<Analysis (for as-1)>]
                             },
+                     'interims': {'ar1_id': [an_interims_report],
+                                  'ar2_id': [an_interims_report]
+                                 },
                     },
                 },
             {'service_2_title':
@@ -623,6 +626,9 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-2)>],
                              'ar2_id': [<Analysis (for as-2)>]
                             },
+                     'interims': {'ar1_id': [an_interims_report],
+                                  'ar2_id': [an_interims_report]
+                                 },
                     },
                 },
             ...
@@ -631,6 +637,8 @@ class AnalysisRequestPublishView(BrowserView):
         """
         analyses = {}
         for ar in ars:
+            an_interims_report = []
+            interims_per_ar = {}
             ans = [an.getObject() for an in ar.getAnalyses()]
             for an in ans:
                 cat = an.getCategoryTitle()
@@ -642,19 +650,24 @@ class AnalysisRequestPublishView(BrowserView):
                             # here - service fields are all inside!
                             'service': an,
                             'accredited': an.getAccredited(),
-                            'ars': {ar.id: an.getFormattedResult()}
+                            'ars': {ar.id: an.getFormattedResult()},
                         }
                     }
                 elif an_title not in analyses[cat]:
                     analyses[cat][an_title] = {
                         'service': an,
                         'accredited': an.getAccredited(),
-                        'ars': {ar.id: an.getFormattedResult()}
+                        'ars': {ar.id: an.getFormattedResult()},
                     }
                 else:
                     d = analyses[cat][an_title]
                     d['ars'][ar.id] = an.getFormattedResult()
                     analyses[cat][an_title] = d
+
+                interims = an.getInterimFields()
+                an_interims_report = filter(lambda interim: interim.get('report', False), interims)
+                interims_per_ar.update({ar.id: an_interims_report})
+                analyses[cat][an_title]['interims'] = interims_per_ar
         return analyses
 
     def _lab_address(self, lab):
@@ -929,6 +942,9 @@ class AnalysisRequestDigester:
         data['batch'] = self._batch_data(ar)
         data['specifications'] = self._specs_data(ar)
         data['analyses'] = self._analyses_data(ar, ['verified', 'published'])
+        data['hasinterimfields'] = len(
+            [an['interims'] for an in data['analyses'] if
+             len(an['interims']) > 0]) > 0
         data['qcanalyses'] = self._qcanalyses_data(ar,
                                                    ['verified', 'published'])
         data['points_of_capture'] = sorted(
@@ -1352,6 +1368,8 @@ class AnalysisRequestDigester:
         # is out of range. The second value (dismissed here) is a bool that
         # indicates if the result is out of shoulders
         andict['outofrange'] = is_out_of_range(analysis)[0]
+        interims = analysis.getInterimFields()
+        andict['interims'] = filter(lambda interim: interim.get('report', False), interims)
         return andict
 
     def _qcanalyses_data(self, ar, analysis_states=None):

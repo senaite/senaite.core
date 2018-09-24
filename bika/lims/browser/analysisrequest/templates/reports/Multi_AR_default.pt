@@ -240,21 +240,37 @@
                             <div class="row">
                                 <span class="td service_title"
                                       tal:attributes="style string:width:${servicecol_width}%">
-                                <span tal:content="service_title"/>
-                                <img tal:attributes='src python:portal["url"]+"/++resource++bika.lims.images/accredited.png";'
-                                     tal:condition="python:transposed[cat_title][service_title]['accredited']"
-                                     class="accredited-ico"/>
+                                    <span tal:content="service_title"/>
+                                    <img tal:attributes='src python:portal["url"]+"/++resource++bika.lims.images/accredited.png";'
+                                         tal:condition="python:transposed[cat_title][service_title]['accredited']"
+                                         class="accredited-ico"/>
+                                    <span tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
+                                          tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ars[0].id]"> <br />
+                                        <span class="interims_title" tal:content="structure interim/title|nothing"/>
+                                    </span>
                                 </span>
                                 <span class="td method_title"
                                       tal:attributes="style string:width:${methodcol_width}%"
                                       tal:content="python:transposed[cat_title][service_title]['service'].getMethod().Title() if transposed[cat_title][service_title]['service'].getMethod() else ''"></span>
-                                <span class="td unit"
-                                      tal:attributes="style string:width:${unitcol_width}%"
-                                      tal:content="python:transposed[cat_title][service_title]['service'].getUnit()"></span>
+                                <span class="td unit">
+                                    <span tal:attributes="style string:width:${unitcol_width}%"
+                                          tal:content="python:transposed[cat_title][service_title]['service'].getUnit()" />
+                                    <span class="new_line"
+                                          tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
+                                          tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ars[0].id]">
+                                        <span tal:content="structure interim/unit|nothing"/>
+                                    </span>
+                                </span>
                                 <tal:ar repeat="ar ars">
-                                    <span class="td result"
-                                          tal:attributes="style string:width:${arcol_width}%"
-                                          tal:content="structure python:transposed[cat_title][service_title]['ars'].get(ar.id,'')"/>
+                                    <span class="td result">
+                                        <span tal:attributes="style string:width:${arcol_width}%"
+                                              tal:content="structure python:transposed[cat_title][service_title]['ars'].get(ar.id,'')"/>
+                                        <span class="new_line"
+                                              tal:condition="python:len(transposed[cat_title][service_title]['interims']) != 0"
+                                              tal:repeat="interim python:transposed[cat_title][service_title]['interims'][ar.id]">
+                                            <span tal:content="interim/formatted_value"></span>
+                                        </span>
+                                    </span>
                                 </tal:ar>
                             </div>
                         </tal:cat_analyses>
