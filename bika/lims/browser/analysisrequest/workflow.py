@@ -439,7 +439,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         newar.setSample(ar.getSample())
         ignore_fieldnames = ['Analyses', 'DatePublished',
                              'ParentAnalysisRequest', 'ChildAnaysisRequest',
-                             'Digest', 'Sample']
+                             'Sample']
         copy_field_values(ar, newar, ignore_fieldnames=ignore_fieldnames)
 
         # Set the results for each AR analysis
