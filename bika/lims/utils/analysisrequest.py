@@ -409,7 +409,7 @@ def create_retest(ar):
                          .format(repr(ar)))
 
     # 1. Create the Retest (Analysis Request)
-    ignore = ['Analyses', 'DatePublished', 'Retracted', 'Sample']
+    ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample']
     retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
     retest.setSample(ar.getSample())
     copy_field_values(ar, retest, ignore_fieldnames=ignore)
@@ -432,7 +432,7 @@ def create_retest(ar):
         nan.reindexObject()
 
     # 3. Assign the source to retest
-    retest.setRetracted(ar)
+    retest.setInvalidated(ar)
 
     # 4. Transition the retest to "to_be_verified"!
     changeWorkflowState(retest, 'bika_ar_workflow', 'to_be_verified')

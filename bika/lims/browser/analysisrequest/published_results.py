@@ -78,13 +78,13 @@ class AnalysisRequestPublishedResults(BikaListingView):
                 self.context.translate(message), 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        parent_retracted = ar.getRetracted()
-        if parent_retracted:
+        invalidated = ar.getInvalidated()
+        if invalidated:
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': parent_retracted.getId()})
+                        mapping={'retracted_request_id': invalidated.getId()})
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'info')
 

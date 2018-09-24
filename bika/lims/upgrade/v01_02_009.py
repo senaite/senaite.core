@@ -139,8 +139,8 @@ def rebind_invalidated_ars(portal):
         if not relation:
             continue
         retest = relation.getTargetObject()
-        retracted = relation.getSourceObject()
-        retest.setRetracted(retracted)
+        invalidated = relation.getSourceObject()
+        retest.setInvalidated(invalidated)
         # Set ParentAnalysisRequest field to None, cause we will use this field
         # for storing Primary-Partitions relationship.
         retest.setParentAnalysisRequest(None)
@@ -149,7 +149,7 @@ def rebind_invalidated_ars(portal):
         to_remove.append((relation.aq_parent, relation.id))
 
         if num % 100 == 0:
-            logger.info("Rebinding retracted ARs: {0}/{1}".format(num, total))
+            logger.info("Rebinding invalidated ARs: {0}/{1}".format(num, total))
 
     # Remove relationships
     for relation_to_remove in to_remove:
@@ -157,4 +157,4 @@ def rebind_invalidated_ars(portal):
         rel_id = relation_to_remove[1]
         folder.manage_delObjects([rel_id])
 
-    logger.info("{} retracted ARs have been rebinded".format(num))
+    logger.info("{} invalidated ARs have been rebinded".format(num))

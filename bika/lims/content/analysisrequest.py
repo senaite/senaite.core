@@ -1697,9 +1697,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The Analysis Request the current Analysis Request comes from because of
-    # a retraction of the former
+    # an invalidation of the former
     ReferenceField(
-        'Retracted',
+        'Invalidated',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestRetracted',
         referenceClass=HoldingReference,
@@ -1712,7 +1712,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The Analysis Request that was automatically generated due to the
-    # retraction of the current Analysis Request
+    # invalidation of the current Analysis Request
     ComputedField(
         'Retest',
         expression="here.get_retest()",

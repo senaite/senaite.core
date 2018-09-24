@@ -210,7 +210,7 @@ the invalidated:
     >>> retest
     <AnalysisRequest at /plone/clients/client-1/water-0001-R02>
 
-    >>> retest.getRetracted()
+    >>> retest.getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> api.get_workflow_status_of(retest)
@@ -269,10 +269,10 @@ as the invalidated (retest):
     >>> retest2
     <AnalysisRequest at /plone/clients/client-1/water-0001-R03>
 
-    >>> retest2.getRetracted()
+    >>> retest2.getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/water-0001-R02>
 
-    >>> retest2.getRetracted().getRetracted()
+    >>> retest2.getInvalidated().getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> api.get_workflow_status_of(retest2)

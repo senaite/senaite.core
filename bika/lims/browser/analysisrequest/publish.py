@@ -910,10 +910,10 @@ class AnalysisRequestDigester:
 
         # Sub-objects
         excludearuids.append(ar.UID())
-        puid = ar.getRawRetracted()
+        puid = ar.getRawInvalidated()
         if puid and puid not in excludearuids:
             data['parent_analysisrequest'] = self._ar_data(
-                ar.getRetracted(), excludearuids)
+                ar.getInvalidated(), excludearuids)
         retest = ar.getRetest()
         if retest and api.get_uid(retest) not in excludearuids:
             data['child_analysisrequest'] = self._ar_data(retest, excludearuids)
