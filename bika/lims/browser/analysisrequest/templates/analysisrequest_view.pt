@@ -43,7 +43,7 @@
             title="Exclude from invoice"
             i18n:attributes="value"
             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
-        <img tal:condition="python:hasattr(context, 'getChildAnalysisRequest') and context.getChildAnalysisRequest()"
+        <img tal:condition="python:context.getRetest()"
             title="Results have been withdrawn"
             i18n:attributes="value"
             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/delete_big.png"/>
