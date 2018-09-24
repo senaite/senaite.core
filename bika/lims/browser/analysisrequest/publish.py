@@ -664,15 +664,10 @@ class AnalysisRequestPublishView(BrowserView):
                     d['ars'][ar.id] = an.getFormattedResult()
                     analyses[cat][an_title] = d
 
-                interims = hasattr(an, 'getInterimFields') \
-                    and an.getInterimFields() or []
-                analyses[cat][an_title]['interims'] = {}
-                if len(interims) > 0:
-                    an_interims_report = [a for a in interims if 'report' in a]
-                    interims_per_ar.update({ar.id: an_interims_report})
-                    analyses[cat][an_title]['interims'] = interims_per_ar
-                an_interims_report = []
-                interims_per_ar = {}
+                interims = an.getInterimFields()
+                an_interims_report = filter(lambda interim: interim.get('report', False), interims)
+                interims_per_ar.update({ar.id: an_interims_report})
+                analyses[cat][an_title]['interims'] = interims_per_ar
         return analyses
 
     def _lab_address(self, lab):
@@ -1412,10 +1407,8 @@ class AnalysisRequestDigester:
         # is out of range. The second value (dismissed here) is a bool that
         # indicates if the result is out of shoulders
         andict['outofrange'] = is_out_of_range(analysis)[0]
-        andict['interims'] = hasattr(analysis, 'getInterimFields') \
-                   and analysis.getInterimFields() or []
-        if len(andict['interims']) > 0:
-            andict['interims'] = [a for a in andict['interims'] if 'report' in a]
+        interims = analysis.getInterimFields()
+        andict['interims'] = filter(lambda interim: interim.get('report', False), interims)
         return andict
 
     def _qcanalyses_data(self, ar, analysis_states=None):
