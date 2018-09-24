@@ -6,15 +6,15 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import time
-import transaction
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.DCWorkflow.Guard import Guard
 
+import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.DCWorkflow.Guard import Guard
 
 version = '1.2.9'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -68,7 +68,7 @@ def reindex_client_local_owner_permissions(portal):
                 .format(end-start))
     transaction.commit()
 
-    
+
 def migrate_attachment_report_options(portal):
     """Migrate Attachments with the report option "a" (attach in report)
        to the option to "i" (ignore in report)
@@ -103,9 +103,9 @@ def rename_retract_ar_transition(portal):
         actbox_name="Invalidate",
     )
     guard = transition.guard or Guard()
-    guard_props = {'guard_permissions': 'BIKA: Retract',
-                   'guard_roles': '',
-                   'guard_expr': 'python:here.guard_cancelled_object()'}
+    guard_props = {"guard_permissions": "BIKA: Retract",
+                   "guard_roles": "",
+                   "guard_expr": "python:here.guard_cancelled_object()"}
     guard.changeFromProperties(guard_props)
     transition.guard = guard
 
@@ -149,7 +149,8 @@ def rebind_invalidated_ars(portal):
         to_remove.append((relation.aq_parent, relation.id))
 
         if num % 100 == 0:
-            logger.info("Rebinding invalidated ARs: {0}/{1}".format(num, total))
+            logger.info("Rebinding invalidated ARs: {0}/{1}"
+                        .format(num, total))
 
     # Remove relationships
     for relation_to_remove in to_remove:
@@ -157,4 +158,4 @@ def rebind_invalidated_ars(portal):
         rel_id = relation_to_remove[1]
         folder.manage_delObjects([rel_id])
 
-    logger.info("{} invalidated ARs have been rebinded".format(num))
+    logger.info("Rebound {} invalidated ARs".format(num))
