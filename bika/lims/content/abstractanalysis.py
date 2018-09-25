@@ -16,6 +16,7 @@ from Products.Archetypes.Field import BooleanField, DateTimeField, \
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -613,12 +614,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not starttime:
             # The analysis is not yet ready to be processed
             return 0
-
-        endtime = self.getDateVerified()
-        if not endtime:
-            # Assume here the analysis is still in progress, so use the current
-            # Date and Time
-            endtime = DateTime()
+        endtime = self.getDateVerified() or DateTime()
 
         # Duration in minutes
         duration = (endtime - starttime) * 24 * 60
@@ -638,10 +634,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not maxtime:
             # No Turnaround time is set for this analysis
             return 0
-        maxtime_delta = int(maxtime.get('days', 0)) * 24 * 60
-        maxtime_delta += int(maxtime.get('hours', 0)) * 60
-        maxtime_delta += int(maxtime.get('minutes', 0))
-        return maxtime_delta - self.getDuration()
+        return api.to_minutes(**maxtime) - self.getDuration()
 
     def isLateAnalysis(self):
         """Returns true if the analysis is late in accordance with the maximum
@@ -651,10 +644,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: true if the analysis is late
         :rtype: bool
         """
-        maxtime = self.getMaxTimeAllowed()
-        if not maxtime:
-            # No maximum turnaround time set, assume is not late
-            return False
         return self.getEarliness() < 0
 
     @security.public
