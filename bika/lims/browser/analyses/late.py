@@ -104,15 +104,17 @@ class LateAnalysesView(BikaListingView):
             items[x]['DateReceived'] = self.ulocalized_time(sample.getDateReceived())
             items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
 
-            late = DateTime() - obj.getDueDate()
-            days = int(late / 1)
-            hours = int((late % 1 ) * 24)
-            mins = int((((late % 1) * 24) % 1) * 60)
-            late_str = days and "%s day%s" % (days, days > 1 and 's' or '') or ""
-            if days < 2:
-                late_str += hours and " %s hour%s" % (hours, hours > 1 and 's' or '') or ""
-            if not days and not hours:
-                late_str = "%s min%s" % (mins, mins > 1 and 's' or '')
+            late_str = ""
+            if obj.getDueDate():
+                late = DateTime() - obj.getDueDate()
+                days = int(late / 1)
+                hours = int((late % 1 ) * 24)
+                mins = int((((late % 1) * 24) % 1) * 60)
+                late_str = days and "%s day%s" % (days, days > 1 and 's' or '') or ""
+                if days < 2:
+                    late_str += hours and " %s hour%s" % (hours, hours > 1 and 's' or '') or ""
+                if not days and not hours:
+                    late_str = "%s min%s" % (mins, mins > 1 and 's' or '')
 
             items[x]['Late'] = late_str
         return items

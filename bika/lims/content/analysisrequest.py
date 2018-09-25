@@ -2004,6 +2004,9 @@ class AnalysisRequest(BaseFolder):
                     calculation and not calculation.getDependentServices()):
                 resultdate = analysis.getResultCaptureDate()
             duedate = analysis.getDueDate()
+            if not duedate:
+                continue
+
             # noinspection PyCallingNonCallable
             if (resultdate and resultdate > duedate) \
                     or (not resultdate and DateTime() > duedate):
