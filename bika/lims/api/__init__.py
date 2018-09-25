@@ -1265,6 +1265,15 @@ def to_date(value, default=None):
         return to_date(default)
 
 
+def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
+               to_int=True):
+    """Returns the computed total number of minutes
+    """
+    total = float(days)*24*60 + float(hours)*60 + float(minutes) + \
+            float(seconds)/60 + float(milliseconds)/1000/60
+    return int(round(total)) if to_int else total
+
+
 def to_int(value, default=_marker):
     """Tries to convert the value to int.
     Truncates at the decimal point if the value is a float
