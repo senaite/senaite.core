@@ -641,9 +641,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         maxtime_delta = int(maxtime.get('days', 0)) * 24 * 60
         maxtime_delta += int(maxtime.get('hours', 0)) * 60
         maxtime_delta += int(maxtime.get('minutes', 0))
-        duration = self.getDuration()
-        earliness = maxtime_delta - duration
-        return earliness
+        return maxtime_delta - self.getDuration()
 
     def isLateAnalysis(self):
         """Returns true if the analysis is late in accordance with the maximum
