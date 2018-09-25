@@ -1985,33 +1985,11 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getLate')
 
     def getLate(self):
-        """Return True if any analyses are late
+        """Return True if there is at least one late analysis in this Request
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        review_state = workflow.getInfoFor(self, 'review_state', '')
-        resultdate = 0
-        if review_state in ['to_be_sampled', 'to_be_preserved',
-                            'sample_due', 'published']:
-            return False
-
-        for analysis in self.objectValues('Analysis'):
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state == 'published':
-                continue
-            # This situation can be met during analysis request creation
-            calculation = analysis.getCalculation()
-            if not calculation or (
-                    calculation and not calculation.getDependentServices()):
-                resultdate = analysis.getResultCaptureDate()
-            duedate = analysis.getDueDate()
-            if not duedate:
-                continue
-
-            # noinspection PyCallingNonCallable
-            if (resultdate and resultdate > duedate) \
-                    or (not resultdate and DateTime() > duedate):
-                return True
-        return False
+        analyses = self.getAnalyses(full_objects=True, retracted=False)
+        late_ans = filter(lambda an: an.isLateAnalysis(), analyses)
+        return len(late_ans) > 0
 
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
