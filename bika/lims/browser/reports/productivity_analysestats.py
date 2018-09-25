@@ -122,16 +122,14 @@ class Report(BrowserView):
                 services[service_uid]['ave_early'] = ''
             else:
                 avemins = (mins_early) / count_early
-                services[service_uid]['ave_early'] = formatDuration(self.context,
-                                                                    avemins)
+                services[service_uid]['ave_early'] = formatDuration(avemins)
             count_late = services[service_uid]['count_late']
             mins_late = services[service_uid]['mins_late']
             if count_late == 0:
                 services[service_uid]['ave_late'] = ''
             else:
                 avemins = mins_late / count_late
-                services[service_uid]['ave_late'] = formatDuration(self.context,
-                                                                   avemins)
+                services[service_uid]['ave_late'] = formatDuration(avemins)
 
         # and now lets do the actual report lines
         formats = {'columns': 7,
@@ -265,7 +263,7 @@ class Report(BrowserView):
 
         if total_count_late:
             ave_mins = total_mins_late / total_count_late
-            footline.append({'value': formatDuration(self.context, ave_mins),
+            footline.append({'value': formatDuration(ave_mins),
                              'class': 'total number'})
         else:
             footline.append({'value': ''})
@@ -275,7 +273,7 @@ class Report(BrowserView):
 
         if total_count_early:
             ave_mins = total_mins_early / total_count_early
-            footline.append({'value': formatDuration(self.context, ave_mins),
+            footline.append({'value': formatDuration(ave_mins),
                              'class': 'total number'})
         else:
             footline.append({'value': '',

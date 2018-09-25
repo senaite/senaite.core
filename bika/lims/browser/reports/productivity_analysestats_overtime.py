@@ -122,8 +122,7 @@ class Report(BrowserView):
             count = periods[datekey]['count']
             duration = periods[datekey]['duration']
             ave_duration = (duration) / count
-            periods[datekey]['duration'] = \
-                formatDuration(self.context, ave_duration)
+            periods[datekey]['duration'] = formatDuration(ave_duration)
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
@@ -147,7 +146,7 @@ class Report(BrowserView):
             ave_total_duration = total_duration / total_count
         else:
             ave_total_duration = 0
-        ave_total_duration = formatDuration(self.context, ave_total_duration)
+        ave_total_duration = formatDuration(ave_total_duration)
 
         # footer data
         footlines = []
