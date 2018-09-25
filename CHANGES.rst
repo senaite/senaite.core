@@ -6,22 +6,30 @@ Changelog
 
 **Added**
 
+- #1001 Option to show Interim fields on results reports
+- #1024 Function to get the Verifiers from an Analysis Request
+- #1019 Support for min and max warns in range charts
 - #1003 Alphanumeric numbering in sequential IDs generator
 
 **Changed**
 
 - #1017 Instrument Results imports of analysis that have interim fields with apply wide must stay received
+- #1027 Refactored relationship between invalidated ARs and retests
+- #1027 Rename `retract_ar` transition to `invalidate`
 - #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
 
 **Removed**
 
+- #1026 Removed auto-digest of results reports on verify transitions
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
 
 
 **Fixed**
 
+- #1022 Date Received saved as UTC time
+- #1018 Fix AR Add cleanup after template removal
 - #1014 ReferenceWidget does not handle searches with null/None
 - #1008 Previous results from same batch are always displayed in reports
 - #1013 ARs and Samples from other clients are listed when logged in as contact

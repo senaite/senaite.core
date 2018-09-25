@@ -68,8 +68,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
         workflow = getToolByName(ar, 'portal_workflow')
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = hasattr(ar, 'getChildAnalysisRequest') \
-                and ar.getChildAnalysisRequest() or None
+            childar = ar.getRetest() or None
             childid = childar and childar.getId() or None
             message = _('This Analysis Request has been withdrawn and is '
                         'shown for trace-ability purposes only. Retest: '
@@ -79,14 +78,13 @@ class AnalysisRequestPublishedResults(BikaListingView):
                 self.context.translate(message), 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
-        if hasattr(ar, 'getParentAnalysisRequest') \
-           and ar.getParentAnalysisRequest():
-            par = ar.getParentAnalysisRequest()
+        invalidated = ar.getInvalidated()
+        if invalidated:
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': par.getId()})
+                        mapping={'retracted_request_id': invalidated.getId()})
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'info')
 

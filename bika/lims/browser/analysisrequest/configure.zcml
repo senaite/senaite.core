@@ -226,27 +226,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 
-  <!-- Verifying any Analysis will cause a digestion of the parent AR to
-  be triggered at the end of the request -->
-  <subscriber
-      for="bika.lims.interfaces.IAnalysis
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.browser.analysisrequest.publish.AnalysisAfterTransitionHandler"
-  />
-
-  <!-- Modifying an AR that has been verified causes a digestion to be
-  triggered at the end of this request. -->
-  <subscriber
-      for="bika.lims.interfaces.IAnalysisRequest
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler="bika.lims.browser.analysisrequest.publish.ARModifiedHandler"
-  />
-
-  <!-- At the end of each request, this will check to see if any ARs are
-  flagged to have their publication data pre-digested. -->
-  <subscriber
-      for="zope.publisher.interfaces.IEndRequestEvent"
-      handler="bika.lims.browser.analysisrequest.publish.EndRequestHandler"
-  />
-
 </configure>

@@ -7,51 +7,67 @@
 
 """Bika's browser views are based on this one, for a nice set of utilities.
 """
-from DateTime.DateTime import DateTime, safelocaltime
-from DateTime.interfaces import DateTimeError
-from Products.CMFCore.utils import getToolByName
+import traceback
+from datetime import datetime
+from time import strptime
+
 from AccessControl import ClassSecurityInfo
+from DateTime.DateTime import DateTime, safelocaltime
+from Products.ATContentTypes.utils import dt2DT
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time as _ut
 from Products.Five.browser import BrowserView as BaseBrowserView
 from bika.lims import logger
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
-from time import strptime as _strptime
-import traceback
 
 
-def strptime(context, value):
-    """given a string, this function tries to return a DateTime.DateTime object
-    with the date formats from i18n translations
+def get_date(context, value):
+    """Tries to return a DateTime.DateTime object
     """
-    val = ""
-    for fmt in ['date_format_long', 'date_format_short']:
-        fmtstr = context.translate(fmt, domain='senaite.core', mapping={})
-        fmtstr = fmtstr.replace(r"${", '%').replace('}', '')
+    if not value:
+        return None
+    if isinstance(value, DateTime):
+        return value
+    if isinstance(value, datetime):
+        return dt2DT(value)
+    if not isinstance(value, basestring):
+        return None
+
+    def try_parse(date_string, format):
+        if not format:
+            return None
         try:
-            val = _strptime(value, fmtstr)
+            struct_time = strptime(date_string, format)
+            return datetime(*struct_time[:6])
         except ValueError:
+            pass
+        return None
+
+    def get_locale_format(key, context):
+        format = context.translate(key, domain="senaite.core", mapping={})
+        # TODO: Is this replacement below strictly necessary?
+        return format.replace(r"${", '%').replace('}', '')
+
+    # Try with prioritized formats
+    formats = [get_locale_format("date_format_long", context),
+               get_locale_format("date_format_short", context),
+               "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y-%m-%d %H:%M:%S"]
+    for pri_format in formats:
+        val = try_parse(value, pri_format)
+        if not val:
             continue
-        try:
-            val = DateTime(*list(val)[:-6])
-        except DateTimeError:
-            val = ""
+        val = dt2DT(val)
         if val.timezoneNaive():
             # Use local timezone for tz naive strings
             # see http://dev.plone.org/plone/ticket/10141
             zone = val.localZone(safelocaltime(val.timeTime()))
             parts = val.parts()[:-1] + (zone,)
             val = DateTime(*parts)
-        break
-    else:
-        try:
-            # The following will handle an rfc822 string.
-            value = value.split(" +", 1)[0]
-            val = DateTime(value)
-        except:
-            logger.warning("DateTimeField failed to format date "
-                           "string '%s' with '%s'" % (value, fmtstr))
-    return val
+        return val
+
+    logger.warn("Unable to convert {} to datetime".format(value))
+    return None
 
 
 def ulocalized_time(time, long_format=None, time_only=None, context=None,
@@ -75,9 +91,7 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     """
     # if time is a string, we'll try pass it through strptime with the various
     # formats defined.
-    if isinstance(time, basestring):
-        time = strptime(context, time)
-
+    time = get_date(context, time)
     if not time or not isinstance(time, DateTime):
         return ''
 

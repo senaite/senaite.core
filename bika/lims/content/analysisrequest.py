@@ -1682,18 +1682,6 @@ schema = BikaSchema.copy() + Schema((
         expression="here.getTemplate().Title() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
-    ReferenceField(
-        'ChildAnalysisRequest',
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestChildAnalysisRequest',
-        referenceClass=HoldingReference,
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            visible=False,
-        ),
-    ),
 
     ReferenceField(
         'ParentAnalysisRequest',
@@ -1706,6 +1694,29 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible=False,
         ),
+    ),
+
+    # The Analysis Request the current Analysis Request comes from because of
+    # an invalidation of the former
+    ReferenceField(
+        'Invalidated',
+        allowed_types=('AnalysisRequest',),
+        relationship='AnalysisRequestRetracted',
+        referenceClass=HoldingReference,
+        mode="rw",
+        read_permission=View,
+        write_permission=ModifyPortalContent,
+        widget=ReferenceWidget(
+            visible=False,
+        ),
+    ),
+
+    # The Analysis Request that was automatically generated due to the
+    # invalidation of the current Analysis Request
+    ComputedField(
+        'Retest',
+        expression="here.get_retest()",
+        widget=ComputedWidget(visible=False)
     ),
 
     # For comments or results interpretation
@@ -1760,12 +1771,6 @@ schema = BikaSchema.copy() + Schema((
                      'edit': 'invisible'},
         ),
     ),
-    # Here is stored pre-digested data used during publication.
-    # It is updated when the object is verified or when changes
-    # are made to verified objects.
-    StringField(
-        'Digest'
-    )
 )
 )
 
@@ -2333,7 +2338,13 @@ class AnalysisRequest(BaseFolder):
 
     security.declarePublic('getVerifier')
 
+    @deprecated("Use getVerifiers instead")
     def getVerifier(self):
+        """Returns the user that verified the whole Analysis Request. Since the
+        verification is done automatically as soon as all the analyses it
+        contains are verified, this function returns the user that verified the
+        last analysis pending.
+        """
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
 
@@ -2356,6 +2367,30 @@ class AnalysisRequest(BaseFolder):
             if verifier is None or verifier == '':
                 verifier = actor
         return verifier
+
+    @security.public
+    def getVerifiersIDs(self):
+        """Returns the ids from users that have verified at least one analysis
+        from this Analysis Request
+        """
+        verifiers_ids = list()
+        for brain in self.getAnalyses():
+            verifiers = brain.getVerificators or ""
+            verifiers_ids += verifiers.split(",")
+        return list(set(verifiers_ids))
+
+    @security.public
+    def getVerifiers(self):
+        """Returns the list of lab contacts that have verified at least one
+        analysis from this Analysis Request
+        """
+        contacts = list()
+        for verifier in self.getVerifiersIDs():
+            user = api.get_user(verifier)
+            contact = api.get_user_contact(user, ["LabContact"])
+            if contact:
+                contacts.append(contact)
+        return contacts
 
     security.declarePublic('getContactUIDForUser')
 
@@ -2438,14 +2473,6 @@ class AnalysisRequest(BaseFolder):
         """
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(self, 'review_state') == 'invalid'
-
-    def getLastChild(self):
-        """return the last child Request due to invalidation
-        """
-        child = self.getChildAnalysisRequest()
-        while child and child.getChildAnalysisRequest():
-            child = child.getChildAnalysisRequest()
-        return child
 
     def getRequestedAnalyses(self):
         """It returns all requested analyses, even if they belong to an
@@ -2967,6 +2994,10 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_retract(self):
         events.after_retract(self)
 
+    @security.public
+    def workflow_script_invalidate(self):
+        events.after_invalidate(self)
+
     def SearchableText(self):
         """
         Override searchable text logic based on the requirements.
@@ -3053,5 +3084,14 @@ class AnalysisRequest(BaseFolder):
                     "It can not hold an own value!")
         return None
 
+    def get_retest(self):
+        """Returns the Analysis Request automatically generated because of the
+        retraction of the current analysis request
+        """
+        relationship = "AnalysisRequestRetracted"
+        retest = self.getBackReferences(relationship=relationship)
+        if retest and len(retest) > 1:
+            logger.warn("More than one retest for {0}".format(self.getId()))
+        return retest and retest[0] or None
 
 registerType(AnalysisRequest, PROJECTNAME)

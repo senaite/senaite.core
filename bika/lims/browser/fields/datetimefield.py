@@ -5,20 +5,13 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from time import strptime
-
 from AccessControl import ClassSecurityInfo
-
-from DateTime.DateTime import DateTime, safelocaltime
-from DateTime.interfaces import DateTimeError
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.interfaces import IDateTimeField
 from Products.Archetypes.public import *
 from Products.Archetypes.public import DateTimeField as DTF
-from Products.ATContentTypes.utils import dt2DT
-from bika.lims import logger
+from bika.lims.browser import get_date
 from zope.interface import implements
-import datetime
 
 
 class DateTimeField(DTF):
@@ -41,45 +34,14 @@ class DateTimeField(DTF):
 
     security.declarePrivate('set')
 
+
     def set(self, instance, value, **kwargs):
         """
         Check if value is an actual date/time value. If not, attempt
         to convert it to one; otherwise, set to None. Assign all
         properties passed as kwargs to object.
         """
-        val = value
-        if not value:
-            val = None
-        elif isinstance(value, basestring):
-            for fmt in ['date_format_long', 'date_format_short']:
-                fmtstr = instance.translate(fmt, domain='bika', mapping={})
-                fmtstr = fmtstr.replace(r"${", '%').replace('}', '')
-                try:
-                    val = strptime(value, fmtstr)
-                except ValueError:
-                    continue
-                try:
-                    val = DateTime(*list(val)[:-6])
-                except DateTimeError:
-                    continue
-                if val.timezoneNaive():
-                    # Use local timezone for tz naive strings
-                    # see http://dev.plone.org/plone/ticket/10141
-                    zone = val.localZone(safelocaltime(val.timeTime()))
-                    parts = val.parts()[:-1] + (zone,)
-                    val = DateTime(*parts)
-                break
-            else:
-                try:
-                    # The following will handle an rfc822 string.
-                    value = value.split(" +", 1)[0]
-                    val = DateTime(value)
-                except:
-                    logger.warning("DateTimeField failed to format date "
-                                   "string '%s' with '%s'" % (value, fmtstr))
-        elif isinstance(value, datetime.datetime):
-            val = dt2DT(value)
-
+        val = get_date(instance, value)
         super(DateTimeField, self).set(instance, val, **kwargs)
 
 registerField(DateTimeField,

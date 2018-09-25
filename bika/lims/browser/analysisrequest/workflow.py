@@ -5,15 +5,12 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import json
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from string import Template
 
 import plone
-import zope.event
 from DateTime import DateTime
-from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import PMF, api
@@ -21,19 +18,14 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims.browser.analyses.workflow import AnalysesWorkflowAction
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.content.analysisspec import ResultsRangeDict
-from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
-from bika.lims.utils import copy_field_values
 from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import in_state
 from bika.lims.workflow import wasTransitionPerformed
 from email.Utils import formataddr
 
@@ -385,7 +377,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             came_from = came_from[0]
         return self.workflow_action_default(action='verify', came_from=came_from)
 
-    def workflow_action_retract_ar(self):
+    def workflow_action_invalidate(self):
 
         # AR should be retracted
         # Can't transition inactive ARs
@@ -395,15 +387,9 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             self.request.response.redirect(self.context.absolute_url())
             return
 
-        # 1. Copies the AR linking the original one and viceversa
-        ar = self.context
-        newar = self.cloneAR(ar)
-
-        # 2. The old AR gets a status of 'invalid'
-        api.do_transition_for(ar, 'retract_ar')
-
-        # 3. The new AR copy opens in status 'to be verified'
-        changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
+        # Retract the AR and get the retest
+        api.do_transition_for(self.context, 'invalidate')
+        retest = self.context.getRetest()
 
         # 4. The system immediately alerts the client contacts who ordered
         # the results, per email and SMS, that a possible mistake has been
@@ -412,12 +398,12 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         # to the AR online.
         bika_setup = api.get_bika_setup()
         if bika_setup.getNotifyOnARRetract():
-            self.notify_ar_retract(ar, newar)
+            self.notify_ar_retract(self.context, retest)
 
         message = _('${items} invalidated.',
-                    mapping={'items': ar.getId()})
+                    mapping={'items': self.context.getId()})
         self.context.plone_utils.addPortalMessage(message, 'warning')
-        self.request.response.redirect(newar.absolute_url())
+        self.request.response.redirect(retest.absolute_url())
 
     def workflow_action_copy_to_new(self):
         # Pass the selected AR UIDs in the request, to ar_add.
@@ -433,50 +419,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)
         return
-
-    def cloneAR(self, ar):
-        newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
-        newar.setSample(ar.getSample())
-        ignore_fieldnames = ['Analyses', 'DatePublished',
-                             'ParentAnalysisRequest', 'ChildAnaysisRequest',
-                             'Digest', 'Sample']
-        copy_field_values(ar, newar, ignore_fieldnames=ignore_fieldnames)
-
-        # Set the results for each AR analysis
-        ans = ar.getAnalyses(full_objects=True)
-        # If a whole AR is retracted and contains retracted Analyses, these
-        # retracted analyses won't be created/shown in the new AR
-        workflow = getToolByName(self, "portal_workflow")
-        analyses = [x for x in ans
-                if workflow.getInfoFor(x, "review_state") not in ("retracted")]
-        for an in analyses:
-            if hasattr(an, 'IsReflexAnalysis') and an.IsReflexAnalysis:
-                # We don't want reflex analyses to be copied
-                continue
-            try:
-                nan = _createObjectByType("Analysis", newar, an.getKeyword())
-            except Exception as e:
-                from bika.lims import logger
-                logger.warn('Cannot create analysis %s inside %s (%s)'%
-                            an.getAnalysisService().Title(), newar, e)
-                continue
-            # Make a copy
-            ignore_fieldnames = ['Verificators', 'DataAnalysisPublished']
-            copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
-            nan.unmarkCreationFlag()
-            zope.event.notify(ObjectInitializedEvent(nan))
-            changeWorkflowState(nan, 'bika_analysis_workflow',
-                                'to_be_verified')
-            nan.reindexObject()
-
-        newar.reindexObject()
-        newar.aq_parent.reindexObject()
-        renameAfterCreation(newar)
-
-        if hasattr(ar, 'setChildAnalysisRequest'):
-            ar.setChildAnalysisRequest(newar)
-        newar.setParentAnalysisRequest(ar)
-        return newar
 
     def workflow_action_schedule_sampling(self):
         """
