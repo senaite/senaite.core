@@ -8,7 +8,10 @@
 import cProfile
 import json
 import os
+import time
 from functools import wraps
+
+from bika.lims import logger
 
 
 def returns_json(func):
@@ -42,5 +45,24 @@ def profileit(path=None):
             else:
                 print prof.print_stats()
             return retval
+        return wrapper
+    return inner
+
+
+def timeit(threshold=0):
+    """Decorator to log the execution time of a function
+    """
+
+    def inner(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            return_value = func(*args, **kwargs)
+            end = time.time()
+            duration = float(end-start)
+            if duration > threshold:
+                logger.info("Execution of '{}{}' took {:2f}s".format(
+                    func.__name__, args, duration))
+            return return_value
         return wrapper
     return inner
