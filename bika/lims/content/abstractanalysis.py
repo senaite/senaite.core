@@ -638,8 +638,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not maxtime:
             # No Turnaround time is set for this analysis
             return 0
-        maxtime_delta = int(maxtime.get('days', 0)) * 86400
-        maxtime_delta += int(maxtime.get('hours', 0)) * 3600
+        maxtime_delta = int(maxtime.get('days', 0)) * 24 * 60
+        maxtime_delta += int(maxtime.get('hours', 0)) * 60
         maxtime_delta += int(maxtime.get('minutes', 0))
         duration = self.getDuration()
         earliness = maxtime_delta - duration
