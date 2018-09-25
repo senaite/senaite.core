@@ -185,23 +185,20 @@ def formatDateParms(context, date_id):
     return date_parms
 
 
-def formatDuration(context, totminutes):
-    """ Format a time period in a usable manner: eg. 3h24m
+def formatDuration(total_minutes):
+    """ Format a time period in a usable manner: eg. 2d 3h 24m
     """
-    mins = totminutes % 60
-    hours = (totminutes - mins) / 60
+    minutes = int(round(total_minutes))
+    hours = minutes / 60
+    days = hours / 24
 
-    if mins:
-        mins_str = '%sm' % mins
-    else:
-        mins_str = ''
+    minutes = minutes % 60
+    hours = hours % 24
 
-    if hours:
-        hours_str = '%sh' % hours
-    else:
-        hours_str = ''
-
-    return '%s%s' % (hours_str, mins_str)
+    days = days and "{}d ".format(str(days)) or ""
+    hours = hours and "{}h ".format(str(hours)) or ""
+    minutes = minutes and "{}m ".format(str(minutes)) or ""
+    return "".join([days, hours, minutes])
 
 
 def formatDecimalMark(value, decimalmark='.'):
