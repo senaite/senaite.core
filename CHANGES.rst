@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1031 Added profiling and timing decorators
 - #1001 Option to show Interim fields on results reports
 - #1024 Function to get the Verifiers from an Analysis Request
 - #1019 Support for min and max warns in range charts
