@@ -100,12 +100,16 @@ Set different Turnaround Times for every single Analysis Service:
     >>> [maxtime.get("days"), maxtime.get("hours"), maxtime.get("minutes")]
     [3, 0, 0]
 
-And leave Magnesium (Mg) without any Turnaround Time set:
+And leave Magnesium (Mg) without any Turnaround Time set, so it will use the
+default Turnaround time set in setup:
 
-    >>> Mg.setMaxTimeAllowed(dict())
+    >>> maxtime = bikasetup.getDefaultTurnaroundTime()
+    >>> [maxtime.get("days"), maxtime.get("hours"), maxtime.get("minutes")]
+    [5, 0, 0]
+
     >>> maxtime = Mg.getMaxTimeAllowed()
     >>> [maxtime.get("days"), maxtime.get("hours"), maxtime.get("minutes")]
-    [None, None, None]
+    [5, 0, 0]
 
 Create an Analysis Request:
 
@@ -153,9 +157,9 @@ And none of the analyses are late:
 And Earliness (in minutes) matches with the TAT assigned to each analysis:
 
     >>> map(lambda an: api.to_minutes(**an.getMaxTimeAllowed()), analyses)
-    [3390, 1680, 4320, 0]
+    [3390, 1680, 4320, 7200]
     >>> map(lambda an: an.getEarliness(), analyses)
-    [3390, 1680, 4320, 0]
+    [3390, 1680, 4320, 7200]
 
 Receive the Analysis Request:
 
@@ -210,7 +214,12 @@ Earliness in minutes. Note the value for Cu is negative (is late), and the value
 for Mg is 0 (no Turnaround Time) set:
 
     >>> map(lambda an: int(round(an.getEarliness())), analyses)
-    [510, -1200, 1440, 0]
+    [510, -1200, 1440, 4320]
+
+Lateness in minutes. Note that all values are negative except for Cu:
+
+    >>> map(lambda an: int(round(an.getLateness())), analyses)
+    [-510, 1200, -1440, -4320]
 
 Because one of the analyses (Cu) is late, the Analysis Request is late too:
 
