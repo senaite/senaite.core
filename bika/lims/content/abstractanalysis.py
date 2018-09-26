@@ -621,15 +621,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return duration
 
     @security.public
-    def getMaxTimeAllowed(self):
-        """Returns the maximum turnaround time for this analysis. If no TAT is
-        set for this particular analysis, it returns the value set at setup
-        return: a dictionary with the keys "days", "hours" and "minutes"
-        """
-        tat = self.Schema().getField("MaxTimeAllowed").get(self)
-        return tat or self.bika_setup.getDefaultTurnaroundTime()
-
-    @security.public
     def getEarliness(self):
         """The remaining time in minutes for this analysis to be completed.
         Returns zero if the analysis is neither 'ready to process' nor a
