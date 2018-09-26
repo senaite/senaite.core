@@ -10,6 +10,7 @@ import time
 import transaction
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
@@ -47,8 +48,8 @@ def upgrade(tool):
     # Rebind ARs that were generated because of the invalidation of other ARs
     rebind_invalidated_ars(portal)
 
-    # Add "Create partition" transition
-    add_create_partition_transition(portal)
+    # Setup the partitioning system
+    setup_partitioning(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -166,6 +167,18 @@ def rebind_invalidated_ars(portal):
     logger.info("Rebound {} invalidated ARs".format(num))
 
 
+def setup_partitioning(portal):
+    """Setups the enhanced partitioning system
+    """
+    logger.info("Setting up the enhanced partitioning system")
+
+    # Add "Create partition" transition
+    add_create_partition_transition(portal)
+
+    # Add getAncestorsUIDs index in analyses catalog
+    add_partitioning_indexes(portal)
+
+
 def add_create_partition_transition(portal):
     logger.info("Adding partitioning workflow")
     wf_tool = api.get_tool("portal_workflow")
@@ -210,3 +223,26 @@ def add_create_partition_transition(portal):
         workflow.updateRoleMappingsFor(api.get_object(ar))
         if num % 100 == 0:
             logger.info("Updating role mappings: {0}/{1}".format(num, total))
+
+
+def add_partitioning_indexes(portal):
+    """Adds the indexes for partitioning
+    """
+    logger.info("Adding partitioning indexes")
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="getAncestorsUIDs",
+              index_attribute="getAncestorsUIDs",
+              index_metatype="KeywordIndex")
+
+
+def add_index(portal, catalog_id, index_name, index_attribute, index_metatype):
+    logger.info("Adding '{}' index to '{}' ...".format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name in catalog.indexes():
+        logger.info("Index '{}' already in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.addIndex(index_name, index_metatype)
+    logger.info("Indexing new index '{}' ...".format(index_name))
+    catalog.manage_reindexIndex(index_name)
+    logger.info("Indexing new index '{}' [DONE]".format(index_name))
