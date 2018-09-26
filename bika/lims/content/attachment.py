@@ -5,39 +5,33 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from DateTime import DateTime
-
 from AccessControl import ClassSecurityInfo
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-
-from Products.Archetypes.atapi import Schema
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces.analysis import IRequestAnalysis
+from DateTime import DateTime
+from plone.app.blob.field import FileField
 from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import registerType
 from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import registerType
 from Products.Archetypes.config import REFERENCE_CATALOG
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import getCurrentState
-
-from plone.app.blob.field import FileField
-
-from bika.lims import api
-from bika.lims import logger
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
-from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.browser.widgets import DateTimeWidget
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 
 
 schema = BikaSchema.copy() + Schema((
