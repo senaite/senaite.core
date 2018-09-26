@@ -12,6 +12,7 @@ from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
 from datetime import datetime
+from datetime import timedelta
 from DateTime import DateTime
 
 from Products.CMFPlone.utils import base_hasattr, safe_unicode
@@ -1272,6 +1273,24 @@ def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
     total = float(days)*24*60 + float(hours)*60 + float(minutes) + \
             float(seconds)/60 + float(milliseconds)/1000/60
     return int(round(total)) if to_int else total
+
+
+def to_dhm_format(days=0, hours=0, minutes=0, seconds=0, milliseconds=0):
+    """Returns a representation of time in a string in xd yh zm format
+    """
+    minutes = to_minutes(days=days, hours=hours, minutes=minutes,
+                         seconds=seconds, milliseconds=milliseconds)
+    delta = timedelta(minutes= int(round(minutes)))
+    d = delta.days
+    h = delta.seconds // 3600
+    m = (delta.seconds // 60) % 60
+    m = m and "{}m ".format(str(m)) or ""
+    d = d and "{}d ".format(str(d)) or ""
+    if m and d:
+        h = "{}h ".format(str(h))
+    else:
+        h = h and "{}h ".format(str(h)) or ""
+    return "".join([d, h, m]).strip()
 
 
 def to_int(value, default=_marker):

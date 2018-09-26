@@ -1449,3 +1449,37 @@ Convert to minutes
 
     >>> api.to_minutes(minutes=122.4567, seconds=6, to_int=False)
     122.55669999999999
+
+
+Convert to dhm format
+---------------------
+
+    >>> api.to_dhm_format(hours=1)
+    '1h'
+
+    >>> api.to_dhm_format(hours=1.5, minutes=30)
+    '2h'
+
+    >>> api.to_dhm_format(hours=0, minutes=0, seconds=0)
+    ''
+
+    >>> api.to_dhm_format(minutes=120)
+    '2h'
+
+    >>> api.to_dhm_format(hours="1", minutes="120", seconds="120")
+    '3h 2m'
+
+    >>> api.to_dhm_format(days=3)
+    '3d'
+
+    >>> api.to_dhm_format(days=3, minutes=140)
+    '3d 2h 20m'
+
+    >>> api.to_dhm_format(days=3, minutes=20)
+    '3d 0h 20m'
+
+    >>> api.to_dhm_format(minutes=122.4567)
+    '2h 2m'
+
+    >>> api.to_dhm_format(minutes=122.4567, seconds=6)
+    '2h 3m'
