@@ -1697,9 +1697,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The Analysis Request the current Analysis Request comes from because of
-    # a retraction of the former
+    # an invalidation of the former
     ReferenceField(
-        'Retracted',
+        'Invalidated',
         allowed_types=('AnalysisRequest',),
         relationship='AnalysisRequestRetracted',
         referenceClass=HoldingReference,
@@ -1712,7 +1712,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The Analysis Request that was automatically generated due to the
-    # retraction of the current Analysis Request
+    # invalidation of the current Analysis Request
     ComputedField(
         'Retest',
         expression="here.get_retest()",
@@ -1771,12 +1771,6 @@ schema = BikaSchema.copy() + Schema((
                      'edit': 'invisible'},
         ),
     ),
-    # Here is stored pre-digested data used during publication.
-    # It is updated when the object is verified or when changes
-    # are made to verified objects.
-    StringField(
-        'Digest'
-    )
 )
 )
 
@@ -2999,6 +2993,10 @@ class AnalysisRequest(BaseFolder):
     @security.public
     def workflow_script_retract(self):
         events.after_retract(self)
+
+    @security.public
+    def workflow_script_invalidate(self):
+        events.after_invalidate(self)
 
     def SearchableText(self):
         """

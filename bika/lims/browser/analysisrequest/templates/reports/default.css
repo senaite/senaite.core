@@ -102,7 +102,13 @@
     line-height:1.6;
 }
 #report #section-results .result {
-    width:100px;
+    width:60px;
+}
+#report #section-results .previous,
+#report #section-results .analysis,
+#report #section-results .result,
+#report #section-results .outofrange {
+    white-space:nowrap;
 }
 #report #section-results .specs {
     width:200px;
@@ -192,4 +198,10 @@
     border-top: 1px solid #aaaaaa;
     padding: 5px 0;
     width: 100%;
+}
+.new_line{
+    display: block
+}
+.interims_title{
+    padding-left: 10px
 }

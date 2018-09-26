@@ -818,7 +818,7 @@
 
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="publish" />
-    <exit-transition transition_id="retract_ar" />
+    <exit-transition transition_id="invalidate" />
     <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
     </permission-map>
@@ -888,7 +888,7 @@
 
   <state state_id="published" title="Published" i18n:attributes="title">
     <exit-transition transition_id="republish"/>
-    <exit-transition transition_id="retract_ar"/>
+    <exit-transition transition_id="invalidate"/>
     <exit-transition transition_id="reject"/>
     <permission-map name="BIKA: Add Analysis" acquired="False">
     </permission-map>
@@ -1105,7 +1105,7 @@
     </guard>
   </transition>
 
-  <transition transition_id="retract_ar" title="Invalidate" new_state="invalid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="invalidate" title="Invalidate" new_state="invalid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Invalidate</action>
     <guard>
       <guard-permission>BIKA: Retract</guard-permission>

@@ -6,17 +6,22 @@ Changelog
 
 **Added**
 
+- #1031 Added profiling and timing decorators
+- #1001 Option to show Interim fields on results reports
 - #1024 Function to get the Verifiers from an Analysis Request
 - #1019 Support for min and max warns in range charts
 - #1003 Alphanumeric numbering in sequential IDs generator
 
 **Changed**
 
+- #1027 Refactored relationship between invalidated ARs and retests
+- #1027 Rename `retract_ar` transition to `invalidate`
 - #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
 
 **Removed**
 
+- #1026 Removed auto-digest of results reports on verify transitions
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
 
