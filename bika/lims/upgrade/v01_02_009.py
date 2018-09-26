@@ -10,6 +10,7 @@ import time
 import transaction
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -44,6 +45,9 @@ def upgrade(tool):
 
     # Rebind ARs that were generated because of the invalidation of other ARs
     rebind_invalidated_ars(portal)
+
+    # Reindex Turnaround time and due date related fields
+    recatalog_analyses_due_date(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -159,3 +163,26 @@ def rebind_invalidated_ars(portal):
         folder.manage_delObjects([rel_id])
 
     logger.info("Rebound {} invalidated ARs".format(num))
+
+
+def recatalog_analyses_due_date(portal):
+    """Recatalog the index and metadata field 'getDueDate'
+    """
+    logger.info("Updating Analyses getDueDate")
+    # No need to update those analyses that are verified or published. Only
+    # those that are under work
+    catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+    review_states = ["retracted", "sample_due", "attachment_due",
+                     "sample_received", "to_be_verified"]
+    query = dict(portal_type="Analysis", review_state=review_states)
+    analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(analyses)
+    num = 0
+    for num, analysis in enumerate(analyses, start=1):
+        analysis = api.get_object(analysis)
+        catalog.catalog_object(analysis, idxs=['getDueDate'])
+        if num % 100 == 0:
+            logger.info("Updating Analysis getDueDate: {0}/{1}"
+                        .format(num, total))
+
+    logger.info("{} Analyses updated".format(num))
