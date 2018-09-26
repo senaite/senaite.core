@@ -22,7 +22,7 @@ from Products.Archetypes.interfaces.field import IComputedField
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api, deprecated
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
@@ -183,13 +183,6 @@ def formatDateParms(context, date_id):
         date_parms = 'to %s' % (to_date)
 
     return date_parms
-
-
-@deprecated("Use api.to_dhm_format function")
-def formatDuration(total_minutes):
-    """ Format a time period in a usable manner: eg. 2d 3h 24m
-    """
-    return api.to_dhm_format(minutes=total_minutes)
 
 
 def formatDecimalMark(value, decimalmark='.'):
