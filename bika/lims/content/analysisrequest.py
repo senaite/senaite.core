@@ -1987,9 +1987,10 @@ class AnalysisRequest(BaseFolder):
     def getLate(self):
         """Return True if there is at least one late analysis in this Request
         """
-        analyses = self.getAnalyses(full_objects=True, retracted=False)
-        late_ans = filter(lambda an: an.isLateAnalysis(), analyses)
-        return len(late_ans) > 0
+        for analysis in self.getAnalyses(full_objects=True, retracted=False):
+            if analysis.isLateAnalysis():
+                return True
+        return False
 
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
