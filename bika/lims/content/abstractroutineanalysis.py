@@ -260,13 +260,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     def getDueDate(self):
         """Used to populate getDueDate index and metadata.
         This calculates the difference between the time the analysis processing
-        started and the maximum turnaround time.
+        started and the maximum turnaround time. If the analysis has no
+        turnaround time set or is not yet ready for proces, returns None
         """
+        tat = self.getMaxTimeAllowed()
+        if not tat:
+            return None
         start = self.getStartProcessDate()
         if not start:
             return None
-        minutes = api.to_minutes(**self.getMaxTimeAllowed())
-        return dt2DT(DT2dt(start) + timedelta(minutes=minutes))
+        return dt2DT(DT2dt(start) + timedelta(minutes=api.to_minutes(**tat)))
 
     @security.public
     def getSampleTypeUID(self):

@@ -621,6 +621,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return duration
 
     @security.public
+    def getMaxTimeAllowed(self):
+        """Returns the maximum turnaround time for this analysis. If no TAT is
+        set for this particular analysis, it returns the value set at setup
+        return: a dictionary with the keys "days", "hours" and "minutes"
+        """
+        tat = self.Schema().getField("MaxTimeAllowed").get(self)
+        return tat or self.bika_setup.getDefaultTurnaroundTime()
+
+    @security.public
     def getEarliness(self):
         """The remaining time in minutes for this analysis to be completed.
         Returns zero if the analysis is neither 'ready to process' nor a
@@ -636,6 +645,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return 0
         return api.to_minutes(**maxtime) - self.getDuration()
 
+    @security.public
     def isLateAnalysis(self):
         """Returns true if the analysis is late in accordance with the maximum
         turnaround time. If no maximum turnaround time is set for this analysis
@@ -645,6 +655,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         return self.getEarliness() < 0
+
+    @security.public
+    def getLateness(self):
+        """The time in minutes that exceeds the maximum turnaround set for this
+        analysis. If the analysis has no turnaround time set or is not ready
+        for process yet, returns 0. The analysis is not late if the lateness is
+        negative
+        :return: the time in minutes that exceeds the maximum turnaround time
+        :rtype: int
+        """
+        return -self.getEarliness()
 
     @security.public
     def isInstrumentValid(self):
