@@ -8,6 +8,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
@@ -103,17 +104,7 @@ class LateAnalysesView(BikaListingView):
                                                   contact.getFullname())
             items[x]['DateReceived'] = self.ulocalized_time(sample.getDateReceived())
             items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
-
-            minutes = abs(obj.getEarliness())
-            minutes = int(round(minutes))
-            hours = minutes/60
-            days = hours/24
-            minutes = minutes % 60
-            hours = hours % 24
-            days = days and "{}d ".format(str(days)) or ""
-            hours = hours and "{}h ".format(str(hours)) or ""
-            minutes = minutes and "{}m ".format(str(minutes)) or ""
-            items[x]['Late'] = "".join([days, hours, minutes])
+            items[x]['Late'] = api.to_dhm_format(obj.getLateness())
         return items
 
     def isItemAllowed(self, obj):

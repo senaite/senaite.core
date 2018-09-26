@@ -14,7 +14,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration
+from bika.lims.utils import formatDateQuery, formatDateParms
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -78,7 +78,7 @@ class Report(BrowserView):
                     # Calculate averages
                     data_lines.append(
                         [{"value": prev_date_key, 'class': ''},
-                         {"value": formatDuration(duration / count),
+                         {"value": api.to_dhm_format(minutes=(duration//count)),
                           "class": "number"}]
                     )
                 count = 0
@@ -95,13 +95,13 @@ class Report(BrowserView):
             # Calculate averages
             data_lines.append(
                 [{"value": prev_date_key, 'class': ''},
-                 {"value": formatDuration(duration / count),
+                 {"value": api.to_dhm_format(minutes=(duration//count)),
                   "class": "number"}]
             )
 
         # Totals
         total_duration = total_count and total_duration / total_count or 0
-        total_duration = formatDuration(total_duration)
+        total_duration = api.to_dhm_format(minutes=total_duration)
 
         if self.request.get("output_format", "") == "CSV":
             return self.generate_csv(data_lines)
