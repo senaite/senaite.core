@@ -64,7 +64,7 @@ schema = BikaSchema.copy() + Schema((
     StringField(
         'ReportOption',
         searchable=True,
-        vocabulary="ATTACHMENT_REPORT_OPTIONS",
+        vocabulary=ATTACHMENT_REPORT_OPTIONS,
         widget=SelectionWidget(
             label=_("Report Options"),
             checkbox_bound=0,
