@@ -191,7 +191,7 @@ class Attachment(BaseFolder):
             # This might happen when the AR was invalidated
             ar_ids = ", ".join(map(api.get_id, ars))
             logger.info("Attachment assigned to more than one AR: [{}]. "
-                        "The last AR will be returned".format(ar_ids))
+                        "The first AR will be returned".format(ar_ids))
 
         # return the first AR
         if len(ars) >= 1:
@@ -217,7 +217,7 @@ class Attachment(BaseFolder):
             # happen when the AR was invalidated
             an_ids = ", ".join(map(api.get_id, ans))
             logger.info("Attachment assigned to more than one Analysis: [{}]. "
-                        "The last Analysis will be returned".format(an_ids))
+                        "The first Analysis will be returned".format(an_ids))
 
         if len(ans) >= 1:
             analysis = ans[0]
