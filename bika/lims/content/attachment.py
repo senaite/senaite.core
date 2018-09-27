@@ -172,7 +172,7 @@ class Attachment(BaseFolder):
     def getRequest(self):
         """Return the primary AR this attachment is linked
         """
-        ars = self.getLinkedAnalyses()
+        ars = self.getLinkedRequests()
 
         if len(ars) > 1:
             # Attachment is assigned to more than one Analysis Request.
