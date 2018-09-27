@@ -140,9 +140,14 @@ class Attachment(BaseFolder):
         """
         rc = api.get_tool("reference_catalog")
         refs = rc.getBackReferences(self, "AnalysisRequestAttachment")
+        # fetch the objects by UID and handle nonexisting UIDs gracefully
         ars = map(lambda ref: api.get_object_by_uid(ref.sourceUID, None), refs)
-        # filter None values and ensure an ascending order of the ARs by ID
-        return sorted(filter(None, ars), key=lambda ar: api.get_id(ar))
+        # filter out None values (nonexisting UIDs)
+        ars = filter(None, ars)
+        # sort by physical path, so that attachments coming from an AR with a
+        # higher "-Rn" suffix get sorted correctly.
+        # N.B. the created date is the same, hence we can not use it
+        return sorted(ars, key=api.get_path, reverse=True)
 
     @security.public
     def getLinkedAnalyses(self):
@@ -150,9 +155,14 @@ class Attachment(BaseFolder):
         """
         # Fetch the linked Analyses UIDs
         refs = get_backreferences(self, "AnalysisAttachment")
+        # fetch the objects by UID and handle nonexisting UIDs gracefully
         ans = map(lambda uid: api.get_object_by_uid(uid, None), refs)
-        # filter None values and ensure an ascending order of the ARs by ID
-        return sorted(filter(None, ans), key=lambda an: api.get_id(an))
+        # filter out None values (nonexisting UIDs)
+        ans = filter(None, ans)
+        # sort by physical path, so that attachments coming from an AR with a
+        # higher "-Rn" suffix get sorted correctly.
+        # N.B. the created date is the same, hence we can not use it
+        return sorted(ans, key=api.get_path, reverse=True)
 
     @security.public
     def getTextTitle(self):

@@ -817,7 +817,7 @@ However, this retest AR **references the same Attachments** as the original AR:
     True
 
     >>> att_ar.getLinkedRequests()
-    [<AnalysisRequest at /plone/clients/client-1/water-0003-R01>, <AnalysisRequest at /plone/clients/client-1/water-0003-R02>]
+    [<AnalysisRequest at /plone/clients/client-1/water-0003-R02>, <AnalysisRequest at /plone/clients/client-1/water-0003-R01>]
 
     >>> att_ar.getLinkedAnalyses()
     []
@@ -831,7 +831,7 @@ And all contained Analyses of the retest keep references to the same Attachments
     []
 
     >>> att_an.getLinkedAnalyses()
-    [<Analysis at /plone/clients/client-1/water-0003-R01/NoCalc>, <Analysis at /plone/clients/client-1/water-0003-R02/NoCalc>]
+    [<Analysis at /plone/clients/client-1/water-0003-R02/NoCalc>, <Analysis at /plone/clients/client-1/water-0003-R01/NoCalc>]
 
 This means that removing that attachment from the retest should **not** delete
 the attachment from the original AR:
