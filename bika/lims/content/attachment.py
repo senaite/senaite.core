@@ -136,7 +136,7 @@ class Attachment(BaseFolder):
     def getLinkedRequests(self):
         """Lookup linked Analysis Requests
 
-        :returns: list of AR objects in ascending order, e.g -R1..-Rn
+        :returns: sorted list of ARs, where the latest AR comes first
         """
         rc = api.get_tool("reference_catalog")
         refs = rc.getBackReferences(self, "AnalysisRequestAttachment")
@@ -152,6 +152,8 @@ class Attachment(BaseFolder):
     @security.public
     def getLinkedAnalyses(self):
         """Lookup linked Analyses
+
+        :returns: sorted list of ANs, where the latest AN comes first
         """
         # Fetch the linked Analyses UIDs
         refs = get_backreferences(self, "AnalysisAttachment")
