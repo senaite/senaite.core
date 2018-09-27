@@ -274,7 +274,11 @@ def _get_object(context, value):
     if api.is_uid(value):
         uc = api.get_tool('uid_catalog', context=context)
         brains = uc(UID=value)
-        assert len(brains) == 1
+        if len(brains) == 0:
+            # Broken Reference!
+            logger.warn("Reference on {} with UID {} is broken!"
+                        .format(repr(context), value))
+            return None
         return brains[0].getObject()
     return None
 
