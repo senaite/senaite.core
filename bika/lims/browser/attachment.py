@@ -206,7 +206,7 @@ class AttachmentsView(BrowserView):
         attachment_file = form.get('AttachmentFile_file', None)
         AttachmentType = form.get('AttachmentType', '')
         AttachmentKeys = form.get('AttachmentKeys', '')
-        ReportOption = form.get('ReportOption', 'a')
+        ReportOption = form.get('ReportOption', 'r')
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
