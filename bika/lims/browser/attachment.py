@@ -227,8 +227,7 @@ class AttachmentsView(BrowserView):
         # handle analysis attachment
         analysis_uid = form.get("Analysis", None)
         if analysis_uid:
-            rc = api.get_tool("reference_catalog")
-            analysis = rc.lookupObject(analysis_uid)
+            analysis = api.get_object_by_uid(analysis_uid)
             others = analysis.getAttachment()
             attachments = []
             for other in others:
