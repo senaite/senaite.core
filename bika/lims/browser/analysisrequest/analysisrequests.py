@@ -255,6 +255,7 @@ class AnalysisRequestsView(BikaListingView):
                     {"id": "sample"},
                     {"id": "preserve"},
                     {"id": "receive"},
+                    {"id": "create_partitions"},
                     {"id": "retract"},
                     {"id": "verify"},
                     {"id": "prepublish"},
@@ -335,6 +336,7 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_order": "descending",
                 },
                 "transitions": [
+                    {"id": "create_partitions"},
                     {"id": "prepublish"},
                     {"id": "cancel"},
                     {"id": "reinstate"},
@@ -504,6 +506,7 @@ class AnalysisRequestsView(BikaListingView):
                 },
                 "transitions": [
                     {"id": "receive"},
+                    {"id": "create_partitions"},
                     {"id": "retract"},
                     {"id": "prepublish"},
                     {"id": "cancel"},
