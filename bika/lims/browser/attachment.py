@@ -5,22 +5,20 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from zope.interface import implements
-from zope.annotation.interfaces import IAnnotations
-from zope.publisher.interfaces import IPublishTraverse
-
-from plone import protect
-
-from BTrees.OOBTree import OOBTree
-from Products.Five.browser import BrowserView
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.decorators import returns_json
 from bika.lims.permissions import AddAttachment
-from bika.lims.permissions import EditResults
 from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditResults
+from BTrees.OOBTree import OOBTree
+from plone import protect
+from Products.Five.browser import BrowserView
+from zope.annotation.interfaces import IAnnotations
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
+
 
 ATTACHMENTS_STORAGE = "bika.lims.browser.attachment"
 
