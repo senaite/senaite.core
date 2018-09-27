@@ -548,20 +548,20 @@ class ajaxAttachmentsView(AttachmentsView):
         return result
 
     def ajax_delete_analysis_attachment(self):
+        """Endpoint for attachment delete in WS
+        """
         form = self.request.form
-        attachment_uid = form.get('attachment_uid', None)
+        attachment_uid = form.get("attachment_uid", None)
+
         if not attachment_uid:
             return "error"
-        uc = api.get_tool('uid_catalog')
-        attachment = uc(UID=attachment_uid)
-        if not attachment:
-            return "%s does not exist" % attachment_uid
-        attachment = attachment[0].getObject()
-        for analysis in attachment.getBackReferences("AnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
-        for analysis in attachment.getBackReferences("DuplicateAnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
-        attachment.aq_parent.manage_delObjects(ids=[attachment.getId(), ])
+
+        attachment = api.get_object_by_uid(attachment_uid, None)
+        if attachment is None:
+            return "Could not resolve attachment UID {}".format(attachment_uid)
+
+        # handle delete via the AttachmentsView
+        view = self.context.restrictedTraverse("@@attachments_view")
+        view.delete_attachment(attachment)
+
         return "success"
