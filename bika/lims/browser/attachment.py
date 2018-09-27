@@ -269,27 +269,57 @@ class AttachmentsView(BrowserView):
         return attachment
 
     def delete_attachment(self, attachment):
-        """Delete attachment
+        """Delete attachment from the AR or Analysis
 
-        Code taken from bika.lims.content.delARAttachment.
+        The attachment will be only deleted if it is not further referenced by
+        another AR/Analysis.
         """
-        uid = attachment.UID()
 
-        parent_ar = attachment.getRequest()
-        parent_an = attachment.getAnalysis()
-        parent = parent_an if parent_an else parent_ar
-        others = parent.getAttachment()
+        # Get the holding parent of this attachment
+        parent = None
+        if attachment.getLinkedRequests():
+            # Holding parent is an AR
+            parent = attachment.getRequest()
+        elif attachment.getLinkedAnalyses():
+            # Holding parent is an Analysis
+            parent = attachment.getAnalysis()
 
-        # remove references
-        attachments = []
-        for other in others:
-            if other.UID() != uid:
-                attachments.append(other.UID())
+        if parent is None:
+            logger.warn(
+                "Attachment {} is nowhere assigned. This should never happen!"
+                .format(repr(attachment)))
+            return False
+
+        # Get the other attachments of the holding parent
+        attachments = parent.getAttachment()
+
+        # New attachments to set
+        if attachment in attachments:
+            attachments.remove(attachment)
+
+        # Set the attachments w/o the current attachments
         parent.setAttachment(attachments)
 
-        # delete the attachment finally
-        client = api.get_parent(attachment)
-        client.manage_delObjects([attachment.getId(), ])
+        retain = False
+
+        # Attachment is referenced by another Analysis
+        if attachment.getLinkedAnalyses():
+            holder = attachment.getAnalysis()
+            logger.info("Attachment {} referenced by {} -> RETAIN"
+                        .format(repr(attachment), repr(holder)))
+            retain = True
+
+        # Attachment is referenced by another AR
+        if attachment.getLinkedRequests():
+            holder = attachment.getRequest()
+            logger.info("Attachment {} referenced by {} -> RETAIN"
+                        .format(repr(attachment), repr(holder)))
+            retain = True
+
+        # Delete attachment finally
+        if retain is False:
+            client = api.get_parent(attachment)
+            client.manage_delObjects([attachment.getId(), ])
 
     def global_attachments_allowed(self):
         """Checks Bika Setup if Attachments are allowed
