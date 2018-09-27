@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.Field import Field, StringField
 from bika.lims import logger
 from bika.lims import api
