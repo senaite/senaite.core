@@ -115,7 +115,7 @@ class Report(BrowserView):
             query['getClientUID'] = self.request.form['ClientUID']
             client = api.get_object_by_uid(query['getClientUID'])
             out_params.append({'title': _('Client'),
-                               'value': client.Title,
+                               'value': client.Title(),
                                'type': 'text'})
 
     def add_filter_by_date(self, query, out_params):
