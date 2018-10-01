@@ -971,9 +971,9 @@ class AnalysisResultsImporter(Logger):
                 mapping={"request_id": objid,
                          "analysis_keyword": acode,
                          "result": ""})
-
         if resultsaved:
-            if len([i.get('wide') for i in interimsout if i.get('wide')]) == 0:
+            # We don't transition if there are interims fields with missing values
+            if self.toAutoSubmitInterims(analysis, interimsout):
                 doActionFor(analysis, 'submit')
                 self.calculateTotalResults(objid, analysis)
                 fields_to_reindex.append('Result')
@@ -988,3 +988,18 @@ class AnalysisResultsImporter(Logger):
         if len(fields_to_reindex):
             analysis.reindexObject(idxs=fields_to_reindex)
         return resultsaved
+
+    def toAutoSubmitInterims(self, analysis, interimsout=[]):
+        """Returns True or False depending of wheather there are missing interims fields
+           and if those missing interims fields are used in a calculation.
+        """
+        if not interimsout:
+            return True
+        interims_with_no_values = filter(lambda interim: not interim.get('value', False), interimsout)
+        if interims_with_no_values:
+            calculation = analysis.getCalculation()
+            formula = calculation.getMinifiedFormula()
+            missing_vals_in_formula = filter(lambda interim: (interim.get('keyword') in formula), interims_with_no_values)
+            if missing_vals_in_formula:
+                return False
+        return True
