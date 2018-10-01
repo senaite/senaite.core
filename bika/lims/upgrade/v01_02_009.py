@@ -35,6 +35,12 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
+
+    # Delete orphaned Attachments
+    # https://github.com/senaite/senaite.core/issues/1025
+    delete_orphaned_attachments(portal)
+
+    # Migrate report option from attach (a) -> ignore (i)
     migrate_attachment_report_options(portal)
 
     # Reindex object security for client contents (see #991)
@@ -51,6 +57,26 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def delete_orphaned_attachments(portal):
+    """Delete attachments where the Analysis was removed
+       https://github.com/senaite/senaite.core/issues/1025
+    """
+    attachments = api.search({"portal_type": "Attachment"})
+    total = len(attachments)
+    logger.info("Integrity checking %d attachments" % total)
+    for num, attachment in enumerate(attachments):
+        obj = api.get_object(attachment)
+        # The method `getRequest` from the attachment tries to get the AR
+        # either directly or from one of the linked Analyses. If it returns
+        # `None`, we can be sure that the attachment is neither assigned
+        # directly to an AR nor to an Analysis.
+        ar = obj.getRequest()
+        if ar is None:
+            obj_id = api.get_id(obj)
+            api.get_parent(obj).manage_delObjects(obj_id)
+            logger.info("Deleted orphaned Attachment {}".format(obj_id))
 
 
 def reindex_client_local_owner_permissions(portal):

@@ -174,6 +174,8 @@ class ARAnalysesField(ObjectField):
 
         # delete analyses
         delete_ids = []
+        assigned_attachments = []
+
         for analysis in instance.objectValues('Analysis'):
             service_uid = analysis.getServiceUID()
 
@@ -186,6 +188,11 @@ class ARAnalysesField(ObjectField):
                 logger.warn("Inactive/verified/retracted Analyses can not be "
                             "removed.")
                 continue
+
+            # Remember assigned attachments
+            # https://github.com/senaite/senaite.core/issues/1025
+            assigned_attachments.extend(analysis.getAttachment())
+            analysis.setAttachment([])
 
             # If it is assigned to a worksheet, unassign it before deletion.
             if self._is_assigned_to_worksheet(analysis):
@@ -211,6 +218,15 @@ class ARAnalysesField(ObjectField):
         if delete_ids:
             # Note: subscriber might promote the AR
             instance.manage_delObjects(ids=delete_ids)
+
+        # Remove orphaned attachments
+        for attachment in assigned_attachments:
+            # only delete attachments which are no further linked
+            if not attachment.getLinkedAnalyses():
+                logger.info(
+                    "Deleting attachment: {}".format(attachment.getId()))
+                attachment_id = api.get_id(attachment)
+                api.get_parent(attachment).manage_delObjects(attachment_id)
 
         return new_analyses
 
