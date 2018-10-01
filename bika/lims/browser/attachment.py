@@ -5,22 +5,20 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from zope.interface import implements
-from zope.annotation.interfaces import IAnnotations
-from zope.publisher.interfaces import IPublishTraverse
-
-from plone import protect
-
-from BTrees.OOBTree import OOBTree
-from Products.Five.browser import BrowserView
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.decorators import returns_json
 from bika.lims.permissions import AddAttachment
-from bika.lims.permissions import EditResults
 from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditResults
+from BTrees.OOBTree import OOBTree
+from plone import protect
+from Products.Five.browser import BrowserView
+from zope.annotation.interfaces import IAnnotations
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
+
 
 ATTACHMENTS_STORAGE = "bika.lims.browser.attachment"
 
@@ -208,7 +206,7 @@ class AttachmentsView(BrowserView):
         attachment_file = form.get('AttachmentFile_file', None)
         AttachmentType = form.get('AttachmentType', '')
         AttachmentKeys = form.get('AttachmentKeys', '')
-        ReportOption = form.get('ReportOption', 'a')
+        ReportOption = form.get('ReportOption', 'r')
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
@@ -229,8 +227,7 @@ class AttachmentsView(BrowserView):
         # handle analysis attachment
         analysis_uid = form.get("Analysis", None)
         if analysis_uid:
-            rc = api.get_tool("reference_catalog")
-            analysis = rc.lookupObject(analysis_uid)
+            analysis = api.get_object_by_uid(analysis_uid)
             others = analysis.getAttachment()
             attachments = []
             for other in others:
@@ -272,27 +269,57 @@ class AttachmentsView(BrowserView):
         return attachment
 
     def delete_attachment(self, attachment):
-        """Delete attachment
+        """Delete attachment from the AR or Analysis
 
-        Code taken from bika.lims.content.delARAttachment.
+        The attachment will be only deleted if it is not further referenced by
+        another AR/Analysis.
         """
-        uid = attachment.UID()
 
-        parent_ar = attachment.getRequest()
-        parent_an = attachment.getAnalysis()
-        parent = parent_an if parent_an else parent_ar
-        others = parent.getAttachment()
+        # Get the holding parent of this attachment
+        parent = None
+        if attachment.getLinkedRequests():
+            # Holding parent is an AR
+            parent = attachment.getRequest()
+        elif attachment.getLinkedAnalyses():
+            # Holding parent is an Analysis
+            parent = attachment.getAnalysis()
 
-        # remove references
-        attachments = []
-        for other in others:
-            if other.UID() != uid:
-                attachments.append(other.UID())
+        if parent is None:
+            logger.warn(
+                "Attachment {} is nowhere assigned. This should never happen!"
+                .format(repr(attachment)))
+            return False
+
+        # Get the other attachments of the holding parent
+        attachments = parent.getAttachment()
+
+        # New attachments to set
+        if attachment in attachments:
+            attachments.remove(attachment)
+
+        # Set the attachments w/o the current attachments
         parent.setAttachment(attachments)
 
-        # delete the attachment finally
-        client = api.get_parent(attachment)
-        client.manage_delObjects([attachment.getId(), ])
+        retain = False
+
+        # Attachment is referenced by another Analysis
+        if attachment.getLinkedAnalyses():
+            holder = attachment.getAnalysis()
+            logger.info("Attachment {} referenced by {} -> RETAIN"
+                        .format(repr(attachment), repr(holder)))
+            retain = True
+
+        # Attachment is referenced by another AR
+        if attachment.getLinkedRequests():
+            holder = attachment.getRequest()
+            logger.info("Attachment {} referenced by {} -> RETAIN"
+                        .format(repr(attachment), repr(holder)))
+            retain = True
+
+        # Delete attachment finally
+        if retain is False:
+            client = api.get_parent(attachment)
+            client.manage_delObjects([attachment.getId(), ])
 
     def global_attachments_allowed(self):
         """Checks Bika Setup if Attachments are allowed
@@ -521,20 +548,20 @@ class ajaxAttachmentsView(AttachmentsView):
         return result
 
     def ajax_delete_analysis_attachment(self):
+        """Endpoint for attachment delete in WS
+        """
         form = self.request.form
-        attachment_uid = form.get('attachment_uid', None)
+        attachment_uid = form.get("attachment_uid", None)
+
         if not attachment_uid:
             return "error"
-        uc = api.get_tool('uid_catalog')
-        attachment = uc(UID=attachment_uid)
-        if not attachment:
-            return "%s does not exist" % attachment_uid
-        attachment = attachment[0].getObject()
-        for analysis in attachment.getBackReferences("AnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
-        for analysis in attachment.getBackReferences("DuplicateAnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
-        attachment.aq_parent.manage_delObjects(ids=[attachment.getId(), ])
+
+        attachment = api.get_object_by_uid(attachment_uid, None)
+        if attachment is None:
+            return "Could not resolve attachment UID {}".format(attachment_uid)
+
+        # handle delete via the AttachmentsView
+        view = self.context.restrictedTraverse("@@attachments_view")
+        view.delete_attachment(attachment)
+
         return "success"

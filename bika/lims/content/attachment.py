@@ -5,83 +5,64 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from DateTime import DateTime
-
 from AccessControl import ClassSecurityInfo
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-
-from Products.Archetypes.atapi import Schema
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces.analysis import IRequestAnalysis
+from DateTime import DateTime
+from plone.app.blob.field import FileField
 from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import ReferenceWidget
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.config import REFERENCE_CATALOG
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import getCurrentState
-
-from plone.app.blob.field import FileField
-
-from bika.lims import api
-from bika.lims import logger
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
-from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.browser.widgets import DateTimeWidget
+from Products.Archetypes.atapi import registerType
 
 
 schema = BikaSchema.copy() + Schema((
 
-    ComputedField(
-        'RequestID',
-        expression='here.getRequestID()',
-        widget=ComputedWidget(
-            visible=True,
-        ),
-    ),
-
     FileField(
-        'AttachmentFile',
+        "AttachmentFile",
         widget=FileWidget(
             label=_("Attachment"),
         ),
     ),
 
     ReferenceField(
-        'AttachmentType',
+        "AttachmentType",
         required=0,
-        allowed_types=('AttachmentType',),
-        relationship='AttachmentAttachmentType',
+        allowed_types=("AttachmentType",),
+        relationship="AttachmentAttachmentType",
         widget=ReferenceWidget(
             label=_("Attachment Type"),
         ),
     ),
 
     StringField(
-        'ReportOption',
+        "ReportOption",
         searchable=True,
-        vocabulary="ATTACHMENT_REPORT_OPTIONS",
+        vocabulary=ATTACHMENT_REPORT_OPTIONS,
         widget=SelectionWidget(
             label=_("Report Options"),
             checkbox_bound=0,
-            format='select',
+            format="select",
             visible=True,
-            default='a',
+            default="r",
         ),
     ),
 
     StringField(
-        'AttachmentKeys',
+        "AttachmentKeys",
         searchable=True,
         widget=StringWidget(
             label=_("Attachment Keys"),
@@ -89,37 +70,21 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     DateTimeField(
-        'DateLoaded',
+        "DateLoaded",
         required=1,
-        default_method='current_date',
+        default_method="current_date",
         widget=DateTimeWidget(
             label=_("Date Loaded"),
         ),
     ),
-
-    ComputedField(
-        'AttachmentTypeUID',
-        expression="context.getAttachmentType().UID() if context.getAttachmentType() else ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-
-    ComputedField(
-        'ClientUID',
-        expression='here.aq_parent.UID()',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
 ))
 
-schema['id'].required = False
-schema['title'].required = False
+schema["id"].required = False
+schema["title"].required = False
 
 
 class Attachment(BaseFolder):
-    """Attachments live inside a client and can be linked to ARs or Analyses
+    """Attachments are stored per client and can be linked to ARs or Analyses
     """
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -127,84 +92,141 @@ class Attachment(BaseFolder):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
+        """Rename with the IDServer
+        """
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    @security.public
     def Title(self):
-        """Return the Id
-        """
-        return safe_unicode(self.getId()).encode('utf-8')
+        """Return the ID
 
+        :returns: IDServer generated ID
+        """
+        return self.getId()
+
+    @security.public
+    def getRequestID(self):
+        """Return the ID of the linked AR
+        """
+        ar = self.getRequest()
+        if not ar:
+            return ""
+        return api.get_id(ar)
+
+    @security.public
+    def getAttachmentTypeUID(self):
+        """Return the UID of the assigned attachment type
+        """
+        attachment_type = self.getAttachmentType()
+        if not attachment_type:
+            return ""
+        return api.get_uid(attachment_type)
+
+    @security.public
+    def getClientUID(self):
+        """Return the UID of the client
+        """
+        client = api.get_parent(self)
+        if not client:
+            return ""
+        return api.get_uid(client)
+
+    @security.public
+    def getLinkedRequests(self):
+        """Lookup linked Analysis Requests
+
+        :returns: sorted list of ARs, where the latest AR comes first
+        """
+        rc = api.get_tool("reference_catalog")
+        refs = rc.getBackReferences(self, "AnalysisRequestAttachment")
+        # fetch the objects by UID and handle nonexisting UIDs gracefully
+        ars = map(lambda ref: api.get_object_by_uid(ref.sourceUID, None), refs)
+        # filter out None values (nonexisting UIDs)
+        ars = filter(None, ars)
+        # sort by physical path, so that attachments coming from an AR with a
+        # higher "-Rn" suffix get sorted correctly.
+        # N.B. the created date is the same, hence we can not use it
+        return sorted(ars, key=api.get_path, reverse=True)
+
+    @security.public
+    def getLinkedAnalyses(self):
+        """Lookup linked Analyses
+
+        :returns: sorted list of ANs, where the latest AN comes first
+        """
+        # Fetch the linked Analyses UIDs
+        refs = get_backreferences(self, "AnalysisAttachment")
+        # fetch the objects by UID and handle nonexisting UIDs gracefully
+        ans = map(lambda uid: api.get_object_by_uid(uid, None), refs)
+        # filter out None values (nonexisting UIDs)
+        ans = filter(None, ans)
+        # sort by physical path, so that attachments coming from an AR with a
+        # higher "-Rn" suffix get sorted correctly.
+        # N.B. the created date is the same, hence we can not use it
+        return sorted(ans, key=api.get_path, reverse=True)
+
+    @security.public
     def getTextTitle(self):
-        """Return the request and possibly analayis title as title
+        """Return a title for texts and listings
         """
         request_id = self.getRequestID()
         if not request_id:
-            return ''
+            return ""
 
         analysis = self.getAnalysis()
         if not analysis:
             return request_id
 
-        return '%s - %s' % (request_id, analysis.Title())
+        return "%s - %s" % (request_id, analysis.Title())
 
+    @security.public
     def getRequest(self):
-        """Return the AR to which this is linked there is a short time between
-        creation and linking when it is not linked
+        """Return the primary AR this attachment is linked
         """
-        # Attachment field in AnalysisRequest is still a ReferenceField, not
-        # an UIDReferenceField yet.
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        uids = [uid for uid in
-                tool.getBackReferences(self, 'AnalysisRequestAttachment')]
+        ars = self.getLinkedRequests()
 
-        if len(uids) > 1:
-            logger.warn("Attachment assigned to more than one Analysis Request."
-                        "This should never happen!. The first Analysis Request"
-                        "will be returned.")
+        if len(ars) > 1:
+            # Attachment is assigned to more than one Analysis Request.
+            # This might happen when the AR was invalidated
+            ar_ids = ", ".join(map(api.get_id, ars))
+            logger.info("Attachment assigned to more than one AR: [{}]. "
+                        "The first AR will be returned".format(ar_ids))
 
-        if len(uids) > 0:
-            reference = uids[0]
-            ar = tool.lookupObject(reference.sourceUID)
-            return ar
+        # return the first AR
+        if len(ars) >= 1:
+            return ars[0]
 
-        # This Attachment is not linked directly to an Analysis Request, but
-        # probably linked to an Analysis, so try to get the Analysis Request
-        # from there.
+        # Check if the attachment is linked to an analysis and try to get the
+        # AR from the linked analysis
         analysis = self.getAnalysis()
         if IRequestAnalysis.providedBy(analysis):
             return analysis.getRequest()
 
         return None
 
-    def getRequestID(self):
-        """Return the ID of the request to which this is linked
-        """
-        ar = self.getRequest()
-        if ar:
-            return ar.getId()
-        else:
-            return None
-
+    @security.public
     def getAnalysis(self):
-        """Return the analysis to which this is linked it may not be linked to
-        an analysis
+        """Return the primary analysis this attachment is linked
         """
-        analysis = get_backreferences(self, 'AnalysisAttachment',
-                                      as_brains=True)
-        if not analysis:
-            return None
+        analysis = None
+        ans = self.getLinkedAnalyses()
 
-        if len(analysis) > 1:
-            logger.warn("Single attachment assigned to more than one Analysis")
+        if len(ans) > 1:
+            # Attachment is assigned to more than one Analysis. This might
+            # happen when the AR was invalidated
+            an_ids = ", ".join(map(api.get_id, ans))
+            logger.info("Attachment assigned to more than one Analysis: [{}]. "
+                        "The first Analysis will be returned".format(an_ids))
 
-        analysis = api.get_object(analysis[0])
+        if len(ans) >= 1:
+            analysis = ans[0]
+
         return analysis
 
-    security.declarePublic('current_date')
-
+    @security.public
     def current_date(self):
-        """return current date
+        """Return current date
         """
         return DateTime()
 
