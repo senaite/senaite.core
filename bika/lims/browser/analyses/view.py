@@ -592,7 +592,7 @@ class AnalysesView(BikaListingView):
         # a duplicate, `getDueDate` returns the due date of the source analysis
         due_date = analysis_brain.getDueDate
         if not due_date:
-            return
+            return None
         due_date_str = self.ulocalized_time(due_date, long_format=0)
         item['DueDate'] = due_date_str
 
