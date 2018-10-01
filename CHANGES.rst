@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1031 Added profiling and timing decorators
 - #1001 Option to show Interim fields on results reports
 - #1024 Function to get the Verifiers from an Analysis Request
 - #1019 Support for min and max warns in range charts
@@ -28,6 +29,7 @@ Changelog
 **Fixed**
 
 - #1034 Attachments assigned to Analyses break and get orphaned when the referenced Analysis was removed
+- #1028 Numbers for productivity report "Analyses by client" are all zero
 - #1022 Date Received saved as UTC time
 - #1018 Fix AR Add cleanup after template removal
 - #1014 ReferenceWidget does not handle searches with null/None

@@ -5,12 +5,18 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
+import StringIO
+import csv
+import datetime
+from collections import OrderedDict
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.browser import BrowserView
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
+from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -20,170 +26,167 @@ class Report(BrowserView):
     template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request, report=None):
-        self.report = report
         BrowserView.__init__(self, context, request)
+        self.report = report
+        self.headings = {
+            'header': _("Analysis requests and analyses per client"),
+            'subheader': _("Number of Analysis requests and analyses per client"),
+        }
+        self.formats = {
+            'columns': 3,
+            'col_heads': [
+                _('Client'),
+                _('Number of requests'),
+                _('Number of analyses')],
+            'class': ''
+        }
 
     def __call__(self):
-        # get all the data into datalines
-
-        pc = getToolByName(self.context, 'portal_catalog')
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        bc = getToolByName(self.context, 'bika_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
-
-        self.report_content = {}
-        parm_lines = {}
         parms = []
-        headings = {}
-        count_all_ars = 0
-        count_all_analyses = 0
-        query = {}
 
-        this_client = logged_in_client(self.context)
+        # Base query
+        query = dict(portal_type="Analysis", sort_on='getClientTitle')
 
-        if not this_client and 'ClientUID' in self.request.form:
-            client_uid = self.request.form['ClientUID']
-            this_client = rc.lookupObject(client_uid)
-            parms.append(
-                {'title': _('Client'),
-                 'value': this_client.Title(),
-                 'type': 'text'})
+        # Filter by client
+        self.add_filter_by_client(query, parms)
 
-        if this_client:
-            headings['header'] = _("Analysis requests and analyses")
-            headings['subheader'] = _("Number of Analysis requests and analyses")
-        else:
-            headings['header'] = _("Analysis requests and analyses per client")
-            headings['subheader'] = _(
-                "Number of Analysis requests and analyses per client")
+        # Filter by date
+        self.add_filter_by_date(query, parms)
 
+        # Filter analyses by review_state
+        self.add_filter_by_review_state(query, parms)
+
+        # Filter analyses by cancellation state
+        self.add_filter_by_cancellation_state(query, parms)
+
+        # Filter analyses by worksheet state
+        self.add_filter_by_worksheet_state(query, parms)
+
+        # Fetch and fill data
+        data = OrderedDict()
+        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        total_num_analyses = len(analyses)
+        total_num_ars = 0
+        for analysis in analyses:
+            client = analysis.getClientTitle
+            data_client = data.get(client, {})
+            request = analysis.getRequestID
+            requests = data_client.get("requests", [])
+            if request not in requests:
+                requests += [request]
+                data_client["requests"] = requests
+                total_num_ars += 1
+            data_client["analyses"] = data_client.get("analyses", 0) + 1
+            data[client] = data_client
+
+        # Generate datalines
+        data_lines = list()
+        for client, data in data.items():
+            ars_count = len(data.get('requests', []))
+            ans_count = data.get('analyses', 0)
+            data_lines.append([{"value": client},
+                               {"value": ars_count},
+                               {"value": ans_count}])
+
+        if self.request.get('output_format', '') == 'CSV':
+            return self.generate_csv(data_lines)
+
+        self.report_content = {
+            'headings': self.headings,
+            'parms': parms,
+            'formats': self.formats,
+            'datalines': data_lines,
+            'footings': [
+                [{'value': _('Total'), 'class': 'total_label'},
+                 {'value': total_num_ars},
+                 {'value': total_num_analyses},],]
+        }
+
+        return {'report_title': t(self.headings['header']),
+                'report_data': self.template()}
+
+    def add_filter_by_client(self, query, out_params):
+        """Applies the filter by client to the search query
+        """
+        current_client = logged_in_client(self.context)
+        if current_client:
+            query['getClientUID'] = api.get_uid(current_client)
+        elif self.request.form.get("ClientUID", ""):
+            query['getClientUID'] = self.request.form['ClientUID']
+            client = api.get_object_by_uid(query['getClientUID'])
+            out_params.append({'title': _('Client'),
+                               'value': client.Title(),
+                               'type': 'text'})
+
+    def add_filter_by_date(self, query, out_params):
+        """Applies the filter by Requested date to the search query
+        """
         date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
             query['created'] = date_query
             requested = formatDateParms(self.context, 'Requested')
-            parms.append(
-                {'title': _('Requested'),
-                 'value': requested,
-                 'type': 'text'})
+            out_params.append({'title': _('Requested'),
+                               'value': requested,
+                               'type': 'text'})
 
-        workflow = getToolByName(self.context, 'portal_workflow')
-        if 'bika_analysis_workflow' in self.request.form:
-            query['review_state'] = self.request.form['bika_analysis_workflow']
-            review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_analysis_workflow'], 'Analysis')
-            parms.append(
-                {'title': _('Status'), 'value': review_state, 'type': 'text'})
+    def add_filter_by_review_state(self, query, out_params):
+        """Applies the filter by review_state to the search query
+        """
+        self.add_filter_by_wf_state(query=query, out_params=out_params,
+                                    wf_id="bika_analysis_workflow",
+                                    index="review_state",
+                                    title=_("Status"))
 
-        if 'bika_cancellation_workflow' in self.request.form:
-            query['cancellation_state'] = self.request.form[
-                'bika_cancellation_workflow']
-            cancellation_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_cancellation_workflow'], 'Analysis')
-            parms.append({'title': _('Active'), 'value': cancellation_state,
-                          'type': 'text'})
+    def add_filter_by_worksheet_state(self, query, out_params):
+        """Applies the filter by worksheetanalysis_review_state to the search
+        query
+        """
+        self.add_filter_by_wf_state(query=query, out_params=out_params,
+                                    wf_id="bika_worksheetanalysis_workflow",
+                                    index="worksheetanalysis_review_state",
+                                    title=_("Assigned to worksheet"))
 
-        if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form[
-                'bika_worksheetanalysis_workflow']
-            ws_review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append(
-                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
-                 'type': 'text'})
+    def add_filter_by_cancellation_state(self, query, out_params):
+        """Applies the filter by cancellation_state to the search query
+        """
+        self.add_filter_by_wf_state(query=query, out_params=out_params,
+                                    wf_id="bika_cancellation_workflow",
+                                    index="cancellation_state",
+                                    title=_("Active"))
 
-        if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form[
-                'bika_worksheetanalysis_workflow']
-            ws_review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append(
-                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
-                 'type': 'text'})
+    def add_filter_by_wf_state(self, query, out_params, wf_id, index,
+                               title):
+        if not self.request.form.get(wf_id, ""):
+            return
+        query[index] = self.request.form[wf_id]
+        workflow = api.get_tool("portal_workflow")
+        state = workflow.getTitleForStateOnType(query[index], 'Analysis')
+        out_params.append({'title': title, 'value': state, 'type': 'text'})
 
-        # and now lets do the actual report lines
-        formats = {'columns': 3,
-                   'col_heads': [_('Client'),
-                                 _('Number of requests'),
-                                 _('Number of analyses')],
-                   'class': ''}
+    def generate_csv(self, data_lines):
+        """Generates and writes a CSV to request's reposonse
+        """
+        fieldnames = [
+            'Client',
+            'Analysis Requests',
+            'Analyses',
+        ]
+        output = StringIO.StringIO()
+        dw = csv.DictWriter(output, extrasaction='ignore',
+                            fieldnames=fieldnames)
+        dw.writerow(dict((fn, fn) for fn in fieldnames))
+        for row in data_lines:
+            dw.writerow({
+                'Client': row[0]['value'],
+                'Analysis Requests': row[1]['value'],
+                'Analyses': row[2]['value'],
+            })
+        report_data = output.getvalue()
+        output.close()
 
-        datalines = []
-
-        if this_client:
-            c_proxies = pc(portal_type="Client", UID=this_client.UID())
-        else:
-            c_proxies = pc(portal_type="Client", sort_on='sortable_title')
-
-        for client in c_proxies:
-            query['getClientUID'] = client.UID
-            dataline = [{'value': client.Title}, ]
-            query['portal_type'] = 'AnalysisRequest'
-            ars = bc(query)
-            count_ars = len(ars)
-            dataitem = {'value': count_ars}
-            dataline.append(dataitem)
-
-            query['portal_type'] = 'Analysis'
-            analyses = bac(query)
-            count_analyses = len(analyses)
-            dataitem = {'value': count_analyses}
-            dataline.append(dataitem)
-
-            datalines.append(dataline)
-
-            count_all_analyses += count_analyses
-            count_all_ars += count_ars
-
-        # footer data
-        footlines = []
-        if not this_client:
-            footline = []
-            footitem = {'value': _('Total'),
-                        'class': 'total_label'}
-            footline.append(footitem)
-
-            footitem = {'value': count_all_ars}
-            footline.append(footitem)
-            footitem = {'value': count_all_analyses}
-            footline.append(footitem)
-
-            footlines.append(footline)
-
-        self.report_content = {
-            'headings': headings,
-            'parms': parms,
-            'formats': formats,
-            'datalines': datalines,
-            'footings': footlines}
-
-        if self.request.get('output_format', '') == 'CSV':
-            import csv
-            import StringIO
-            import datetime
-
-            fieldnames = [
-                'Client',
-                'Analysis Requests',
-                'Analyses',
-            ]
-            output = StringIO.StringIO()
-            dw = csv.DictWriter(output, extrasaction='ignore',
-                                fieldnames=fieldnames)
-            dw.writerow(dict((fn, fn) for fn in fieldnames))
-            for row in datalines:
-                dw.writerow({
-                    'Client': row[0]['value'],
-                    'Analysis Requests': row[1]['value'],
-                    'Analyses': row[2]['value'],
-                })
-            report_data = output.getvalue()
-            output.close()
-            date = datetime.datetime.now().strftime("%Y%m%d%H%M")
-            setheader = self.request.RESPONSE.setHeader
-            setheader('Content-Type', 'text/csv')
-            setheader("Content-Disposition",
-                      "attachment;filename=\"analysesperclient_%s.csv\"" % date)
-            self.request.RESPONSE.write(report_data)
-        else:
-            return {'report_title': t(headings['header']),
-                    'report_data': self.template()}
+        date = datetime.datetime.now().strftime("%Y%m%d%H%M")
+        setheader = self.request.RESPONSE.setHeader
+        setheader('Content-Type', 'text/csv')
+        setheader("Content-Disposition",
+                  "attachment;filename=\"analysesperclient_%s.csv\"" % date)
+        self.request.RESPONSE.write(report_data)
