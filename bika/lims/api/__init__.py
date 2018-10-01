@@ -1280,7 +1280,7 @@ def to_dhm_format(days=0, hours=0, minutes=0, seconds=0, milliseconds=0):
     """
     minutes = to_minutes(days=days, hours=hours, minutes=minutes,
                          seconds=seconds, milliseconds=milliseconds)
-    delta = timedelta(minutes= int(round(minutes)))
+    delta = timedelta(minutes=int(round(minutes)))
     d = delta.days
     h = delta.seconds // 3600
     m = (delta.seconds // 60) % 60
