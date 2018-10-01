@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #1032 Refactored and fixed inconsistencies with Analysis TAT logic
 - #1027 Refactored relationship between invalidated ARs and retests
 - #1027 Rename `retract_ar` transition to `invalidate`
 - #1012 Refactored Contacts listing
@@ -28,6 +29,10 @@ Changelog
 
 **Fixed**
 
+- #1030 Earliness of analysis is not expressed as minutes
+- #1029 TAT in Analysis TAT over time report does not display days
+- #1029 TAT in Analysis TAT over time report with decimals
+- #1029 Need to always choose an analyst in productivity reports
 - #1034 Attachments assigned to Analyses break and get orphaned when the referenced Analysis was removed
 - #1028 Numbers for productivity report "Analyses by client" are all zero
 - #1022 Date Received saved as UTC time
