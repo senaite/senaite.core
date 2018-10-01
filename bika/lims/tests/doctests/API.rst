@@ -1447,7 +1447,7 @@ Convert to minutes
     >>> api.to_minutes(minutes=122.4567, seconds=6)
     123
 
-    >>> api.to_minutes(minutes=122.4567, seconds=6, to_int=False)
+    >>> api.to_minutes(minutes=122.4567, seconds=6, round_to_int=False)
     122.55669999999999
 
 
