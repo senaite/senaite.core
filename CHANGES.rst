@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #1034 Attachments assigned to Analyses break and get orphaned when the referenced Analysis was removed
 - #1022 Date Received saved as UTC time
 - #1018 Fix AR Add cleanup after template removal
 - #1014 ReferenceWidget does not handle searches with null/None
