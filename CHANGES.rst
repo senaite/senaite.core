@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #764 Code cleanup and redux of 2-Dimensional-CSV instrument interface
 - #1032 Refactored and fixed inconsistencies with Analysis TAT logic
 - #1027 Refactored relationship between invalidated ARs and retests
 - #1027 Rename `retract_ar` transition to `invalidate`
