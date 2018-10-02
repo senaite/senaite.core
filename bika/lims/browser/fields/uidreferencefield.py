@@ -194,7 +194,11 @@ class UIDReferenceField(StringField):
         # UID of the current object
         uid = api.get_uid(context)
         # current set UIDs
-        cur = set(self.getRaw(context) or [])
+        raw = self.getRaw(context) or []
+        # handle single reference fields
+        if isinstance(raw, basestring):
+            raw = [raw, ]
+        cur = set(raw)
         # UIDs to be set
         new = set(map(api.get_uid, items))
         # removed UIDs
