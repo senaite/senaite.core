@@ -21,7 +21,8 @@ class SupplierInstrumentsView(InstrumentsView):
 
     def __init__(self, context, request):
         super(SupplierInstrumentsView, self).__init__(context, request)
-        # Don't allow to add instruments here
+        # Don't allow to add instruments here, because it can be given another
+        # supplier, which is confusing
         self.context_actions = {}
 
     def before_render(self):
@@ -43,12 +44,9 @@ class SupplierReferenceSamplesView(ReferenceSamplesView):
 
         self.contentFilter["path"]["query"] = api.get_path(context)
 
-        self.context_actions = {
-            _("Add"): {
-                "url": "createObject?type_name=ReferenceSample",
-                "permission": "Add portal content",
-                "icon": "++resource++bika.lims.images/add.png"}
-        }
+        # Don't allow to add reference samples here, because it can be given
+        # another supplier, which is confusing
+        self.context_actions = {}
 
         # Remove the Supplier column from the list
         del self.columns["Supplier"]
