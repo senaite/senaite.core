@@ -29,6 +29,9 @@ Run this test from the buildout directory:
     bin/test test_textual_doctests -t ARAnalysesField
 """
 
+FROZEN_STATES = ["verified", "published"]
+FROZEN_TRANSITIONS = ["verify", "retract"]
+
 
 class ARAnalysesField(ObjectField):
     """A field that stores Analyses instances
@@ -131,10 +134,14 @@ class ARAnalysesField(ObjectField):
                 "Items parameter must be a tuple or list, got '{}'".format(
                     type(items)))
 
-        # Bail out if the AR in frozen state
-        if self._is_frozen(instance):
-            raise ValueError(
-                "Analyses can not be modified for inactive/verified ARs")
+        # Bail out if the AR is inactive
+        if not api.is_active(instance):
+            raise ValueError("Inactive ARs can not be modified")
+
+        # Bail out if the AR is in a frozen state
+        if api.get_workflow_status_of(instance) in FROZEN_STATES:
+            raise ValueError("ARs in the states '{}' can not be modified"
+                             .format(", ".join(FROZEN_STATES)))
 
         # Convert the items to a valid list of AnalysisServices
         services = filter(None, map(self._to_service, items))
@@ -184,7 +191,7 @@ class ARAnalysesField(ObjectField):
                 continue
 
             # Skip Analyses in frozen states
-            if self._is_frozen(analysis, "retract"):
+            if self._is_frozen(analysis):
                 logger.warn("Inactive/verified/retracted Analyses can not be "
                             "removed.")
                 continue
@@ -271,20 +278,20 @@ class ARAnalysesField(ObjectField):
         logger.warn(msg)
         return None
 
-    def _is_frozen(self, brain_or_object, *frozen_transitions):
+    def _is_frozen(self, brain_or_object):
         """Check if the passed in object is frozen: the object is cancelled,
         inactive or has been verified at some point
         :param brain_or_object: Analysis or AR Brain/Object
-        :param frozen_transitions: additional transitions that freeze the object
         :returns: True if the object is frozen
         """
         if not api.is_active(brain_or_object):
             return True
+        if api.get_workflow_status_of(brain_or_object) in FROZEN_STATES:
+            return True
+        # Check the review history if one of the frozen transitions was done
         object = api.get_object(brain_or_object)
-        frozen_trans = set(frozen_transitions)
-        frozen_trans.add('verify')
         performed_transitions = set(getReviewHistoryActionsList(object))
-        if frozen_trans.intersection(performed_transitions):
+        if set(FROZEN_TRANSITIONS).intersection(performed_transitions):
             return True
         return False
 
