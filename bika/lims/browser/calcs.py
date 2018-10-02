@@ -13,7 +13,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
 from bika.lims import bikaMessageFactory as _, api
-from bika.lims.api.analysis import is_out_of_range
+from bika.lims.api.analysis import is_out_of_range, get_formatted_interval
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import t, isnumber
@@ -223,35 +223,6 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         except ValueError:
             # non-float
             Result['formatted_result'] = Result['result']
-        # calculate Dry Matter result
-        # if parent is not an AR, it's never going to be calculable
-        dm = hasattr(analysis.aq_parent, 'getReportDryMatter') and \
-            analysis.aq_parent.getReportDryMatter() and \
-            analysis.getReportDryMatter()
-        if dm:
-            dry_service = self.context.bika_setup.getDryMatterService()
-            # get the UID of the DryMatter Analysis from our parent AR
-            dry_analysis = [a for a in
-                            analysis.aq_parent.getAnalyses(full_objects=True)
-                            if a.getServiceUID() == dry_service.UID()]
-            if dry_analysis:
-                dry_analysis = dry_analysis[0]
-                dry_uid = dry_analysis.UID()
-                # get the current DryMatter analysis result from the form
-                if dry_uid in self.current_results:
-                    try:
-                        dry_result = float(self.current_results[dry_uid])
-                    except:
-                        dm = False
-                else:
-                    try:
-                        dry_result = float(dry_analysis.getResult())
-                    except:
-                        dm = False
-            else:
-                dm = False
-        Result['dry_result'] = dm and dry_result and \
-            '%.2f' % ((Result['result'] / dry_result) * 100) or ''
 
         self.results.append(Result)
 
@@ -310,9 +281,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             return
 
         result_range = analysis.getResultsRange()
-        rngstr = "{0} {1}, {2} {3}".format(
-            t(_("min")), result_range.get("min"),
-            t(_("max")), result_range.get("max"))
+        rngstr = get_formatted_interval(result_range, default="")
         message = "Result out of range"
         icon = "exclamation.png"
         if not out_of_shoulder:
@@ -322,7 +291,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         uid = api.get_uid(analysis)
         alert = self.alerts.get(uid, [])
         alert.append({'icon': "++resource++bika.lims.images/{}".format(icon),
-                      'msg': "{0} ({1})".format(t(_(message)), rngstr),
+                      'msg': "{0} {1}".format(t(_(message)), rngstr),
                       'field': "Result"})
         self.alerts[uid] = alert
 
@@ -387,22 +356,4 @@ class ajaxGetMethodCalculation(BrowserView):
             if calc:
                 calcdict = {'uid': calc.UID(),
                             'title': calc.Title()}
-        return json.dumps(calcdict)
-
-
-class ajaxGetAvailableCalculations(BrowserView):
-    """
-    Returns all available calculations.
-    """
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Calculation',
-                              inactive_state='active')]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', _("None")))
-        calcdict = [{'uid': calc[0], 'title': calc[1]} for calc in items]
-
         return json.dumps(calcdict)

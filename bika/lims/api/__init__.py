@@ -5,13 +5,17 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import Missing
+import re
+
 from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
 from datetime import datetime
+from datetime import timedelta
 from DateTime import DateTime
 
-from Products.CMFPlone.utils import base_hasattr
+from Products.CMFPlone.utils import base_hasattr, safe_unicode
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.interfaces import IFolderish
 from Products.Archetypes.BaseObject import BaseObject
@@ -19,6 +23,7 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IClient, IContact, ILabContact
 
 from zope import globalrequest
 from zope.event import notify
@@ -66,6 +71,8 @@ Thanks.
 """
 
 _marker = object()
+
+UID_RX = re.compile("[a-z0-9]{32}$")
 
 
 class BikaLIMSError(Exception):
@@ -810,12 +817,20 @@ def get_cancellation_status(brain_or_object, default="active"):
     :returns: Value of the review_status variable
     :rtype: String
     """
+
     if is_brain(brain_or_object):
-        return getattr(brain_or_object, "cancellation_state", default)
+        state = getattr(brain_or_object, "cancellation_state", None)
+        if state is not None:
+            return state
+
     workflows = get_workflows_for(brain_or_object)
-    if 'bika_cancellation_workflow' not in workflows:
+    if "bika_cancellation_workflow" in workflows:
+        return get_workflow_status_of(brain_or_object, "cancellation_state")
+
+    state = get_workflow_status_of(brain_or_object)
+    if state not in ("active", "inactive"):
         return default
-    return get_workflow_status_of(brain_or_object, 'cancellation_state')
+    return state
 
 
 def get_inactive_status(brain_or_object, default="active"):
@@ -826,12 +841,20 @@ def get_inactive_status(brain_or_object, default="active"):
     :returns: Value of the review_status variable
     :rtype: String
     """
+
     if is_brain(brain_or_object):
-        return getattr(brain_or_object, "inactive_state", default)
+        state = getattr(brain_or_object, "inactive_state", None)
+        if state is not None:
+            return state
+
     workflows = get_workflows_for(brain_or_object)
-    if 'bika_inactive_workflow' not in workflows:
+    if "bika_inactive_workflow" in workflows:
+        return get_workflow_status_of(brain_or_object, "inactive_state")
+
+    state = get_workflow_status_of(brain_or_object)
+    if state not in ("active", "inactive"):
         return default
-    return get_workflow_status_of(brain_or_object, 'inactive_state')
+    return state
 
 
 def is_active(brain_or_object):
@@ -1084,6 +1107,40 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
     return get_object(brains[0])
 
 
+def get_user_client(user_or_contact):
+    """Returns the client of the contact of a Plone user
+
+    If the user passed in has no contact or does not belong to any client,
+    returns None.
+
+    :param: Plone user or contact
+    :returns: Client the contact of the Plone user belongs to
+    """
+    if not user_or_contact or ILabContact.providedBy(user_or_contact):
+        # Lab contacts cannot belong to a client
+        return None
+
+    if not IContact.providedBy(user_or_contact):
+        contact = get_user_contact(user_or_contact, contact_types=['Contact'])
+        if IContact.providedBy(contact):
+            return get_user_client(contact)
+        return None
+
+    client = get_parent(user_or_contact)
+    if client and IClient.providedBy(client):
+        return client
+
+    return None
+
+
+def get_current_client():
+    """Returns the current client the current logged in user belongs to, if any
+
+    :returns: Client the current logged in user belongs to or None
+    """
+    return get_user_client(get_current_user())
+
+
 def get_cache_key(brain_or_object):
     """Generate a cache key for a common brain or object
 
@@ -1161,6 +1218,8 @@ def is_uid(uid, validate=False):
         return False
     if len(uid) != 32:
         return False
+    if not UID_RX.match(uid):
+        return False
     if not validate:
         return True
 
@@ -1207,6 +1266,52 @@ def to_date(value, default=None):
         return to_date(default)
 
 
+def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
+               round_to_int=True):
+    """Returns the computed total number of minutes
+    """
+    total = float(days)*24*60 + float(hours)*60 + float(minutes) + \
+            float(seconds)/60 + float(milliseconds)/1000/60
+    return int(round(total)) if round_to_int else total
+
+
+def to_dhm_format(days=0, hours=0, minutes=0, seconds=0, milliseconds=0):
+    """Returns a representation of time in a string in xd yh zm format
+    """
+    minutes = to_minutes(days=days, hours=hours, minutes=minutes,
+                         seconds=seconds, milliseconds=milliseconds)
+    delta = timedelta(minutes=int(round(minutes)))
+    d = delta.days
+    h = delta.seconds // 3600
+    m = (delta.seconds // 60) % 60
+    m = m and "{}m ".format(str(m)) or ""
+    d = d and "{}d ".format(str(d)) or ""
+    if m and d:
+        h = "{}h ".format(str(h))
+    else:
+        h = h and "{}h ".format(str(h)) or ""
+    return "".join([d, h, m]).strip()
+
+
+def to_int(value, default=_marker):
+    """Tries to convert the value to int.
+    Truncates at the decimal point if the value is a float
+
+    :param value: The value to be converted to an int
+    :return: The resulting int or default
+    """
+    if is_floatable(value):
+        value = to_float(value)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        if default is None:
+            return default
+        if default is not _marker:
+            return to_int(default)
+        fail("Value %s cannot be converted to int" % repr(value))
+
+
 def is_floatable(value):
     """Checks if the passed in value is a valid floatable number
 
@@ -1234,3 +1339,30 @@ def to_float(value, default=_marker):
             return to_float(default)
         fail("Value %s is not floatable" % repr(value))
     return float(value)
+
+
+def to_searchable_text_metadata(value):
+    """Parse the given metadata value to searchable text
+
+    :param value: The raw value of the metadata column
+    :returns: Searchable and translated unicode value or None
+    """
+    if not value:
+        return u""
+    if value is Missing.Value:
+        return u""
+    if is_uid(value):
+        return u""
+    if isinstance(value, (bool)):
+        return u""
+    if isinstance(value, (list, tuple)):
+        for v in value:
+            return to_searchable_text_metadata(v)
+    if isinstance(value, (dict)):
+        for k, v in value.items():
+            return to_searchable_text_metadata(v)
+    if is_date(value):
+        return value.strftime("%Y-%m-%d")
+    if not isinstance(value, basestring):
+        value = str(value)
+    return safe_unicode(value)

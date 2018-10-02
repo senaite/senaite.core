@@ -27,14 +27,6 @@ def retract(obj):
     return isBasicTransitionAllowed(obj)
 
 
-def sample_prep(obj):
-    return isBasicTransitionAllowed(obj)
-
-
-def sample_prep_complete(obj):
-    return isBasicTransitionAllowed(obj)
-
-
 def receive(obj):
     return isBasicTransitionAllowed(obj)
 

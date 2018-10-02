@@ -2,7 +2,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
         metal:use-macro="here/main_template/macros/master"
-        i18n:domain="bika">
+        i18n:domain="senaite.core">
 <body>
 
 <metal:content-title fill-slot="content-title">

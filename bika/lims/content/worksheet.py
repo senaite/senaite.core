@@ -15,6 +15,8 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME, WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import (IAnalysisRequest, IDuplicateAnalysis,
                                   IReferenceAnalysis, IReferenceSample,
                                   IRoutineAnalysis, IWorksheet)
@@ -97,16 +99,11 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
     ),
 
-    TextField(
+    RemarksField(
         'Remarks',
         searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
 
@@ -201,22 +198,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         doActionFor(analysis, 'assign')
 
-        # If a dependency of DryMatter service is added here, we need to
-        # make sure that the dry matter analysis itself is also
-        # present.  Otherwise WS calculations refer to the DB version
-        # of the DM analysis, which is out of sync with the form.
-        dms = self.bika_setup.getDryMatterService()
-        if dms:
-            dmk = dms.getKeyword()
-            deps = analysis.getDependents()
-            # if dry matter service in my dependents:
-            if dmk in [a.getKeyword() for a in deps]:
-                # get dry matter analysis from AR
-                dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
-                                                     full_objects=True)[0]
-                # add it.
-                if dma not in self.getAnalyses():
-                    self.addAnalysis(dma)
         # Reindex the worksheet in order to update its columns
         self.reindexObject()
         analysis.reindexObject(idxs=['getWorksheetUID', ])

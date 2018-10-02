@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import mimetypes
 import os
 import re
 import tempfile
@@ -13,17 +14,15 @@ import urllib2
 from email import Encoders
 from time import time
 
-import mimetypes
-
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
 from DateTime import DateTime
-from Products.Archetypes.public import DisplayList
 from Products.Archetypes.interfaces.field import IComputedField
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api as api
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from email.MIMEBase import MIMEBase
@@ -143,14 +142,7 @@ def getUsers(context, roles, allow_empty=True):
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """
-    wf = getToolByName(obj, 'portal_workflow')
-    if (hasattr(obj, 'inactive_state') and obj.inactive_state == 'inactive') or \
-       wf.getInfoFor(obj, 'inactive_state', 'active') == 'inactive':
-        return False
-    if (hasattr(obj, 'cancellation_state') and obj.inactive_state == 'cancelled') or \
-       wf.getInfoFor(obj, 'cancellation_state', 'active') == 'cancelled':
-        return False
-    return True
+    return api.is_active(obj)
 
 
 def formatDateQuery(context, date_id):
@@ -191,25 +183,6 @@ def formatDateParms(context, date_id):
         date_parms = 'to %s' % (to_date)
 
     return date_parms
-
-
-def formatDuration(context, totminutes):
-    """ Format a time period in a usable manner: eg. 3h24m
-    """
-    mins = totminutes % 60
-    hours = (totminutes - mins) / 60
-
-    if mins:
-        mins_str = '%sm' % mins
-    else:
-        mins_str = ''
-
-    if hours:
-        hours_str = '%sh' % hours
-    else:
-        hours_str = ''
-
-    return '%s%s' % (hours_str, mins_str)
 
 
 def formatDecimalMark(value, decimalmark='.'):
@@ -602,7 +575,7 @@ def format_supsub(text):
     subsup = []
     clauses = []
     insubsup = True
-    for c in text:
+    for c in str(text):
         if c == '(':
             if insubsup is False:
                 out.append(c)
@@ -814,7 +787,7 @@ def render_html_attributes(**kwargs):
     attr = list()
     if kwargs:
         attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
-    return " ".join(attr)
+    return " ".join(attr).replace("css_class", "class")
 
 
 def get_registry_value(key, default=None):
@@ -938,3 +911,16 @@ def get_display_list(brains_or_objects=None, none_item=False):
         items.insert(0, ('', t('Select...')))
 
     return DisplayList(items)
+
+
+def to_choices(display_list):
+    """Converts a display list to a choices list
+    """
+    if not display_list:
+        return []
+
+    return map(
+        lambda item: {
+            "ResultValue": item[0],
+            "ResultText": item[1]},
+        display_list.items())

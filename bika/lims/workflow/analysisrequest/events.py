@@ -5,8 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from DateTime import DateTime
-
+from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 
@@ -102,9 +101,6 @@ def after_receive(obj):
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    obj.setDateReceived(DateTime())
-    obj.reindexObject(idxs=["getDateReceived", ])
-
     # Do note that the 'sample' transition for Sample already transitions
     # all the analyses associated to all the sample partitions, so there
     # is no need to transition neither the analyses nor partitions here
@@ -138,6 +134,27 @@ def after_reject(obj):
         from bika.lims.utils.analysisrequest import notify_rejection
         # Notify the Client about the Rejection.
         notify_rejection(obj)
+
+
+def after_retract(obj):
+    """Method triggered after a 'retract' transition for the Analysis Request
+    passed in is performed. Transitions and sets the analyses of the Analyses
+    Request to retracted.
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    ans = obj.getAnalyses(full_objects=True)
+    for analysis in ans:
+        doActionFor(analysis, 'retract')
+
+
+def after_invalidate(obj):
+    """Function triggered after 'invalidate' transition for the Analysis
+    Request passed in is performed. Creates a retest
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    create_retest(obj)
 
 
 def after_attach(obj):

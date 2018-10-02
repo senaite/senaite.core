@@ -5,7 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import ast
 import json
 
 from zope.interface import implements
@@ -35,11 +34,13 @@ class DefaultReferenceWidgetVocabulary(object):
         catalog_name = _c(self.request.get('catalog_name', 'portal_catalog'))
         catalog = getToolByName(self.context, catalog_name)
 
-        # N.B. We don't use json.loads to avoid unicode conversion, which will
-        #      fail in the catalog search for some cases
+        # json.loads does unicode conversion, which will fail in the catalog
+        # search for some cases. So we need to convert the strings to utf8
         # see: https://github.com/senaite/bika.lims/issues/443
-        base_query = ast.literal_eval(self.request['base_query'])
-        search_query = ast.literal_eval(self.request.get('search_query', "{}"))
+        base_query = json.loads(self.request['base_query'])
+        search_query = json.loads(self.request.get('search_query', "{}"))
+        base_query = self.to_utf8(base_query)
+        search_query = self.to_utf8(search_query)
 
         # first with all queries
         contentFilter = dict((k, v) for k, v in base_query.items())
@@ -129,3 +130,27 @@ class DefaultReferenceWidgetVocabulary(object):
                         brains = _brains
 
         return brains
+
+    def to_utf8(self, data):
+        """
+        Convert unicode values to strings even if they belong to lists or dicts.
+        :param data: an object.
+        :return: The object with all unicode values converted to string.
+        """
+        # if this is a unicode string, return its string representation
+        if isinstance(data, unicode):
+            return data.encode('utf-8')
+
+        # if this is a list of values, return list of string values
+        if isinstance(data, list):
+            return [self.to_utf8(item) for item in data]
+
+        # if this is a dictionary, return dictionary of string keys and values
+        if isinstance(data, dict):
+            return {
+                self.to_utf8(key): self.to_utf8(value)
+                for key, value in data.iteritems()
+            }
+            # if it's anything else, return it in its original form
+
+        return data

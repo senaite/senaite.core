@@ -4,7 +4,7 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
+from bika.lims.api import get_tool
 from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.utils import getHiddenAttributesForClass
@@ -229,4 +229,30 @@ class HideClientDiscountFields(object):
         fieldName = field.getName()
         if fieldName in fields and not ShowPrices:
             state = 'invisible'
+        return state
+
+
+class SampleDateReceived(object):
+    """DateReceived is editable in sample context, only if all related analyses
+    are not yet submitted.
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 3
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'visible'
+        if field.getName() == 'DateReceived':
+            # if ONLY "sample_received" analyses exist, it is permitted
+            # to edit the field.
+            wf = get_tool('portal_workflow')
+            anwf = wf['bika_analysis_workflow']
+            state_ids = [s for s in anwf.states if s != 'sample_received']
+            if context.getAnalyses(review_state=state_ids):
+                if mode == 'edit':
+                    state = 'invisible'
+                elif mode == 'view':
+                    state = 'visible'
         return state

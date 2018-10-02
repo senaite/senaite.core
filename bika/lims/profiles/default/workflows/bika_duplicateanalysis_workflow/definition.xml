@@ -5,7 +5,7 @@
              description="" state_variable="review_state"
              initial_state="unassigned"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: Retract</permission>

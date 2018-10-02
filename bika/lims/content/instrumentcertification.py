@@ -29,7 +29,9 @@ from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 # bika.lims imports
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import ComboBoxWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims import logger
@@ -179,17 +181,11 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    TextField(
+    RemarksField(
         'Remarks',
         searchable=True,
-        default_content_type='text/x-web-intelligent',
-        allowable_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        mode="rw",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
 
@@ -273,7 +269,7 @@ class InstrumentCertification(BaseFolder):
 
         delta = 0
         today = DateTime()
-        valid_from = self.getValidFrom()
+        valid_from = self.getValidFrom() or today
         valid_to = self.getValidTo()
 
         # one of the fields is not set, return 0 days

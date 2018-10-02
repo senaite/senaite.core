@@ -140,3 +140,9 @@ div.resultsinterpretation_heading {
 .blue { background:blue; }
 .green { background:green; }
 .black { background:black; }
+.new_line{
+    display: block
+}
+.interims_title{
+    padding-left: 10px
+}

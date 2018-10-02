@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
@@ -13,10 +14,11 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisSpec
 from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import (BaseFolder, ComputedField,
-                                        ComputedWidget, ReferenceWidget,
-                                        Schema)
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import Schema
 from Products.Archetypes.utils import DisplayList
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field.records import RecordsField
@@ -62,7 +64,9 @@ schema = Schema((
         type='resultsrange',
         subfields=(
             'keyword',
+            'min_operator',
             'min',
+            'max_operator',
             'max',
             'warn_min',
             'warn_max',
@@ -77,7 +81,9 @@ schema = Schema((
         },
         subfield_labels={
             'keyword': _('Analysis Service'),
+            'min_operator': _('Min operator'),
             'min': _('Min'),
+            'max_operator': _('Max operator'),
             'max': _('Max'),
             'warn_min': _('Min warn'),
             'warn_max': _('Max warn'),
@@ -170,14 +176,23 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
     security.declarePublic('getRemainingSampleTypes')
 
-    def getSampleTypes(self):
+    def getSampleTypes(self, active_only=True):
         """Return all sampletypes
         """
-        sampletypes = []
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        for st in bsc(portal_type='SampleType', sort_on='sortable_title'):
-            sampletypes.append((st.UID, st.Title))
-
+        catalog = api.get_tool("bika_setup_catalog")
+        query = {
+            "portal_type": "SampleType",
+            # N.B. The `sortable_title` index sorts case sensitive. Since there
+            #      is no sort key for sample types, it makes more sense to sort
+            #      them alphabetically in the selection
+            "sort_on": "title",
+            "sort_order": "ascending"
+        }
+        results = catalog(query)
+        if active_only:
+            results = filter(api.is_active, results)
+        sampletypes = map(
+            lambda brain: (brain.UID, brain.Title), results)
         return DisplayList(sampletypes)
 
     def getClientUID(self):
@@ -185,6 +200,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
+
 
 class ResultsRangeDict(dict):
 
@@ -194,6 +210,8 @@ class ResultsRangeDict(dict):
         self["max"] = self.max
         self["warn_min"] = self.warn_min
         self["warn_max"] = self.warn_max
+        self["min_operator"] = self.min_operator
+        self["max_operator"] = self.max_operator
 
     @property
     def min(self):
@@ -211,6 +229,14 @@ class ResultsRangeDict(dict):
     def warn_max(self):
         return self.get('warn_max', self.max)
 
+    @property
+    def min_operator(self):
+        return self.get('min_operator', 'geq')
+
+    @property
+    def max_operator(self):
+        return self.get('max_operator', 'leq')
+
     @min.setter
     def min(self, value):
         self["min"] = value
@@ -226,3 +252,11 @@ class ResultsRangeDict(dict):
     @warn_max.setter
     def warn_max(self, value):
         self['warn_max'] = value
+
+    @min_operator.setter
+    def min_operator(self, value):
+        self['min_operator'] = value
+
+    @max_operator.setter
+    def max_operator(self, value):
+        self['max_operator'] = value

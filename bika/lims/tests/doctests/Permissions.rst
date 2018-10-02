@@ -353,11 +353,11 @@ The `clients` folder follows **no** workflow::
     >>> get_workflows_for(clients)
     ()
 
-A `client` follows the `bika_one_state_workflow` and the
+A `client` follows the `bika_client_workflow` and the
 `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(client)
-    ('bika_client_workflow', 'bika_inactive_workflow')
+    ('bika_client_workflow',)
 
     >>> get_workflow_status_of(client)
     'active'
@@ -380,7 +380,7 @@ Exactly these roles have should have a `View` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("View", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
 
     >>> get_roles_for_permission("View", contact)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
@@ -391,10 +391,10 @@ Exactly these roles have should have the `Access contents information` permissio
     ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
 
     >>> get_roles_for_permission("Access contents information", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner', 'Preserver', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -402,10 +402,10 @@ Exactly these roles have should have the `List folder contents` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
 
     >>> get_roles_for_permission("List folder contents", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
@@ -413,7 +413,7 @@ Exactly these roles have should have the `Modify portal content` permission::
     ['LabClerk', 'LabManager', 'Manager', 'Owner']
 
     >>> get_roles_for_permission("Modify portal content", client)
-    ['LabManager', 'Manager', 'Owner']
+    ['LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Delete objects` permission::
 

@@ -66,5 +66,6 @@ class ClientARTemplatesView(BikaListingView):
         if checkPermission(AddARTemplate, self.context):
             self.context_actions[_('Add')] = \
                 {'url': 'createObject?type_name=ARTemplate',
+                 'permission': 'Add portal content',
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientARTemplatesView, self).__call__()

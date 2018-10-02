@@ -64,7 +64,7 @@ Now we need to create some basic content for our tests:
     >>> labcontact = api.create(portal.bika_setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(portal.bika_setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(portal.bika_setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> Cu = api.create(portal.bika_setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="409", Category=category.UID(), Accredited=True)
+    >>> Cu = api.create(portal.bika_setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="409.17", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(portal.bika_setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="208.20", Category=category.UID())
     >>> profile = api.create(portal.bika_setup.bika_analysisprofiles, "AnalysisProfile", title="Profile", Service=[Fe.UID(), Cu.UID()])
     >>> template = api.create(portal.bika_setup.bika_artemplates, "ARTemplate", title="Template", AnalysisProfile=[profile.UID()])
@@ -162,12 +162,12 @@ Accredited services view shows a list of services, with prices.
 
     >>> enableShowPrices()
     >>> browser.open(portal.absolute_url() + "/accreditation")
-    >>> True if "409" in browser.contents else "Accreditation listing should have Price column, but it is not visible."
+    >>> True if "409.17" in browser.contents else "Accreditation listing should have Price column, but it is not visible."
     True
 
     >>> disableShowPrices()
     >>> browser.open(portal.absolute_url() + "/accreditation")
-    >>> True if "409" not in browser.contents else "Accreditation listing should not have Price column, but it is visible."
+    >>> True if "409.17" not in browser.contents else "Accreditation listing should not have Price column, but it is visible."
     True
 
 
@@ -178,12 +178,12 @@ Analysis Profiles contain prices in the list of available analyses.
 
     >>> enableShowPrices()
     >>> browser.open(profile.absolute_url())
-    >>> True if "409" in browser.contents else "Profile Analyses should be showing Price."
+    >>> True if "409.17" in browser.contents else "Profile Analyses should be showing Price."
     True
 
     >>> disableShowPrices()
     >>> browser.open(profile.absolute_url())
-    >>> True if "409" not in browser.contents else "Profile Analyses should NOT be showing Price."
+    >>> True if "409.17" not in browser.contents else "Profile Analyses should NOT be showing Price."
     True
 
 
@@ -194,12 +194,12 @@ Analysis Request Templates contain prices in the list of available analyses.
 
     >>> enableShowPrices()
     >>> browser.open(template.absolute_url())
-    >>> True if "409"  in browser.contents else "AR Templates should be showing Price."
+    >>> True if "409.17"  in browser.contents else "AR Templates should be showing Price."
     True
 
     >>> disableShowPrices()
     >>> browser.open(template.absolute_url())
-    >>> True if "409"  not in browser.contents else "AR Templates should NOT be showing Price."
+    >>> True if "409.17"  not in browser.contents else "AR Templates should NOT be showing Price."
     True
 
 Client discount fields show/hide

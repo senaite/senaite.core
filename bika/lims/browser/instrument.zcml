@@ -2,7 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
     <browser:page
       for="bika.lims.interfaces.IInstrument"
@@ -28,7 +28,7 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!--browser:page
+    <browser:page
       for="bika.lims.interfaces.IInstrument"
       name="schedule"
       class="bika.lims.browser.instrument.InstrumentScheduleView"
@@ -42,7 +42,7 @@
       class="bika.lims.browser.instrument.InstrumentMaintenanceView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    /-->
+    />
 
     <browser:page
       for="bika.lims.interfaces.IInstrument"
@@ -74,17 +74,6 @@
       class="bika.lims.browser.instrument.ajaxGetInstrumentMethods"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <!-- Show Instrument QC failures viewlet -->
-    <browser:viewlet
-        for="*"
-        name="bika.lims.instrument_qc_failures_viewlet"
-        class="bika.lims.browser.instrument.InstrumentQCFailuresViewlet"
-        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-        template="templates/instrument_qc_failures_viewlet.pt"
-        permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 </configure>

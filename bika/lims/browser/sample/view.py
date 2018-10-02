@@ -8,20 +8,16 @@
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.sample.samples_filter_bar \
+    import SamplesBikaListingFilterBar
 from bika.lims.permissions import *
 from bika.lims.utils import getUsers
-from bika.lims.browser.sample.samples_filter_bar\
-    import SamplesBikaListingFilterBar
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
+from bika.lims.utils import t
+
 from . import SampleEdit
-import json
-from datetime import datetime, date
-import plone
-import App
 
 
 class SampleView(SampleEdit):
@@ -37,7 +33,6 @@ class SamplesView(BikaListingView):
     """
     A list of samples view (folder view)
     """
-    implements(IViewView)
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
@@ -391,6 +386,20 @@ class SamplesView(BikaListingView):
                          'state_title']},
         ]
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # If the current user is a client contact, display those samples that
+        # belong to same client only
+        super(SamplesView, self).before_render()
+        client = api.get_current_client()
+        if client:
+            self.contentFilter['path'] = {
+                "query": "/".join(client.getPhysicalPath()),
+                "level": 0 }
+            # No need to display the Client column
+            self.remove_column('Client')
+
     def folderitem(self, obj, item, index):
         workflow = getToolByName(self.context, "portal_workflow")
         mtool = getToolByName(self.context, 'portal_membership')
@@ -424,7 +433,7 @@ class SamplesView(BikaListingView):
         item['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
         item['AdHoc'] = obj.getAdHoc() and True or ''
 
-        item['Created'] = self.ulocalized_time(obj.created())
+        item['Created'] = self.ulocalized_time(obj.created(), long_format=1)
 
         sd = obj.getSamplingDate()
         item['SamplingDate'] = \

@@ -1,4 +1,4 @@
-<html i18n:domain="bika"
+<html i18n:domain="senaite.core"
       tal:define="portal_state context/@@plone_portal_state;
                   portal_url portal_state/portal_url;
                   locale portal_state/locale;
@@ -53,13 +53,6 @@
           <span i18n:name="accreditation_body_abbrev">
             schedule of Accreditation for this Laboratory
           </span>
-        </span>
-      </h5>
-
-      <h5 tal:condition="view/service/getReportDryMatter">
-        <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dry.png"/>
-        <span i18n:translate="">
-          Can be reported as dry matter
         </span>
       </h5>
 

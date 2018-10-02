@@ -7,6 +7,8 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.utils import t
 from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -51,16 +53,11 @@ schema = BikaSchema.copy() + Schema((
             label=_("Date"),
         ),
     ),
-    TextField(
+    RemarksField(
         'Remarks',
         searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
     ComputedField(

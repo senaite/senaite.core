@@ -63,7 +63,7 @@ class ARTemplateAnalysesView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {'inactive_state': 'active'},
              'columns': ['Title',
                          'Price',
                          'Partition',
@@ -152,11 +152,6 @@ class ARTemplateAnalysesView(BikaListingView):
                 src='%s/++resource++bika.lims.images/accredited.png'\
                 title='%s'>"%(self.context.absolute_url(),
                               _("Accredited"))
-            if obj.getReportDryMatter():
-                after_icons += "<img\
-                src='%s/++resource++bika.lims.images/dry.png'\
-                title='%s'>"%(self.context.absolute_url(),
-                              _("Can be reported as dry matter"))
             if obj.getAttachmentOption() == 'r':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_reqd.png'\

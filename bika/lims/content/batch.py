@@ -8,7 +8,9 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME
@@ -96,7 +98,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Client"),
             size=30,
             visible=True,
-            base_query={'inactive_state': 'active'},
+            base_query={'review_state': 'active'},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
@@ -132,15 +134,11 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
 
-    TextField(
+    RemarksField(
         'Remarks',
-        default_content_type='text/x-web-intelligent',
-        allowable_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        searchable=True,
+        widget=RemarksWidget(
             label=_('Remarks'),
-            append_only=True,
         )
     ),
 

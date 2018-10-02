@@ -5,10 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims.permissions import ManageLoginDetails
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims.permissions import ManageSupplyOrders, ManageLoginDetails
-from bika.lims.interfaces import IAnalysisRequest
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -32,13 +31,14 @@ def ObjectModifiedEventHandler(obj, event):
             reference_versions[obj.UID()] = version_id + 1
             target.reference_versions = reference_versions
 
-    elif obj.portal_type == 'Client':
+    # Note: obj can be also a reference!
+    # <Folder at .../client-1/4d1dd3f77b76b3427a005e1f339e7bd4/at_references>
+    elif obj.meta_type == obj.portal_type == 'AnalysisRequest':
         mp = obj.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk',  'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(ManageSupplyOrders, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
+        # Allow to remove Analyses / Attachments
+        # https://github.com/senaite/senaite.core/issues/780
+        can_delete = ["Manager", "LabManager", "Owner"]
+        mp(permissions.DeleteObjects, can_delete, 0)
 
     elif obj.portal_type == 'Contact':
         # Contacts need to be given "Owner" local-role on their Client.

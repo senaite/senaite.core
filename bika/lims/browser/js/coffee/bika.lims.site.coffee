@@ -9,8 +9,8 @@ class window.SiteView
     console.debug "SiteView::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
-    @_ = window.jarn.i18n.MessageFactory('bika')
+    jarn.i18n.loadCatalog 'senaite.core'
+    @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
     # initialze the loading spinner
     @init_spinner()
@@ -118,7 +118,7 @@ class window.SiteView
         closeOnEsc: false
         onLoad: ->
           # manually remove remarks
-          @getOverlay().find('#archetypes-fieldname-Remarks').remove()
+          @getOverlay().find('.ArchetypesRemarksWidget').remove()
           return
         onClose: ->
           # here is where we'd populate the form controls, if we cared to.

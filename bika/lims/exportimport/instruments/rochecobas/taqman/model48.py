@@ -78,7 +78,13 @@ class RocheCobasTaqmanParser(InstrumentCSVResultsFileParser):
         rawdict['DefaultResult'] = 'Result'
         rawdict['Remarks'] = ''.join([rawdict['Result'], " on Order Number.", resid]) \
             if rawdict['Result'] == "Target Not Detected" else ''
-        rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Accepted Date/Time'])
+
+        if self._fileformat == "csv":
+            rawdict['DateTime'] = rawdict['Accepted Date/Time']
+        else:
+            rawdict['DateTime'] = self.csvDate2BikaDate(
+                rawdict['Accepted Date/Time'])
+
         self._addRawResult(resid, {testname: rawdict}, False)
         return 0
 

@@ -26,6 +26,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.api.analysis import is_out_of_range
@@ -44,11 +45,12 @@ from bika.lims.workflow import wasTransitionPerformed
 from plone.api.portal import get_registry_record
 from plone.api.portal import set_registry_record
 from plone.app.blob.interfaces import IBlobField
+from plone.memoize import view as viewcache
 from plone.registry import Record
 from plone.registry import field
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
-from zope.component import getAdapters, getUtility
+from zope.component import getUtility
 
 
 class AnalysisRequestPublishView(BrowserView):
@@ -612,6 +614,9 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-1)>],
                              'ar2_id': [<Analysis (for as-1)>]
                             },
+                     'interims': {'ar1_id': [an_interims_report],
+                                  'ar2_id': [an_interims_report]
+                                 },
                     },
                 },
             {'service_2_title':
@@ -621,6 +626,9 @@ class AnalysisRequestPublishView(BrowserView):
                                        <Analysis (for as-2)>],
                              'ar2_id': [<Analysis (for as-2)>]
                             },
+                     'interims': {'ar1_id': [an_interims_report],
+                                  'ar2_id': [an_interims_report]
+                                 },
                     },
                 },
             ...
@@ -629,6 +637,8 @@ class AnalysisRequestPublishView(BrowserView):
         """
         analyses = {}
         for ar in ars:
+            an_interims_report = []
+            interims_per_ar = {}
             ans = [an.getObject() for an in ar.getAnalyses()]
             for an in ans:
                 cat = an.getCategoryTitle()
@@ -640,25 +650,30 @@ class AnalysisRequestPublishView(BrowserView):
                             # here - service fields are all inside!
                             'service': an,
                             'accredited': an.getAccredited(),
-                            'ars': {ar.id: an.getFormattedResult()}
+                            'ars': {ar.id: an.getFormattedResult()},
                         }
                     }
                 elif an_title not in analyses[cat]:
                     analyses[cat][an_title] = {
                         'service': an,
                         'accredited': an.getAccredited(),
-                        'ars': {ar.id: an.getFormattedResult()}
+                        'ars': {ar.id: an.getFormattedResult()},
                     }
                 else:
                     d = analyses[cat][an_title]
                     d['ars'][ar.id] = an.getFormattedResult()
                     analyses[cat][an_title] = d
+
+                interims = an.getInterimFields()
+                an_interims_report = filter(lambda interim: interim.get('report', False), interims)
+                interims_per_ar.update({ar.id: an_interims_report})
+                analyses[cat][an_title]['interims'] = interims_per_ar
         return analyses
 
     def _lab_address(self, lab):
         lab_address = lab.getPostalAddress() \
-                      or lab.getBillingAddress() \
-                      or lab.getPhysicalAddress()
+            or lab.getBillingAddress() \
+            or lab.getPhysicalAddress()
         return _format_address(lab_address)
 
     def explode_data(self, data, padding=''):
@@ -689,15 +704,6 @@ class AnalysisRequestDigester:
     called for all subsequent digestion.  This allows the instance to cache
     data for objects that may be read multiple times for different ARs.
 
-    Passing overwrite=True when calling the instance will cause the
-    ar.Digest field to be overwritten with a new digestion.  This flag
-    is set True by default in the EndRequestHandler that is responsible for
-    automated re-building.
-
-    It should be run once when the AR is verified (or when a verified AR is
-    modified) to pre-digest the data so that AnalysisRequestPublishView will
-    run a little faster.
-
     Note: ProxyFields are not included in the reading of the schema.  If you
     want to access sample fields in the report template, you must refer
     directly to the correct field in the Sample data dictionary.
@@ -715,7 +721,7 @@ class AnalysisRequestDigester:
             'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
             'relatedItems', 'modification_date', 'immediatelyAddableTypes',
             'locallyAllowedTypes', 'nextPreviousEnabled', 'constrainTypesMode',
-            'RestrictedCategories', 'Digest',
+            'RestrictedCategories',
         ]
 
     def __call__(self, ar, overwrite=False):
@@ -723,38 +729,9 @@ class AnalysisRequestDigester:
         self.context = ar
         self.request = ar.REQUEST
 
-        # if AR was previously digested, use existing data (if exists)
-        verified = wasTransitionPerformed(ar, 'verify')
-        if not overwrite and verified:
-            # Prevent any error related with digest
-            data = ar.getDigest() if hasattr(ar, 'getDigest') else {}
-            if data:
-                # Check if the department managers have changed since
-                # verification:
-                saved_managers = data.get('managers', {})
-                saved_managers_ids = set(saved_managers.get('ids', []))
-                current_managers = self.context.getManagers()
-                current_managers_ids = set([man.getId() for man in
-                                            current_managers])
-                # The symmetric difference of two sets A and B is the set of
-                # elements which are in either of the sets A or B but not
-                # in both.
-                are_different = saved_managers_ids.symmetric_difference(
-                    current_managers_ids)
-                if len(are_different) == 0:
-                    # Seems that sometimes the 'obj' is wrong in the saved
-                    # data.
-                    data['obj'] = ar
-                    # Always set results interpretation
-                    self._set_results_interpretation(ar, data)
-                    return data
-
         logger.info("=========== creating new data for %s" % ar)
-
         # Set data to the AR schema field, and return it.
         data = self._ar_data(ar)
-        if hasattr(ar, 'setDigest'):
-            ar.setDigest(data)
         logger.info("=========== new data for %s created." % ar)
         return data
 
@@ -920,7 +897,6 @@ class AnalysisRequestDigester:
                 'client_sampleid': ar.getClientSampleID(),
                 'adhoc': ar.getAdHoc(),
                 'composite': ar.getComposite(),
-                'report_drymatter': ar.getReportDryMatter(),
                 'invoice_exclude': ar.getInvoiceExclude(),
                 'date_received': ulocalized_time(ar.getDateReceived(),
                                                  long_format=1),
@@ -940,21 +916,20 @@ class AnalysisRequestDigester:
                 'prepublish': False,
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None,
-                'resultsinterpretation':ar.getResultsInterpretation(),
+                'resultsinterpretation': ar.getResultsInterpretation(),
                 'ar_attachments': self._get_ar_attachments(ar),
                 'an_attachments': self._get_an_attachments(ar),
-        }
+                }
 
         # Sub-objects
         excludearuids.append(ar.UID())
-        puid = ar.getRawParentAnalysisRequest()
+        puid = ar.getRawInvalidated()
         if puid and puid not in excludearuids:
             data['parent_analysisrequest'] = self._ar_data(
-                ar.getParentAnalysisRequest(), excludearuids)
-        cuid = ar.getRawChildAnalysisRequest()
-        if cuid and cuid not in excludearuids:
-            data['child_analysisrequest'] = self._ar_data(
-                ar.getChildAnalysisRequest(), excludearuids)
+                ar.getInvalidated(), excludearuids)
+        retest = ar.getRetest()
+        if retest and api.get_uid(retest) not in excludearuids:
+            data['child_analysisrequest'] = self._ar_data(retest, excludearuids)
 
         wf = ar.portal_workflow
         allowed_states = ['verified', 'published']
@@ -967,6 +942,9 @@ class AnalysisRequestDigester:
         data['batch'] = self._batch_data(ar)
         data['specifications'] = self._specs_data(ar)
         data['analyses'] = self._analyses_data(ar, ['verified', 'published'])
+        data['hasinterimfields'] = len(
+            [an['interims'] for an in data['analyses'] if
+             len(an['interims']) > 0]) > 0
         data['qcanalyses'] = self._qcanalyses_data(ar,
                                                    ['verified', 'published'])
         data['points_of_capture'] = sorted(
@@ -1174,7 +1152,7 @@ class AnalysisRequestDigester:
             physical_address = _format_address(
                 contact.getPhysicalAddress()) if contact else ''
             postal_address =\
-                    _format_address(contact.getPostalAddress())\
+                _format_address(contact.getPostalAddress())\
                 if contact else ''
             data = {'id': member.id,
                     'fullname': to_utf8(cfullname) if cfullname else to_utf8(
@@ -1212,8 +1190,8 @@ class AnalysisRequestDigester:
 
     def _lab_address(self, lab):
         lab_address = lab.getPostalAddress() \
-                      or lab.getBillingAddress() \
-                      or lab.getPhysicalAddress()
+            or lab.getBillingAddress() \
+            or lab.getPhysicalAddress()
         return _format_address(lab_address)
 
     def _lab_data(self):
@@ -1277,6 +1255,7 @@ class AnalysisRequestDigester:
         analyses = []
         dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
+        incl_prev_results = self.context.bika_setup.getIncludePreviousFromBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         showhidden = self.isHiddenAnalysesVisible()
 
@@ -1296,11 +1275,10 @@ class AnalysisRequestDigester:
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
             andict['previous_results'] = ""
-            if batch:
+            if batch and incl_prev_results:
                 keyword = an.getKeyword()
                 bars = [bar for bar in batch.getAnalysisRequests()
-                        if an.aq_parent.UID() != bar.UID()
-                        and keyword in bar]
+                        if an.aq_parent.UID() != bar.UID() and keyword in bar]
                 for bar in bars:
                     pan = bar[keyword]
                     pan_state = workflow.getInfoFor(pan, 'review_state')
@@ -1338,7 +1316,6 @@ class AnalysisRequestDigester:
                   'formatted_uncertainty': '',
                   'retested': analysis.getRetested(),
                   'remarks': to_utf8(analysis.getRemarks()),
-                  'resultdm': to_utf8(analysis.getResultDM()),
                   'outofrange': False,
                   'type': analysis.portal_type,
                   'reftype': analysis.getReferenceType() \
@@ -1391,6 +1368,8 @@ class AnalysisRequestDigester:
         # is out of range. The second value (dismissed here) is a bool that
         # indicates if the result is out of shoulders
         andict['outofrange'] = is_out_of_range(analysis)[0]
+        interims = analysis.getInterimFields()
+        andict['interims'] = filter(lambda interim: interim.get('report', False), interims)
         return andict
 
     def _qcanalyses_data(self, ar, analysis_states=None):
@@ -1438,7 +1417,7 @@ class AnalysisRequestDigester:
     def _managers_data(self, ar):
         managers = {'ids': [], 'dict': {}}
         departments = {}
-        ar_mngrs = ar.getResponsible()
+        ar_mngrs = self._verifiers_data(ar.UID())
         for id in ar_mngrs['ids']:
             new_depts = ar_mngrs['dict'][id]['departments'].split(',')
             if id in managers['ids']:
@@ -1460,6 +1439,53 @@ class AnalysisRequestDigester:
             managers['dict'][mngr]['departments'] = final_depts
 
         return managers
+
+    @viewcache.memoize
+    def _verifiers_data(self, ar_uid):
+        verifiers = dict()
+        for brain in self.get_analyses(ar_uid):
+            an_verifiers = brain.getVerificators or ''
+            an_verifiers = an_verifiers.split(',')
+            for user_id in an_verifiers:
+                user_data = self._user_contact_data(user_id)
+                if not user_data:
+                    continue
+                verifiers[user_id] = user_data
+        return {'ids': verifiers.keys(),
+                'dict': verifiers}
+
+    @viewcache.memoize
+    def get_analyses(self, ar_uid):
+        query = dict(getRequestUID=ar_uid,
+                     portal_type='Analysis',
+                     cancellation_state='active',
+                     review_state=['verified', 'published'])
+        return api.search(query, CATALOG_ANALYSIS_LISTING)
+
+    @viewcache.memoize
+    def _user_contact_data(self, user_id):
+        user = self.get_user_contact(user_id)
+        if not user:
+            return None
+        signature = user.getSignature()
+        if signature:
+            signature = '{}/Signature'.format(user.absolute_url())
+        return dict(salutation=safe_unicode(user.getSalutation()),
+                    name=safe_unicode(user.getFullname()),
+                    email=safe_unicode(user.getEmailAddress()),
+                    phone=safe_unicode(user.getBusinessPhone()),
+                    job_title=safe_unicode(user.getJobTitle()),
+                    signature=signature or '',
+                    departments='')
+
+    @viewcache.memoize
+    def get_user_contact(self, user_id):
+        query = dict(getUsername=user_id,
+                     portal_type=['LabContact', 'Contact'])
+        users = api.search(query, 'portal_catalog')
+        if len(users) == 1:
+            return api.get_object(users[0])
+        return None
 
     def _set_results_interpretation(self, ar, data):
         """
@@ -1484,47 +1510,6 @@ class AnalysisRequestDigester:
         """Returns true if hidden analyses are visible
         """
         return self.request.form.get('hvisible', '0').lower() in ['true', '1']
-
-
-def ARModifiedHandler(instance, event):
-    """After any modification of an AR that has already been verified,
-    re-populate the ar.Digest.
-    """
-    if IAnalysisRequest.providedBy(instance):
-        if wasTransitionPerformed(instance, 'verify'):
-            request = instance.REQUEST
-            ars_to_digest = set(request.get('ars_to_digest', []))
-            ars_to_digest.add(instance)
-            request['ars_to_digest'] = ars_to_digest
-
-
-def AnalysisAfterTransitionHandler(instance, event):
-    """After a 'verify' transition on any analysis, we must set a flag in
-    the request so that the AR is digested before the request terminates.
-    We're doing it here so that the digestion happens only once at the end
-    of the request, regardless of how many children were transitioned.
-    """
-    if event.transition and event.transition.id == 'verify':
-        request = instance.REQUEST
-        ar = instance.aq_parent
-        ars_to_digest = set(request.get('ars_to_digest', []))
-        ars_to_digest.add(ar)
-        request['ars_to_digest'] = ars_to_digest
-
-
-def EndRequestHandler(event):
-    """At the end of the request, we check, to see if any pre-digestion is
-    required, for any ars or analyses that were processed during the request.
-    """
-    request = event.request
-    ars_to_digest = set(request.get('ars_to_digest', []))
-    digester = AnalysisRequestDigester()
-    if ars_to_digest:
-        for ar in ars_to_digest:
-            digester(ar, overwrite=True)
-    # If this commit() is not here, then the data does not appear to be
-    # saved.  IEndRequest happens outside the transaction?
-    transaction.commit()
 
 
 def get_client_address(context):

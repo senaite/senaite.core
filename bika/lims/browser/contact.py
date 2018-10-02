@@ -262,17 +262,13 @@ class ContactLoginDetailsView(BrowserView):
             return error(None, msg)
 
         contact.setUser(username)
+
         # TODO: Not sure if this is the correct behaviour after
         # senaite-integration since there have been changes in permissions.
         # If we're being created in a Client context, then give
         # the contact an Owner local role on client.
         if contact.aq_parent.portal_type == 'Client':
-            contact.aq_parent.manage_setLocalRoles(username, ['Owner', ])
-            if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
-                contact.aq_parent.reindexObjectSecurity()
-
-            # Grant roles to user
-            api.user.grant_roles(username=username, roles=['Member', 'Client'])
+            self.set_client_contact_permissions(contact)
 
         # Additional groups for LabContact users.
         # not required (not available for client Contact)
@@ -296,6 +292,21 @@ class ContactLoginDetailsView(BrowserView):
         self.context.plone_utils.addPortalMessage(message, 'info')
         return self.request.response.redirect(
             self.context.absolute_url() + "/login_details")
+
+    def set_client_contact_permissions(self, contact):
+        """Confer local owner role to client contact, and ensure
+        that they have access to client contents.
+        """
+        username = contact.getUsername()
+        contact.aq_parent.manage_setLocalRoles(username, ['Owner', ])
+        if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
+            contact.aq_parent.reindexObjectSecurity()
+        # Reindex setup objects located inside this client
+        bsc = contact.bika_setup_catalog
+        for brain in bsc(getClientUID=contact.aq_parent.UID()):
+            brain.getObject().reindexObjectSecurity()
+        # Grant roles to user
+        api.user.grant_roles(username=username, roles=['Member', 'Client'])
 
     def tabindex(self):
         i = 0

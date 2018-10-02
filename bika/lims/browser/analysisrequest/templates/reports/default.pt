@@ -31,8 +31,8 @@
                         categanalyses   analysisrequest/categorized_analyses;
                         categqcanalyses analysisrequest/categorized_qcanalyses;
                         hasqcanalyses   python:len(qcanalyses) &gt; 0;
-                        reportdrymatter analysisrequest/report_drymatter;
                         hasprevresults  analysisrequest/haspreviousresults;
+                        hasinterimfields  analysisrequest/hasinterimfields;
                         showqcanalyses  python:view.isQCAnalysesVisible();
                         remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
@@ -124,11 +124,11 @@
   <!-- Alert section (invalidated ar, etc.) -->
   <div id="section-alert" tal:condition="analysisrequest/invalid">
     <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
-    <tal:invalidreport tal:define="child python:analysisrequest['obj'].getChildAnalysisRequest()"
+    <tal:invalidreport tal:define="retest python:analysisrequest['obj'].getRetest()"
                        tal:condition="child">
       <span i18n:translate="">This Analysis request has been replaced by</span>&nbsp;
-      <a tal:attributes="href child/absolute_url"
-         tal:content="child/id"></a>
+      <a tal:attributes="href retest/absolute_url"
+         tal:content="retest/id"></a>
     </tal:invalidreport>
   </div>
   <div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
@@ -220,7 +220,6 @@
               <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
               <th tal:condition="hasprevresults" class="previous"><span i18n:translate="">Previous Results</span></th>
               <th class="result"><span i18n:translate="">Result</span></th>
-              <th class="dryresult" tal:condition="analysisrequest/report_drymatter"><span i18n:translate="">Dry</span></th>
               <th class="specs"><span i18n:translate="">Value Range</span></th>
               <th class="outofrange"></th>
             </tr>
@@ -250,6 +249,12 @@
                          class="accredited-ico"/>
                     <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
                     <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
+                    <span tal:condition="hasinterimfields">
+                      <span class='new_line' tal:repeat="interim python:analysis['interims']">
+                          <span class="interims_title"
+                              tal:content="interim/title"></span>
+                      </span>
+                    </span>
                   </td>
                   <td tal:condition="hasprevresults" class="prev">
                     <span tal:content="structure analysis/previous_results">1,2,3</span>
@@ -257,9 +262,12 @@
                   <td>
                     <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
-                  </td>
-                  <td class="dryresult" tal:condition="python: reportdrymatter and getattr(analysis, 'resultdm', None)">
-                    <span tal:content="structure string:${analysis/resultdm} ${analysis/formatted_unit|nothing}">23</span>
+                    <span tal:condition="hasinterimfields">
+                      <span class='new_line' tal:repeat="interim python:analysis['interims']">
+                          <span class="result" tal:content="structure interim/formatted_value"/>
+                          <span class="units" tal:content="structure interim/unit|nothing"/>
+                      </span>
+                    </span>
                   </td>
                   <td class="specs">
                     <span tal:condition="analysis/uncertainty"
@@ -273,7 +281,6 @@
                 </tr>
                 <tr tal:condition="python:remarksenabled==True and analysis['remarks']">
                   <td class="remarks" colspan="5"
-                      tal:attributes="colspan python: '6' if reportdrymatter else '5';"
                       tal:content="structure analysis/remarks">
                     Quisque sodales quam quis faucibus pretium. Aliquam erat volutpat. Pellentesque vel gravida nibh. Curabitur scelerisque cursus pretium. Mauris sollicitudin, risus vitae tincidunt fringilla, nisi risus consequat dolor, a laoreet dui odio eget elit. Etiam metus orci, sagittis sit amet metus in, tempus viverra ipsum. Nulla sed mi pharetra, hendrerit turpis quis, hendrerit elit. In vel eleifend arcu. Phasellus at imperdiet dui, quis mattis velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
                   </td>
@@ -314,7 +321,6 @@
                   <tr>
                     <th class="analysis"><span tal:content='python: cat'>Category: Vitamin D</span></th>
                     <th class="result"><span i18n:translate="">Result</span></th>
-                    <th class="dryresult" tal:condition="analysisrequest/report_drymatter"><span i18n:translate="">Dry</span></th>
                     <th class="specs"><span i18n:translate="">Value Range</span></th>
                     <th class="refsample" tal:condition='python: duplicate==False'><span i18n:translate="">Reference Sample</span></th>
                     <th class="worksheet"><span i18n:translate="">Worksheet</span></th>
@@ -334,9 +340,6 @@
                         <td>
                           <span class="result" tal:content="structure analysis/formatted_result">23</span>
                           <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
-                        </td>
-                        <td class="dryresult" tal:condition="python: reportdrymatter and getattr(analysis, 'resultdm', None)">
-                          <span tal:content="structure string:${analysis/resultdm}  ${analysis/formatted_unit|nothing}">23</span>
                         </td>
                         <td class="specs">
                           <span tal:condition="analysis/uncertainty"
@@ -383,15 +386,6 @@
       <tal:render condition="python:attachment['renderoption']=='r'">
         <tal:tag replace="structure attachment/inline"/>
       </tal:render>
-      <tal:attach condition="python:attachment['renderoption'] in ('a', '')">
-        <span tal:content="attachment/keywords">Total Vit D2 + D3</span>
-        <a title="Click to download"
-          tal:attributes="href attachment/download"
-          tal:content="attachment/filename">Filename</a>
-        <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-        (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-        <span class="file-size" tal:content="attachment/size">145Kb</span>
-      </tal:attach>
     </div>
     </tal:ar_attachments>
 
@@ -401,15 +395,6 @@
       <tal:render condition="python:attachment['renderoption']=='r'">
         <tal:tag replace="structure attachment/inline"/>
       </tal:render>
-      <tal:attach condition="python:attachment['renderoption'] in ('a', '')">
-        <span tal:content="attachment/keywords">Total Vit D2 + D3</span>
-        <a title="Click to download"
-          tal:attributes="href attachment/download"
-          tal:content="attachment/filename">Filename</a>
-        <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-        (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-        <span class="file-size" tal:content="attachment/size">145Kb</span>
-      </tal:attach>
     </div>
   </tal:attachments>
   <!-- /ATTACHMENTS -->
@@ -458,7 +443,6 @@
   <!-- Discreeter section -->
   <div id="section-discreeter">
     <div id="discreeter-outofrange" i18n:translate="">* Result out of client specified range.</div>
-    <div tal:condition="analysisrequest/report_drymatter" i18n:translate="">Reported as dry matter</div>
     <div tal:condition="analysisrequest/invoice_exclude" i18n:translate="">Not invoiced</div>
     <div tal:condition="laboratory/accredited" i18n:translate="">Methods included in the <tal:block replace="laboratory/accreditation_body" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</div>
     <div i18n:translate="">Analysis results relate only to the samples tested.</div>

@@ -15,6 +15,7 @@ from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
     IntegerWidget, SelectionWidget, StringWidget
 from Products.Archetypes.utils import DisplayList, IntDisplayList
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField, UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
@@ -192,18 +193,6 @@ AllowManualDetectionLimit = BooleanField(
     )
 )
 
-# Indicates that the result should be calculated against the system "Dry Matter"
-# service, and the modified result stored in Analysis.ResultDM field.
-ReportDryMatter = BooleanField(
-    'ReportDryMatter',
-    schemata="Analysis",
-    default=False,
-    widget=BooleanWidget(
-        label=_("Report as Dry Matter"),
-        description=_("These results can be reported as dry matter"),
-    )
-)
-
 # Specify attachment requirements for these analyses
 AttachmentOption = StringField(
     'AttachmentOption',
@@ -351,6 +340,7 @@ MaxTimeAllowed = DurationField(
 # The amount of difference allowed between this analysis, and any duplicates.
 DuplicateVariation = FixedPointField(
     'DuplicateVariation',
+    default='0.00',
     schemata="Method",
     widget=DecimalWidget(
         label=_("Duplicate Variation %"),
@@ -558,8 +548,9 @@ ResultOptions = RecordsField(
     subfield_validators={'ResultValue': 'resultoptionsvalidator',
                          'ResultText': 'resultoptionsvalidator'},
     subfield_sizes={'ResultValue': 5,
-                    'ResultText': 25,
-                    },
+                    'ResultText': 25,},
+    subfield_maxlength={'ResultValue': 5,
+                        'ResultText': 255,},
     widget=RecordsWidget(
         label=_("Result Options"),
         description=_(
@@ -666,7 +657,6 @@ schema = BikaSchema.copy() + Schema((
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
-    ReportDryMatter,
     AttachmentOption,
     Keyword,
     ManualEntryOfResults,
@@ -967,3 +957,12 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         department = self.getDepartment()
         if department:
             return department.UID()
+
+    @security.public
+    def getMaxTimeAllowed(self):
+        """Returns the maximum turnaround time for this analysis. If no TAT is
+        set for this particular analysis, it returns the value set at setup
+        return: a dictionary with the keys "days", "hours" and "minutes"
+        """
+        tat = self.Schema().getField("MaxTimeAllowed").get(self)
+        return tat or self.bika_setup.getDefaultTurnaroundTime()

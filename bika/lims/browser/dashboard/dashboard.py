@@ -535,7 +535,7 @@ class DashboardView(BrowserView):
             analyses assigned, etc.)
 
             sample_registered, not_requested, published, retracted,
-            sample_due, sample_received, sample_prep, sampled, to_be_preserved,
+            sample_due, sample_received, sampled, to_be_preserved,
             to_be_sampled, , to_be_verified, rejected, verified, to_be_verified,
             assigned
         """

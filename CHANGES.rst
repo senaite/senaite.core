@@ -1,7 +1,222 @@
 Changelog
 =========
 
-1.2.4 (unreleased)
+1.2.9 (unreleased)
+------------------
+
+**Added**
+
+- #1031 Added profiling and timing decorators
+- #1001 Option to show Interim fields on results reports
+- #1024 Function to get the Verifiers from an Analysis Request
+- #1019 Support for min and max warns in range charts
+- #1003 Alphanumeric numbering in sequential IDs generator
+
+**Changed**
+
+- #1032 Refactored and fixed inconsistencies with Analysis TAT logic
+- #1027 Refactored relationship between invalidated ARs and retests
+- #1027 Rename `retract_ar` transition to `invalidate`
+- #1012 Refactored Contacts listing
+- #1010 Increased max length of Results options to 255 chars (was 40)
+
+**Removed**
+
+- #1026 Removed auto-digest of results reports on verify transitions
+- #1005 Removed databasesanitize package
+- #992 Removed "Attach" report option for Attachments
+
+
+**Fixed**
+
+- #1030 Earliness of analysis is not expressed as minutes
+- #1029 TAT in Analysis TAT over time report does not display days
+- #1029 TAT in Analysis TAT over time report with decimals
+- #1029 Need to always choose an analyst in productivity reports
+- #1034 Attachments assigned to Analyses break and get orphaned when the referenced Analysis was removed
+- #1028 Numbers for productivity report "Analyses by client" are all zero
+- #1022 Date Received saved as UTC time
+- #1018 Fix AR Add cleanup after template removal
+- #1014 ReferenceWidget does not handle searches with null/None
+- #1008 Previous results from same batch are always displayed in reports
+- #1013 ARs and Samples from other clients are listed when logged in as contact
+- #991 New client contacts do not have access to their own AR Templates
+- #996 Hide checkbox labels on category expansion
+- #990 Fix client analysisspecs view
+- #899 Secondary AR changes received date of sample
+- #888 Order of Interim Fields not maintained on ARs
+
+
+**Security**
+
+
+
+1.2.8 (2018-08-11)
+------------------
+
+**Added**
+
+- #965 Added operators for max and min values in Specifications
+- #947 Instrument import interface: Cobas Integra 400plus
+- #924 Added ExtProxyField for its use in SchemaExtender
+
+**Changed**
+
+- #971 Refactored Client's Analysis Requests, Samples and Batches listings
+- #945 Show AR Remarks in Worksheet ManageResults views
+- #953 Refactored Analysis Categories Listing
+- #956 Refactored LabContacts Listing
+- #955 Refactored Departments Listing
+- #954 Refactored Attachment Types Listing
+- #944 Remarks style in Manage Results/Analyses
+- #943 AnalysisRequest View Remarks Field Style
+- #938 Refactored Analysis Profiles Widget
+- #937 Refactored Analysis Specifications Widget
+- #936 Refactored AR Templates Listing
+- #933 Refactored SampleConditions Listing
+- #932 Refactored Calculation Listing
+- #931 Refactored AnalysisSpecs Listing
+- #935 Refactored SamplingDeviations Listing
+- #926 Refactored Analysis Services Listing
+- #916 Refactored Instruments Listing
+- #919 Refactored Profiles Listing
+- #915 Refactored SamplePoints Listing
+- #914 Refactored Sampletypes Listing
+- #913 Refactored Methods Listing View
+
+**Removed**
+
+- #972 Remove "Linked Sample" from Sample
+- #912 Remove "Default AR Specifications" Selection from Setup
+- #901 Remove explicit permission settings for clients
+- #900 Removed basic handling of custom Sample Preparation Workflows
+
+**Fixed**
+
+- #983 Traceback in Client's Analysis Specs view
+- #986 Result input fields are not read-only for analyst after submission
+- #985 Do not display content actions in listings from inside Client
+- #966 Traceback in Analyses listings when analysis unit is a numeric value
+- #959 Time not displayed for Date Created in Analysis Requests listings
+- #949 Retain AR Spec if Analyses were added/removed
+- #948 Inactive Sample Types shown in Analysis Specifications
+- #940 Label "Date Received" appears twice in Analysis Request view
+- #917 Localization of date and time strings in listings
+- #902 Attribute error when updating QC results using an import interface
+- #456 Date Published appears two times on the header table of AR view
+- #898 Cannot view/edit Supplier. Tabs for different views now visible.
+- #905 Users created through LabContact's Login Details view are added to "Clients" group
+- #906 DateTime Widget does not display the Time
+- #909 List of clients cannot sort by Client ID
+- #921 Missing interim fields in worksheet/analyses_transposed view
+- #920 Refactored Remarks and created RemarksField and RemarksWidget
+- #958 Traceback on batch book view
+- #960 Traceback on AnalysisSpec Log
+- #962 Calculated results not marked for submission if zero
+- #964 Dormant Analysis Services displayed in AR Templates
+- #967 Avoid deepcopy, "Can't pickle acquisition wrappers"
+
+
+1.2.7 (2018-07-10)
+------------------
+
+**Added**
+
+- #836 Allow (Multi-)Attachment upload available in AR Add
+- #846 Transifex integration
+- #848 Show icon on the Supply Order View
+- #844 Missing interface for AR Report added
+- #858 Only Lab Managers sees rejected analysis requests
+
+**Changed**
+
+- #891 Better default styles for listing tables
+- #887 New icon set
+- #879 Upgrade lxml version from 2.3.6 to 3.6.0 and  Plone from 4.3.15 to 4.3.17
+- #873 Sample Type field editable in AR and Sample edit views before receive
+- #868 AR Add Form: Refactoring and Styling
+- #817 Make warn message clearer if transition rejection is due to missing sampler
+
+**Fixed**
+
+- #892 Display only active Analyses for new Profiles
+- #889 Fix override order of message catalogs
+- #864 Sort order in setup of analysis services wrong
+- #881 Fixed JS i18n catalog names
+- #880 Fix message factory
+- #878 Fix AR Header Table Styles and Ajax Failures
+- #877 Worksheet's attachments column is empty after results import from file
+- #857 "other" reasons are not listed on AR rejection notifications (e-mail and attached pdf)
+- #875 Fix Batch AR View
+- #872 Date format appears wrong in Users history administrative report
+- #855 Dashboard is displayed to Lab clerks after login only
+- #871 Fix OpenTagError for i18ndude
+- #865 AR VAT Amount when using Profiles is not calculated correctly
+- #851 Fix worksheet verification with retracted results
+
+
+1.2.6 (2018-06-08)
+------------------
+
+**Changed**
+
+- #838 Unpinned WeasyPrint to allow Addon to use newer version
+- #820 Always allow interim fields to be added to Analysis Services
+- #826 Display signatures of verifiers instead of dept managers in results report
+- #814 Change naming from Bika LIMS Configuration to LIMS Configuration in the Site Setup page
+- #814 Change naming from Bika Setup to Setup in the LIMS Configuration section found in the Site Setup page
+
+**Fixed**
+
+- #842 Re-compiled Coffee-Scripts with version 1.12.7
+- #824 Instrument Listing Views Fixes and Refactoring
+- #840 Fix date range filter for "Data entry day book" report
+- #828 Traceback when removing a retracted analysis through Manage Analyses view
+- #832 Set new calculation Interims to dependant services
+- #833 Fix sort order of interims in Calculations and Analysis Services
+- #834 Fix Duplication Action for Analysis Services
+- #835 List only published ARs when "Published" Filter is active
+- #825 Error when exporting Worksheets list with `senaite.exporter`
+- #821 Cannot retract single analysis services
+
+
+1.2.5 (2018-05-05)
+------------------
+
+**Added**
+
+- #777 Delay option for searches in reference widget combos
+- #806 Include Client ID when setting up ARReport on the IDServer
+
+**Changed**
+
+- #815 Change description and title of the invalidation notification option
+
+**Removed**
+
+- #811 Remove senaite.api import in printform
+- #807 Remove "queued_ars" JS call to avoid 404
+- #800 Remove Dry Matter from tests
+- #779 Remove Dry Matter functionality
+
+**Fixed**
+
+- #813 Saving AR results gives TypeError: can only compare to a set
+- #799 On AR Listing, edit for Date Sampled not working when Sampler has a value
+- #776 Analyses submission in Worksheet is slow
+- #726 404 Error raised when clicking Print Samples Sheets from within a client
+- #802 Remove Dry Matter remainders
+- #781 Delete Permission on ARs for Lab Managers
+- #784 Fix workflow state filter not kept when expanding categories in AS listing
+- #786 Fix inactive services listed in AR "Manage Analyses" forms
+- #775 Analyses on Analysis Requests are hyperlinked to their Worksheets
+- #769 Traceback when submitting duplicate when Duplicate Variation is not set
+- #771 Slow Searches in Listing Views
+- #774 When retracting an Analysis Requests its analyses are also retracted
+- #772 Improved UID check in API
+
+
+1.2.4 (2018-04-06)
 ------------------
 
 **Added**
@@ -15,6 +230,8 @@ Changelog
 
 **Changed**
 
+- #765 Department Filtering Improvements
+- #746 StringField to UIDReferenceField for Default Department of Lab Contact
 - #744 Updated WeasyPrint to 0.42.2
 - #694 Out of range/shoulders logic redux, ported to `api.analysis`
 - #694 Make getResultRange functions from Analysis-types consistent
@@ -27,13 +244,14 @@ Changelog
 
 **Fixed**
 
+- #763 Datetime conversion error in CSV Importer of Taqman 48
 - #761 Dormant Reference Definitions were listed for selection on WS Templates
 - #735 Interim fields not created for QC Analyses on WSs
 - #752 Published Date field of Analyses is never set
-- #760 Default to empty the Title field when creating a new Analysis Specification (it was showing the UID)
-- #759 Date error raised in invoice batch creation although End date is after Start date
+- #760 Default to empty the Title field when creating a new Analysis Specification
+- #759 Date error in invoice batch creation although End date is after Start date
 - #743 Traceback when accessing the view of a Statement
-- #734 Chameleon parse error in "Analyses performed and published as % of total", "Analyses summary per department" and "Data entry day book" productivity reports
+- #734 Chameleon parse error in productivity reports
 - #750 Wrong redirect after Batch Label edit or creation
 - #721 Fix filter functionality of Worksheets after sort/pagination
 - #738 Traceback when Invalidating Analysis Requests
@@ -54,9 +272,7 @@ Changelog
 - #712 Dates in date picker are visible again
 - #703 Containers of Duplicated Analyses are not found
 - #698 Fix Publish Actions for Batches
-- #696 Filter worksheets by department. The worksheet count in the dashboard is now properly updated accordingly to the selected departments
-
-**Security**
+- #696 Worksheet count in dashboard is wrong in when filtered by department
 
 
 1.2.3 (2018-02-23)

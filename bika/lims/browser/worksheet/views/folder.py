@@ -49,6 +49,10 @@ class FolderView(BikaListingView):
         self.show_select_all_checkbox = True
         self.show_select_column = True
         self.restrict_results = False
+        self.selected_state = ''
+        self.analyst_choices = []
+        self.can_reassign = False
+        self.can_manage = False
         self.wf = getToolByName(self, 'portal_workflow')
         self.rc = getToolByName(self, REFERENCE_CATALOG)
         self.pm = getToolByName(self.context, "portal_membership")

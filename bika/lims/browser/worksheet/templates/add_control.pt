@@ -3,7 +3,7 @@
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	metal:use-macro="here/main_template/macros/master"
-	i18n:domain="bika">
+	i18n:domain="senaite.core">
 <body>
 
 <metal:content-title fill-slot="content-title">
@@ -56,13 +56,6 @@
 			</tr>
 		</table>
 	</fieldset>
-
-	<tal:remarks define="
-		field python:context.Schema()['Remarks'];
-		errors python:{};">
-		<p style="margin-top:2em;"/>
-		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
-	</tal:remarks>
 
 </metal:content-core>
 

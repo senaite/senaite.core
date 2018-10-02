@@ -8,35 +8,32 @@
 import collections
 import json
 import traceback
-from DateTime import DateTime
 
-from bika.lims import bikaMessageFactory as _
+from DateTime import DateTime
+from Products.Archetypes import PloneMessageFactory as PMF
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
     AnalysisRequestsBikaListingFilterBar
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.permissions import (AddAnalysisRequest, ManageAnalysisRequests,
                                    SampleSample)
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import getUsers, t
 from collective.taskqueue.interfaces import ITaskQueue
 from plone.api import user
-from plone.app.layout.globals.interfaces import IViewView
 from plone.protect import CheckAuthenticator, PostOnly
-from Products.Archetypes import PloneMessageFactory as PMF
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import queryUtility
-from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
     """Listing View for all Analysis Requests in the System
     """
-    implements(IViewView)
 
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
     ar_add = ViewPageTemplateFile("templates/ar_add.pt")
@@ -58,9 +55,15 @@ class AnalysisRequestsView(BikaListingView):
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
-            "path": {"query": "/", "depth": 2},
             "cancellation_state": "active",
         }
+
+        # Filter by Department
+        if self.context.bika_setup.getAllowDepartmentFiltering():
+            deps = self.request.get('filter_by_department_info', '')
+            dep_uids = deps.split(",")
+            dep_query = {"query": dep_uids, "operator": "or"}
+            self.contentFilter['getDepartmentUIDs'] = dep_query
 
         self.context_actions = {}
 
@@ -103,7 +106,7 @@ class AnalysisRequestsView(BikaListingView):
             ("getClientOrderNumber", {
                 "title": _("Client Order"),
                 "sortable": True,
-                "toggle": True}),
+                "toggle": False}),
             ("Creator", {
                 "title": PMF("Creator"),
                 "index": "getCreatorFullName",
@@ -118,12 +121,12 @@ class AnalysisRequestsView(BikaListingView):
                 "attr": "getSampleID",
                 "index": "getSampleID",
                 "replace_url": "getSampleURL",
-                "toggle": True, }),
+                "toggle": False}),
             ("BatchID", {
                 "title": _("Batch ID"),
                 "index": "getBatchID",
                 "sortable": True,
-                "toggle": True}),
+                "toggle": False}),
             ("Client", {
                 "title": _("Client"),
                 "index": "getClientTitle",
@@ -135,21 +138,21 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "index": "getProvince",
                 "attr": "getProvince",
-                "toggle": True}),
+                "toggle": False}),
             ("District", {
                 "title": _("District"),
                 "sortable": True,
                 "index": "getDistrict",
                 "attr": "getDistrict",
-                "toggle": True}),
+                "toggle": False}),
             ("getClientReference", {
                 "title": _("Client Ref"),
                 "sortable": True,
                 "index": "getClientReference",
-                "toggle": True}),
+                "toggle": False}),
             ("getClientSampleID", {
                 "title": _("Client SID"),
-                "toggle": True}),
+                "toggle": False}),
             ("ClientContact", {
                 "title": _("Contact"),
                 "sortable": True,
@@ -185,7 +188,9 @@ class AnalysisRequestsView(BikaListingView):
                 "input_width": "10"}),
             ("getDateVerified", {
                 "title": _("Date Verified"),
-                "input_width": "10"}),
+                "input_width": "10",
+                "toggle": False,
+            }),
             ("getSampler", {
                 "title": _("Sampler"),
                 "toggle": SamplingWorkflowEnabled}),
@@ -371,7 +376,7 @@ class AnalysisRequestsView(BikaListingView):
                 "id": "published",
                 "title": _("Published"),
                 "contentFilter": {
-                    "review_state": ("published", "invalid"),
+                    "review_state": ("published"),
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
@@ -548,6 +553,7 @@ class AnalysisRequestsView(BikaListingView):
                 (self.mtool.checkPermission(AddAnalysisRequest, self.context)):
             self.context_actions[_("Add")] = \
                 {"url": "ar_add?ar_count=1",
+                 'permission': 'Add portal content',
                  "icon": "++resource++bika.lims.images/add.png"}
 
         self.editresults = -1
@@ -612,32 +618,25 @@ class AnalysisRequestsView(BikaListingView):
             new_states.append(state)
         self.review_states = new_states
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # If the current user is a client contact, display those analysis
+        # requests that belong to same client only
+        super(AnalysisRequestsView, self).before_render()
+        client = api.get_current_client()
+        if client:
+            self.contentFilter['path'] = {
+                "query": "/".join(client.getPhysicalPath()),
+                "level": 0 }
+            # No need to display the Client column
+            self.remove_column('Client')
+
     def isItemAllowed(self, obj):
+        """ If Adnvanced Filter bar is enabled, this method checks if the item
+        matches advanced filter bar criteria
         """
-        It checks if the analysis request can be added to the list depending
-        on the department filter. It checks the department of each analysis
-        service from each analysis belonguing to the given analysis request.
-        If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis request brain.
-        @return: boolean
-        """
-        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
-            return False
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
-        # Getting the department from analysis service
-        deps = obj.getDepartmentUIDs if hasattr(obj, "getDepartmentUIDs")\
-            else []
-        result = True
-        if deps:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get("filter_by_department_info", "")
-            # Comparing departments" UIDs
-            deps_uids = set(deps)
-            filter_uids = set(cookie_dep_uid.split(","))
-            matches = deps_uids & filter_uids
-            result = len(matches) > 0
-        return result
+        return not self.filter_bar_enabled or self.filter_bar_check_item(obj)
 
     def folderitems(self, full_objects=False, classic=False):
         # We need to get the portal catalog here in roder to save process
@@ -784,7 +783,7 @@ class AnalysisRequestsView(BikaListingView):
         if after_icons:
             item['after']['getId'] = after_icons
 
-        item['Created'] = self.ulocalized_time(obj.created)
+        item['Created'] = self.ulocalized_time(obj.created, long_format=1)
         if obj.getContactUID:
             item['ClientContact'] = obj.getContactFullName
             item['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \

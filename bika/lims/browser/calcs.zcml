@@ -2,7 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
 <!--  When interim fields are changed, javascript calls this to populate result fields  -->
   <browser:page
@@ -17,13 +17,6 @@
       for="*"
       name="get_method_calculation"
       class="bika.lims.browser.calcs.ajaxGetMethodCalculation"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
-  <browser:page
-      for="*"
-      name="get_available_calculations"
-      class="bika.lims.browser.calcs.ajaxGetAvailableCalculations"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
   />

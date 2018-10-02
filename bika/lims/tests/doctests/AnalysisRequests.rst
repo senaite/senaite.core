@@ -23,6 +23,7 @@ Needed Imports::
 
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.api import do_transition_for
 
 Functional Helpers::
 
@@ -886,3 +887,68 @@ Setting the value on the `Sample` changes also the value on the `AnalysisRequest
 
     >>> sample.getComposite() == composite2
     True
+
+DateReceived field special handling
+...................................
+
+Secondary ARs will always have identical DateReceived value as the
+original AR and associated Sample (The AR field is a ProxyField).
+
+This means the "receive" transition on an AR will only modify the DateReceived
+value if it has not already been set.
+
+    .. code ::
+    >>> ar1 = create_analysisrequest(client, request, values, service_uids)
+    >>> len(api.do_transition_for(ar1, 'receive'))
+    1
+    >>> values2 = values.copy()
+    >>> values2['Sample'] = ar1.getSample().UID()
+    >>> ar2 = create_analysisrequest(client, request, values2, service_uids)
+    >>> ar1.getSample() == ar2.getSample()
+    True
+    >>> len({ar1.getDateReceived(),
+    ...      ar2.getDateReceived(),
+    ...      ar1.getSample().getDateReceived(),
+    ...      ar2.getSample().getDateReceived()})
+    1
+
+DateReceived field should be editable in Received state
+.......................................................
+
+For this we need an AR with more than one Analysis:
+
+    .. code ::
+
+    >>> from bika.lims.adapters.widgetvisibility import SampleDateReceived
+    >>> from bika.lims.workflow import doActionFor
+
+    >>> as2 = api.create(bika_analysisservices, 'AnalysisService', title='Another Type Of Analysis', ShortTitle='Another', Category=analysiscategory, Keyword='AN')
+    >>> ar1 = create_analysisrequest(client, request, values, service_uids + [as2.UID()])
+    >>> sample1 = ar1.getSample()
+
+In states earlier than `sample_received` the DateReceived field is uneditable:
+
+    .. code ::
+
+    >>> SampleDateReceived(sample1)(sample1, 'edit', sample1.schema['DateReceived'], 'default')
+    'invisible'
+
+In the `sample_received` state however, it is possible to modify the field.  In this case
+the SampleDateReceived adapter also simply passes the schema default unmolested.
+
+    .. code ::
+
+    >>> p = api.do_transition_for(ar1, 'receive')
+    >>> SampleDateReceived(sample1)(sample1, 'edit', sample1.schema['DateReceived'], 'default')
+    'default'
+
+After any analysis has been submitted, the field is no longer editable.  The adapter
+sets the widget.isible to 'invisible'.
+
+    .. code ::
+
+    >>> an = ar1.getAnalyses(full_objects=True)[0]
+    >>> an.setResult('1')
+    >>> p = doActionFor(an, 'submit')
+    >>> SampleDateReceived(sample1)(sample1, 'edit', sample1.schema['DateReceived'], 'default')
+    'invisible'

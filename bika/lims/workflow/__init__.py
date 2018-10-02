@@ -96,17 +96,12 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     if allowed_transition:
         allowed = isTransitionAllowed(instance, action_id, active_only)
         if not allowed:
-            transitions = workflow.getTransitionsFor(instance)
-            transitions = [trans['id'] for trans in transitions]
-            transitions = ', '.join(transitions)
             currstate = getCurrentState(instance)
             clazzname = instance.__class__.__name__
-            msg = "Transition '{0}' not allowed: {1} '{2}' ({3}). " \
-                  "Available transitions: {4}".format(action_id, clazzname,
-                                                      instance.getId(),
-                                                      currstate, transitions)
+            msg = "Transition '{0}' not allowed: {1} '{2}' ({3})"
+            msg = msg.format(action_id, clazzname, instance.getId(), currstate)
             logger.warning(msg)
-            _logTransitionFailure(instance, action_id)
+            #_logTransitionFailure(instance, action_id)
             return actionperformed, message
     else:
         logger.warning(
@@ -334,13 +329,7 @@ def wasTransitionPerformed(instance, transition_id):
 def isActive(instance):
     """Returns True if the object is neither in a cancelled nor inactive state
     """
-    state = getCurrentState(instance, 'cancellation_state')
-    if state == 'cancelled':
-        return False
-    state = getCurrentState(instance, 'inactive_state')
-    if state == 'inactive':
-        return False
-    return True
+    return api.is_active(instance)
 
 
 def getReviewHistoryActionsList(instance):
@@ -482,60 +471,3 @@ class JSONReadExtender(object):
         include_fields = get_include_fields(request)
         if not include_fields or "transitions" in include_fields:
             data['transitions'] = get_workflow_actions(self.context)
-
-
-
-@implementer(IWorkflowChain)
-def SamplePrepWorkflowChain(ob, wftool):
-    """Responsible for inserting the optional sampling preparation workflow
-    into the workflow chain for objects with ISamplePrepWorkflow
-
-    This is only done if the object is in 'sample_prep' state in the
-    primary workflow (review_state).
-    """
-    # use catalog to retrieve review_state: getInfoFor causes recursion loop
-    chain = list(ToolWorkflowChain(ob, wftool))
-    try:
-        bc = getToolByName(ob, 'bika_catalog')
-    except AttributeError:
-        logger.warning(traceback.format_exc())
-        logger.warning(
-            "Error getting 'bika_catalog' using 'getToolByName' with '{0}'"
-            " as context.".format(ob))
-        return chain
-    proxies = bc(UID=ob.UID())
-    if not proxies or proxies[0].review_state != 'sample_prep':
-        return chain
-    sampleprep_workflow = ob.getPreparationWorkflow()
-    if sampleprep_workflow:
-        chain.append(sampleprep_workflow)
-    return tuple(chain)
-
-
-def SamplePrepTransitionEventHandler(instance, event):
-    """Sample preparation is considered complete when the sampleprep workflow
-    reaches a state which has no exit transitions.
-
-    If the stateis state's ID is the same as any AnalysisRequest primary
-    workflow ID, then the AnalysisRequest will be sent directly to that state.
-
-    If the final state's ID is not found in the AR workflow, the AR will be
-    transitioned to 'sample_received'.
-    """
-    if not event.transition:
-        # creation doesn't have a 'transition'
-        return
-
-    if not event.new_state.getTransitions():
-        # Is this the final (No exit transitions) state?
-        wftool = getToolByName(instance, 'portal_workflow')
-        primary_wf_name = list(ToolWorkflowChain(instance, wftool))[0]
-        primary_wf = wftool.getWorkflowById(primary_wf_name)
-        primary_wf_states = primary_wf.states.keys()
-        if event.new_state.id in primary_wf_states:
-            # final state name matches review_state in primary workflow:
-            dst_state = event.new_state.id
-        else:
-            # fallback state:
-            dst_state = 'sample_received'
-        changeWorkflowState(instance, primary_wf_name, dst_state)

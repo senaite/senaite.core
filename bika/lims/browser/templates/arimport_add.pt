@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
       lang="en"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bika">
+      i18n:domain="senaite.core">
 
 <head>< i18n:translate=""
         tal:content="Add ARImport"/>

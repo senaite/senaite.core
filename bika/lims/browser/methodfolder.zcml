@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      for="bika.lims.interfaces.IMethods"
+      name="folder_view"
+      class=".methodfolder.MethodFolderContentsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

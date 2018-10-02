@@ -82,12 +82,15 @@ class WorkflowAction:
 
         return action, came_from
 
+    def get_selected_uids(self):
+        """Returns a list of selected form uids"""
+        return self.request.form.get('uids', None) or list()
+
     def _get_selected_items(self):
         """return a list of selected form objects
            full_objects defaults to True
         """
-        form = self.request.form
-        uids = form.get("uids", [])
+        uids = self.get_selected_uids()
         selected_items = collections.OrderedDict()
         for uid in uids:
             obj = get_object_by_uid(uid)
@@ -1039,15 +1042,11 @@ class BikaListingView(BrowserView):
         """Get the sort_order criteria from the request or view
         """
         form_id = self.get_form_id()
-        key = "{}_sort_order".format(form_id)
-        sort_order = self.request.get(key, None)
-
-        if sort_order is None:
-            sort_order = self.contentFilter.get("sort_order", self.sort_order)
-        if sort_order not in ["ascending", "descending"]:
-            sort_order = "descending"
-
-        return sort_order
+        allowed = ["ascending", "descending"]
+        sort_order = [self.request.get("{}_sort_order".format(form_id), None),
+                      self.contentFilter.get("sort_order", None)]
+        sort_order = filter(lambda order: order in allowed, sort_order)
+        return sort_order and sort_order[0] or "descending"
 
     def is_valid_sort_index(self, sort_on):
         """Checks if the sort_on index is capable for a sort_
@@ -1291,7 +1290,7 @@ class BikaListingView(BrowserView):
 
         # strip whitespaces off the searchterm
         searchterm = searchterm.strip()
-        # strip illegal characters off the searchterm
+        # Strip illegal characters of the searchterm
         searchterm = searchterm.strip(u"*.!$%&/()=-+:'`´^")
         logger.info(u"ListingView::search:searchterm='{}'".format(searchterm))
 
@@ -1302,19 +1301,66 @@ class BikaListingView(BrowserView):
 
         # search the catalog
         catalog = api.get_tool(self.catalog)
-        brains = catalog(query)
+
+        # return the unfiltered catalog results if no searchterm
+        if not searchterm:
+            brains = catalog(query)
+
+        # check if there is ng3 index in the catalog to query by wildcards
+        elif "listing_searchable_text" in catalog.indexes():
+            # Always expand all categories if we have a searchterm
+            self.expand_all_categories = True
+            brains = self.ng3_index_search(catalog, query, searchterm)
+
+        else:
+            self.expand_all_categories = True
+            brains = self.metadata_search(catalog, query, searchterm, ignorecase)
 
         # Sort manually?
         if self.manual_sort_on is not None:
             brains = self.sort_brains(brains, sort_on=self.manual_sort_on)
 
-        # return the unfiltered catalog results
-        if not searchterm:
-            logger.info(u"ListingView::search: return {} results".format(len(brains)))
-            return brains
+        end = time.time()
+        logger.info(u"ListingView::search: Search for '{}' executed in "
+                    u"{:.2f}s ({} matches)"
+                    .format(searchterm, end - start, len(brains)))
+        return brains
 
-        # Always expand all categories if we have a searchterm
-        self.expand_all_categories = True
+    def ng3_index_search(self, catalog, query, searchterm):
+        """ Searches given catalog by query and also looks for a keyword in the
+        specific index called 'listing_searchable_text'
+        #REMEMBER TextIndexNG indexes are the only indexes that wildcards can be
+        used in the beginning of the string.
+        http://zope.readthedocs.io/en/latest/zope2book/SearchingZCatalog.html#textindexng
+        :param catalog: catalog to search
+        :param query:
+        :param searchterm: a keyword to look for in 'listing_searchable_text'
+        :return: brains matching the search result
+        """
+        logger.info(u"ListingView::search: Prepare NG3 index query for '{}'"
+                    .format(self.catalog))
+        # Remove quotation mark
+        searchterm = searchterm.replace('"', '')
+        # If the keyword is not encoded in searches, TextIndexNG3 encodes by
+        # default encoding which we cannot always trust
+        searchterm = searchterm.encode("utf-8")
+        query["listing_searchable_text"] = "*" + searchterm + "*"
+        return catalog(query)
+
+    def metadata_search(self, catalog, query, searchterm, ignorecase=True):
+        """ Retrieves all the brains from given catalog and returns the ones
+        with at least one metadata containing the search term
+        :param catalog: catalog to search
+        :param query:
+        :param searchterm:
+        :param ignorecase:
+        :return: brains matching search result
+        """
+        # create a catalog query
+        logger.info(u"ListingView::search: Prepare metadata query for '{}'"
+                    .format(self.catalog))
+
+        brains = catalog(query)
 
         # Build a regular expression for the given searchterm
         regex = self.make_regex_for(searchterm, ignorecase=ignorecase)
@@ -1332,12 +1378,7 @@ class BikaListingView(BrowserView):
             return False
 
         # Filtered brains by searchterm -> metadata match
-        out = filter(match, brains)
-
-        end = time.time()
-        logger.info(u"ListingView::search: Search for '{}' executed in {:.2f}s ({} matches)"
-                    .format(searchterm, end - start, len(out)))
-        return out
+        return filter(match, brains)
 
     def get_searchterm(self):
         """Get the user entered search value from the request
