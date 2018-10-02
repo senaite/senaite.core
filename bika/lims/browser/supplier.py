@@ -21,19 +21,8 @@ class SupplierInstrumentsView(InstrumentsView):
 
     def __init__(self, context, request):
         super(SupplierInstrumentsView, self).__init__(context, request)
-
-        portal = api.get_portal()
-        portal_url = portal.absolute_url()
-
-        add_url = "{}/{}/{}/createObject?type_name={}".format(
-            portal_url, "bika_setup", "bika_instruments", "Instrument")
-
-        self.context_actions = {
-            _("Add"): {
-                "url": add_url,
-                "permisison": "Add portal content",
-                "icon": "++resource++bika.lims.images/add.png"}
-        }
+        # Don't allow to add instruments here
+        self.context_actions = {}
 
     def before_render(self):
         """Before template render hook
