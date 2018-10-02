@@ -44,9 +44,12 @@ class SupplierReferenceSamplesView(ReferenceSamplesView):
 
         self.contentFilter["path"]["query"] = api.get_path(context)
 
-        # Don't allow to add reference samples here, because it can be given
-        # another supplier, which is confusing
-        self.context_actions = {}
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=ReferenceSample",
+                "permission": "Add portal content",
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
 
         # Remove the Supplier column from the list
         del self.columns["Supplier"]
