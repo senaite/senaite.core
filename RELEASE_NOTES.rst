@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Update from 1.2.8 to 1.2.9
+--------------------------
+
+- This update might take long depending on the number of Analysis Requests and
+  Samples registered in the system, because the upgrade step will update the
+  role mappings for all them.
+  https://github.com/senaite/senaite.core/pull/1041
+
+
 Update from 1.2.7 to 1.2.8
 --------------------------
 
