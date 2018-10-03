@@ -225,7 +225,23 @@ def recatalog_analyses_due_date(portal):
 def update_rejection_permissions(portal):
     """Adds the permission 'Reject Analysis Request' and update the permission
      mappings accordingly """
-    logger.info("Updating rejection permissions")
+    updated = update_rejection_permissions_for(portal, "bika_ar_workflow",
+                                               "Reject Analysis Request")
+    if updated:
+        brains = api.search(dict(portal_type="AnalysisRequest"),
+                            CATALOG_ANALYSIS_REQUEST_LISTING)
+        update_rolemappings_for(brains, "bika_ar_workflow")
+
+
+    updated = update_rejection_permissions_for(portal, "bika_sample_workflow",
+                                               "Reject Sample")
+    if updated:
+        brains = api.search(dict(portal_type="Sample"), "bika_catalog")
+        update_rolemappings_for(brains, "bika_sample_workflow")
+
+
+def update_rejection_permissions_for(portal, workflow_id, permission_id):
+    logger.info("Updating rejection permissions for {}".format(workflow_id))
     all_roles = ["Manager", "LabManager", "LabClerk", "Client", "Owner"]
     roles_mapping = {
         "sample_registered": all_roles,
@@ -237,28 +253,30 @@ def update_rejection_permissions(portal):
         "sample_received": ["Manager", "LabManager", "LabClerk"],
         "attachment_due": ["Manager", "LabManager"],
         "to_be_verified": ["Manager", "LabManager"],
+        # Those that only apply to sample_workflow below
+        "expired": ["Manager", "LabManager"],
+        "disposed": ["Manager", "LabManager"],
     }
     wf_tool = api.get_tool("portal_workflow")
-    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
 
     if "rejected" not in workflow.states:
         logger.warning("rejected state not found for workflow {} [SKIP]"
                        .format(workflow.id))
-        return
+        return False
 
-    # If "Reject Analysis Request" permission is already there, skip
-    if "Reject Analysis Request" in workflow.permissions:
-        logger.info("'Reject Analysis Request' already in place. [SKIP]")
-        return
+    if permission_id in workflow.permissions:
+        logger.info("'{}' already in place. [SKIP]".format(permission_id))
+        return False
 
-    workflow.permissions += ("Reject Analysis Request",)
+    workflow.permissions += (permission_id,)
     for state_id, state in workflow.states.items():
         if "reject" not in state.transitions:
             continue
         if state_id not in roles_mapping:
             continue
         roles = roles_mapping[state_id]
-        state.setPermission("Reject Analysis Request", False, roles)
+        state.setPermission(permission_id, False, roles)
 
     if "reject" not in workflow.transitions:
         workflow.transitions.addTransition("reject")
@@ -271,16 +289,18 @@ def update_rejection_permissions(portal):
     transition = workflow.transitions.reject
     guard = transition.guard or Guard()
     guard_props = {
-        "guard_permissions": "Reject Analysis Request",
+        "guard_permissions": permission_id,
         "guard_roles": "",
         "guard_expr": "python:here.bika_setup.isRejectionWorkflowEnabled()"
     }
     guard.changeFromProperties(guard_props)
     transition.guard = guard
+    return True
 
-    # Update role mappings
-    brains = api.search(dict(portal_type="AnalysisRequest"),
-                        CATALOG_ANALYSIS_REQUEST_LISTING)
+def update_rolemappings_for(brains, workflow_id):
+    logger.info("Updating role mappings for '{}'".format(workflow_id))
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
     total = len(brains)
     num = 0
     for num, brain in enumerate(brains, start=1):
@@ -288,4 +308,4 @@ def update_rejection_permissions(portal):
         if num % 100 == 0:
             logger.info("Updating role mappings: {0}/{1}"
                         .format(num, total))
-    logger.info("{} Analysis Requests updated".format(num))
+    logger.info("{} objects updated".format(num))
