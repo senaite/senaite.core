@@ -37,7 +37,7 @@ Run this test from the buildout directory:
     bin/test test_textual_doctests -t ARAnalysesField
 """
 
-FROZEN_STATES = ["verified", "published", "invalid"]
+FROZEN_STATES = ["verified", "published", "retracted"]
 FROZEN_TRANSITIONS = ["verify", "retract"]
 
 
@@ -141,6 +141,11 @@ class ARAnalysesField(ObjectField):
             raise TypeError(
                 "Items parameter must be a tuple or list, got '{}'".format(
                     type(items)))
+
+        # Bail out if the AR is inactive
+        if not api.is_active(instance):
+            raise Unauthorized("Inactive ARs can not be modified"
+                               .format(AddAnalysis))
 
         # Bail out if the user has not the right permission
         sm = getSecurityManager()
