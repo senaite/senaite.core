@@ -8,13 +8,21 @@
 import itertools
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api, deprecated, logger
+from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
+from bika.lims import api
+from bika.lims import deprecated
+from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IAnalysis, IAnalysisService, IARAnalysesField
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IARAnalysesField
+from bika.lims.permissions import AddAnalysis
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import getReviewHistoryActionsList
-from Products.Archetypes.public import Field, ObjectField
+from Products.Archetypes.public import Field
+from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
@@ -28,6 +36,9 @@ Run this test from the buildout directory:
 
     bin/test test_textual_doctests -t ARAnalysesField
 """
+
+FROZEN_STATES = ["verified", "published", "retracted"]
+FROZEN_TRANSITIONS = ["verify", "retract"]
 
 
 class ARAnalysesField(ObjectField):
@@ -131,10 +142,16 @@ class ARAnalysesField(ObjectField):
                 "Items parameter must be a tuple or list, got '{}'".format(
                     type(items)))
 
-        # Bail out if the AR in frozen state
-        if self._is_frozen(instance):
-            raise ValueError(
-                "Analyses can not be modified for inactive/verified ARs")
+        # Bail out if the AR is inactive
+        if not api.is_active(instance):
+            raise Unauthorized("Inactive ARs can not be modified"
+                               .format(AddAnalysis))
+
+        # Bail out if the user has not the right permission
+        sm = getSecurityManager()
+        if not sm.checkPermission(AddAnalysis, instance):
+            raise Unauthorized("You do not have the '{}' permission"
+                               .format(AddAnalysis))
 
         # Convert the items to a valid list of AnalysisServices
         services = filter(None, map(self._to_service, items))
@@ -184,7 +201,7 @@ class ARAnalysesField(ObjectField):
                 continue
 
             # Skip Analyses in frozen states
-            if self._is_frozen(analysis, "retract"):
+            if self._is_frozen(analysis):
                 logger.warn("Inactive/verified/retracted Analyses can not be "
                             "removed.")
                 continue
@@ -271,20 +288,20 @@ class ARAnalysesField(ObjectField):
         logger.warn(msg)
         return None
 
-    def _is_frozen(self, brain_or_object, *frozen_transitions):
+    def _is_frozen(self, brain_or_object):
         """Check if the passed in object is frozen: the object is cancelled,
         inactive or has been verified at some point
         :param brain_or_object: Analysis or AR Brain/Object
-        :param frozen_transitions: additional transitions that freeze the object
         :returns: True if the object is frozen
         """
         if not api.is_active(brain_or_object):
             return True
+        if api.get_workflow_status_of(brain_or_object) in FROZEN_STATES:
+            return True
+        # Check the review history if one of the frozen transitions was done
         object = api.get_object(brain_or_object)
-        frozen_trans = set(frozen_transitions)
-        frozen_trans.add('verify')
         performed_transitions = set(getReviewHistoryActionsList(object))
-        if frozen_trans.intersection(performed_transitions):
+        if set(FROZEN_TRANSITIONS).intersection(performed_transitions):
             return True
         return False
 
