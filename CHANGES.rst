@@ -30,6 +30,7 @@ Changelog
 
 **Fixed**
 
+- #1039 Detection limit criteria is preserved in retracted analyses
 - #1037 Display supplier view instead of reference samples per default
 - #1030 Earliness of analysis is not expressed as minutes
 - #1029 TAT in Analysis TAT over time report does not display days
