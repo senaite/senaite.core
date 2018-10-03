@@ -14,7 +14,7 @@ Changelog
 
 **Changed**
 
-- #1036 Manage Analyses: Check only the current state of the AR to decide if it is frozen
+- #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
 - #764 Code cleanup and redux of 2-Dimensional-CSV instrument interface
 - #1032 Refactored and fixed inconsistencies with Analysis TAT logic
 - #1027 Refactored relationship between invalidated ARs and retests
