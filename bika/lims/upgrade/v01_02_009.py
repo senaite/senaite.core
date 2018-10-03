@@ -11,6 +11,8 @@ import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -57,6 +59,9 @@ def upgrade(tool):
 
     # Reindex Turnaround time and due date related fields
     recatalog_analyses_due_date(portal)
+
+    # Update workflow states and permissions for AR/Sample rejection
+    update_rejection_permissions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -215,3 +220,72 @@ def recatalog_analyses_due_date(portal):
                         .format(num, total))
 
     logger.info("{} Analyses updated".format(num))
+
+
+def update_rejection_permissions(portal):
+    """Adds the permission 'Reject Analysis Request' and update the permission
+     mappings accordingly """
+    logger.info("Updating rejection permissions")
+    all_roles = ["Manager", "LabManager", "LabClerk", "Client", "Owner"]
+    roles_mapping = {
+        "sample_registered": all_roles,
+        "scheduled_sampling": all_roles,
+        "to_be_sampled": all_roles,
+        "sampled": all_roles,
+        "to_be_preserved": all_roles,
+        "sample_due": all_roles,
+        "sample_received": ["Manager", "LabManager", "LabClerk"],
+        "attachment_due": ["Manager", "LabManager"],
+        "to_be_verified": ["Manager", "LabManager"],
+    }
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
+
+    if "rejected" not in workflow.states:
+        logger.warning("rejected state not found for workflow {} [SKIP]"
+                       .format(workflow.id))
+        return
+
+    # If "Reject Analysis Request" permission is already there, skip
+    if "Reject Analysis Request" in workflow.permissions:
+        logger.info("'Reject Analysis Request' already in place. [SKIP]")
+        return
+
+    workflow.permissions += ("Reject Analysis Request",)
+    for state_id, state in workflow.states.items():
+        if "reject" not in state.transitions:
+            continue
+        if state_id not in roles_mapping:
+            continue
+        roles = roles_mapping[state_id]
+        state.setPermission("Reject Analysis Request", False, roles)
+
+    if "reject" not in workflow.transitions:
+        workflow.transitions.addTransition("reject")
+        transition = workflow.transitions.reject
+        transition.setProperties(
+            title="Reject",
+            new_state_id="rejected",
+            actbox_name="Reject",
+        )
+    transition = workflow.transitions.reject
+    guard = transition.guard or Guard()
+    guard_props = {
+        "guard_permissions": "Reject Analysis Request",
+        "guard_roles": "",
+        "guard_expr": "python:here.bika_setup.isRejectionWorkflowEnabled()"
+    }
+    guard.changeFromProperties(guard_props)
+    transition.guard = guard
+
+    # Update role mappings
+    brains = api.search(dict(portal_type="AnalysisRequest"),
+                        CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    num = 0
+    for num, brain in enumerate(brains, start=1):
+        workflow.updateRoleMappingsFor(api.get_object(brain))
+        if num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}"
+                        .format(num, total))
+    logger.info("{} Analysis Requests updated".format(num))

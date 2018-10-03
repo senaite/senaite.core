@@ -26,6 +26,12 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
+  <!--
+  Client can only reject an AR when is not yet received.
+  Labman can only reject an AR when is not yet verified.
+   -->
+  <permission>Reject Analysis Request</permission>
+
   <state state_id="sample_registered" title="Registered" i18n:attributes="title">
     <description>Creating an AR</description>
     <exit-transition transition_id="sampling_workflow"/>
@@ -99,6 +105,15 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
@@ -187,6 +202,15 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
@@ -280,6 +304,15 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="sampled" title="Sampled" i18n:attributes="title">
@@ -365,6 +398,15 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
@@ -457,6 +499,15 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
@@ -551,6 +602,13 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
@@ -637,6 +695,12 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
     </permission-map>
   </state>
 
@@ -728,6 +792,15 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
@@ -814,12 +887,17 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <!-- Reject Analysis Request -->
+    <permission-map name="Reject Analysis Request" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="publish" />
     <exit-transition transition_id="invalidate" />
-    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Add Attachment" acquired="False">
@@ -889,7 +967,6 @@
   <state state_id="published" title="Published" i18n:attributes="title">
     <exit-transition transition_id="republish"/>
     <exit-transition transition_id="invalidate"/>
-    <exit-transition transition_id="reject"/>
     <permission-map name="BIKA: Add Analysis" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
@@ -1153,6 +1230,7 @@
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
       <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
+      <guard-permission>Reject Analysis Request</guard-permission>
     </guard>
   </transition>
 
