@@ -8,13 +8,21 @@
 import itertools
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api, deprecated, logger
+from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
+from bika.lims import api
+from bika.lims import deprecated
+from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IAnalysis, IAnalysisService, IARAnalysesField
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IARAnalysesField
+from bika.lims.permissions import AddAnalysis
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import getReviewHistoryActionsList
-from Products.Archetypes.public import Field, ObjectField
+from Products.Archetypes.public import Field
+from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
@@ -29,7 +37,7 @@ Run this test from the buildout directory:
     bin/test test_textual_doctests -t ARAnalysesField
 """
 
-FROZEN_STATES = ["verified", "published"]
+FROZEN_STATES = ["verified", "published", "invalid"]
 FROZEN_TRANSITIONS = ["verify", "retract"]
 
 
@@ -134,14 +142,11 @@ class ARAnalysesField(ObjectField):
                 "Items parameter must be a tuple or list, got '{}'".format(
                     type(items)))
 
-        # Bail out if the AR is inactive
-        if not api.is_active(instance):
-            raise ValueError("Inactive ARs can not be modified")
-
-        # Bail out if the AR is in a frozen state
-        if api.get_workflow_status_of(instance) in FROZEN_STATES:
-            raise ValueError("ARs in the states '{}' can not be modified"
-                             .format(", ".join(FROZEN_STATES)))
+        # Bail out if the user has not the right permission
+        sm = getSecurityManager()
+        if not sm.checkPermission(AddAnalysis, instance):
+            raise Unauthorized("You do not have the '{}' permission"
+                               .format(AddAnalysis))
 
         # Convert the items to a valid list of AnalysisServices
         services = filter(None, map(self._to_service, items))
