@@ -66,14 +66,6 @@
     <!-- Header Table -->
     <span tal:replace="structure view/header_table"/>
 
-    <div tal:define="cfields python:view.get_custom_fields()"
-         tal:condition="python: cfields">
-        <tal:customfields repeat="cfield python:cfields.keys()">
-            <span tal:replace="structure python:cfields[cfield]['title']"/>&nbsp;
-            <span tal:replace="structure python:cfields[cfield]['value']"/>
-        </tal:customfields>
-    </div>
-
     <!-- Refactored Remarks Widget
          https://github.com/senaite/senaite.core/pull/920 -->
     <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;

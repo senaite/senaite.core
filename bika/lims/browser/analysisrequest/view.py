@@ -434,32 +434,3 @@ class AnalysisRequestViewView(BrowserView):
             if verifier is None or verifier == '':
                 verifier = actor
         return verifier
-
-    def get_custom_fields(self):
-        """ Returns a dictionary with custom fields to be rendered after
-            header_table with this structure:
-            {<fieldid>:{title:<title>, value:<html>}
-        """
-        custom = {}
-        ar = self.context
-        workflow = getToolByName(self.context, 'portal_workflow')
-        # If is a retracted AR, show the link to child AR and show a warn msg
-        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = ar.getRetest() or None
-            anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getId())) or None
-            if anchor:
-                custom['ChildAR'] = {
-                    'title': t(_("AR for retested results")),
-                    'value': anchor
-                }
-        # If is an AR automatically generated due to a Retraction, show it's
-        # parent AR information
-        invalidated = ar.getInvalidated()
-        if invalidated:
-            anchor = "<a href='%s'>%s</a>" % (invalidated.absolute_url(),
-                                              invalidated.getId())
-            custom['ParentAR'] = {
-                'title': t(_("Invalid AR retested")),
-                'value': anchor
-            }
-        return custom
