@@ -5,9 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_samplingrounds import SamplingRoundsView
 
 
@@ -27,6 +26,7 @@ class ClientSamplingRoundsView(SamplingRoundsView):
         self.title = self.context.translate(_("Client Sampling Rounds"))
         self.context_actions = {
             _('Add'): {'url': '++add++SamplingRound',  # To work with dexterity
+                       'permission': 'Add portal content',
                        'icon': '++resource++bika.lims.images/add.png'}}
 
     def __call__(self):

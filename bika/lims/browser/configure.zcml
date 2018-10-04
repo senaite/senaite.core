@@ -1,7 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
   <include package="plone.resource" file="meta.zcml"/>
 
@@ -24,11 +24,9 @@
   <include file="instrument.zcml"/>
   <include file="instrumenttype.zcml"/>
   <include file="instrumentlocation.zcml"/>
-  <include file="late_analyses.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="menu.zcml"/>
-  <include file="method.zcml"/>
-  <include file="remarks.zcml"/>
+  <include file="methodfolder.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="pricelist.zcml"/>
@@ -40,6 +38,7 @@
   <include file="worksheettemplate.zcml"/>
 
   <include package=".aggregatedanalyses"/>
+  <include package=".analyses"/>
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>

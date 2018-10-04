@@ -1,289 +1,290 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:tal="http://xml.zope.org/namespaces/tal"
-	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	i18n:domain="plone">
+             xmlns:tal="http://xml.zope.org/namespaces/tal"
+             xmlns:metal="http://xml.zope.org/namespaces/metal"
+             xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="plone">
 
-<head><title></title></head>
-<body>
+  <head>
+    <title></title>
+  </head>
+  <body>
 
-<metal:view_macro define-macro="view"
-	tal:define="kssClassesView context/@@kss_field_decorator_view;
-				getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
-<span metal:define-macro="records-field-view"
-	tal:define="
-		kss_class python:getKssClasses(fieldName,
-		templateId='records_widget', macro='records-field-view');"
-	tal:attributes="
-		class kss_class;
-		id string:parent-fieldname-$fieldName">
-	<tal:block metal:define-slot="inside"
-		tal:repeat="idx python:range(field.getSize(here))"
-		tal:define="outerJoin field/outerJoin;
-					innerJoin field/innerJoin;">
-		<span
-			tal:define="subfieldValues python:[field.getViewFor(here,idx,key,innerJoin) for key in field.getSubfields()];
-			            dummy python:subfieldValues.sort()"
-			tal:replace="structure python:innerJoin.join(subfieldValues)" /><span
-			tal:replace="structure outerJoin"
-			tal:condition="not: repeat/idx/end" />
-	</tal:block>
-</span>
-</metal:view_macro>
+    <metal:view_macro
+      define-macro="view"
+      tal:define="kssClassesView context/@@kss_field_decorator_view;
+                  getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+      <span
+        metal:define-macro="records-field-view"
+        tal:define="kss_class python:getKssClasses(fieldName,
+                    templateId='records_widget', macro='records-field-view');"
+        tal:attributes="class kss_class;
+                        id string:parent-fieldname-$fieldName">
+        <tal:block metal:define-slot="inside"
+                   tal:repeat="idx python:range(field.getSize(here))"
+                   tal:define="outerJoin field/outerJoin;
+                               innerJoin field/innerJoin;">
+          <span
+            tal:define="subfieldValues python:[field.getViewFor(here,idx,key,innerJoin) for key in field.getSubfields()];"
+            tal:replace="structure python:innerJoin.join(subfieldValues)" />
+          <span
+            tal:replace="structure outerJoin"
+            tal:condition="not: repeat/idx/end" />
+        </tal:block>
+      </span>
+    </metal:view_macro>
 
-<metal:define define-macro="edit">
-<metal:use use-macro="here/widgets/field/macros/edit">
-<tal:block metal:fill-slot="widget_body">
-	<span tal:replace="structure context/@@authenticator/authenticator"/>
+    <metal:define define-macro="edit">
+      <metal:use use-macro="here/widgets/field/macros/edit">
+        <tal:block metal:fill-slot="widget_body">
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-	<fieldset style="border:none;"
-		class="ArchetypesRecordsWidget"
-		tal:define="
-			values python:field.getEditAccessor(here)();
-			session_values python:here.session_restore_value(fieldName, values);
-			cached_values python:request.get(fieldName,session_values);
-			values python:cached_values or values;
-			dummy python:values.sort();
-			i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
+          <fieldset
+            style="border:none;"
+            class="ArchetypesRecordsWidget"
+            tal:define="values python:field.getEditAccessor(here)();
+                        session_values python:here.session_restore_value(fieldName, values);
+                        cached_values python:request.get(fieldName,session_values);
+                        values python:cached_values or values;
+                        i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
 
-	<table
-		tal:attributes="id string:${fieldName}_table"
-		class="recordswidget nosort">
+            <table
+              class="recordswidget nosort table table-condensed"
+              tal:attributes="id string:${fieldName}_table">
 
-	<tr class="header">
-		<tal:block repeat="key python:field.getSubfields()">
-			<th tal:condition="python:
-				field.testSubfieldCondition(key,here,portal,template)
-				and (not hasattr(field, 'subfield_hidden')
-				     or field.subfield_hidden.get(key, False) == False)">
-				<span
-					tal:content="structure python:
-						here.translate(domain=i18n_domain,
-						               msgid=field.getSubfieldLabel(key), default=field.getSubfieldLabel(key))">
-					Label
-				</span>
-				<span tal:condition="python:key in field.required_subfields" class="fieldRequired">&nbsp;</span>
-			</th>
-		</tal:block>
-		<th>
-			<span tal:condition="widget/allowDelete" i18n:translate="" id="delete_this_entry"></span>
-		</th>
-	</tr>
+              <tr class="header">
+                <tal:block repeat="key python:field.getSubfields()">
+                  <th
+                    tal:condition="python:field.testSubfieldCondition(key,here,portal,template)
+                                   and (not hasattr(field, 'subfield_hidden')
+                                   or field.subfield_hidden.get(key, False) == False)">
+                    <span
+                      tal:content="structure python:
+                                   here.translate(domain=i18n_domain,
+                                   msgid=field.getSubfieldLabel(key), default=field.getSubfieldLabel(key))">
+                      Label
+                    </span>
+                    <span tal:condition="python:key in field.required_subfields" class="fieldRequired">&nbsp;</span>
+                  </th>
+                </tal:block>
+                <th>
+                  <span tal:condition="widget/allowDelete" i18n:translate="" id="delete_this_entry"></span>
+                </th>
+              </tr>
 
-	<tr
-		tal:attributes="class string:records_row_${fieldName}"
-		tal:repeat="idx python:range(field.getEditSize(here))"
-		tal:define="combogrid_options python:hasattr(widget, 'combogrid_options') and widget.combogrid_options or {}">
+              <tr
+                tal:attributes="class string:records_row_${fieldName}"
+                tal:repeat="idx python:range(field.getEditSize(here))"
+                tal:define="combogrid_options python:hasattr(widget, 'combogrid_options') and widget.combogrid_options or {}">
 
-		<tal:keys tal:repeat="key python:field.getSubfields()">
-			<td tal:condition="python:
-				field.testSubfieldCondition(key,here,portal,template)
-				and (not hasattr(field, 'subfield_hidden')
-				     or field.subfield_hidden.get(key, False) == False)">
-				<tal:block
-					define="
-						type python:field.getSubfieldType(key);
-						required python:key in field.required_subfields and ' required' or '';">
+                <tal:keys tal:repeat="key python:field.getSubfields()">
+                  <td tal:condition="python:field.testSubfieldCondition(key,here,portal,template)
+                                     and (not hasattr(field, 'subfield_hidden')
+                                     or field.subfield_hidden.get(key, False) == False)">
+                    <tal:block
+                      define="type python:field.getSubfieldType(key);
+                              required python:key in field.required_subfields and ' required' or '';">
 
-					<!-- string -->
+                      <!-- string -->
 
-					<tal:string condition="python: type == 'string' and not field.isSelection(key)">
-						<input type="text"
-							name=""
-							value=""
-							size="30"
-							tabindex="#"
-							tal:attributes="
-								class string:records_inputstring;
-								name string:${fieldName}.${key}:records:ignore_empty;
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								value python:field.getSubfieldValue(values, idx, key);
-								size python:field.getSubfieldSize(key);
-								maxlength python:field.getSubfieldMaxlength(key);
-								readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
-								tabindex tabindex/next|nothing;
-								combogrid_options python: widget.jsondumps(combogrid_options.get(key, ''))"/>
-					</tal:string>
+                      <tal:string condition="python: type == 'string' and not field.isSelection(key)">
+                        <input
+                          type="text"
+                          name=""
+                          value=""
+                          size="30"
+                          tabindex="#"
+                          tal:attributes="class string:records_inputstring form-control input-sm;
+                                          name string:${fieldName}.${key}:records:ignore_empty;
+                                          id string:${fieldName}-${key}-${repeat/idx/index};
+                                          value python:field.getSubfieldValue(values, idx, key);
+                                          size python:field.getSubfieldSize(key);
+                                          maxlength python:field.getSubfieldMaxlength(key);
+                                          readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
+                                          tabindex tabindex/next|nothing;
+                                          combogrid_options python: widget.jsondumps(combogrid_options.get(key, ''))"/>
+                      </tal:string>
 
-					<!-- selection -->
+                      <!-- selection -->
 
-					<tal:selection condition="python: field.isSelection(key)">
-						<tal:block
-							tal:define="
-								value python:field.getSubfieldValue(values, idx, key);
-								vocab python:field.getVocabularyFor(key, here);
-								size python:field.getSubfieldSize(key);">
-							<select
-								tal:condition="python:size and size < 2 or False"
-								tal:attributes="
-									name string:${fieldName}.${key}:records:ignore_empty;
-									id string:${fieldName}-${key}-${repeat/idx/index};
-									tabindex tabindex/next|nothing;"
-									i18n:domain="python:i18n_domain">
-								<option tal:repeat="item vocab"
-									tal:attributes="value item;
-									selected python:test(here.checkSelected(item, value), 'selected', None);"
-									tal:content="python: vocab.getValue(item)"
-									i18n:translate=""/>
-							</select>
+                      <tal:selection condition="python: field.isSelection(key)">
+                        <tal:block
+                          tal:define="value python:field.getSubfieldValue(values, idx, key);
+                                      vocab python:field.getVocabularyFor(key, here);
+                                      size python:field.getSubfieldSize(key);">
+                          <select
+                            class="form-control input-sm"
+                            tal:condition="python:size and size < 2 or False"
+                            tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+                                           id string:${fieldName}-${key}-${repeat/idx/index};
+                                           tabindex tabindex/next|nothing;"
+                            i18n:domain="python:i18n_domain">
+                            <option
+                              tal:repeat="item vocab"
+                              tal:attributes="value item;
+                                              selected python:test(here.checkSelected(item, value), 'selected', None);"
+                              tal:content="python: vocab.getValue(item)"
+                              i18n:translate=""/>
+                          </select>
 
-							<!-- multi-select selection -->
+                          <!-- multi-select selection -->
 
-							<select tal:condition="python:size and size > 1 or False"
-								multiple="multiple"
-								tal:attributes="
-									name string:${fieldName}.${key}:records:list;
-									id string:${fieldName}-${key}-${repeat/idx/index};
-									tabindex tabindex/next|nothing;
-									size size;"
-								i18n:domain="python:i18n_domain">
-								<option
-									tal:repeat="item vocab"
-									tal:attributes="
-										value item;
-										selected python:here.checkSelected(item, value) and 'selected' or None;"
-									tal:content="python: vocab.getValue(item)"
-									i18n:translate=""/>
-							</select>
-						</tal:block>
-					</tal:selection>
+                          <select
+                            class="form-control input-sm"
+                            tal:condition="python:size and size > 1 or False"
+                            multiple="multiple"
+                            tal:attributes="name string:${fieldName}.${key}:records:list;
+                                            id string:${fieldName}-${key}-${repeat/idx/index};
+                                            tabindex tabindex/next|nothing;
+                                            size size;"
+                            i18n:domain="python:i18n_domain">
+                            <option
+                              tal:repeat="item vocab"
+                              tal:attributes="value item;
+                                              selected python:here.checkSelected(item, value) and 'selected' or None;"
+                              tal:content="python: vocab.getValue(item)"
+                              i18n:translate=""/>
+                          </select>
+                        </tal:block>
+                      </tal:selection>
 
-					<!-- text -->
+                      <!-- text -->
 
-					<tal:text condition="python: type == 'lines'">
-						<textarea name="" cols="30" rows="5" tabindex="#"
-							tal:attributes="
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								name string:${fieldName}.${key}:records:ignore_empty:lines;
-								tabindex tabindex/next|nothing;"
-							tal:content="python:'\n'.join(field.getSubfieldValue(values, idx, key, []))" >
-						</textarea>
-					</tal:text>
+                      <tal:text condition="python: type == 'lines'">
+                        <textarea
+                          class="form-control input-sm"
+                          name="" cols="30" rows="5" tabindex="#"
+                          tal:attributes="id string:${fieldName}-${key}-${repeat/idx/index};
+                                          name string:${fieldName}.${key}:records:ignore_empty:lines;
+                                          tabindex tabindex/next|nothing;"
+                          tal:content="python:'\n'.join(field.getSubfieldValue(values, idx, key, []))" >
+                        </textarea>
+                      </tal:text>
 
-					<!-- boolean -->
+                      <!-- boolean -->
 
-					<tal:boolean condition="python: type == 'boolean'">
-						<span style="width:100%;border-bottom:1px solid red;"></span>
-						<input type="checkbox" name="" tabindex="#"
-							tal:attributes="
-								name string:${fieldName}.${key}:records:ignore_empty;
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								tabindex tabindex/next|nothing;
-								checked python:field.getSubfieldValue(values, idx, key) and 'checked' or ''"/>
-					</tal:boolean>
+                      <tal:boolean condition="python: type == 'boolean'">
+                        <span style="width:100%;border-bottom:1px solid red;"></span>
+                        <input
+                          type="checkbox" name="" tabindex="#"
+                          tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+                                          id string:${fieldName}-${key}-${repeat/idx/index};
+                                          tabindex tabindex/next|nothing;
+                                          checked python:field.getSubfieldValue(values, idx, key) and 'checked' or ''"/>
+                      </tal:boolean>
 
-					<!-- datepicker -->
+                      <!-- datepicker -->
 
-					<tal:string condition="python: type == 'datepicker'">
-						<input type="text"
-							name=""
-							value=""
-							size="30"
-							tabindex="#"
-							tal:attributes="
-								class string:datepicker;
-								name string:${fieldName}.${key}:records:ignore_empty;
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								value python:field.getSubfieldValue(values, idx, key);
-								size python:field.getSubfieldSize(key);
-								maxlength python:field.getSubfieldMaxlength(key);
-								readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
-								tabindex tabindex/next|nothing;"/>
-					</tal:string>
+                      <tal:string condition="python: type == 'datepicker'">
+                        <input
+                          type="text"
+                          name=""
+                          value=""
+                          size="30"
+                          tabindex="#"
+                          tal:attributes="class string:datepicker form-control input-sm;
+                                          name string:${fieldName}.${key}:records:ignore_empty;
+                                          id string:${fieldName}-${key}-${repeat/idx/index};
+                                          value python:field.getSubfieldValue(values, idx, key);
+                                          size python:field.getSubfieldSize(key);
+                                          maxlength python:field.getSubfieldMaxlength(key);
+                                          readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
+                                          tabindex tabindex/next|nothing;"/>
+                      </tal:string>
 
-					<!-- datepicker_nofuture -->
+                      <!-- datepicker_nofuture -->
 
-					<tal:string condition="python: type == 'datepicker_nofuture'">
-						<input type="text"
-							name=""
-							value=""
-							size="30"
-							tabindex="#"
-							tal:attributes="
-								class string:datepicker_nofuture;
-								name string:${fieldName}.${key}:records:ignore_empty;
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								value python:field.getSubfieldValue(values, idx, key);
-								size python:field.getSubfieldSize(key);
-								maxlength python:field.getSubfieldMaxlength(key);
-								readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
-								tabindex tabindex/next|nothing;"/>
-					</tal:string>
+                      <tal:string condition="python: type == 'datepicker_nofuture'">
+                        <input
+                          type="text"
+                          name=""
+                          value=""
+                          size="30"
+                          tabindex="#"
+                          tal:attributes="class string:datepicker_nofuture form-control input-sm;
+                                          name string:${fieldName}.${key}:records:ignore_empty;
+                                          id string:${fieldName}-${key}-${repeat/idx/index};
+                                          value python:field.getSubfieldValue(values, idx, key);
+                                          size python:field.getSubfieldSize(key);
+                                          maxlength python:field.getSubfieldMaxlength(key);
+                                          readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
+                                          tabindex tabindex/next|nothing;"/>
+                      </tal:string>
 
-					<!-- int -->
+                      <!-- int -->
 
-					<tal:number condition="python: type == 'int'">
-						<input type="text" name="" value="" size="10" tabindex="#"
-							tal:attributes="
-								name string:${fieldName}.${key}:${type}:records:ignore_empty:int;
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								value python:field.getSubfieldValue(values, idx, key);
-								size python:field.getSubfieldSize(key);
-								maxlength python:field.getSubfieldMaxlength(key);
-								tabindex tabindex/next|nothing;"/>
-					</tal:number>
+                      <tal:number condition="python: type == 'int'">
+						            <input
+                          class="form-control input-sm"
+                          type="text" name="" value="" size="10" tabindex="#"
+							            tal:attributes="name string:${fieldName}.${key}:${type}:records:ignore_empty:int;
+								                          id string:${fieldName}-${key}-${repeat/idx/index};
+								                          value python:field.getSubfieldValue(values, idx, key);
+								                          size python:field.getSubfieldSize(key);
+								                          maxlength python:field.getSubfieldMaxlength(key);
+								                          tabindex tabindex/next|nothing;"/>
+					            </tal:number>
 
-					<!-- float long -->
+					            <!-- float long -->
 
-					<tal:number condition="python: type in ['float', 'long']">
-						<input type="text" name="" value="" size="10" tabindex="#"
-							tal:attributes="
-								name string:${fieldName}.${key}:${type}:records:ignore_empty;
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								value python:field.getSubfieldValue(values, idx, key);
-								size python:field.getSubfieldSize(key);
-								maxlength python:field.getSubfieldMaxlength(key);
-								tabindex tabindex/next|nothing;"/>
-					</tal:number>
+					            <tal:number condition="python: type in ['float', 'long']">
+						            <input
+                          class="form-control input-sm"
+                          type="text" name="" value="" size="10" tabindex="#"
+                          tal:attributes="name string:${fieldName}.${key}:${type}:records:ignore_empty;
+                                          id string:${fieldName}-${key}-${repeat/idx/index};
+                                          value python:field.getSubfieldValue(values, idx, key);
+                                          size python:field.getSubfieldSize(key);
+                                          maxlength python:field.getSubfieldMaxlength(key);
+                                          tabindex tabindex/next|nothing;"/>
+                      </tal:number>
 
-				</tal:block>
+                    </tal:block>
 
-			</td>
+			            </td>
 
-		</tal:keys>
+		            </tal:keys>
 
+		            <td>
+		              <!-- delete -->
+			            <img
+                    tal:condition="widget/allowDelete"
+                    class="rw_deletebtn btn btn-link"
+                    tal:attributes="id string:delete-row-${repeat/idx/index};
+                                    src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
 
-		<td>
-		<!-- delete -->
-			<img tal:condition="widget/allowDelete"
-				class="rw_deletebtn"
-				tal:attributes="
-						id string:delete-row-${repeat/idx/index};
-						src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+                  <!-- Hidden fields -->
+			            <tal:keys tal:repeat="key python:field.getSubfields()">
+				            <input
+                      type="hidden"
+                      tal:condition="python:hasattr(field, 'subfield_hidden')
+                                     and field.subfield_hidden.get(key, False) == True"
+                      name=""
+                      value=""
+                      tal:attributes="id string:${fieldName}-${key}-${repeat/idx/index};
+                                      name string:${fieldName}.${key}:records:ignore_empty;
+                                      value python:field.getSubfieldValue(values, idx, key);"/>
+                  </tal:keys>
+                </td>
 
-			<!-- Hidden fields -->
-			<tal:keys tal:repeat="key python:field.getSubfields()">
-				<input type="hidden"
-					tal:condition="python:hasattr(field, 'subfield_hidden')
-					               and field.subfield_hidden.get(key, False) == True"
-					name=""
-					value=""
-					tal:attributes="
-							id string:${fieldName}-${key}-${repeat/idx/index};
-							name string:${fieldName}.${key}:records:ignore_empty;
-							value python:field.getSubfieldValue(values, idx, key);"/>
-			</tal:keys>
-		</td>
+              </tr>
+	          </table>
 
-	</tr>
-	</table>
+            <input
+              type="button"
+              class="context btn btn-default btn btn-default btn-xs"
+              value="More"
+              tal:condition="python: field.showMore(values) or not field.fixedSize"
+              tal:attributes="id string:${fieldName}_more;tabindex tabindex/next|nothing"
+              i18n:attributes="value" />
+          </fieldset>
+        </tal:block>
+      </metal:use>
+    </metal:define>
 
-	<input
-		type="button"
-		class="context"
-		value="More"
-		tal:condition="python: field.showMore(values) or not field.fixedSize"
-		tal:attributes="id string:${fieldName}_more;tabindex tabindex/next|nothing"
-		i18n:attributes="value" />
-	</fieldset>
-</tal:block>
-</metal:use>
-</metal:define>
+    <div metal:define-macro="search">
+      <div metal:use-macro="here/widgets/string/macros/edit">
+      </div>
+    </div>
 
-<div metal:define-macro="search">
-  <div metal:use-macro="here/widgets/string/macros/edit">
-  </div>
-</div>
-
-</body>
+  </body>
 </html>

@@ -3,7 +3,7 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:monkey="http://namespaces.plone.org/monkey"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
     <adapter
       factory=".acquirefielddefaults.AcquireFieldDefaults"
@@ -91,6 +91,13 @@
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IClient"
       name="HideClientDiscountFields"
+    />
+
+    <adapter
+        factory=".widgetvisibility.SampleDateReceived"
+        provides="bika.lims.interfaces.IATWidgetVisibility"
+        for="bika.lims.interfaces.ISample"
+        name="SampleDateReceived"
     />
 
     <adapter name='bika.lims.IHaveIdentifiersExtender' factory=".identifiers.IHaveIdentifiersSchemaExtender"/>

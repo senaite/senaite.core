@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
-      i18n:domain="bika">
+      i18n:domain="senaite.core">
 <head>
     <style>
         body {
@@ -61,8 +61,8 @@
     alllabreas  python:ar.bika_setup.getRejectionReasons()[0];
     labreasons  python:[alllabreas[key] for key in alllabreas.keys() if key != 'checkbox'];
     client      python:ar.getClient();
-    rej_widg    python:ar.getRejectionReasons();
-    reasons     python:ar.getRejectionReasons()[0].get('selected',[]) if rej_widg else [];">
+    reasons     python: view.get_rejection_reasons('selected');
+    otherreas   python: view.get_rejection_reasons('other');">
     <div class="header">
         <h1 tal:content="lab/Title"></h1>
         <div class="header-logo">
@@ -74,11 +74,11 @@
     <div class="client">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="label" i18n:translate="">Referring Facility/Requestor</td>
+                <td class="label" i18n:translate="">Client</td>
                 <td tal:content="python: client.Title()"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Unique ID/Facility Code</td>
+                <td class="label" i18n:translate="">Client ID</td>
                 <td tal:content="python: client.getClientID()"></td>
             </tr>
             <tr>
@@ -95,26 +95,10 @@
         </table>
     </div>
 
-    <tal:patient define="patient python:ar.Schema().getField('Patient');
-                         patient python:patient.get(ar) if patient else None;">
-    <div class="patient" tal:condition="patient">
-        <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-                <td class="label" i18n:translate="">Name of Patient</td>
-                <td tal:content="python: patient.getFullname()"></td>
-                <td class="label" i18n:translate="">Age</td>
-                <td tal:content="python: patient.getAgeSplittedStr()"></td>
-                <td class="label" i18n:translate="">Sex</td>
-                <td tal:content="python: patient.getGender()"></td>
-            </tr>
-        </table>
-    </div>
-    </tal:patient>
-
     <div class="sample">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="label" i18n:translate="">Nature of specimen</td>
+                <td class="label" i18n:translate="">Sample type</td>
                 <td tal:content="python: sample.getSampleType().Title()"></td>
                 <td class="label" i18n:translate="">Date collected</td>
                 <td tal:content="python:plone_view.toLocalizedTime(sample.getDateSampled())"></td>
@@ -122,14 +106,14 @@
                 <td tal:content="python:plone_view.toLocalizedTime(sample.getDateReceived())"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Sample Number/NMRL Number</td>
+                <td class="label" i18n:translate="">Sample ID</td>
                 <td tal:condition="python: sample.getClientSampleID()"
                     tal:content="python:'%s / %s' % (sample.getClientSampleID(), sample.getSampleID())" colspan="5"></td>
                 <td tal:condition="python: not sample.getClientSampleID()"
                     tal:content="python:sample.getSampleID()" colspan="5"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Tests requested/Measurement Procedure</td>
+                <td class="label" i18n:translate="">Analyses requested</td>
                 <td colspan="5" tal:define="analyses python:ar.getAnalyses();
                                             analyses python:[an.getObject() for an in analyses];
                                             analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
@@ -147,6 +131,10 @@
                 tal:attributes="class python: 'check checked' if reason in reasons else 'check'"
                 tal:content="python: 'X' if reason in reasons else '  '">&nbsp;</span>&nbsp;<span tal:replace="reason"></span><br/>
             </tal:reason>
+            <span
+                tal:condition="python:otherreas"
+                tal:attributes="class python: 'check checked' if otherreas else 'check'"
+                tal:content="python: 'X' if otherreas else '  '">&nbsp;</span>&nbsp;<span tal:replace="python: otherreas and otherreas[0] or ''"></span><br/>
         </div>
     </div>
 

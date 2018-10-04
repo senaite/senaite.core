@@ -10,7 +10,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-  <title i18n:translate="" i18n:domain="bika">Install SENAITE</title>
+  <title i18n:translate="" i18n:domain="senaite.core">Install SENAITE</title>
 
   <link rel="stylesheet" type="text/css"
         tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css"
@@ -35,7 +35,7 @@
        width="400"
        tal:attributes="src string:${context/absolute_url}/++resource++senaite-core-logo.png" />
 
-  <h1 i18n:translate="" i18n:domain="bika">Install SENAITE</h1>
+  <h1 i18n:translate="" i18n:domain="senaite.core">Install SENAITE</h1>
 
   <form action="#"
         method="post"
@@ -56,7 +56,7 @@
           No special characters are allowed.
         </div>
 
-        <div class="formHelp" i18n:translate="" i18n:domain="bika">
+        <div class="formHelp" i18n:translate="" i18n:domain="senaite.core">
           Please use <em>senaite</em> or <em>senaitelims</em> as your site name.
         </div>
 
@@ -187,7 +187,7 @@
       <div class="formControls">
         <input type="hidden" name="form.submitted:boolean" value="True" />
         <input type="submit" name="submit" value="Install"
-               i18n:attributes="value;" i18n:domain="bika" />
+               i18n:attributes="value;" i18n:domain="senaite.core" />
       </div>
 
   </form>

@@ -32,6 +32,7 @@
                         categqcanalyses analysisrequest/categorized_qcanalyses;
                         hasqcanalyses   python:len(qcanalyses) &gt; 0;
                         hasprevresults  analysisrequest/haspreviousresults;
+                        hasinterimfields  analysisrequest/hasinterimfields;
                         showqcanalyses  python:view.isQCAnalysesVisible();
                         remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
@@ -123,11 +124,11 @@
   <!-- Alert section (invalidated ar, etc.) -->
   <div id="section-alert" tal:condition="analysisrequest/invalid">
     <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
-    <tal:invalidreport tal:define="child python:analysisrequest['obj'].getChildAnalysisRequest()"
+    <tal:invalidreport tal:define="retest python:analysisrequest['obj'].getRetest()"
                        tal:condition="child">
       <span i18n:translate="">This Analysis request has been replaced by</span>&nbsp;
-      <a tal:attributes="href child/absolute_url"
-         tal:content="child/id"></a>
+      <a tal:attributes="href retest/absolute_url"
+         tal:content="retest/id"></a>
     </tal:invalidreport>
   </div>
   <div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
@@ -248,6 +249,12 @@
                          class="accredited-ico"/>
                     <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
                     <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
+                    <span tal:condition="hasinterimfields">
+                      <span class='new_line' tal:repeat="interim python:analysis['interims']">
+                          <span class="interims_title"
+                              tal:content="interim/title"></span>
+                      </span>
+                    </span>
                   </td>
                   <td tal:condition="hasprevresults" class="prev">
                     <span tal:content="structure analysis/previous_results">1,2,3</span>
@@ -255,6 +262,12 @@
                   <td>
                     <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
+                    <span tal:condition="hasinterimfields">
+                      <span class='new_line' tal:repeat="interim python:analysis['interims']">
+                          <span class="result" tal:content="structure interim/formatted_value"/>
+                          <span class="units" tal:content="structure interim/unit|nothing"/>
+                      </span>
+                    </span>
                   </td>
                   <td class="specs">
                     <span tal:condition="analysis/uncertainty"
@@ -373,15 +386,6 @@
       <tal:render condition="python:attachment['renderoption']=='r'">
         <tal:tag replace="structure attachment/inline"/>
       </tal:render>
-      <tal:attach condition="python:attachment['renderoption'] in ('a', '')">
-        <span tal:content="attachment/keywords">Total Vit D2 + D3</span>
-        <a title="Click to download"
-          tal:attributes="href attachment/download"
-          tal:content="attachment/filename">Filename</a>
-        <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-        (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-        <span class="file-size" tal:content="attachment/size">145Kb</span>
-      </tal:attach>
     </div>
     </tal:ar_attachments>
 
@@ -391,15 +395,6 @@
       <tal:render condition="python:attachment['renderoption']=='r'">
         <tal:tag replace="structure attachment/inline"/>
       </tal:render>
-      <tal:attach condition="python:attachment['renderoption'] in ('a', '')">
-        <span tal:content="attachment/keywords">Total Vit D2 + D3</span>
-        <a title="Click to download"
-          tal:attributes="href attachment/download"
-          tal:content="attachment/filename">Filename</a>
-        <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-        (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-        <span class="file-size" tal:content="attachment/size">145Kb</span>
-      </tal:attach>
     </div>
   </tal:attachments>
   <!-- /ATTACHMENTS -->

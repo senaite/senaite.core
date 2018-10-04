@@ -1,6 +1,6 @@
 <div class="attachments"
      tal:define="attachments_view python:view.get_attachments_view()"
-     i18n:domain="bika">
+     i18n:domain="senaite.core">
 
   <script type="text/javascript">
    jQuery(document).ready(function($) {
@@ -117,8 +117,7 @@
                 </td>
                 <td class="attachment-report-option">
                   <!-- Attachment Report Option
-                       a=Attach to Report (default)
-                       i=Ignore in Report
+                       i=Ignore in Report (default)
                        r=Render in Report
                     -->
                   <select name="ReportOption"

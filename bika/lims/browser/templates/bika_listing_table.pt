@@ -34,7 +34,7 @@
 
   <form name="bika_listing_form"
         method="post"
-        i18n:domain="bika"
+        i18n:domain="senaite.core"
         tal:attributes="id form_id;
                         action python:view.bika_listing.getPOSTAction() if hasattr(view.bika_listing, 'getPOSTAction') else 'workflow_action';"
         tal:omit-tag="table_only"
@@ -136,7 +136,7 @@
                              view.bika_listing.json_interim_fields or []"/>
       <table summary="Content listing"
              tal:omit-tag="python:rows_only"
-             tal:attributes="class python:'bika-listing-table';
+             tal:attributes="class python:'bika-listing-table table table-condensed table-noborder';
                              form_id view/bika_listing/form_id"
              i18n:attributes="summary summary_content_listing;"
              tal:define="columns view/bika_listing/columns;
@@ -173,7 +173,7 @@
                                          value state_id;
                                          id state/id;
                                          class python:request.get(form_id + '_review_state', 'default') == state_id
-                                         and 'selected' or ''"
+                                         and 'selected btn btn-sm btn-primary' or 'btn btn-sm btn-default'"
                         tal:content="structure state/title"/>
                     </tal:review_states>
                   </td>
@@ -186,7 +186,7 @@
                     <tal:filters_enabled
                       tal:define="term python:request.get(form_id+'_filter', '');">
                       <span class="filter-search-button">&nbsp;</span>
-                      <input class="filter-search-input"
+                      <input class="filter-search-input input-sm"
                              autocomplete="off"
                              tal:attributes="name python:form_id+'_filter';
                                              value python:term;"/>
@@ -309,7 +309,7 @@
                   </td>
                   <td class="batching" style="text-align:right">
 
-                    <span class='number-items' i18n:domain="bika" i18n:translate="" tal:condition="python:len(view.items) != 1">
+                    <span class='number-items' i18n:domain="senaite.core" i18n:translate="" tal:condition="python:len(view.items) != 1">
                       <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Items
                     </span>
                     <span class='number-items' i18n:translate="" tal:condition="python:len(view.items) == 1">
@@ -325,13 +325,13 @@
                                           next_pagesize   python:pagesize+next_limit_from;
                                           form_id         python:view.bika_listing.form_id;"
                                   condition="python:view.bika_listing.show_more">
-                      &nbsp;&nbsp;
+
                       <a tal:attributes="href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from,sort_on=sort_on,sort_order=sort_order);
                                          data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize),form_id);
                                          data-pagesize  python:pagesize;
                                          data-limitfrom python:next_limit_from;
                                          data-form-id   python:form_id;"
-                         class="bika_listing_show_more"
+                         class="bika_listing_show_more btn btn-default btn-sm"
                          i18n:translate="">Show more</a>
                     </tal:showmore>
 

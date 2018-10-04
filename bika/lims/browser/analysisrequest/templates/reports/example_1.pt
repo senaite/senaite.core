@@ -33,7 +33,8 @@
                         hasqcanalyses   python:len(qcanalyses) &gt; 0;
                         hasprevresults  analysisrequest/haspreviousresults;
                         showqcanalyses  python:view.isQCAnalysesVisible();
-                        remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
+                        remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();
+                        json modules/json">
 
   <!--
        Page Header
@@ -118,11 +119,11 @@
   <!-- Alert section (invalidated ar, etc.) -->
   <div id="section-alert" tal:condition="analysisrequest/invalid">
     <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
-    <tal:invalidreport tal:define="child python:analysisrequest['obj'].getChildAnalysisRequest()"
-                       tal:condition="child">
+    <tal:invalidreport tal:define="retest python:analysisrequest['obj'].getRetest()"
+                       tal:condition="retest">
       <span i18n:translate="">This Analysis request has been replaced by</span>&nbsp;
-      <a tal:attributes="href child/absolute_url"
-         tal:content="child/id"></a>
+      <a tal:attributes="href retest/absolute_url"
+         tal:content="retest/id"></a>
     </tal:invalidreport>
   </div>
   <div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
@@ -260,20 +261,11 @@
                   <td class="outofrange">
                     <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
                   </td>
-                  <td class="specs-graphs"
-                      tal:define="rr analysis/specs;
-                             min python: str(rr.get('min',0)).replace(',','.');
-                             min python: min if min else 0;
-                             max python: str(rr.get('max',0)).replace(',','.');
-                             max python: max if max else 0;
-                             err python: str(rr.get('error',0)).replace(',','.');
-                             err python: err if err else 0;
-                             res python: str(analysis.get('result',0)).replace(',','.');
-                             res python: res if res else 0;
-                             dataspecs python: '[%s,%s,%s,%s]' % (res,min,max,err);"
-                      tal:condition="rr">
+                  <td class="specs-graphs">
                     <div class="range-chart"
-                         tal:attributes="data-specs python:dataspecs"></div>
+                         style="width:150px;"
+                         tal:attributes="data-range python: json.dumps(analysis.getResultsRange());
+                                         data-result python: analysis.getResult();"></div>
                   </td>
                 </tr>
                 <tr tal:condition="python:remarksenabled==True and analysis['remarks']">
@@ -367,60 +359,34 @@
     <p tal:content="structure analysisrequest/remarks"></p>
   </div>
 
-  <!-- Attachments section -->
-  <div id="section-attachments"
-       tal:define="ar_attachments analysisrequest/ar_attachments;
-           an_attachments analysisrequest/an_attachments">
+  <!-- ATTACHMENTS -->
+  <tal:attachments
+    define="ar_attachments analysisrequest/ar_attachments;
+            an_attachments analysisrequest/an_attachments">
 
-    <h1 i18n:translate="" tal:condition="python:ar_attachments or an_attachments">Attachments</h1>
+    <tal:attchmentheader condition="python:ar_attachments or an_attachments">
+      <h1 i18n:translate="">Attachments</h1>
+    </tal:attchmentheader>
 
     <!-- AR Attachments -->
-    <div id="analysisrequest-attachments" tal:condition="ar_attachments">
-      <h2 i18n:translate="">Analysis request attachments</h2>
-      <ul>
-        <tal:attachment tal:repeat="attachment ar_attachments">
-          <li>
-            <tal:inline condition="python:attachment['renderoption']=='r'">
-              <div class="inline-attachment">
-                <tal:tag replace="structure attachment/inline"/>
-              </div>
-            </tal:inline>
-            <a title="Click to download"
-               tal:attributes="href attachment/download"
-               tal:content="attachment/filename">Filename</a>
-            <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-            (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-            <span class="file-size" tal:content="attachment/size">145Kb</span>
-          </li>
-        </tal:attachment>
-      </ul>
+    <tal:ar_attachments>
+    <h2 i18n:translate="" tal:condition="ar_attachments">Analysis services attachments</h2>
+    <div class="attachment" tal:repeat="attachment ar_attachments">
+      <tal:render condition="python:attachment['renderoption']=='r'">
+        <tal:tag replace="structure attachment/inline"/>
+      </tal:render>
     </div>
+    </tal:ar_attachments>
 
-    <!-- Analyses Attachments -->
-    <div id="analyses-attachments" tal:condition="an_attachments">
-      <h2 i18n:translate="">Analysis services attachments</h2>
-      <table id="analysis-attachments">
-        <tal:attachment tal:repeat="attachment an_attachments">
-          <tr>
-            <td tal:content="attachment/keywords">Total Vit D2 + D3</td>
-            <td>
-              <tal:inline condition="python:attachment['renderoption']=='r'">
-                <div class="inline-attachment">
-                  <tal:tag replace="structure attachment/inline"/>
-                </div>
-              </tal:inline>
-              <a title="Click to download"
-                 tal:attributes="href attachment/download"
-                 tal:content="attachment/filename">Filename</a>
-              <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-              (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-              <span class="file-size" tal:content="attachment/size">145Kb</span>
-            </td>
-          </tr>
-        </tal:attachment>
-      </table>
+    <!-- AN Attachments -->
+    <h2 i18n:translate="" tal:condition="an_attachments">Analysis services attachments</h2>
+    <div class="attachment"  tal:repeat="attachment an_attachments">
+      <tal:render condition="python:attachment['renderoption']=='r'">
+        <tal:tag replace="structure attachment/inline"/>
+      </tal:render>
     </div>
-  </div>
+  </tal:attachments>
+  <!-- /ATTACHMENTS -->
 
   <!-- Signatures section -->
   <div id="section-signatures">

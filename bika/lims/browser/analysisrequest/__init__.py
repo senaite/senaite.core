@@ -27,7 +27,6 @@ from .add2 import ajaxAnalysisRequestAddView  # noqa: F401
 from .analysisrequests import AnalysisRequestsView
 from .invoice import InvoicePrintView
 from .invoice import InvoiceView
-from .log import AnalysisRequestLog
 from .manage_analyses import AnalysisRequestAnalysesView
 from .manage_results import AnalysisRequestManageResultsView
 from .published_results import AnalysisRequestPublishedResults

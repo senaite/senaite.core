@@ -78,8 +78,8 @@ function add_No(dlg, element){
 function calcdependencies(elements, auto_yes) {
 	/*jshint validthis:true */
 	auto_yes = auto_yes || false;
-    window.jarn.i18n.loadCatalog("bika");
-	var _ = window.jarn.i18n.MessageFactory("bika");
+    window.jarn.i18n.loadCatalog("senaite.core");
+	var _ = window.jarn.i18n.MessageFactory("senaite.core");
 
 	var dep;
 	var i, cb;

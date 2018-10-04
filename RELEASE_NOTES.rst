@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Update from 1.2.7 to 1.2.8
+--------------------------
+
+- Operators for min and max values have been added. For specifications already
+  present in the system, the result ranges are considered as bounded and closed:
+  `[min,max] = {result | min <= result <= max}`.
+  https://github.com/senaite/senaite.core/pull/965
+
+
 Update from 1.2.4 to 1.2.5
 --------------------------
 
@@ -9,6 +18,12 @@ Update from 1.2.4 to 1.2.5
   TextIndexNG3 indexes instead of looking for the keyword inside wildcards.
   For now, it is used only in AR listing catalog.
   https://pypi.python.org/pypi/Products.TextIndexNG3/
+
+- This update might take long depending on the number of Analyses registered in
+  the system, because the upgrade step will walk through all analyses in order
+  to update those that do not have a valid (non-floatable) duplicate variation
+  value (see #768).
+
 
 Update from 1.2.3 to 1.2.4
 --------------------------

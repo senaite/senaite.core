@@ -1,4 +1,4 @@
-<div class="field" i18n:domain="bika" tal:attributes="style view/style|nothing"
+<div class="field" i18n:domain="senaite.core" tal:attributes="style view/style|nothing"
         tal:define="analysts view/analysts">
 
     <label i18n:translate="">Analyst</label>
@@ -8,12 +8,10 @@
             id="Analyst"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
 
+        <option value=""/>
         <tal:analysts tal:repeat="analyst analysts">
-            <option
-                    value=""
-                    tal:attributes="
-                            value python:analyst;
-                            selected python:request.get('Analyst', '') == analyst and 'selected' or ''"
+            <option tal:attributes="value python:analyst;
+                                    selected python:request.get('Analyst', '') == analyst and 'selected' or ''"
                     tal:content="python:analysts.getValue(analyst)">
             </option>
         </tal:analysts>

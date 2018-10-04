@@ -9,8 +9,8 @@ from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
@@ -144,29 +144,6 @@ class AnalysisRequestViewView(BrowserView):
                 message = "General Retract Done.  Submit this AR manually."
                 self.addMessage(message, 'warning')
 
-        # If is a retracted AR, show the link to child AR and show a warn msg
-        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = hasattr(ar, 'getChildAnalysisRequest') \
-                        and ar.getChildAnalysisRequest() or None
-            message = _('These results have been withdrawn and are '
-                        'listed here for trace-ability purposes. Please follow '
-                        'the link to the retest')
-            if childar:
-                message = (message + " %s.") % childar.getId()
-            else:
-                message = message + "."
-            self.addMessage(message, 'warning')
-        # If is an AR automatically generated due to a Retraction, show it's
-        # parent AR information
-        if hasattr(ar, 'getParentAnalysisRequest') \
-            and ar.getParentAnalysisRequest():
-            par = ar.getParentAnalysisRequest()
-            message = _('This Analysis Request has been '
-                        'generated automatically due to '
-                        'the retraction of the Analysis '
-                        'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': par.getId()})
-            self.addMessage(message, 'info')
         self.renderMessages()
         return self.template()
 
@@ -457,33 +434,3 @@ class AnalysisRequestViewView(BrowserView):
             if verifier is None or verifier == '':
                 verifier = actor
         return verifier
-
-    def get_custom_fields(self):
-        """ Returns a dictionary with custom fields to be rendered after
-            header_table with this structure:
-            {<fieldid>:{title:<title>, value:<html>}
-        """
-        custom = {}
-        ar = self.context
-        workflow = getToolByName(self.context, 'portal_workflow')
-        # If is a retracted AR, show the link to child AR and show a warn msg
-        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = hasattr(ar, 'getChildAnalysisRequest') \
-                        and ar.getChildAnalysisRequest() or None
-            anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getId())) or None
-            if anchor:
-                custom['ChildAR'] = {
-                    'title': t(_("AR for retested results")),
-                    'value': anchor
-                }
-        # If is an AR automatically generated due to a Retraction, show it's
-        # parent AR information
-        if hasattr(ar, 'getParentAnalysisRequest') \
-            and ar.getParentAnalysisRequest():
-            par = ar.getParentAnalysisRequest()
-            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getId())
-            custom['ParentAR'] = {
-                'title': t(_("Invalid AR retested")),
-                'value': anchor
-            }
-        return custom

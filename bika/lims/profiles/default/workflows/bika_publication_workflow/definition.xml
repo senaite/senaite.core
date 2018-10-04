@@ -6,7 +6,7 @@
              state_variable="publish_state"
              initial_state="unpublished"
              manager_bypass="False"
-             i18n:domain="bika">
+             i18n:domain="senaite.core">
 
   <state state_id="published" title="Published" i18n:attributes="title">
     <exit-transition transition_id="republish" />

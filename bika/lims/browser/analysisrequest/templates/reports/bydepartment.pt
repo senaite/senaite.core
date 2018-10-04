@@ -124,11 +124,11 @@
     <!-- Alert section (invalidated ar, etc.) -->
     <div id="section-alert" tal:condition="analysisrequest/invalid">
       <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
-      <tal:invalidreport tal:define="child python:analysisrequest['obj'].getChildAnalysisRequest()"
-                         tal:condition="child">
+      <tal:invalidreport tal:define="retest python:analysisrequest['obj'].getRetest()"
+                         tal:condition="retest">
         <span i18n:translate="">This Analysis request has been replaced by</span>&nbsp;
-        <a tal:attributes="href child/absolute_url"
-           tal:content="child/id"></a>
+        <a tal:attributes="href retest/absolute_url"
+           tal:content="retest/id"></a>
       </tal:invalidreport>
     </div>
     <div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
@@ -311,15 +311,6 @@
         <tal:render condition="python:attachment['renderoption']=='r'">
           <tal:tag replace="structure attachment/inline"/>
         </tal:render>
-        <tal:attach condition="python:attachment['renderoption'] in ('a', '')">
-          <span tal:content="attachment/keywords">Total Vit D2 + D3</span>
-          <a title="Click to download"
-            tal:attributes="href attachment/download"
-            tal:content="attachment/filename">Filename</a>
-          <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-          (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-          <span class="file-size" tal:content="attachment/size">145Kb</span>
-        </tal:attach>
       </div>
       </tal:ar_attachments>
 
@@ -329,15 +320,6 @@
         <tal:render condition="python:attachment['renderoption']=='r'">
           <tal:tag replace="structure attachment/inline"/>
         </tal:render>
-        <tal:attach condition="python:attachment['renderoption'] in ('a', '')">
-          <span tal:content="attachment/keywords">Total Vit D2 + D3</span>
-          <a title="Click to download"
-            tal:attributes="href attachment/download"
-            tal:content="attachment/filename">Filename</a>
-          <span class="file-type" tal:content="attachment/type">Type</span>&nbsp;&nbsp;
-          (<span class="file-mime" tal:content="attachment/mimetype">CSV</span>)&nbsp;&mdash;&nbsp;
-          <span class="file-size" tal:content="attachment/size">145Kb</span>
-        </tal:attach>
       </div>
     </tal:attachments>
     <!-- /ATTACHMENTS -->

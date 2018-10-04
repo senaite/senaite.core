@@ -40,7 +40,6 @@ from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
-from bika.lims.config import DEFAULT_AR_SPECS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
@@ -349,21 +348,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Analysis Request."),
         ),
     ),
-    StringField(
-        'DefaultARSpecs',
-        schemata="Analyses",
-        default='ar_specs',
-        vocabulary=DEFAULT_AR_SPECS,
-        widget=SelectionWidget(
-            label=_("Default AR Specifications"),
-            description=_(
-                "Choose the default specifications used for all AR views "
-                "to display alerts and notifications.  These will also be "
-                "applied when an AR is published in permanent media, "
-                "e.g. PDF."),
-            format='select',
-        )
-    ),
     IntegerField(
         'ExponentialFormatThreshold',
         schemata="Analyses",
@@ -656,10 +640,10 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
-            label=_("Email notification on AR retract"),
+            label=_("Email notification on AR invalidation"),
             description=_("Select this to activate automatic notifications "
                           "via email to the Client and Lab Managers when an Analysis "
-                          "Request is retracted.")
+                          "Request is invalidated.")
         ),
     ),
     TextField(
@@ -812,7 +796,10 @@ schema = BikaFolderSchema.copy() + Schema((
                 " IDs from 001 to 999.</p>" 
                 "<p>Alphanumeric prefixes for IDs are included as is in the" 
                 " formats, e.g. WS for Worksheet in WS-{seq:03d} produces" 
-                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>" 
+                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>"
+                "<p>For dynamic generation of alphanumeric and sequential IDs,"
+                " the wildcard {alpha} can be used. E.g WS-{alpha:2a3d}"
+                " produces WS-AA001, WS-AA002, WS-AB034, etc.</p>"
                 "<p>Variables that can be used include:" 
                 "<table>" 
                 "<tr>"

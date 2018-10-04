@@ -206,7 +206,7 @@ class AddAnalysesView(BikaListingView):
         item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived)
         DueDate = obj.getDueDate
         item['getDueDate'] = self.ulocalized_time(DueDate)
-        if DueDate < DateTime():
+        if DueDate and DueDate < DateTime():
             item['after']['DueDate'] = '<img width="16" height="16"'
             ' src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                 (self.context.absolute_url(),

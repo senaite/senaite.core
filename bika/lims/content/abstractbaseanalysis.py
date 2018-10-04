@@ -15,6 +15,7 @@ from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
     IntegerWidget, SelectionWidget, StringWidget
 from Products.Archetypes.utils import DisplayList, IntDisplayList
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField, UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
@@ -547,8 +548,9 @@ ResultOptions = RecordsField(
     subfield_validators={'ResultValue': 'resultoptionsvalidator',
                          'ResultText': 'resultoptionsvalidator'},
     subfield_sizes={'ResultValue': 5,
-                    'ResultText': 25,
-                    },
+                    'ResultText': 25,},
+    subfield_maxlength={'ResultValue': 5,
+                        'ResultText': 255,},
     widget=RecordsWidget(
         label=_("Result Options"),
         description=_(
@@ -955,3 +957,12 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         department = self.getDepartment()
         if department:
             return department.UID()
+
+    @security.public
+    def getMaxTimeAllowed(self):
+        """Returns the maximum turnaround time for this analysis. If no TAT is
+        set for this particular analysis, it returns the value set at setup
+        return: a dictionary with the keys "days", "hours" and "minutes"
+        """
+        tat = self.Schema().getField("MaxTimeAllowed").get(self)
+        return tat or self.bika_setup.getDefaultTurnaroundTime()

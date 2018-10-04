@@ -17,7 +17,7 @@ We are going to test all instruments import interfaces on this one doctest
 4. Same analyses and same results because they will be testing against the same AR
    `Ca` = 0.0
    `Mg` = 2.0
-5. To set DefaultResult to float `0.0` use `zeroValueDefaultInstrumentResults`
+5. To set DefaultResult to float `0.0` use `get_result`
    example can be found at `exportimport/instruments/varian/vistapro/icp.py`
 
 Running this test from the buildout directory::
@@ -237,6 +237,7 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     results = Import(context, request)
     ...     test_results = eval(results)
     ...     #TODO: Test for interim fields on other files aswell
+    ...     analyses = ar.getAnalyses(full_objects=True)
     ...     if 'Parsing file generic.two_dimension.csv' in test_results['log']:
     ...         # Testing also for interim fields, only for `generic.two_dimension` interface
     ...         # TODO: Test for - H2O-0001: calculated result for 'THCaCO3': '2.0'
@@ -248,16 +249,15 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...             self.fail("pest2 did not get updated")
     ...         if "H2O-0001 result for 'TotalTerpenes:pest3': '1'" not in test_results['log']:
     ...             self.fail("pest3 did not get updated")
-    ...         analyses = ar.getAnalyses(full_objects=True)
-    ...         if an.getKeyword() ==  'TotalTerpenes':
-    ...             if an.getResult() != 'PASS':
-    ...                 msg = "{}:Result did not get updated".format(an.getKeyword())
-    ...                 self.fail(msg)
+    ...         for an in analyses:
+    ...             if an.getKeyword() == 'TotalTerpenes':
+    ...                 if an.getResult() != 'PASS':
+    ...                     msg = "{}:Result did not get updated".format(an.getKeyword())
+    ...                     self.fail(msg)
     ...
     ...     elif 'Import finished successfully: 1 ARs and 2 results updated' not in test_results['log']:
     ...         self.fail("Results Update failed")
     ...
-    ...     analyses = ar.getAnalyses(full_objects=True)
     ...     for an in analyses:
     ...         if an.getKeyword() ==  'Ca':
     ...             if an.getResult() != '0.0':

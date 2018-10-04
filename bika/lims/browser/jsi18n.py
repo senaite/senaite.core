@@ -30,8 +30,12 @@ class i18njs(BaseView):
         if td is None or language not in td._catalogs:
             return
 
+        # N.B. Multiple PO files might be registered for one language, where
+        # usually the one at position 0 is the custom catalog with the
+        # overriding terms in it. Therefore, we need to reverse the order, so
+        # that the custom catalog wins.
         _catalog = {}
-        for mo_path in td._catalogs[language]:
+        for mo_path in reversed(td._catalogs[language]):
             catalog = td._data[mo_path]._catalog
             if catalog is None:
                 td._data[mo_path].reload()

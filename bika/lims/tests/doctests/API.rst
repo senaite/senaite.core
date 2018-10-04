@@ -122,12 +122,28 @@ Now we show it with catalog results::
     >>> api.get_object(api.get_object(brain))
     <Client at /plone/clients/client-1>
 
+
+The function also accepts a UID:
+
+    >>> api.get_object(api.get_uid(brain))
+    <Client at /plone/clients/client-1>
+
+And returns the portal object when UID=="0"
+
+    >>> api.get_object("0")
+    <PloneSite at /plone>
+
 No supported objects raise an error::
 
     >>> api.get_object(object())
     Traceback (most recent call last):
     [...]
     BikaLIMSError: <object object at 0x...> is not supported.
+
+    >>> api.get_object("i_am_not_an_uid")
+    Traceback (most recent call last):
+    [...]
+    BikaLIMSError: 'i_am_not_an_uid' is not supported.
 
 To check if an object is supported, e.g. is an ATCT, Dexterity, ZCatalog or
 Portal object, we can use the `is_object` function::
@@ -144,7 +160,7 @@ Portal object, we can use the `is_object` function::
     >>> api.is_object(None)
     False
 
-  >>> api.is_object(object())
+    >>> api.is_object(object())
     False
 
 
@@ -646,12 +662,12 @@ This function returns all assigned workflows for a given object::
     ('bika_one_state_workflow',)
 
     >>> api.get_workflows_for(client)
-    ('bika_client_workflow', 'bika_inactive_workflow')
+    ('bika_client_workflow',)
 
 This function also supports the portal_type as parameter::
 
     >>> api.get_workflows_for(api.get_portal_type(client))
-    ('bika_client_workflow', 'bika_inactive_workflow')
+    ('bika_client_workflow',)
 
 
 Getting the Workflow Status of an Object
@@ -664,7 +680,7 @@ This function returns the state of a given object::
 
 It is also capable to get the state of another state variable::
 
-    >>> api.get_workflow_status_of(client, "inactive_state")
+    >>> api.get_workflow_status_of(client, "review_state")
     'active'
 
 Deactivate the client::
@@ -672,18 +688,15 @@ Deactivate the client::
     >>> api.do_transition_for(client, "deactivate")
     <Client at /plone/clients/client-1>
 
-    >>> api.get_workflow_status_of(client, "inactive_state")
-    'inactive'
-
     >>> api.get_workflow_status_of(client)
-    'active'
+    'inactive'
 
 Reactivate the client::
 
     >>> api.do_transition_for(client, "activate")
     <Client at /plone/clients/client-1>
 
-    >>> api.get_workflow_status_of(client, "inactive_state")
+    >>> api.get_workflow_status_of(client)
     'active'
 
 
@@ -950,7 +963,8 @@ So first I'll add some users with some different roles:
 
     >>> for user in [{'username': 'labmanager_1', 'roles': ['LabManager']},
     ...              {'username': 'labmanager_2', 'roles': ['LabManager']},
-    ...              {'username': 'sampler_1', 'roles': ['Sampler']}]:
+    ...              {'username': 'sampler_1', 'roles': ['Sampler']},
+    ...              {'username': 'client_1', 'roles': ['Client']}]:
     ...    member = portal.portal_registration.addMember(
     ...        user['username'], user['username'],
     ...        properties={'username': user['username'],
@@ -1017,6 +1031,35 @@ But fails if we specify only `Contact` type:
     >>> nuser is None
     True
 
+
+Getting the Contact Client
+--------------------------
+
+Getting the current client the current user belongs to::
+
+    >>> api.get_current_client() is None
+    True
+
+And still fails if we use a user that is not associated to a client::
+
+    >>> api.get_user_client(user) is None
+    True
+
+    >>> api.get_user_client(labcontact) is None
+    True
+
+Try now with a valid contact::
+
+    >>> client_user = api.get_user('client_1')
+    >>> contact1 = api.create(client, "Contact", Firstname="Lost", Lastname="Nomad")
+    >>> contact1.setUser(client_user)
+    True
+
+    >>> api.get_user_client(contact1)
+    <Client at /plone/clients/client-1>
+
+    >>> api.get_user_client(client_user)
+    <Client at /plone/clients/client-1>
 
 
 Creating a Cache Key
@@ -1148,10 +1191,12 @@ Checks if an UID is a valid 23 alphanumeric uid:
     >>> api.is_uid("")
     False
 
-    >>> api.is_uid("0")
-    False
-
     >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e')
+    True
+
+Per convention we assume "0" is the uid for portal object (PloneSite):
+
+    >>> api.is_uid("0")
     True
 
 Checks if an UID is a valid 23 alphanumeric uid and with a brain:
@@ -1165,11 +1210,11 @@ Checks if an UID is a valid 23 alphanumeric uid and with a brain:
     >>> api.is_uid("", validate=True)
     False
 
-    >>> api.is_uid("0", validate=True)
-    False
-
     >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e', validate=True)
     False
+
+    >>> api.is_uid("0", validate=True)
+    True
 
     >>> asfolder = self.portal.bika_setup.bika_analysisservices
     >>> serv = api.create(asfolder, "AnalysisService", title="AS test")
@@ -1354,3 +1399,105 @@ With default fallback:
 
     >>> api.to_float("2.1", "2")
     2.1
+
+Convert to an int number
+------------------------
+
+    >>> api.to_int(2)
+    2
+
+    >>> api.to_int("2")
+    2
+
+    >>> api.to_int(2.1)
+    2
+
+    >>> api.to_int("2.1")
+    2
+
+With default fallback:
+
+    >>> api.to_int(None, 2)
+    2
+
+    >>> api.to_int(None, "2")
+    2
+
+    >>> api.to_int("", 2)
+    2
+
+    >>> api.to_int("2", 0)
+    2
+
+    >>> api.to_int(2, 0)
+    2
+
+    >>> api.to_int("as", None) is None
+    True
+
+    >>> api.to_int("as", "2")
+    2
+
+Convert to minutes
+------------------
+
+    >>> api.to_minutes(hours=1)
+    60
+
+    >>> api.to_minutes(hours=1.5, minutes=30)
+    120
+
+    >>> api.to_minutes(hours=0, minutes=0, seconds=0)
+    0
+
+    >>> api.to_minutes(minutes=120)
+    120
+
+    >>> api.to_minutes(hours="1", minutes="120", seconds="120")
+    182
+
+    >>> api.to_minutes(days=3)
+    4320
+
+    >>> api.to_minutes(minutes=122.4567)
+    122
+
+    >>> api.to_minutes(minutes=122.4567, seconds=6)
+    123
+
+    >>> api.to_minutes(minutes=122.4567, seconds=6, round_to_int=False)
+    122.55669999999999
+
+
+Convert to dhm format
+---------------------
+
+    >>> api.to_dhm_format(hours=1)
+    '1h'
+
+    >>> api.to_dhm_format(hours=1.5, minutes=30)
+    '2h'
+
+    >>> api.to_dhm_format(hours=0, minutes=0, seconds=0)
+    ''
+
+    >>> api.to_dhm_format(minutes=120)
+    '2h'
+
+    >>> api.to_dhm_format(hours="1", minutes="120", seconds="120")
+    '3h 2m'
+
+    >>> api.to_dhm_format(days=3)
+    '3d'
+
+    >>> api.to_dhm_format(days=3, minutes=140)
+    '3d 2h 20m'
+
+    >>> api.to_dhm_format(days=3, minutes=20)
+    '3d 0h 20m'
+
+    >>> api.to_dhm_format(minutes=122.4567)
+    '2h 2m'
+
+    >>> api.to_dhm_format(minutes=122.4567, seconds=6)
+    '2h 3m'

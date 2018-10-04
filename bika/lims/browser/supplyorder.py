@@ -22,6 +22,10 @@ class View(BrowserView):
     template = ViewPageTemplateFile('templates/supplyorder_view.pt')
     title = _('Supply Order')
 
+    def __init__(self, context, request):
+        self.init__ = super(View, self).__init__(context, request)
+        self.icon = self.portal_url + '/++resource++bika.lims.images/supplyorder_big.png'
+
     def __call__(self):
         context = self.context
         portal = self.portal

@@ -16,4 +16,5 @@
  <column value="SamplingRoundUID"/>
  <column value="review_state"/>
  <index name="Identifiers" meta_type="KeywordIndex"/>
+ <column value="getClientID"/>
 </object>

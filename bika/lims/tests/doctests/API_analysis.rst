@@ -17,6 +17,7 @@ Needed Imports:
     >>> import re
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.api.analysis import get_formatted_interval
     >>> from bika.lims.api.analysis import is_out_of_range
     >>> from bika.lims.content.analysisrequest import AnalysisRequest
     >>> from bika.lims.content.sample import Sample
@@ -500,3 +501,189 @@ Now, check for out-of-range results:
     >>> cu_control.setResult("-1.09")
     >>> is_out_of_range(cu_control)
     (True, True)
+
+
+Check if results are out of range when open interval is used
+------------------------------------------------------------
+
+Set open interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+First, get the analyses from slot 1 and sort them asc:
+
+    >>> analyses = worksheet.get_analyses_at(1)
+    >>> analyses.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
+
+Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
+
+    >>> au_analysis = analyses[0]
+    >>> au_analysis.setResult(-5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+    >>> au_analysis.setResult(5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+
+Check if results are out of range when left-open interval is used
+-----------------------------------------------------------------
+
+Set left-open interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'geq'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+First, get the analyses from slot 1 and sort them asc:
+
+    >>> analyses = worksheet.get_analyses_at(1)
+    >>> analyses.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
+
+Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
+
+    >>> au_analysis = analyses[0]
+    >>> au_analysis.setResult(-5)
+    >>> is_out_of_range(au_analysis)
+    (False, False)
+
+    >>> au_analysis.setResult(5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+
+Check if results are out of range when right-open interval is used
+------------------------------------------------------------------
+
+Set right-open interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'leq'
+    >>> specification.setResultsRange(ranges)
+
+First, get the analyses from slot 1 and sort them asc:
+
+    >>> analyses = worksheet.get_analyses_at(1)
+    >>> analyses.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
+
+Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
+
+    >>> au_analysis = analyses[0]
+    >>> au_analysis.setResult(-5)
+    >>> is_out_of_range(au_analysis)
+    (True, False)
+
+    >>> au_analysis.setResult(5)
+    >>> is_out_of_range(au_analysis)
+    (False, False)
+
+
+Check if formatted interval is rendered properly
+------------------------------------------------
+
+Set closed interval for min and max from water specification
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'geq'
+    ...     range['max_operator'] = 'leq'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '[-5;5]'
+
+Try now with left-open interval
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'leq'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '(-5;5]'
+
+Try now with right-open interval
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'geq'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '[-5;5)'
+
+Try now with open interval
+
+    >>> ranges = specification.getResultsRange()
+    >>> for range in ranges:
+    ...     range['min_operator'] = 'gt'
+    ...     range['max_operator'] = 'lt'
+    >>> specification.setResultsRange(ranges)
+
+Get the result range for `Au` (min: -5, max: 5)
+
+    >>> rr = specification.getResultsRange()
+    >>> res_range = filter(lambda item: item.get('keyword') == 'Au', rr)[0]
+    >>> get_formatted_interval(res_range)
+    '(-5;5)'
+
+And if we set a 0 value as min or max?
+
+    >>> res_range['min'] = 0
+    >>> get_formatted_interval(res_range)
+    '(0;5)'
+
+    >>> res_range['max'] = 0
+    >>> res_range['min'] = -5
+    >>> get_formatted_interval(res_range)
+    '(-5;0)'
+
+And now, set no value for min and/or max
+
+    >>> res_range['min'] = ''
+    >>> res_range['max'] = 5
+    >>> get_formatted_interval(res_range)
+    '<5'
+
+    >>> res_range['max'] = ''
+    >>> res_range['min'] = -5
+    >>> get_formatted_interval(res_range)
+    '>-5'
+
+And change the operators
+
+    >>> res_range['min'] = ''
+    >>> res_range['max'] = 5
+    >>> res_range['max_operator'] = 'leq'
+    >>> get_formatted_interval(res_range)
+    '<=5'
+
+    >>> res_range['max'] = ''
+    >>> res_range['min'] = -5
+    >>> res_range['max_operator'] = 'lt'
+    >>> res_range['min_operator'] = 'geq'
+    >>> get_formatted_interval(res_range)
+    '>=-5'

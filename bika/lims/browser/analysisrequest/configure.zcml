@@ -1,7 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
   <!-- AR Add 2 -->
   <browser:page
@@ -170,14 +170,6 @@
 
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="log"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestLog"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
-
-  <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
       name="invoice"
       class="bika.lims.browser.analysisrequest.InvoiceView"
       permission="bika.lims.ManageInvoices"
@@ -224,29 +216,6 @@
       class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
-  />
-
-  <!-- Verifying any Analysis will cause a digestion of the parent AR to
-  be triggered at the end of the request -->
-  <subscriber
-      for="bika.lims.interfaces.IAnalysis
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.browser.analysisrequest.publish.AnalysisAfterTransitionHandler"
-  />
-
-  <!-- Modifying an AR that has been verified causes a digestion to be
-  triggered at the end of this request. -->
-  <subscriber
-      for="bika.lims.interfaces.IAnalysisRequest
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler="bika.lims.browser.analysisrequest.publish.ARModifiedHandler"
-  />
-
-  <!-- At the end of each request, this will check to see if any ARs are
-  flagged to have their publication data pre-digested. -->
-  <subscriber
-      for="zope.publisher.interfaces.IEndRequestEvent"
-      handler="bika.lims.browser.analysisrequest.publish.EndRequestHandler"
   />
 
 </configure>

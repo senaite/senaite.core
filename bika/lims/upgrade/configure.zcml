@@ -1,7 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="bika">
+    i18n_domain="senaite.core">
 
  <genericsetup:upgradeStep
         title="Upgrade to Bika LIMS Evo 1.0.0"
@@ -122,11 +122,39 @@
        handler="bika.lims.upgrade.v01_02_004.upgrade"
        profile="bika.lims:default"/>
 
-  <genericsetup:upgradeStep
+ <genericsetup:upgradeStep
        title="Upgrade to SENAITE.CORE 1.2.5"
        source="1.2.4"
        destination="1.2.5"
        handler="bika.lims.upgrade.v01_02_005.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to SENAITE.CORE 1.2.6"
+       source="1.2.5"
+       destination="1.2.6"
+       handler="bika.lims.upgrade.v01_02_006.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to SENAITE.CORE 1.2.7"
+       source="1.2.6"
+       destination="1.2.7"
+       handler="bika.lims.upgrade.v01_02_007.upgrade"
+       profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+       title="Upgrade to SENAITE.CORE 1.2.8"
+       source="1.2.7"
+       destination="1.2.8"
+       handler="bika.lims.upgrade.v01_02_008.upgrade"
+       profile="bika.lims:default"/>
+
+  <genericsetup:upgradeStep
+       title="Upgrade to SENAITE.CORE 1.2.9"
+       source="1.2.8"
+       destination="1.2.9"
+       handler="bika.lims.upgrade.v01_02_009.upgrade"
        profile="bika.lims:default"/>
 
 </configure>

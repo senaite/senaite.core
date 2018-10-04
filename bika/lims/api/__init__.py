@@ -12,6 +12,7 @@ from Acquisition import aq_base
 from AccessControl.PermissionRole import rolesForPermissionOn
 
 from datetime import datetime
+from datetime import timedelta
 from DateTime import DateTime
 
 from Products.CMFPlone.utils import base_hasattr, safe_unicode
@@ -22,6 +23,7 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IClient, IContact, ILabContact
 
 from zope import globalrequest
 from zope.event import notify
@@ -238,19 +240,21 @@ def is_object(brain_or_object):
     return False
 
 
-def get_object(brain_or_object):
+def get_object(brain_object_uid):
     """Get the full content object
 
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: PortalObject/ATContentType/DexterityContentType
-    /CatalogBrain
+    :param brain_object_uid: A catalog brain or content object or uid
+    :type brain_object_uid: PortalObject/ATContentType/DexterityContentType
+    /CatalogBrain/basestring
     :returns: The full object
     """
-    if not is_object(brain_or_object):
-        fail("{} is not supported.".format(repr(brain_or_object)))
-    if is_brain(brain_or_object):
-        return brain_or_object.getObject()
-    return brain_or_object
+    if is_uid(brain_object_uid):
+        return get_object_by_uid(brain_object_uid)
+    if not is_object(brain_object_uid):
+        fail("{} is not supported.".format(repr(brain_object_uid)))
+    if is_brain(brain_object_uid):
+        return brain_object_uid.getObject()
+    return brain_object_uid
 
 
 def is_portal(brain_or_object):
@@ -815,12 +819,20 @@ def get_cancellation_status(brain_or_object, default="active"):
     :returns: Value of the review_status variable
     :rtype: String
     """
+
     if is_brain(brain_or_object):
-        return getattr(brain_or_object, "cancellation_state", default)
+        state = getattr(brain_or_object, "cancellation_state", None)
+        if state is not None:
+            return state
+
     workflows = get_workflows_for(brain_or_object)
-    if 'bika_cancellation_workflow' not in workflows:
+    if "bika_cancellation_workflow" in workflows:
+        return get_workflow_status_of(brain_or_object, "cancellation_state")
+
+    state = get_workflow_status_of(brain_or_object)
+    if state not in ("active", "inactive"):
         return default
-    return get_workflow_status_of(brain_or_object, 'cancellation_state')
+    return state
 
 
 def get_inactive_status(brain_or_object, default="active"):
@@ -831,12 +843,20 @@ def get_inactive_status(brain_or_object, default="active"):
     :returns: Value of the review_status variable
     :rtype: String
     """
+
     if is_brain(brain_or_object):
-        return getattr(brain_or_object, "inactive_state", default)
+        state = getattr(brain_or_object, "inactive_state", None)
+        if state is not None:
+            return state
+
     workflows = get_workflows_for(brain_or_object)
-    if 'bika_inactive_workflow' not in workflows:
+    if "bika_inactive_workflow" in workflows:
+        return get_workflow_status_of(brain_or_object, "inactive_state")
+
+    state = get_workflow_status_of(brain_or_object)
+    if state not in ("active", "inactive"):
         return default
-    return get_workflow_status_of(brain_or_object, 'inactive_state')
+    return state
 
 
 def is_active(brain_or_object):
@@ -1089,6 +1109,40 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
     return get_object(brains[0])
 
 
+def get_user_client(user_or_contact):
+    """Returns the client of the contact of a Plone user
+
+    If the user passed in has no contact or does not belong to any client,
+    returns None.
+
+    :param: Plone user or contact
+    :returns: Client the contact of the Plone user belongs to
+    """
+    if not user_or_contact or ILabContact.providedBy(user_or_contact):
+        # Lab contacts cannot belong to a client
+        return None
+
+    if not IContact.providedBy(user_or_contact):
+        contact = get_user_contact(user_or_contact, contact_types=['Contact'])
+        if IContact.providedBy(contact):
+            return get_user_client(contact)
+        return None
+
+    client = get_parent(user_or_contact)
+    if client and IClient.providedBy(client):
+        return client
+
+    return None
+
+
+def get_current_client():
+    """Returns the current client the current logged in user belongs to, if any
+
+    :returns: Client the current logged in user belongs to or None
+    """
+    return get_user_client(get_current_user())
+
+
 def get_cache_key(brain_or_object):
     """Generate a cache key for a common brain or object
 
@@ -1164,6 +1218,8 @@ def is_uid(uid, validate=False):
     """
     if not isinstance(uid, basestring):
         return False
+    if uid == '0':
+        return True
     if len(uid) != 32:
         return False
     if not UID_RX.match(uid):
@@ -1212,6 +1268,52 @@ def to_date(value, default=None):
         return DateTime(value)
     except:
         return to_date(default)
+
+
+def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
+               round_to_int=True):
+    """Returns the computed total number of minutes
+    """
+    total = float(days)*24*60 + float(hours)*60 + float(minutes) + \
+            float(seconds)/60 + float(milliseconds)/1000/60
+    return int(round(total)) if round_to_int else total
+
+
+def to_dhm_format(days=0, hours=0, minutes=0, seconds=0, milliseconds=0):
+    """Returns a representation of time in a string in xd yh zm format
+    """
+    minutes = to_minutes(days=days, hours=hours, minutes=minutes,
+                         seconds=seconds, milliseconds=milliseconds)
+    delta = timedelta(minutes=int(round(minutes)))
+    d = delta.days
+    h = delta.seconds // 3600
+    m = (delta.seconds // 60) % 60
+    m = m and "{}m ".format(str(m)) or ""
+    d = d and "{}d ".format(str(d)) or ""
+    if m and d:
+        h = "{}h ".format(str(h))
+    else:
+        h = h and "{}h ".format(str(h)) or ""
+    return "".join([d, h, m]).strip()
+
+
+def to_int(value, default=_marker):
+    """Tries to convert the value to int.
+    Truncates at the decimal point if the value is a float
+
+    :param value: The value to be converted to an int
+    :return: The resulting int or default
+    """
+    if is_floatable(value):
+        value = to_float(value)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        if default is None:
+            return default
+        if default is not _marker:
+            return to_int(default)
+        fail("Value %s cannot be converted to int" % repr(value))
 
 
 def is_floatable(value):

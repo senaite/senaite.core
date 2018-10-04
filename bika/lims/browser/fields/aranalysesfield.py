@@ -8,13 +8,21 @@
 import itertools
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api, deprecated, logger
+from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
+from bika.lims import api
+from bika.lims import deprecated
+from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IAnalysis, IAnalysisService, IARAnalysesField
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IARAnalysesField
+from bika.lims.permissions import AddAnalysis
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import wasTransitionPerformed
-from Products.Archetypes.public import Field, ObjectField
+from bika.lims.workflow import getReviewHistoryActionsList
+from Products.Archetypes.public import Field
+from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
@@ -28,6 +36,9 @@ Run this test from the buildout directory:
 
     bin/test test_textual_doctests -t ARAnalysesField
 """
+
+FROZEN_STATES = ["verified", "published", "retracted"]
+FROZEN_TRANSITIONS = ["verify", "retract"]
 
 
 class ARAnalysesField(ObjectField):
@@ -57,17 +68,17 @@ class ARAnalysesField(ObjectField):
         """
 
         full_objects = False
-        # If get_reflexed is false don't return the analyses that have been
+        # If reflexed is false don't return the analyses that have been
         # reflexed, only the final ones
-        get_reflexed = True
+        reflexed = True
 
         if 'full_objects' in kwargs:
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']
 
-        if 'get_reflexed' in kwargs:
-            get_reflexed = kwargs['get_reflexed']
-            del kwargs['get_reflexed']
+        if 'reflexed' in kwargs:
+            reflexed = kwargs['reflexed']
+            del kwargs['reflexed']
 
         if 'retracted' in kwargs:
             retracted = kwargs['retracted']
@@ -85,15 +96,15 @@ class ARAnalysesField(ObjectField):
         contentFilter['path'] = {'query': api.get_path(instance),
                                  'level': 0}
         analyses = bac(contentFilter)
-        if not retracted or full_objects or not get_reflexed:
+        if not retracted or full_objects or not reflexed:
             analyses_filtered = []
             for a in analyses:
                 if not retracted and a.review_state == 'retracted':
                     continue
-                if full_objects or not get_reflexed:
+                if full_objects or not reflexed:
                     a_obj = a.getObject()
                     # Check if analysis has been reflexed
-                    if not get_reflexed and \
+                    if not reflexed and \
                             a_obj.getReflexRuleActionsTriggered() != '':
                         continue
                     if full_objects:
@@ -131,10 +142,16 @@ class ARAnalysesField(ObjectField):
                 "Items parameter must be a tuple or list, got '{}'".format(
                     type(items)))
 
-        # Bail out if the AR in frozen state
-        if self._is_frozen(instance):
-            raise ValueError(
-                "Analyses can not be modified for inactive/verified ARs")
+        # Bail out if the AR is inactive
+        if not api.is_active(instance):
+            raise Unauthorized("Inactive ARs can not be modified"
+                               .format(AddAnalysis))
+
+        # Bail out if the user has not the right permission
+        sm = getSecurityManager()
+        if not sm.checkPermission(AddAnalysis, instance):
+            raise Unauthorized("You do not have the '{}' permission"
+                               .format(AddAnalysis))
 
         # Convert the items to a valid list of AnalysisServices
         services = filter(None, map(self._to_service, items))
@@ -174,6 +191,8 @@ class ARAnalysesField(ObjectField):
 
         # delete analyses
         delete_ids = []
+        assigned_attachments = []
+
         for analysis in instance.objectValues('Analysis'):
             service_uid = analysis.getServiceUID()
 
@@ -183,8 +202,14 @@ class ARAnalysesField(ObjectField):
 
             # Skip Analyses in frozen states
             if self._is_frozen(analysis):
-                logger.warn("Inactive/verified Analyses can not be removed.")
+                logger.warn("Inactive/verified/retracted Analyses can not be "
+                            "removed.")
                 continue
+
+            # Remember assigned attachments
+            # https://github.com/senaite/senaite.core/issues/1025
+            assigned_attachments.extend(analysis.getAttachment())
+            analysis.setAttachment([])
 
             # If it is assigned to a worksheet, unassign it before deletion.
             if self._is_assigned_to_worksheet(analysis):
@@ -193,12 +218,32 @@ class ARAnalysesField(ObjectField):
                 ws.removeAnalysis(analysis)
 
             # Unset the partition reference
-            analysis.edit(SamplePartition=None)
+            part = analysis.getSamplePartition()
+            if part:
+                # From this partition, remove the reference to the current
+                # analysis that is going to be removed to prevent inconsistent
+                # states (Sample Partitions referencing to Analyses that do not
+                # exist anymore
+                an_uid = api.get_uid(analysis)
+                part_ans = part.getAnalyses() or []
+                part_ans = filter(lambda an: api.get_uid(an) != an_uid, part_ans)
+                part.setAnalyses(part_ans)
+            # Unset the Analysis-to-Partition reference
+            analysis.setSamplePartition(None)
             delete_ids.append(analysis.getId())
 
         if delete_ids:
             # Note: subscriber might promote the AR
             instance.manage_delObjects(ids=delete_ids)
+
+        # Remove orphaned attachments
+        for attachment in assigned_attachments:
+            # only delete attachments which are no further linked
+            if not attachment.getLinkedAnalyses():
+                logger.info(
+                    "Deleting attachment: {}".format(attachment.getId()))
+                attachment_id = api.get_id(attachment)
+                api.get_parent(attachment).manage_delObjects(attachment_id)
 
         return new_analyses
 
@@ -244,15 +289,21 @@ class ARAnalysesField(ObjectField):
         return None
 
     def _is_frozen(self, brain_or_object):
-        """Check if the passed in object is frozen
-
-        :param obj: Analysis or AR Brain/Object
+        """Check if the passed in object is frozen: the object is cancelled,
+        inactive or has been verified at some point
+        :param brain_or_object: Analysis or AR Brain/Object
         :returns: True if the object is frozen
         """
-        obj = api.get_object(brain_or_object)
-        active = api.is_active(obj)
-        verified = wasTransitionPerformed(obj, 'verify')
-        return not active or verified
+        if not api.is_active(brain_or_object):
+            return True
+        if api.get_workflow_status_of(brain_or_object) in FROZEN_STATES:
+            return True
+        # Check the review history if one of the frozen transitions was done
+        object = api.get_object(brain_or_object)
+        performed_transitions = set(getReviewHistoryActionsList(object))
+        if set(FROZEN_TRANSITIONS).intersection(performed_transitions):
+            return True
+        return False
 
     def _get_assigned_worksheets(self, analysis):
         """Return the assigned worksheets of this Analysis
@@ -304,11 +355,19 @@ class ARAnalysesField(ObjectField):
         if specs is None:
             return
 
-        rr = {item["keyword"]: item for item in instance.getResultsRange()}
+        # N.B. we copy the records here, otherwise the spec will be written to
+        #      the attached specification of this AR
+        rr = {item["keyword"]: item.copy()
+              for item in instance.getResultsRange()}
         for spec in specs:
             keyword = spec.get("keyword")
             if keyword in rr:
-                rr[keyword].update(spec)
+                # overwrite the instance specification only, if the specific
+                # analysis spec has min/max values set
+                if all([spec.get("min"), spec.get("max")]):
+                    rr[keyword].update(spec)
+                else:
+                    rr[keyword] = spec
             else:
                 rr[keyword] = spec
         return instance.setResultsRange(rr.values())
