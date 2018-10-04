@@ -31,6 +31,7 @@ Changelog
 
 **Fixed**
 
+- #1043 Invalid AR Retested informative message is not prominent enough
 - #1039 Detection limit criteria from retracted analysis is preserved
 - #1037 Display supplier view instead of reference samples per default
 - #1030 Earliness of analysis is not expressed as minutes
