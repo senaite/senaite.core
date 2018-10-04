@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #1044 State of analyses in retests is set to `received` by default (was `to_be_verified`)
 - #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
 - #764 Code cleanup and redux of 2-Dimensional-CSV instrument interface
 - #1032 Refactored and fixed inconsistencies with Analysis TAT logic

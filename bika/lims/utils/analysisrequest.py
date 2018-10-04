@@ -405,7 +405,7 @@ def create_retest(ar):
 
     if not ar.isInvalid():
         # Analysis Request must be in 'invalid' state
-        raise ValueError("Cannot create a retest from a valid Analysis Request"
+        raise ValueError("Cannot do a retest from an invalid Analysis Request"
                          .format(repr(ar)))
 
     # 1. Create the Retest (Analysis Request)
@@ -425,17 +425,17 @@ def create_retest(ar):
         copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
         nan.unmarkCreationFlag()
 
-        # Set the workflow state of the analysis to 'to_be_verified', cause it
-        # already has a result in place
-        # TODO: We loose here the info about who submitted the result!
-        changeWorkflowState(nan, 'bika_analysis_workflow', 'to_be_verified')
+        # Set the workflow state of the analysis to 'sample_received'. Since we
+        # keep the results of the previous analyses, these will be preserved,
+        # only awaiting for their submission
+        changeWorkflowState(nan, 'bika_analysis_workflow', 'sample_received')
         nan.reindexObject()
 
     # 3. Assign the source to retest
     retest.setInvalidated(ar)
 
-    # 4. Transition the retest to "to_be_verified"!
-    changeWorkflowState(retest, 'bika_ar_workflow', 'to_be_verified')
+    # 4. Transition the retest to "sample_received"!
+    changeWorkflowState(retest, 'bika_ar_workflow', 'sample_received')
 
     # 5. Reindex and other stuff
     retest.reindexObject()
