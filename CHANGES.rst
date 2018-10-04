@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #1042 Function api.get_object() supports UID as input param
 - #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
 - #764 Code cleanup and redux of 2-Dimensional-CSV instrument interface
 - #1032 Refactored and fixed inconsistencies with Analysis TAT logic
@@ -27,7 +28,6 @@ Changelog
 - #1026 Removed auto-digest of results reports on verify transitions
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
-
 
 **Fixed**
 

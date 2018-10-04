@@ -122,12 +122,28 @@ Now we show it with catalog results::
     >>> api.get_object(api.get_object(brain))
     <Client at /plone/clients/client-1>
 
+
+The function also accepts a UID:
+
+    >>> api.get_object(api.get_uid(brain))
+    <Client at /plone/clients/client-1>
+
+And returns the portal object when UID=="0"
+
+    >>> api.get_object("0")
+    <PloneSite at /plone>
+
 No supported objects raise an error::
 
     >>> api.get_object(object())
     Traceback (most recent call last):
     [...]
     BikaLIMSError: <object object at 0x...> is not supported.
+
+    >>> api.get_object("i_am_not_an_uid")
+    Traceback (most recent call last):
+    [...]
+    BikaLIMSError: 'i_am_not_an_uid' is not supported.
 
 To check if an object is supported, e.g. is an ATCT, Dexterity, ZCatalog or
 Portal object, we can use the `is_object` function::
@@ -144,7 +160,7 @@ Portal object, we can use the `is_object` function::
     >>> api.is_object(None)
     False
 
-  >>> api.is_object(object())
+    >>> api.is_object(object())
     False
 
 
@@ -1175,10 +1191,12 @@ Checks if an UID is a valid 23 alphanumeric uid:
     >>> api.is_uid("")
     False
 
-    >>> api.is_uid("0")
-    False
-
     >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e')
+    True
+
+Per convention we assume "0" is the uid for portal object (PloneSite):
+
+    >>> api.is_uid("0")
     True
 
 Checks if an UID is a valid 23 alphanumeric uid and with a brain:
@@ -1192,11 +1210,11 @@ Checks if an UID is a valid 23 alphanumeric uid and with a brain:
     >>> api.is_uid("", validate=True)
     False
 
-    >>> api.is_uid("0", validate=True)
-    False
-
     >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e', validate=True)
     False
+
+    >>> api.is_uid("0", validate=True)
+    True
 
     >>> asfolder = self.portal.bika_setup.bika_analysisservices
     >>> serv = api.create(asfolder, "AnalysisService", title="AS test")
