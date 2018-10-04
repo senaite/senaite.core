@@ -15,6 +15,7 @@ Changelog
 **Changed**
 
 - #1044 State of analyses in retests is set to `received` by default (was `to_be_verified`)
+- #1042 Function api.get_object() supports UID as input param
 - #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
 - #764 Code cleanup and redux of 2-Dimensional-CSV instrument interface
 - #1032 Refactored and fixed inconsistencies with Analysis TAT logic
@@ -29,9 +30,9 @@ Changelog
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
 
-
 **Fixed**
 
+- #1043 Invalid AR Retested informative message is not prominent enough
 - #1039 Detection limit criteria from retracted analysis is preserved
 - #1037 Display supplier view instead of reference samples per default
 - #1030 Earliness of analysis is not expressed as minutes
