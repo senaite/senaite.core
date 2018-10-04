@@ -131,7 +131,7 @@
   <browser:viewlet
     for="bika.lims.interfaces.IAnalysisRequest"
     name="bika.lims.invalid_ar_viewlet"
-    class=".invalid_ar_viewlet.InvalidAnalysisRequestViewlet"
+    class=".analysisrequest.InvalidAnalysisRequestViewlet"
     manager="plone.app.layout.viewlets.interfaces.IAboveContent"
     template="templates/invalid_ar_viewlet.pt"
     permission="zope2.View"
@@ -142,7 +142,7 @@
   <browser:viewlet
     for="bika.lims.interfaces.IAnalysisRequest"
     name="bika.lims.retest_ar_viewlet"
-    class=".retest_ar_viewlet.RetestAnalysisRequestViewlet"
+    class=".analysisrequest.RetestAnalysisRequestViewlet"
     manager="plone.app.layout.viewlets.interfaces.IAboveContent"
     template="templates/retest_ar_viewlet.pt"
     permission="zope2.View"
