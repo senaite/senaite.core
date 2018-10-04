@@ -378,7 +378,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         return self.workflow_action_default(action='verify', came_from=came_from)
 
     def workflow_action_invalidate(self):
-
         # AR should be retracted
         # Can't transition inactive ARs
         if not api.is_active(self.context):
