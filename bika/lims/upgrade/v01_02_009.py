@@ -11,6 +11,8 @@ import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -57,6 +59,9 @@ def upgrade(tool):
 
     # Reindex Turnaround time and due date related fields
     recatalog_analyses_due_date(portal)
+
+    # Update workflow states and permissions for AR/Sample rejection
+    update_rejection_permissions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -215,3 +220,92 @@ def recatalog_analyses_due_date(portal):
                         .format(num, total))
 
     logger.info("{} Analyses updated".format(num))
+
+
+def update_rejection_permissions(portal):
+    """Adds the permission 'Reject Analysis Request' and update the permission
+     mappings accordingly """
+    updated = update_rejection_permissions_for(portal, "bika_ar_workflow",
+                                               "Reject Analysis Request")
+    if updated:
+        brains = api.search(dict(portal_type="AnalysisRequest"),
+                            CATALOG_ANALYSIS_REQUEST_LISTING)
+        update_rolemappings_for(brains, "bika_ar_workflow")
+
+
+    updated = update_rejection_permissions_for(portal, "bika_sample_workflow",
+                                               "Reject Sample")
+    if updated:
+        brains = api.search(dict(portal_type="Sample"), "bika_catalog")
+        update_rolemappings_for(brains, "bika_sample_workflow")
+
+
+def update_rejection_permissions_for(portal, workflow_id, permission_id):
+    logger.info("Updating rejection permissions for {}".format(workflow_id))
+    all_roles = ["Manager", "LabManager", "LabClerk", "Client", "Owner"]
+    roles_mapping = {
+        "sample_registered": all_roles,
+        "scheduled_sampling": all_roles,
+        "to_be_sampled": all_roles,
+        "sampled": all_roles,
+        "to_be_preserved": all_roles,
+        "sample_due": all_roles,
+        "sample_received": ["Manager", "LabManager", "LabClerk"],
+        "attachment_due": ["Manager", "LabManager"],
+        "to_be_verified": ["Manager", "LabManager"],
+        # Those that only apply to sample_workflow below
+        "expired": ["Manager", "LabManager"],
+        "disposed": ["Manager", "LabManager"],
+    }
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
+
+    if "rejected" not in workflow.states:
+        logger.warning("rejected state not found for workflow {} [SKIP]"
+                       .format(workflow.id))
+        return False
+
+    if permission_id in workflow.permissions:
+        logger.info("'{}' already in place. [SKIP]".format(permission_id))
+        return False
+
+    workflow.permissions += (permission_id,)
+    for state_id, state in workflow.states.items():
+        if "reject" not in state.transitions:
+            continue
+        if state_id not in roles_mapping:
+            continue
+        roles = roles_mapping[state_id]
+        state.setPermission(permission_id, False, roles)
+
+    if "reject" not in workflow.transitions:
+        workflow.transitions.addTransition("reject")
+        transition = workflow.transitions.reject
+        transition.setProperties(
+            title="Reject",
+            new_state_id="rejected",
+            actbox_name="Reject",
+        )
+    transition = workflow.transitions.reject
+    guard = transition.guard or Guard()
+    guard_props = {
+        "guard_permissions": permission_id,
+        "guard_roles": "",
+        "guard_expr": "python:here.bika_setup.isRejectionWorkflowEnabled()"
+    }
+    guard.changeFromProperties(guard_props)
+    transition.guard = guard
+    return True
+
+def update_rolemappings_for(brains, workflow_id):
+    logger.info("Updating role mappings for '{}'".format(workflow_id))
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
+    total = len(brains)
+    num = 0
+    for num, brain in enumerate(brains, start=1):
+        workflow.updateRoleMappingsFor(api.get_object(brain))
+        if num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}"
+                        .format(num, total))
+    logger.info("{} objects updated".format(num))

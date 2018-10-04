@@ -19,6 +19,12 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
+  <!--
+  Client can only reject a Sample when is not yet received.
+  Labman can only reject a Sample when is not yet verified.
+   -->
+  <permission>Reject Sample</permission>
+
   <state state_id="sample_registered" title="Sample registered" i18n:attributes="title">
     <exit-transition transition_id="sampling_workflow"/>
     <exit-transition transition_id="no_sampling_workflow"/>
@@ -47,6 +53,15 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
   </state>
@@ -103,6 +118,15 @@
       <permission-role>Owner</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
@@ -163,6 +187,15 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="sampled" title="Sampled" i18n:attributes="title">
@@ -213,6 +246,15 @@
       <permission-role>Owner</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
@@ -267,6 +309,15 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="sample_received" title="Sample received" i18n:attributes="title">
@@ -310,6 +361,13 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
+    </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
     </permission-map>
   </state>
 
@@ -365,6 +423,15 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Client</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
@@ -416,6 +483,12 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="disposed" title="Disposed" i18n:attributes="title">
@@ -441,6 +514,12 @@
     <permission-map name="View" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <!-- Reject Sample -->
+    <permission-map name="Reject Sample" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>LabManager</permission-role>
     </permission-map>
   </state>
 
@@ -521,6 +600,7 @@
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
       <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
+      <guard-permission>Reject Sample</guard-permission>
     </guard>
   </transition>
 
