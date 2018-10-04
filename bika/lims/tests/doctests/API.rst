@@ -161,7 +161,7 @@ Portal object, we can use the `is_object` function::
     False
 
     >>> api.is_object(object())
-      False
+    False
 
 
 Checking if an Object is the Portal
