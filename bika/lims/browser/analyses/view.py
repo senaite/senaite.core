@@ -591,6 +591,8 @@ class AnalysesView(BikaListingView):
         # returns the date when the ReferenceSample expires. If the analysis is
         # a duplicate, `getDueDate` returns the due date of the source analysis
         due_date = analysis_brain.getDueDate
+        if not due_date:
+            return None
         due_date_str = self.ulocalized_time(due_date, long_format=0)
         item['DueDate'] = due_date_str
 

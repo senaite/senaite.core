@@ -1,0 +1,21 @@
+<div tal:omit-tag=""
+     tal:define="retest python:view.context.getRetest()"
+     tal:condition="python:retest"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-warning alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong i18n:translate="">Warning</strong>
+      <p class="title">
+        <span i18n:translate="">These results have been withdrawn and are listed here for trace-ability purposes. Please follow the link to the retest </span>
+        <a tal:attributes="href python:retest.absolute_url()"
+           tal:content="python:retest.getId()"></a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -6,10 +6,11 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+from datetime import timedelta
 from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
-from Products.CMFCore.utils import getToolByName
+from Products.ATContentTypes.utils import DT2dt, dt2DT
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -258,23 +259,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     @security.public
     def getDueDate(self):
         """Used to populate getDueDate index and metadata.
-        This calculates the difference between the time that the sample
-        partition associated with this analysis was recieved, and the
-        maximum turnaround time.
+        This calculates the difference between the time the analysis processing
+        started and the maximum turnaround time. If the analysis has no
+        turnaround time set or is not yet ready for proces, returns None
         """
-        maxtime = self.getMaxTimeAllowed()
-        if not maxtime:
-            maxtime = getToolByName(self, 'bika_setup').getDefaultTurnaroundTime()
-        max_days = float(maxtime.get('days', 0)) + (
-            (float(maxtime.get('hours', 0)) * 3600 +
-             float(maxtime.get('minutes', 0)) * 60)
-            / 86400
-        )
-        part = self.getSamplePartition()
-        if part:
-            starttime = part.getDateReceived()
-            duetime = starttime + max_days if starttime else ''
-            return duetime
+        tat = self.getMaxTimeAllowed()
+        if not tat:
+            return None
+        start = self.getStartProcessDate()
+        if not start:
+            return None
+        return dt2DT(DT2dt(start) + timedelta(minutes=api.to_minutes(**tat)))
 
     @security.public
     def getSampleTypeUID(self):

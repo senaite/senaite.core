@@ -122,12 +122,28 @@ Now we show it with catalog results::
     >>> api.get_object(api.get_object(brain))
     <Client at /plone/clients/client-1>
 
+
+The function also accepts a UID:
+
+    >>> api.get_object(api.get_uid(brain))
+    <Client at /plone/clients/client-1>
+
+And returns the portal object when UID=="0"
+
+    >>> api.get_object("0")
+    <PloneSite at /plone>
+
 No supported objects raise an error::
 
     >>> api.get_object(object())
     Traceback (most recent call last):
     [...]
     BikaLIMSError: <object object at 0x...> is not supported.
+
+    >>> api.get_object("i_am_not_an_uid")
+    Traceback (most recent call last):
+    [...]
+    BikaLIMSError: 'i_am_not_an_uid' is not supported.
 
 To check if an object is supported, e.g. is an ATCT, Dexterity, ZCatalog or
 Portal object, we can use the `is_object` function::
@@ -144,7 +160,7 @@ Portal object, we can use the `is_object` function::
     >>> api.is_object(None)
     False
 
-  >>> api.is_object(object())
+    >>> api.is_object(object())
     False
 
 
@@ -1175,10 +1191,12 @@ Checks if an UID is a valid 23 alphanumeric uid:
     >>> api.is_uid("")
     False
 
-    >>> api.is_uid("0")
-    False
-
     >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e')
+    True
+
+Per convention we assume "0" is the uid for portal object (PloneSite):
+
+    >>> api.is_uid("0")
     True
 
 Checks if an UID is a valid 23 alphanumeric uid and with a brain:
@@ -1192,11 +1210,11 @@ Checks if an UID is a valid 23 alphanumeric uid and with a brain:
     >>> api.is_uid("", validate=True)
     False
 
-    >>> api.is_uid("0", validate=True)
-    False
-
     >>> api.is_uid('0e1dfc3d10d747bf999948a071bc161e', validate=True)
     False
+
+    >>> api.is_uid("0", validate=True)
+    True
 
     >>> asfolder = self.portal.bika_setup.bika_analysisservices
     >>> serv = api.create(asfolder, "AnalysisService", title="AS test")
@@ -1419,3 +1437,67 @@ With default fallback:
 
     >>> api.to_int("as", "2")
     2
+
+Convert to minutes
+------------------
+
+    >>> api.to_minutes(hours=1)
+    60
+
+    >>> api.to_minutes(hours=1.5, minutes=30)
+    120
+
+    >>> api.to_minutes(hours=0, minutes=0, seconds=0)
+    0
+
+    >>> api.to_minutes(minutes=120)
+    120
+
+    >>> api.to_minutes(hours="1", minutes="120", seconds="120")
+    182
+
+    >>> api.to_minutes(days=3)
+    4320
+
+    >>> api.to_minutes(minutes=122.4567)
+    122
+
+    >>> api.to_minutes(minutes=122.4567, seconds=6)
+    123
+
+    >>> api.to_minutes(minutes=122.4567, seconds=6, round_to_int=False)
+    122.55669999999999
+
+
+Convert to dhm format
+---------------------
+
+    >>> api.to_dhm_format(hours=1)
+    '1h'
+
+    >>> api.to_dhm_format(hours=1.5, minutes=30)
+    '2h'
+
+    >>> api.to_dhm_format(hours=0, minutes=0, seconds=0)
+    ''
+
+    >>> api.to_dhm_format(minutes=120)
+    '2h'
+
+    >>> api.to_dhm_format(hours="1", minutes="120", seconds="120")
+    '3h 2m'
+
+    >>> api.to_dhm_format(days=3)
+    '3d'
+
+    >>> api.to_dhm_format(days=3, minutes=140)
+    '3d 2h 20m'
+
+    >>> api.to_dhm_format(days=3, minutes=20)
+    '3d 0h 20m'
+
+    >>> api.to_dhm_format(minutes=122.4567)
+    '2h 2m'
+
+    >>> api.to_dhm_format(minutes=122.4567, seconds=6)
+    '2h 3m'

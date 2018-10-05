@@ -26,6 +26,7 @@ profile = 'profile-{0}:default'.format(product)
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
     ut = UpgradeUtils(portal)
     ver_from = ut.getInstalledVersion(product)
 
@@ -37,6 +38,14 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF HERE --------
+
+    setup.runImportStepFromProfile(profile, 'typeinfo')
+
+    # Delete orphaned Attachments
+    # https://github.com/senaite/senaite.core/issues/1025
+    delete_orphaned_attachments(portal)
+
+    # Migrate report option from attach (a) -> ignore (i)
     migrate_attachment_report_options(portal)
 
     # Reindex object security for client contents (see #991)
@@ -48,11 +57,37 @@ def upgrade(tool):
     # Rebind ARs that were generated because of the invalidation of other ARs
     rebind_invalidated_ars(portal)
 
+    # Reindex Turnaround time and due date related fields
+    recatalog_analyses_due_date(portal)
+
+    # Update workflow states and permissions for AR/Sample rejection
+    update_rejection_permissions(portal)
+
     # Setup the partitioning system
     setup_partitioning(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def delete_orphaned_attachments(portal):
+    """Delete attachments where the Analysis was removed
+       https://github.com/senaite/senaite.core/issues/1025
+    """
+    attachments = api.search({"portal_type": "Attachment"})
+    total = len(attachments)
+    logger.info("Integrity checking %d attachments" % total)
+    for num, attachment in enumerate(attachments):
+        obj = api.get_object(attachment)
+        # The method `getRequest` from the attachment tries to get the AR
+        # either directly or from one of the linked Analyses. If it returns
+        # `None`, we can be sure that the attachment is neither assigned
+        # directly to an AR nor to an Analysis.
+        ar = obj.getRequest()
+        if ar is None:
+            obj_id = api.get_id(obj)
+            api.get_parent(obj).manage_delObjects(obj_id)
+            logger.info("Deleted orphaned Attachment {}".format(obj_id))
 
 
 def reindex_client_local_owner_permissions(portal):
@@ -165,6 +200,118 @@ def rebind_invalidated_ars(portal):
         folder.manage_delObjects([rel_id])
 
     logger.info("Rebound {} invalidated ARs".format(num))
+
+
+def recatalog_analyses_due_date(portal):
+    """Recatalog the index and metadata field 'getDueDate'
+    """
+    logger.info("Updating Analyses getDueDate")
+    # No need to update those analyses that are verified or published. Only
+    # those that are under work
+    catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+    review_states = ["retracted", "sample_due", "attachment_due",
+                     "sample_received", "to_be_verified"]
+    query = dict(portal_type="Analysis", review_state=review_states)
+    analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(analyses)
+    num = 0
+    for num, analysis in enumerate(analyses, start=1):
+        analysis = api.get_object(analysis)
+        catalog.catalog_object(analysis, idxs=['getDueDate'])
+        if num % 100 == 0:
+            logger.info("Updating Analysis getDueDate: {0}/{1}"
+                        .format(num, total))
+
+    logger.info("{} Analyses updated".format(num))
+
+
+def update_rejection_permissions(portal):
+    """Adds the permission 'Reject Analysis Request' and update the permission
+     mappings accordingly """
+    updated = update_rejection_permissions_for(portal, "bika_ar_workflow",
+                                               "Reject Analysis Request")
+    if updated:
+        brains = api.search(dict(portal_type="AnalysisRequest"),
+                            CATALOG_ANALYSIS_REQUEST_LISTING)
+        update_rolemappings_for(brains, "bika_ar_workflow")
+
+
+    updated = update_rejection_permissions_for(portal, "bika_sample_workflow",
+                                               "Reject Sample")
+    if updated:
+        brains = api.search(dict(portal_type="Sample"), "bika_catalog")
+        update_rolemappings_for(brains, "bika_sample_workflow")
+
+
+def update_rejection_permissions_for(portal, workflow_id, permission_id):
+    logger.info("Updating rejection permissions for {}".format(workflow_id))
+    all_roles = ["Manager", "LabManager", "LabClerk", "Client", "Owner"]
+    roles_mapping = {
+        "sample_registered": all_roles,
+        "scheduled_sampling": all_roles,
+        "to_be_sampled": all_roles,
+        "sampled": all_roles,
+        "to_be_preserved": all_roles,
+        "sample_due": all_roles,
+        "sample_received": ["Manager", "LabManager", "LabClerk"],
+        "attachment_due": ["Manager", "LabManager"],
+        "to_be_verified": ["Manager", "LabManager"],
+        # Those that only apply to sample_workflow below
+        "expired": ["Manager", "LabManager"],
+        "disposed": ["Manager", "LabManager"],
+    }
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
+
+    if "rejected" not in workflow.states:
+        logger.warning("rejected state not found for workflow {} [SKIP]"
+                       .format(workflow.id))
+        return False
+
+    if permission_id in workflow.permissions:
+        logger.info("'{}' already in place. [SKIP]".format(permission_id))
+        return False
+
+    workflow.permissions += (permission_id,)
+    for state_id, state in workflow.states.items():
+        if "reject" not in state.transitions:
+            continue
+        if state_id not in roles_mapping:
+            continue
+        roles = roles_mapping[state_id]
+        state.setPermission(permission_id, False, roles)
+
+    if "reject" not in workflow.transitions:
+        workflow.transitions.addTransition("reject")
+        transition = workflow.transitions.reject
+        transition.setProperties(
+            title="Reject",
+            new_state_id="rejected",
+            actbox_name="Reject",
+        )
+    transition = workflow.transitions.reject
+    guard = transition.guard or Guard()
+    guard_props = {
+        "guard_permissions": permission_id,
+        "guard_roles": "",
+        "guard_expr": "python:here.bika_setup.isRejectionWorkflowEnabled()"
+    }
+    guard.changeFromProperties(guard_props)
+    transition.guard = guard
+    return True
+
+def update_rolemappings_for(brains, workflow_id):
+    logger.info("Updating role mappings for '{}'".format(workflow_id))
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
+    total = len(brains)
+    num = 0
+    for num, brain in enumerate(brains, start=1):
+        workflow.updateRoleMappingsFor(api.get_object(brain))
+        if num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}"
+                        .format(num, total))
+    logger.info("{} objects updated".format(num))
 
 
 def setup_partitioning(portal):

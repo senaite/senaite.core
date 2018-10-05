@@ -8,9 +8,10 @@
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration, \
+from bika.lims.utils import formatDateQuery, formatDateParms, \
     logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -122,16 +123,15 @@ class Report(BrowserView):
                 services[service_uid]['ave_early'] = ''
             else:
                 avemins = (mins_early) / count_early
-                services[service_uid]['ave_early'] = formatDuration(self.context,
-                                                                    avemins)
+                services[service_uid]['ave_early'] = \
+                    api.to_dhm_format(minutes=avemins)
             count_late = services[service_uid]['count_late']
             mins_late = services[service_uid]['mins_late']
             if count_late == 0:
                 services[service_uid]['ave_late'] = ''
             else:
                 avemins = mins_late / count_late
-                services[service_uid]['ave_late'] = formatDuration(self.context,
-                                                                   avemins)
+                services[service_uid]['ave_late'] = api.to_dhm_format(avemins)
 
         # and now lets do the actual report lines
         formats = {'columns': 7,
@@ -265,7 +265,7 @@ class Report(BrowserView):
 
         if total_count_late:
             ave_mins = total_mins_late / total_count_late
-            footline.append({'value': formatDuration(self.context, ave_mins),
+            footline.append({'value': api.to_dhm_format(minutes=ave_mins),
                              'class': 'total number'})
         else:
             footline.append({'value': ''})
@@ -275,7 +275,7 @@ class Report(BrowserView):
 
         if total_count_early:
             ave_mins = total_mins_early / total_count_early
-            footline.append({'value': formatDuration(self.context, ave_mins),
+            footline.append({'value': api.to_dhm_format(minutes=ave_mins),
                              'class': 'total number'})
         else:
             footline.append({'value': '',

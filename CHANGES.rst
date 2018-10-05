@@ -14,6 +14,11 @@ Changelog
 
 **Changed**
 
+- #1044 State of analyses in retests is set to `received` by default (was `to_be_verified`)
+- #1042 Function api.get_object() supports UID as input param
+- #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
+- #764 Code cleanup and redux of 2-Dimensional-CSV instrument interface
+- #1032 Refactored and fixed inconsistencies with Analysis TAT logic
 - #1027 Refactored relationship between invalidated ARs and retests
 - #1027 Rename `retract_ar` transition to `invalidate`
 - #1012 Refactored Contacts listing
@@ -25,9 +30,18 @@ Changelog
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
 
-
 **Fixed**
 
+- #1041 Reject transition is available to Client once AR/Sample is received
+- #1043 Invalid AR Retested informative message is not prominent enough
+- #1039 Detection limit criteria from retracted analysis is preserved
+- #1037 Display supplier view instead of reference samples per default
+- #1030 Earliness of analysis is not expressed as minutes
+- #1029 TAT in Analysis TAT over time report does not display days
+- #1029 TAT in Analysis TAT over time report with decimals
+- #1029 Need to always choose an analyst in productivity reports
+- #1034 Attachments assigned to Analyses break and get orphaned when the referenced Analysis was removed
+- #1028 Numbers for productivity report "Analyses by client" are all zero
 - #1022 Date Received saved as UTC time
 - #1018 Fix AR Add cleanup after template removal
 - #1014 ReferenceWidget does not handle searches with null/None
