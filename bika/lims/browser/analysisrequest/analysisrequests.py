@@ -9,10 +9,6 @@ import collections
 import json
 import traceback
 
-from DateTime import DateTime
-from Products.Archetypes import PloneMessageFactory as PMF
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -21,13 +17,20 @@ from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import (AddAnalysisRequest, ManageAnalysisRequests,
-                                   SampleSample)
+from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import ManageAnalysisRequests
+from bika.lims.permissions import SampleSample
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import getUsers, t
+from bika.lims.utils import get_image
+from bika.lims.utils import getUsers
+from bika.lims.utils import t
 from collective.taskqueue.interfaces import ITaskQueue
+from DateTime import DateTime
 from plone.api import user
-from plone.protect import CheckAuthenticator, PostOnly
+from plone.protect import CheckAuthenticator
+from plone.protect import PostOnly
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import queryUtility
 
 
