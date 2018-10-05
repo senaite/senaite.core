@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #1046 Show "Date Registered" instead of "Date Created" in Analysis Requests listings
 - #1044 State of analyses in retests is set to `received` by default (was `to_be_verified`)
 - #1042 Function api.get_object() supports UID as input param
 - #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
