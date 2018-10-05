@@ -111,12 +111,12 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "toggle": False}),
             ("Creator", {
-                "title": PMF("Creator"),
+                "title": _("Creator"),
                 "index": "getCreatorFullName",
                 "sortable": True,
                 "toggle": True}),
             ("Created", {
-                "title": PMF("Date Created"),
+                "title": _("Date Registered"),
                 "index": "created",
                 "toggle": False}),
             ("getSample", {
