@@ -989,7 +989,7 @@
       if (pagesize < 1) {
         pagesize = 1;
       }
-      if (pagesize > 100) {
+      if (pagesize > 250) {
         pagesize = 250;
       }
       $el.val(pagesize);

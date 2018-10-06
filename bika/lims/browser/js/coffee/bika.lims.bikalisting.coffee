@@ -1104,7 +1104,7 @@ class window.BikaListingTableView
     pagesize = @parse_int $el.val()
 
     if pagesize < 1 then pagesize = 1
-    if pagesize > 100 then pagesize = 250
+    if pagesize > 250 then pagesize = 250
 
     $el.val pagesize
 
