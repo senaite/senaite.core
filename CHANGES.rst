@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #1050 Added Late filter button to analysisrequests listing
 - #1046 Show "Date Registered" instead of "Date Created" in Analysis Requests listings
 - #1044 State of analyses in retests is set to `received` by default (was `to_be_verified`)
 - #1042 Function api.get_object() supports UID as input param
