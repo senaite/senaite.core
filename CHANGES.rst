@@ -23,6 +23,7 @@ Changelog
 - #1027 Rename `retract_ar` transition to `invalidate`
 - #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
+- #899 Sample's Date Received editable only when `received` analyses exist
 
 **Removed**
 
@@ -32,6 +33,7 @@ Changelog
 
 **Fixed**
 
+- #1049 Secondary Analysis Request changes received date of Sample
 - #1041 Reject transition is available to Client once AR/Sample is received
 - #1043 Invalid AR Retested informative message is not prominent enough
 - #1039 Detection limit criteria from retracted analysis is preserved
@@ -50,7 +52,6 @@ Changelog
 - #991 New client contacts do not have access to their own AR Templates
 - #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
-- #899 Secondary AR changes received date of sample
 - #888 Order of Interim Fields not maintained on ARs
 
 
