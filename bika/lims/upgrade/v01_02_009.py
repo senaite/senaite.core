@@ -318,23 +318,39 @@ def update_analaysisrequests_due_date(portal):
     """Removes the metadata getLate from ar-catalog and adds the column
     getDueDate"""
     logger.info("Updating getLate -> getDueDate metadata columns ...")
+    catalog_objects = False
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     if "getLate" in catalog.schema():
         catalog.delColumn("getLate")
 
     if "getDueDate" in catalog.schema():
-        logger.info("getDueDate already in catalog [SKIP]")
-        return
+        logger.info("getDueDate column already in catalog [SKIP]")
+    else:
+        logger.info("Adding column 'getDueDate' to catalog '{}' ..."
+                    .format(catalog.id))
+        catalog.addColumn("getDueDate")
+        catalog_objects = True
 
-    logger.info("Adding Column 'getDueDate' to catalog '{}' ..."
-                .format(catalog.id))
-    catalog.addColumn("getDueDate")
-    catalog.addIndex("getDueDate", "DateIndex")
-    catalog.manage_reindexIndex("getDueDate")
+    if "getDueDate" in catalog.indexes():
+        logger.info("getDueDate index already in catalog [SKIP]")
+    else:
+        logger.info("Adding index 'getDueDate' to catalog '{}'"
+                    .format(catalog.id))
+        catalog.addIndex("getDueDate", "DateIndex")
+        catalog.manage_reindexIndex("getDueDate")
 
-    query = dict(portal_type="AnalysisRequest")
-    for analysis_request in api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING):
-        analysis_request = api.get_object(analysis_request)
-        analysis_request.reindexObject(idxs=['getDueDate'])
+    if catalog_objects:
+        # Only recatalog the objects if the column getDueDate was not there
+        num = 0
+        query = dict(portal_type="AnalysisRequest")
+        ar_brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        total = len(ar_brains)
+        for num, analysis_request in enumerate(ar_brains):
+            analysis_request = api.get_object(analysis_request)
+            analysis_request.reindexObject(idxs=['getDueDate'])
+            if num % 100 == 0:
+                logger.info("Updating Analysis Request getDueDate: {0}/{1}"
+                            .format(num, total))
+        logger.info("{} Analysis Requests updated".format(num))
 
     logger.info("Updating getLate -> getDueDate metadata columns [DONE]")
