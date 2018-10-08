@@ -12,6 +12,7 @@ Changelog
 
 **Removed**
 
+- #1056 Remove collective.taskqueue dependency
 - #808 Remove old AR Add code
 
 
