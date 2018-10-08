@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-10-08 13:34+0000\n"
+"POT-Creation-Date: 2018-10-08 13:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Marc Jedrzejas <marc.jedr@gmail.com>, 2018\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -351,7 +351,7 @@ msgstr "Neuen Anhang hinzufügen"
 
 #: bika/lims/content/analysisrequest.py:1369
 msgid "Add one or more attachments to describe the sample in this analysis request, or to specify your request."
-msgstr ""
+msgstr "Fügen Sie einen oder mehrere Anhänge zu diesem Analysenauftrag hinzu, um Ihre Probe genauer zu beschreiben."
 
 #: bika/lims/content/calculation.py:83
 msgid "Additional Python Libraries"
@@ -1504,7 +1504,7 @@ msgstr "Objekte anlegen und initialisieren"
 #: bika/lims/browser/analysisrequest/analysisrequests.py:114
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:97
 msgid "Creator"
-msgstr "Hersteller"
+msgstr "Ersteller"
 
 #: bika/lims/browser/instrument.py:384
 #: bika/lims/content/instrumentscheduledtask.py:56
@@ -1563,7 +1563,7 @@ msgstr "Datum"
 #: bika/lims/browser/arimports.py:65
 #: bika/lims/browser/reports/productivity_dataentrydaybook.py:40
 msgid "Date Created"
-msgstr "Herstelldatum"
+msgstr "Erstellungsdatum"
 
 #: bika/lims/browser/supplyorderfolder.py:41
 #: bika/lims/content/supplyorder.py:83
@@ -1618,7 +1618,7 @@ msgstr "Empfangsdatum"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:119
 msgid "Date Registered"
-msgstr ""
+msgstr "Registrierdatum"
 
 #: bika/lims/browser/batch/publish.py:94
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:37
@@ -1628,7 +1628,7 @@ msgstr "Auftragsdatum"
 
 #: bika/lims/content/analysisrequest.py:1405
 msgid "Date Sample Received"
-msgstr ""
+msgstr "Probenempfangsdatum"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:127
 #: bika/lims/browser/referencesample.py:307
@@ -5041,7 +5041,7 @@ msgstr "Probenahmehäufigkeit"
 
 #: bika/lims/browser/dashboard/dashboard.py:405
 msgid "Sampling scheduled"
-msgstr ""
+msgstr "Probennahme geplant"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -5967,7 +5967,7 @@ msgstr "Die Ergebnisse wurden zurückgezogen und werden zur Nachverfolgung hier 
 
 #: bika/lims/browser/viewlets/templates/retest_ar_viewlet.pt:15
 msgid "This Analysis Request has been generated automatically due to the retraction of the Analysis Request"
-msgstr ""
+msgstr "Dieser Analysenauftrag wurde automatisch erzeugt, da der ursprüngliche Auftrag ungültig ist"
 
 #: bika/lims/content/bikasetup.py:597
 msgid "This is the default maximum time allowed for performing analyses.  It is only used for analyses where the analysis service does not specify a turnaround time."
@@ -6236,7 +6236,7 @@ msgstr "Unbekanntes Dateiformat ${format}"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:499
 msgid "Unsassigned"
-msgstr ""
+msgstr "Nicht zugewiesen"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:161
 msgid "Update Attachments"
@@ -6506,7 +6506,7 @@ msgstr "Validierung fehlgeschlagen: Wert muss eine Gleitkommazahl sein"
 
 #: bika/lims/validators.py:780
 msgid "Validation for '{}' failed"
-msgstr ""
+msgstr "Validierung für '{}' fehlgeschlagen"
 
 #: bika/lims/content/instrumentvalidation.py:48
 msgid "Validation report date"
@@ -6560,7 +6560,7 @@ msgstr "Volumen"
 
 #: bika/lims/browser/viewlets/templates/invalid_ar_viewlet.pt:13
 msgid "Warning"
-msgstr ""
+msgstr "Warnung"
 
 #: bika/lims/content/analysisrequest.py:1235
 msgid "Was the sample taken in non-scheduled matter, e.g. out of a recurring sampling schedule?"
@@ -6644,7 +6644,7 @@ msgstr "Ja"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:289
 msgid "You can use the browse button to select and upload a new attachment."
-msgstr ""
+msgstr "Sie können den Durchsuchen Button verwenden um neue Anhänge auszuwählen und hochzuladen"
 
 #: bika/lims/browser/worksheet/workflow.py:49
 msgid "You do not have sufficient privileges to manage worksheets."
@@ -6685,7 +6685,7 @@ msgstr "halbjährlich"
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:46
 #: bika/lims/browser/worksheet/templates/print/ar_by_row.pt:46
 msgid "by"
-msgstr ""
+msgstr "von"
 
 #: bika/lims/browser/reports/administration_usershistory.py:150
 msgid "comment"
@@ -6724,12 +6724,13 @@ msgstr "${d}.${m}.${Y}"
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
 #. Default: "mm/dd/yy"
+#, fuzzy
 msgid "date_format_short_datepicker"
-msgstr ""
+msgstr "dd.mm.yy"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:314
 msgid "days"
-msgstr ""
+msgstr "Tage"
 
 #: bika/lims/browser/templates/referencesample_view.pt:124
 msgid "deactivate"
@@ -6737,7 +6738,7 @@ msgstr "deaktivieren"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:314
 msgid "hours"
-msgstr ""
+msgstr "Stunden"
 
 #: bika/lims/controlpanel/bika_sampletypes.py:147
 msgid "hours: {} minutes: {} days: {}"
@@ -6755,7 +6756,7 @@ msgstr "Spezifikation"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:314
 msgid "minutes"
-msgstr ""
+msgstr "Minuten"
 
 #: bika/lims/content/instrumentcertification.py:246
 msgid "monthly"
@@ -6829,7 +6830,7 @@ msgstr "bis"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:555
 msgid "updated every 2 hours"
-msgstr ""
+msgstr "Aktualisiert alle 2 Stunden"
 
 #. and the version installed on disk is ${new_version}. Please remember to
 #. ${backup_instructions_link}, and then ${click_here} to perform the
