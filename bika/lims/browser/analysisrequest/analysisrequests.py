@@ -24,7 +24,6 @@ from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import get_image
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
-from collective.taskqueue.interfaces import ITaskQueue
 from DateTime import DateTime
 from plone.api import user
 from plone.protect import CheckAuthenticator
@@ -905,12 +904,6 @@ class AnalysisRequestsView(BikaListingView):
                         "submitted-by-current-user.png",
                         title=t(_("Cannot verify: Submitted by current user")))
         return item
-
-    def pending_tasks(self):
-        task_queue = queryUtility(ITaskQueue, name='ar-create')
-        if task_queue is None:
-            return 0
-        return len(task_queue)
 
     @property
     def copy_to_new_allowed(self):
