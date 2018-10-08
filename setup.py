@@ -53,7 +53,6 @@ setup(
         'jarn.jsi18n',
         'WeasyPrint',
         'collective.progressbar',
-        'z3c.unconfigure==1.0.1',
         'plone.app.dexterity',
         'plone.app.relationfield',
         'plone.app.referenceablebehavior',

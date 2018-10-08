@@ -89,7 +89,6 @@
     />
 
   <!-- Zope 3 browser resources -->
-
   <browser:resourceDirectory
       name="bika.lims.images"
       directory="images"

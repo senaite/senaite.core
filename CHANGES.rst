@@ -12,6 +12,7 @@ Changelog
 
 **Removed**
 
+- #1057 Remove z3c.unconfigure dependency
 - #808 Remove old AR Add code
 
 
