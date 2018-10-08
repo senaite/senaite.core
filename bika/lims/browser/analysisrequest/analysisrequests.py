@@ -119,6 +119,34 @@ class AnalysisRequestsView(BikaListingView):
                 "title": _("Date Registered"),
                 "index": "created",
                 "toggle": False}),
+            ("SamplingDate", {
+                "title": _("Expected Sampling Date"),
+                "index": "getSamplingDate",
+                "toggle": SamplingWorkflowEnabled}),
+            ("getDateSampled", {
+                "title": _("Date Sampled"),
+                "toggle": True,
+                "input_class": "datetimepicker_nofuture",
+                "input_width": "10"}),
+            ("getDatePreserved", {
+                "title": _("Date Preserved"),
+                "toggle": False,
+                "input_class": "datetimepicker_nofuture",
+                "input_width": "10",
+                "sortable": False}),  # no datesort without index
+            ("getDateReceived", {
+                "title": _("Date Received"),
+                "toggle": False}),
+            ("getDueDate", {
+                "title": _("Due Date"),
+                "toggle": False}),
+            ("getDateVerified", {
+                "title": _("Date Verified"),
+                "input_width": "10",
+                "toggle": False}),
+            ("getDatePublished", {
+                "title": _("Date Published"),
+                "toggle": False}),
             ("getSample", {
                 "title": _("Sample"),
                 "attr": "getSampleID",
@@ -180,38 +208,12 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "index": "getSamplingDeviationTitle",
                 "toggle": False}),
-            ("SamplingDate", {
-                "title": _("Expected Sampling Date"),
-                "index": "getSamplingDate",
-                "toggle": SamplingWorkflowEnabled}),
-            ("getDateSampled", {
-                "title": _("Date Sampled"),
-                "toggle": True,
-                "input_class": "datetimepicker_nofuture",
-                "input_width": "10"}),
-            ("getDateVerified", {
-                "title": _("Date Verified"),
-                "input_width": "10",
-                "toggle": False,
-            }),
             ("getSampler", {
                 "title": _("Sampler"),
                 "toggle": SamplingWorkflowEnabled}),
-            ("getDatePreserved", {
-                "title": _("Date Preserved"),
-                "toggle": False,
-                "input_class": "datetimepicker_nofuture",
-                "input_width": "10",
-                "sortable": False}),  # no datesort without index
             ("getPreserver", {
                 "title": _("Preserver"),
                 "sortable": False,
-                "toggle": False}),
-            ("getDateReceived", {
-                "title": _("Date Received"),
-                "toggle": False}),
-            ("getDatePublished", {
-                "title": _("Date Published"),
                 "toggle": False}),
             ("getProfilesTitle", {
                 "title": _("Profile"),
@@ -513,7 +515,29 @@ class AnalysisRequestsView(BikaListingView):
                 ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
-            },
+            }, {
+                "id": "late",
+                "title": get_image("late.png",
+                                   title=t(_("Late"))),
+                "contentFilter": {
+                    "cancellation_state": "active",
+                    # Query only for unpublished ARs that are late
+                    "review_state": (
+                        "sample_received",
+                        "attachment_due",
+                        "to_be_verified",
+                        "verified",
+                    ),
+                    "getDueDate": {
+                        "query": DateTime(),
+                        "range": "max",
+                    },
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
+                "custom_transitions": [print_stickers],
+                "columns": self.columns.keys(),
+            }
         ]
 
     def update(self):
@@ -717,6 +741,9 @@ class AnalysisRequestsView(BikaListingView):
         date = obj.getDateReceived
         item["getDateReceived"] = \
             self.ulocalized_time(date, long_format=1) if date else ""
+        date = obj.getDueDate
+        item["getDueDate"] = \
+            self.ulocalized_time(date, long_format=1) if date else ""
         date = obj.getDatePublished
         item["getDatePublished"] = \
             self.ulocalized_time(date, long_format=1) if date else ""
@@ -735,8 +762,9 @@ class AnalysisRequestsView(BikaListingView):
                 print_icon = get_image("ok.png",
                                        title=t(_("Printed")))
             elif printed == "2":
-                print_icon = get_image("exclamation.png",
-                                       title=t(_("Republished after last print")))
+                print_icon = get_image(
+                    "exclamation.png",
+                    title=t(_("Republished after last print")))
             item["after"]["Printed"] = print_icon
         item["SamplingDeviation"] = obj.getSamplingDeviationTitle
 
