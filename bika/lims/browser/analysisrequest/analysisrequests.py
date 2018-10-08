@@ -513,7 +513,31 @@ class AnalysisRequestsView(BikaListingView):
                 ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
-            },
+            }, {
+                "id": "late",
+                "title": get_image("late.png",
+                                   title=t(_("Late"))),
+                "contentFilter": {
+                    "cancellation_state": "active",
+                    # Query only for unpublished ARs that are late
+                    "review_state": (
+                        "sample_received",
+                        "attachment_due",
+                        "to_be_verified",
+                        "verified",
+                    ),
+                    "getDueDate": {
+                        # Consider the due date as *not* late, but the day
+                        # *after* the due date is definitely late
+                        "query": DateTime() + 1,
+                        "range": "min",
+                    },
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
+                "custom_transitions": [print_stickers],
+                "columns": self.columns.keys(),
+            }
         ]
 
     def update(self):
