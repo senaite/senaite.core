@@ -12,6 +12,8 @@ Changelog
 
 **Removed**
 
+- #1058 Removed gpw dependency
+- #1058 Remved broken Quality Control reports
 - #1057 Remove z3c.unconfigure dependency
 - #1056 Remove collective.taskqueue dependency
 - #808 Remove old AR Add code
