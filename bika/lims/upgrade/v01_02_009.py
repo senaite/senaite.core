@@ -337,7 +337,8 @@ def update_analaysisrequests_due_date(portal):
         logger.info("Adding index 'getDueDate' to catalog '{}'"
                     .format(catalog.id))
         catalog.addIndex("getDueDate", "DateIndex")
-        catalog.manage_reindexIndex("getDueDate")
+        if not catalog_objects:
+            catalog.manage_reindexIndex("getDueDate")
 
     if catalog_objects:
         # Only recatalog the objects if the column getDueDate was not there
