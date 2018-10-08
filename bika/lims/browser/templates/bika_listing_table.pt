@@ -307,14 +307,19 @@
                           tal:condition="view/bika_listing/show_workflow_action_buttons">
                     </span>
                   </td>
+                  <!-- Paging and Show More Button -->
                   <td class="batching" style="text-align:right">
 
-                    <span class='number-items' i18n:domain="senaite.core" i18n:translate="" tal:condition="python:len(view.items) != 1">
-                      <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Items
+                    <!-- number displayed -->
+                    <span class="number-items">
+                      <span tal:replace="python:len(view.items)"/>
                     </span>
-                    <span class='number-items' i18n:translate="" tal:condition="python:len(view.items) == 1">
-                      <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Item
+                    <span i18n:translate="">of</span>
+                    <!-- total -->
+                    <span class="number-total">
+                      <span tal:replace="python:view.bika_listing.total"/>
                     </span>
+                    <span i18n:translate="">Results</span>
 
                     <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
                                           sort_on         python:view.bika_listing.get_sort_on();
@@ -325,6 +330,13 @@
                                           next_pagesize   python:pagesize+next_limit_from;
                                           form_id         python:view.bika_listing.form_id;"
                                   condition="python:view.bika_listing.show_more">
+
+                      <input tal:attributes="name string:${form_id}_pagesize;
+                                             value pagesize"
+                             class="pagesize_input"
+                             type="number"
+                             min="1"
+                             max="250"/>
 
                       <a tal:attributes="href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from,sort_on=sort_on,sort_order=sort_order);
                                          data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize),form_id);
