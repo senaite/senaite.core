@@ -754,8 +754,9 @@ class AnalysisRequestsView(BikaListingView):
 
         due_date = obj.getDueDate
         if due_date and due_date < (obj.getDatePublished or DateTime()):
-            after_icons += get_image("late.png",
-                                     title=t(_("Late Analyses")))
+            due_date_str = self.ulocalized_time(due_date)
+            img_title = "{}: {}".format(t(_("Late Analyses")), due_date_str)
+            after_icons += get_image("late.png", title=img_title)
 
         if obj.getSamplingDate and obj.getSamplingDate > DateTime():
             after_icons += get_image("calendar.png",

@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1051 Show the Due date in late's image tooltip in Analysis Requests listings
 - #1048 Allow to set the pagesize in listings and show total number of results
 - #1031 Added profiling and timing decorators
 - #1001 Option to show Interim fields on results reports
