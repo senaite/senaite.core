@@ -35,6 +35,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1058
     remove_qc_reports(portal)
 
+    # Remove updates notification viewlet
+    # https://github.com/senaite/senaite.core/pull/1059
+    setup.runImportStepFromProfile(profile, 'viewlets')
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
