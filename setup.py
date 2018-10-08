@@ -61,7 +61,6 @@ setup(
         'z3c.jbot',
         'plone.resource',
         'CairoSVG==1.0.20',
-        'collective.taskqueue',
         'zopyx.txng3.ext==3.4.0'
     ],
     extras_require={
