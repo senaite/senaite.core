@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 20:01+0000\n"
+"POT-Creation-Date: 2018-10-08 13:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Hungarian (https://www.transifex.com/senaite/teams/87045/hu/)\n"
@@ -842,10 +842,6 @@ msgstr "Ellenőrzés"
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "View"
 msgstr "Megtekintés"
-
-#: bika/lims/profiles/default/types/Client.xml
-msgid "WINE-40: Do not move or remove this entry."
-msgstr "WINE-40: Ezt a tételt ne mozgassa, ne törölje"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"

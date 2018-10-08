@@ -39,6 +39,8 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    # Display supplier view instead of reference samples per default
+    # https://github.com/senaite/senaite.core/pull/1037
     setup.runImportStepFromProfile(profile, 'typeinfo')
 
     # Delete orphaned Attachments
@@ -46,25 +48,32 @@ def upgrade(tool):
     delete_orphaned_attachments(portal)
 
     # Migrate report option from attach (a) -> ignore (i)
+    # https://github.com/senaite/senaite.core/pull/992
     migrate_attachment_report_options(portal)
 
-    # Reindex object security for client contents (see #991)
+    # Reindex object security for client contents
+    # https://github.com/senaite/senaite.core/pull/991
     reindex_client_local_owner_permissions(portal)
 
     # Rename "retract_ar" transition to "invalidate"
+    # https://github.com/senaite/senaite.core/pull/1027
     rename_retract_ar_transition(portal)
 
     # Rebind ARs that were generated because of the invalidation of other ARs
+    # https://github.com/senaite/senaite.core/pull/1027
     rebind_invalidated_ars(portal)
 
     # Reindex Turnaround time and due date related fields
+    # https://github.com/senaite/senaite.core/pull/1032
     recatalog_analyses_due_date(portal)
 
     # Update workflow states and permissions for AR/Sample rejection
+    # https://github.com/senaite/senaite.core/pull/1041
     update_rejection_permissions(portal)
 
-    # Setup the partitioning system
-    setup_partitioning(portal)
+    # Remove getLate and add getDueDate metadata in ar_catalog
+    # https://github.com/senaite/senaite.core/pull/1051
+    update_analaysisrequests_due_date(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -314,82 +323,44 @@ def update_rolemappings_for(brains, workflow_id):
     logger.info("{} objects updated".format(num))
 
 
-def setup_partitioning(portal):
-    """Setups the enhanced partitioning system
-    """
-    logger.info("Setting up the enhanced partitioning system")
+def update_analaysisrequests_due_date(portal):
+    """Removes the metadata getLate from ar-catalog and adds the column
+    getDueDate"""
+    logger.info("Updating getLate -> getDueDate metadata columns ...")
+    catalog_objects = False
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    if "getLate" in catalog.schema():
+        catalog.delColumn("getLate")
 
-    # Add "Create partition" transition
-    add_create_partition_transition(portal)
+    if "getDueDate" in catalog.schema():
+        logger.info("getDueDate column already in catalog [SKIP]")
+    else:
+        logger.info("Adding column 'getDueDate' to catalog '{}' ..."
+                    .format(catalog.id))
+        catalog.addColumn("getDueDate")
+        catalog_objects = True
 
-    # Add getAncestorsUIDs index in analyses catalog
-    add_partitioning_indexes(portal)
+    if "getDueDate" in catalog.indexes():
+        logger.info("getDueDate index already in catalog [SKIP]")
+    else:
+        logger.info("Adding index 'getDueDate' to catalog '{}'"
+                    .format(catalog.id))
+        catalog.addIndex("getDueDate", "DateIndex")
+        if not catalog_objects:
+            catalog.manage_reindexIndex("getDueDate")
 
+    if catalog_objects:
+        # Only recatalog the objects if the column getDueDate was not there
+        num = 0
+        query = dict(portal_type="AnalysisRequest")
+        ar_brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        total = len(ar_brains)
+        for num, analysis_request in enumerate(ar_brains):
+            analysis_request = api.get_object(analysis_request)
+            analysis_request.reindexObject(idxs=['getDueDate'])
+            if num % 100 == 0:
+                logger.info("Updating Analysis Request getDueDate: {0}/{1}"
+                            .format(num, total))
+        logger.info("{} Analysis Requests updated".format(num))
 
-def add_create_partition_transition(portal):
-    logger.info("Adding partitioning workflow")
-    wf_tool = api.get_tool("portal_workflow")
-    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
-
-    # Transition: create_partitions
-    update_role_mappings = False
-    transition_id = "create_partitions"
-    if transition_id not in workflow.transitions:
-        update_role_mappings = True
-        workflow.transitions.addTransition(transition_id)
-    transition = workflow.transitions.create_partitions
-    transition.setProperties(
-        title="Create partitions",
-        new_state_id='sample_received',
-        after_script_name='',
-        actbox_name="Create partitions", )
-    guard = transition.guard or Guard()
-    guard_props = {'guard_permissions': 'BIKA: Edit Results',
-                   'guard_roles': '',
-                   'guard_expr': 'python:here.guard_handler("create_partitions")'}
-    guard.changeFromProperties(guard_props)
-    transition.guard = guard
-
-    # Add the transition to "sample_received" state
-    state = workflow.states.sample_received
-    if transition_id not in state.transitions:
-        update_role_mappings = True
-        state.transitions += (transition_id, )
-
-    if not update_role_mappings:
-        return
-
-    # Update role mappings if necessary. Analysis Requests transitioned beyond
-    # sample_received state are omitted.
-    states = ["sampled", "scheduled_sampling", "to_be_preserved",
-              "to_be_sampled", "sample_due", "sample_received"]
-    query = dict(portal_type="AnalysisRequest", states=states)
-    ars = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
-    total = len(ars)
-    for num, ar in enumerate(ars, start=1):
-        workflow.updateRoleMappingsFor(api.get_object(ar))
-        if num % 100 == 0:
-            logger.info("Updating role mappings: {0}/{1}".format(num, total))
-
-
-def add_partitioning_indexes(portal):
-    """Adds the indexes for partitioning
-    """
-    logger.info("Adding partitioning indexes")
-    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
-              index_name="getAncestorsUIDs",
-              index_attribute="getAncestorsUIDs",
-              index_metatype="KeywordIndex")
-
-
-def add_index(portal, catalog_id, index_name, index_attribute, index_metatype):
-    logger.info("Adding '{}' index to '{}' ...".format(index_name, catalog_id))
-    catalog = api.get_tool(catalog_id)
-    if index_name in catalog.indexes():
-        logger.info("Index '{}' already in catalog '{}' [SKIP]"
-                    .format(index_name, catalog_id))
-        return
-    catalog.addIndex(index_name, index_metatype)
-    logger.info("Indexing new index '{}' ...".format(index_name))
-    catalog.manage_reindexIndex(index_name)
-    logger.info("Indexing new index '{}' [DONE]".format(index_name))
+    logger.info("Updating getLate -> getDueDate metadata columns [DONE]")

@@ -1,11 +1,31 @@
 Changelog
 =========
 
-1.2.9 (unreleased)
+1.3.0 (unreleased)
 ------------------
 
 **Added**
 
+
+**Changed**
+
+
+**Removed**
+
+
+**Fixed**
+
+
+**Security**
+
+
+1.2.9 (2018-10-08)
+------------------
+
+**Added**
+
+- #1051 Show the Due date in late's image tooltip in Analysis Requests listings
+- #1048 Allow to set the pagesize in listings and show total number of results
 - #1031 Added profiling and timing decorators
 - #1001 Option to show Interim fields on results reports
 - #1024 Function to get the Verifiers from an Analysis Request
@@ -14,6 +34,8 @@ Changelog
 
 **Changed**
 
+- #1050 Added Late filter button to analysisrequests listing
+- #1046 Show "Date Registered" instead of "Date Created" in Analysis Requests listings
 - #1044 State of analyses in retests is set to `received` by default (was `to_be_verified`)
 - #1042 Function api.get_object() supports UID as input param
 - #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
@@ -23,6 +45,7 @@ Changelog
 - #1027 Rename `retract_ar` transition to `invalidate`
 - #1012 Refactored Contacts listing
 - #1010 Increased max length of Results options to 255 chars (was 40)
+- #899 Sample's Date Received editable only when `received` analyses exist
 
 **Removed**
 
@@ -32,6 +55,9 @@ Changelog
 
 **Fixed**
 
+- #1051 Analyses Requests w/o submitted results always appear as not late
+- #1047 Fix translate utility function
+- #1049 Secondary Analysis Request changes received date of Sample
 - #1041 Reject transition is available to Client once AR/Sample is received
 - #1043 Invalid AR Retested informative message is not prominent enough
 - #1039 Detection limit criteria from retracted analysis is preserved
@@ -50,12 +76,7 @@ Changelog
 - #991 New client contacts do not have access to their own AR Templates
 - #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
-- #899 Secondary AR changes received date of sample
 - #888 Order of Interim Fields not maintained on ARs
-
-
-**Security**
-
 
 
 1.2.8 (2018-08-11)

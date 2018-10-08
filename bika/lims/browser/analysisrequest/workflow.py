@@ -132,7 +132,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         if nr_parts > nr_existing:
             for i in range(nr_parts - nr_existing):
                 part = _createObjectByType("SamplePartition", sample, tmpID())
-                part.setDateReceived = DateTime()
                 part.processForm()
         # remove excess parts
         if nr_existing > nr_parts:

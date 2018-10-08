@@ -519,6 +519,7 @@ class BikaListingView(BrowserView):
         self.base_url = context.absolute_url()
         self.field_icons = {}
         self.items = []
+        self.total = 0
         self.limit_from = 0
         self.member = None
         self.mtool = None
@@ -931,6 +932,7 @@ class BikaListingView(BrowserView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
+        self.total = len(brains)
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -1440,6 +1442,7 @@ class BikaListingView(BrowserView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
+        self.total = len(brains)
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -1816,6 +1819,7 @@ class BikaListingTable(tableview.Table):
         self.request = bika_listing.request
         self.form_id = bika_listing.form_id
         self.items = folderitems
+        self.total = bika_listing.total
 
     def rendered_items(self, cat=None, **kwargs):
         """Render the table rows of items in a particular category.
