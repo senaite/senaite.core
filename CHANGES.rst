@@ -32,6 +32,7 @@ Changelog
 
 **Fixed**
 
+- #1051 Analyses Requests w/o submitted results always appear as not late
 - #1041 Reject transition is available to Client once AR/Sample is received
 - #1043 Invalid AR Retested informative message is not prominent enough
 - #1039 Detection limit criteria from retracted analysis is preserved

@@ -759,7 +759,8 @@ class AnalysisRequestsView(BikaListingView):
                 """<img src='%s/++resource++bika.lims.images/delete.png'
                     title='%s'/>
                 """ % (self.portal_url, t(_("Results have been withdrawn")))
-        if obj.getLate:
+        due_date = obj.getDueDate
+        if due_date and due_date < (obj.getDatePublished or DateTime()):
             after_icons += \
                 """<img src='%s/++resource++bika.lims.images/late.png'
                     title='%s'>
