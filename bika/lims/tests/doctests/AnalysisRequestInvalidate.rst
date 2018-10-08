@@ -191,7 +191,7 @@ When an Analysis Request is invalidated two things should happen:
     `verified` state.
 
     2- A new Analysis Request (retest) is created automatically, with same
-    analyses as the invalidated, but in `to_be_verified` state.
+    analyses as the invalidated, but in `sample_received` state.
 
 Invalidate the Analysis Request:
 
@@ -214,13 +214,13 @@ the invalidated:
     <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> api.get_workflow_status_of(retest)
-    'to_be_verified'
+    'sample_received'
 
-    >>> not_to_be_verified = 0
+    >>> not_received = 0
     >>> for analysis in retest.getAnalyses(full_objects=True):
-    ...     if api.get_workflow_status_of(analysis) != 'to_be_verified':
-    ...         not_to_be_verified += 1
-    >>> not_to_be_verified
+    ...     if api.get_workflow_status_of(analysis) != 'sample_received':
+    ...         not_received += 1
+    >>> not_received
     0
 
     >>> retest_ans = map(lambda an: an.getKeyword(), retest.getAnalyses(full_objects=True))
@@ -235,7 +235,17 @@ Invalidate the retest
 We can even invalidate the retest generated previously. As a result, a new
 retest will be created.
 
-First, verify all analyses from the retest:
+First, submit all analyses from the retest:
+
+    >>> for analysis in retest.getAnalyses(full_objects=True):
+    ...     transitioned = do_action_for(analysis, 'submit')
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(retest)
+    'to_be_verified'
+
+Now, verify all analyses from the retest:
 
     >>> for analysis in retest.getAnalyses(full_objects=True):
     ...     transitioned = do_action_for(analysis, 'verify')
@@ -276,13 +286,13 @@ as the invalidated (retest):
     <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> api.get_workflow_status_of(retest2)
-    'to_be_verified'
+    'sample_received'
 
-    >>> not_to_be_verified = 0
+    >>> not_received = 0
     >>> for analysis in retest2.getAnalyses(full_objects=True):
-    ...     if api.get_workflow_status_of(analysis) != 'to_be_verified':
-    ...         not_to_be_verified += 1
-    >>> not_to_be_verified
+    ...     if api.get_workflow_status_of(analysis) != 'sample_received':
+    ...         not_received += 1
+    >>> not_received
     0
 
     >>> retest_ans = map(lambda an: an.getKeyword(), retest2.getAnalyses(full_objects=True))

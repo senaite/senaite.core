@@ -61,7 +61,9 @@ def t(i18n_msg):
     """
     text = to_unicode(i18n_msg)
     try:
-        text = translate(text)
+        request = api.get_request()
+        domain = getattr(i18n_msg, "domain", "senaite.core")
+        text = translate(text, domain=domain, context=request)
     except UnicodeDecodeError:
         # TODO: This is only a quick fix
         logger.warn("{} couldn't be translated".format(text))

@@ -11,6 +11,8 @@ import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -37,6 +39,8 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    # Display supplier view instead of reference samples per default
+    # https://github.com/senaite/senaite.core/pull/1037
     setup.runImportStepFromProfile(profile, 'typeinfo')
 
     # Delete orphaned Attachments
@@ -44,19 +48,32 @@ def upgrade(tool):
     delete_orphaned_attachments(portal)
 
     # Migrate report option from attach (a) -> ignore (i)
+    # https://github.com/senaite/senaite.core/pull/992
     migrate_attachment_report_options(portal)
 
-    # Reindex object security for client contents (see #991)
+    # Reindex object security for client contents
+    # https://github.com/senaite/senaite.core/pull/991
     reindex_client_local_owner_permissions(portal)
 
     # Rename "retract_ar" transition to "invalidate"
+    # https://github.com/senaite/senaite.core/pull/1027
     rename_retract_ar_transition(portal)
 
     # Rebind ARs that were generated because of the invalidation of other ARs
+    # https://github.com/senaite/senaite.core/pull/1027
     rebind_invalidated_ars(portal)
 
     # Reindex Turnaround time and due date related fields
+    # https://github.com/senaite/senaite.core/pull/1032
     recatalog_analyses_due_date(portal)
+
+    # Update workflow states and permissions for AR/Sample rejection
+    # https://github.com/senaite/senaite.core/pull/1041
+    update_rejection_permissions(portal)
+
+    # Remove getLate and add getDueDate metadata in ar_catalog
+    # https://github.com/senaite/senaite.core/pull/1051
+    update_analaysisrequests_due_date(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -215,3 +232,135 @@ def recatalog_analyses_due_date(portal):
                         .format(num, total))
 
     logger.info("{} Analyses updated".format(num))
+
+
+def update_rejection_permissions(portal):
+    """Adds the permission 'Reject Analysis Request' and update the permission
+     mappings accordingly """
+    updated = update_rejection_permissions_for(portal, "bika_ar_workflow",
+                                               "Reject Analysis Request")
+    if updated:
+        brains = api.search(dict(portal_type="AnalysisRequest"),
+                            CATALOG_ANALYSIS_REQUEST_LISTING)
+        update_rolemappings_for(brains, "bika_ar_workflow")
+
+
+    updated = update_rejection_permissions_for(portal, "bika_sample_workflow",
+                                               "Reject Sample")
+    if updated:
+        brains = api.search(dict(portal_type="Sample"), "bika_catalog")
+        update_rolemappings_for(brains, "bika_sample_workflow")
+
+
+def update_rejection_permissions_for(portal, workflow_id, permission_id):
+    logger.info("Updating rejection permissions for {}".format(workflow_id))
+    all_roles = ["Manager", "LabManager", "LabClerk", "Client", "Owner"]
+    roles_mapping = {
+        "sample_registered": all_roles,
+        "scheduled_sampling": all_roles,
+        "to_be_sampled": all_roles,
+        "sampled": all_roles,
+        "to_be_preserved": all_roles,
+        "sample_due": all_roles,
+        "sample_received": ["Manager", "LabManager", "LabClerk"],
+        "attachment_due": ["Manager", "LabManager"],
+        "to_be_verified": ["Manager", "LabManager"],
+        # Those that only apply to sample_workflow below
+        "expired": ["Manager", "LabManager"],
+        "disposed": ["Manager", "LabManager"],
+    }
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
+
+    if "rejected" not in workflow.states:
+        logger.warning("rejected state not found for workflow {} [SKIP]"
+                       .format(workflow.id))
+        return False
+
+    if permission_id in workflow.permissions:
+        logger.info("'{}' already in place. [SKIP]".format(permission_id))
+        return False
+
+    workflow.permissions += (permission_id,)
+    for state_id, state in workflow.states.items():
+        if "reject" not in state.transitions:
+            continue
+        if state_id not in roles_mapping:
+            continue
+        roles = roles_mapping[state_id]
+        state.setPermission(permission_id, False, roles)
+
+    if "reject" not in workflow.transitions:
+        workflow.transitions.addTransition("reject")
+        transition = workflow.transitions.reject
+        transition.setProperties(
+            title="Reject",
+            new_state_id="rejected",
+            actbox_name="Reject",
+        )
+    transition = workflow.transitions.reject
+    guard = transition.guard or Guard()
+    guard_props = {
+        "guard_permissions": permission_id,
+        "guard_roles": "",
+        "guard_expr": "python:here.bika_setup.isRejectionWorkflowEnabled()"
+    }
+    guard.changeFromProperties(guard_props)
+    transition.guard = guard
+    return True
+
+def update_rolemappings_for(brains, workflow_id):
+    logger.info("Updating role mappings for '{}'".format(workflow_id))
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
+    total = len(brains)
+    num = 0
+    for num, brain in enumerate(brains, start=1):
+        workflow.updateRoleMappingsFor(api.get_object(brain))
+        if num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}"
+                        .format(num, total))
+    logger.info("{} objects updated".format(num))
+
+
+def update_analaysisrequests_due_date(portal):
+    """Removes the metadata getLate from ar-catalog and adds the column
+    getDueDate"""
+    logger.info("Updating getLate -> getDueDate metadata columns ...")
+    catalog_objects = False
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    if "getLate" in catalog.schema():
+        catalog.delColumn("getLate")
+
+    if "getDueDate" in catalog.schema():
+        logger.info("getDueDate column already in catalog [SKIP]")
+    else:
+        logger.info("Adding column 'getDueDate' to catalog '{}' ..."
+                    .format(catalog.id))
+        catalog.addColumn("getDueDate")
+        catalog_objects = True
+
+    if "getDueDate" in catalog.indexes():
+        logger.info("getDueDate index already in catalog [SKIP]")
+    else:
+        logger.info("Adding index 'getDueDate' to catalog '{}'"
+                    .format(catalog.id))
+        catalog.addIndex("getDueDate", "DateIndex")
+        if not catalog_objects:
+            catalog.manage_reindexIndex("getDueDate")
+
+    if catalog_objects:
+        # Only recatalog the objects if the column getDueDate was not there
+        num = 0
+        query = dict(portal_type="AnalysisRequest")
+        ar_brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        total = len(ar_brains)
+        for num, analysis_request in enumerate(ar_brains):
+            analysis_request = api.get_object(analysis_request)
+            analysis_request.reindexObject(idxs=['getDueDate'])
+            if num % 100 == 0:
+                logger.info("Updating Analysis Request getDueDate: {0}/{1}"
+                            .format(num, total))
+        logger.info("{} Analysis Requests updated".format(num))
+
+    logger.info("Updating getLate -> getDueDate metadata columns [DONE]")

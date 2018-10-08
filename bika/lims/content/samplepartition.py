@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
@@ -176,16 +177,10 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     @security.public
     def after_receive_transition_event(self):
         """Method triggered after a 'receive' transition for the current Sample
-        Partition is performed. Stores value for "Date Received" field and also
-        triggers the 'receive' transition for depedendent objects, such as
-        Analyses associated to this Sample Partition. If all Sample Partitions
-        that belongs to the same sample as the current Sample Partition have
-        been transitioned to the "received" state, promotes to Sample
+        Partition is performed.
         This function is called automatically by
         bika.lims.workflow.AfterTransitionEventHandler
         """
-        self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["getDateReceived", ])
         self._cascade_promote_transition('receive', 'sample_received')
 
     def guard_to_be_preserved(self):

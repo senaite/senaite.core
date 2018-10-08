@@ -86,6 +86,10 @@ class window.BikaListingTableView
     # bind event handler for contextmenu clicks
     $(document).on "click", ".contextmenu tr", @on_contextmenu_item_click
 
+    # Pagesize changed
+    $("form").on "change", "input.pagesize_input", @on_pagesize_change
+    $("form").on "keypress", "input.pagesize_input", @on_pagesize_keypress
+
     # Ajax form submit events
     $(this).on "ajax:submit:start", @on_ajax_submit_start
     $(this).on "ajax:submit:end", @on_ajax_submit_end
@@ -1085,3 +1089,36 @@ class window.BikaListingTableView
     limit_from = @parse_int $el.attr "data-limitfrom"
 
     @show_more form_id, pagesize, limit_from
+
+  on_pagesize_change: (event) =>
+    ###
+     * Eventhandler when the Pagesize changed
+    ###
+    console.debug "°°° ListingTableView::on_pagesize_change °°°"
+
+    # current event target (Show More button)
+    el = event.currentTarget
+    $el = $(el)
+
+    # get the pagesize
+    pagesize = @parse_int $el.val()
+
+    if pagesize < 1 then pagesize = 1
+    if pagesize > 250 then pagesize = 250
+
+    $el.val pagesize
+
+    form_id = $el.parents("form").attr "id"
+    @show_more form_id, pagesize, 0
+
+  on_pagesize_keypress: (event) =>
+    ###
+     * Eventhandler when the Pagesize changed
+    ###
+    console.debug "°°° ListingTableView::on_pagesize_keypress °°°"
+
+    # Prevent form submit
+    if event.which == 13
+      console.debug "ListingTableView::on_pagesize_keypress: capture Enter key"
+      event.preventDefault()
+      @on_pagesize_change(event)
