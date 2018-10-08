@@ -49,7 +49,6 @@ setup(
         'openpyxl==1.5.8',
         'plone.app.iterate',
         'magnitude',
-        'gpw',
         'jarn.jsi18n',
         'WeasyPrint',
         'collective.progressbar',
