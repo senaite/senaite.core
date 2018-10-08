@@ -1951,7 +1951,6 @@ class Setup(WorksheetImporter):
             ARIDPadding=int(values['ARIDPadding']),
             ExternalIDServer=self.to_bool(values['ExternalIDServer']),
             IDServerURL=values['IDServerURL'],
-            ShowNewReleasesInfo=values.get('ShowNewReleasesInfo', True),
         )
 
 
