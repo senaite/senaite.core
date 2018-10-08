@@ -28,6 +28,7 @@ _indexes_dict = {
     'getDateReceived': 'DateIndex',
     'getDateVerified': 'DateIndex',
     'getDatePublished': 'DateIndex',
+    'getDueDate': 'DateIndex',
     'getSampler': 'FieldIndex',
     'getReceivedBy': 'FieldIndex',
     'getDepartmentUIDs': 'KeywordIndex',
@@ -97,8 +98,7 @@ _columns_list = [
     'getPrinted',
     'getSamplingDeviationTitle',
     'getPrioritySortkey',
-    # TODO: This should be updated through a clock
-    'getLate',
+    'getDueDate',
     'getInvoiceExclude',
     'getHazardous',
     'getSamplingWorkflowEnabled',

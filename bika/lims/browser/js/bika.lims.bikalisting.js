@@ -8,6 +8,8 @@
 
   window.BikaListingTableView = (function() {
     function BikaListingTableView() {
+      this.on_pagesize_keypress = bind(this.on_pagesize_keypress, this);
+      this.on_pagesize_change = bind(this.on_pagesize_change, this);
       this.on_show_more_click = bind(this.on_show_more_click, this);
       this.on_column_header_click = bind(this.on_column_header_click, this);
       this.on_ajax_submit_end = bind(this.on_ajax_submit_end, this);
@@ -88,6 +90,8 @@
       $("form").on("click", "td.review_state_selector a", this.on_review_state_filter_click);
       $(document).on("click", this.on_click);
       $(document).on("click", ".contextmenu tr", this.on_contextmenu_item_click);
+      $("form").on("change", "input.pagesize_input", this.on_pagesize_change);
+      $("form").on("keypress", "input.pagesize_input", this.on_pagesize_keypress);
       $(this).on("ajax:submit:start", this.on_ajax_submit_start);
       return $(this).on("ajax:submit:end", this.on_ajax_submit_end);
     };
@@ -970,6 +974,40 @@
       pagesize = this.parse_int($el.attr("data-pagesize"));
       limit_from = this.parse_int($el.attr("data-limitfrom"));
       return this.show_more(form_id, pagesize, limit_from);
+    };
+
+    BikaListingTableView.prototype.on_pagesize_change = function(event) {
+
+      /*
+       * Eventhandler when the Pagesize changed
+       */
+      var $el, el, form_id, pagesize;
+      console.debug("°°° ListingTableView::on_pagesize_change °°°");
+      el = event.currentTarget;
+      $el = $(el);
+      pagesize = this.parse_int($el.val());
+      if (pagesize < 1) {
+        pagesize = 1;
+      }
+      if (pagesize > 250) {
+        pagesize = 250;
+      }
+      $el.val(pagesize);
+      form_id = $el.parents("form").attr("id");
+      return this.show_more(form_id, pagesize, 0);
+    };
+
+    BikaListingTableView.prototype.on_pagesize_keypress = function(event) {
+
+      /*
+       * Eventhandler when the Pagesize changed
+       */
+      console.debug("°°° ListingTableView::on_pagesize_keypress °°°");
+      if (event.which === 13) {
+        console.debug("ListingTableView::on_pagesize_keypress: capture Enter key");
+        event.preventDefault();
+        return this.on_pagesize_change(event);
+      }
     };
 
     return BikaListingTableView;

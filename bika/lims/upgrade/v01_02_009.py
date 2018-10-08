@@ -63,6 +63,9 @@ def upgrade(tool):
     # Update workflow states and permissions for AR/Sample rejection
     update_rejection_permissions(portal)
 
+    # Remove getLate and add getDueDate metadata in ar_catalog
+    update_analaysisrequests_due_date(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -309,3 +312,29 @@ def update_rolemappings_for(brains, workflow_id):
             logger.info("Updating role mappings: {0}/{1}"
                         .format(num, total))
     logger.info("{} objects updated".format(num))
+
+
+def update_analaysisrequests_due_date(portal):
+    """Removes the metadata getLate from ar-catalog and adds the column
+    getDueDate"""
+    logger.info("Updating getLate -> getDueDate metadata columns ...")
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    if "getLate" in catalog.schema():
+        catalog.delColumn("getLate")
+
+    if "getDueDate" in catalog.schema():
+        logger.info("getDueDate already in catalog [SKIP]")
+        return
+
+    logger.info("Adding Column 'getDueDate' to catalog '{}' ..."
+                .format(catalog.id))
+    catalog.addColumn("getDueDate")
+    catalog.addIndex("getDueDate", "DateIndex")
+    catalog.manage_reindexIndex("getDueDate")
+
+    query = dict(portal_type="AnalysisRequest")
+    for analysis_request in api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING):
+        analysis_request = api.get_object(analysis_request)
+        analysis_request.reindexObject(idxs=['getDueDate'])
+
+    logger.info("Updating getLate -> getDueDate metadata columns [DONE]")
