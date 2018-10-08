@@ -12,6 +12,8 @@ Changelog
 
 **Removed**
 
+- #808 Remove old AR Add code
+
 
 **Fixed**
 

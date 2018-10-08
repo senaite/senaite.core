@@ -18,7 +18,6 @@ from copy import copy
 
 
 class AnalysisRequestsView(_ARV, _ARAV):
-    ar_add = ViewPageTemplateFile("../analysisrequest/templates/ar_add.pt")
     implements(IViewView)
 
     def __init__(self, context, request):
