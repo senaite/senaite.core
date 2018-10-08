@@ -1982,6 +1982,12 @@ class AnalysisRequest(BaseFolder):
                 manager_list.append(manager)
         return manager_list
 
+    def getDueDate(self):
+        """Returns the earliest due date of the analyses this Analysis Request
+        contains."""
+        due_dates = map(lambda an: an.getDueDate, self.getAnalyses())
+        return due_dates and min(due_dates) or None
+
     security.declareProtected(View, 'getLate')
 
     def getLate(self):

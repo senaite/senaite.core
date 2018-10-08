@@ -751,9 +751,13 @@ class AnalysisRequestsView(BikaListingView):
         if states_dict.get('review_state', '') == 'invalid':
             after_icons += get_image("delete.png",
                                      title=t(_("Results have been withdrawn")))
-        if obj.getLate:
-            after_icons += get_image("late.png",
-                                     title=t(_("Late Analyses")))
+
+        due_date = obj.getDueDate
+        if due_date and due_date < (obj.getDatePublished or DateTime()):
+            due_date_str = self.ulocalized_time(due_date)
+            img_title = "{}: {}".format(t(_("Late Analyses")), due_date_str)
+            after_icons += get_image("late.png", title=img_title)
+
         if obj.getSamplingDate and obj.getSamplingDate > DateTime():
             after_icons += get_image("calendar.png",
                                      title=t(_("Future dated sample")))
