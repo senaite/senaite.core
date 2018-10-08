@@ -34,6 +34,7 @@ Changelog
 
 **Fixed**
 
+- #1047 Fix translate utility function
 - #1049 Secondary Analysis Request changes received date of Sample
 - #1041 Reject transition is available to Client once AR/Sample is received
 - #1043 Invalid AR Retested informative message is not prominent enough
