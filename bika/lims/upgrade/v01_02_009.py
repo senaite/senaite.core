@@ -332,7 +332,6 @@ def update_analaysisrequests_due_date(portal):
     catalog.addIndex("getDueDate", "DateIndex")
     catalog.manage_reindexIndex("getDueDate")
 
-    # No need to go through all Analysis Requests. getLate metadata column was
     query = dict(portal_type="AnalysisRequest")
     for analysis_request in api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING):
         analysis_request = api.get_object(analysis_request)
