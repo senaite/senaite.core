@@ -39,6 +39,8 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF HERE --------
 
+    # Display supplier view instead of reference samples per default
+    # https://github.com/senaite/senaite.core/pull/1037
     setup.runImportStepFromProfile(profile, 'typeinfo')
 
     # Delete orphaned Attachments
@@ -46,24 +48,31 @@ def upgrade(tool):
     delete_orphaned_attachments(portal)
 
     # Migrate report option from attach (a) -> ignore (i)
+    # https://github.com/senaite/senaite.core/pull/992
     migrate_attachment_report_options(portal)
 
-    # Reindex object security for client contents (see #991)
+    # Reindex object security for client contents
+    # https://github.com/senaite/senaite.core/pull/991
     reindex_client_local_owner_permissions(portal)
 
     # Rename "retract_ar" transition to "invalidate"
+    # https://github.com/senaite/senaite.core/pull/1027
     rename_retract_ar_transition(portal)
 
     # Rebind ARs that were generated because of the invalidation of other ARs
+    # https://github.com/senaite/senaite.core/pull/1027
     rebind_invalidated_ars(portal)
 
     # Reindex Turnaround time and due date related fields
+    # https://github.com/senaite/senaite.core/pull/1032
     recatalog_analyses_due_date(portal)
 
     # Update workflow states and permissions for AR/Sample rejection
+    # https://github.com/senaite/senaite.core/pull/1041
     update_rejection_permissions(portal)
 
     # Remove getLate and add getDueDate metadata in ar_catalog
+    # https://github.com/senaite/senaite.core/pull/1051
     update_analaysisrequests_due_date(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
