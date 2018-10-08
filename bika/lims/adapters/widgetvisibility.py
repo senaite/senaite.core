@@ -4,6 +4,7 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
 from bika.lims.api import get_tool
 from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient
 from bika.lims.interfaces import IATWidgetVisibility
