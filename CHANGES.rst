@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.9 (unreleased)
+1.2.9 (2018-10-08)
 ------------------
 
 **Added**
@@ -59,10 +59,6 @@ Changelog
 - #996 Hide checkbox labels on category expansion
 - #990 Fix client analysisspecs view
 - #888 Order of Interim Fields not maintained on ARs
-
-
-**Security**
-
 
 
 1.2.8 (2018-08-11)
