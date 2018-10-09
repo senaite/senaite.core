@@ -16,14 +16,6 @@
 
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="qualitycontrol"
-      class="bika.lims.browser.reports.QualityControlView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IReportFolder"
       name="administration"
       class="bika.lims.browser.reports.AdministrationView"
       permission="zope2.View"

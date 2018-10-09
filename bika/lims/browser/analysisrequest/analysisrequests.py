@@ -24,7 +24,6 @@ from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import get_image
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
-from collective.taskqueue.interfaces import ITaskQueue
 from DateTime import DateTime
 from plone.api import user
 from plone.protect import CheckAuthenticator
@@ -39,7 +38,6 @@ class AnalysisRequestsView(BikaListingView):
     """
 
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
-    ar_add = ViewPageTemplateFile("templates/ar_add.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
@@ -910,12 +908,6 @@ class AnalysisRequestsView(BikaListingView):
                         title=t(_("Cannot verify: Submitted by current user")))
         return item
 
-    def pending_tasks(self):
-        task_queue = queryUtility(ITaskQueue, name='ar-create')
-        if task_queue is None:
-            return 0
-        return len(task_queue)
-
     @property
     def copy_to_new_allowed(self):
         mtool = api.get_tool("portal_membership")
@@ -937,23 +929,3 @@ class AnalysisRequestsView(BikaListingView):
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
-
-
-class QueuedAnalysisRequestsCount():
-
-    def __call__(self):
-        """Returns the number of tasks in the queue ar-create, responsible of
-        creating Analysis Requests asynchronously"""
-        try:
-            PostOnly(self.context.REQUEST)
-        except Exception:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        try:
-            CheckAuthenticator(self.request.form)
-        except Exception:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        task_queue = queryUtility(ITaskQueue, name="ar-create")
-        count = len(task_queue) if task_queue is not None else 0
-        return json.dumps({"count": count})

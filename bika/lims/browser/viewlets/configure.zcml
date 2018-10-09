@@ -22,17 +22,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Show new version and upgrade alert viewlet -->
-  <browser:viewlet
-      for="plone.app.controlpanel.interfaces.IPloneControlPanelView"
-      name="bika.lims.checknewversions"
-      class="bika.lims.browser.viewlets.new_versions.NewVersionsViewlet"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      template="templates/new_versions.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- Hide BreadCrumbs for root views -->
   <browser:viewlet
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
