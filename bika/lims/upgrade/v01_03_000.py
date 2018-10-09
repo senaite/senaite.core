@@ -57,8 +57,6 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1060
     purge_portlets(portal)
 
-
-
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -79,7 +77,7 @@ def remove_qc_reports(portal):
 def purge_portlets(portal):
     """Remove old portlets. Leave the Navigation portlet only
     """
-    logger.info("Purging portlets up ...")
+    logger.info("Purging portlets ...")
 
     def remove_portlets(context_portlet):
         mapping = portal.restrictedTraverse(context_portlet)
