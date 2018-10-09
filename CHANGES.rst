@@ -12,6 +12,7 @@ Changelog
 
 **Removed**
 
+- #1059 Removed updates alert viewlet
 - #1060 Removed classic portlets
 - #1058 Removed gpw dependency
 - #1058 Remved broken Quality Control reports
