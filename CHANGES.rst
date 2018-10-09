@@ -12,6 +12,7 @@ Changelog
 
 **Removed**
 
+- #1060 Removed classic portlets
 - #1058 Removed gpw dependency
 - #1058 Remved broken Quality Control reports
 - #1057 Remove z3c.unconfigure dependency
