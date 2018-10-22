@@ -30,6 +30,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters, getMultiAdapter
+from bika.lims.browser.listing.ajax import AjaxListingView
 
 COOKIE_LISTING_FILTER_BAR = "bika_listing_filter_bar"
 
@@ -264,7 +265,7 @@ class WorkflowAction:
         return len(transitioned), dest
 
 
-class BikaListingView(BrowserView):
+class BikaListingView(AjaxListingView, BrowserView):
     """Base View for Bika Table Listings
     """
     template = ViewPageTemplateFile("templates/bika_listing.pt")
@@ -548,6 +549,10 @@ class BikaListingView(BrowserView):
 
         # Always update on __call__
         self.update()
+
+        # handle subpath calls
+        if len(self.traverse_subpath) > 0:
+            return self.handle_subpath()
 
         form_id = self.get_form_id()
 
@@ -1610,6 +1615,8 @@ class BikaListingView(BrowserView):
            <table/> tag will be printed (form tags, authenticator, etc).
            Then you can insert your own form tags around it.
         """
+        if "ajax" in self.request:
+            return self.ajax_contents_table()
         table = BikaListingTable(bika_listing=self, table_only=table_only)
         return table.render(self)
 
