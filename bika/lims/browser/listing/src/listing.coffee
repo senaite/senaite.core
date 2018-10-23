@@ -92,7 +92,7 @@ class ListingController extends React.Component
       </div>
       <div className="col-sm-12">
         <Table
-          className="table table-condensed table-hover table-striped table-sm small"
+          className="contentstable table table-condensed table-hover table-striped table-sm small"
           columns={@state.columns}
           review_states={@state.review_states}
           folderitems={@state.folderitems}/>

@@ -1,6 +1,25 @@
 <tal:contents_table
   define="portal context/@@plone_portal_state/portal;">
 
+  <tal:css>
+    <!-- Colors usef from https://mdbootstrap.com/css/colors -->
+    <style type="text/css">
+     tr.state-sample_due { border-left: solid #ffff8d; }
+     tr.state-sample_received { border-left: solid #b9f6ca; }
+     tr.state-to_be_verified { border-left: solid #84ffff; }
+     tr.state-verified { border-left: solid #80d8ff; }
+     tr.state-published { border-left: solid #00c853; }
+     tr.state-retracted { border-left: solid #ff8a80; }
+     tr.state-invalid { border-left: solid #b71c1c; }
+     tr.state-open { border-left: solid #ab47bc; }
+     tr.state-inactive { border-left: solid #e0e0e0; }
+     tr.state-cancelled { border-left: solid #607d8b; }
+     tr.state-attachment_due { border-left: solid #ffc107; }
+     tr.state-unassigned { border-left: solid #4a148c; }
+     tr.state-empty-worksheet { border-left: solid #f8bbd0; }
+    </style>
+  </tal:css>
+
   <tal:js
     define="portal_url portal/absolute_url;
             static_url string:${portal_url}/++resource++senaite.core.browser.listing.static;">
