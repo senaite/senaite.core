@@ -23,14 +23,18 @@ class ListingController extends React.Component
     super(props)
     console.log "ListingController::constructor:props=", props
 
-
-    @handleSubmit = @handleSubmit.bind(this)
-    @handleChange = @handleChange.bind(this)
+    @handleSubmit = @handleSubmit.bind @
+    @handleChange = @handleChange.bind @
+    @filterResults = @filterResults.bind @
 
     @el = document.getElementById "ajax-contents-table-wrapper"
     @view_name = @el.dataset.view_name
+
     @json_columns = @el.dataset.columns
     @json_review_states = @el.dataset.review_states
+
+    @columns = JSON.parse @json_columns
+    @review_states = JSON.parse @json_review_states
 
     @api = new ListingAPI(
       view_name: @view_name
@@ -38,8 +42,24 @@ class ListingController extends React.Component
 
     @state =
       folderitems: []
-      columns: JSON.parse @json_columns
-      review_states: JSON.parse @json_review_states
+      columns: @columns
+      review_states: @review_states
+      filter_by: "active"
+
+  getRequestOptions: ->
+    ###
+     * Options to be sent to the server
+    ###
+    options =
+      filter_by: @state.filter_by
+
+    console.debug("Request Options=", options)
+    return options
+
+  get_default_state: ->
+    ###*
+     *
+    ###
 
   componentDidMount: ->
     ###
@@ -76,9 +96,15 @@ class ListingController extends React.Component
     ###
      * Handler for the Review State filter buttons
     ###
-    el = event.target
-    console.log "ListingController:Filter button '#{el.id}' was clicked"
+    me = this
+    el = event.currentTarget
+    filter_by = el.id
+    console.log "ListingController:Filter button '#{filter_by}' was clicked"
 
+    promise = @api.fetch_folderitems filter_by: filter_by
+    promise.then (folderitems) ->
+      me.setState
+        folderitems: folderitems
 
   render: ->
     ###

@@ -8,11 +8,11 @@ class FilterBar extends React.Component
     super(props)
     @state =
       active: "default"
+    @handleClick = @handleClick.bind @
 
   handleClick: (event) ->
-    button = event.target
+    button = event.currentTarget
     button_id = button.id
-
     console.info "Button #{button_id} clicked..."
     @setState
       active: button_id

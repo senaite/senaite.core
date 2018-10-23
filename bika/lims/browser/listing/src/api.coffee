@@ -44,7 +44,7 @@ class ListingAPI
         "Content-Type": "application/json"
       body: if method is "POST" then data else null
       credentials: "include"
-    console.info "PublishAPI::fetch:endpoint=#{endpoint} init=",init
+    console.info "ListingAPI::fetch:endpoint=#{endpoint} init=",init
     request = new Request(url, init)
     return fetch(request).then (response) ->
       return response.json()
@@ -65,13 +65,15 @@ class ListingAPI
     return @get_json "review_states",
       method: "GET"
 
-  fetch_folderitems: ->
+  fetch_folderitems: (data) ->
     ###
      * Fetch folder items
      * @returns {Promise}
     ###
-    return @get_json "folderitems",
-      method: "GET"
+    options =
+      data: data or {}
+      method: "POST"
+    return @get_json "folderitems", options
 
 
 export default ListingAPI
