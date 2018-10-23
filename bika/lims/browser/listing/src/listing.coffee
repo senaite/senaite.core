@@ -126,7 +126,7 @@ class ListingController extends React.Component
                    review_state={@state.review_state}
                    review_states={@state.review_states}/>
       </div>
-      <div className="col-sm-12">
+      <div className="col-sm-12 table-responsive">
         <Table
           className="contentstable table table-condensed table-hover table-striped table-sm small"
           columns={@state.columns}
