@@ -15,9 +15,12 @@
      tr.state-attachment_due { border-left: solid #ffc107; border-width: 0.5em; }
      tr.state-unassigned { border-left: solid #4a148c; border-width: 0.5em; }
      tr.state-empty-worksheet { border-left: solid #f8bbd0; border-width: 0.5em; }
-
      tr.state-cancelled { border-left: solid #000000; border-width: 0.5em; }
      tr.state-inactive { border-left: solid #607d8b; border-width: 0.5em; }
+
+     th.sortable { cursor: pointer; }
+     th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
+     th.active.descending span:after { content: "▼"; margin-left: 0.5em;}
     </style>
   </tal:css>
 
@@ -31,10 +34,13 @@
 
   <!-- ReactJS managed component -->
   <div id="ajax-contents-table-wrapper"
-       tal:attributes="data-view_name python:view.__name__;
+       tal:attributes="data-columns python:view.ajax_columns();
                        data-form_id python:view.form_id;
-                       data-columns python:view.ajax_columns();
-                       data-review_states python:view.ajax_review_states();">
+                       data-pagesize python:view.pagesize;
+                       data-review_states python:view.ajax_review_states();
+                       data-sort_on python:view.get_sort_on();
+                       data-sort_order python:view.get_sort_order();
+                       data-view_name python:view.__name__;">
   </div>
 
 </tal:contents_table>

@@ -74,11 +74,22 @@ class AjaxListingView(BrowserView):
                              .format(func_arg, "/".join(required_args)), 400)
         return func(*args)
 
-    def get_json(self):
+    def get_json(self, encoding="utf8"):
         """Extracts the JSON from the request
         """
         body = self.request.get("BODY", "{}")
-        return json.loads(body)
+
+        def encode_hook(pairs):
+            new_pairs = []
+            for key, value in pairs.iteritems():
+                if isinstance(value, unicode):
+                    value = value.encode(encoding)
+                if isinstance(key, unicode):
+                    key = key.encode(encoding)
+                new_pairs.append((key, value))
+            return dict(new_pairs)
+
+        return json.loads(body, object_hook=encode_hook)
 
     def fail(self, message, status=500, **kw):
         """Set a JSON error object and a status to the response
@@ -128,20 +139,7 @@ class AjaxListingView(BrowserView):
         """Returns the folderitems
         """
         payload = self.get_json()
-        # review_state = payload.get("review_state", self.default_review_state)
-
-        # # update the catalog query with the filter
-        # review_state_item = self.review_states_by_id.get(review_state)
-        # if review_state_item:
-        #     content_filter = review_state_item.get("contentFilter", {})
-        #     if content_filter:
-        #         self.contentFilter.update(content_filter)
-
-        # # bypass missing request paramerter check in `review_state` method
-        # self.default_review_state = review_state
-
-        # logger.info("AjaxListingView::ajax_folderitems:contentFilter={}"
-        #             .format(self.contentFilter))
-
+        # Fake a HTTP GET request with parameters, so that the `bika_listing`
+        # view handles them correctly.
         self.request.form.update(payload)
         return self.to_safe_json(self.folderitems())

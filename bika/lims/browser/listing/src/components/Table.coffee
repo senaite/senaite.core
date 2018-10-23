@@ -1,25 +1,12 @@
 import React from "react"
 import TableRow from "./TableRow.coffee"
+import TableHeaderRow from "./TableHeaderRow.coffee"
 
 
 class Table extends React.Component
 
   constructor: (props) ->
     super(props)
-
-  componentDidMount: ->
-
-  buildHeaderColumns: ->
-    columns = []
-
-    for key, value of @props.columns
-      if (!value.toggle)
-        continue
-
-      columns.push(
-        <th key={key}>{value.title}</th>
-      )
-    return columns
 
   buildFolderItems: ->
     rows = []
@@ -38,9 +25,10 @@ class Table extends React.Component
     <table id={@props.id}
             className={@props.className}>
       <thead>
-        <tr>
-          {@buildHeaderColumns()}
-        </tr>
+        <TableHeaderRow sort_on={this.props.sort_on}
+                        sort_order={this.props.sort_order}
+                        onSort={this.props.onSort}
+                        columns={this.props.columns}/>
       </thead>
       <tbody>
         {@buildFolderItems()}

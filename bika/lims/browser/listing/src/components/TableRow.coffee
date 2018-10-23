@@ -2,7 +2,7 @@ import React from "react"
 import TableCell from "./TableCell.coffee"
 
 
-class Row extends React.Component
+class TableRow extends React.Component
 
   buildTableCells: ->
     cells = []
@@ -26,4 +26,4 @@ class Row extends React.Component
     </tr>
 
 
-export default Row
+export default TableRow

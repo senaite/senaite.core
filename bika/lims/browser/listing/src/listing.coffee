@@ -26,25 +26,30 @@ class ListingController extends React.Component
 
     @filterByState = @filterByState.bind @
     @filterBySearchterm = @filterBySearchterm.bind @
+    @sortBy = @sortBy.bind @
 
     @el = document.getElementById "ajax-contents-table-wrapper"
-    @view_name = @el.dataset.view_name
+
+    # get initial configuration data from the HTML attribute
+    @columns = JSON.parse @el.dataset.columns
     @form_id = @el.dataset.form_id
-
-    @json_columns = @el.dataset.columns
-    @json_review_states = @el.dataset.review_states
-
-    @columns = JSON.parse @json_columns
-    @review_states = JSON.parse @json_review_states
+    @pagesize = @el.dataset.pagesize
+    @review_states = JSON.parse @el.dataset.review_states
+    @sort_on = @el.dataset.sort_on
+    @sort_order = @el.dataset.sort_order
+    @view_name = @el.dataset.view_name
 
     @api = new ListingAPI()
 
     @state =
-      folderitems: []
       columns: @columns or {}
       filter: @api.get_url_parameter("#{@form_id}_filter") or ""
+      folderitems: []
+      pagesize: @pagesize
       review_state: @api.get_url_parameter("#{@form_id}_review_state") or "default"
       review_states: @review_states or []
+      sort_on: @sort_on
+      sort_order: @sort_order
 
   getRequestOptions: ->
     ###
@@ -53,6 +58,8 @@ class ListingController extends React.Component
     options =
       "#{@form_id}_review_state": @state.review_state
       "#{@form_id}_filter": @state.filter
+      "#{@form_id}_sort_on": @state.sort_on
+      "#{@form_id}_sort_order": @state.sort_order
 
     console.debug("Request Options=", options)
     return options
@@ -92,6 +99,20 @@ class ListingController extends React.Component
     , ->
       me.fetch_folderitems()
 
+  sortBy: (sort_on, sort_order) ->
+    ###
+     * Sort the results by the given sort_on index with the given sort_order
+    ###
+    console.log "sort_on=#{sort_on} sort_order=#{sort_order}"
+
+    me = this
+
+    @setState
+      sort_on: sort_on
+      sort_order: sort_order
+    , ->
+      me.fetch_folderitems()
+
   fetch_folderitems: ->
     ###
      * Fetch the folderitems
@@ -126,6 +147,9 @@ class ListingController extends React.Component
       <div className="col-sm-12 table-responsive">
         <Table
           className="contentstable table table-condensed table-hover table-striped table-sm small"
+          onSort={@sortBy}
+          sort_on={@state.sort_on}
+          sort_order={@state.sort_order}
           columns={@state.columns}
           review_states={@state.review_states}
           folderitems={@state.folderitems}/>
