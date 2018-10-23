@@ -3,11 +3,9 @@
 ###
 import React from "react"
 import ReactDOM from "react-dom"
-
-import ListingAPI from './api.coffee'
-
-import Table from "./components/Table.js"
-import FilterBar from "./components/FilterBar.js"
+import ListingAPI from "./api.coffee"
+import Table from "./components/Table.coffee"
+import FilterBar from "./components/FilterBar.coffee"
 
 
 # DOCUMENT READY ENTRY POINT
@@ -80,6 +78,7 @@ class ListingController extends React.Component
     ###
     el = event.target
     console.log "ListingController:Filter button '#{el.id}' was clicked"
+
 
   render: ->
     ###
