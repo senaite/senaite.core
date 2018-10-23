@@ -6,9 +6,7 @@ class ListingAPI
 
   constructor: (props) ->
     console.debug "ListingAPI::constructor"
-    @view_name = props.view_name or "base_view"
-    @form_id = props.form_id or "list"
-    console.info "ListingAPI::constructor:view_name=#{@view_name} form_id=#{@form_id}"
+    @view_name = "base_view"
     return @
 
   get_base_url: ->

@@ -11,12 +11,12 @@ class FilterBar extends React.Component
     @handleClick = @handleClick.bind @
 
   handleClick: (event) ->
-    button = event.currentTarget
-    button_id = button.id
-    console.info "Button #{button_id} clicked..."
+    el = event.currentTarget
+    id = el.id
+    console.info "Button #{id} clicked..."
     @setState
-      active: button_id
-    @props.onClick event
+      active: id
+    @props.onClick id
 
   buildButtons: ->
     buttons = []
@@ -42,5 +42,6 @@ class FilterBar extends React.Component
     <ul className={@props.className}>
       {@buildButtons()}
     </ul>
+
 
 export default FilterBar

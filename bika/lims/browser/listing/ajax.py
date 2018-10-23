@@ -4,7 +4,7 @@ import inspect
 import json
 
 from bika.lims import api
-from bika.lims import logger
+# from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.utils import t
 from DateTime import DateTime
@@ -128,19 +128,20 @@ class AjaxListingView(BrowserView):
         """Returns the folderitems
         """
         payload = self.get_json()
-        review_state = payload.get("review_state", self.default_review_state)
+        # review_state = payload.get("review_state", self.default_review_state)
 
-        # update the catalog query with the filter
-        review_state_item = self.review_states_by_id.get(review_state)
-        if review_state_item:
-            content_filter = review_state_item.get("contentFilter", {})
-            if content_filter:
-                self.contentFilter.update(content_filter)
+        # # update the catalog query with the filter
+        # review_state_item = self.review_states_by_id.get(review_state)
+        # if review_state_item:
+        #     content_filter = review_state_item.get("contentFilter", {})
+        #     if content_filter:
+        #         self.contentFilter.update(content_filter)
 
-        # bypass missing request paramerter check in `review_state` method
-        self.default_review_state = review_state
+        # # bypass missing request paramerter check in `review_state` method
+        # self.default_review_state = review_state
 
-        logger.info("AjaxListingView::ajax_folderitems:contentFilter={}"
-                    .format(self.contentFilter))
+        # logger.info("AjaxListingView::ajax_folderitems:contentFilter={}"
+        #             .format(self.contentFilter))
 
+        self.request.form.update(payload)
         return self.to_safe_json(self.folderitems())
