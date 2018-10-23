@@ -7,7 +7,7 @@ class FilterBar extends React.Component
   constructor: (props) ->
     super(props)
     @state =
-      active: "default"
+      active: props.review_state or "default"
     @handleClick = @handleClick.bind @
 
   handleClick: (event) ->

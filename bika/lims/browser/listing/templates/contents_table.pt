@@ -17,7 +17,7 @@
      tr.state-empty-worksheet { border-left: solid #f8bbd0; border-width: 0.5em; }
 
      tr.state-cancelled { border-left: solid #000000; border-width: 0.5em; }
-     tr.state-inactive { border-left: solid #3E4551; border-width: 0.5em; }
+     tr.state-inactive { border-left: solid #607d8b; border-width: 0.5em; }
     </style>
   </tal:css>
 
@@ -32,6 +32,7 @@
   <!-- ReactJS managed component -->
   <div id="ajax-contents-table-wrapper"
        tal:attributes="data-view_name python:view.__name__;
+                       data-form_id python:view.form_id;
                        data-columns python:view.ajax_columns();
                        data-review_states python:view.ajax_review_states();">
   </div>

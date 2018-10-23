@@ -7,6 +7,8 @@ class ListingAPI
   constructor: (props) ->
     console.debug "ListingAPI::constructor"
     @view_name = props.view_name or "base_view"
+    @form_id = props.form_id or "list"
+    console.info "ListingAPI::constructor:view_name=#{@view_name} form_id=#{@form_id}"
     return @
 
   get_base_url: ->
@@ -24,6 +26,17 @@ class ListingAPI
     api_endpoint = @view_name
     base_url = @get_base_url()
     return "#{base_url}/#{api_endpoint}/#{endpoint}"
+
+  get_url_parameter: (name) ->
+    ###
+     * Parse a request parameter by name
+    ###
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]')
+    regex = new RegExp('[\\?&]' + name + '=([^&#]*)')
+    results = regex.exec(location.search)
+    if results == null
+      return ""
+    return decodeURIComponent(results[1].replace(/\+/g, ' '))
 
   get_json: (endpoint, options) ->
     ###

@@ -38,39 +38,31 @@ class ListingController extends React.Component
 
     @api = new ListingAPI(
       view_name: @view_name
+      form_id: @view_name
     )
 
     @state =
       folderitems: []
-      columns: @columns
-      review_states: @review_states
-      filter_by: "active"
+      columns: @columns or {}
+      review_state: @api.get_url_parameter("review_state") or "default"
+      review_states: @review_states or []
 
   getRequestOptions: ->
     ###
      * Options to be sent to the server
     ###
     options =
-      filter_by: @state.filter_by
+      review_state: @state.review_state
 
     console.debug("Request Options=", options)
     return options
-
-  get_default_state: ->
-    ###*
-     *
-    ###
 
   componentDidMount: ->
     ###
      * ReactJS event handler when the component did mount
     ###
     console.debug "ListingController::componentDidMount"
-
-    @api.fetch_folderitems().then (
-      (folderitems) ->
-        @setState folderitems: folderitems
-      ).bind(this)
+    @fetch_folderitems()
 
   componentDidUpdate: ->
     ###
@@ -96,15 +88,32 @@ class ListingController extends React.Component
     ###
      * Handler for the Review State filter buttons
     ###
+
     me = this
     el = event.currentTarget
-    filter_by = el.id
-    console.log "ListingController:Filter button '#{filter_by}' was clicked"
+    review_state = el.id
 
-    promise = @api.fetch_folderitems filter_by: filter_by
+    console.log "ListingController::filterResults: review_state='#{review_state}'"
+
+    @setState
+      review_state: review_state
+    , ->
+      me.fetch_folderitems()
+
+  fetch_folderitems: ->
+    ###
+     * Fetch the folderitems
+    ###
+    me = this
+
+    promise = @api.fetch_folderitems
+      review_state: @state.review_state
+
     promise.then (folderitems) ->
       me.setState
         folderitems: folderitems
+
+    return promise
 
   render: ->
     ###
@@ -114,6 +123,7 @@ class ListingController extends React.Component
       <div className="col-sm-12">
         <FilterBar className="filterbar nav nav-pills"
                    onClick={@filterResults}
+                   review_state={@state.review_state}
                    review_states={@state.review_states}/>
       </div>
       <div className="col-sm-12">
