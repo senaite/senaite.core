@@ -21,6 +21,7 @@
      th.sortable { cursor: pointer; }
      th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
      th.active.descending span:after { content: "▼"; margin-left: 0.5em;}
+     th:first-child { border-left: solid transparent; border-width: 0.5em; }
     </style>
   </tal:css>
 

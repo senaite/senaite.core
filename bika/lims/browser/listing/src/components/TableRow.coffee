@@ -1,12 +1,34 @@
 import React from "react"
 import TableCell from "./TableCell.coffee"
+import Checkbox from "./Checkbox.coffee"
 
 
 class TableRow extends React.Component
 
+  constructor: (props) ->
+    super(props)
+
+  getRowClass: ->
+    cls = @props.className
+    uid = @props.item.uid
+    selected_uids = @props.selected_uids or []
+    if uid in selected_uids
+      cls += " info"
+    return cls
+
   buildTableCells: ->
     cells = []
     item = @props.item
+
+    # insert select column
+    cells.push(
+      <td key={item.uid}>
+        <Checkbox name="uid"  # change to config value
+                  onSelect={@props.onSelect}
+                  checked={item.uid in @props.selected_uids}
+                  value={item.uid}/>
+      </td>
+    )
 
     for key, column of @props.columns
       if (!column.toggle)
@@ -23,7 +45,7 @@ class TableRow extends React.Component
     return cells
 
   render: ->
-    <tr className={this.props.className}>
+    <tr className={@getRowClass()}>
       {this.buildTableCells()}
     </tr>
 

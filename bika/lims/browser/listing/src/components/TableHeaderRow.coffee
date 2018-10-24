@@ -1,6 +1,7 @@
 import React from "react"
 
 import TableHeaderCell from "./TableHeaderCell.coffee"
+import Checkbox from "./Checkbox.coffee"
 
 
 class TableHeaderRow extends React.Component
@@ -23,10 +24,18 @@ class TableHeaderRow extends React.Component
 
     @props.onSort index, sort_order
 
-
   buildTableHeaderCells: ->
     cells = []
     item = @props.item
+
+    # insert select column
+    cells.push(
+      <th key="select_all">
+        <Checkbox name="uid"  # change to config value
+                  onSelect={@props.onSelect}
+                  value="all"/>
+      </th>
+    )
 
     for key, column of @props.columns
 

@@ -8,6 +8,7 @@ import Table from "./components/Table.coffee"
 import FilterBar from "./components/FilterBar.coffee"
 import SearchBox from "./components/SearchBox.coffee"
 import Pagination from "./components/Pagination.coffee"
+import ButtonBar from "./components/ButtonBar.coffee"
 
 CONTAINER_ID = "ajax-contents-table-wrapper"
 
@@ -32,6 +33,7 @@ class ListingController extends React.Component
     @filterBySearchterm = @filterBySearchterm.bind @
     @sortBy = @sortBy.bind @
     @showMore = @showMore.bind @
+    @selectUID = @selectUID.bind @
 
     @el = document.getElementById "ajax-contents-table-wrapper"
 
@@ -44,22 +46,38 @@ class ListingController extends React.Component
     @api = new ListingAPI()
 
     @state =
-      api_url: ""
-      columns: @columns
+      # filter, pagesize, sort_on, sort_order and review_state are initially set
+      # from the request to allow bookmarks to specific searches
       filter: @api.get_url_parameter("#{@form_id}_filter")
-      folderitems: []
-      form_id: @form_id
       pagesize: parseInt @api.get_url_parameter("#{@form_id}_pagesize") or @pagesize
-      review_state: @api.get_url_parameter("#{@form_id}_review_state")
-      review_states: @review_states
       sort_on: @api.get_url_parameter("#{@form_id}_sort_on")
       sort_order: @api.get_url_parameter("#{@form_id}_sort_order")
-      total: 0
+      review_state: @api.get_url_parameter("#{@form_id}_review_state")
+      # The url_query is computed on the server and allows to bookmark listings
       url_query: ""
+      # The API URL to call
+      api_url: ""
+      # form_id, columns and review_states are defined in the listing view and
+      # passed in via a data attribute in the template, because they can be seen
+      # as constant values
+      form_id: @form_id
+      columns: @columns
+      review_states: @review_states
+      # The data from the folderitems view call
+      folderitems: []
+      # total number of items in the database
+      total: 0
+      # The current active review_state item
+      review_state_item: {}
+      # UIDs of selected rows are stored in selected_uids.
+      # These are sent when a transition action is clicked.
+      selected_uids: []
+      # The possible transitions
+      transitions: []
 
   getRequestOptions: ->
     ###
-     * Options to be sent to the server
+     * Only these state values should be sent to the server
     ###
     options =
       "review_state": @state.review_state
@@ -88,62 +106,69 @@ class ListingController extends React.Component
     ###
      * Filter the results by the given state
     ###
-    me = this
-
-    @setState
-      review_state: review_state
-    , ->
-      me.fetch_folderitems()
+    console.log "filterByState=#{review_state}"
+    @set_state review_state: review_state
 
   filterBySearchterm: (filter="") ->
     ###
      * Filter the results by the given sarchterm
     ###
-    me = this
-
-    @setState
-      filter: filter
-    , ->
-      me.fetch_folderitems()
+    console.log "filterBySearchterm=#{filter}"
+    @set_state filter: filter
 
   sortBy: (sort_on, sort_order) ->
     ###
      * Sort the results by the given sort_on index with the given sort_order
     ###
     console.log "sort_on=#{sort_on} sort_order=#{sort_order}"
-
-    me = this
-
-    @setState
+    @set_state
       sort_on: sort_on
       sort_order: sort_order
-    , ->
-      me.fetch_folderitems()
 
   showMore: (pagesize) ->
     ###
      * Show more items
     ###
     console.debug "showMore: pagesize=#{pagesize}"
+    @set_state pagesize: parseInt pagesize
 
+  selectUID: (uid, toggle) ->
+    ###
+     * select/deselect the UID
+    ###
+    selected_uids = @state.selected_uids
+
+    if toggle
+      if uid == "all"
+        all_uids = @state.folderitems.map (item) -> item.uid
+        selected_uids = all_uids
+      else
+        selected_uids.push uid
+    else
+      if uid == "all"
+        selected_uids = []
+      else
+        pos = selected_uids.indexOf uid
+        selected_uids.splice pos, 1
+
+    # set the new state
+    @setState selected_uids: selected_uids
+
+  set_state: (data, fetch=yes) ->
+    ###
+     * Set the state and fetch the folderitems
+    ###
     me = this
-
-    pagesize = parseInt pagesize
-
-    @setState
-      pagesize: pagesize
-    , ->
-      me.fetch_folderitems()
-
+    @setState data, ->
+      if fetch then me.fetch_folderitems()
 
   fetch_folderitems: ->
     ###
      * Fetch the folderitems
     ###
-    me = this
-
     promise = @api.fetch_folderitems @getRequestOptions()
 
+    me = this
     promise.then (data) ->
       me.setState data, ->
         console.info "New State: ", me.state
@@ -158,9 +183,9 @@ class ListingController extends React.Component
       <div className="row">
         <div className="col-sm-9">
           <FilterBar className="filterbar nav nav-pills"
-                    onClick={@filterByState}
-                    review_state={@state.review_state}
-                    review_states={@state.review_states}/>
+                     onClick={@filterByState}
+                     review_state={@state.review_state}
+                     review_states={@state.review_states}/>
         </div>
         <div className="col-sm-3">
           <SearchBox onSearch={@filterBySearchterm} placeholder="Search ..." />
@@ -171,15 +196,22 @@ class ListingController extends React.Component
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
             onSort={@sortBy}
+            onSelect={@selectUID}
             sort_on={@state.sort_on}
             sort_order={@state.sort_order}
             columns={@state.columns}
             review_states={@state.review_states}
-            folderitems={@state.folderitems}/>
+            folderitems={@state.folderitems}
+            selected_uids={@state.selected_uids}/>
         </div>
       </div>
       <div className="row">
         <div className="col-sm-9">
+          <ButtonBar className="buttonbar nav nav-pills"
+                     selected_uids={@state.selected_uids}
+                     review_state={@state.review_state}
+                     review_state_item={@state.review_state_item}
+                     review_states={@state.review_states}/>
         </div>
         <div className="col-sm-3">
           <Pagination
