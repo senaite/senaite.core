@@ -222,4 +222,6 @@ class AjaxListingView(BrowserView):
                     "Loaded {} folderitems in {:.2f}s".format(
                         len(folderitems), _runtime))
 
+        # set correct response header
+        self.request.response.setHeader("content-type", "application/json")
         return self.to_safe_json(data)
