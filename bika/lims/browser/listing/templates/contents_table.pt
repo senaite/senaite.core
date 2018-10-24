@@ -34,13 +34,10 @@
 
   <!-- ReactJS managed component -->
   <div id="ajax-contents-table-wrapper"
-       tal:attributes="data-columns python:view.ajax_columns();
-                       data-form_id python:view.form_id;
+       tal:attributes="data-form_id python:view.form_id;
                        data-pagesize python:view.pagesize;
-                       data-review_states python:view.ajax_review_states();
-                       data-sort_on python:view.get_sort_on();
-                       data-sort_order python:view.get_sort_order();
-                       data-view_name python:view.__name__;">
+                       data-columns python:view.ajax_columns();
+                       data-review_states python:view.ajax_review_states();">
   </div>
 
 </tal:contents_table>

@@ -8,11 +8,13 @@ import Table from "./components/Table.coffee"
 import FilterBar from "./components/FilterBar.coffee"
 import SearchBox from "./components/SearchBox.coffee"
 
+CONTAINER_ID = "ajax-contents-table-wrapper"
+
 
 # DOCUMENT READY ENTRY POINT
 document.addEventListener "DOMContentLoaded", ->
   console.debug "*** SENAITE.CORE.LISTING::DOMContentLoaded: --> Loading ReactJS Controller"
-  controller = ReactDOM.render <ListingController/>, document.getElementById "ajax-contents-table-wrapper"
+  controller = ReactDOM.render <ListingController/>, document.getElementById CONTAINER_ID
 
 
 class ListingController extends React.Component
@@ -24,6 +26,7 @@ class ListingController extends React.Component
     super(props)
     console.log "ListingController::constructor:props=", props
 
+    # bind callbacks
     @filterByState = @filterByState.bind @
     @filterBySearchterm = @filterBySearchterm.bind @
     @sortBy = @sortBy.bind @
@@ -32,34 +35,36 @@ class ListingController extends React.Component
 
     # get initial configuration data from the HTML attribute
     @columns = JSON.parse @el.dataset.columns
-    @form_id = @el.dataset.form_id
-    @pagesize = @el.dataset.pagesize
     @review_states = JSON.parse @el.dataset.review_states
-    @sort_on = @el.dataset.sort_on
-    @sort_order = @el.dataset.sort_order
-    @view_name = @el.dataset.view_name
+    @form_id = @el.dataset.form_id
+    @pagesize = parseInt @el.dataset.pagesize
 
     @api = new ListingAPI()
 
     @state =
-      columns: @columns or {}
-      filter: @api.get_url_parameter("#{@form_id}_filter") or ""
+      api_url: ""
+      columns: @columns
+      filter: @api.get_url_parameter("#{@form_id}_filter")
       folderitems: []
-      pagesize: @pagesize
-      review_state: @api.get_url_parameter("#{@form_id}_review_state") or "default"
-      review_states: @review_states or []
-      sort_on: @sort_on
-      sort_order: @sort_order
+      form_id: @form_id
+      pagesize: @api.get_url_parameter("#{@form_id}_pagesize") or @pagesize
+      review_state: @api.get_url_parameter("#{@form_id}_review_state")
+      review_states: @review_states
+      sort_on: @api.get_url_parameter("#{@form_id}_sort_on")
+      sort_order: @api.get_url_parameter("#{@form_id}_sort_order")
+      total: 0
+      url_query: ""
 
   getRequestOptions: ->
     ###
      * Options to be sent to the server
     ###
     options =
-      "#{@form_id}_review_state": @state.review_state
-      "#{@form_id}_filter": @state.filter
-      "#{@form_id}_sort_on": @state.sort_on
-      "#{@form_id}_sort_order": @state.sort_order
+      "review_state": @state.review_state
+      "filter": @state.filter
+      "sort_on": @state.sort_on
+      "sort_order": @state.sort_order
+      "pagesize": @state.pagesize
 
     console.debug("Request Options=", options)
     return options
@@ -121,9 +126,9 @@ class ListingController extends React.Component
 
     promise = @api.fetch_folderitems @getRequestOptions()
 
-    promise.then (folderitems) ->
-      me.setState
-        folderitems: folderitems
+    promise.then (data) ->
+      me.setState data, ->
+        console.info "New State: ", me.state
 
     return promise
 
