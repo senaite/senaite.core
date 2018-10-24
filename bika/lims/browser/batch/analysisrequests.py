@@ -8,14 +8,11 @@
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims.browser.analysisrequest import AnalysisRequestsView as BaseView
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
 
 
 class AnalysisRequestsView(BaseView):
     template = ViewPageTemplateFile(
         "../analysisrequest/templates/analysisrequests.pt")
-    implements(IViewView)
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
