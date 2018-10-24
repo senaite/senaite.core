@@ -29,7 +29,7 @@ class SearchBox extends React.Component
     @props.onSearch ""
 
   render: ->
-    <div className="input-group">
+    <div className="input-group input-group-sm">
       <input type="text"
              ref={@searchInput}
              className="form-control"

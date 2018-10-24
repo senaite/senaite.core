@@ -163,20 +163,30 @@ class AjaxListingView(BrowserView):
         # Fake a HTTP GET request with parameters, so that the `bika_listing`
         # view handles them correctly.
         form_data = self.to_form_data(payload)
+        # this serves `request.form.get` calls
         self.request.form.update(form_data)
+        # this serves `request.get` calls
+        self.request.other.update(form_data)
+
+        api_url = self.get_api_url()
+        catalog = self.catalog
+        form_id = self.form_id
+        sort_on = self.get_sort_on()
+        sort_order = self.get_sort_order()
+        review_state_item = self.review_state
+        review_state = review_state_item.get("id", "default")
+
+        # workaround for `pagesize` handling
+        pagesize = self.get_pagesize()
+        self.pagesize = pagesize
 
         # get the folderitems
         folderitems = self.folderitems()
 
-        api_url = self.get_api_url()
-        catalog = self.catalog
-        count = len(folderitems)
-        form_id = self.form_id
-        pagesize = self.pagesize
-        review_state = payload.get("review_state", self.review_state)
-        sort_on = payload.get("sort_on", self.get_sort_on())
-        sort_order = payload.get("sort_order", self.get_sort_order())
+        # get the number of the total results
         total = self.total
+        # get the count of the current results
+        count = len(folderitems)
 
         end = time()
 
@@ -192,6 +202,7 @@ class AjaxListingView(BrowserView):
             "form_id": form_id,
             "pagesize": pagesize,
             "review_state": review_state,
+            "review_state_item": review_state_item,
             "sort_on": sort_on,
             "sort_order": sort_order,
             "total": total,

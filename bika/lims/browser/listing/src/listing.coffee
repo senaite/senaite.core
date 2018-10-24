@@ -7,6 +7,7 @@ import ListingAPI from "./api.coffee"
 import Table from "./components/Table.coffee"
 import FilterBar from "./components/FilterBar.coffee"
 import SearchBox from "./components/SearchBox.coffee"
+import Pagination from "./components/Pagination.coffee"
 
 CONTAINER_ID = "ajax-contents-table-wrapper"
 
@@ -30,6 +31,7 @@ class ListingController extends React.Component
     @filterByState = @filterByState.bind @
     @filterBySearchterm = @filterBySearchterm.bind @
     @sortBy = @sortBy.bind @
+    @showMore = @showMore.bind @
 
     @el = document.getElementById "ajax-contents-table-wrapper"
 
@@ -47,7 +49,7 @@ class ListingController extends React.Component
       filter: @api.get_url_parameter("#{@form_id}_filter")
       folderitems: []
       form_id: @form_id
-      pagesize: @api.get_url_parameter("#{@form_id}_pagesize") or @pagesize
+      pagesize: parseInt @api.get_url_parameter("#{@form_id}_pagesize") or @pagesize
       review_state: @api.get_url_parameter("#{@form_id}_review_state")
       review_states: @review_states
       sort_on: @api.get_url_parameter("#{@form_id}_sort_on")
@@ -118,6 +120,22 @@ class ListingController extends React.Component
     , ->
       me.fetch_folderitems()
 
+  showMore: (pagesize) ->
+    ###
+     * Show more items
+    ###
+    console.debug "showMore: pagesize=#{pagesize}"
+
+    me = this
+
+    pagesize = parseInt pagesize
+
+    @setState
+      pagesize: pagesize
+    , ->
+      me.fetch_folderitems()
+
+
   fetch_folderitems: ->
     ###
      * Fetch the folderitems
@@ -137,27 +155,40 @@ class ListingController extends React.Component
      * Listing Table
     ###
     <div className="listing-container">
-    <div className="row">
-      <div className="col-sm-9">
-        <FilterBar className="filterbar nav nav-pills"
-                   onClick={@filterByState}
-                   review_state={@state.review_state}
-                   review_states={@state.review_states}/>
+      <div className="row">
+        <div className="col-sm-9">
+          <FilterBar className="filterbar nav nav-pills"
+                    onClick={@filterByState}
+                    review_state={@state.review_state}
+                    review_states={@state.review_states}/>
+        </div>
+        <div className="col-sm-3">
+          <SearchBox onSearch={@filterBySearchterm} placeholder="Search ..." />
+        </div>
       </div>
-      <div className="col-sm-3">
-        <SearchBox onSearch={@filterBySearchterm} placeholder="Search ..." />
+      <div className="row">
+        <div className="col-sm-12 table-responsive">
+          <Table
+            className="contentstable table table-condensed table-hover table-striped table-sm small"
+            onSort={@sortBy}
+            sort_on={@state.sort_on}
+            sort_order={@state.sort_order}
+            columns={@state.columns}
+            review_states={@state.review_states}
+            folderitems={@state.folderitems}/>
+        </div>
       </div>
-    </div>
-    <div className="row">
-      <div className="col-sm-12 table-responsive">
-        <Table
-          className="contentstable table table-condensed table-hover table-striped table-sm small"
-          onSort={@sortBy}
-          sort_on={@state.sort_on}
-          sort_order={@state.sort_order}
-          columns={@state.columns}
-          review_states={@state.review_states}
-          folderitems={@state.folderitems}/>
+      <div className="row">
+        <div className="col-sm-9">
+        </div>
+        <div className="col-sm-3">
+          <Pagination
+            id="pagination"
+            className="pagination-controls"
+            total={@state.total}
+            onShowMore={@showMore}
+            count={@state.count}
+            pagesize={@pagesize}/>
+        </div>
       </div>
-    </div>
     </div>
