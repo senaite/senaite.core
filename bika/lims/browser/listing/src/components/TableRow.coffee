@@ -12,6 +12,7 @@ class TableRow extends React.Component
       if (!column.toggle)
         continue
       value = item.replace[key] or item[key]
+
       cells.push(
         <TableCell key={key}
                    item={item}

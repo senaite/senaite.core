@@ -122,7 +122,6 @@ class AjaxListingView(BrowserView):
             return repr(obj)
 
         thing = self.preprocess_json_data(thing)
-
         return json.dumps(thing, default=default)
 
     def ajax_columns(self):
@@ -175,6 +174,11 @@ class AjaxListingView(BrowserView):
         sort_order = self.get_sort_order()
         review_state_item = self.review_state
         review_state = review_state_item.get("id", "default")
+        show_select_column = self.show_select_column
+        show_select_all_checkbox = self.show_select_all_checkbox
+        show_column_toggles = self.show_column_toggles
+        allow_edit = self.allow_edit
+        show_table_footer = self.show_table_footer
 
         # workaround for `pagesize` handling
         pagesize = self.get_pagesize()
@@ -206,7 +210,12 @@ class AjaxListingView(BrowserView):
             "sort_on": sort_on,
             "sort_order": sort_order,
             "total": total,
-            "url_query": urllib.urlencode(form_data)
+            "url_query": urllib.urlencode(form_data),
+            "show_select_column": show_select_column,
+            "show_select_all_checkbox": show_select_all_checkbox,
+            "show_column_toggles": show_column_toggles,
+            "allow_edit": allow_edit,
+            "show_table_footer": show_table_footer,
         }
 
         logger.info("AjaxListingView::ajax_folderitems:"
