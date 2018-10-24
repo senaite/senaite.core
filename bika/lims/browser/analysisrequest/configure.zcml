@@ -16,15 +16,16 @@
       for="bika.lims.interfaces.IClient"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="bika.lims.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <!-- TODO Do we need ar_add when the context is an AR? -->
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="bika.lims.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 
@@ -32,7 +33,7 @@
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="bika.lims.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 
@@ -40,7 +41,7 @@
       for="bika.lims.interfaces.IBatch"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="bika.lims.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 
@@ -48,7 +49,7 @@
       for="bika.lims.interfaces.ISample"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="bika.lims.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 

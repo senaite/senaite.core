@@ -5,18 +5,14 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.analysisrequest import AnalysisRequestAddView as _ARAV
-from bika.lims.browser.analysisrequest import AnalysisRequestsView as _ARV
-from bika.lims.permissions import *
+from bika.lims.browser.analysisrequest import AnalysisRequestsView as BaseView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
 
-class AnalysisRequestsView(_ARV, _ARAV):
+class AnalysisRequestsView(BaseView):
     template = ViewPageTemplateFile(
         "../analysisrequest/templates/analysisrequests.pt")
     implements(IViewView)
@@ -28,16 +24,6 @@ class AnalysisRequestsView(_ARV, _ARAV):
                               'sort_on': 'created',
                               'sort_order': 'reverse',
                               'cancellation_state':'active'}
-
-    def __call__(self):
-        self.context_actions = {}
-        mtool = getToolByName(self.context, 'portal_membership')
-        if mtool.checkPermission(AddAnalysisRequest, self.portal):
-            self.context_actions[self.context.translate(_('Add new'))] = {
-                'url': self.context.absolute_url() + "/ar_add?ar_count=1",
-                'icon': '++resource++bika.lims.images/add.png'}
-
-        return super(AnalysisRequestsView, self).__call__()
 
     def getMemberDiscountApplies(self):
         client = self.context.getClient()
