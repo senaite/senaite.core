@@ -9,13 +9,14 @@ Changelog
 
 **Changed**
 
+- #1063 Permission for ar_add changed to "AddAnalysisRequest"
 
 **Removed**
 
-- #1059 Removed updates alert viewlet
-- #1060 Removed classic portlets
-- #1058 Removed gpw dependency
-- #1058 Remved broken Quality Control reports
+- #1059 Remove updates alert viewlet
+- #1060 Remove classic portlets
+- #1058 Remove gpw dependency
+- #1058 Remove broken Quality Control reports
 - #1057 Remove z3c.unconfigure dependency
 - #1056 Remove collective.taskqueue dependency
 - #808 Remove old AR Add code
