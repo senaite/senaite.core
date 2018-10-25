@@ -283,6 +283,8 @@ class AjaxListingView(BrowserView):
         self.pagesize = pagesize
 
         # get the folderitems
+        self.update()
+        self.before_render()
         folderitems = self.folderitems()
 
         # get the number of the total results
