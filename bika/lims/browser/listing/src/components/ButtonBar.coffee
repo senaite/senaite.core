@@ -7,6 +7,15 @@ class ButtonBar extends React.Component
   constructor: (props) ->
     super(props)
     @handleClick = @handleClick.bind @
+    @transition_button_class =
+      "cancel": "btn-warning"
+      "invalidate": "btn-danger"
+      "retract": "btn-danger"
+      "deactivate": "btn-danger"
+      "republish": "btn-info"
+      "prepublish": "btn-info"
+      "receive": "btn-primary"
+      "publish": "btn-success"
 
   handleClick: (event) ->
     el = event.currentTarget
@@ -30,9 +39,13 @@ class ButtonBar extends React.Component
       )
 
     for transition in @props.transitions
+      cls = "btn btn-default btn-sm"
+      additional_cls = @transition_button_class[transition.id]
+      if additional_cls
+        cls += " #{additional_cls}"
       buttons.push(
         <li key={transition.id}>
-          <Button className="btn btn-default btn-sm"
+          <Button className={cls}
                   onClick={@handleClick}
                   id={transition.id}
                   badge={@props.selected_uids.length}
