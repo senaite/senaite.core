@@ -78,6 +78,7 @@ class ListingController extends React.Component
       # Listing specific configs
       show_select_all_checkbox: no
       show_select_column: no
+      select_checkbox_name: "uids"
 
 
   getRequestOptions: ->
@@ -244,6 +245,7 @@ class ListingController extends React.Component
             review_states={@state.review_states}
             folderitems={@state.folderitems}
             selected_uids={@state.selected_uids}
+            select_checkbox_name={@state.select_checkbox_name}
             show_select_column={@state.show_select_column}
             show_select_all_checkbox={@state.show_select_all_checkbox}
             />

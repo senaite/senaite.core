@@ -272,6 +272,7 @@ class AjaxListingView(BrowserView):
         review_state_item = self.review_state
         review_state = review_state_item.get("id", "default")
         review_states = self.review_states
+        select_checkbox_name = self.select_checkbox_name
         show_select_column = self.show_select_column
         show_select_all_checkbox = self.show_select_all_checkbox
         show_column_toggles = self.show_column_toggles
@@ -312,6 +313,7 @@ class AjaxListingView(BrowserView):
             "sort_order": sort_order,
             "total": total,
             "url_query": urllib.urlencode(form_data),
+            "select_checkbox_name": select_checkbox_name,
             "show_select_column": show_select_column,
             "show_select_all_checkbox": show_select_all_checkbox,
             "show_column_toggles": show_column_toggles,

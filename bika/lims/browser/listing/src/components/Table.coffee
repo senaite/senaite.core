@@ -29,6 +29,7 @@ class Table extends React.Component
                   item={item}
                   review_states={this.props.review_states}
                   selected_uids={@props.selected_uids}
+                  select_checkbox_name={@props.select_checkbox_name}
                   columns={this.props.columns}
                   show_select_column={@props.show_select_column}
                   show_select_all_checkbox={@props.show_select_all_checkbox}
@@ -46,6 +47,7 @@ class Table extends React.Component
                         onSort={this.props.onSort}
                         folderitems={@props.folderitems}
                         selected_uids={@props.selected_uids}
+                        select_checkbox_name={@props.select_checkbox_name}
                         columns={this.props.columns}
                         show_select_column={@props.show_select_column}
                         show_select_all_checkbox={@props.show_select_all_checkbox}

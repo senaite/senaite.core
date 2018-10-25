@@ -24,7 +24,7 @@ class TableRow extends React.Component
     if @props.show_select_column
       cells.push(
         <td key={item.uid}>
-          <Checkbox name="uid"  # change to config value
+          <Checkbox name={@props.select_checkbox_name}
                     onSelect={@props.onSelect}
                     checked={item.uid in @props.selected_uids}
                     value={item.uid}/>
