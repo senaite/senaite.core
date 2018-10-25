@@ -2,7 +2,7 @@
   define="portal context/@@plone_portal_state/portal;">
 
   <tal:css>
-    <!-- Colors usef from https://mdbootstrap.com/css/colors -->
+    <!-- Colors used from https://mdbootstrap.com/css/colors -->
     <style type="text/css">
      tr.state-sample_due { border-left: solid #ffff8d; border-width: 0.5em; }
      tr.state-sample_received { border-left: solid #795548; border-width: 0.5em; }
@@ -33,12 +33,22 @@
             tal:attributes="src string:${static_url}/js/senaite.core.listing.js"></script>
   </tal:js>
 
-  <!-- ReactJS managed component -->
-  <div id="ajax-contents-table-wrapper"
-       tal:attributes="data-form_id python:view.form_id;
-                       data-pagesize python:view.pagesize;
-                       data-columns python:view.ajax_columns();
-                       data-review_states python:view.ajax_review_states();">
-  </div>
+  <form name="listing_form"
+        method="post"
+        i18n:domain="senaite.core"
+        tal:attributes="id python:view.form_id;
+                        action python:view.getPOSTAction()">
+
+    <input tal:replace="structure context/@@authenticator/authenticator"/>
+    <input type="hidden" name="submitted" value="1"/>
+
+    <!-- ReactJS managed component -->
+    <div id="ajax-contents-table-wrapper"
+        tal:attributes="data-form_id python:view.form_id;
+                        data-pagesize python:view.pagesize;
+                        data-columns python:view.ajax_columns();
+                        data-review_states python:view.ajax_review_states();">
+    </div>
+  </form>
 
 </tal:contents_table>

@@ -19,12 +19,13 @@ class TableRow extends React.Component
   buildTableCells: ->
     cells = []
     item = @props.item
+    name = "#{@props.select_checkbox_name}:list"
 
     # insert select column
     if @props.show_select_column
       cells.push(
         <td key={item.uid}>
-          <Checkbox name={@props.select_checkbox_name}
+          <Checkbox name={name}
                     onSelect={@props.onSelect}
                     checked={item.uid in @props.selected_uids}
                     value={item.uid}/>

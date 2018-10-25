@@ -79,7 +79,7 @@ class ListingController extends React.Component
       show_select_all_checkbox: no
       show_select_column: no
       select_checkbox_name: "uids"
-
+      post_action: "workflow_action"
 
   getRequestOptions: ->
     ###
@@ -148,9 +148,21 @@ class ListingController extends React.Component
     ###
     console.debug "ListingController::doAction: id=#{id}"
 
+    # handle clear button separate
     if id == "clear_selection"
       @setState selected_uids: []
       return
+
+    # get the form element
+    form = document.getElementById @state.form_id
+
+    # inject workflow action id for `BikaListing._get_form_workflow_action`
+    input = document.createElement "input"
+    input.setAttribute "name", "workflow_action_id"
+    input.setAttribute "value", id
+    form.appendChild input
+
+    return form.submit()
 
   selectUID: (uid, toggle) ->
     ###
@@ -200,7 +212,6 @@ class ListingController extends React.Component
     me = this
     promise.then (data) ->
       me.setState data
-
 
   fetch_folderitems: ->
     ###

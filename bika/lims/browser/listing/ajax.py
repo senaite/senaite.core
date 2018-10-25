@@ -278,6 +278,7 @@ class AjaxListingView(BrowserView):
         show_column_toggles = self.show_column_toggles
         allow_edit = self.allow_edit
         show_table_footer = self.show_table_footer
+        post_action = self.getPOSTAction()
 
         # workaround for `pagesize` handling
         pagesize = self.get_pagesize()
@@ -319,6 +320,7 @@ class AjaxListingView(BrowserView):
             "show_column_toggles": show_column_toggles,
             "allow_edit": allow_edit,
             "show_table_footer": show_table_footer,
+            "post_action": post_action,
         }
 
         # some performance logging
