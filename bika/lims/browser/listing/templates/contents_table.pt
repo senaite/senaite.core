@@ -5,9 +5,9 @@
     <!-- Colors usef from https://mdbootstrap.com/css/colors -->
     <style type="text/css">
      tr.state-sample_due { border-left: solid #ffff8d; border-width: 0.5em; }
-     tr.state-sample_received { border-left: solid #b9f6ca; border-width: 0.5em; }
-     tr.state-to_be_verified { border-left: solid #84ffff; border-width: 0.5em; }
-     tr.state-verified { border-left: solid #80d8ff; border-width: 0.5em; }
+     tr.state-sample_received { border-left: solid #795548; border-width: 0.5em; }
+     tr.state-to_be_verified { border-left: solid #18ffff; border-width: 0.5em; }
+     tr.state-verified { border-left: solid #0091ea; border-width: 0.5em; }
      tr.state-published { border-left: solid #00c853; border-width: 0.5em; }
      tr.state-retracted { border-left: solid #ff8a80; border-width: 0.5em; }
      tr.state-invalid { border-left: solid #b71c1c; border-width: 0.5em; }
