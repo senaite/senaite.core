@@ -29,7 +29,10 @@ class Table extends React.Component
                   item={item}
                   review_states={this.props.review_states}
                   selected_uids={@props.selected_uids}
-                  columns={this.props.columns}/>
+                  columns={this.props.columns}
+                  show_select_column={@props.show_select_column}
+                  show_select_all_checkbox={@props.show_select_all_checkbox}
+                  />
       )
     return rows
 
@@ -41,7 +44,12 @@ class Table extends React.Component
                         onSelect={@onSelect}
                         sort_order={this.props.sort_order}
                         onSort={this.props.onSort}
-                        columns={this.props.columns}/>
+                        folderitems={@props.folderitems}
+                        selected_uids={@props.selected_uids}
+                        columns={this.props.columns}
+                        show_select_column={@props.show_select_column}
+                        show_select_all_checkbox={@props.show_select_all_checkbox}
+                        />
       </thead>
       <tbody>
         {@buildFolderItems()}

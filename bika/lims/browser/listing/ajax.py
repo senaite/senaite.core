@@ -151,6 +151,53 @@ class AjaxListingView(BrowserView):
         url = self.context.absolute_url()
         return "{}/{}".format(url, view_name)
 
+    def ajax_transitions(self):
+        """Returns a list of possible transitions
+        """
+        start = time()
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+        # Get the selected UIDs
+        uids = payload.get("uids", [])
+
+        transitions = []
+
+        # get the custom transitions of the current review_state
+        custom_transitions = self.review_state.get("custom_transitions", [])
+
+        transitions_by_tid = {}
+        common_tids = None
+        for uid in uids:
+            obj = api.get_object_by_uid(uid)
+            obj_transitions = api.get_transitions_for(obj)
+            tids = []
+            for transition in obj_transitions:
+                tid = transition.get("id")
+                tids.append(tid)
+                transitions_by_tid[tid] = transition
+            if common_tids is None:
+                common_tids = set(tids)
+            common_tids = common_tids.intersection(tids)
+
+        common_transitions = map(
+            lambda tid: transitions_by_tid[tid], common_tids)
+        transitions = custom_transitions + common_transitions
+
+        end = time()
+
+        # calculate the runtime
+        _runtime = end - start
+
+        logger.info("AjaxListingView::ajax_transitions:"
+                    "Loaded transitions for {} UIDs in {:.2f}s".format(
+                        len(uids), _runtime))
+
+        data = {
+            "transitions": transitions,
+        }
+
+        return self.to_safe_json(data)
+
     def ajax_folderitems(self):
         """Returns the folderitems
         """
@@ -174,6 +221,7 @@ class AjaxListingView(BrowserView):
         sort_order = self.get_sort_order()
         review_state_item = self.review_state
         review_state = review_state_item.get("id", "default")
+        review_states = self.review_states
         show_select_column = self.show_select_column
         show_select_all_checkbox = self.show_select_all_checkbox
         show_column_toggles = self.show_column_toggles
@@ -206,6 +254,7 @@ class AjaxListingView(BrowserView):
             "form_id": form_id,
             "pagesize": pagesize,
             "review_state": review_state,
+            "review_states": review_states,
             "review_state_item": review_state_item,
             "sort_on": sort_on,
             "sort_order": sort_order,

@@ -34,6 +34,7 @@ class ListingController extends React.Component
     @sortBy = @sortBy.bind @
     @showMore = @showMore.bind @
     @selectUID = @selectUID.bind @
+    @doAction = @doAction.bind @
 
     @el = document.getElementById "ajax-contents-table-wrapper"
 
@@ -72,8 +73,12 @@ class ListingController extends React.Component
       # UIDs of selected rows are stored in selected_uids.
       # These are sent when a transition action is clicked.
       selected_uids: []
-      # The possible transitions
+      # The possible transition buttons
       transitions: []
+      # Listing specific configs
+      show_select_all_checkbox: no
+      show_select_column: no
+
 
   getRequestOptions: ->
     ###
@@ -106,14 +111,18 @@ class ListingController extends React.Component
     ###
      * Filter the results by the given state
     ###
-    console.log "filterByState=#{review_state}"
-    @set_state review_state: review_state
+    console.log "ListingController::filterByState: review_state=#{review_state}"
+    me = this
+    @set_state
+      review_state: review_state
+    , ->
+      me.fetch_transitions()
 
   filterBySearchterm: (filter="") ->
     ###
      * Filter the results by the given sarchterm
     ###
-    console.log "filterBySearchterm=#{filter}"
+    console.log "ListingController::filterBySearchter: filter=#{filter}"
     @set_state filter: filter
 
   sortBy: (sort_on, sort_order) ->
@@ -129,8 +138,18 @@ class ListingController extends React.Component
     ###
      * Show more items
     ###
-    console.debug "showMore: pagesize=#{pagesize}"
+    console.debug "ListingController::showMore: pagesize=#{pagesize}"
     @set_state pagesize: parseInt pagesize
+
+  doAction: (id) ->
+    ###
+     * Perform an action coming from the WF Action Buttons
+    ###
+    console.debug "ListingController::doAction: id=#{id}"
+
+    if id == "clear_selection"
+      @setState selected_uids: []
+      return
 
   selectUID: (uid, toggle) ->
     ###
@@ -152,7 +171,10 @@ class ListingController extends React.Component
         selected_uids.splice pos, 1
 
     # set the new state
-    @setState selected_uids: selected_uids
+    me = this
+    @setState selected_uids: selected_uids, ->
+      # fetch all possible transitions
+      me.fetch_transitions()
 
   set_state: (data, fetch=yes) ->
     ###
@@ -161,6 +183,23 @@ class ListingController extends React.Component
     me = this
     @setState data, ->
       if fetch then me.fetch_folderitems()
+
+  fetch_transitions: ->
+    ###
+     * Fetch the possible transitions
+    ###
+    selected_uids = @state.selected_uids
+
+    if selected_uids.length == 0
+      @setState transitions: []
+      return
+
+    promise = @api.fetch_transitions uids: selected_uids
+
+    me = this
+    promise.then (data) ->
+      me.setState data
+
 
   fetch_folderitems: ->
     ###
@@ -202,16 +241,18 @@ class ListingController extends React.Component
             columns={@state.columns}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
-            selected_uids={@state.selected_uids}/>
+            selected_uids={@state.selected_uids}
+            show_select_column={@state.show_select_column}
+            show_select_all_checkbox={@state.show_select_all_checkbox}
+            />
         </div>
       </div>
       <div className="row">
         <div className="col-sm-9">
           <ButtonBar className="buttonbar nav nav-pills"
+                     onClick={@doAction}
                      selected_uids={@state.selected_uids}
-                     review_state={@state.review_state}
-                     review_state_item={@state.review_state_item}
-                     review_states={@state.review_states}/>
+                     transitions={@state.transitions}/>
         </div>
         <div className="col-sm-3">
           <Pagination

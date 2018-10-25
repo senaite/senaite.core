@@ -29,13 +29,20 @@ class TableHeaderRow extends React.Component
     item = @props.item
 
     # insert select column
-    cells.push(
-      <th key="select_all">
-        <Checkbox name="uid"  # change to config value
-                  onSelect={@props.onSelect}
-                  value="all"/>
-      </th>
-    )
+    if @props.show_select_column
+      selected_count = @props.selected_uids.length
+      folderitems_count = @props.folderitems.length
+      checked = selected_count > 0 and selected_count == folderitems_count
+
+      cells.push(
+        <th key="select_all">
+          {@props.show_select_all_checkbox and
+            <Checkbox name="uid"  # change to config value
+                      onSelect={@props.onSelect}
+                      checked={checked}
+                      value="all"/>}
+        </th>
+      )
 
     for key, column of @props.columns
 

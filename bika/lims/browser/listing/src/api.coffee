@@ -86,5 +86,15 @@ class ListingAPI
       method: "POST"
     return @get_json "folderitems", options
 
+  fetch_transitions: (data) ->
+    ###
+     * Fetch possible transitions
+     * @returns {Promise}
+    ###
+    options =
+      data: data or {}
+      method: "POST"
+    return @get_json "transitions", options
+
 
 export default ListingAPI

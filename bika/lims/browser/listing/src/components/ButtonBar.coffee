@@ -14,29 +14,40 @@ class ButtonBar extends React.Component
     console.info "Button #{id} clicked..."
     @props.onClick id
 
-  buildCustomTransitions: ->
+  buildButtons: ->
     buttons = []
 
-    review_state_item = @props.review_state_item
-    custom_transitions = review_state_item.custom_transitions or []
-
-    for key, value of custom_transitions
-      cls = "btn btn-default btn-sm"
+    # Insert a clear button
+    if @props.transitions.length > 0
       buttons.push(
-        <li key={value.id}>
-          <Button onClick={@handleClick}
-                  action={value.url}
-                  id={value.id}
-                  title={value.title}
-                  className={cls}/>
+        <li key="clear">
+          <button className="btn btn-default btn-sm"
+                  onClick={@handleClick}
+                  id="clear_selection">
+            <span className="glyphicon glyphicon-ban-circle"></span>
+          </button>
+        </li>
+      )
+
+    for transition in @props.transitions
+      buttons.push(
+        <li key={transition.id}>
+          <Button className="btn btn-default btn-sm"
+                  onClick={@handleClick}
+                  id={transition.id}
+                  badge={@props.selected_uids.length}
+                  title={transition.title}/>
         </li>
       )
 
     return buttons
 
   render: ->
+    if @props.selected_uids.length == 0
+      return null
+
     <ul className={@props.className}>
-      {@buildCustomTransitions()}
+      {@buildButtons()}
     </ul>
 
 
