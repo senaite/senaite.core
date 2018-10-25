@@ -227,7 +227,9 @@ class ListingController extends React.Component
                      review_states={@state.review_states}/>
         </div>
         <div className="col-sm-3">
-          <SearchBox onSearch={@filterBySearchterm} placeholder="Search ..." />
+          <SearchBox onSearch={@filterBySearchterm}
+                     filter={@state.filter}
+                     placeholder="Search ..." />
         </div>
       </div>
       <div className="row">

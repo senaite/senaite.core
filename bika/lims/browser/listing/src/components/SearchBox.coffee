@@ -33,6 +33,7 @@ class SearchBox extends React.Component
       <input type="text"
              ref={@searchInput}
              className="form-control"
+             defaultValue={@props.filter}
              onKeyPress={@onSearchInputKeyPress}
              placeholder={this.props.placeholder}/>
       <span className="input-group-btn">
