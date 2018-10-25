@@ -23,6 +23,8 @@ Changelog
 
 **Fixed**
 
+- #1065 Creation of reflex rules does not work with senaite.lims is installed
+
 
 **Security**
 
