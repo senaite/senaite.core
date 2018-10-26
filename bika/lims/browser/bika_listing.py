@@ -1615,9 +1615,10 @@ class BikaListingView(AjaxListingView, BrowserView):
            <table/> tag will be printed (form tags, authenticator, etc).
            Then you can insert your own form tags around it.
         """
+        legacy = self.request.get("legacy", False)
         # We can only use the new-style listing view is registered and not
         # directly instantiated like in AnalysisRequestView
-        if not self.__name__:
+        if not self.__name__ or legacy:
             table = BikaListingTable(bika_listing=self, table_only=table_only)
             return table.render(self)
         return self.ajax_contents_table()
