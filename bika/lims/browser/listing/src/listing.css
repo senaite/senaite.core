@@ -1,0 +1,34 @@
+/* Listing Styles */
+
+#ajax-contents-table tr { border-left: solid transparent; }
+
+#ajax-contents-table tr.state-active { border-left: solid transparent; }
+#ajax-contents-table tr.state-inactive { border-left: solid #616161; }
+
+#ajax-contents-table tr.state-sample_due { border-left: solid #ffff8d !important; }
+#ajax-contents-table tr.state-sample_received { border-left: solid #795548 !important; }
+#ajax-contents-table tr.state-to_be_verified { border-left: solid #18ffff !important; }
+#ajax-contents-table tr.state-verified { border-left: solid #0091ea !important; }
+#ajax-contents-table tr.state-published { border-left: solid #00c853 !important; }
+#ajax-contents-table tr.state-retracted { border-left: solid #ff8a80 !important; }
+#ajax-contents-table tr.state-invalid { border-left: solid #b71c1c !important; }
+#ajax-contents-table tr.state-open { border-left: solid #ab47bc !important; }
+#ajax-contents-table tr.state-attachment_due { border-left: solid #ffc107 !important; }
+#ajax-contents-table tr.state-unassigned { border-left: solid #4a148c !important; }
+#ajax-contents-table tr.state-empty-worksheet { border-left: solid #f8bbd0 !important; }
+#ajax-contents-table tr.state-cancelled { border-left: solid #000000 !important; }
+
+#ajax-contents-table th { cursor: pointer; }
+#ajax-contents-table th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
+#ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em; }
+
+#table-overlay {
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #ccc;
+  opacity: 0.3;
+}

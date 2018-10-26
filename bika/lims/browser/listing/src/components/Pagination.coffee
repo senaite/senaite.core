@@ -32,6 +32,7 @@ class Pagination extends React.Component
     @setState pagesize: pagesize
 
     if event.which == 13
+      event.preventDefault()
       @props.onShowMore pagesize
 
   render: ->

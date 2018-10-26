@@ -7,9 +7,12 @@ import ReactDOM from "react-dom"
 import ButtonBar from "./components/ButtonBar.coffee"
 import FilterBar from "./components/FilterBar.coffee"
 import ListingAPI from "./api.coffee"
+import Loader from "./components/Loader.coffee"
 import Pagination from "./components/Pagination.coffee"
 import SearchBox from "./components/SearchBox.coffee"
 import Table from "./components/Table.coffee"
+
+import "./listing.css"
 
 CONTAINER_ID = "ajax-contents-table"
 
@@ -44,6 +47,7 @@ class ListingController extends React.Component
     @review_states = JSON.parse @el.dataset.review_states
     @form_id = @el.dataset.form_id
     @api_url = @el.dataset.api_url
+    @pagesize = parseInt @el.dataset.pagesize
 
     # the API is responsible for async calls and knows about the endpoints
     @api = new ListingAPI
@@ -51,11 +55,11 @@ class ListingController extends React.Component
 
     @state =
       # loading indicator
-      loading: no
+      loading: yes
       # filter, pagesize, sort_on, sort_order and review_state are initially set
       # from the request to allow bookmarks to specific searches
       filter: @api.get_url_parameter("#{@form_id}_filter")
-      pagesize: parseInt(@api.get_url_parameter("#{@form_id}_pagesize")) or 30
+      pagesize: parseInt(@api.get_url_parameter("#{@form_id}_pagesize")) or @pagesize
       sort_on: @api.get_url_parameter("#{@form_id}_sort_on")
       sort_order: @api.get_url_parameter("#{@form_id}_sort_order")
       review_state: @api.get_url_parameter("#{@form_id}_review_state")
@@ -175,7 +179,7 @@ class ListingController extends React.Component
       promise.then (data) ->
         if data.folderitems.length > 0
           console.debug "Adding #{data.folderitems.length} more folderitems..."
-          # append the new folderitems to the existing one          s
+          # append the new folderitems to the existing ones
           new_folderitems = folderitems.concat data.folderitems
           me.setState folderitems: new_folderitems
 
@@ -229,7 +233,9 @@ class ListingController extends React.Component
 
     # set the new list of selected UIDs to the state
     me = this
-    @setState selected_uids: selected_uids, ->
+    @setState
+     selected_uids: selected_uids
+    , ->
       # fetch all possible transitions
       me.fetch_transitions()
 
@@ -244,6 +250,7 @@ class ListingController extends React.Component
      * Helper to set the state and reload the folderitems
     ###
     me = this
+
     @setState data, ->
       if fetch then me.fetch_folderitems()
 
@@ -258,8 +265,8 @@ class ListingController extends React.Component
       @setState transitions: []
       return
 
-    # toggle loading on
-    @setState loading: yes
+    # turn loader on
+    @setState loading: on
 
     # fetch the transitions from the server
     promise = @api.fetch_transitions uids: selected_uids
@@ -269,16 +276,16 @@ class ListingController extends React.Component
       # data looks like this: {"transitions": [...]}
       me.setState data, ->
         console.debug "ListingController::fetch_transitions: NEW STATE=", me.state
-      # toggle loading off
-      me.setState loading: no
+        # turn loader off
+        me.setState loading: off
 
   fetch_folderitems: ->
     ###
      * Fetch the folderitems
     ###
 
-    # toggle loading on
-    @setState loading: yes
+    # turn loader on
+    @setState loading: on
 
     # fetch the folderitems from the server
     promise = @api.fetch_folderitems @getRequestOptions()
@@ -287,8 +294,8 @@ class ListingController extends React.Component
     promise.then (data) ->
       me.setState data, ->
         console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
-      # toggle loading off
-      me.setState loading: no
+        # turn loader off
+        me.setState loading: off
 
     return promise
 
@@ -298,11 +305,14 @@ class ListingController extends React.Component
     ###
     <div className="listing-container">
       <div className="row">
-        <div className="col-sm-9">
+        <div className="col-sm-8">
           <FilterBar className="filterbar nav nav-pills"
                      onClick={@filterByState}
                      review_state={@state.review_state}
                      review_states={@state.review_states}/>
+        </div>
+        <div className="col-sm-1">
+          <Loader loading={@state.loading} />
         </div>
         <div className="col-sm-3">
           <SearchBox onSearch={@filterBySearchterm}
@@ -312,6 +322,7 @@ class ListingController extends React.Component
       </div>
       <div className="row">
         <div className="col-sm-12 table-responsive">
+          {@state.loading and <div id="table-overlay" />}
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
             onSort={@sortBy}
@@ -329,11 +340,14 @@ class ListingController extends React.Component
         </div>
       </div>
       <div className="row">
-        <div className="col-sm-9">
+        <div className="col-sm-8">
           <ButtonBar className="buttonbar nav nav-pills"
                      onClick={@doAction}
                      selected_uids={@state.selected_uids}
                      transitions={@state.transitions}/>
+        </div>
+        <div className="col-sm-1">
+          <Loader loading={@state.loading} />
         </div>
         <div className="col-sm-3">
           <Pagination
