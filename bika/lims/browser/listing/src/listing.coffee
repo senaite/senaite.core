@@ -329,7 +329,7 @@ class ListingController extends React.Component
       </div>
       <div className="row">
         <div className="col-sm-12 table-responsive">
-          {@state.loading and <div id="table-overlay" />}
+          {@state.loading and <div id="table-overlay"/>}
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
             onSort={@sortBy}
