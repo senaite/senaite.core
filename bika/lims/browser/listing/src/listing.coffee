@@ -43,7 +43,6 @@ class ListingController extends React.Component
     @columns = JSON.parse @el.dataset.columns
     @review_states = JSON.parse @el.dataset.review_states
     @form_id = @el.dataset.form_id
-    @pagesize = parseInt @el.dataset.pagesize
     @api_url = @el.dataset.api_url
 
     # the API is responsible for async calls and knows about the endpoints
@@ -56,7 +55,7 @@ class ListingController extends React.Component
       # filter, pagesize, sort_on, sort_order and review_state are initially set
       # from the request to allow bookmarks to specific searches
       filter: @api.get_url_parameter("#{@form_id}_filter")
-      pagesize: parseInt @api.get_url_parameter("#{@form_id}_pagesize") or @pagesize
+      pagesize: parseInt(@api.get_url_parameter("#{@form_id}_pagesize")) or 30
       sort_on: @api.get_url_parameter("#{@form_id}_sort_on")
       sort_order: @api.get_url_parameter("#{@form_id}_sort_order")
       review_state: @api.get_url_parameter("#{@form_id}_review_state")
@@ -88,6 +87,8 @@ class ListingController extends React.Component
       post_action: "workflow_action"
       ajax_categories: no
       expand_all_categories: no
+      show_more: no
+      limit_from: 0
 
     # dev only
     window.list = @
@@ -102,7 +103,7 @@ class ListingController extends React.Component
       "sort_on": @state.sort_on
       "sort_order": @state.sort_order
       "pagesize": @state.pagesize
-      "ajax_categories": @state.ajax_categories
+      "limit_from": @state.limit_from
 
     console.debug("Request Options=", options)
     return options
@@ -131,6 +132,7 @@ class ListingController extends React.Component
 
     @set_state
       review_state: review_state
+      pagesize: @get_items_on_page()
 
   filterBySearchterm: (filter="") ->
     ###
@@ -139,7 +141,8 @@ class ListingController extends React.Component
     console.debug "ListingController::filterBySearchter: filter=#{filter}"
 
     @set_state
-     filter: filter
+      filter: filter
+      pagesize: @get_items_on_page()
 
   sortBy: (sort_on, sort_order) ->
     ###
@@ -150,6 +153,7 @@ class ListingController extends React.Component
     @set_state
       sort_on: sort_on
       sort_order: sort_order
+      pagesize: @get_items_on_page()
 
   showMore: (pagesize) ->
     ###
@@ -157,8 +161,23 @@ class ListingController extends React.Component
     ###
     console.debug "ListingController::showMore: pagesize=#{pagesize}"
 
-    @set_state
+    # the existing folderitems
+    folderitems = @state.folderitems
+
+    me = this
+    @setState
       pagesize: parseInt pagesize
+      limit_from: @state.folderitems.length
+    , ->
+      # N.B. we're using limit_from here, so we must append the returning
+      #      folderitems to the existing ones
+      promise = me.api.fetch_folderitems me.getRequestOptions()
+      promise.then (data) ->
+        if data.folderitems.length > 0
+          console.debug "Adding #{data.folderitems.length} more folderitems..."
+          # append the new folderitems to the existing one          s
+          new_folderitems = folderitems.concat data.folderitems
+          me.setState folderitems: new_folderitems
 
   doAction: (id) ->
     ###
@@ -213,6 +232,12 @@ class ListingController extends React.Component
     @setState selected_uids: selected_uids, ->
       # fetch all possible transitions
       me.fetch_transitions()
+
+  get_items_on_page: ->
+    ###
+     * Return the current shown items
+    ###
+    return @state.folderitems.length
 
   set_state: (data, fetch=yes) ->
     ###
@@ -316,8 +341,9 @@ class ListingController extends React.Component
             className="pagination-controls"
             total={@state.total}
             onShowMore={@showMore}
-            count={@state.count}
-            pagesize={@pagesize}/>
+            show_more={@state.show_more}
+            count={@get_items_on_page()}
+            pagesize={@state.pagesize}/>
         </div>
       </div>
     </div>

@@ -281,6 +281,7 @@ class AjaxListingView(BrowserView):
         category_index = self.category_index
         expand_all_categories = self.expand_all_categories
         ajax_categories = self.ajax_categories
+        limit_from = self.limit_from
 
         # workaround for `pagesize` handling
         pagesize = self.get_pagesize()
@@ -290,6 +291,9 @@ class AjaxListingView(BrowserView):
         self.update()
         self.before_render()
         folderitems = self.folderitems()
+
+        # show more is calculated after the folderitems call
+        show_more = self.show_more
 
         # get the number of the total results
         total = self.total
@@ -326,6 +330,8 @@ class AjaxListingView(BrowserView):
             "ajax_categories": ajax_categories,
             "expand_all_categories": expand_all_categories,
             "show_workflow_action_buttons": show_workflow_action_buttons,
+            "show_more": show_more,
+            "limit_from": limit_from,
         }
 
         # some performance logging

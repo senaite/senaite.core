@@ -51,7 +51,6 @@
     <div id="ajax-contents-table"
         tal:attributes="data-form_id python:view.form_id;
                         data-api_url python:view.get_api_url();
-                        data-pagesize python:view.pagesize;
                         data-columns python:view.ajax_columns();
                         data-review_states python:view.ajax_review_states();">
     </div>

@@ -5,35 +5,34 @@ class Pagination extends React.Component
 
   constructor: (props) ->
     super(props)
+
     @state =
-      pagesize: props.pagesize
+      pagesize: @props.pagesize
+
     @onShowMoreClick = @onShowMoreClick.bind @
     @onPageSizeChange = @onPageSizeChange.bind @
     @pagesizeInput = React.createRef()
 
   onShowMoreClick: (event) ->
     event.preventDefault()
-    el = event.currentTarget
+
     pagesize = parseInt @pagesizeInput.current.value
-    if not pagesize or pagesize < 0
-      pagesize = 0
-    items_to_show = pagesize + @props.count
-    @props.onShowMore items_to_show
+    if not pagesize or pagesize < 1
+      pagesize = 1
+
+    @props.onShowMore pagesize
 
   onPageSizeChange: (event) ->
-    event.preventDefault()
     pagesize = parseInt @pagesizeInput.current.value
-    if not pagesize or pagesize < 0
-      pagesize = 0
+
+    if not pagesize or pagesize < 1
+      pagesize = 1
       @pagesizeInput.current.value = pagesize
+
     @setState pagesize: pagesize
 
     if event.which == 13
-      console.debug "Page size changed to #{pagesize}"
-      me = this
-      items_to_show = pagesize + @props.count
-      @setState pagesize: pagesize, ->
-        me.props.onShowMore items_to_show
+      @props.onShowMore pagesize
 
   render: ->
     <div id={@props.id} className={@props.className}>
