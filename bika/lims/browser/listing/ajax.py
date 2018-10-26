@@ -275,7 +275,12 @@ class AjaxListingView(BrowserView):
         show_column_toggles = self.show_column_toggles
         allow_edit = self.allow_edit
         show_table_footer = self.show_table_footer
+        show_workflow_action_buttons = self.show_workflow_action_buttons
         post_action = self.getPOSTAction()
+        show_categories = self.show_categories
+        category_index = self.category_index
+        expand_all_categories = self.expand_all_categories
+        ajax_categories = self.ajax_categories
 
         # workaround for `pagesize` handling
         pagesize = self.get_pagesize()
@@ -318,6 +323,9 @@ class AjaxListingView(BrowserView):
             "allow_edit": allow_edit,
             "show_table_footer": show_table_footer,
             "post_action": post_action,
+            "ajax_categories": ajax_categories,
+            "expand_all_categories": expand_all_categories,
+            "show_workflow_action_buttons": show_workflow_action_buttons,
         }
 
         # some performance logging

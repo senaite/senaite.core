@@ -86,6 +86,8 @@ class ListingController extends React.Component
       show_select_column: no
       select_checkbox_name: "uids"
       post_action: "workflow_action"
+      ajax_categories: no
+      expand_all_categories: no
 
     # dev only
     window.list = @
@@ -100,6 +102,7 @@ class ListingController extends React.Component
       "sort_on": @state.sort_on
       "sort_order": @state.sort_order
       "pagesize": @state.pagesize
+      "ajax_categories": @state.ajax_categories
 
     console.debug("Request Options=", options)
     return options
