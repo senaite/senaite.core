@@ -18,10 +18,9 @@ class ButtonBar extends React.Component
       "publish": "btn-success"
 
   handleClick: (event) ->
-    event.preventDefault
+    event.preventDefault()
     el = event.currentTarget
     id = el.id
-    console.info "Button #{id} clicked..."
     @props.onClick id
 
   buildButtons: ->

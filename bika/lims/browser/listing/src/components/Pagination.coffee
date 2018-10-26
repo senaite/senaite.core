@@ -12,7 +12,7 @@ class Pagination extends React.Component
     @pagesizeInput = React.createRef()
 
   onShowMoreClick: (event) ->
-    console.debug "SHOW MORE"
+    event.preventDefault()
     el = event.currentTarget
     pagesize = parseInt @pagesizeInput.current.value
     if not pagesize or pagesize < 0
@@ -21,6 +21,7 @@ class Pagination extends React.Component
     @props.onShowMore items_to_show
 
   onPageSizeChange: (event) ->
+    event.preventDefault()
     pagesize = parseInt @pagesizeInput.current.value
     if not pagesize or pagesize < 0
       pagesize = 0

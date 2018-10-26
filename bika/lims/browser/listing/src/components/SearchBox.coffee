@@ -13,18 +13,19 @@ class SearchBox extends React.Component
     @searchInput = React.createRef()
 
   onSearchInputKeyPress: (event) ->
+    event.preventDefault()
     if event.which == 13
       el = event.currentTarget
       console.debug "ENTER KEYPRESS DETECTED: value=#{el.value}"
       @props.onSearch el.value
 
   onSearchButtonClick: (event) ->
-    console.debug "SEARCH BUTTON CLICKED"
+    event.preventDefault()
     value = @searchInput.current.value
     @props.onSearch value
 
   onClearButtonClick: (event) ->
-    console.debug "CLEAR BUTTON CLICKED"
+    event.preventDefault()
     @searchInput.current.value = ""
     @props.onSearch ""
 

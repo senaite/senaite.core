@@ -11,6 +11,7 @@ class FilterBar extends React.Component
     @handleClick = @handleClick.bind @
 
   handleClick: (event) ->
+    event.preventDefault()
     el = event.currentTarget
     id = el.id
     console.info "Button #{id} clicked..."

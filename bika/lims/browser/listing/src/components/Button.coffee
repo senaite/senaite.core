@@ -2,6 +2,9 @@ import React from "react"
 
 
 class Button extends React.Component
+  ###
+   * Button component usable for the listing
+  ###
 
   render: ->
     ###
