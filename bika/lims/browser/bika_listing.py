@@ -923,7 +923,7 @@ class BikaListingView(AjaxListingView, BrowserView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
-        self.total = len(brains)
+        self.total = len(brains) + self.limit_from
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -1433,7 +1433,7 @@ class BikaListingView(AjaxListingView, BrowserView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
-        self.total = len(brains)
+        self.total = len(brains) + self.limit_from
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
