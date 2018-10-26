@@ -245,6 +245,13 @@ class ListingController extends React.Component
     ###
     return @state.folderitems.length
 
+  toggle_loader: (toggle=off) ->
+    ###
+     * Toggle the loader on/off
+    ###
+
+    @setState loading: toggle
+
   set_state: (data, fetch=yes) ->
     ###
      * Helper to set the state and reload the folderitems
@@ -266,7 +273,7 @@ class ListingController extends React.Component
       return
 
     # turn loader on
-    @setState loading: on
+    @toggle_loader on
 
     # fetch the transitions from the server
     promise = @api.fetch_transitions uids: selected_uids
@@ -277,7 +284,7 @@ class ListingController extends React.Component
       me.setState data, ->
         console.debug "ListingController::fetch_transitions: NEW STATE=", me.state
         # turn loader off
-        me.setState loading: off
+        me.toggle_loader off
 
   fetch_folderitems: ->
     ###
@@ -285,7 +292,7 @@ class ListingController extends React.Component
     ###
 
     # turn loader on
-    @setState loading: on
+    @toggle_loader on
 
     # fetch the folderitems from the server
     promise = @api.fetch_folderitems @getRequestOptions()
@@ -295,7 +302,7 @@ class ListingController extends React.Component
       me.setState data, ->
         console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
         # turn loader off
-        me.setState loading: off
+        me.toggle_loader off
 
     return promise
 

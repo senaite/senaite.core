@@ -11,7 +11,9 @@ class Pagination extends React.Component
 
     @onShowMoreClick = @onShowMoreClick.bind @
     @onPageSizeChange = @onPageSizeChange.bind @
+
     @pagesizeInput = React.createRef()
+    @showMoreButton = React.createRef()
 
   onShowMoreClick: (event) ->
     event.preventDefault()
@@ -36,31 +38,37 @@ class Pagination extends React.Component
       @props.onShowMore pagesize
 
   render: ->
-    <div id={@props.id} className={@props.className}>
-      <div className="input-group input-group-sm">
-        <span className="input-group-addon">
-          {@props.count} / {@props.total}
-        </span>
-        <input type="text"
-               defaultValue={@state.pagesize}
-               onChange={@onPageSizeChange}
-               onKeyPress={@onPageSizeChange}
-               ref={@pagesizeInput}
-               disabled={@props.count >= @props.total}
-               className="form-control"/>
-        <span className="input-group-btn">
-          <button className="btn btn-default"
-                  disabled={@props.count >= @props.total}
-                  onClick={@onShowMoreClick}>
-            <span>Show </span>
-            <span className="">
-              {@state.pagesize}
-            </span>
-            <span> more</span>
-          </button>
-        </span>
+    if @props.count >= @props.total
+      <div className="text-right">
+        {@props.count} / {@props.total}
       </div>
-    </div>
+    else
+      <div id={@props.id} className={@props.className}>
+        <div className="input-group input-group-sm">
+          <span className="input-group-addon">
+            {@props.count} / {@props.total}
+          </span>
+          <input type="text"
+                defaultValue={@state.pagesize}
+                onChange={@onPageSizeChange}
+                onKeyPress={@onPageSizeChange}
+                ref={@pagesizeInput}
+                disabled={@props.count >= @props.total}
+                className="form-control"/>
+          <span className="input-group-btn">
+            <button className="btn btn-default"
+                    disabled={@props.count >= @props.total}
+                    ref={@showMoreButton}
+                    onClick={@onShowMoreClick}>
+              <span>Show </span>
+              <span className="">
+                {@state.pagesize}
+              </span>
+              <span> more</span>
+            </button>
+          </span>
+        </div>
+      </div>
 
 
 export default Pagination

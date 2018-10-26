@@ -23,10 +23,9 @@
 #ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em; }
 
 #table-overlay {
+  display: none;
   position: absolute;
   z-index: 1000;
-  top: 0;
-  left: 0;
   height: 100%;
   width: 100%;
   background: #ccc;
