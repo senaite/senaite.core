@@ -3,12 +3,13 @@
 ###
 import React from "react"
 import ReactDOM from "react-dom"
-import ListingAPI from "./api.coffee"
-import Table from "./components/Table.coffee"
-import FilterBar from "./components/FilterBar.coffee"
-import SearchBox from "./components/SearchBox.coffee"
-import Pagination from "./components/Pagination.coffee"
+
 import ButtonBar from "./components/ButtonBar.coffee"
+import FilterBar from "./components/FilterBar.coffee"
+import ListingAPI from "./api.coffee"
+import Pagination from "./components/Pagination.coffee"
+import SearchBox from "./components/SearchBox.coffee"
+import Table from "./components/Table.coffee"
 
 CONTAINER_ID = "ajax-contents-table-wrapper"
 
@@ -26,7 +27,6 @@ class ListingController extends React.Component
 
   constructor: (props) ->
     super(props)
-    console.log "ListingController::constructor:props=", props
 
     # bind callbacks
     @filterByState = @filterByState.bind @
@@ -36,17 +36,23 @@ class ListingController extends React.Component
     @selectUID = @selectUID.bind @
     @doAction = @doAction.bind @
 
-    @el = document.getElementById "ajax-contents-table-wrapper"
+    # get the container element
+    @el = document.getElementById CONTAINER_ID
 
     # get initial configuration data from the HTML attribute
     @columns = JSON.parse @el.dataset.columns
     @review_states = JSON.parse @el.dataset.review_states
     @form_id = @el.dataset.form_id
     @pagesize = parseInt @el.dataset.pagesize
+    @api_url = @el.dataset.api_url
 
-    @api = new ListingAPI()
+    # the API is responsible for async calls and knows about the endpoints
+    @api = new ListingAPI
+      api_url: @api_url
 
     @state =
+      # loading indicator
+      loading: no
       # filter, pagesize, sort_on, sort_order and review_state are initially set
       # from the request to allow bookmarks to specific searches
       filter: @api.get_url_parameter("#{@form_id}_filter")
@@ -81,6 +87,9 @@ class ListingController extends React.Component
       select_checkbox_name: "uids"
       post_action: "workflow_action"
 
+    # dev only
+    window.list = @
+
   getRequestOptions: ->
     ###
      * Only these state values should be sent to the server
@@ -100,6 +109,8 @@ class ListingController extends React.Component
      * ReactJS event handler when the component did mount
     ###
     console.debug "ListingController::componentDidMount"
+
+    # initial fetch of the folderitems
     @fetch_folderitems()
 
   componentDidUpdate: ->
@@ -112,25 +123,27 @@ class ListingController extends React.Component
     ###
      * Filter the results by the given state
     ###
-    console.log "ListingController::filterByState: review_state=#{review_state}"
+    console.debug "ListingController::filterByState: review_state=#{review_state}"
     me = this
+
     @set_state
       review_state: review_state
-    , ->
-      me.fetch_transitions()
 
   filterBySearchterm: (filter="") ->
     ###
      * Filter the results by the given sarchterm
     ###
-    console.log "ListingController::filterBySearchter: filter=#{filter}"
-    @set_state filter: filter
+    console.debug "ListingController::filterBySearchter: filter=#{filter}"
+
+    @set_state
+     filter: filter
 
   sortBy: (sort_on, sort_order) ->
     ###
      * Sort the results by the given sort_on index with the given sort_order
     ###
-    console.log "sort_on=#{sort_on} sort_order=#{sort_order}"
+    console.debug "sort_on=#{sort_on} sort_order=#{sort_order}"
+
     @set_state
       sort_on: sort_on
       sort_order: sort_order
@@ -140,7 +153,9 @@ class ListingController extends React.Component
      * Show more items
     ###
     console.debug "ListingController::showMore: pagesize=#{pagesize}"
-    @set_state pagesize: parseInt pagesize
+
+    @set_state
+      pagesize: parseInt pagesize
 
   doAction: (id) ->
     ###
@@ -158,6 +173,7 @@ class ListingController extends React.Component
 
     # inject workflow action id for `BikaListing._get_form_workflow_action`
     input = document.createElement "input"
+    input.setAttribute "type", "hidden"
     input.setAttribute "name", "workflow_action_id"
     input.setAttribute "value", id
     form.appendChild input
@@ -168,22 +184,28 @@ class ListingController extends React.Component
     ###
      * select/deselect the UID
     ###
+
+    # the selected UIDs from the state
     selected_uids = @state.selected_uids
 
-    if toggle
+    if toggle is yes
+      # handle the select all checkbox
       if uid == "all"
         all_uids = @state.folderitems.map (item) -> item.uid
         selected_uids = all_uids
+      # push the uid into the list of selected_uids
       else
         selected_uids.push uid
     else
+      # flush all selected UIDs when the select_all checkbox is deselected
       if uid == "all"
         selected_uids = []
       else
+        # remove the selected UID from the list of selected_uids
         pos = selected_uids.indexOf uid
         selected_uids.splice pos, 1
 
-    # set the new state
+    # set the new list of selected UIDs to the state
     me = this
     @setState selected_uids: selected_uids, ->
       # fetch all possible transitions
@@ -191,7 +213,7 @@ class ListingController extends React.Component
 
   set_state: (data, fetch=yes) ->
     ###
-     * Set the state and fetch the folderitems
+     * Helper to set the state and reload the folderitems
     ###
     me = this
     @setState data, ->
@@ -203,26 +225,42 @@ class ListingController extends React.Component
     ###
     selected_uids = @state.selected_uids
 
+    # empty the possible transitions if no UID is selected
     if selected_uids.length == 0
       @setState transitions: []
       return
 
+    # toggle loading on
+    @setState loading: yes
+
+    # fetch the transitions from the server
     promise = @api.fetch_transitions uids: selected_uids
 
     me = this
     promise.then (data) ->
-      me.setState data
+      # data looks like this: {"transitions": [...]}
+      me.setState data, ->
+        console.debug "ListingController::fetch_transitions: NEW STATE=", me.state
+      # toggle loading off
+      me.setState loading: no
 
   fetch_folderitems: ->
     ###
      * Fetch the folderitems
     ###
+
+    # toggle loading on
+    @setState loading: yes
+
+    # fetch the folderitems from the server
     promise = @api.fetch_folderitems @getRequestOptions()
 
     me = this
     promise.then (data) ->
       me.setState data, ->
-        console.info "New State: ", me.state
+        console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
+      # toggle loading off
+      me.setState loading: no
 
     return promise
 

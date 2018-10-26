@@ -6,14 +6,8 @@ class ListingAPI
 
   constructor: (props) ->
     console.debug "ListingAPI::constructor"
-    @view_name = "base_view"
+    @api_url = props.api_url
     return @
-
-  get_base_url: ->
-    ###
-     * Get the current view url
-    ###
-    return document.URL.split("?")[0]
 
   get_api_url: (endpoint) ->
     ###
@@ -21,9 +15,7 @@ class ListingAPI
      * @param {string} endpoint
      * @returns {string}
     ###
-    api_endpoint = @view_name
-    base_url = @get_base_url()
-    return "#{base_url}/#{api_endpoint}/#{endpoint}"
+    return "#{@api_url}/#{endpoint}"
 
   get_url_parameter: (name) ->
     ###

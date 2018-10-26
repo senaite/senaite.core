@@ -28,9 +28,6 @@ class AjaxListingView(BrowserView):
 
     def __init__(self, context, request):
         super(AjaxListingView, self).__init__(context, request)
-        # we need the absolute view URL when we call subpaths
-        self.absolute_view_url = "{}/{}".format(
-            self.context.absolute_url(), self.__name__)
         self.traverse_subpath = []
 
     def set_content_type_header(self, content_type="application/json"):
@@ -184,8 +181,8 @@ class AjaxListingView(BrowserView):
     def get_api_url(self):
         """Calculate the API URL of this view
         """
-        view_name = self.__name__
         url = self.context.absolute_url()
+        view_name = self.__name__
         return "{}/{}".format(url, view_name)
 
     def get_allowed_transitions_for(self, objects):
