@@ -11,7 +11,7 @@ import Pagination from "./components/Pagination.coffee"
 import SearchBox from "./components/SearchBox.coffee"
 import Table from "./components/Table.coffee"
 
-CONTAINER_ID = "ajax-contents-table-wrapper"
+CONTAINER_ID = "ajax-contents-table"
 
 
 # DOCUMENT READY ENTRY POINT

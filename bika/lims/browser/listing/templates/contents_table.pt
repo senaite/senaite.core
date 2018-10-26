@@ -4,24 +4,29 @@
   <tal:css>
     <!-- Colors used from https://mdbootstrap.com/css/colors -->
     <style type="text/css">
-     tr.state-sample_due { border-left: solid #ffff8d; border-width: 0.5em; }
-     tr.state-sample_received { border-left: solid #795548; border-width: 0.5em; }
-     tr.state-to_be_verified { border-left: solid #18ffff; border-width: 0.5em; }
-     tr.state-verified { border-left: solid #0091ea; border-width: 0.5em; }
-     tr.state-published { border-left: solid #00c853; border-width: 0.5em; }
-     tr.state-retracted { border-left: solid #ff8a80; border-width: 0.5em; }
-     tr.state-invalid { border-left: solid #b71c1c; border-width: 0.5em; }
-     tr.state-open { border-left: solid #ab47bc; border-width: 0.5em; }
-     tr.state-attachment_due { border-left: solid #ffc107; border-width: 0.5em; }
-     tr.state-unassigned { border-left: solid #4a148c; border-width: 0.5em; }
-     tr.state-empty-worksheet { border-left: solid #f8bbd0; border-width: 0.5em; }
-     tr.state-cancelled { border-left: solid #000000; border-width: 0.5em; }
-     tr.state-inactive { border-left: solid #607d8b; border-width: 0.5em; }
 
-     th.sortable { cursor: pointer; }
-     th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
-     th.active.descending span:after { content: "▼"; margin-left: 0.5em;}
-     th:first-child { border-left: solid transparent; border-width: 0.5em; }
+     #ajax-contents-table tr { border-left: solid transparent; }
+
+     #ajax-contents-table tr.state-active { border-left: solid transparent; }
+     #ajax-contents-table tr.state-inactive { border-left: solid #616161; }
+
+     #ajax-contents-table tr.state-sample_due { border-left: solid #ffff8d !important; }
+     #ajax-contents-table tr.state-sample_received { border-left: solid #795548 !important; }
+     #ajax-contents-table tr.state-to_be_verified { border-left: solid #18ffff !important; }
+     #ajax-contents-table tr.state-verified { border-left: solid #0091ea !important; }
+     #ajax-contents-table tr.state-published { border-left: solid #00c853 !important; }
+     #ajax-contents-table tr.state-retracted { border-left: solid #ff8a80 !important; }
+     #ajax-contents-table tr.state-invalid { border-left: solid #b71c1c; important; }
+     #ajax-contents-table tr.state-open { border-left: solid #ab47bc; important; }
+     #ajax-contents-table tr.state-attachment_due { border-left: solid #ffc107 !important; }
+     #ajax-contents-table tr.state-unassigned { border-left: solid #4a148c !important; }
+     #ajax-contents-table tr.state-empty-worksheet { border-left: solid #f8bbd0 !important; }
+     #ajax-contents-table tr.state-cancelled { border-left: solid #000000 !important; }
+
+     #ajax-contents-table th { cursor: pointer; }
+     #ajax-contents-table th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
+     #ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em;}
+
     </style>
   </tal:css>
 
@@ -43,7 +48,7 @@
     <input type="hidden" name="submitted" value="1"/>
 
     <!-- ReactJS managed component -->
-    <div id="ajax-contents-table-wrapper"
+    <div id="ajax-contents-table"
         tal:attributes="data-form_id python:view.form_id;
                         data-api_url python:view.get_api_url();
                         data-pagesize python:view.pagesize;
