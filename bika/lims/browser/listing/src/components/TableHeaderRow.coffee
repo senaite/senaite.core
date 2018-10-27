@@ -11,12 +11,20 @@ class TableHeaderRow extends React.Component
 
   constructor: (props) ->
     super(props)
-    @onHeaderCellClick = @onHeaderCellClick.bind @
+    @on_header_column_click = @on_header_column_click.bind @
 
-  onHeaderCellClick: (event) ->
+  on_header_column_click: (event) ->
+    ###
+     * Event handler when a header columns was clicked
+    ###
     el = event.currentTarget
+
     index = el.getAttribute "index"
     sort_order = el.getAttribute "sort_order"
+
+    if not index
+      return
+
     console.debug "HEADER CLICKED sort_on='#{index}' sort_order=#{sort_order}"
 
     if "active" in el.classList
@@ -26,6 +34,29 @@ class TableHeaderRow extends React.Component
         sort_order = "ascending"
 
     @props.onSort index, sort_order
+
+  get_sort_index: (key, column) ->
+    ###
+     * Get the sort index of the given column
+    ###
+    index = column.index
+
+    # if the index is set, return immediately
+    if index
+      return index
+
+    # lookup the column key in the available indexes
+    catalog_indexes = @props.catalog_indexes
+
+    # lookup the title in the available indexes
+    if key in catalog_indexes
+      return key
+
+    # lookup the title getter in the available indexes
+    get_key = "get" + key.charAt(0).toUpperCase() + key.slice(1)
+    if get_key in catalog_indexes
+      return get_key
+    return null
 
   build_cells: ->
     ###
@@ -67,26 +98,30 @@ class TableHeaderRow extends React.Component
         continue
 
       title = column.title
-      index = column.index or ""
-      sortable = column.sortable or no
+      index = @get_sort_index key, column
+      sortable = index or no
+      # sort_on is the current sort index
       sort_on = @props.sort_on or "created"
       sort_order = @props.sort_order or "ascending"
-      is_sort_column = index == sort_on
+      # check if the current sort_on is the index of this column
+      is_sort_column = index is sort_on
 
       cls = [key]
       if sortable
         cls.push "sortable"
       if is_sort_column
         cls.push "active #{sort_order}"
+      cls = cls.join " "
 
       cells.push(
         <TableHeaderCell
           key={key}
-          className={cls.join " "}
-          onClick={@onHeaderCellClick}
+          title={column.title}
           index={index}
           sort_order={sort_order}
-          title={column.title}/>
+          className={cls}
+          onClick={@on_header_column_click}
+          />
       )
 
     return cells

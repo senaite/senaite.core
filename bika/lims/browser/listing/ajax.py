@@ -289,6 +289,7 @@ class AjaxListingView(BrowserView):
             "allow_edit": self.allow_edit,
             "api_url": self.get_api_url(),
             "catalog": self.catalog,
+            "catalog_indexes": self.get_catalog_indexes(),
             "categories": self.categories,
             "expand_all_categories": self.expand_all_categories,
             "form_id": self.form_id,
@@ -306,7 +307,7 @@ class AjaxListingView(BrowserView):
             "show_table_footer": self.show_table_footer,
             "show_workflow_action_buttons": self.show_workflow_action_buttons,
             "sort_on": self.sort_on,
-            "sort_order": self.sort_order,
+            "sort_order": self.get_sort_order(),
         }
 
         return config
@@ -362,6 +363,12 @@ class AjaxListingView(BrowserView):
 
         # update the config
         data.update(config)
+
+        # update with the current payload
+        # N.B. This is needed to set back the requested `sort_on` and
+        #      `sort_order` values to the response data. This needs to be fixed
+        #      in the base class `get_sort_on` and `get_sort_order` methods.
+        data.update(payload)
 
         # some performance logging
         logger.info("AjaxListingView::ajax_folderitems:"

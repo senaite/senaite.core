@@ -47,14 +47,15 @@ class Table extends React.Component
     rows.push(
       <TableHeaderRow
         key="header_row"
-        sort_on={this.props.sort_on}
+        sort_on={@props.sort_on}
         on_select_checkbox_checked={@on_select_checkbox_checked}
-        sort_order={this.props.sort_order}
+        sort_order={@props.sort_order}
+        catalog_indexes={@props.catalog_indexes}
         onSort={this.props.onSort}
         folderitems={@props.folderitems}
         selected_uids={@props.selected_uids}
         select_checkbox_name={@props.select_checkbox_name}
-        columns={this.props.columns}
+        columns={@props.columns}
         show_select_column={@props.show_select_column}
         show_select_all_checkbox={@props.show_select_all_checkbox}
         show_categories={@props.show_categories}

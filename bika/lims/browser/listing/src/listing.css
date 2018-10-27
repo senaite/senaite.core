@@ -18,9 +18,14 @@
 #ajax-contents-table tr.state-empty-worksheet { border-left: solid #f8bbd0 !important; }
 #ajax-contents-table tr.state-cancelled { border-left: solid #000000 !important; }
 
-#ajax-contents-table th { cursor: pointer; }
+#ajax-contents-table th.sortable { cursor: pointer; }
+#ajax-contents-table th.sortable:hover { Background-color: #ccc; }
+#ajax-contents-table th:not(.sortable) { cursor: not-allowed; }
+
 #ajax-contents-table th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
 #ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em; }
+
+#ajax-contents-table tr.category { cursor: pointer; }
 
 #table-overlay {
   position: absolute;
@@ -31,4 +36,3 @@
   opacity: 0.3;
 }
 
-#ajax-contents-table tr.category { cursor: pointer; }

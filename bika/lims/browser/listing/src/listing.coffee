@@ -86,6 +86,8 @@ class ListingController extends React.Component
       selected_uids: []
       # The possible transition buttons
       transitions: []
+      # The available catalog indexes for sorting
+      catalog_indexes: []
       # Listing specific configs
       show_select_all_checkbox: no
       show_select_column: no
@@ -338,6 +340,7 @@ class ListingController extends React.Component
             onSelect={@selectUID}
             sort_on={@state.sort_on}
             sort_order={@state.sort_order}
+            catalog_indexes={@state.catalog_indexes}
             columns={@state.columns}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
