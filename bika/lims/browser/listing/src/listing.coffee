@@ -63,8 +63,8 @@ class ListingController extends React.Component
       sort_on: @api.get_url_parameter("#{@form_id}_sort_on")
       sort_order: @api.get_url_parameter("#{@form_id}_sort_order")
       review_state: @api.get_url_parameter("#{@form_id}_review_state")
-      # The url_query is computed on the server and allows to bookmark listings
-      url_query: ""
+      # The query string is computed on the server and allows to bookmark listings
+      query_string: ""
       # The API URL to call
       api_url: ""
       # form_id, columns and review_states are defined in the listing view and
@@ -75,6 +75,8 @@ class ListingController extends React.Component
       review_states: @review_states
       # The data from the folderitems view call
       folderitems: []
+      # The categories of the folderitems
+      categories: []
       # total number of items in the database
       total: 0
       # The current active review_state item
@@ -89,13 +91,13 @@ class ListingController extends React.Component
       show_select_column: no
       select_checkbox_name: "uids"
       post_action: "workflow_action"
-      ajax_categories: no
+      show_categories: no
       expand_all_categories: no
       show_more: no
       limit_from: 0
 
     # dev only
-    window.list = @
+    window.lv = @
 
   getRequestOptions: ->
     ###
@@ -343,6 +345,9 @@ class ListingController extends React.Component
             select_checkbox_name={@state.select_checkbox_name}
             show_select_column={@state.show_select_column}
             show_select_all_checkbox={@state.show_select_all_checkbox}
+            categories={@state.categories}
+            show_categories={@state.show_categories}
+            expand_all_categories={@state.expand_all_categories}
             />
         </div>
       </div>
