@@ -238,6 +238,79 @@ class AjaxListingView(BrowserView):
 
         return self.to_safe_json(data)
 
+    def base_info(self, brain_or_object):
+        """Object/Brain Base info
+        """
+        info = {
+            "id": api.get_id(brain_or_object),
+            "uid": api.get_uid(brain_or_object),
+            "url": api.get_url(brain_or_object),
+            "title": api.get_title(brain_or_object),
+            "portal_type": api.get_portal_type(brain_or_object),
+        }
+        return info
+
+    def get_category_uid(self, brain_or_object, accessor="getCategoryUID"):
+        """Get the category UID from the brain or object
+
+        This will be used to speed up the listing by categories
+        """
+        attr = getattr(brain_or_object, accessor, None)
+        if attr is None:
+            return ""
+        if callable(attr):
+            return attr()
+        return attr
+
+    def get_folderitems(self):
+        """This method calls the folderitems method
+
+        For performance reasons this method should do the following:
+
+        1. Check if categories are requested
+        2. Extract the category data from the brains
+        3. Return the minimum brain information if categories are requested
+        """
+        # workaround for `pagesize` handling in BikaListing
+        pagesize = self.get_pagesize()
+        self.pagesize = pagesize
+
+        # get the folderitems
+        self.update()
+        self.before_render()
+
+        return self.folderitems()
+
+    def get_listing_config(self):
+        """Get the configuration settings of the current listing view
+        """
+
+        config = {
+            "allow_edit": self.allow_edit,
+            "api_url": self.get_api_url(),
+            "catalog": self.catalog,
+            "categories": self.categories,
+            "expand_all_categories": self.expand_all_categories,
+            "form_id": self.form_id,
+            "limit_from": self.limit_from,
+            "pagesize": self.pagesize,
+            "post_action": self.getPOSTAction(),
+            "review_state": self.review_state.get("id", "default"),
+            "review_states": self.review_states,
+            "select_checkbox_name": self.select_checkbox_name,
+            "show_categories": self.show_categories,
+            "show_column_toggles": self.show_column_toggles,
+            "show_more": self.show_more,
+            "show_select_all_checkbox": self.show_select_all_checkbox,
+            "show_select_column": self.show_select_column,
+            "show_table_footer": self.show_table_footer,
+            "show_workflow_action_buttons": self.show_workflow_action_buttons,
+            "sort_on": self.sort_on,
+            "sort_order": self.sort_order,
+        }
+
+        return config
+
     def ajax_folderitems(self):
         """Calls the `folderitems` method of the view and returns it as JSON
 
@@ -246,6 +319,8 @@ class AjaxListingView(BrowserView):
         3. Call the `folderitems` method
         4. Prepare a data structure for the ReactJS listing app
         """
+
+        # take the start time
         start = time()
 
         # Get the HTTP POST JSON Payload
@@ -261,83 +336,41 @@ class AjaxListingView(BrowserView):
         # this serves `request.get` calls
         self.request.other.update(form_data)
 
-        api_url = self.get_api_url()
-        catalog = self.catalog
-        form_id = self.form_id
-        sort_on = self.get_sort_on()
-        sort_order = self.get_sort_order()
-        review_state_item = self.review_state
-        review_state = review_state_item.get("id", "default")
-        review_states = self.review_states
-        select_checkbox_name = self.select_checkbox_name
-        show_select_column = self.show_select_column
-        show_select_all_checkbox = self.show_select_all_checkbox
-        show_column_toggles = self.show_column_toggles
-        allow_edit = self.allow_edit
-        show_table_footer = self.show_table_footer
-        show_workflow_action_buttons = self.show_workflow_action_buttons
-        post_action = self.getPOSTAction()
-        show_categories = self.show_categories
-        category_index = self.category_index
-        expand_all_categories = self.expand_all_categories
-        ajax_categories = self.ajax_categories
-        limit_from = self.limit_from
+        # generate a query string from the form data
+        query_string = urllib.urlencode(form_data)
 
-        # workaround for `pagesize` handling
-        pagesize = self.get_pagesize()
-        self.pagesize = pagesize
+        # get the folder items
+        folderitems = self.get_folderitems()
 
-        # get the folderitems
-        self.update()
-        self.before_render()
-        folderitems = self.folderitems()
+        # get the view config
+        config = self.get_listing_config()
 
-        # show more is calculated after the folderitems call
-        show_more = self.show_more
-
-        # get the number of the total results
-        total = self.total
-        # get the count of the current results
-        count = len(folderitems)
-
+        # take the end time
         end = time()
 
-        # calculate the runtime
-        _runtime = end - start
+        # calculate the total runtime
+        runtime = end - start
 
+        # prepare the response object
         data = {
-            "_runtime": _runtime,
-            "api_url": api_url,
-            "catalog": catalog,
-            "count": count,
+            "_runtime": runtime,
+            "count": len(folderitems),
             "folderitems": folderitems,
-            "form_id": form_id,
-            "pagesize": pagesize,
-            "review_state": review_state,
-            "review_states": review_states,
-            "review_state_item": review_state_item,
-            "sort_on": sort_on,
-            "sort_order": sort_order,
-            "total": total,
-            "url_query": urllib.urlencode(form_data),
-            "select_checkbox_name": select_checkbox_name,
-            "show_select_column": show_select_column,
-            "show_select_all_checkbox": show_select_all_checkbox,
-            "show_column_toggles": show_column_toggles,
-            "allow_edit": allow_edit,
-            "show_table_footer": show_table_footer,
-            "post_action": post_action,
-            "ajax_categories": ajax_categories,
-            "expand_all_categories": expand_all_categories,
-            "show_workflow_action_buttons": show_workflow_action_buttons,
-            "show_more": show_more,
-            "limit_from": limit_from,
+            "query_string": query_string,
+            "total": self.total,
         }
+
+        # update the config
+        data.update(config)
 
         # some performance logging
         logger.info("AjaxListingView::ajax_folderitems:"
                     "Loaded {} folderitems in {:.2f}s".format(
-                        len(folderitems), _runtime))
+                        len(folderitems), runtime))
 
+        # set the json content type header
+        # Note: This is not really needed for the ReactJS App, but more correct
+        #       and to show the results nicely in the browser
         self.set_content_type_header()
+
         return self.to_safe_json(data)
