@@ -140,7 +140,7 @@ class ListingController extends React.Component
 
     @set_state
       review_state: review_state
-      pagesize: @get_items_on_page()
+      pagesize: @pagesize  # reset to the initial pagesize on state change
       limit_from: 0
 
   filterBySearchterm: (filter="") ->
@@ -151,7 +151,7 @@ class ListingController extends React.Component
 
     @set_state
       filter: filter
-      pagesize: @get_items_on_page()
+      pagesize: @pagesize  # reset to the initial pagesize on search
       limit_from: 0
 
   sortBy: (sort_on, sort_order) ->
@@ -163,7 +163,7 @@ class ListingController extends React.Component
     @set_state
       sort_on: sort_on
       sort_order: sort_order
-      pagesize: @get_items_on_page()
+      pagesize: @get_items_on_page() # keep the current number of items on sort
       limit_from: 0
 
   showMore: (pagesize) ->
@@ -355,7 +355,7 @@ class ListingController extends React.Component
             show_select_all_checkbox={@state.show_select_all_checkbox}
             categories={@state.categories}
             show_categories={@state.show_categories}
-            expand_all_categories={@state.expand_all_categories}
+            filter={@state.filter}
             />
         </div>
       </div>

@@ -1,5 +1,7 @@
 import React from "react"
 
+import TableRow from "./TableRow.coffee"
+
 
 class TableCategoryRow extends React.Component
   ###
@@ -8,6 +10,10 @@ class TableCategoryRow extends React.Component
 
   constructor: (props) ->
     super(props)
+
+    @state =
+      expanded: @props.expand_all_categories
+
     @on_row_click = @on_row_click.bind @
 
   on_row_click: (event) ->
@@ -16,22 +22,21 @@ class TableCategoryRow extends React.Component
     ###
     el = event.currentTarget
     category = el.getAttribute "category"
+    @setState
+      expanded: not @state.expanded
     console.debug "TableCategoryRow::on_row_click: category #{category} clicked"
 
   build_category_cells: ->
     ###
      * Build the category cells
     ###
-
     cells = []
-
-    expanded = @props.expanded
 
     cls = "collapsed"
     icon_cls = "glyphicon glyphicon-collapse-up"
 
     # calculate the CSS class for expanded
-    if expanded
+    if @state.expanded
       cls = "expanded"
       icon_cls = "glyphicon glyphicon-collapse-down"
 
@@ -54,12 +59,49 @@ class TableCategoryRow extends React.Component
 
     return cells
 
+  build_rows: ->
+    ###
+     * Build the category row + the content rows
+    ###
+    rows = []
+
+    rows.push(
+      <tr key={@props.category}
+          onClick={@on_row_click}
+          category={@props.category}
+          className={@props.className}>
+      {@build_category_cells()}
+      </tr>
+    )
+
+    # return only the category row if it is not expanded
+    if not @state.expanded
+      return rows
+
+    for index, item of @props.folderitems
+      if item.category != @props.category
+        continue
+
+      console.info "Adding Item #{item.title} to the category #{@props.category}"
+
+      rows.push(
+        <TableRow
+          key={index}
+          className={item.state_class}
+          on_select_checkbox_checked={@on_select_checkbox_checked}
+          item={item}
+          review_states={@props.review_states}
+          selected_uids={@props.selected_uids}
+          select_checkbox_name={@props.select_checkbox_name}
+          columns={@props.columns}
+          show_select_column={@props.show_select_column}
+          />
+      )
+
+    return rows
+
   render: ->
-    <tr onClick={@on_row_click}
-        category={@props.category}
-        className={@props.className}>
-     {@build_category_cells()}
-    </tr>
+    @build_rows()
 
 
 export default TableCategoryRow

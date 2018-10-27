@@ -27,18 +27,25 @@ class TableHeaderRow extends React.Component
 
     console.debug "HEADER CLICKED sort_on='#{index}' sort_order=#{sort_order}"
 
+    # toggle the sort order if the clicked column was the active one
     if "active" in el.classList
       if sort_order == "ascending"
         sort_order = "descending"
       else
         sort_order = "ascending"
 
-    @props.onSort index, sort_order
+    # call the parent event handler with the sort index and the sort order
+    @props.on_header_column_click index, sort_order
 
   get_sort_index: (key, column) ->
     ###
      * Get the sort index of the given column
     ###
+
+    # disallow sorting when categories are shown
+    if @props.show_categories
+      return null
+
     index = column.index
 
     # if the index is set, return immediately
