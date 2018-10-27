@@ -62,7 +62,7 @@ class ListingController extends React.Component
       pagesize: parseInt(@api.get_url_parameter("#{@form_id}_pagesize")) or @pagesize
       sort_on: @api.get_url_parameter("#{@form_id}_sort_on")
       sort_order: @api.get_url_parameter("#{@form_id}_sort_order")
-      review_state: @api.get_url_parameter("#{@form_id}_review_state")
+      review_state: @api.get_url_parameter("#{@form_id}_review_state") or "default"
       # The query string is computed on the server and allows to bookmark listings
       query_string: ""
       # The API URL to call
@@ -141,6 +141,7 @@ class ListingController extends React.Component
     @set_state
       review_state: review_state
       pagesize: @get_items_on_page()
+      limit_from: 0
 
   filterBySearchterm: (filter="") ->
     ###
@@ -151,6 +152,7 @@ class ListingController extends React.Component
     @set_state
       filter: filter
       pagesize: @get_items_on_page()
+      limit_from: 0
 
   sortBy: (sort_on, sort_order) ->
     ###
@@ -162,6 +164,7 @@ class ListingController extends React.Component
       sort_on: sort_on
       sort_order: sort_order
       pagesize: @get_items_on_page()
+      limit_from: 0
 
   showMore: (pagesize) ->
     ###
@@ -317,18 +320,20 @@ class ListingController extends React.Component
     <div className="listing-container">
       <div className="row">
         <div className="col-sm-8">
-          <FilterBar className="filterbar nav nav-pills"
-                     onClick={@filterByState}
-                     review_state={@state.review_state}
-                     review_states={@state.review_states}/>
+          <FilterBar
+            className="filterbar nav nav-pills"
+            on_filter_button_clicked={@filterByState}
+            review_state={@state.review_state}
+            review_states={@state.review_states}/>
         </div>
         <div className="col-sm-1">
           <Loader loading={@state.loading} />
         </div>
         <div className="col-sm-3">
-          <SearchBox onSearch={@filterBySearchterm}
-                     filter={@state.filter}
-                     placeholder="Search ..." />
+          <SearchBox
+            on_search={@filterBySearchterm}
+            filter={@state.filter}
+            placeholder="Search ..." />
         </div>
       </div>
       <div className="row">

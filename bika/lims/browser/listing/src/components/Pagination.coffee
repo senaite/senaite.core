@@ -2,6 +2,9 @@ import React from "react"
 
 
 class Pagination extends React.Component
+  ###
+   * The pagination component renders table paging controls
+  ###
 
   constructor: (props) ->
     super(props)
@@ -9,33 +12,62 @@ class Pagination extends React.Component
     @state =
       pagesize: @props.pagesize
 
-    @onShowMoreClick = @onShowMoreClick.bind @
-    @onPageSizeChange = @onPageSizeChange.bind @
+    @on_show_more_click = @on_show_more_click.bind @
+    @on_pagesize_change = @on_pagesize_change.bind @
 
-    @pagesizeInput = React.createRef()
-    @showMoreButton = React.createRef()
+    @pagesize_input = React.createRef()
+    @show_more_button = React.createRef()
 
-  onShowMoreClick: (event) ->
+  on_show_more_click: (event) ->
+    ###
+     * Event handler when the "Show more" button was clicked
+    ###
+
+    # prevent form submission
     event.preventDefault()
 
-    pagesize = parseInt @pagesizeInput.current.value
+    # parse the value of the pagesize input field
+    pagesize = parseInt @pagesize_input.current.value
+
+    # minimum pagesize is 1
     if not pagesize or pagesize < 1
       pagesize = 1
 
+    # call the parent event handler
     @props.onShowMore pagesize
 
-  onPageSizeChange: (event) ->
-    pagesize = parseInt @pagesizeInput.current.value
+  on_pagesize_change: (event) ->
+    ###
+     * Event handler when a manual pagesize was entered
+    ###
 
-    if not pagesize or pagesize < 1
-      pagesize = 1
-      @pagesizeInput.current.value = pagesize
+    pagesize = @get_pagesize_input_value()
 
+    # set the pagesize to the local state
     @setState pagesize: pagesize
 
+    # handle enter keypress
     if event.which == 13
+      # prevent form submission
       event.preventDefault()
+
+      # call the parent event listener
       @props.onShowMore pagesize
+
+  get_pagesize_input_value: ->
+    ###
+     * Fetch the value of the pagesize input field
+    ###
+
+    pagesize = parseInt @pagesize_input.current.value
+
+    if not pagesize or pagesize < 1
+      # minimum pagesize is 1
+      pagesize = 1
+      # write sanitized value back to the field
+      @pagesize_input.current.value = pagesize
+
+    return pagesize
 
   render: ->
     if @props.count >= @props.total
@@ -50,16 +82,16 @@ class Pagination extends React.Component
           </span>
           <input type="text"
                 defaultValue={@state.pagesize}
-                onChange={@onPageSizeChange}
-                onKeyPress={@onPageSizeChange}
-                ref={@pagesizeInput}
+                onChange={@on_pagesize_change}
+                onKeyPress={@on_pagesize_change}
+                ref={@pagesize_input}
                 disabled={@props.count >= @props.total}
                 className="form-control"/>
           <span className="input-group-btn">
             <button className="btn btn-default"
                     disabled={@props.count >= @props.total}
-                    ref={@showMoreButton}
-                    onClick={@onShowMoreClick}>
+                    ref={@show_more_button}
+                    onClick={@on_show_more_click}>
               <span>Show </span>
               <span className="">
                 {@state.pagesize}

@@ -2,47 +2,81 @@ import React from "react"
 
 
 class SearchBox extends React.Component
+  ###
+   * This component provides a search box
+  ###
 
   constructor: (props) ->
     super(props)
 
-    @onSearchInputKeyPress = @onSearchInputKeyPress.bind @
-    @onSearchButtonClick = @onSearchButtonClick.bind @
-    @onClearButtonClick = @onClearButtonClick.bind @
+    @on_search_field_keypress = @on_search_field_keypress.bind @
+    @on_search_button_click = @on_search_button_click.bind @
+    @on_clear_button_click = @on_clear_button_click.bind @
 
-    @searchInput = React.createRef()
+    @search_input_field = React.createRef()
 
-  onSearchInputKeyPress: (event) ->
+  on_search_field_keypress: (event) ->
+    ###
+     * Event handler when a keypress was detected in the searchfield
+    ###
+
+    # handle enter key
     if event.which == 13
-      el = event.currentTarget
-      console.debug "ENTER KEYPRESS DETECTED: value=#{el.value}"
-      @props.onSearch el.value
+      # prevent form submission on enter
+      event.preventDefault()
 
-  onSearchButtonClick: (event) ->
-    event.preventDefault()
-    value = @searchInput.current.value
-    @props.onSearch value
+      # call the parent event handler with the current search value
+      value = @get_search_value()
+      @props.on_search value
 
-  onClearButtonClick: (event) ->
+  on_search_button_click: (event) ->
+    ###
+     * Event handler when the search button was clicked
+    ###
+
+    # prevent form submission
     event.preventDefault()
-    @searchInput.current.value = ""
-    @props.onSearch ""
+
+    # call the parent event handler with the current search value
+    value = @get_search_value()
+    @props.on_search value
+
+  on_clear_button_click: (event) ->
+    ###
+     * Event handler when the clear button was clicked
+    ###
+
+    # prevent form submission
+    event.preventDefault()
+
+    # flush the search field value
+    @search_input_field.current.value = ""
+
+    # call the parent event handler with the current search value
+    @props.on_search ""
+
+  get_search_value: ->
+    ###
+     * Return the value of the search field
+    ###
+    value = @search_input_field.current.value
+    return value
 
   render: ->
     <div className="input-group input-group-sm">
       <input type="text"
-             ref={@searchInput}
              className="form-control"
+             ref={@search_input_field}
              defaultValue={@props.filter}
-             onKeyPress={@onSearchInputKeyPress}
+             onKeyPress={@on_search_field_keypress}
              placeholder={this.props.placeholder}/>
       <span className="input-group-btn">
         <button className="btn btn-default"
-                onClick={@onClearButtonClick}>
+                onClick={@on_clear_button_click}>
           <span className="glyphicon glyphicon-remove"></span>
         </button>
         <button className="btn btn-default"
-                onClick={@onSearchButtonClick}>
+                onClick={@on_search_button_click}>
           <span className="glyphicon glyphicon-search"></span>
         </button>
       </span>
