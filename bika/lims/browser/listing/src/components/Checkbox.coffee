@@ -2,24 +2,19 @@ import React from "react"
 
 
 class Checkbox extends React.Component
+  ###
+   * The checkbox component renders a single checkbox
+  ###
 
   constructor: (props) ->
     super(props)
-    @onSelect = @onSelect.bind @
-
-  onSelect: (event) ->
-    event.preventDefault()
-    el = event.currentTarget
-    el.value
-    # propagate change event to parent component
-    @props.onSelect event
 
   render: ->
     <input type="checkbox"
            name={@props.name}
+           value={@props.value}
            checked={@props.checked}
-           onChange={@onSelect}
-           value={@props.value}/>
+           onChange={@props.onChange}/>
 
 
 export default Checkbox

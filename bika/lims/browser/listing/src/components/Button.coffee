@@ -3,7 +3,7 @@ import React from "react"
 
 class Button extends React.Component
   ###
-   * Button component usable for the listing
+   * The button component renders a single button
   ###
 
   render: ->
