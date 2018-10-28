@@ -188,7 +188,7 @@ class ListingController extends React.Component
           new_folderitems = folderitems.concat data.folderitems
           me.setState folderitems: new_folderitems
 
-  doAction: (id) ->
+  doAction: (id, url) ->
     ###
      * Perform an action coming from the WF Action Buttons
     ###
@@ -209,9 +209,14 @@ class ListingController extends React.Component
     # inject workflow action id for `BikaListing._get_form_workflow_action`
     input = document.createElement "input"
     input.setAttribute "type", "hidden"
+    input.setAttribute "id", id
     input.setAttribute "name", "workflow_action_id"
     input.setAttribute "value", action
     form.appendChild input
+
+    # Override the form action when a custom URL is given
+    if url
+      form.action = url
 
     return form.submit()
 
@@ -365,7 +370,7 @@ class ListingController extends React.Component
       <div className="row">
         <div className="col-sm-8">
           <ButtonBar className="buttonbar nav nav-pills"
-                     onClick={@doAction}
+                     on_transition_button_click={@doAction}
                      selected_uids={@state.selected_uids}
                      transitions={@state.transitions}/>
         </div>

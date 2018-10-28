@@ -12,6 +12,7 @@ class Button extends React.Component
     ###
     <button id={@props.id}
             name={@props.name}
+            url={@props.url}
             onClick={@props.onClick}
             className={@props.className}>
       <span dangerouslySetInnerHTML={{__html: @props.title}}></span>

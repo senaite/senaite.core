@@ -11,7 +11,8 @@ class ButtonBar extends React.Component
 
   constructor: (props) ->
     super(props)
-    @handle_button_click = @handle_button_click.bind @
+
+    @on_transition_button_click = @on_transition_button_click.bind @
 
     @css_mapping =
       "activate": "btn-success"
@@ -39,9 +40,9 @@ class ButtonBar extends React.Component
 
     return cls
 
-  handle_button_click: (event) ->
+  on_transition_button_click: (event) ->
     ###
-     * Event handler when a button was clicked
+     * Event handler when a transition button was clicked
     ###
 
     # prevent form submit, because we want to handle that explicitly
@@ -49,9 +50,13 @@ class ButtonBar extends React.Component
 
     # extract the action ID
     el = event.currentTarget
-    id = el.id
 
-    @props.onClick id
+    # extract the transition action and the url of the button
+    action = el.getAttribute "id"
+    url = el.getAttribute "url"
+
+    # call the parent event handler to perform the transition
+    @props.on_transition_button_click action, url
 
   build_buttons: ->
     ###
@@ -64,7 +69,7 @@ class ButtonBar extends React.Component
       buttons.push(
         <li key="clear">
           <button className="btn btn-default btn-sm"
-                  onClick={@handle_button_click}
+                  onClick={@on_transition_button_click}
                   id="clear_selection">
             <span className="glyphicon glyphicon-ban-circle"></span>
           </button>
@@ -75,6 +80,7 @@ class ButtonBar extends React.Component
     for transition in @props.transitions
 
       id = transition.id
+      url = transition.url
       title = transition.title
       cls = @get_button_css id
       btn_id = "#{id}_transition"
@@ -84,9 +90,10 @@ class ButtonBar extends React.Component
           <Button
             id={btn_id}
             title={title}
+            url={url}
             className={cls}
             badge={@props.selected_uids.length}
-            onClick={@handle_button_click}/>
+            onClick={@on_transition_button_click}/>
         </li>
       )
 
