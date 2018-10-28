@@ -17,9 +17,9 @@ class TableCell extends React.Component
     item_key = @props.item_key
     if @props.item_key not of before
       return null
-    contents <span className="before-item"
+    return <span className="before-item"
                  dangerouslySetInnerHTML={{__html: before[item_key]}}>
-             </span>
+           </span>
 
   render_after_content: ->
     ###
