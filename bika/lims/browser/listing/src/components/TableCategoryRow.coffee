@@ -12,7 +12,7 @@ class TableCategoryRow extends React.Component
     super(props)
 
     @state =
-      expanded: no
+      expanded: @props.expanded
 
     @on_row_click = @on_row_click.bind @
 
@@ -70,7 +70,7 @@ class TableCategoryRow extends React.Component
           onClick={@on_row_click}
           category={@props.category}
           className={@props.className}>
-      {@build_category_cells()}
+        {@build_category_cells()}
       </tr>
     )
 
@@ -79,10 +79,10 @@ class TableCategoryRow extends React.Component
       return rows
 
     for index, item of @props.folderitems
+
+      # skip items of other categories
       if item.category != @props.category
         continue
-
-      console.info "Adding Item #{item.title} to the category #{@props.category}"
 
       rows.push(
         <TableRow

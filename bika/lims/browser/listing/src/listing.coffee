@@ -312,6 +312,8 @@ class ListingController extends React.Component
 
     me = this
     promise.then (data) ->
+      console.debug "ListingController::fetch_folderitems: GOT RESPONSE=", data
+
       me.setState data, ->
         console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
         # turn loader off

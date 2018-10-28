@@ -144,11 +144,13 @@ class AjaxListingView(BrowserView):
             """
             # Convert `DateTime` objects to ISO8601 format
             if isinstance(obj, DateTime):
-                return obj.ISO8601()
+                obj = obj.ISO8601()
             # Convert objects and brains to UIDs
             if api.is_object(obj):
-                return api.get_uid(obj)
-            return repr(obj)
+                obj = api.get_uid(obj)
+            if isinstance(obj, basestring):
+                return obj
+            return str(obj)
 
         # translate all i18n Message objects
         thing = self.translate_data(thing)
@@ -287,6 +289,16 @@ class AjaxListingView(BrowserView):
 
         return self.folderitems()
 
+    def get_selected_uids(self, folderitems):
+        """Lookup selected UIDs from the folderitems
+        """
+        selected_uids = []
+
+        for folderitem in folderitems:
+            if folderitem.get("selected", False):
+                selected_uids.append(folderitem.get("uid"))
+        return selected_uids
+
     def get_listing_config(self):
         """Get the configuration settings of the current listing view
         """
@@ -349,6 +361,11 @@ class AjaxListingView(BrowserView):
         # get the folder items
         folderitems = self.get_folderitems()
 
+        # Process selected UIDs and their allowed transitions
+        selected_uids = self.get_selected_uids(folderitems)
+        selected_objs = map(api.get_object_by_uid, selected_uids)
+        transitions = self.get_allowed_transitions_for(selected_objs)
+
         # get the view config
         config = self.get_listing_config()
 
@@ -364,7 +381,9 @@ class AjaxListingView(BrowserView):
             "count": len(folderitems),
             "folderitems": folderitems,
             "query_string": query_string,
+            "selected_uids": selected_uids,
             "total": self.total,
+            "transitions": transitions,
         }
 
         # update the config
