@@ -48,12 +48,12 @@ class TableHeaderRow extends React.Component
 
     index = column.index
 
-    # if the index is set, return immediately
-    if index
-      return index
-
     # lookup the column key in the available indexes
     catalog_indexes = @props.catalog_indexes
+
+    # if the index is set, return immediately
+    if index and index in catalog_indexes
+      return index
 
     # lookup the title in the available indexes
     if key in catalog_indexes

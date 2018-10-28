@@ -242,14 +242,15 @@ class AjaxListingView(BrowserView):
         def sort_transitions(a, b):
             transition_weights = {
                 "invalidate": 100,
-                "cancel": 95,
-                "deactivate": 90,
-                "assign": 15,
-                "receive": 10,
-                "submit": 5,
+                "retract": 90,
+                "cancel": 80,
+                "deactivate": 70,
+                "assign": 30,
+                "receive": 20,
+                "submit": 10,
             }
-            w1 = a in custom_tids and 1000 or transition_weights.get(a, 0)
-            w2 = b in custom_tids and 1000 or transition_weights.get(b, 0)
+            w1 = transition_weights.get(a, 0)
+            w2 = transition_weights.get(b, 0)
             return cmp(w1, w2)
 
         for tid in sorted(all_transition_ids, cmp=sort_transitions):
@@ -431,6 +432,11 @@ class AjaxListingView(BrowserView):
 
         # update the config
         data.update(config)
+
+        # XXX fix broken `sort_on` lookup in BikaListing
+        sort_on = payload.get("sort_on")
+        if sort_on in self.get_catalog_indexes():
+            data["sort_on"] = sort_on
 
         # some performance logging
         logger.info("AjaxListingView::ajax_folderitems:"
