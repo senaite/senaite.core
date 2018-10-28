@@ -94,6 +94,7 @@ class TableCategoryRow extends React.Component
           selected_uids={@props.selected_uids}
           select_checkbox_name={@props.select_checkbox_name}
           columns={@props.columns}
+          column_order={@props.column_order}
           show_select_column={@props.show_select_column}
           />
       )

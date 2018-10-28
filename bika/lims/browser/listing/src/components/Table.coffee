@@ -38,6 +38,32 @@ class Table extends React.Component
       count += 1
     return count
 
+
+  get_review_state_by_id: (id) ->
+    ###
+     * Fetch the current review_state item by id
+    ###
+
+    current = null
+
+    # review_states is the list of review_state items from the listing view
+    for review_state in @props.review_states
+      if review_state.id == id
+        current = review_state
+        break
+
+    if not current
+      throw "No review_state definition found for ID #{id}"
+
+    return current
+
+  get_column_order: ->
+    ###
+     * Get the column order defined in the current selected review_state item
+    ###
+    review_state_item = @get_review_state_by_id @props.review_state
+    return review_state_item.columns
+
   build_header_rows: ->
     ###
      * Build the table header rows (actually just one row)
@@ -56,6 +82,7 @@ class Table extends React.Component
         selected_uids={@props.selected_uids}
         select_checkbox_name={@props.select_checkbox_name}
         columns={@props.columns}
+        column_order={@get_column_order()}
         show_select_column={@props.show_select_column}
         show_select_all_checkbox={@props.show_select_all_checkbox}
         show_categories={@props.show_categories}
@@ -99,6 +126,7 @@ class Table extends React.Component
             selected_uids={@props.selected_uids}
             select_checkbox_name={@props.select_checkbox_name}
             columns={@props.columns}
+            column_order={@get_column_order()}
             show_select_column={@props.show_select_column}
             />
       )
@@ -122,6 +150,7 @@ class Table extends React.Component
           selected_uids={@props.selected_uids}
           select_checkbox_name={@props.select_checkbox_name}
           columns={@props.columns}
+          column_order={@get_column_order()}
           show_select_column={@props.show_select_column}
           />
       )

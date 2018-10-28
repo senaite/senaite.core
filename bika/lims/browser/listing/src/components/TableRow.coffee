@@ -52,8 +52,11 @@ class TableRow extends React.Component
         </td>
     )
 
-    # insert cells for visible columns
-    for key, column of @props.columns
+    # insert visible columns in the right order
+    for key in @props.column_order
+
+      # get the column
+      column = @props.columns[key]
 
       # skip hidden
       if not column.toggle

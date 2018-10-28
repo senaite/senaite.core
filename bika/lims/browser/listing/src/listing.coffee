@@ -79,8 +79,6 @@ class ListingController extends React.Component
       categories: []
       # total number of items in the database
       total: 0
-      # The current active review_state item
-      review_state_item: {}
       # UIDs of selected rows are stored in selected_uids.
       # These are sent when a transition action is clicked.
       selected_uids: []
@@ -347,6 +345,7 @@ class ListingController extends React.Component
             sort_order={@state.sort_order}
             catalog_indexes={@state.catalog_indexes}
             columns={@state.columns}
+            review_state={@state.review_state}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
             selected_uids={@state.selected_uids}

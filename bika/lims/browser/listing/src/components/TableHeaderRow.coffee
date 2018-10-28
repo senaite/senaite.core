@@ -97,8 +97,11 @@ class TableHeaderRow extends React.Component
         </th>
       )
 
-    # insert column titles for visible columns
-    for key, column of @props.columns
+    # insert visible columns in the right order
+    for key in @props.column_order
+
+      # get the column object
+      column = @props.columns[key]
 
       # skip hidden colums
       if not column.toggle
