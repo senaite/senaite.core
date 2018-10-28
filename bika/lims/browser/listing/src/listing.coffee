@@ -192,7 +192,6 @@ class ListingController extends React.Component
     ###
      * Perform an action coming from the WF Action Buttons
     ###
-    console.debug "ListingController::doAction: id=#{id}"
 
     # handle clear button separate
     if id == "clear_selection"
@@ -202,11 +201,16 @@ class ListingController extends React.Component
     # get the form element
     form = document.getElementById @state.form_id
 
+    # N.B. Transition submit buttons are suffixed with `_transition`, because
+    #      otherwise the form.submit call below retrieves the element instead of
+    #      doing the method call.
+    action = id.split("_transition")[0]
+
     # inject workflow action id for `BikaListing._get_form_workflow_action`
     input = document.createElement "input"
     input.setAttribute "type", "hidden"
     input.setAttribute "name", "workflow_action_id"
-    input.setAttribute "value", id
+    input.setAttribute "value", action
     form.appendChild input
 
     return form.submit()

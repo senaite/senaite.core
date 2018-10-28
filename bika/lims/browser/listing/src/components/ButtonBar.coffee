@@ -77,11 +77,12 @@ class ButtonBar extends React.Component
       id = transition.id
       title = transition.title
       cls = @get_button_css id
+      btn_id = "#{id}_transition"
 
       buttons.push(
         <li key={transition.id}>
           <Button
-            id={id}
+            id={btn_id}
             title={title}
             className={cls}
             badge={@props.selected_uids.length}
