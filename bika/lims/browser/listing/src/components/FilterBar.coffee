@@ -53,6 +53,10 @@ class FilterBar extends React.Component
         </li>
       )
 
+    # omit filter buttons if there is only one
+    if buttons.length == 1
+      return []
+
     return buttons
 
   render: ->
