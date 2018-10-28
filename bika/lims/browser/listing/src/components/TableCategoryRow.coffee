@@ -12,7 +12,7 @@ class TableCategoryRow extends React.Component
     super(props)
 
     @state =
-      expanded: @props.expand_all_categories
+      expanded: no
 
     @on_row_click = @on_row_click.bind @
 
@@ -88,7 +88,7 @@ class TableCategoryRow extends React.Component
         <TableRow
           key={index}
           className={item.state_class}
-          on_select_checkbox_checked={@on_select_checkbox_checked}
+          on_select_checkbox_checked={@props.on_select_checkbox_checked}
           item={item}
           review_states={@props.review_states}
           selected_uids={@props.selected_uids}

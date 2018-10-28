@@ -23,7 +23,7 @@ class Table extends React.Component
     checked = el.checked
 
     # call the parent event handler
-    @props.onSelect uid, checked
+    @props.on_select_checkbox_checked uid, checked
 
   get_column_count: ->
     ###

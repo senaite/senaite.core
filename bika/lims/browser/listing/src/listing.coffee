@@ -342,7 +342,7 @@ class ListingController extends React.Component
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
             onSort={@sortBy}
-            onSelect={@selectUID}
+            on_select_checkbox_checked={@selectUID}
             sort_on={@state.sort_on}
             sort_order={@state.sort_order}
             catalog_indexes={@state.catalog_indexes}
