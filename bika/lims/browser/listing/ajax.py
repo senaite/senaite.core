@@ -191,6 +191,11 @@ class AjaxListingView(BrowserView):
         """Retrieves all transitions from the given objects and calculate the
         ones which have all in common (intersection).
         """
+
+        # Handle empty list of objects
+        if not objects:
+            return []
+
         transitions = []
 
         # get the custom transitions of the current review_state
