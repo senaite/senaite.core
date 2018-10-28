@@ -66,11 +66,12 @@ class TableRow extends React.Component
       title = item.replace[key] or item[key]
 
       cells.push(
-        <TableCell key={key}
-                   item={item}
-                   item_key={key}
-                   className={key}
-                   html={title}/>
+        <TableCell
+          key={key}
+          item={item}
+          item_key={key}
+          className={key}
+          html={title}/>
       )
     return cells
 

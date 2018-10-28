@@ -1,5 +1,7 @@
 import React from "react"
 
+import Select from "./Select.coffee"
+
 
 class TableCell extends React.Component
   ###
@@ -33,11 +35,29 @@ class TableCell extends React.Component
                  dangerouslySetInnerHTML={{__html: after[item_key]}}>
            </span>
 
+  render_content: ->
+    ###
+     * Render the table cell content
+    ###
+    content = <span dangerouslySetInnerHTML={{__html: @props.html}}></span>
+
+    item = @props.item
+    item_key = @props.item_key
+    if item_key of item.choices
+      options = item.choices[item_key]
+      value = item[item_key]
+      return <Select
+               value={value}
+               name={item_key}
+               className="form-control input-sm"
+               options={options} />
+    return content
+
   render: ->
     <td className={@props.className}>
-      {this.render_before_content()}
-      <span dangerouslySetInnerHTML={{__html: @props.html}}></span>
-      {this.render_after_content()}
+      {@render_before_content()}
+      {@render_content()}
+      {@render_after_content()}
     </td>
 
 
