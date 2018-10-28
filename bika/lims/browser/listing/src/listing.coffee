@@ -215,8 +215,7 @@ class ListingController extends React.Component
     form.appendChild input
 
     # Override the form action when a custom URL is given
-    if url
-      form.action = url
+    if url then form.action = url
 
     return form.submit()
 

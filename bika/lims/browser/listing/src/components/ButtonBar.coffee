@@ -8,7 +8,6 @@ class ButtonBar extends React.Component
    * The button bar component renders the workflow and custom transitions buttons
   ###
 
-
   constructor: (props) ->
     super(props)
 
