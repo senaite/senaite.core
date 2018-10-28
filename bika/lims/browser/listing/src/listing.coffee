@@ -110,6 +110,7 @@ class ListingController extends React.Component
       "sort_order": @state.sort_order
       "pagesize": @state.pagesize
       "limit_from": @state.limit_from
+      "selected_uids": @state.selected_uids,
 
     console.debug("Request Options=", options)
     return options
@@ -313,7 +314,6 @@ class ListingController extends React.Component
     me = this
     promise.then (data) ->
       console.debug "ListingController::fetch_folderitems: GOT RESPONSE=", data
-
       me.setState data, ->
         console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
         # turn loader off

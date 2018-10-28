@@ -196,19 +196,29 @@ class AjaxListingView(BrowserView):
         if not objects:
             return []
 
+        # allowed transitions
         transitions = []
+
+        # allowed transitions of the current workflow
+        allowed_transitions = self.review_state.get("transitions")
+        allowed_transition_ids = map(
+            lambda t: t.get("id"), allowed_transitions)
+
+        # internal mapping of transition id -> transition
+        transitions_by_tid = {}
 
         # get the custom transitions of the current review_state
         custom_transitions = self.review_state.get("custom_transitions", [])
 
-        transitions_by_tid = {}
-        common_tids = set()
+        # N.B. we use set() here to handle dupes in the views gracefully
+        custom_tids = set()
+        for transition in custom_transitions:
+            tid = transition.get("id")
+            custom_tids.add(tid)
+            transitions_by_tid[tid] = transition
 
-        # process allowed transitions in the current selected review_state
-        for allowed_transition in self.review_state.get("transitions", []):
-            tid = allowed_transition.get("id")
-            common_tids.add(tid)
-            transitions_by_tid[tid] = allowed_transition
+        # transition ids all objects have in common
+        common_tids = None
 
         for obj in objects:
             # get the allowed transitions for this object
@@ -216,13 +226,35 @@ class AjaxListingView(BrowserView):
             tids = []
             for transition in obj_transitions:
                 tid = transition.get("id")
+                if tid not in allowed_transition_ids:
+                    continue
                 tids.append(tid)
                 transitions_by_tid[tid] = transition
+
+            if common_tids is None:
+                common_tids = set(tids)
+
             common_tids = common_tids.intersection(tids)
 
-        common_transitions = map(
-            lambda tid: transitions_by_tid[tid], common_tids)
-        transitions = custom_transitions + common_transitions
+        # union the common and custom transitions
+        all_transition_ids = common_tids.union(custom_tids)
+
+        def sort_transitions(a, b):
+            transition_weights = {
+                "invalidate": 100,
+                "cancel": 95,
+                "deactivate": 90,
+                "assign": 15,
+                "receive": 10,
+                "submit": 5,
+            }
+            w1 = a in custom_tids and 1000 or transition_weights.get(a, 0)
+            w2 = b in custom_tids and 1000 or transition_weights.get(b, 0)
+            return cmp(w1, w2)
+
+        for tid in sorted(all_transition_ids, cmp=sort_transitions):
+            transition = transitions_by_tid.get(tid)
+            transitions.append(transition)
 
         return transitions
 
@@ -294,12 +326,17 @@ class AjaxListingView(BrowserView):
 
         return self.folderitems()
 
-    def get_selected_uids(self, folderitems):
+    def get_selected_uids(self, folderitems, uids_to_keep=None):
         """Lookup selected UIDs from the folderitems
         """
         selected_uids = []
+        if uids_to_keep:
+            selected_uids = uids_to_keep
 
         for folderitem in folderitems:
+            uid = folderitem.get("uid")
+            if uid in selected_uids:
+                continue
             if folderitem.get("selected", False):
                 selected_uids.append(folderitem.get("uid"))
         return selected_uids
@@ -367,7 +404,8 @@ class AjaxListingView(BrowserView):
         folderitems = self.get_folderitems()
 
         # Process selected UIDs and their allowed transitions
-        selected_uids = self.get_selected_uids(folderitems)
+        uids_to_keep = payload.get("selected_uids")
+        selected_uids = self.get_selected_uids(folderitems, uids_to_keep)
         selected_objs = map(api.get_object_by_uid, selected_uids)
         transitions = self.get_allowed_transitions_for(selected_objs)
 
@@ -398,7 +436,7 @@ class AjaxListingView(BrowserView):
         # N.B. This is needed to set back the requested `sort_on` and
         #      `sort_order` values to the response data. This needs to be fixed
         #      in the base class `get_sort_on` and `get_sort_order` methods.
-        data.update(payload)
+        # data.update(payload)
 
         # some performance logging
         logger.info("AjaxListingView::ajax_folderitems:"
