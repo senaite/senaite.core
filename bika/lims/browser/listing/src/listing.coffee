@@ -218,6 +218,14 @@ class ListingController extends React.Component
     # Override the form action when a custom URL is given
     if url then form.action = url
 
+    # inject all selected uids, because not all items might be shown on the current page
+    for uid in @state.selected_uids
+      input = document.createElement "input"
+      input.setAttribute "type", "hidden"
+      input.setAttribute "name", "#{@state.select_checkbox_name}:list"
+      input.setAttribute "value", uid
+      form.appendChild input
+
     return form.submit()
 
   selectUID: (uid, toggle) ->
@@ -232,7 +240,10 @@ class ListingController extends React.Component
       # handle the select all checkbox
       if uid == "all"
         all_uids = @state.folderitems.map (item) -> item.uid
-        selected_uids = all_uids
+        # keep existing selected uids
+        for uid in all_uids
+          if uid not in selected_uids
+            selected_uids.push uid
       # push the uid into the list of selected_uids
       else
         selected_uids.push uid

@@ -65,6 +65,15 @@ class TableHeaderRow extends React.Component
       return get_key
     return null
 
+  all_selected: ->
+    ###
+     * Checks if all visible items are selected
+    ###
+    for item in @props.folderitems
+      if item.uid not in @props.selected_uids
+        return no
+    return yes
+
   build_cells: ->
     ###
      * Build all cells for the row
@@ -80,9 +89,7 @@ class TableHeaderRow extends React.Component
     if @props.show_select_column
 
       # check if all visible rows are selected
-      selected_count = @props.selected_uids.length
-      folderitems_count = @props.folderitems.length
-      checked = selected_count > 0 and selected_count == folderitems_count
+      all_selected = @all_selected()
 
       show_select_all_checkbox = @props.show_select_all_checkbox
 
@@ -92,7 +99,7 @@ class TableHeaderRow extends React.Component
             <Checkbox
               name={checkbox_name}
               value={checkbox_value}
-              checked={checked}
+              checked={all_selected}
               onChange={@props.on_select_checkbox_checked}/>}
         </th>
       )
