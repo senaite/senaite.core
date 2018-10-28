@@ -200,7 +200,7 @@ class AjaxListingView(BrowserView):
         transitions = []
 
         # allowed transitions of the current workflow
-        allowed_transitions = self.review_state.get("transitions")
+        allowed_transitions = self.review_state.get("transitions", [])
         allowed_transition_ids = map(
             lambda t: t.get("id"), allowed_transitions)
 
