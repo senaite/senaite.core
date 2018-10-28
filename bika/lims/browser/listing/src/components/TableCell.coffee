@@ -1,6 +1,8 @@
 import React from "react"
 
 import Select from "./Select.coffee"
+import NumericField from "./NumericField.coffee"
+import Checkbox from "./Checkbox.coffee"
 
 
 class TableCell extends React.Component
@@ -43,14 +45,29 @@ class TableCell extends React.Component
 
     item = @props.item
     item_key = @props.item_key
+    item_uid = item.uid
+    name = "#{item_key}.#{item_uid}:records"
+    value = item[item_key]
+
     if item_key of item.choices
       options = item.choices[item_key]
-      value = item[item_key]
-      return <Select
+      return <Select value={value}
+                     name={name}
+                     className="form-control input-sm"
+                     options={options} />
+
+    else if item_key in item.allow_edit
+      if typeof(value) == "boolean"
+        return <Checkbox name={name}
+                         value={value}
+                         checked={value}/>
+
+      return <NumericField
+               size="5"
+               name={name}
                value={value}
-               name={item_key}
-               className="form-control input-sm"
-               options={options} />
+               className="form-control input-sm" />
+
     return content
 
   render: ->

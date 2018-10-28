@@ -8,6 +8,7 @@ class Select extends React.Component
 
   constructor: (props) ->
     super(props)
+    @on_select = @on_select.bind @
 
   on_select: (event) ->
     ###
