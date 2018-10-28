@@ -195,16 +195,22 @@ class AjaxListingView(BrowserView):
         custom_transitions = self.review_state.get("custom_transitions", [])
 
         transitions_by_tid = {}
-        common_tids = None
+        common_tids = set()
+
+        # process allowed transitions in the current selected review_state
+        for allowed_transition in self.review_state.get("transitions", []):
+            tid = allowed_transition.get("id")
+            common_tids.add(tid)
+            transitions_by_tid[tid] = allowed_transition
+
         for obj in objects:
+            # get the allowed transitions for this object
             obj_transitions = api.get_transitions_for(obj)
             tids = []
             for transition in obj_transitions:
                 tid = transition.get("id")
                 tids.append(tid)
                 transitions_by_tid[tid] = transition
-            if common_tids is None:
-                common_tids = set(tids)
             common_tids = common_tids.intersection(tids)
 
         common_transitions = map(
