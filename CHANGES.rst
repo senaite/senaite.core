@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1066 Enhanced partitioning system (partition magic)
 
 **Changed**
 
