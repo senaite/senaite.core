@@ -1,5 +1,6 @@
 /* Listing Styles */
 
+/* Colors taken from https://mdbootstrap.com/css/colors */
 #ajax-contents-table tr { border-left: solid transparent; }
 
 #ajax-contents-table tr.state-active { border-left: solid transparent; }
@@ -25,7 +26,7 @@
 #ajax-contents-table th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
 #ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em; }
 
-#ajax-contents-table tr.category { cursor: pointer; }
+#ajax-contents-table tr.category { cursor: pointer; font-weight: bold; font-size: 115%; color: #3E4551; background-color: #fcf8e3; }
 
 #table-overlay {
   position: absolute;
