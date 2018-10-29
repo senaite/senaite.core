@@ -912,7 +912,7 @@ class AnalysisRequestsView(BikaListingView):
         # Partition?
         item["primary_uid"] = obj.getRawParentAnalysisRequest or ''
         if item["primary_uid"]:
-            row_class = "{} partition".format(item["table_row_class"] or "")
+            row_class = "{} partition".format(item.get("table_row_class", ""))
             item["table_row_class"] = row_class.strip()
         return item
 
