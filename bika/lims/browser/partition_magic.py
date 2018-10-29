@@ -112,10 +112,7 @@ class PartitionMagicView(BrowserView):
         logger.info("*** CREATE PARTITION ***")
 
         ar = self.get_object_by_uid(primary_uid)
-        sample = ar.getSample()
-
         record = {
-            "PrimarySample": api.get_uid(sample),
             "InternalUse": True,
             "ParentAnalysisRequest": primary_uid,
             "SampleType": sampletype_uid,
