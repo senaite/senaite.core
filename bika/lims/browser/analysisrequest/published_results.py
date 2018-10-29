@@ -5,12 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import bikaMessageFactory as _
+from Products.CMFCore.utils import getToolByName
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import t
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 
 
 class AnalysisRequestPublishedResults(BikaListingView):
@@ -64,30 +63,6 @@ class AnalysisRequestPublishedResults(BikaListingView):
         ]
 
     def __call__(self):
-        ar = self.context
-        workflow = getToolByName(ar, 'portal_workflow')
-        # If is a retracted AR, show the link to child AR and show a warn msg
-        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
-            childar = ar.getRetest() or None
-            childid = childar and childar.getId() or None
-            message = _('This Analysis Request has been withdrawn and is '
-                        'shown for trace-ability purposes only. Retest: '
-                        '${retest_child_id}.',
-                        mapping={'retest_child_id': safe_unicode(childid) or ''})
-            self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'warning')
-        # If is an AR automatically generated due to a Retraction, show it's
-        # parent AR information
-        invalidated = ar.getInvalidated()
-        if invalidated:
-            message = _('This Analysis Request has been '
-                        'generated automatically due to '
-                        'the retraction of the Analysis '
-                        'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': invalidated.getId()})
-            self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'info')
-
         # Printing workflow enabled?
         # If not, remove the Column
         self.printwfenabled = self.context.bika_setup.getPrintingWorkflowEnabled()

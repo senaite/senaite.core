@@ -9,10 +9,6 @@ import collections
 import json
 import traceback
 
-from DateTime import DateTime
-from Products.Archetypes import PloneMessageFactory as PMF
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -21,13 +17,19 @@ from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import (AddAnalysisRequest, ManageAnalysisRequests,
-                                   SampleSample)
+from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import ManageAnalysisRequests
+from bika.lims.permissions import SampleSample
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import getUsers, t
-from collective.taskqueue.interfaces import ITaskQueue
+from bika.lims.utils import get_image
+from bika.lims.utils import getUsers
+from bika.lims.utils import t
+from DateTime import DateTime
 from plone.api import user
-from plone.protect import CheckAuthenticator, PostOnly
+from plone.protect import CheckAuthenticator
+from plone.protect import PostOnly
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import queryUtility
 
 
@@ -36,7 +38,6 @@ class AnalysisRequestsView(BikaListingView):
     """
 
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
-    ar_add = ViewPageTemplateFile("templates/ar_add.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
@@ -51,7 +52,7 @@ class AnalysisRequestsView(BikaListingView):
         # catalog used for the query
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
 
-        # see: https://docs.plone.org/develop/plone/searching_and_indexing/query.html#searching-for-content-within-a-folder
+        # https://docs.plone.org/develop/plone/searching_and_indexing/query.html#searching-for-content-within-a-folder
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
@@ -108,13 +109,41 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "toggle": False}),
             ("Creator", {
-                "title": PMF("Creator"),
+                "title": _("Creator"),
                 "index": "getCreatorFullName",
                 "sortable": True,
                 "toggle": True}),
             ("Created", {
-                "title": PMF("Date Created"),
+                "title": _("Date Registered"),
                 "index": "created",
+                "toggle": False}),
+            ("SamplingDate", {
+                "title": _("Expected Sampling Date"),
+                "index": "getSamplingDate",
+                "toggle": SamplingWorkflowEnabled}),
+            ("getDateSampled", {
+                "title": _("Date Sampled"),
+                "toggle": True,
+                "input_class": "datetimepicker_nofuture",
+                "input_width": "10"}),
+            ("getDatePreserved", {
+                "title": _("Date Preserved"),
+                "toggle": False,
+                "input_class": "datetimepicker_nofuture",
+                "input_width": "10",
+                "sortable": False}),  # no datesort without index
+            ("getDateReceived", {
+                "title": _("Date Received"),
+                "toggle": False}),
+            ("getDueDate", {
+                "title": _("Due Date"),
+                "toggle": False}),
+            ("getDateVerified", {
+                "title": _("Date Verified"),
+                "input_width": "10",
+                "toggle": False}),
+            ("getDatePublished", {
+                "title": _("Date Published"),
                 "toggle": False}),
             ("getSample", {
                 "title": _("Sample"),
@@ -177,38 +206,12 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "index": "getSamplingDeviationTitle",
                 "toggle": False}),
-            ("SamplingDate", {
-                "title": _("Expected Sampling Date"),
-                "index": "getSamplingDate",
-                "toggle": SamplingWorkflowEnabled}),
-            ("getDateSampled", {
-                "title": _("Date Sampled"),
-                "toggle": True,
-                "input_class": "datetimepicker_nofuture",
-                "input_width": "10"}),
-            ("getDateVerified", {
-                "title": _("Date Verified"),
-                "input_width": "10",
-                "toggle": False,
-            }),
             ("getSampler", {
                 "title": _("Sampler"),
                 "toggle": SamplingWorkflowEnabled}),
-            ("getDatePreserved", {
-                "title": _("Date Preserved"),
-                "toggle": False,
-                "input_class": "datetimepicker_nofuture",
-                "input_width": "10",
-                "sortable": False}),  # no datesort without index
             ("getPreserver", {
                 "title": _("Preserver"),
                 "sortable": False,
-                "toggle": False}),
-            ("getDateReceived", {
-                "title": _("Date Received"),
-                "toggle": False}),
-            ("getDatePublished", {
-                "title": _("Date Published"),
                 "toggle": False}),
             ("getProfilesTitle", {
                 "title": _("Profile"),
@@ -470,8 +473,8 @@ class AnalysisRequestsView(BikaListingView):
                 "columns": self.columns.keys(),
             }, {
                 "id": "assigned",
-                "title": "<img title='%s' src='%s/++resource++bika.lims.images/assigned.png'/>" % (
-                    t(_("Assigned")), self.portal_url),
+                "title": get_image("assigned.png",
+                                   title=t(_("Assigned"))),
                 "contentFilter": {
                     "assigned_state": "assigned",
                     "cancellation_state": "active",
@@ -490,8 +493,8 @@ class AnalysisRequestsView(BikaListingView):
                 "columns": self.columns.keys(),
             }, {
                 "id": "unassigned",
-                "title": "<img title='%s' src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
-                    t(_("Unassigned")), self.portal_url),
+                "title": get_image("unassigned.png",
+                                   title=t(_("Unsassigned"))),
                 "contentFilter": {
                     "assigned_state": "unassigned",
                     "cancellation_state": "active",
@@ -510,7 +513,29 @@ class AnalysisRequestsView(BikaListingView):
                 ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
-            },
+            }, {
+                "id": "late",
+                "title": get_image("late.png",
+                                   title=t(_("Late"))),
+                "contentFilter": {
+                    "cancellation_state": "active",
+                    # Query only for unpublished ARs that are late
+                    "review_state": (
+                        "sample_received",
+                        "attachment_due",
+                        "to_be_verified",
+                        "verified",
+                    ),
+                    "getDueDate": {
+                        "query": DateTime(),
+                        "range": "max",
+                    },
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
+                "custom_transitions": [print_stickers],
+                "columns": self.columns.keys(),
+            }
         ]
 
     def update(self):
@@ -532,7 +557,8 @@ class AnalysisRequestsView(BikaListingView):
         # remove `scheduled_sampling` filter
         if not setup.getScheduleSamplingEnabled():
             self.review_states = filter(
-                lambda x: x.get("id") != "scheduled_sampling", self.review_states)
+                lambda x: x.get("id") != "scheduled_sampling",
+                self.review_states)
 
         # remove `to_be_preserved` filter
         if not setup.getSamplePreservationEnabled():
@@ -628,7 +654,7 @@ class AnalysisRequestsView(BikaListingView):
         if client:
             self.contentFilter['path'] = {
                 "query": "/".join(client.getPhysicalPath()),
-                "level": 0 }
+                "level": 0}
             # No need to display the Client column
             self.remove_column('Client')
 
@@ -713,6 +739,9 @@ class AnalysisRequestsView(BikaListingView):
         date = obj.getDateReceived
         item["getDateReceived"] = \
             self.ulocalized_time(date, long_format=1) if date else ""
+        date = obj.getDueDate
+        item["getDueDate"] = \
+            self.ulocalized_time(date, long_format=1) if date else ""
         date = obj.getDatePublished
         item["getDatePublished"] = \
             self.ulocalized_time(date, long_format=1) if date else ""
@@ -725,22 +754,15 @@ class AnalysisRequestsView(BikaListingView):
             printed = obj.getPrinted if hasattr(obj, "getPrinted") else "0"
             print_icon = ""
             if printed == "0":
-                print_icon = \
-                    """<img src='%s/++resource++bika.lims.images/delete.png'
-                        title='%s'>
-                    """ % (self.portal_url, t(_("Not printed yet")))
+                print_icon = get_image("delete.png",
+                                       title=t(_("Not printed yet")))
             elif printed == "1":
-                print_icon = \
-                    """<img src='%s/++resource++bika.lims.images/ok.png'
-                        title='%s'>
-                    """ % (self.portal_url, t(_("Printed")))
+                print_icon = get_image("ok.png",
+                                       title=t(_("Printed")))
             elif printed == "2":
-                print_icon = \
-                    """<img
-                        src='%s/++resource++bika.lims.images/exclamation.png'
-                            title='%s'>
-                        """ \
-                    % (self.portal_url, t(_("Republished after last print")))
+                print_icon = get_image(
+                    "exclamation.png",
+                    title=t(_("Republished after last print")))
             item["after"]["Printed"] = print_icon
         item["SamplingDeviation"] = obj.getSamplingDeviationTitle
 
@@ -750,36 +772,27 @@ class AnalysisRequestsView(BikaListingView):
         # Getting a dictionary with each workflow id and current state in it
         states_dict = obj.getObjectWorkflowStates
         if obj.assigned_state == 'assigned':
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/worksheet.png'
-                    title='%s'/>
-                """ % (self.portal_url, t(_("All analyses assigned")))
+            after_icons += get_image("worksheet.png",
+                                     title=t(_("All analyses assigned")))
         if states_dict.get('review_state', '') == 'invalid':
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/delete.png'
-                    title='%s'/>
-                """ % (self.portal_url, t(_("Results have been withdrawn")))
-        if obj.getLate:
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/late.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Late Analyses")))
+            after_icons += get_image("delete.png",
+                                     title=t(_("Results have been withdrawn")))
+
+        due_date = obj.getDueDate
+        if due_date and due_date < (obj.getDatePublished or DateTime()):
+            due_date_str = self.ulocalized_time(due_date)
+            img_title = "{}: {}".format(t(_("Late Analyses")), due_date_str)
+            after_icons += get_image("late.png", title=img_title)
+
         if obj.getSamplingDate and obj.getSamplingDate > DateTime():
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/calendar.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Future dated sample")))
+            after_icons += get_image("calendar.png",
+                                     title=t(_("Future dated sample")))
         if obj.getInvoiceExclude:
-            after_icons += \
-                """<img
-                    src='%s/++resource++bika.lims.images/invoice_exclude.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Exclude from invoice")))
+            after_icons += get_image("invoice_exclude.png",
+                                     title=t(_("Exclude from invoice")))
         if obj.getHazardous:
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/hazardous.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Hazardous")))
+            after_icons += get_image("hazardous.png",
+                                     title=t(_("Hazardous")))
         if after_icons:
             item['after']['getId'] = after_icons
 
@@ -887,17 +900,10 @@ class AnalysisRequestsView(BikaListingView):
                 # Gettin the full object if not get before
                 full_object = full_object if full_object else obj.getObject()
                 if not full_object.isUserAllowedToVerify(self.member):
-                    item["after"]["state_title"] = \
-                        """<img src='++resource++bika.lims.images/submitted-by-current-user.png'
-                            title='%s'/>
-                        """ % t(_("Cannot verify: Submitted by current user"))
+                    item["after"]["state_title"] = get_image(
+                        "submitted-by-current-user.png",
+                        title=t(_("Cannot verify: Submitted by current user")))
         return item
-
-    def pending_tasks(self):
-        task_queue = queryUtility(ITaskQueue, name='ar-create')
-        if task_queue is None:
-            return 0
-        return len(task_queue)
 
     @property
     def copy_to_new_allowed(self):
@@ -920,23 +926,3 @@ class AnalysisRequestsView(BikaListingView):
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
-
-
-class QueuedAnalysisRequestsCount():
-
-    def __call__(self):
-        """Returns the number of tasks in the queue ar-create, responsible of
-        creating Analysis Requests asynchronously"""
-        try:
-            PostOnly(self.context.REQUEST)
-        except:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        try:
-            CheckAuthenticator(self.request.form)
-        except:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        task_queue = queryUtility(ITaskQueue, name="ar-create")
-        count = len(task_queue) if task_queue is not None else 0
-        return json.dumps({"count": count})

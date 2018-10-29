@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.Field import Field, StringField
 from bika.lims import logger
 from bika.lims import api
@@ -40,6 +39,49 @@ class UIDReferenceField(StringField):
     implements(IUIDReferenceField)
 
     security = ClassSecurityInfo()
+
+    def get_relationship_key(self, context):
+        """Return the configured relationship key or generate a new one
+        """
+        if not self.relationship:
+            return context.portal_type + self.getName()
+        return self.relationship
+
+    def link_reference(self, source, target):
+        """Link the target to the source
+        """
+        target_uid = api.get_uid(target)
+        # get the annotation storage key
+        key = self.get_relationship_key(target)
+        # get all backreferences from the source
+        # N.B. only like this we get the persistent mapping!
+        backrefs = get_backreferences(source, relationship=None)
+        if key not in backrefs:
+            backrefs[key] = PersistentList()
+        if target_uid not in backrefs[key]:
+            backrefs[key].append(target_uid)
+        return True
+
+    def unlink_reference(self, source, target):
+        """Unlink the target from the source
+        """
+        target_uid = api.get_uid(target)
+        # get the storage key
+        key = self.get_relationship_key(target)
+        # get all backreferences from the source
+        # N.B. only like this we get the persistent mapping!
+        backrefs = get_backreferences(source, relationship=None)
+        if key not in backrefs:
+            logger.warn(
+                "Referenced object {} has no backreferences for the key {}"
+                .format(repr(source), key))
+            return False
+        if target_uid not in backrefs[key]:
+            logger.warn("Target {} was not linked by {}"
+                        .format(repr(target), repr(source)))
+            return False
+        backrefs[key].remove(target_uid)
+        return True
 
     @security.public
     def get_object(self, context, value):
@@ -135,21 +177,44 @@ class UIDReferenceField(StringField):
                 ret = [ret]
         return ret
 
-    def _set_backreferences(self, context, items):
-        if items:
-            if self.relationship:
-                key = self.relationship
-            else:
-                key = context.portal_type + self.getName()
-            uid = context.UID()
-            for item in items:
-                # Because no relationship is passed to get_backreferences,
-                # the entire set of backrefs is returned by reference.
-                backrefs = get_backreferences(item, relationship=None)
-                if key not in backrefs:
-                    backrefs[key] = PersistentList()
-                if uid not in backrefs[key]:
-                    backrefs[key].append(uid)
+    def _set_backreferences(self, context, items, **kwargs):
+        """Set the back references on the linked items
+
+        This will set an annotation storage on the referenced items which point
+        to the current context.
+        """
+
+        # Don't set any references during initialization.
+        # This might cause a recursion error when calling `getRaw` to fetch the
+        # current set UIDs!
+        initializing = kwargs.get('_initializing_', False)
+        if initializing:
+            return
+
+        # UID of the current object
+        uid = api.get_uid(context)
+        # current set UIDs
+        raw = self.getRaw(context) or []
+        # handle single reference fields
+        if isinstance(raw, basestring):
+            raw = [raw, ]
+        cur = set(raw)
+        # UIDs to be set
+        new = set(map(api.get_uid, items))
+        # removed UIDs
+        removed = cur.difference(new)
+
+        # Unlink removed UIDs from the source
+        for uid in removed:
+            source = api.get_object_by_uid(uid, None)
+            if source is None:
+                logger.warn("UID {} does not exist anymore".format(uid))
+                continue
+            self.unlink_reference(source, context)
+
+        # Link backrefs
+        for item in items:
+            self.link_reference(item, context)
 
     @security.public
     def set(self, context, value, **kwargs):
@@ -170,7 +235,7 @@ class UIDReferenceField(StringField):
             if type(value) not in (list, tuple):
                 value = [value, ]
             ret = [self.get_object(context, val) for val in value if val]
-            self._set_backreferences(context, ret)
+            self._set_backreferences(context, ret, **kwargs)
             uids = [self.get_uid(context, r) for r in ret if r]
             StringField.set(self, context, uids, **kwargs)
         else:
@@ -186,7 +251,7 @@ class UIDReferenceField(StringField):
                 value = value[0]
             ret = self.get_object(context, value)
             if ret:
-                self._set_backreferences(context, [ret, ])
+                self._set_backreferences(context, [ret, ], **kwargs)
                 uid = self.get_uid(context, ret)
                 StringField.set(self, context, uid, **kwargs)
             else:
@@ -212,7 +277,11 @@ def _get_object(context, value):
     if api.is_uid(value):
         uc = api.get_tool('uid_catalog', context=context)
         brains = uc(UID=value)
-        assert len(brains) == 1
+        if len(brains) == 0:
+            # Broken Reference!
+            logger.warn("Reference on {} with UID {} is broken!"
+                        .format(repr(context), value))
+            return None
         return brains[0].getObject()
     return None
 

@@ -16,6 +16,7 @@ from Products.Archetypes.Field import BooleanField, DateTimeField, \
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -617,12 +618,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not starttime:
             # The analysis is not yet ready to be processed
             return 0
-
-        endtime = self.getDateVerified()
-        if not endtime:
-            # Assume here the analysis is still in progress, so use the current
-            # Date and Time
-            endtime = DateTime()
+        endtime = self.getDateVerified() or DateTime()
 
         # Duration in minutes
         duration = (endtime - starttime) * 24 * 60
@@ -642,13 +638,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not maxtime:
             # No Turnaround time is set for this analysis
             return 0
-        maxtime_delta = int(maxtime.get('days', 0)) * 86400
-        maxtime_delta += int(maxtime.get('hours', 0)) * 3600
-        maxtime_delta += int(maxtime.get('minutes', 0))
-        duration = self.getDuration()
-        earliness = maxtime_delta - duration
-        return earliness
+        return api.to_minutes(**maxtime) - self.getDuration()
 
+    @security.public
     def isLateAnalysis(self):
         """Returns true if the analysis is late in accordance with the maximum
         turnaround time. If no maximum turnaround time is set for this analysis
@@ -657,11 +649,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: true if the analysis is late
         :rtype: bool
         """
-        maxtime = self.getMaxTimeAllowed()
-        if not maxtime:
-            # No maximum turnaround time set, assume is not late
-            return False
         return self.getEarliness() < 0
+
+    @security.public
+    def getLateness(self):
+        """The time in minutes that exceeds the maximum turnaround set for this
+        analysis. If the analysis has no turnaround time set or is not ready
+        for process yet, returns 0. The analysis is not late if the lateness is
+        negative
+        :return: the time in minutes that exceeds the maximum turnaround time
+        :rtype: int
+        """
+        return -self.getEarliness()
 
     @security.public
     def isInstrumentValid(self):

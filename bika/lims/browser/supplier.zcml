@@ -14,7 +14,7 @@
 
     <browser:page
       for="bika.lims.interfaces.ISupplier"
-      name="base_view"
+      name="reference_samples"
       class="bika.lims.browser.supplier.SupplierReferenceSamplesView"
       permission="bika.lims.ManageSuppliers"
       layer="bika.lims.interfaces.IBikaLIMS"

@@ -1982,31 +1982,19 @@ class AnalysisRequest(BaseFolder):
                 manager_list.append(manager)
         return manager_list
 
+    def getDueDate(self):
+        """Returns the earliest due date of the analyses this Analysis Request
+        contains."""
+        due_dates = map(lambda an: an.getDueDate, self.getAnalyses())
+        return due_dates and min(due_dates) or None
+
     security.declareProtected(View, 'getLate')
 
     def getLate(self):
-        """Return True if any analyses are late
+        """Return True if there is at least one late analysis in this Request
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        review_state = workflow.getInfoFor(self, 'review_state', '')
-        resultdate = 0
-        if review_state in ['to_be_sampled', 'to_be_preserved',
-                            'sample_due', 'published']:
-            return False
-
-        for analysis in self.objectValues('Analysis'):
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state == 'published':
-                continue
-            # This situation can be met during analysis request creation
-            calculation = analysis.getCalculation()
-            if not calculation or (
-                    calculation and not calculation.getDependentServices()):
-                resultdate = analysis.getResultCaptureDate()
-            duedate = analysis.getDueDate()
-            # noinspection PyCallingNonCallable
-            if (resultdate and resultdate > duedate) \
-                    or (not resultdate and DateTime() > duedate):
+        for analysis in self.getAnalyses(full_objects=True, retracted=False):
+            if analysis.isLateAnalysis():
                 return True
         return False
 
