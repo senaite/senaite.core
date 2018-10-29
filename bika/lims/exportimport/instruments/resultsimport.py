@@ -973,6 +973,7 @@ class AnalysisResultsImporter(Logger):
                          "result": ""})
         if resultsaved:
             # We don't transition if there are interims fields with missing values
+            # Returns true if interims < 0
             if self.toAutoSubmitInterims(analysis, interimsout):
                 doActionFor(analysis, 'submit')
                 self.calculateTotalResults(objid, analysis)

@@ -499,7 +499,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Interims' priority order (from low to high):
         # Calculation < Analysis
-        interims = calc.getInterimFields() + self.getInterimFields()
+        interims = self.getInterimFields()
+        # Check for default values only if there's missing values in self.getInterimFields()
+        interims_missing_values = filter(lambda interim: not interim.get('value', False), interims)
+        if interims_missing_values:
+            interims = calc.getInterimFields() + self.getInterimFields()
 
         # Add interims to mapping
         for i in interims:
