@@ -4,6 +4,8 @@ import Select from "./Select.coffee"
 import NumericField from "./NumericField.coffee"
 import Checkbox from "./Checkbox.coffee"
 import StringField from "./StringField.coffee"
+import ReadonlyField from "./ReadonlyField.coffee"
+import HiddenField from "./HiddenField.coffee"
 
 
 class TableCell extends React.Component
@@ -42,8 +44,8 @@ class TableCell extends React.Component
      * Event handler when the checkbox field changed
     ###
     el = event.currentTarget
-    value = el.value
-    console.debug "TableCell:on_cell_checkbox_field_change: value=#{value}"
+    checked = el.checked
+    console.debug "TableCell:on_cell_checkbox_field_change: checked=#{checked}"
 
   on_cell_numeric_field_change: (event) ->
     ###
@@ -98,16 +100,12 @@ class TableCell extends React.Component
     if not allow_edit
       return no
 
-    # row is not selected
-    if not selected
-      return no
+    # check if the field is listed in the item's allow_edit list
+    if item_key in item.allow_edit
+      return yes
 
     # XXX Fix inconsistent behavior
     if item_key of item.choices
-      return yes
-
-    # check if the field is listed in the item's allow_edit list
-    if item_key in item.allow_edit
       return yes
 
     if item_key in @editable_fields
@@ -120,58 +118,119 @@ class TableCell extends React.Component
       * Render the table cell content
     ###
 
-    # return a plain text field if the cell can not be edited
-    if not @is_edit_allowed()
-      return <span dangerouslySetInnerHTML={{__html: @props.html}}></span>
-
-
-    # Handle editable cell
-
     item = @props.item
     item_key = @props.item_key
-    item_uid = item.uid
-    name = "#{item_key}.#{item_uid}"
-    value = item[item_key]
-    cell = []
+    name = @props.name
+    value = @props.value
+    formatted_value = @props.formatted_value
+    title = @props.title
+    choices = item.choices or {}
+    disabled = @props.disabled
+    column_title = @props.column.title
+    editable = @is_edit_allowed()
+    required_fields = item.required or []
+    required = item_key in required_fields
 
-    # Render selection field
-    if item_key of item.choices
+    # Render readonly fields
+    if not editable
+      field = [
+        <ReadonlyField
+          key={name}
+          name={name}
+          value={value}
+          title={column_title}
+          formatted_value={formatted_value}
+          className="readonly"
+          />
+      ]
+      return field
+
+    # Select
+    if item_key of choices
       fieldname = "#{name}:records"
-      options = item.choices[item_key]
-      return <Select name={fieldname}
-                     value={value}
-                     title={item_key}
-                     options={options}
-                     disabled={@props.disabled}
-                     onChange={@on_cell_select_field_change}
-                     className="listing_select_entry" />
+      options = choices[item_key]
+      field = [
+        <Select
+          key={name}
+          name={fieldname}
+          value={value}
+          title={column_title}
+          disabled={disabled}
+          required={required}
+          options={options}
+          onChange={@on_cell_select_field_change}
+          className=""
+          />
+      ]
+      if disabled
+        field.push (
+          <HiddenField
+            key={name + "_hidden"}
+            name={fieldname}
+            value={value}
+            className=""
+          />
+        )
+      return field
 
-    # Render boolean field
+    # Checkbox
     if typeof(value) == "boolean"
-      key = "boolean"
       fieldname = "#{name}:record:ignore-empty"
-      return <Checkbox name={fieldname}
-                       value={value}
-                       title={item_key}
-                       defaultChecked={value}
-                       disabled={@props.disabled}
-                       onChange={@on_cell_checkbox_field_change}
-                       className="listing_checkbox_entry" />
+      field = [
+        <Checkbox
+          key={name}
+          name={fieldname}
+          value="on"
+          title={column_title}
+          defaultChecked={value}
+          disabled={disabled}
+          editable={editable}
+          onChange={@on_cell_checkbox_field_change}
+          className=""
+          />
+      ]
+      if disabled
+        field.push (
+          <HiddenField
+            key={name + "_hidden"}
+            name={fieldname}
+            value={value}
+            className=""
+          />
+        )
+      return field
 
-
-    # Render numerif field
-    fieldname = "#{name}:records"
-    return <NumericField key={key}
-                         name={fieldname}
-                         defaultValue={value}
-                         title={item_key}
-                         disabled={@props.disabled}
-                         onChange={@on_cell_numeric_field_change}
-                         className="listing_string_entry numeric" />
+    # Numeric
+    if typeof(value) == "string"
+      fieldname = "#{name}:records"
+      field = [
+        <NumericField
+          key={name}
+          name={fieldname}
+          defaultValue={value}
+          editable={editable}
+          title={column_title}
+          formatted_value={formatted_value}
+          placeholder={column_title}
+          disabled={disabled}
+          onChange={@on_cell_numeric_field_change}
+          className=""
+          />
+      ]
+      if disabled
+        field.push (
+          <HiddenField
+            key={name + "_hidden"}
+            name={fieldname}
+            value={value}
+            className=""
+          />
+        )
+      return field
 
   render: ->
     <td className={@props.className}>
-      <div className="form-group">
+      <div className="input-group">
         {@render_before_content()}
         {@render_content()}
         {@render_after_content()}

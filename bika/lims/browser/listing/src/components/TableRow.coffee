@@ -78,19 +78,28 @@ class TableRow extends React.Component
       if not column.toggle
         continue
 
-      # get either the replacement html or the plain value of the item
-      title = item.replace[key] or item[key]
+      # form field name
+      name = "#{key}.#{uid}"
+      # form field value
+      value = item[key]
+      # replacement html or plain value of the current column
+      formatted_value = item.replace[key] or value
 
       cells.push(
         <TableCell
-          key={key}
-          item={item}
-          item_key={key}
-          selected={selected}
-          disabled={disabled}
-          allow_edit={allow_edit}
-          html={title}/>
+          key={key}  # internal key only
+          item={item}  # a single folderitem
+          item_key={key}  # the current rendered column key
+          name={name}  # the form field name
+          value={value}  # the form field value
+          formatted_value={formatted_value}  # the formatted value for readonly fields
+          selected={selected}  # true if the row is selected
+          disabled={disabled}  # true if the fields should be frozen
+          allow_edit={allow_edit}  # the global allow_edit flag
+          column={column}  # the current rendered column object
+          />
       )
+
     return cells
 
   render: ->
