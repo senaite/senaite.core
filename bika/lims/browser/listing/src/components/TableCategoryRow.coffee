@@ -88,6 +88,7 @@ class TableCategoryRow extends React.Component
         <TableRow
           key={index}
           className={item.state_class}
+          allow_edit={@props.allow_edit}
           on_select_checkbox_checked={@props.on_select_checkbox_checked}
           item={item}
           review_states={@props.review_states}

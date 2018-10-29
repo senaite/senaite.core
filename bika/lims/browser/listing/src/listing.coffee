@@ -87,6 +87,7 @@ class ListingController extends React.Component
       # The available catalog indexes for sorting
       catalog_indexes: []
       # Listing specific configs
+      allow_edit: no
       show_select_all_checkbox: no
       show_select_column: no
       select_checkbox_name: "uids"
@@ -362,6 +363,7 @@ class ListingController extends React.Component
           {@state.loading and <div id="table-overlay"/>}
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
+            allow_edit={@state.allow_edit}
             onSort={@sortBy}
             on_select_checkbox_checked={@selectUID}
             sort_on={@state.sort_on}

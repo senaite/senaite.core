@@ -44,6 +44,16 @@ class TableRow extends React.Component
     uid = item.uid
     selected = @is_selected()
 
+    # XXX Refactor this!
+    # A JSON structure coming from bika.lims.analysisrequest.manage_analyses to
+    # determine if the row can be selected or not
+    row_data = item.row_data or "{}"
+    row_data = JSON.parse row_data
+    disabled = row_data.disabled
+
+    # global allow_edit
+    allow_edit = @props.allow_edit
+
     # insert select column
     if @props.show_select_column
       cells.push(
@@ -51,7 +61,9 @@ class TableRow extends React.Component
           <Checkbox
             name={checkbox_name}
             value={uid}
+            disabled={disabled}
             checked={selected}
+            allow_edit={allow_edit}
             onChange={@props.on_select_checkbox_checked}/>
         </td>
     )
@@ -75,6 +87,8 @@ class TableRow extends React.Component
           item={item}
           item_key={key}
           selected={selected}
+          disabled={disabled}
+          allow_edit={allow_edit}
           html={title}/>
       )
     return cells

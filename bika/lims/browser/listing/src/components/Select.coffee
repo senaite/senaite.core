@@ -47,14 +47,36 @@ class Select extends React.Component
 
     return options
 
+  render_field: ->
+    ###
+     * Render the field
+    ###
+    field = []
+
+    if @props.disabled
+      field.push (
+        <input key="field_hidden"
+               type="hidden"
+               name={@props.name}
+               value={@props.value}/>
+      )
+
+    field.push (
+      <select key="field"
+              name={@props.name}
+              value={@props.value}
+              title={@props.title}
+              disabled={@props.disabled}
+              onChange={@on_change}
+              className={@props.className}>
+        {@build_options()}
+      </select>
+    )
+
+    return field
+
   render: ->
-    <select name={@props.value}
-            value={@props.value}
-            title={@props.title}
-            onChange={@on_change}
-            className={@props.className}>
-      {@build_options()}
-    </select>
+    @render_field()
 
 
 export default Select

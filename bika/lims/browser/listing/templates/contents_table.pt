@@ -10,6 +10,7 @@
   </tal:js>
 
   <form name="listing_form"
+        class="form form-inline"
         method="post"
         i18n:domain="senaite.core"
         tal:attributes="id python:view.form_id;

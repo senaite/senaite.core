@@ -22,14 +22,35 @@ class StringField extends React.Component
     # propagate event
     if @props.onChange then @props.onChange event
 
+  render_field: ->
+    ###
+     * Render the field
+    ###
+    field = []
+
+    if @props.disabled
+      field.push (
+        <input key="field_hidden"
+               type="hidden"
+               name={@props.name}
+               value={@props.value}/>
+      )
+
+    field.push (
+      <input type="text"
+             name={@props.name}
+             defaultValue={@props.value}
+             disabled={@props.disabled}
+             className={@props.className or "form-control input-sm"}
+             placeholder={@props.placeholder}
+             onChange={@on_change} />
+    )
+
+    return field
+
   render: ->
-    <input type={@props.state or "text"}
-           name={@props.name}
-           defaultValue={@props.value}
-           size={@props.size or 5}
-           className={@props.className or "form-control input-sm"}
-           placeholder={@props.placeholder}
-           onChange={@on_change} />
+    @render_field()
 
 
 export default StringField
+

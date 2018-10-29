@@ -149,6 +149,7 @@ class Table extends React.Component
         <TableCategoryRow
             key={category}
             className="category"
+            allow_edit={@props.allow_edit}
             colspan={@get_column_count()}
             category={category}
             expanded={expanded}
@@ -176,6 +177,7 @@ class Table extends React.Component
         <TableRow
           key={index}
           className={item.state_class}
+          allow_edit={@props.allow_edit}
           on_select_checkbox_checked={@on_select_checkbox_checked}
           item={item}
           review_states={@props.review_states}

@@ -22,15 +22,37 @@ class Checkbox extends React.Component
     # propagate event
     if @props.onChange then @props.onChange event
 
+  render_field: ->
+    ###
+     * Render the field
+    ###
+    field = []
+
+    if @props.disabled
+      field.push (
+        <input key="field_hidden"
+               type="hidden"
+               name={@props.name}
+               value={@props.value}/>
+      )
+
+    field.push (
+      <input key="field"
+             type="checkbox"
+             name={@props.name}
+             value={@props.value}
+             title={@props.title}
+             disabled={@props.disabled}
+             checked={@props.checked}
+             defaultChecked={@props.defaultChecked}
+             className={@props.className}
+             onChange={@on_change}/>
+    )
+
+    return field
+
   render: ->
-    <input type="checkbox"
-           name={@props.name}
-           value={@props.value}
-           title={@props.title}
-           checked={@props.checked}
-           defaultChecked={@props.defaultChecked}
-           className={@props.className}
-           onChange={@on_change}/>
+    @render_field()
 
 
 export default Checkbox
