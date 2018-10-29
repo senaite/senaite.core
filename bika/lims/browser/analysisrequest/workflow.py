@@ -477,6 +477,8 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         return success
 
     def workflow_action_create_partitions(self):
+        """Redirects the user to the partition magic view
+        """
         uids = list()
         if IAnalysisRequest.providedBy(self.context):
             uids = [api.get_uid(self.context)]
