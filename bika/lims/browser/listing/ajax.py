@@ -359,6 +359,7 @@ class AjaxListingView(BrowserView):
             "post_action": self.getPOSTAction(),
             "review_state": self.review_state.get("id", "default"),
             "review_states": self.review_states,
+            "columns": self.columns,
             "select_checkbox_name": self.select_checkbox_name,
             "show_categories": self.show_categories,
             "show_column_toggles": self.show_column_toggles,
