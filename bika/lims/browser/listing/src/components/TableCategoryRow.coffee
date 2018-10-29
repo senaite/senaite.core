@@ -53,7 +53,7 @@ class TableCategoryRow extends React.Component
     cells.push(
       <td key={@props.category}
           colSpan={colspan}>
-        {@props.category}
+       {@props.category}
       </td>
     )
 

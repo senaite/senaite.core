@@ -16,8 +16,8 @@ class Checkbox extends React.Component
      * Event handler when the checkbox changed
     ###
     el = event.currentTarget
-    value = el.value
-    console.debug "Checkbox::on_change: value=#{value}"
+    checked = el.checked
+    console.debug "Checkbox::on_change: checked=#{checked}"
 
     # propagate event
     if @props.onChange then @props.onChange event
