@@ -346,10 +346,10 @@ class ListingController extends React.Component
             review_state={@state.review_state}
             review_states={@state.review_states}/>
         </div>
-        <div className="col-sm-1">
+        <div className="col-sm-1 text-right">
           <Loader loading={@state.loading} />
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-3 text-right">
           <SearchBox
             on_search={@filterBySearchterm}
             filter={@state.filter}
@@ -388,10 +388,10 @@ class ListingController extends React.Component
                      selected_uids={@state.selected_uids}
                      transitions={@state.transitions}/>
         </div>
-        <div className="col-sm-1">
+        <div className="col-sm-1 text-right">
           <Loader loading={@state.loading} />
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-3 text-right">
           <Pagination
             id="pagination"
             className="pagination-controls"
