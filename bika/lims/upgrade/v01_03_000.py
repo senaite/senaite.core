@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.DCWorkflow.Guard import Guard
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
@@ -14,8 +15,6 @@ from bika.lims.catalog.analysisrequest_catalog import \
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from plone.portlets.interfaces import IPortletType
-from zope import component
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -119,6 +118,9 @@ def setup_partitioning(portal):
     # Add getAncestorsUIDs index in analyses catalog
     add_partitioning_indexes(portal)
 
+    # Adds metadata columns for partitioning
+    add_partitioning_metadata(portal)
+
 
 def add_create_partition_transition(portal):
     logger.info("Adding partitioning workflow")
@@ -176,6 +178,14 @@ def add_partitioning_indexes(portal):
               index_metatype="KeywordIndex")
 
 
+def add_partitioning_metadata(portal):
+    """Add metadata columns required for partitioning machinery
+    """
+    logger.info("Adding partitioning metadata")
+    add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING,
+                 'getRawParentAnalysisRequest')
+
+
 def add_index(portal, catalog_id, index_name, index_attribute, index_metatype):
     logger.info("Adding '{}' index to '{}' ...".format(index_name, catalog_id))
     catalog = api.get_tool(catalog_id)
@@ -186,5 +196,19 @@ def add_index(portal, catalog_id, index_name, index_attribute, index_metatype):
     catalog.addIndex(index_name, index_metatype)
     logger.info("Indexing new index '{}' ...".format(index_name))
     catalog.manage_reindexIndex(index_name)
-    logger.info("Indexing new index '{}' [DONE]".format(index_name))
 
+
+def add_metadata(portal, catalog_id, column, refresh_catalog=False):
+    logger.info("Adding '{}' metadata to '{}' ...".format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column in catalog.schema():
+        logger.info("Metadata '{}' already in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+
+    catalog.addColumn(column)
+
+    if refresh_catalog:
+        logger.info("Refreshing catalog '{}' ...".format(catalog_id))
+        handler = ZLogHandler(steps=100)
+        catalog.refreshCatalog(pghandler=handler)

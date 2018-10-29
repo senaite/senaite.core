@@ -664,5 +664,13 @@ table.bika-listing-table-transposed table.worksheet-position tbody tr {
     background-color: #fff9ee !important;
 }
 
+.bika-listing-table tr.partition td {
+  border:none;
+}
 
+.bika-listing-table tr.partition td.getId a:before{
+  content:"···•";
+  color:#333;
+  padding:0 5px 0 2px;
+}
 /* </dtml-with> */
