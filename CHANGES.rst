@@ -13,7 +13,6 @@ Changelog
 
 **Changed**
 
-- #1017 Instrument Results imports of analysis that have interim fields with apply wide must stay received
 - #1027 Refactored relationship between invalidated ARs and retests
 - #1027 Rename `retract_ar` transition to `invalidate`
 - #1012 Refactored Contacts listing
@@ -29,6 +28,7 @@ Changelog
 **Fixed**
 
 - #1022 Date Received saved as UTC time
+- #1017 After importing instrument results, the analyses that have missing interim fields, must not be transitioned
 - #1018 Fix AR Add cleanup after template removal
 - #1014 ReferenceWidget does not handle searches with null/None
 - #1008 Previous results from same batch are always displayed in reports
