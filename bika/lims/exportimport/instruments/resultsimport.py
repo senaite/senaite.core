@@ -950,6 +950,7 @@ class AnalysisResultsImporter(Logger):
         # write interims
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
+            fields_to_reindex.append('InterimFields')
             analysis.calculateResult(override=self._override[1])
 
         # Set result if present.

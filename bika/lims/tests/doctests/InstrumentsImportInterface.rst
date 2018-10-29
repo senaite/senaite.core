@@ -151,18 +151,17 @@ This service matches the service specified in the file from which the import wil
     >>> analysisservice5
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-5>
 
-    >>> interim_calc_2 = api.create(bika_calculations, 'Calculation', title='Interims Calc 2')
-    >>> interim_4 = {'keyword': 'interim_4', 'title': 'Interim 4', 'value': '', 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> interim_5 = {'keyword': 'interim_5', 'title': 'Pesticide 2', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> interim_6 = {'keyword': 'interim_6', 'title': 'Pesticide 3', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> interims_2 = [interim_4, interim_5, interim_6]
-    >>> interim_calc_2.setInterimFields(interims_2)
-    >>> import pdb; pdb.set_trace()
-    >>> self.assertEqual(interim_calc_2.getInterimFields(), interims_2)
-    >>> interim_calc_2.setFormula('((([interim_4] > 0.0) or ([interim_5] > .05) or ([interim_6] > 10.0) ) and "PASS" or "FAIL" )')
-    >>> analysisservice6 = api.create(bika_analysisservices, 'AnalysisService', title='Total Terpenes2', Keyword="TotalTerpenes2")
+    >>> calc_res_weight = api.create(bika_calculations, 'Calculation', title='Residual Weight')
+    >>> gross_mass = {'keyword': 'GM', 'title': 'Gross Mass', 'value': '', 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> net_mass = {'keyword': 'NM', 'title': 'Net Mass', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> vessel_mass = {'keyword': 'VM', 'title': 'Vessel Mass', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> interims_2 = [gross_mass, net_mass, vessel_mass]
+    >>> calc_res_weight.setInterimFields(interims_2)
+    >>> self.assertEqual(calc_res_weight.getInterimFields(), interims_2)
+    >>> calc_res_weight.setFormula('(( [NM] - [VM] ) / ( [GM] - [VM] )) * 100')
+    >>> analysisservice6 = api.create(bika_analysisservices, 'AnalysisService', title='Residual Weight Test', Keyword="RWT")
     >>> analysisservice6.setUseDefaultCalculation(False)
-    >>> analysisservice6.setCalculation(interim_calc_2)
+    >>> analysisservice6.setCalculation(calc_res_weight)
     >>> analysisservice6.setInterimFields(interims_2)
     >>> analysisservice6
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-6>
@@ -192,9 +191,7 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     >>> ar.getReceivedBy()
     'test_user_1_'
 
-    >>> service_uids2 = [
-    ...                 analysisservice6.UID(),
-    ...                ]
+    >>> service_uids2 = [analysisservice6.UID()]
     >>> ar2 = create_analysisrequest(client, request, values, service_uids2)
     >>> ar2
     <AnalysisRequest at /plone/clients/client-1/H2O-0002-R01>
@@ -267,7 +264,7 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     #TODO: Test for interim fields on other files aswell
     ...     analyses = ar.getAnalyses(full_objects=True)
     ...     if 'Parsing file generic.two_dimension.csv' in test_results['log']:
-    ...         analyses2 = ar2.getAnalyses(full_objects=True)
+    ...         ar2_analyses = ar2.getAnalyses(full_objects=True)
     ...         # Testing also for interim fields, only for `generic.two_dimension` interface
     ...         # TODO: Test for - H2O-0001: calculated result for 'THCaCO3': '2.0'
     ...         if 'Import finished successfully: 2 ARs and 4 results updated' not in test_results['log']:
@@ -278,10 +275,10 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...             self.fail("pest2 did not get updated")
     ...         if "H2O-0001 result for 'TotalTerpenes:pest3': '1'" not in test_results['log']:
     ...             self.fail("pest3 did not get updated")
-    ...         if "H2O-0002 result for 'TotalTerpenes2:interim_5': '1'" not in test_results['log']:
-    ...             self.fail("interims5 did not get updated")
-    ...         if "H2O-0002 result for 'TotalTerpenes2:interim_6': '1'" not in test_results['log']:
-    ...             self.fail("pest3 did not get updated")
+    ...         if "H2O-0002 result for 'RWT:GM': '1'" not in test_results['log']:
+    ...             self.fail("NM did not get updated")
+    ...         if "H2O-0002 result for 'RWT:VM': '1'" not in test_results['log']:
+    ...             self.fail("VM did not get updated")
     ...         for an in analyses:
     ...             if an.getKeyword() == 'TotalTerpenes':
     ...                 if api.get_workflow_status_of(an) != 'to_be_verified':
@@ -290,12 +287,11 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...                 if an.getResult() != 'PASS':
     ...                     msg = "{}:Result did not get updated".format(an.getKeyword())
     ...                     self.fail(msg)
-    ...         for an in analyses2:
-    ...             if an.getKeyword() == 'TotalTerpenes2':
+    ...         for an in ar2_analyses:
+    ...             if an.getKeyword() == 'RWT':
     ...                 if api.get_workflow_status_of(an) != 'sample_received':
     ...                     msg = "{}: Analysis not in Received state".format(an.getKeyword())
     ...                     self.fail(msg)
-    ...                 import pdb; pdb.set_trace()
     ...                 if an.getResult() != '':
     ...                     msg = "{}:Result did got updated".format(an.getKeyword())
     ...                     self.fail(msg)
