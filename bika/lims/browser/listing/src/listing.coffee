@@ -220,6 +220,8 @@ class ListingController extends React.Component
 
     # inject all selected uids, because not all items might be shown on the current page
     for uid in @state.selected_uids
+      if form.querySelector "input[value='#{uid}']"
+        continue
       input = document.createElement "input"
       input.setAttribute "type", "hidden"
       input.setAttribute "name", "#{@state.select_checkbox_name}:list"

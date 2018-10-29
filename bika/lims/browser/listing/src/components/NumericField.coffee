@@ -8,7 +8,26 @@ class NumericField extends React.Component
 
   constructor: (props) ->
     super(props)
+    # bind event handler to the current context
     @on_change = @on_change.bind @
+
+    @allowed_keys = [
+      8,    # backspace
+      9,    # tab
+      13,   # enter
+      35,   # end
+      36,   # home
+      37,   # left arrow
+      39,   # right arrow
+      46,   # delete - We don't support the del key in Opera because del == . == 46.
+      44,   # ,
+      60,   # <
+      62,   # >
+      45,   # -
+      69,   # E
+      101,  # e,
+      61    # =
+    ]
 
   on_change: (event) ->
     ###
@@ -16,14 +35,18 @@ class NumericField extends React.Component
     ###
     el = event.currentTarget
     value = el.value
-    console.debug "Input changed to #{value}"
-    el.value = value
+    console.debug "NumericField::on_change: value=#{value}"
+
+    # propagate event
+    if @props.onChange then @props.onChange event
 
   render: ->
     <input type="text"
            name={@props.name}
-           defaultValue={@props.value}
-           size={@props.size}
+           defaultValue={@props.defaultValue}
+           title={@props.title}
+           className={@props.className}
+           placeholder={@props.placeholder}
            onChange={@on_change} />
 
 

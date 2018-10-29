@@ -8,15 +8,19 @@ class Select extends React.Component
 
   constructor: (props) ->
     super(props)
-    @on_select = @on_select.bind @
+    # bind event handler to the current context
+    @on_change = @on_change.bind @
 
-  on_select: (event) ->
+  on_change: (event) ->
     ###
      * Event handler when the selection changed
     ###
     el = event.currentTarget
     value = el.value
-    console.debug "Selection changed to #{value}"
+    console.debug "Select::on_change: value=#{value}"
+
+    # propagate event to the parent event handler
+    if @props.onChange then @props.onChange event
 
   build_options: ->
     ###
@@ -44,9 +48,10 @@ class Select extends React.Component
     return options
 
   render: ->
-    <select value={@props.value}
-            onChange={@on_select}
-            name={@props.name}
+    <select name={@props.value}
+            value={@props.value}
+            title={@props.title}
+            onChange={@on_change}
             className={@props.className}>
       {@build_options()}
     </select>

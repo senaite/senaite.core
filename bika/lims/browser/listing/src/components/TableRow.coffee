@@ -12,18 +12,22 @@ class TableRow extends React.Component
   constructor: (props) ->
     super(props)
 
+  is_selected: ->
+    ###
+     * Check if the current row is selected
+    ###
+    uid = @props.item.uid
+    selected_uids = @props.selected_uids or []
+    return uid in selected_uids
+
   get_row_css_class: ->
     ###
      * Calculate the row CSS class
     ###
     cls = @props.className
 
-    # check if the current item UID is in the list selected UIDs
-    uid = @props.item.uid
-    selected_uids = @props.selected_uids or []
-
-    # add info class if the row is selected
-    if uid in selected_uids
+    # Add CSS class when the row is selected
+    if @is_selected()
       cls += " info"
 
     return cls
@@ -37,8 +41,8 @@ class TableRow extends React.Component
 
     item = @props.item
     checkbox_name = "#{@props.select_checkbox_name}:list"
-    checkbox_value = item.uid
-    checked = item.uid in @props.selected_uids
+    uid = item.uid
+    selected = @is_selected()
 
     # insert select column
     if @props.show_select_column
@@ -46,8 +50,8 @@ class TableRow extends React.Component
         <td key={item.uid}>
           <Checkbox
             name={checkbox_name}
-            value={checkbox_value}
-            checked={checked}
+            value={uid}
+            checked={selected}
             onChange={@props.on_select_checkbox_checked}/>
         </td>
     )
@@ -70,7 +74,7 @@ class TableRow extends React.Component
           key={key}
           item={item}
           item_key={key}
-          className={key}
+          selected={selected}
           html={title}/>
       )
     return cells
