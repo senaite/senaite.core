@@ -102,15 +102,13 @@ class ListingController extends React.Component
       allow_edit: no
       show_select_all_checkbox: no
       show_select_column: no
+      show_column_toggles: yes
       select_checkbox_name: "uids"
       post_action: "workflow_action"
       show_categories: no
       expand_all_categories: no
       show_more: no
       limit_from: 0
-
-    # dev only
-    window.lv = @
 
   getRequestOptions: ->
     ###
@@ -565,17 +563,18 @@ class ListingController extends React.Component
       <div className="row">
         <div className="col-sm-12 table-responsive">
           {@state.loading and <div id="table-overlay"/>}
-          <TableContextMenu
-            show={@state.contextmenu_show}
-            x={@state.contextmenu_x}
-            y={@state.contextmenu_y}
-            title={_("Display Columns")}
-            columns={@state.columns}
-            column_order={@get_column_order()}
-            table_columns={@get_visible_columns()}
-            on_column_toggle={@toggleColumn}
-            on_context_menu={@toggleContextMenu}
-            />
+          {@state.show_column_toggles and
+            <TableContextMenu
+              show={@state.contextmenu_show}
+              x={@state.contextmenu_x}
+              y={@state.contextmenu_y}
+              title={_("Display Columns")}
+              columns={@state.columns}
+              column_order={@get_column_order()}
+              table_columns={@get_visible_columns()}
+              on_column_toggle={@toggleColumn}
+              on_context_menu={@toggleContextMenu}
+              />}
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
             allow_edit={@state.allow_edit}
