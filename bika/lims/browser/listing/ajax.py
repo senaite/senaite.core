@@ -226,9 +226,10 @@ class AjaxListingView(BrowserView):
             tids = []
             for transition in obj_transitions:
                 tid = transition.get("id")
-                if tid not in allowed_transition_ids:
-                    continue
-                tids.append(tid)
+                if allowed_transition_ids:
+                    if tid not in allowed_transition_ids:
+                        continue
+                    tids.append(tid)
                 transitions_by_tid[tid] = transition
 
             if common_tids is None:
