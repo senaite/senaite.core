@@ -40,32 +40,6 @@ class Table extends React.Component
       count += 1
     return count
 
-
-  get_review_state_by_id: (id) ->
-    ###
-     * Fetch the current review_state item by id
-    ###
-
-    current = null
-
-    # review_states is the list of review_state items from the listing view
-    for review_state in @props.review_states
-      if review_state.id == id
-        current = review_state
-        break
-
-    if not current
-      throw "No review_state definition found for ID #{id}"
-
-    return current
-
-  get_column_order: ->
-    ###
-     * Get the column order defined in the current selected review_state item
-    ###
-    review_state_item = @get_review_state_by_id @props.review_state
-    return review_state_item.columns
-
   build_header_rows: ->
     ###
      * Build the table header rows (actually just one row)
@@ -76,7 +50,6 @@ class Table extends React.Component
       <TableHeaderRow
         key="header_row"  # internal key
         {...@props}  # pass in all properties from the table component
-        column_order={@get_column_order()}
         />
     )
 
@@ -140,11 +113,9 @@ class Table extends React.Component
             key={category}  # internal key
             {...@props}  # pass in all properties from the table component
             className="category"
-            colspan={@get_column_count()}
             category={category}
             expanded={expanded}
             on_select_checkbox_checked={@on_select_checkbox_checked}
-            column_order={@get_column_order()}
             />
       )
 
@@ -164,7 +135,6 @@ class Table extends React.Component
           className={item.state_class}
           on_select_checkbox_checked={@on_select_checkbox_checked}
           item={item}
-          column_order={@get_column_order()}
           />
       )
 

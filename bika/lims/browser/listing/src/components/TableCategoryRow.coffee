@@ -50,7 +50,7 @@ class TableCategoryRow extends React.Component
     )
 
     # subtract 1 for the toggle cell
-    colspan = @props.colspan - 1
+    colspan = @props.column_count - 1
 
     cells.push(
       <td key={@props.category}

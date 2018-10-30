@@ -11,6 +11,7 @@ import Loader from "./components/Loader.coffee"
 import Pagination from "./components/Pagination.coffee"
 import SearchBox from "./components/SearchBox.coffee"
 import Table from "./components/Table.coffee"
+import TableContextMenu from "./components/TableContextMenu.coffee"
 
 import "./listing.css"
 
@@ -38,6 +39,8 @@ class ListingController extends React.Component
     @showMore = @showMore.bind @
     @selectUID = @selectUID.bind @
     @doAction = @doAction.bind @
+    @toggleContextMenu = @toggleContextMenu.bind @
+    @toggleColumn = @toggleColumn.bind @
 
     # get the container element
     @el = document.getElementById CONTAINER_ID
@@ -56,6 +59,10 @@ class ListingController extends React.Component
     @state =
       # loading indicator
       loading: yes
+      # context menu visibility and coordinates
+      contextmenu_show: no
+      contextmenu_x: 0
+      contextmenu_y: 0
       # filter, pagesize, sort_on, sort_order and review_state are initially set
       # from the request to allow bookmarks to specific searches
       filter: @api.get_url_parameter("#{@form_id}_filter")
@@ -65,6 +72,8 @@ class ListingController extends React.Component
       review_state: @api.get_url_parameter("#{@form_id}_review_state") or "default"
       # The query string is computed on the server and allows to bookmark listings
       query_string: ""
+      # The column toggles define the visible columns per user setting
+      column_toggles: []
       # The API URL to call
       api_url: ""
       # form_id, columns and review_states are defined in the listing view and
@@ -131,6 +140,50 @@ class ListingController extends React.Component
     ###
     console.debug "ListingController::componentDidUpdate"
 
+  toggleContextMenu: (x, y, toggle) ->
+    ###
+     * Toggle the context menu
+    ###
+    console.debug "ListingController::toggleContextMenu: x=#{x} y=#{y}"
+
+    toggle ?= not @state.contextmenu_show
+
+    @setState
+      contextmenu_show: toggle
+      contextmenu_x: x
+      contextmenu_y: y
+
+  toggleColumn: (column) ->
+    ###
+     * Toggle the column on or off
+    ###
+    console.debug "ListingController::toggleColumn: column=#{column}"
+
+    # reset the default visible columns
+    if column == "reset"
+      columns = @get_default_columns()
+      @setState
+        column_toggles: @get_default_columns()
+
+      return columns
+
+    # get the current displayed columns
+    columns = @get_visible_columns()
+    # check if the current column is displayed
+    index = columns.indexOf column
+
+    if index > -1
+      # remove the column
+      columns.splice index, 1
+    else
+      # add the column
+      columns.push column
+
+    @setState
+      column_toggles: columns
+
+    return columns
+
   filterByState: (review_state="default") ->
     ###
      * Filter the results by the given state
@@ -163,7 +216,7 @@ class ListingController extends React.Component
     @set_state
       sort_on: sort_on
       sort_order: sort_order
-      pagesize: @get_items_on_page() # keep the current number of items on sort
+      pagesize: @get_item_count() # keep the current number of items on sort
       limit_from: 0
 
   showMore: (pagesize) ->
@@ -265,7 +318,70 @@ class ListingController extends React.Component
       # fetch all possible transitions
       me.fetch_transitions()
 
-  get_items_on_page: ->
+  get_review_state_by_id: (id) ->
+    ###
+     * Fetch the current review_state item by id
+    ###
+    current = null
+
+    # review_states is the list of review_state items from the listing view
+    for review_state in @review_states
+      if review_state.id == id
+        current = review_state
+        break
+
+    if not current
+      throw "No review_state definition found for ID #{id}"
+
+    return current
+
+  get_column_order: ->
+    ###
+     * Get the column order defined in the current selected review_state item
+    ###
+    review_state_item = @get_review_state_by_id @state.review_state
+    return review_state_item.columns or []
+
+  get_visible_columns: ->
+    ###
+     * Get the visible columns according to the user settings
+    ###
+
+    if @state.column_toggles.length > 0
+      columns = []
+      for key in @get_column_order()
+        if key in @state.column_toggles
+          columns.push key
+      return columns
+
+    return @get_default_columns()
+
+  get_default_columns: ->
+    ###
+     * Get the default visible columns of the listing
+    ###
+
+    columns = []
+    for key in @get_column_order()
+      column = @columns[key]
+      if column.toggle
+        columns.push key
+    return columns
+
+  get_column_count: ->
+    ###
+     * Calculate the current number of displayed columns
+    ###
+    # get the current visible columns
+    visible_columns = @get_visible_columns()
+
+    count = visible_columns.length
+    # add 1 if the select column is rendered
+    if @state.show_select_column
+      count += 1
+    return count
+
+  get_item_count: ->
     ###
      * Return the current shown items
     ###
@@ -275,7 +391,6 @@ class ListingController extends React.Component
     ###
      * Toggle the loader on/off
     ###
-
     @setState loading: toggle
 
   set_state: (data, fetch=yes) ->
@@ -359,15 +474,31 @@ class ListingController extends React.Component
       <div className="row">
         <div className="col-sm-12 table-responsive">
           {@state.loading and <div id="table-overlay"/>}
+          <TableContextMenu
+            show={@state.contextmenu_show}
+            x={@state.contextmenu_x}
+            y={@state.contextmenu_y}
+            title="Select Columns"
+            columns={@state.columns}
+            column_order={@get_column_order()}
+            table_columns={@get_visible_columns()}
+            on_column_toggle={@toggleColumn}
+            on_context_menu={@toggleContextMenu}
+            />
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
             allow_edit={@state.allow_edit}
-            on_header_colum_click={@sortBy}
+            on_header_column_click={@sortBy}
             on_select_checkbox_checked={@selectUID}
+            on_context_menu={@toggleContextMenu}
             sort_on={@state.sort_on}
             sort_order={@state.sort_order}
             catalog_indexes={@state.catalog_indexes}
             columns={@state.columns}
+            column_toggles={@state.column_toggles}
+            column_count={@get_column_count()}
+            column_order={@get_column_order()}
+            table_columns={@get_visible_columns()}
             review_state={@state.review_state}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
@@ -398,7 +529,7 @@ class ListingController extends React.Component
             total={@state.total}
             onShowMore={@showMore}
             show_more={@state.show_more}
-            count={@get_items_on_page()}
+            count={@get_item_count()}
             pagesize={@state.pagesize}/>
         </div>
       </div>

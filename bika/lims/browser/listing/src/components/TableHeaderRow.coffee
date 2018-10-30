@@ -12,6 +12,7 @@ class TableHeaderRow extends React.Component
   constructor: (props) ->
     super(props)
     @on_header_column_click = @on_header_column_click.bind @
+    @on_context_menu = @on_context_menu.bind @
 
   on_header_column_click: (event) ->
     ###
@@ -36,6 +37,21 @@ class TableHeaderRow extends React.Component
 
     # call the parent event handler with the sort index and the sort order
     @props.on_header_column_click index, sort_order
+
+  on_context_menu: (event) ->
+    ###
+     * Event handler for contextmenu
+    ###
+    event.preventDefault()
+
+    rect = event.currentTarget.getBoundingClientRect()
+
+    x = event.clientX - rect.x
+    y = event.clientY - rect.y
+
+    console.debug "TableHeaderRow::on_context_menu: x=#{x} y=#{y}"
+
+    @props.on_context_menu x, y
 
   get_sort_index: (key, column) ->
     ###
@@ -104,15 +120,11 @@ class TableHeaderRow extends React.Component
         </th>
       )
 
-    # insert visible columns in the right order
-    for key in @props.column_order
+    # insert table columns in the right order
+    for key in @props.table_columns
 
       # get the column object
       column = @props.columns[key]
-
-      # skip hidden colums
-      if not column.toggle
-        continue
 
       title = column.title
       index = @get_sort_index key, column
@@ -134,7 +146,7 @@ class TableHeaderRow extends React.Component
         <TableHeaderCell
           key={key}  # internal key
           {...@props}  # pass in all properties from the table component
-          title={column.title}
+          title={title}
           index={index}
           sort_order={sort_order}
           className={cls}
@@ -145,8 +157,8 @@ class TableHeaderRow extends React.Component
     return cells
 
   render: ->
-    <tr className={this.props.className}>
-      {this.build_cells()}
+    <tr className={@props.className} onContextMenu={@on_context_menu}>
+      {@build_cells()}
     </tr>
 
 

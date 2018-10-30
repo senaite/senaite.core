@@ -69,14 +69,10 @@ class TableRow extends React.Component
     )
 
     # insert visible columns in the right order
-    for key in @props.column_order
+    for key in @props.table_columns
 
       # get the column
       column = @props.columns[key]
-
-      # skip hidden
-      if not column.toggle
-        continue
 
       # form field name
       name = "#{key}.#{uid}"
