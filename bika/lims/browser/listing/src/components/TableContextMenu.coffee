@@ -75,7 +75,7 @@ class TableContextMenu extends React.Component
         <hr/>
         <a href="#" onClick={@on_toggle_click} column="reset">
           <span className="glyphicon glyphicon-repeat"></span>
-          <strong> Reset Columns</strong>
+          <strong> {@props.reset_title or "Reset"}</strong>
         </a>
       </li>
     )

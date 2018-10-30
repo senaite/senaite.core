@@ -569,6 +569,7 @@ class ListingController extends React.Component
               x={@state.contextmenu_x}
               y={@state.contextmenu_y}
               title={_("Display Columns")}
+              reset_title={_("Reset")}
               columns={@state.columns}
               column_order={@get_column_order()}
               table_columns={@get_visible_columns()}
