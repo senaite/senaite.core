@@ -270,8 +270,11 @@ class ListingController extends React.Component
     # Override the form action when a custom URL is given
     if url then form.action = url
 
-    # inject all selected uids, because not all items might be shown on the current page
+    # inject all hidden input fields for UIDs that are currently not in the DOM
     for uid in @state.selected_uids
+      # skip injection if the element is currently in the DOM
+      if document.querySelectorAll("input[value='#{uid}']:not([disabled])").length > 0
+        continue
       input = document.createElement "input"
       input.setAttribute "type", "hidden"
       input.setAttribute "name", "#{@state.select_checkbox_name}:list"
