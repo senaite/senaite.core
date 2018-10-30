@@ -9,19 +9,23 @@ Changelog
 
 **Changed**
 
+- #1063 Permission for ar_add changed to "AddAnalysisRequest"
+- #1064 Python 2.x is not supported by WeasyPrint v43. Pinned version: 0.42.3
 
 **Removed**
 
-- #1059 Removed updates alert viewlet
-- #1060 Removed classic portlets
-- #1058 Removed gpw dependency
-- #1058 Remved broken Quality Control reports
+- #1059 Remove updates alert viewlet
+- #1060 Remove classic portlets
+- #1058 Remove gpw dependency
+- #1058 Remove broken Quality Control reports
 - #1057 Remove z3c.unconfigure dependency
 - #1056 Remove collective.taskqueue dependency
 - #808 Remove old AR Add code
 
 
 **Fixed**
+
+- #1065 Creation of reflex rules does not work with senaite.lims add-on
 
 
 **Security**
