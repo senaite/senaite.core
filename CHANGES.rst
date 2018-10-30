@@ -9,6 +9,7 @@ Changelog
 
 **Changed**
 
+- #1064 Python 2.x is not supported by WeasyPrint v43. Pinned version: 0.42.3
 
 **Removed**
 

@@ -50,7 +50,6 @@ setup(
         'plone.app.iterate',
         'magnitude',
         'jarn.jsi18n',
-        'WeasyPrint',
         'collective.progressbar',
         'plone.app.dexterity',
         'plone.app.relationfield',
@@ -59,7 +58,9 @@ setup(
         'z3c.jbot',
         'plone.resource',
         'CairoSVG==1.0.20',
-        'zopyx.txng3.ext==3.4.0'
+        'zopyx.txng3.ext==3.4.0',
+        # Python 2.x is not supported by WeasyPrint v43
+        'WeasyPrint==0.42.3',
     ],
     extras_require={
         'test': [
