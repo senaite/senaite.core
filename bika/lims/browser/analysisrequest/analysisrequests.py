@@ -924,17 +924,23 @@ class AnalysisRequestsView(BikaListingView):
         forest = dict(uid=None, children=[])
         for item in items:
             node = nodes[item["uid"]]
-            primary_uid = item["primary_uid"]
-            if not primary_uid:
+            parent_uid = item["primary_uid"]
+            if not parent_uid:
+                # This is a root item
                 forest["children"].append(node)
-                continue
-
-            if primary_uid in nodes:
-                parent = nodes[primary_uid]
+            elif parent_uid not in nodes:
+                # There is no parent item in the items list, probably because
+                # the search performed did not return the parent or it fall
+                # into another page. Treat this one as a root, but apply a
+                # different css class
+                node["table_row_class"] += " orphan-partition"
+                forest["children"].append(node)
+            else:
+                # This a partition with an existing parent
+                parent = nodes[parent_uid]
                 if not "children" in parent:
                     parent["children"] = []
                 parent["children"].append(node)
-                continue
 
         # Now make a flat list
         def to_flat(node):
