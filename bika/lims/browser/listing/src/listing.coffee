@@ -41,6 +41,7 @@ class ListingController extends React.Component
     @doAction = @doAction.bind @
     @toggleContextMenu = @toggleContextMenu.bind @
     @toggleColumn = @toggleColumn.bind @
+    @toggleCategory = @toggleCategory.bind @
 
     # get the container element
     @el = document.getElementById CONTAINER_ID
@@ -86,6 +87,8 @@ class ListingController extends React.Component
       folderitems: []
       # The categories of the folderitems
       categories: []
+      # Expanded categories
+      expanded_categories: []
       # total number of items in the database
       total: 0
       # UIDs of selected rows are stored in selected_uids.
@@ -152,6 +155,28 @@ class ListingController extends React.Component
       contextmenu_show: toggle
       contextmenu_x: x
       contextmenu_y: y
+
+  toggleCategory: (category) ->
+    ###
+     * Expand/Collapse the category
+    ###
+    console.debug "ListingController::toggleCategory: column=#{category}"
+
+    # get the current expanded categories
+    expanded = @state.expanded_categories
+    # check if the current category is in there
+    index = expanded.indexOf category
+
+    if index > -1
+      # remove the category
+      expanded.splice index, 1
+    else
+      # add the category
+      expanded.push category
+
+    # set the new expanded categories
+    @setState
+      expanded_categories: expanded
 
   toggleColumn: (column) ->
     ###
@@ -416,6 +441,33 @@ class ListingController extends React.Component
       count += 1
     return count
 
+  get_expanded_categories: ->
+    ###
+     * Get the expanded categories
+    ###
+
+    # return all categories if the flag is on
+    if @state.expand_all_categories
+      return @state.categories
+
+    # expand all categories for searches
+    if @state.filter
+      return @state.categories
+
+    # no categories are expanded if no items are selected
+    if not @state.selected_uids
+      return []
+
+    categories = []
+    for folderitem in @state.folderitems
+      # item is selected, get the category
+      if folderitem.uid in @state.selected_uids
+        category = folderitem.category
+        if category not in categories
+          categories.push category
+
+    return categories
+
   get_item_count: ->
     ###
      * Return the current shown items
@@ -477,7 +529,11 @@ class ListingController extends React.Component
     promise.then (data) ->
       console.debug "ListingController::fetch_folderitems: GOT RESPONSE=", data
       me.setState data, ->
-        console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
+        # calculate the new expanded categories
+        me.setState
+          expanded_categories: me.get_expanded_categories()
+        , ->
+          console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
         # turn loader off
         me.toggle_loader off
 
@@ -542,7 +598,9 @@ class ListingController extends React.Component
             show_select_column={@state.show_select_column}
             show_select_all_checkbox={@state.show_select_all_checkbox}
             categories={@state.categories}
+            expanded_categories={@state.expanded_categories}
             show_categories={@state.show_categories}
+            on_category_click={@toggleCategory}
             filter={@state.filter}
             />
         </div>

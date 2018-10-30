@@ -11,22 +11,18 @@ class TableCategoryRow extends React.Component
   constructor: (props) ->
     super(props)
 
-    # component local state
-    @state =
-      expanded: @props.expanded
-
     # bind event handler to local context
-    @on_row_click = @on_row_click.bind @
+    @on_category_click = @on_category_click.bind @
 
-  on_row_click: (event) ->
+  on_category_click: (event) ->
     ###
      * Event handler when the row was clicked
     ###
     el = event.currentTarget
     category = el.getAttribute "category"
-    @setState
-      expanded: not @state.expanded
     console.debug "TableCategoryRow::on_row_click: category #{category} clicked"
+
+    if @props.on_category_click then @props.on_category_click category
 
   build_category_cells: ->
     ###
@@ -38,7 +34,7 @@ class TableCategoryRow extends React.Component
     icon_cls = "glyphicon glyphicon-collapse-up"
 
     # calculate the CSS class for expanded
-    if @state.expanded
+    if @props.expanded
       cls = "expanded"
       icon_cls = "glyphicon glyphicon-collapse-down"
 
@@ -69,7 +65,7 @@ class TableCategoryRow extends React.Component
 
     rows.push(
       <tr key={@props.category}
-          onClick={@on_row_click}
+          onClick={@on_category_click}
           category={@props.category}
           className={@props.className}>
         {@build_category_cells()}
@@ -77,7 +73,7 @@ class TableCategoryRow extends React.Component
     )
 
     # return only the category row if it is not expanded
-    if not @state.expanded
+    if not @props.expanded
       return rows
 
     for index, item of @props.folderitems

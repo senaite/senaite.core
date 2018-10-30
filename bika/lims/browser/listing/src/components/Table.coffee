@@ -70,54 +70,23 @@ class Table extends React.Component
     ###
     return []
 
-  get_expanded_categories: ->
-    ###
-     * calculate expanded categories
-    ###
-
-    # return all categories if the flag is on
-    if @props.expand_all_categories
-      return @props.categories
-
-    # expand all categories for searches
-    if @filter
-      return @props.categories
-
-    # no categories are expanded if no items are selected
-    if not @props.selected_uids
-      return []
-
-    categories = []
-    for folderitem in @props.folderitems
-      # item is selected, get the category
-      if folderitem.uid in @props.selected_uids
-        category = folderitem.category
-        if category not in categories
-          categories.push category
-
-    return categories
-
   build_category_rows: ->
     ###
      * Build category rows
     ###
     rows = []
 
-    # calculate expanded categories
-    expanded_categories = @get_expanded_categories()
-
     for category in @props.categories
-      expanded = category in expanded_categories
-
+      expanded = category in @props.expanded_categories
       rows.push(
         <TableCategoryRow
-            key={category}  # internal key
-            {...@props}  # pass in all properties from the table component
-            className="category"
-            category={category}
-            expanded={expanded}
-            on_select_checkbox_checked={@on_select_checkbox_checked}
-            />
+          key={category}  # internal key
+          {...@props}  # pass in all properties from the table component
+          className="category"
+          category={category}
+          expanded={expanded}
+          on_select_checkbox_checked={@on_select_checkbox_checked}
+          />
       )
 
     return rows
