@@ -685,7 +685,7 @@ jQuery(function($){
             action_define_div_controller(action_div);
             // Creates a new local id if a new analysis is created
             var set_new = $(action_div)
-                .find("select[id^='ReflexRules-setresulton-']'")
+                .find("select[id^='ReflexRules-setresulton-']")
                 .find(":selected").attr('value');
             if (set_new == 'new') {
                 if (!first_setup){
@@ -791,7 +791,7 @@ jQuery(function($){
             .find('select[id^="ReflexRules-action-"]')
             .find(":selected").attr('value');
         var set_new = $(action_div)
-            .find("select[id^='ReflexRules-setresulton-']'")
+            .find("select[id^='ReflexRules-setresulton-']")
             .find(":selected").attr('value');
         if (set_new == 'new') {
             local_id = new_localid(selection);

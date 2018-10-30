@@ -10,6 +10,7 @@ Changelog
 **Changed**
 
 - #1063 Permission for ar_add changed to "AddAnalysisRequest"
+- #1064 Python 2.x is not supported by WeasyPrint v43. Pinned version: 0.42.3
 
 **Removed**
 
@@ -23,6 +24,8 @@ Changelog
 
 
 **Fixed**
+
+- #1065 Creation of reflex rules does not work with senaite.lims add-on
 
 
 **Security**
