@@ -162,8 +162,7 @@ class ListingController extends React.Component
     # reset the default visible columns
     if column == "reset"
       columns = @get_default_columns()
-      @setState
-        column_toggles: @get_default_columns()
+      @set_column_toggles columns
 
       return columns
 
@@ -179,8 +178,8 @@ class ListingController extends React.Component
       # add the column
       columns.push column
 
-    @setState
-      column_toggles: columns
+    # set the new column toggles
+    @set_column_toggles columns
 
     return columns
 
@@ -346,10 +345,13 @@ class ListingController extends React.Component
      * Get the visible columns according to the user settings
     ###
 
-    if @state.column_toggles.length > 0
+    # get the current user defined column toggles
+    column_toggles = @get_column_toggles()
+
+    if column_toggles.length > 0
       columns = []
       for key in @get_column_order()
-        if key in @state.column_toggles
+        if key in column_toggles
           columns.push key
       return columns
 
@@ -366,6 +368,37 @@ class ListingController extends React.Component
       if column.toggle
         columns.push key
     return columns
+
+  set_column_toggles: (columns) ->
+    ###
+     * Set the user defined column toggles to the local state and local storage
+    ###
+    console.debug "ListingController::set_column_toggles: columns=", columns
+
+    # set the columns to the local storage
+    key = location.pathname
+    storage = window.localStorage
+    storage.setItem key, JSON.stringify(columns)
+
+    @setState
+      column_toggles: columns
+
+  get_column_toggles: ->
+    ###
+     * Return the current column toggles from the local storage
+    ###
+
+    key = location.pathname
+    storage = window.localStorage
+    columns = storage.getItem key
+
+    if not columns
+      return @state.column_toggles
+
+    try
+      return JSON.parse columns
+    catch
+      return @state.column_toggles
 
   get_column_count: ->
     ###
