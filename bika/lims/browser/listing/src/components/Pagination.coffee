@@ -94,11 +94,7 @@ class Pagination extends React.Component
                     disabled={@props.count >= @props.total}
                     ref={@show_more_button}
                     onClick={@on_show_more_click}>
-              <span>Show </span>
-              <span className="">
-                {@state.pagesize}
-              </span>
-              <span> more</span>
+              <span>{@props.show_more_button_title or "Show more"}</span>
             </button>
           </span>
         </div>

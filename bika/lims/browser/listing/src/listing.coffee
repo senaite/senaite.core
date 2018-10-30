@@ -503,7 +503,7 @@ class ListingController extends React.Component
           <SearchBox
             on_search={@filterBySearchterm}
             filter={@state.filter}
-            placeholder="Search ..." />
+            placeholder={_("Search")} />
         </div>
       </div>
       <div className="row">
@@ -513,7 +513,7 @@ class ListingController extends React.Component
             show={@state.contextmenu_show}
             x={@state.contextmenu_x}
             y={@state.contextmenu_y}
-            title="Select Columns"
+            title={_("Display Columns")}
             columns={@state.columns}
             column_order={@get_column_order()}
             table_columns={@get_visible_columns()}
@@ -562,6 +562,7 @@ class ListingController extends React.Component
             id="pagination"
             className="pagination-controls"
             total={@state.total}
+            show_more_button_title={_("Show more")}
             onShowMore={@showMore}
             show_more={@state.show_more}
             count={@get_item_count()}
