@@ -189,7 +189,6 @@ class ListingController extends React.Component
      * Filter the results by the given state
     ###
     console.debug "ListingController::filterByState: review_state=#{review_state}"
-    me = this
 
     @set_state
       review_state: review_state

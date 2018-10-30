@@ -50,6 +50,7 @@ class Table extends React.Component
       <TableHeaderRow
         key="header_row"  # internal key
         {...@props}  # pass in all properties from the table component
+        on_select_checkbox_checked={@on_select_checkbox_checked}
         />
     )
 
