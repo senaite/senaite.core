@@ -3108,5 +3108,10 @@ class AnalysisRequest(BaseFolder):
             descendants += child.getDescendants()
         return descendants
 
+    def isPartition(self):
+        """Returns true if this Analysis Request is a partition
+        """
+        return self.getParentAnalysisRequest() and True or False
+
 
 registerType(AnalysisRequest, PROJECTNAME)

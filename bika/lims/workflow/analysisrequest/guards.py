@@ -56,7 +56,9 @@ def guard_create_partitions(analysis_request):
     if not isBasicTransitionAllowed(analysis_request):
         return False
 
-    # TODO Do not allow the creation of partitions from partitions or primary
+    if analysis_request.isPartition():
+        # Do not allow the creation of partitions from partitions
+        return False
 
     return True
 
