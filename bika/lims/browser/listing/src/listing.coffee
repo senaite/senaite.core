@@ -362,7 +362,7 @@ class ListingController extends React.Component
           <Table
             className="contentstable table table-condensed table-hover table-striped table-sm small"
             allow_edit={@state.allow_edit}
-            onSort={@sortBy}
+            on_header_colum_click={@sortBy}
             on_select_checkbox_checked={@selectUID}
             sort_on={@state.sort_on}
             sort_order={@state.sort_order}

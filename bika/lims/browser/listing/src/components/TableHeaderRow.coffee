@@ -132,7 +132,8 @@ class TableHeaderRow extends React.Component
 
       cells.push(
         <TableHeaderCell
-          key={key}
+          key={key}  # internal key
+          {...@props}  # pass in all properties from the table component
           title={column.title}
           index={index}
           sort_order={sort_order}

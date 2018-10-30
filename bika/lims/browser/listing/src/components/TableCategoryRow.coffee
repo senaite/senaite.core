@@ -11,9 +11,11 @@ class TableCategoryRow extends React.Component
   constructor: (props) ->
     super(props)
 
+    # component local state
     @state =
       expanded: @props.expanded
 
+    # bind event handler to local context
     @on_row_click = @on_row_click.bind @
 
   on_row_click: (event) ->
@@ -86,17 +88,10 @@ class TableCategoryRow extends React.Component
 
       rows.push(
         <TableRow
-          key={index}
+          key={index}  # internal key
+          {...@props}  # pass in all properties from the table component
           className={item.state_class}
-          allow_edit={@props.allow_edit}
-          on_select_checkbox_checked={@props.on_select_checkbox_checked}
           item={item}
-          review_states={@props.review_states}
-          selected_uids={@props.selected_uids}
-          select_checkbox_name={@props.select_checkbox_name}
-          columns={@props.columns}
-          column_order={@props.column_order}
-          show_select_column={@props.show_select_column}
           />
       )
 

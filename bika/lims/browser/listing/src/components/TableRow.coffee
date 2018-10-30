@@ -87,7 +87,8 @@ class TableRow extends React.Component
 
       cells.push(
         <TableCell
-          key={key}  # internal key only
+          key={key}  # internal key
+          {...@props}  # pass in all properties from the table component
           item={item}  # a single folderitem
           item_key={key}  # the current rendered column key
           name={name}  # the form field name

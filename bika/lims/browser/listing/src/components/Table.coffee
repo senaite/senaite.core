@@ -1,8 +1,8 @@
 import React from "react"
 
-import TableRow from "./TableRow.coffee"
-import TableHeaderRow from "./TableHeaderRow.coffee"
 import TableCategoryRow from "./TableCategoryRow.coffee"
+import TableHeaderRow from "./TableHeaderRow.coffee"
+import TableRow from "./TableRow.coffee"
 
 
 class Table extends React.Component
@@ -12,6 +12,8 @@ class Table extends React.Component
 
   constructor: (props) ->
     super(props)
+
+    # bind event handler to local context
     @on_select_checkbox_checked = @on_select_checkbox_checked.bind @
 
   on_select_checkbox_checked: (event) ->
@@ -72,21 +74,9 @@ class Table extends React.Component
 
     rows.push(
       <TableHeaderRow
-        key="header_row"
-        sort_on={@props.sort_on}
-        on_select_checkbox_checked={@on_select_checkbox_checked}
-        sort_order={@props.sort_order}
-        catalog_indexes={@props.catalog_indexes}
-        on_header_column_click={@props.onSort}
-        folderitems={@props.folderitems}
-        selected_uids={@props.selected_uids}
-        select_checkbox_name={@props.select_checkbox_name}
-        columns={@props.columns}
+        key="header_row"  # internal key
+        {...@props}  # pass in all properties from the table component
         column_order={@get_column_order()}
-        show_select_column={@props.show_select_column}
-        show_select_all_checkbox={@props.show_select_all_checkbox}
-        show_categories={@props.show_categories}
-        expand_all_categories={@props.expand_all_categories}
         />
     )
 
@@ -147,20 +137,14 @@ class Table extends React.Component
 
       rows.push(
         <TableCategoryRow
-            key={category}
+            key={category}  # internal key
+            {...@props}  # pass in all properties from the table component
             className="category"
-            allow_edit={@props.allow_edit}
             colspan={@get_column_count()}
             category={category}
             expanded={expanded}
             on_select_checkbox_checked={@on_select_checkbox_checked}
-            folderitems={@props.folderitems}
-            review_states={@props.review_states}
-            selected_uids={@props.selected_uids}
-            select_checkbox_name={@props.select_checkbox_name}
-            columns={@props.columns}
             column_order={@get_column_order()}
-            show_select_column={@props.show_select_column}
             />
       )
 
@@ -175,17 +159,12 @@ class Table extends React.Component
     for index, item of @props.folderitems
       rows.push(
         <TableRow
-          key={index}
+          key={index}  # internal key
+          {...@props}  # pass in all properties from the table component
           className={item.state_class}
-          allow_edit={@props.allow_edit}
           on_select_checkbox_checked={@on_select_checkbox_checked}
           item={item}
-          review_states={@props.review_states}
-          selected_uids={@props.selected_uids}
-          select_checkbox_name={@props.select_checkbox_name}
-          columns={@props.columns}
           column_order={@get_column_order()}
-          show_select_column={@props.show_select_column}
           />
       )
 

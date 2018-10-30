@@ -12,9 +12,11 @@ class Pagination extends React.Component
     @state =
       pagesize: @props.pagesize
 
+    # bind event handler to local context
     @on_show_more_click = @on_show_more_click.bind @
     @on_pagesize_change = @on_pagesize_change.bind @
 
+    # create element references
     @pagesize_input = React.createRef()
     @show_more_button = React.createRef()
 
@@ -81,12 +83,12 @@ class Pagination extends React.Component
             {@props.count} / {@props.total}
           </span>
           <input type="text"
-                defaultValue={@state.pagesize}
-                onChange={@on_pagesize_change}
-                onKeyPress={@on_pagesize_change}
-                ref={@pagesize_input}
-                disabled={@props.count >= @props.total}
-                className="form-control"/>
+                 defaultValue={@state.pagesize}
+                 onChange={@on_pagesize_change}
+                 onKeyPress={@on_pagesize_change}
+                 ref={@pagesize_input}
+                 disabled={@props.count >= @props.total}
+                 className="form-control"/>
           <span className="input-group-btn">
             <button className="btn btn-default"
                     disabled={@props.count >= @props.total}
