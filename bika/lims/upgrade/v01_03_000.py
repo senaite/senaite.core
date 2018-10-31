@@ -253,8 +253,14 @@ def rebind_calculations(portal):
                      "attachment_due",
                      "sample_received",
                      "to_be_verified"]
-    calcs = api.search(dict(portal_type="Calculation"), "bika_setup_catalog")
-    calcs = {api.get_uid(calc): api.get_object(calc) for calc in calcs}
+
+    calcs = {}
+    brains = api.search(dict(portal_type="Calculation"), "bika_setup_catalog")
+    for calc in brains:
+        calc = api.get_object(calc)
+        calc.setFormula(calc.getFormula())
+        calcs[api.get_uid(calc)] = calc
+
     query = dict(review_state=review_states)
     analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
     total = len(analyses)
