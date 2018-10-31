@@ -155,22 +155,6 @@ And when ShowPrices is off, the Invoice tab should not be present at all:
     True
 
 
-Accreditation page
-------------------
-
-Accredited services view shows a list of services, with prices.
-
-    >>> enableShowPrices()
-    >>> browser.open(portal.absolute_url() + "/accreditation")
-    >>> True if "409.17" in browser.contents else "Accreditation listing should have Price column, but it is not visible."
-    True
-
-    >>> disableShowPrices()
-    >>> browser.open(portal.absolute_url() + "/accreditation")
-    >>> True if "409.17" not in browser.contents else "Accreditation listing should not have Price column, but it is visible."
-    True
-
-
 Analysis Profiles
 -----------------
 
