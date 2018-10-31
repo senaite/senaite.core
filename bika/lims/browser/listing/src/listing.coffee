@@ -322,9 +322,10 @@ class ListingController extends React.Component
         for uid in all_uids
           if uid not in selected_uids
             selected_uids.push uid
-      # push the uid into the list of selected_uids
       else
-        selected_uids.push uid
+        if uid not in selected_uids
+          # push the uid into the list of selected_uids
+          selected_uids.push uid
     else
       # flush all selected UIDs when the select_all checkbox is deselected
       if uid == "all"
@@ -466,6 +467,15 @@ class ListingController extends React.Component
 
     return categories
 
+  get_folderitems_by_uid: ->
+    ###
+     * Create a mapping of UID -> folderitem
+    ###
+    mapping = {}
+    @state.folderitems.map (item) ->
+      mapping[item.uid] = item
+    return mapping
+
   get_item_count: ->
     ###
      * Return the current shown items
@@ -527,7 +537,7 @@ class ListingController extends React.Component
     promise.then (data) ->
       console.debug "ListingController::fetch_folderitems: GOT RESPONSE=", data
       me.setState data, ->
-        # calculate the new expanded categories
+        # calculate the new expanded categories and the internal folderitems mapping
         me.setState
           expanded_categories: me.get_expanded_categories()
         , ->
@@ -593,6 +603,7 @@ class ListingController extends React.Component
             review_state={@state.review_state}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
+            folderitems_by_uid={@get_folderitems_by_uid()}
             selected_uids={@state.selected_uids}
             select_checkbox_name={@state.select_checkbox_name}
             show_select_column={@state.show_select_column}
@@ -602,6 +613,8 @@ class ListingController extends React.Component
             show_categories={@state.show_categories}
             on_category_click={@toggleCategory}
             filter={@state.filter}
+            parent_row_title={_("Primary")}
+            child_row_title={_("Partition")}
             />
         </div>
       </div>
