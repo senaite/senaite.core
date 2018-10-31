@@ -30,6 +30,9 @@ class TableCell extends React.Component
     value = el.value
     console.debug "TableCell:on_cell_select_field_change: value=#{value}"
 
+    if @props.on_editable_field_change
+      @props.on_editable_field_change @props.item.uid, el.name, el.value
+
   on_cell_checkbox_field_change: (event) ->
     ###
      * Event handler when the checkbox field changed

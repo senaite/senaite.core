@@ -42,6 +42,7 @@ class ListingController extends React.Component
     @toggleContextMenu = @toggleContextMenu.bind @
     @toggleColumn = @toggleColumn.bind @
     @toggleCategory = @toggleCategory.bind @
+    @setEditableField = @setEditableField.bind @
 
     # get the container element
     @el = document.getElementById CONTAINER_ID
@@ -346,6 +347,13 @@ class ListingController extends React.Component
       # fetch all possible transitions
       me.fetch_transitions()
 
+  setEditableField: (uid, name, value) ->
+    ###
+     * Set the editable field of a table cell
+    ###
+    console.debug "ListingController::setEditableField: uid=#{uid} name=#{name} value=#{value}"
+    @selectUID uid, on
+
   get_review_state_by_id: (id) ->
     ###
      * Fetch the current review_state item by id
@@ -618,6 +626,7 @@ class ListingController extends React.Component
             filter={@state.filter}
             parent_row_title={_("Primary")}
             child_row_title={_("Partition")}
+            on_editable_field_change={@setEditableField}
             />
         </div>
       </div>
