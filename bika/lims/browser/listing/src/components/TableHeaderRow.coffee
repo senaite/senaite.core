@@ -157,7 +157,7 @@ class TableHeaderRow extends React.Component
     return cells
 
   render: ->
-    <tr className={@props.className} onContextMenu={@on_context_menu}>
+    <tr onContextMenu={@on_context_menu}>
       {@build_cells()}
     </tr>
 
