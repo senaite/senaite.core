@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1072 Calculations with dependents do not work after 1.2.9 update
 - #1069 Cannot get the allowed transitions (guard_sample_prep_transition)
 
 
