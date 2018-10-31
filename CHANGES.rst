@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #1069 Cannot get the allowed transitions (guard_sample_prep_transition)
 - #1065 Creation of reflex rules does not work with senaite.lims add-on
 
 

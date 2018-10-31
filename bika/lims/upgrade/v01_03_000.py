@@ -67,6 +67,10 @@ def upgrade(tool):
     # Setup the partitioning system
     setup_partitioning(portal)
 
+    # Fix Cannot get the allowed transitions (guard_sample_prep_transition)
+    # https://github.com/senaite/senaite.core/pull/1069
+    remove_sample_prep_workflow(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -105,7 +109,6 @@ def purge_portlets(portal):
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, 'portlets')
     logger.info("Purging portlets [DONE]")
-
 
 def setup_partitioning(portal):
     """Setups the enhanced partitioning system
@@ -212,3 +215,26 @@ def add_metadata(portal, catalog_id, column, refresh_catalog=False):
         logger.info("Refreshing catalog '{}' ...".format(catalog_id))
         handler = ZLogHandler(steps=100)
         catalog.refreshCatalog(pghandler=handler)
+
+def remove_sample_prep_workflow(portal):
+    """Removes sample_prep and sample_prep_complete transitions
+    """
+    # There is no need to walk through objects because of:
+    # https://github.com/senaite/senaite.core/blob/master/bika/lims/upgrade/v01_02_008.py#L187
+    logger.info("Removing 'sample_prep' related states and transitions ...")
+    workflow_ids = ["bika_sample_workflow",
+                    "bika_ar_workflow",
+                    "bika_analysis_workflow"]
+    to_remove = ["sample_prep", "sample_prep_complete"]
+    wf_tool = api.get_tool("portal_workflow")
+    for wf_id in workflow_ids:
+        workflow = wf_tool.getWorkflowById(wf_id)
+        for state_trans in to_remove:
+            if state_trans in workflow.transitions:
+                logger.info("Removing transition '{}' from '{}'"
+                            .format(state_trans, wf_id))
+                workflow.transitions.deleteTransitions([state_trans])
+            if state_trans in workflow.states:
+                logger.info("Removing state '{}' from '{}'"
+                            .format(state_trans, wf_id))
+                workflow.states.deleteStates([state_trans])
