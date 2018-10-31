@@ -4,6 +4,9 @@ Changelog
 1.2.9.1 (unreleased)
 --------------------
 
+**Fixed**
+
+- #1069 Cannot get the allowed transitions (guard_sample_prep_transition)
 
 
 1.2.9 (2018-10-08)
