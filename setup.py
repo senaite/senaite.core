@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 
-version = '1.2.9'
+version = '1.2.9.1'
 
 setup(
     name='senaite.core',
@@ -51,7 +51,7 @@ setup(
         'magnitude',
         'gpw',
         'jarn.jsi18n',
-        'WeasyPrint',
+        'WeasyPrint==0.42.3',
         'collective.progressbar',
         'z3c.unconfigure==1.0.1',
         'plone.app.dexterity',
