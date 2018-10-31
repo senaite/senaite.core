@@ -253,16 +253,19 @@ class ListingController extends React.Component
     @setState
       pagesize: parseInt pagesize
       limit_from: @state.folderitems.length
+      loading: yes
     , ->
       # N.B. we're using limit_from here, so we must append the returning
       #      folderitems to the existing ones
       promise = me.api.fetch_folderitems me.getRequestOptions()
       promise.then (data) ->
+        me.toggle_loader off
         if data.folderitems.length > 0
           console.debug "Adding #{data.folderitems.length} more folderitems..."
           # append the new folderitems to the existing ones
           new_folderitems = folderitems.concat data.folderitems
-          me.setState folderitems: new_folderitems
+          me.setState
+            folderitems: new_folderitems
 
   doAction: (id, url) ->
     ###
