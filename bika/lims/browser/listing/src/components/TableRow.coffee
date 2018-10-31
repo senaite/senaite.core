@@ -56,7 +56,8 @@ class TableRow extends React.Component
     ###
 
     # only child items have the primary_uid key set
-    if item.primary_uid.length == 0
+    primary_uid = item.primary_uid or ""
+    if primary_uid.length == 0
       return no
     return yes
 
