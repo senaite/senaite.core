@@ -19,6 +19,7 @@ from bika.lims import interfaces
 from bika.lims.browser.analyses.workflow import AnalysesWorkflowAction
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.content.analysisspec import ResultsRangeDict
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import encode_header
@@ -474,3 +475,19 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         # Reload the page in order to show the portal message
         self.request.response.redirect(self.context.absolute_url())
         return success
+
+    def workflow_action_create_partitions(self):
+        """Redirects the user to the partition magic view
+        """
+        uids = list()
+        if IAnalysisRequest.providedBy(self.context):
+            uids = [api.get_uid(self.context)]
+        else:
+            uids = self.get_selected_uids()
+        if not uids:
+            message = "No items selected".format(repr(type(self.context)))
+            self.redirect(message=message, level="error")
+
+        # Redirect to the partitioning magic view
+        url = "{}/partition_magic?uids={}".format(self.back_url, ",".join(uids))
+        self.redirect(redirect_url=url)

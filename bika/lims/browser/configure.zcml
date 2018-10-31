@@ -90,6 +90,24 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <!-- AR Partition Magic View -->
+  <browser:page
+      for="*"
+      name="partition_magic"
+      class=".partition_magic.PartitionMagicView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <!-- Searches for sample types (TemplatePartitions) -->
+  <browser:page
+      for="*"
+      name="get_sampletypes"
+      class=".sampletype.get_sampletypes"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
   <!-- Zope 3 browser resources -->
   <browser:resourceDirectory
       name="bika.lims.images"
