@@ -516,6 +516,7 @@
     <exit-transition transition_id="prepublish"/>
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="create_partitions" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1153,6 +1154,19 @@
       <guard-expression>python:here.guard_receive_transition()</guard-expression>
     </guard>
   </transition>
+
+  <!-- Transition: create_partitions -->
+  <transition transition_id="create_partitions" title="Create partitions"
+              new_state="sample_received" trigger="USER"
+              before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Create partitions</action>
+    <guard>
+      <guard-permission>BIKA: Edit Results</guard-permission>
+      <guard-expression>python:here.guard_handle("create_partitions")</guard-expression>
+    </guard>
+  </transition>
+  <!-- /Transition: create_partitions -->
 
   <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Republish</action>

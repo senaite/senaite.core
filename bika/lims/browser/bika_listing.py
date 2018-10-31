@@ -48,8 +48,8 @@ class WorkflowAction:
     def __init__(self, context, request):
         self.destination_url = ""
         self.context = context
-
         self.request = request
+        self.back_url = self.context.absolute_url()
         # Save context UID for benefit of event subscribers.
         self.request['context_uid'] = hasattr(self.context, 'UID') and \
             self.context.UID() or ''
@@ -97,6 +97,20 @@ class WorkflowAction:
             if obj:
                 selected_items[uid] = obj
         return selected_items
+
+    def redirect(self, redirect_url=None, message=None, level="info"):
+        """Redirect with a message
+        """
+        if redirect_url is None:
+            redirect_url = self.back_url
+        if message is not None:
+            self.add_status_message(message, level)
+        return self.request.response.redirect(redirect_url)
+
+    def add_status_message(self, message, level="info"):
+        """Set a portal status message
+        """
+        return self.context.plone_utils.addPortalMessage(message, level)
 
     def workflow_action_default(self, action, came_from):
         if came_from in ['workflow_action', 'edit']:
@@ -319,7 +333,7 @@ class BikaListingView(BrowserView):
     show_column_toggles = True
 
     # setting pagesize to 0 specifically disables the batch size dropdown.
-    pagesize = 30
+    pagesize = 50
 
     # select checkbox is normally called uids:list
     # if table_only is set then the context form tag might require

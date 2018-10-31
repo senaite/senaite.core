@@ -104,24 +104,41 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Sample Partitions',
         required = 0,
         type = 'artemplate_parts',
-        subfields = ('part_id',
-                     'Container',
-                     'Preservation',
-                     'container_uid',
-                     'preservation_uid'),
-        subfield_labels = {'part_id': _('Partition'),
-                           'Container': _('Container'),
-                           'Preservation': _('Preservation')},
-        subfield_sizes = {'part_id': 15,
-                           'Container': 35,
-                           'Preservation': 35},
-        subfield_hidden = {'preservation_uid': True,
-                           'container_uid': True},
-        default = [{'part_id':'part-1',
-                    'Container':'',
-                    'Preservation':'',
-                    'container_uid':'',
-                    'preservation_uid':''}],
+        subfields = (
+            'part_id',
+            'Container',
+            'Preservation',
+            'SampleType',
+            'container_uid',
+            'preservation_uid',
+            'sampletype_uid'
+        ),
+        subfield_labels = {
+            'part_id': _('Partition'),
+            'Container': _('Container'),
+            'Preservation': _('Preservation'),
+            'SampleType': _('Sample Type')
+        },
+        subfield_sizes = {
+            'part_id': 15,
+            'Container': 35,
+            'Preservation': 35,
+            'SampleType': 35,
+        },
+        subfield_hidden = {
+            'preservation_uid': True,
+            'container_uid': True,
+            'sampletype_uid': True,
+        },
+        default = [{
+            'part_id': 'part-1',
+            'Container': '',
+            'Preservation': '',
+            'SampleType': '',
+            'container_uid': '',
+            'preservation_uid': '',
+            'sampletype_uid': '',
+        }],
         widget=ARTemplatePartitionsWidget(
             label = _("Sample Partitions"),
             description = _("Configure the sample partitions and preservations " + \
@@ -146,9 +163,21 @@ schema = BikaSchema.copy() + Schema((
                     'showOn': True,
                     'width': '550px'
                 },
+                'SampleType': {
+                    'colModel': [
+                        {'columnName': 'sampletype_uid', 'hidden': True},
+                        {'columnName': 'SampleType', 'width': '30',
+                         'label': _('SampleType')},
+                        {'columnName': 'Description', 'width': '70',
+                         'label': _('Description')}],
+                    'url': 'get_sampletypes',
+                    'showOn': True,
+                    'width': '550px'
+                },
             },
          ),
     ),
+
     ReferenceField('AnalysisProfile',
         schemata = 'Analyses',
         required = 0,

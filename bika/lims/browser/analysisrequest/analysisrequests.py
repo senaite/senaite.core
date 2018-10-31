@@ -258,6 +258,7 @@ class AnalysisRequestsView(BikaListingView):
                     {"id": "sample"},
                     {"id": "preserve"},
                     {"id": "receive"},
+                    {"id": "create_partitions"},
                     {"id": "retract"},
                     {"id": "verify"},
                     {"id": "prepublish"},
@@ -338,6 +339,7 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_order": "descending",
                 },
                 "transitions": [
+                    {"id": "create_partitions"},
                     {"id": "prepublish"},
                     {"id": "cancel"},
                     {"id": "reinstate"},
@@ -507,6 +509,7 @@ class AnalysisRequestsView(BikaListingView):
                 },
                 "transitions": [
                     {"id": "receive"},
+                    {"id": "create_partitions"},
                     {"id": "retract"},
                     {"id": "prepublish"},
                     {"id": "cancel"},
@@ -668,7 +671,9 @@ class AnalysisRequestsView(BikaListingView):
         # We need to get the portal catalog here in roder to save process
         # while iterating over folderitems
         self.portal_catalog = api.get_tool("portal_catalog")
-        return BikaListingView.folderitems(self, full_objects, classic)
+        items = BikaListingView.folderitems(self, full_objects, classic)
+        # Keep the original sorting, but display partitions below parents
+        return self.fold_partitions(items)
 
     def folderitem(self, obj, item, index):
         # Additional info from AnalysisRequest to be added in the item
@@ -903,7 +908,48 @@ class AnalysisRequestsView(BikaListingView):
                     item["after"]["state_title"] = get_image(
                         "submitted-by-current-user.png",
                         title=t(_("Cannot verify: Submitted by current user")))
+
+        # Partition?
+        item["primary_uid"] = obj.getRawParentAnalysisRequest or ''
+        if item["primary_uid"]:
+            row_class = "{} partition".format(item.get("table_row_class", ""))
+            item["table_row_class"] = row_class.strip()
         return item
+
+    def fold_partitions(self, items):
+        """Resort the partitions below each parent but keeping the top-level
+        original sorting
+        """
+        nodes = {item["uid"]: item for item in items}
+        forest = dict(uid=None, children=[])
+        for item in items:
+            node = nodes[item["uid"]]
+            parent_uid = item["primary_uid"]
+            if not parent_uid:
+                # This is a root item
+                forest["children"].append(node)
+            elif parent_uid not in nodes:
+                # There is no parent item in the items list, probably because
+                # the search performed did not return the parent or it fall
+                # into another page. Treat this one as a root, but apply a
+                # different css class
+                node["table_row_class"] += " orphan-partition"
+                forest["children"].append(node)
+            else:
+                # This a partition with an existing parent
+                parent = nodes[parent_uid]
+                if not "children" in parent:
+                    parent["children"] = []
+                parent["children"].append(node)
+
+        # Now make a flat list
+        def to_flat(node):
+            flat_list = node['uid'] and [node] or []
+            for child in node.get("children", []):
+                flat_list.extend(to_flat(child))
+            return flat_list
+
+        return to_flat(forest)
 
     @property
     def copy_to_new_allowed(self):

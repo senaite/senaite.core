@@ -665,4 +665,17 @@ table.bika-listing-table-transposed table.worksheet-position tbody tr {
 }
 
 
+.bika-listing-table tr.partition:not(.orphan-partition) td {
+  border:none;
+}
+.bika-listing-table tr.partition td.getId a:before{
+  content:"···•";
+  color:#333;
+  padding:0 5px 0 2px;
+}
+.bika-listing-table tr.orphan-partition td.getId a:before {
+  content:"↵··";
+  padding:0 5px 0 0px;
+}
+
 /* </dtml-with> */

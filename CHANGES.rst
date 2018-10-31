@@ -6,9 +6,11 @@ Changelog
 
 **Added**
 
+- #1066 Enhanced partitioning system (partition magic)
 
 **Changed**
 
+- #1066 Set default page size for listings to 50
 - #1063 Permission for ar_add changed to "AddAnalysisRequest"
 - #1064 Python 2.x is not supported by WeasyPrint v43. Pinned version: 0.42.3
 

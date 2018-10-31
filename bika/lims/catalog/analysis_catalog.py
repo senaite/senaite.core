@@ -54,6 +54,7 @@ _indexes_dict = {
     'getWorksheetUID': 'FieldIndex',
     'getOriginalReflexedAnalysisUID': 'FieldIndex',
     'getPrioritySortkey': 'FieldIndex',
+    'getAncestorsUIDs': 'KeywordIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
