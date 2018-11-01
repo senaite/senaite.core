@@ -1,23 +1,23 @@
 /* Listing Styles */
 
 /* Colors taken from https://mdbootstrap.com/css/colors */
-#ajax-contents-table tr { border-left: 2px outset transparent; }
+#ajax-contents-table tr { border-left:3px outset transparent; }
 
-#ajax-contents-table tr.state-active { border-left: 2px outset transparent; }
-#ajax-contents-table tr.state-inactive { border-left: 2px outset #616161; }
+#ajax-contents-table tr.state-active { border-left:3px outset transparent; }
+#ajax-contents-table tr.state-inactive { border-left:3px outset #616161; }
 
-#ajax-contents-table tr.state-sample_due { border-left: 2px outset #ffff8d !important; }
-#ajax-contents-table tr.state-sample_received { border-left: 2px outset #795548 !important; }
-#ajax-contents-table tr.state-to_be_verified { border-left: 2px outset #18ffff !important; }
-#ajax-contents-table tr.state-verified { border-left: 2px outset #0091ea !important; }
-#ajax-contents-table tr.state-published { border-left: 2px outset #00c853 !important; }
-#ajax-contents-table tr.state-retracted { border-left: 2px outset #ff8a80 !important; }
-#ajax-contents-table tr.state-invalid { border-left: 2px outset #b71c1c !important; }
-#ajax-contents-table tr.state-open { border-left: 2px outset #ab47bc !important; }
-#ajax-contents-table tr.state-attachment_due { border-left: 2px outset #ffc107 !important; }
-#ajax-contents-table tr.state-unassigned { border-left: 2px outset #4a148c !important; }
-#ajax-contents-table tr.state-empty-worksheet { border-left: 2px outset #f8bbd0 !important; }
-#ajax-contents-table tr.state-cancelled { border-left: 2px outset #000000 !important; }
+#ajax-contents-table tr.state-sample_due { border-left:3px outset #ffff8d !important; }
+#ajax-contents-table tr.state-sample_received { border-left:3px outset #795548 !important; }
+#ajax-contents-table tr.state-to_be_verified { border-left:3px outset #18ffff !important; }
+#ajax-contents-table tr.state-verified { border-left:3px outset #0091ea !important; }
+#ajax-contents-table tr.state-published { border-left:3px outset #00c853 !important; }
+#ajax-contents-table tr.state-retracted { border-left:3px outset #ff8a80 !important; }
+#ajax-contents-table tr.state-invalid { border-left:3px outset #b71c1c !important; }
+#ajax-contents-table tr.state-open { border-left:3px outset #ab47bc !important; }
+#ajax-contents-table tr.state-attachment_due { border-left:3px outset #ffc107 !important; }
+#ajax-contents-table tr.state-unassigned { border-left:3px outset #4a148c !important; }
+#ajax-contents-table tr.state-empty-worksheet { border-left:3px outset #f8bbd0 !important; }
+#ajax-contents-table tr.state-cancelled { border-left:3px outset #000000 !important; }
 
 #ajax-contents-table th.sortable { cursor: pointer; }
 #ajax-contents-table th.sortable:hover { Background-color: #ccc; }
