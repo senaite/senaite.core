@@ -66,52 +66,36 @@ class ARAnalysesField(ObjectField):
         :param kwargs: Keyword arguments to be passed to control the output
         :returns: A list of Analysis Objects/Catalog Brains
         """
-
-        full_objects = False
-        # If reflexed is false don't return the analyses that have been
-        # reflexed, only the final ones
-        reflexed = True
-
-        if 'full_objects' in kwargs:
-            full_objects = kwargs['full_objects']
-            del kwargs['full_objects']
-
-        if 'reflexed' in kwargs:
-            reflexed = kwargs['reflexed']
-            del kwargs['reflexed']
-
-        if 'retracted' in kwargs:
-            retracted = kwargs['retracted']
-            del kwargs['retracted']
-        else:
+        full_objects = kwargs and kwargs.get("full_objects", False)
+        reflexed = kwargs and kwargs.get("get_reflexed", True)
+        retracted = kwargs and kwargs.get("retracted", True)
+        if retracted:
             mtool = getToolByName(instance, 'portal_membership')
-            retracted = mtool.checkPermission(
-                ViewRetractedAnalyses, instance)
+            retracted = mtool.checkPermission(ViewRetractedAnalyses, instance)
 
-        bac = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
-        contentFilter = dict([(k, v) for k, v in kwargs.items()
-                              if k in bac.indexes()])
-        contentFilter['portal_type'] = "Analysis"
-        contentFilter['sort_on'] = "getKeyword"
-        contentFilter['path'] = {'query': api.get_path(instance),
-                                 'level': 0}
-        analyses = bac(contentFilter)
-        if not retracted or full_objects or not reflexed:
-            analyses_filtered = []
-            for a in analyses:
-                if not retracted and a.review_state == 'retracted':
+        catalog = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
+        query = dict(
+            [(k, v) for k, v in kwargs.items() if k in catalog.indexes()])
+        query['portal_type'] = "Analysis"
+        query['getRequestUID'] = api.get_uid(instance)
+        analyses = catalog(query)
+        if not full_objects and reflexed and retracted:
+            return analyses
+
+        out_analyses = list()
+        for analysis in analyses:
+            analysis_obj = None
+            if not retracted and analysis.review_state == 'retracted':
+                continue
+            if not reflexed:
+                analysis_obj = api.get_object(analysis)
+                if analysis_obj.getReflexRuleActionsTriggered():
                     continue
-                if full_objects or not reflexed:
-                    a_obj = a.getObject()
-                    # Check if analysis has been reflexed
-                    if not reflexed and \
-                            a_obj.getReflexRuleActionsTriggered() != '':
-                        continue
-                    if full_objects:
-                        a = a_obj
-                analyses_filtered.append(a)
-            analyses = analyses_filtered
-        return analyses
+            if full_objects:
+                analysis = analysis_obj and analysis_obj or api.get_object(
+                    analysis)
+            out_analyses.append(analysis)
+        return out_analyses
 
     security.declarePrivate('set')
 
