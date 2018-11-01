@@ -1993,8 +1993,11 @@ class AnalysisRequest(BaseFolder):
     def getLate(self):
         """Return True if there is at least one late analysis in this Request
         """
-        for analysis in self.getAnalyses(full_objects=True, retracted=False):
-            if analysis.isLateAnalysis():
+        for analysis in self.getAnalyses():
+            if analysis.review_state == "retracted":
+                continue
+            analysis_obj = api.get_object(analysis)
+            if analysis_obj.isLateAnalysis():
                 return True
         return False
 

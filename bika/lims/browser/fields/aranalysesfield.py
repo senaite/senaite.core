@@ -59,59 +59,22 @@ class ARAnalysesField(ObjectField):
         """Returns a list of Analyses assigned to this AR
 
         Return a list of catalog brains unless `full_objects=True` is passed.
-        Overrides "ViewRetractedAnalyses" when `retracted=True` is passed.
         Other keyword arguments are passed to bika_analysis_catalog
 
         :param instance: Analysis Request object
-        :param kwargs: Keyword arguments to be passed to control the output
+        :param kwargs: Keyword arguments to inject in the search query
         :returns: A list of Analysis Objects/Catalog Brains
         """
+        catalog = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
+        query = dict(
+            [(k, v) for k, v in kwargs.items() if k in catalog.indexes()])
+        query['portal_type'] = "Analysis"
+        query['getRequestUID'] = api.get_uid(instance)
+        analyses = catalog(query)
+        if not kwargs.get("full_objects", False):
+            return analyses
 
-        full_objects = False
-        # If reflexed is false don't return the analyses that have been
-        # reflexed, only the final ones
-        reflexed = True
-
-        if 'full_objects' in kwargs:
-            full_objects = kwargs['full_objects']
-            del kwargs['full_objects']
-
-        if 'reflexed' in kwargs:
-            reflexed = kwargs['reflexed']
-            del kwargs['reflexed']
-
-        if 'retracted' in kwargs:
-            retracted = kwargs['retracted']
-            del kwargs['retracted']
-        else:
-            mtool = getToolByName(instance, 'portal_membership')
-            retracted = mtool.checkPermission(
-                ViewRetractedAnalyses, instance)
-
-        bac = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
-        contentFilter = dict([(k, v) for k, v in kwargs.items()
-                              if k in bac.indexes()])
-        contentFilter['portal_type'] = "Analysis"
-        contentFilter['sort_on'] = "getKeyword"
-        contentFilter['path'] = {'query': api.get_path(instance),
-                                 'level': 0}
-        analyses = bac(contentFilter)
-        if not retracted or full_objects or not reflexed:
-            analyses_filtered = []
-            for a in analyses:
-                if not retracted and a.review_state == 'retracted':
-                    continue
-                if full_objects or not reflexed:
-                    a_obj = a.getObject()
-                    # Check if analysis has been reflexed
-                    if not reflexed and \
-                            a_obj.getReflexRuleActionsTriggered() != '':
-                        continue
-                    if full_objects:
-                        a = a_obj
-                analyses_filtered.append(a)
-            analyses = analyses_filtered
-        return analyses
+        return map(api.get_object, analyses)
 
     security.declarePrivate('set')
 

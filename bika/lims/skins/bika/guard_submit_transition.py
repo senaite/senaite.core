@@ -57,7 +57,7 @@ if context.portal_type == "Analysis":
 if context.portal_type == "AnalysisRequest":
     # Only transition to 'attachment_due' if all analyses are at least there.
     has_analyses = False
-    for a in context.objectValues('Analysis'):
+    for a in context.getAnalyses(full_objects=True):
         has_analyses = True
         review_state = workflow.getInfoFor(a, 'review_state')
         if review_state in ('to_be_sampled', 'to_be_preserved',
