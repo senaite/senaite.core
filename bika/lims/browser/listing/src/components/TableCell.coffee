@@ -27,35 +27,48 @@ class TableCell extends React.Component
      * Event handler when the select field changed
     ###
     el = event.currentTarget
+    name = el.name
     value = el.value
     console.debug "TableCell:on_cell_select_field_change: value=#{value}"
 
     if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, el.name, el.value
+      @props.on_editable_field_change @props.item.uid, name, value
 
   on_cell_checkbox_field_change: (event) ->
     ###
      * Event handler when the checkbox field changed
     ###
     el = event.currentTarget
-    checked = el.checked
-    console.debug "TableCell:on_cell_checkbox_field_change: checked=#{checked}"
+    name = el.name
+    value = el.checked
+    console.debug "TableCell:on_cell_checkbox_field_change: checked=#{value}"
+
+    if @props.on_editable_field_change
+      @props.on_editable_field_change @props.item.uid, name, value
 
   on_cell_numeric_field_change: (event) ->
     ###
      * Event handler when the numeric field changed
     ###
     el = event.currentTarget
+    name = el.name
     value = el.value
     console.debug "TableCell:on_cell_numeric_field_change: value=#{value}"
+
+    if @props.on_editable_field_change
+      @props.on_editable_field_change @props.item.uid, name, value
 
   on_cell_string_field_change: (event) ->
     ###
      * Event handler when the string field changed
     ###
     el = event.currentTarget
+    name = el.name
     value = el.value
     console.debug "TableCell:on_cell_string_field_change: value=#{value}"
+
+    if @props.on_editable_field_change
+      @props.on_editable_field_change @props.item.uid, name, value
 
   render_before_content: ->
     ###
