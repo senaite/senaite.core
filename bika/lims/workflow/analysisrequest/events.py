@@ -169,6 +169,20 @@ def after_attach(obj):
     pass
 
 
+def after_submit(obj):
+    """Function called after a 'submit' transition is triggered
+    """
+    # Promote to parent AR
+    parent_ar = obj.getParentAnalysisRequest()
+    if parent_ar:
+        doActionFor(parent_ar, "submit")
+
+    # Cascade to partitions
+    parts = obj.getDescendants(all_descendants=False)
+    for part in parts:
+        doActionFor(part, "submit")
+
+
 def after_verify(obj):
     """Method triggered after a 'verify' transition for the Analysis Request
     passed in is performed. Responsible of triggering cascade actions to
@@ -178,7 +192,15 @@ def after_verify(obj):
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    pass
+    # Promote to parent AR
+    parent_ar = obj.getParentAnalysisRequest()
+    if parent_ar:
+        doActionFor(parent_ar, "verify")
+
+    # Cascade to partitions
+    parts = obj.getDescendants(all_descendants=False)
+    for part in parts:
+        doActionFor(part, "verify")
 
 
 def after_publish(obj):
@@ -194,6 +216,11 @@ def after_publish(obj):
     for analysis in ans:
         doActionFor(analysis, 'publish')
 
+    # Cascade to partitions
+    parts = obj.getDescendants(all_descendants=False)
+    for part in parts:
+        doActionFor(part, "publish")
+
 
 def after_reinstate(obj):
     """Method triggered after a 'reinstate' transition for the Analysis Request
@@ -207,6 +234,11 @@ def after_reinstate(obj):
     for analysis in ans:
         doActionFor(analysis, 'reinstate')
 
+    # Promote to parent AR
+    parent_ar = obj.getParentAnalysisRequest()
+    if parent_ar:
+        doActionFor(parent_ar, "reinstate")
+
 
 def after_cancel(obj):
     """Method triggered after a 'cancel' transition for the Analysis Request
@@ -219,3 +251,8 @@ def after_cancel(obj):
     ans = obj.getAnalyses(full_objects=True, cancellation_state='active')
     for analysis in ans:
         doActionFor(analysis, 'cancel')
+
+    # Cascade to partitions
+    parts = obj.getDescendants(all_descendants=False)
+    for part in parts:
+        doActionFor(part, "cancel")
