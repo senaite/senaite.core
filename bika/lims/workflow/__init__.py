@@ -210,8 +210,8 @@ def BeforeTransitionEventHandler(instance, event):
 
 def AfterTransitionEventHandler(instance, event):
     """ This event is executed after each transition and delegates further
-    actions to 'after_x_transition_event' function if exists in the instance
-    passed in, where 'x' is the id of the event's transition.
+    actions to 'workflow.<portal_type>.events.after_<transition_id> function
+    if exists for the instance passed in.
 
     If the passed in instance has not a function with the abovementioned
     signature, or if there is no transition for the state change (like the
@@ -229,15 +229,24 @@ def AfterTransitionEventHandler(instance, event):
     if not event.transition:
         return
 
+    portal_type = instance.portal_type
+    wf_module = _load_wf_module('{}.events'.format(portal_type.lower()))
+    if wf_module:
+        # Inspect if event_<transition_id> function exists in the module
+        func_name = "after_{}".format(event.transition.id)
+        func = getattr(wf_module, func_name, False)
+        if func:
+            logger.info('AfterTransition call: {0}.events.{1}'
+                        .format(portal_type.lower(), func_name))
+            func(instance)
+            return
+
+    # Try with old AfterTransitionHandler dance...
+    # TODO CODE TO BE REMOVED AFTER PORTING workflow_script_*/*_transition_event
+
     # Set the request variable preventing cascade's from re-transitioning.
     if skip(instance, event.transition.id):
         return
-
-    clazzname = instance.__class__.__name__
-    currstate = getCurrentState(instance)
-    msg = "Transition '{0}' finished: '{1}' '{2}' ({3})".format(
-        event.transition.id,  clazzname, instance.getId(), currstate)
-    logger.info(msg)
 
     # Because at this point, the object has been transitioned already, but
     # further actions are probably needed still, so be sure is reindexed
@@ -256,8 +265,6 @@ def AfterTransitionEventHandler(instance, event):
     if not after_event:
         return
 
-    msg = "AfterTransition: '{0}.{1}'".format(clazzname, key)
-    logger.info(msg)
     after_event()
 
 

@@ -71,6 +71,11 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1069
     remove_sample_prep_workflow(portal)
 
+    # Rebind calculations of active analyses. The analysis Calculation (an
+    # HistoryAwareField) cannot resolve DependentServices
+    # https://github.com/senaite/senaite.core/pull/1072
+    rebind_calculations(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -238,3 +243,47 @@ def remove_sample_prep_workflow(portal):
                 logger.info("Removing state '{}' from '{}'"
                             .format(state_trans, wf_id))
                 workflow.states.deleteStates([state_trans])
+
+
+def rebind_calculations(portal):
+    """Rebind calculations of active analyses. The analysis Calculation (an
+    HistoryAwareField) cannot resolve DependentServices"""
+    logger.info("Rebinding calculations to analyses ...")
+    review_states = ["sample_due",
+                     "attachment_due",
+                     "sample_received",
+                     "to_be_verified"]
+
+    calcs = {}
+    brains = api.search(dict(portal_type="Calculation"), "bika_setup_catalog")
+    for calc in brains:
+        calc = api.get_object(calc)
+        calc.setFormula(calc.getFormula())
+        calcs[api.get_uid(calc)] = calc
+
+    query = dict(review_state=review_states)
+    analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(analyses)
+    for num, analysis in enumerate(analyses):
+        if num % 100 == 0:
+            logger.info("Rebinding calculations to analyses: {0}/{1}"
+                        .format(num, total))
+        analysis = api.get_object(analysis)
+        calc = analysis.getCalculation()
+        if not calc:
+            continue
+
+        calc_uid = api.get_uid(calc)
+        if calc_uid not in calcs:
+            logger.warn("Calculation with UID {} not found!".format(calc_uid))
+            continue
+
+        calc = calcs[calc_uid]
+        an_interims = analysis.getInterimFields()
+        an_interims_keys = map(lambda interim: interim.get('keyword'),
+                               an_interims)
+        calc_interims = filter(lambda interim: interim.get('keyword')
+                                            not in an_interims_keys,
+                            calc.getInterimFields())
+        analysis.setCalculation(calc)
+        analysis.setInterimFields(an_interims + calc_interims)

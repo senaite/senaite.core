@@ -58,7 +58,7 @@ if context.portal_type in ("Analysis",
 if context.portal_type == "AnalysisRequest":
     # Allow transition to 'to_be_verified'
     # if all analyses are at least to_be_verified
-    for a in context.objectValues('Analysis'):
+    for a in context.getAnalyses(full_objects=True):
         review_state = workflow.getInfoFor(a, 'review_state')
         if review_state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
                             'sample_received', 'attachment_due'):
