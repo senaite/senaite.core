@@ -181,6 +181,115 @@ And we cannot re-submit analyses that have been already submitted:
     False
 
 
+Auto submission of a Worksheets when all its analyses are submitted
+-------------------------------------------------------------------
+
+The same behavior as for Analysis Requests applies to the worksheet when all its
+analyses are submitted.
+
+Create two Analysis Requests:
+
+    >>> ar0 = new_ar([Cu, Fe, Au])
+    >>> ar1 = new_ar([Cu, Fe])
+
+Create a worksheet:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+
+And assign all the analyses from the Analysis Requests created before, except
+`Au` from the first Analysis Request:
+
+    >>> analyses_ar0 = ar0.getAnalyses(full_objects=True)
+    >>> analyses_ar1 = ar1.getAnalyses(full_objects=True)
+    >>> analyses = filter(lambda an: an.getKeyword() != 'Au', analyses_ar0)
+    >>> analyses += analyses_ar1
+    >>> for analysis in analyses:
+    ...     worksheet.addAnalysis(analysis)
+
+Set results and submit all analyses from the worksheet except one:
+
+    >>> ws_analyses = worksheet.getAnalyses()
+    >>> analysis_1 = analyses[0]
+    >>> analysis_2 = analyses[1]
+    >>> analysis_3 = analyses[2]
+    >>> analysis_4 = analyses[3]
+
+    >>> analysis_2.setResult('5')
+    >>> transitioned = do_action_for(analysis_2, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis_2)
+    'to_be_verified'
+
+    >>> analysis_3.setResult('6')
+    >>> transitioned = do_action_for(analysis_3, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis_3)
+    'to_be_verified'
+
+    >>> analysis_4.setResult('7')
+    >>> transitioned = do_action_for(analysis_4, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis_4)
+    'to_be_verified'
+
+The Analysis Request number 1 has been automatically transitioned because all
+the contained analyses have been submitted:
+
+    >>> api.get_workflow_status_of(ar1)
+    'to_be_verified'
+
+While Analysis Request number 0 has not been transitioned because still have two
+analyses with results pending:
+
+    >>> api.get_workflow_status_of(ar0)
+    'sample_received'
+
+And same with worksheet, cause there is one result pending:
+
+    >>> api.get_workflow_status_of(worksheet)
+    'open'
+
+If we set a result for the pending analysis:
+
+    >>> analysis_1.setResult('9')
+    >>> transitioned = do_action_for(analysis_1, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis_1)
+    'to_be_verified'
+
+The worksheet will follow:
+
+    >>> api.get_workflow_status_of(worksheet)
+    'to_be_verified'
+
+But the Analysis Request number 0 will remain `sample_received`:
+
+    >>> api.get_workflow_status_of(ar0)
+    'sample_received'
+
+Unless we submit a result for `Au` analysis:
+
+    >>> au_an = filter(lambda an: an.getKeyword() == 'Au', analyses_ar0)[0]
+    >>> au_an.setResult('10')
+    >>> transitioned = do_action_for(au_an, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(au_an)
+    'to_be_verified'
+
+    >>> api.get_workflow_status_of(ar0)
+    'to_be_verified'
+
+
 Submission of results for analyses with interim fields set
 ----------------------------------------------------------
 

@@ -34,9 +34,6 @@ if context.portal_type == "AnalysisRequest":
 
 if context.portal_type == "Worksheet":
 
-    if not context.getAnalyst():
-        return False
-
     # Only transition to 'attachment_due' if all analyses are at least there.
     has_analyses = False
     workflow = context.portal_workflow
