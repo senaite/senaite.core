@@ -9,6 +9,7 @@ from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IAnalysisService
 
 
 class InterimFieldsField(RecordsField):
@@ -50,6 +51,23 @@ class InterimFieldsField(RecordsField):
         },
     })
     security = ClassSecurityInfo()
+
+    security.declarePrivate('get')
+    def get(self, instance, **kwargs):
+        an_interims = RecordsField.get(self, instance, **kwargs) or []
+        if not IAnalysisService.providedBy(instance):
+            return an_interims
+
+        # This instance implements IAnalysisService
+        calculation = instance.getCalculation()
+        if not calculation:
+            return an_interims
+
+        # Ensure the service includes the interims from the calculation
+        an_keys = map(lambda interim: interim['keyword'], an_interims)
+        calc_interims = calculation.getInterimFields()
+        calc_interims = filter(lambda key: key not in an_keys, calc_interims)
+        return an_interims + calc_interims
 
 
 registerField(
