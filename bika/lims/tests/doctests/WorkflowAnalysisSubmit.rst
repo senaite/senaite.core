@@ -381,3 +381,115 @@ Since interims IT1 and IT2 have default values set, the analysis will submit:
 
     >>> api.get_workflow_status_of(analysis)
     'to_be_verified'
+
+
+Submission of results for analyses with dependencies
+----------------------------------------------------
+
+If an analysis is associated to a calculation that uses the result of other
+analyses (dependents), then the analysis cannot be submitted unless all its
+dependents were previously submitted.
+
+Reset the interim fields for analysis `Au`:
+
+    >>> Au.setInterimFields([])
+
+Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
+
+    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe.setFormula("[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
+
+Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
+
+    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> interim_1 = {'keyword': 'IT1', 'title': 'Interim 1'}
+    >>> calc_au.setInterimFields([interim_1])
+    >>> calc_au.setFormula("([IT1]+[Fe])/2")
+    >>> Au.setCalculation(calc_au)
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> cu_analysis = filter(lambda an: an.getKeyword()=="Cu", analyses)[0]
+    >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
+    >>> au_analysis = filter(lambda an: an.getKeyword()=="Au", analyses)[0]
+
+TODO This should not be like this, but the calculation is performed by
+`ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
+'api.analysis.calculate`:
+
+    >>> fe_analysis.setResult(12)
+    >>> au_analysis.setResult(10)
+
+Cannot submit `Fe`, because there is no result for `Cu` yet:
+
+    >>> transitioned = do_action_for(fe_analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(fe_analysis)
+    'sample_received'
+
+And we cannot submit `Au`, because `Cu`, a dependency of `Fe`, has no result:
+
+    >>> transitioned = do_action_for(au_analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(au_analysis)
+    'sample_received'
+
+Set a result for `Cu` and submit:
+
+    >>> cu_analysis.setResult(12)
+    >>> transitioned = do_action_for(cu_analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(cu_analysis)
+    'to_be_verified'
+
+And `Fe` will follow:
+
+    >>> api.get_workflow_status_of(fe_analysis)
+    'to_be_verified'
+
+While Analysis Request remains to `sample_received`:
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+Because `Au` hasn't been automatically transitioned (there is a missing value
+for an interim):
+
+    >>> api.get_workflow_status_of(au_analysis)
+    'sample_received'
+
+Even if we try to submit `Au`, the submission will not take place:
+
+    >>> transitioned = do_action_for(au_analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(au_analysis)
+    'sample_received'
+
+Because of the missing interim. Set the interim for `Au`:
+
+    >>> au_analysis.setInterimValue("IT1", 4)
+
+And now we are able to submit `Au`:
+
+    >>> transitioned = do_action_for(au_analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(au_analysis)
+    'to_be_verified'
+
+And Analysis Request is transitioned too:
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'

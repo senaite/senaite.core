@@ -26,7 +26,7 @@ def after_submit(analysis):
     """
     # Cascade to other analyses that depends on this analysis
     for dependent in analysis.getDependents():
-        doActionFor(dependent, analysis)
+        doActionFor(dependent, "submit")
 
     # TODO: REFLEX TO REMOVE
     # Do all the reflex rules process
