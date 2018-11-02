@@ -678,4 +678,8 @@ table.bika-listing-table-transposed table.worksheet-position tbody tr {
   padding:0 5px 0 0px;
 }
 
+.bika-listing-table tr td div.progress {
+    width: 54px;
+}
+
 /* </dtml-with> */

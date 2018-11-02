@@ -36,3 +36,7 @@
   background: #ccc;
   opacity: 0.3;
 }
+
+#ajax-contents-table tr td div.progress {
+  width:54px;
+}
