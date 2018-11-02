@@ -206,3 +206,98 @@ The worksheet will automatically be submitted too:
 
     >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
+
+
+Submission of duplicates with interim fields set
+------------------------------------------------
+
+Set interims to the analysis `Au`:
+
+    >>> Au.setInterimFields([
+    ...     {"keyword": "interim_1", "title": "Interim 1",},
+    ...     {"keyword": "interim_2", "title": "Interim 2",}])
+
+Create a Worksheet and submit regular analyses:
+
+    >>> ar = new_ar([Au])
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> submit_regular_analyses(worksheet)
+
+Get the duplicate:
+
+    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
+
+Cannot submit if no result is set:
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+But even if we set a result, we cannot submit because interims are missing:
+
+    >>> duplicate.setResult(12)
+    >>> duplicate.getResult()
+    '12'
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+So, if the duplicate has interims defined, all them are required too:
+
+    >>> duplicate.setInterimValue("interim_1", 15)
+    >>> duplicate.getInterimValue("interim_1")
+    '15'
+
+    >>> duplicate.getInterimValue("interim_2")
+    ''
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+Even if we set a non-valid (None, empty) value to an interim:
+
+    >>> duplicate.setInterimValue("interim_2", None)
+    >>> duplicate.getInterimValue("interim_2")
+    ''
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+    >>> duplicate.setInterimValue("interim_2", '')
+    >>> duplicate.getInterimValue("interim_2")
+    ''
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+But it will work if the value is 0:
+
+    >>> duplicate.setInterimValue("interim_2", 0)
+    >>> duplicate.getInterimValue("interim_2")
+    '0'
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    True
+
+    >>> api.get_workflow_status_of(duplicate)
+    'to_be_verified'
+
+Might happen the other way round. We set interims but not a result:
+
+    >>> ar = new_ar([Au])
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> submit_regular_analyses(worksheet)
+    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
+    >>> duplicate.setInterimValue("interim_1", 10)
+    >>> duplicate.setInterimValue("interim_2", 20)
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+Still, the result is required:
+
+    >>> duplicate.setResult(12)
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    True
+
+    >>> api.get_workflow_status_of(duplicate)
+    'to_be_verified'
+
