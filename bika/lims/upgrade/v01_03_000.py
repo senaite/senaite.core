@@ -41,6 +41,12 @@ GUARDS_PROPERTIES = {
             'guard_permissions': 'BIKA: Edit Results',
             'guard_expr': 'python:here.guard_handler("submit")'
         }
+    },
+    'bika_duplicateanalysis_workflow': {
+        'submit': {
+            'guard_permissions': 'BIKA: Edit Results',
+            'guard_expr': 'python:here.guard_handler("submit")'
+        }
     }
 }
 
@@ -311,6 +317,8 @@ def update_workflows(portal):
                 logger.warn("Transition '{}' for '{}' not found!"
                             .format(transition_id, wf_id))
                 continue
+            logger.info("Updating transition '{}' from '{}'"
+                        .format(transition_id, wf_id))
             transition = workflow.transitions.get(transition_id)
             guard = transition.guard or Guard()
             guard.changeFromProperties(guard_properties)
