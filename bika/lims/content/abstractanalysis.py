@@ -1258,7 +1258,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         # Ensure result integrity regards to None, empty and 0 values
         val = str('' if not value and value != 0 else value).strip()
-        succeed = False
         interims = self.getInterimFields()
         for interim in interims:
             if interim['keyword'] == keyword:
