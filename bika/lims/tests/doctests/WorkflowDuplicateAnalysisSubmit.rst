@@ -301,3 +301,66 @@ Still, the result is required:
     >>> api.get_workflow_status_of(duplicate)
     'to_be_verified'
 
+
+Submission of duplicates with interim calculation
+-------------------------------------------------
+
+If a duplicate have a calculation assigned, the result will be calculated
+automatically based on the calculation. If the calculation have interims set,
+only those that do not have a default value set will be required.
+
+Prepare the calculation and set the calculation to analysis `Au`:
+
+    >>> Au.setInterimFields([])
+    >>> calc = api.create(bikasetup.bika_calculations, 'Calculation', title='Test Calculation')
+    >>> interim_1 = {'keyword': 'IT1', 'title': 'Interim 1', 'value': 10}
+    >>> interim_2 = {'keyword': 'IT2', 'title': 'Interim 2', 'value': 2}
+    >>> interim_3 = {'keyword': 'IT3', 'title': 'Interim 3', 'value': ''}
+    >>> interim_4 = {'keyword': 'IT4', 'title': 'Interim 4', 'value': None}
+    >>> interim_5 = {'keyword': 'IT5', 'title': 'Interim 5'}
+    >>> interims = [interim_1, interim_2, interim_3, interim_4, interim_5]
+    >>> calc.setInterimFields(interims)
+    >>> calc.setFormula("[IT1]+[IT2]+[IT3]+[IT4]+[IT5]")
+    >>> Au.setCalculation(calc)
+
+Create a Worksheet and submit regular analyses:
+
+    >>> ar = new_ar([Au])
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+
+Cannot submit if no result is set
+
+    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+TODO This should not be like this, but the calculation is performed by
+`ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
+'api.analysis.calculate`:
+
+    >>> duplicate.setResult(34)
+
+Set a value for interim IT5:
+
+    >>> duplicate.setInterimValue("IT5", 5)
+
+Cannot transition because IT3 and IT4 have None/empty values as default:
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+Let's set a value for those interims:
+
+    >>> duplicate.setInterimValue("IT3", 3)
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+    >>> duplicate.setInterimValue("IT4", 4)
+
+Since interims IT1 and IT2 have default values set, the analysis will submit:
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    True
+
+    >>> api.get_workflow_status_of(duplicate)
+    'to_be_verified'
