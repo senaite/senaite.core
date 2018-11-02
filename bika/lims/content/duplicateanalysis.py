@@ -99,7 +99,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
                 # Exclude me from the list
                 continue
 
-            if IRequestAnalysis.providedBy(analysis) is False:
+            if not IRequestAnalysis.providedBy(analysis):
                 # Exclude analyses that do not have an analysis request
                 # associated
                 continue

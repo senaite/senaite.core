@@ -323,7 +323,7 @@ Prepare the calculation and set the calculation to analysis `Au`:
     >>> calc.setFormula("[IT1]+[IT2]+[IT3]+[IT4]+[IT5]")
     >>> Au.setCalculation(calc)
 
-Create a Worksheet and submit regular analyses:
+Create a Worksheet with duplicate:
 
     >>> ar = new_ar([Au])
     >>> worksheet = to_new_worksheet_with_duplicate(ar)
@@ -364,3 +364,63 @@ Since interims IT1 and IT2 have default values set, the analysis will submit:
 
     >>> api.get_workflow_status_of(duplicate)
     'to_be_verified'
+
+
+Submission of duplicates with dependencies
+------------------------------------------
+
+Duplicates with dependencies are not allowed. Duplicates can only be created
+from analyses without dependents.
+
+TODO We might consider to allow the creation of duplicates with deps
+
+Reset the interim fields for analysis `Au`:
+
+    >>> Au.setInterimFields([])
+
+Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
+
+    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe.setFormula("[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
+
+Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
+
+    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> interim_1 = {'keyword': 'IT1', 'title': 'Interim 1'}
+    >>> calc_au.setInterimFields([interim_1])
+    >>> calc_au.setFormula("([IT1]+[Fe])/2")
+    >>> Au.setCalculation(calc_au)
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+
+Create a Worksheet with duplicate:
+
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> analyses = worksheet.getRegularAnalyses()
+
+Only one duplicate created for `Cu`, cause is the only analysis that does not
+have dependents:
+
+    >>> duplicates = worksheet.getDuplicateAnalyses()
+    >>> len(duplicates) == 1
+    True
+
+    >>> duplicate = duplicates[0]
+    >>> duplicate.getKeyword()
+    'Cu'
+
+TODO This should not be like this, but the calculation is performed by
+`ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
+'api.analysis.calculate`:
+
+    >>> duplicate.setResult(12)
+
+Cannot submit routine `Fe` cause there is no result for routine analysis `Cu`
+and the duplicate of `Cu` cannot be used as a dependent:
+
+    >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
+    >>> try_transition(fe_analysis, "submit", "to_be_verified")
+    False

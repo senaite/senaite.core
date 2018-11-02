@@ -464,6 +464,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                            'analysis: {}'.format(src_analysis.getId()))
             return None
 
+        # TODO We might consider to allow the creation of duplicates with deps
+        # Removing this check from here and ensuring that duplicate.getSiblings
+        # returns the analyses sorted by priority (duplicates from same
+        # AR > routine analyses from same AR > duplicates from same WS >
+        # routine analyses from same WS) should be almost enough
         calc = src_analysis.getCalculation()
         if calc and calc.getDependentServices():
             logger.warning('Cannot create duplicate analysis from an'
