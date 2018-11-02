@@ -66,6 +66,24 @@ Functional Helpers:
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     ...     transitioned = do_action_for(ar, "receive")
     ...     return ar
+    ...
+    >>> def to_new_worksheet_with_duplicate(ar):
+    ...     worksheet = api.create(portal.worksheets, "Worksheet")
+    ...     for analysis in ar.getAnalyses(full_objects=True):
+    ...         worksheet.addAnalysis(analysis)
+    ...     worksheet.addDuplicateAnalyses(1)
+    ...     return worksheet
+    ...
+    >>> def submit_regular_analyses(worksheet):
+    ...     for analysis in worksheet.getRegularAnalyses():
+    ...         analysis.setResult(13)
+    ...         do_action_for(analysis, "submit")
+    ...
+    >>> def try_transition(object, transition_id, target_state_id):
+    ...      success = do_action_for(object, transition_id)[0]
+    ...      state = api.get_workflow_status_of(duplicate)
+    ...      return success and state == target_state_id
+    ...
 
 Variables:
 
@@ -88,6 +106,49 @@ We need to create some basic objects for the test:
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
+
+
+Duplicate submission basic constraints
+--------------------------------------
+
+Create a Worksheet and submit regular analyses:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> submit_regular_analyses(worksheet)
+
+Get a duplicate:
+
+    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
+
+Cannot submit a duplicate without a result:
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+Even if we try with an empty or None result:
+
+    >>> duplicate.setResult('')
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+    >>> duplicate.setResult(None)
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
+
+But will work if we try with a result of 0:
+
+    >>> duplicate.setResult(0)
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    True
+
+    >>> api.get_workflow_status_of(duplicate)
+    'to_be_verified'
+
+And we cannot re-submit a duplicate that have been submitted already:
+
+    >>> try_transition(duplicate, "submit", "to_be_verified")
+    False
 
 
 Auto submission of a Worksheets when all its analyses are submitted
