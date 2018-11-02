@@ -6,10 +6,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
-from bika.lims.workflow import doActionFor, wasTransitionPerformed
-from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.permissions import Unassign
+from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import wasTransitionPerformed
 
 
 def sample(obj):
