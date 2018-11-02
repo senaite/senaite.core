@@ -75,7 +75,8 @@ class ReferenceAnalysis(AbstractAnalysis):
     def setResult(self, value):
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
-        val = str(value).strip()
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str('' if not value and value != 0 else value).strip()
         self.getField('Result').set(self, val)
 
     def getReferenceResults(self):

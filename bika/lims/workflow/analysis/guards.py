@@ -7,7 +7,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, wasTransitionPerformed
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.permissions import Unassign
 
@@ -119,3 +119,23 @@ def new_verify(obj):
         return obj.isUserAllowedToVerify(member)
 
     return False
+
+
+def guard_submit(analysis):
+    """Return whether the transition "submit" can be performed or not
+    """
+    # Cannot submit without a result
+    if not analysis.getResult():
+        return False
+
+    # Check interims
+    for interim in analysis.getInterimFields():
+        if not interim.get("value", ""):
+            return False
+
+    # Check dependencies (analyses this analysis depends on)
+    for dependency in analysis.getDependencies():
+        if not wasTransitionPerformed(dependency, "submit"):
+            return False
+
+    return True

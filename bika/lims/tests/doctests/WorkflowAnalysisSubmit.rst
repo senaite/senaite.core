@@ -1,0 +1,311 @@
+Analysis submission guard and event
+===================================
+
+Running this test from the buildout directory:
+
+    bin/test test_textual_doctests -t WorkflowAnalysisSubmit
+
+
+Test Setup
+----------
+
+Needed Imports:
+
+    >>> import transaction
+    >>> from DateTime import DateTime
+    >>> from plone import api as ploneapi
+
+    >>> from bika.lims import api
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.workflow import doActionFor as do_action_for
+
+
+Functional Helpers:
+
+    >>> def start_server():
+    ...     from Testing.ZopeTestCase.utils import startZServer
+    ...     ip, port = startZServer()
+    ...     return "http://{}:{}/{}".format(ip, port, portal.id)
+
+    >>> def timestamp(format="%Y-%m-%d"):
+    ...     return DateTime().strftime(format)
+
+Needed Imports:
+
+    >>> import re
+    >>> from AccessControl.PermissionRole import rolesForPermissionOn
+    >>> from bika.lims import api
+    >>> from bika.lims.content.analysisrequest import AnalysisRequest
+    >>> from bika.lims.content.sample import Sample
+    >>> from bika.lims.content.samplepartition import SamplePartition
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.utils.sample import create_sample
+    >>> from bika.lims.utils import tmpID
+    >>> from bika.lims.workflow import doActionFor
+    >>> from bika.lims.workflow import getCurrentState
+    >>> from bika.lims.workflow import getAllowedTransitions
+    >>> from DateTime import DateTime
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from plone.app.testing import setRoles
+
+Functional Helpers:
+
+    >>> def start_server():
+    ...     from Testing.ZopeTestCase.utils import startZServer
+    ...     ip, port = startZServer()
+    ...     return "http://{}:{}/{}".format(ip, port, portal.id)
+    ...
+    >>> def new_ar(services):
+    ...     values = {
+    ...         'Client': client.UID(),
+    ...         'Contact': contact.UID(),
+    ...         'DateSampled': date_now,
+    ...         'SampleType': sampletype.UID()}
+    ...     service_uids = map(api.get_uid, services)
+    ...     ar = create_analysisrequest(client, request, values, service_uids)
+    ...     transitioned = do_action_for(ar, "receive")
+    ...     return ar
+
+Variables:
+
+    >>> portal = self.portal
+    >>> request = self.request
+    >>> bikasetup = portal.bika_setup
+    >>> date_now = DateTime().strftime("%Y-%m-%d")
+    >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
+
+We need to create some basic objects for the test:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+    >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
+    >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
+    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
+    >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
+    >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
+    >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
+
+
+Auto submission of Analysis Requests when all its analyses are submitted
+------------------------------------------------------------------------
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+
+Set results for some of the analyses only:
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> analyses[0].setResult('12')
+    >>> analyses[1].setResult('12')
+
+We've set some results, but all analyses are still in `sample_received`:
+
+    >>> map(api.get_workflow_status_of, analyses)
+    ['sample_received', 'sample_received', 'sample_received']
+
+Transition some of them:
+
+    >>> transitioned = do_action_for(analyses[0], "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analyses[0])
+    'to_be_verified'
+
+    >>> transitioned = do_action_for(analyses[1], "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analyses[1])
+    'to_be_verified'
+
+The Analysis Request status is still in `sample_received`:
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+If we try to transition the remaining analysis w/o result, nothing happens:
+
+    >>> transitioned = do_action_for(analyses[2], "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analyses[2])
+    'sample_received'
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+Even if we try with an empty or None result:
+
+    >>> analyses[2].setResult('')
+    >>> transitioned = do_action_for(analyses[2], "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analyses[2])
+    'sample_received'
+
+    >>> analyses[2].setResult(None)
+    >>> transitioned = do_action_for(analyses[2], "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analyses[2])
+    'sample_received'
+
+But will work if we try with a result of 0:
+
+    >>> analyses[2].setResult(0)
+    >>> transitioned = do_action_for(analyses[2], "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analyses[2])
+    'to_be_verified'
+
+And the AR will follow:
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+And we cannot re-submit analyses that have been already submitted:
+
+    >>> transitioned = do_action_for(analyses[2], "submit")
+    >>> transitioned[0]
+    False
+
+
+Submission of results for analyses with interim fields set
+----------------------------------------------------------
+
+For an analysis to be submitted successfully, it must have a result set, but if
+the analysis have interim fields, they are mandatory too:
+
+    >>> Au.setInterimFields([
+    ...     {"keyword": "interim_1", "title": "Interim 1",},
+    ...     {"keyword": "interim_2", "title": "Interim 2",}])
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Au])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+
+Cannot submit if no result is set:
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'sample_received'
+
+But even if we set a result, we cannot submit because interims are missing:
+
+    >>> analysis.setResult(12)
+    >>> analysis.getResult()
+    '12'
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'sample_received'
+
+So, if the analysis has interims defined, all them are required too:
+
+    >>> analysis.setInterimValue("interim_1", 15)
+    >>> analysis.getInterimValue("interim_1")
+    '15'
+
+    >>> analysis.getInterimValue("interim_2")
+    ''
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'sample_received'
+
+Even if we set a non-valid (None, empty value) to an interim:
+
+    >>> analysis.setInterimValue("interim_2", None)
+    >>> analysis.getInterimValue("interim_2")
+    ''
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'sample_received'
+
+    >>> analysis.setInterimValue("interim_2", '')
+    >>> analysis.getInterimValue("interim_2")
+    ''
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'sample_received'
+
+But it will work if the value is 0:
+
+    >>> analysis.setInterimValue("interim_2", 0)
+    >>> analysis.getInterimValue("interim_2")
+    '0'
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+And the Analysis Request follow:
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+Might happen the other way round. We set interims but not a result:
+
+    >>> ar = new_ar([Au])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> analysis.setInterimValue("interim_1", 10)
+    >>> analysis.setInterimValue("interim_2", 20)
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'sample_received'
+
+Still, the result is required:
+
+    >>> analysis.setResult(12)
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+And again, the Analysis Request will follow:
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+
+Submission of results for analyses with interim calculation
+-----------------------------------------------------------
+

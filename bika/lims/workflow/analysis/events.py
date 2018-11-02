@@ -15,7 +15,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 
 
-def after_submit(obj):
+def after_submit(analysis):
     """Method triggered after a 'submit' transition for the analysis passed in
     is performed. Promotes the submit transition to the Worksheet to which the
     analysis belongs to. Note that for the worksheet there is already a guard
@@ -24,13 +24,23 @@ def after_submit(obj):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
-    ws = obj.getWorksheet()
+    # Cascade to other analyses that depends on this analysis
+    for dependent in analysis.getDependents():
+        doActionFor(dependent, analysis)
+
+    # TODO: REFLEX TO REMOVE
+    # Do all the reflex rules process
+    if IRequestAnalysis.providedBy(analysis):
+        analysis._reflex_rule_process('submit')
+
+    # Promote transition to worksheet
+    ws = analysis.getWorksheet()
     if ws:
         doActionFor(ws, 'submit')
 
-    if IRequestAnalysis.providedBy(obj):
-        ar = obj.getRequest()
-        doActionFor(ar, 'submit')
+    # Promote transition to Analysis Request
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), 'submit')
 
 
 def after_retract(obj):

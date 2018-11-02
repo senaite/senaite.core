@@ -369,10 +369,14 @@
     </guard>
   </transition>
 
-  <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <!-- Transition: submit -->
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
-      <guard-expression>python:here.guard_submit_transition()</guard-expression>
+      <permission>BIKA: Edit Results</permission>
+      <guard-expression>python:here.guard_handler("submit")</guard-expression>
     </guard>
   </transition>
 

@@ -35,6 +35,15 @@ PORTLETS_TO_PURGE = [
     'portlet_verified-pt'
 ]
 
+GUARDS_PROPERTIES = {
+    'bika_analysis_workflow': {
+        'submit': {
+            'guard_permissions': 'BIKA: Edit Results',
+            'guard_expr': 'python:here.guard_handler("submit")'
+        }
+    }
+}
+
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -75,6 +84,9 @@ def upgrade(tool):
     # HistoryAwareField) cannot resolve DependentServices
     # https://github.com/senaite/senaite.core/pull/1072
     rebind_calculations(portal)
+
+    # Update analysis workflow
+    update_workflows(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -287,3 +299,18 @@ def rebind_calculations(portal):
                             calc.getInterimFields())
         analysis.setCalculation(calc)
         analysis.setInterimFields(an_interims + calc_interims)
+
+
+def update_workflows(portal):
+    logger.info("Updating workflows ...")
+    wf_tool = api.get_tool("portal_workflow")
+    for wf_id, transition_ids in GUARDS_PROPERTIES.items():
+        workflow = wf_tool.getWorkflowById(wf_id)
+        for transition_id,  guard_properties in transition_ids.items():
+            if transition_id not in workflow.transitions:
+                logger.warn("Transition '{}' for '{}' not found!"
+                            .format(transition_id, wf_id))
+                continue
+            transition = workflow.transitions.get(transition_id)
+            guard = transition.guard or Guard()
+            guard.changeFromProperties(guard_properties)

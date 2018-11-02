@@ -427,8 +427,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str('' if not value and value != 0 else value).strip()
         # Only allow DL if manually enabled in AS
-        val = str(value).strip()
         if val and val[0] in '<>':
             self.setDetectionLimitOperand(None)
             oper = val[0]
@@ -1250,6 +1251,39 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     and analysis.getAnalysis().UID() == self.UID():
                 ws.removeAnalysis(analysis)
 
+    def setInterimValue(self, keyword, value):
+        """Sets a value to an interim of this analysis
+        :param keyword: the keyword of the interim
+        :param value: the value for the interim
+        """
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str('' if not value and value != 0 else value).strip()
+        succeed = False
+        interims = self.getInterimFields()
+        for interim in interims:
+            if interim['keyword'] == keyword:
+                interim['value'] = val
+                self.setInterimFields(interims)
+                return
+
+        logger.warning("Interim '{}' for analysis '{}' not found"
+                       .format(keyword, self.getKeyword()))
+
+    def getInterimValue(self, keyword):
+        """Returns the value of an interim of this analysis
+        """
+        interims = filter(lambda item: item["keyword"] == keyword,
+                          self.getInterimFields())
+        if not interims:
+            logger.warning("Interim '{}' for analysis '{}' not found"
+                           .format(keyword, self.getKeyword()))
+            return None
+        if len(interims) > 1:
+            logger.error("More than one interim '{}' found for '{}'"
+                         .format(keyword, self.getKeyword()))
+            return None
+        return interims[0].get('value', '')
+
     @security.public
     def guard_sample_transition(self):
         return guards.sample(self)
@@ -1285,35 +1319,3 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def guard_unassign_transition(self):
         return guards.unassign(self)
-
-    @security.public
-    def workflow_script_submit(self):
-        events.after_submit(self)
-
-    @security.public
-    def workflow_script_retract(self):
-        events.after_retract(self)
-
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
-
-    @security.public
-    def workflow_script_cancel(self):
-        events.after_cancel(self)
-
-    @security.public
-    def workflow_script_reject(self):
-        events.after_reject(self)
-
-    @security.public
-    def workflow_script_attach(self):
-        events.after_attach(self)
-
-    @security.public
-    def workflow_script_assign(self):
-        events.after_assign(self)
-
-    @security.public
-    def workflow_script_unassign(self):
-        events.after_unassign(self)
