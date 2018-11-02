@@ -725,9 +725,9 @@ class AnalysisRequestsView(BikaListingView):
         progress_perc = 0
         if num_steps > 0 and num_steps_total > 0:
             progress_perc = (num_steps * 100) / num_steps_total
-        progress = '<div class="progress-bar-container">' + \
-                   '<div class="progress-bar" style="width:{0}%"></div>' + \
-                   '<div class="progress-perc">{0}%</div></div>'
+        progress = '<div class="progress md-progress">'\
+                   '<div class="progress-bar" style="width: {0}%">{0}%</div>'\
+                   '</div>'
         item["replace"]["Progress"] = progress.format(progress_perc)
 
         item["BatchID"] = obj.getBatchID
