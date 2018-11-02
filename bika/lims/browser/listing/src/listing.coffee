@@ -458,11 +458,11 @@ class ListingController extends React.Component
 
     # return all categories if the flag is on
     if @state.expand_all_categories
-      return @state.categories
+      return [].concat @state.categories
 
     # expand all categories for searches
     if @state.filter
-      return @state.categories
+      return [].concat @state.categories
 
     # no categories are expanded if no items are selected
     if not @state.selected_uids
