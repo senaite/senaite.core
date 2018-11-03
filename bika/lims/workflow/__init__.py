@@ -10,6 +10,7 @@ from bika.lims import PMF
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from bika.lims import logger
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -59,8 +60,8 @@ def doActionFor(instance, action_id):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
-    allows the action_id passed in (delegate to isTransitionAllowed) and the
-    instance hasn't been flagged as to be skipped previously.
+    allows the action_id passed in and the instance hasn't been flagged as to
+    be skipped previously.
 
     :param instance: Object to be transitioned
     :param action_id: transition id
@@ -71,6 +72,7 @@ def doActionFor(instance, action_id):
         return False, ""
 
     if isinstance(instance, list):
+        # TODO Workflow . Check if this is strictly necessary
         # This check is here because sometimes Plone creates a list
         # from submitted form elements.
         if len(instance) > 1:
@@ -85,29 +87,19 @@ def doActionFor(instance, action_id):
         # TODO Workflow Remove/Replace this skip thing
         return False, ""
 
-    actionperformed = False
-    message = ''
     workflow = getToolByName(instance, "portal_workflow")
-
-    if not isTransitionAllowed(instance, action_id):
-        currstate = getCurrentState(instance)
-        clazzname = instance.__class__.__name__
-        msg = "Transition '{0}' not allowed: {1} '{2}' ({3})"
-        msg = msg.format(action_id, clazzname, instance.getId(), currstate)
-        logger.warning(msg)
-        #_logTransitionFailure(instance, action_id)
-        return actionperformed, message
-    else:
-        logger.warning(
-            "doActionFor should never (ever) be called with allowed_transition"
-            "set to True as it avoids permission checks.")
     try:
         workflow.doActionFor(instance, action_id)
-        actionperformed = True
+        return True, ""
     except WorkflowException as e:
         message = str(e)
+        curr_state = getCurrentState(instance)
+        clazz_name = instance.__class__.__name__
+        logger.warning(
+            "Transition '{0}' not allowed: {1} '{2}' ({3})"\
+            .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
-    return actionperformed, message
+        return False, message
 
 
 def _logTransitionFailure(obj, transition_id):
