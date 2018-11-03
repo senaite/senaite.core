@@ -154,28 +154,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
-    @security.public
-    def workflow_script_submit(self):
-        """Method triggered after a 'submit' transition for the current
-        ReferenceAnalysis is performed.
-        By default, the "submit" action for transitions the RefAnalysis to the
-        "attachment_due" state. If attachment is not required, the Reference
-        Analysis is transitioned to 'to_be_verified' state (via 'attach').
-        If all the analyses that belong to the same worksheet are in a suitable
-        state, the 'submit' transition to the worksheet is triggered too.
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        # By default, the 'submit' action transitions the ReferenceAnalysis to
-        # the 'attachment_due'. Since doActionFor already checks for the guards
-        # in this case (guard_attach_transition), try always the transition to
-        # 'to_be_verified' via 'attach' action
-        # doActionFor will check the
-        doActionFor(self, 'attach')
-
-        # Delegate the transition of Worksheet to base class AbstractAnalysis
-        AbstractAnalysis.workflow_script_submit(self)
-
     def workflow_script_attach(self):
         if skip(self, "attach"):
             return

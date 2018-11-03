@@ -35,19 +35,30 @@ PORTLETS_TO_PURGE = [
     'portlet_verified-pt'
 ]
 
-GUARDS_PROPERTIES = {
+TRANSITIONS_PROPERTIES = {
     'bika_analysis_workflow': {
         'submit': {
-            'guard_permissions': 'BIKA: Edit Results',
-            'guard_expr': 'python:here.guard_handler("submit")'
+            'guard': {
+                'guard_permissions': 'BIKA: Edit Results',
+                'guard_expr': 'python:here.guard_handler("submit")' }
         }
     },
     'bika_duplicateanalysis_workflow': {
         'submit': {
-            'guard_permissions': 'BIKA: Edit Results',
-            'guard_expr': 'python:here.guard_handler("submit")'
+            'guard': {
+                'guard_permissions': 'BIKA: Edit Results',
+                'guard_expr': 'python:here.guard_handler("submit")' }
         }
-    }
+    },
+    'bika_referenceanalysis_workflow': {
+        'submit': {
+            'properties': {
+                'new_state_id': 'to_be_verified', },
+            'guard': {
+                'guard_permissions': 'BIKA: Edit Results',
+                'guard_expr': 'python:here.guard_handler("submit")' },
+        }
+    },
 }
 
 
@@ -310,15 +321,27 @@ def rebind_calculations(portal):
 def update_workflows(portal):
     logger.info("Updating workflows ...")
     wf_tool = api.get_tool("portal_workflow")
-    for wf_id, transition_ids in GUARDS_PROPERTIES.items():
+    for wf_id, transition_ids in TRANSITIONS_PROPERTIES.items():
         workflow = wf_tool.getWorkflowById(wf_id)
-        for transition_id,  guard_properties in transition_ids.items():
+        for transition_id,  items in transition_ids.items():
             if transition_id not in workflow.transitions:
                 logger.warn("Transition '{}' for '{}' not found!"
                             .format(transition_id, wf_id))
                 continue
+
             logger.info("Updating transition '{}' from '{}'"
                         .format(transition_id, wf_id))
             transition = workflow.transitions.get(transition_id)
-            guard = transition.guard or Guard()
-            guard.changeFromProperties(guard_properties)
+
+            if 'properties' in items:
+                # Update transition properties
+                properties = items['properties']
+                for prop_name, prop_value in properties.items():
+                    if hasattr(transition, prop_name):
+                        setattr(transition, prop_name, prop_value)
+            
+            if 'guard' in items:
+                properties = items['guard']
+                guard = transition.guard or Guard()
+                guard.changeFromProperties(properties)
+                transition.guard = guard
