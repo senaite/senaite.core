@@ -55,57 +55,48 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
+def doActionFor(instance, action_id):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
     allows the action_id passed in (delegate to isTransitionAllowed) and the
     instance hasn't been flagged as to be skipped previously.
-    If active_only is set to True, the instance will only be transitioned if
-    it's current state is active (not cancelled nor inactive)
 
     :param instance: Object to be transitioned
     :param action_id: transition id
-    :param active_only: True if transition must apply to active objects
-    :param allowed_transition: True for a allowed transition check
     :returns: true if the transition has been performed and message
     :rtype: list
     """
-    actionperformed = False
-    message = ''
+    if not instance:
+        return False, ""
+
     if isinstance(instance, list):
         # This check is here because sometimes Plone creates a list
         # from submitted form elements.
         if len(instance) > 1:
             logger.error(
-                "doActionFor is getting an instance paramater which is alist  "
+                "doActionFor is getting an instance parameter which is a list "
                 "with more than one item. Instance: '{}', action_id: '{}'"
                 .format(instance, action_id)
             )
-        instance = instance[0]
-    if not instance:
-        return actionperformed, message
+        return doActionFor(instance=instance[0], action_id=action_id)
 
+    if skip(instance, action_id, peek=True):
+        # TODO Workflow Remove/Replace this skip thing
+        return False, ""
+
+    actionperformed = False
+    message = ''
     workflow = getToolByName(instance, "portal_workflow")
-    skipaction = skip(instance, action_id, peek=True)
-    if skipaction:
-        #clazzname = instance.__class__.__name__
-        #msg = "Skipping transition '{0}': {1} '{2}'".format(action_id,
-        #                                                    clazzname,
-        #                                                    instance.getId())
-        #logger.info(msg)
-        return actionperformed, message
 
-    if allowed_transition:
-        allowed = isTransitionAllowed(instance, action_id, active_only)
-        if not allowed:
-            currstate = getCurrentState(instance)
-            clazzname = instance.__class__.__name__
-            msg = "Transition '{0}' not allowed: {1} '{2}' ({3})"
-            msg = msg.format(action_id, clazzname, instance.getId(), currstate)
-            logger.warning(msg)
-            #_logTransitionFailure(instance, action_id)
-            return actionperformed, message
+    if not isTransitionAllowed(instance, action_id):
+        currstate = getCurrentState(instance)
+        clazzname = instance.__class__.__name__
+        msg = "Transition '{0}' not allowed: {1} '{2}' ({3})"
+        msg = msg.format(action_id, clazzname, instance.getId(), currstate)
+        logger.warning(msg)
+        #_logTransitionFailure(instance, action_id)
+        return actionperformed, message
     else:
         logger.warning(
             "doActionFor should never (ever) be called with allowed_transition"
