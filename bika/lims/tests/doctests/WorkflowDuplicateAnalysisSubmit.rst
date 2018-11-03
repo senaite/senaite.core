@@ -81,7 +81,7 @@ Functional Helpers:
     ...
     >>> def try_transition(object, transition_id, target_state_id):
     ...      success = do_action_for(object, transition_id)[0]
-    ...      state = api.get_workflow_status_of(duplicate)
+    ...      state = api.get_workflow_status_of(object)
     ...      return success and state == target_state_id
     ...
 
