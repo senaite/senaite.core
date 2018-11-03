@@ -88,6 +88,10 @@ def create_analysis(context, source, **kwargs):
     else:
         analysis.setAnalysisService(source.getAnalysisService())
 
+    # Set the interims from the Service
+    service_interims = analysis.getAnalysisService().getInterimFields()
+    analysis.setInterimFields(service_interims)
+
     analysis.unmarkCreationFlag()
     zope.event.notify(ObjectInitializedEvent(analysis))
     return analysis

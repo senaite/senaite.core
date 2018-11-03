@@ -144,9 +144,6 @@ class ARAnalysesField(ObjectField):
                 # TODO Entry point for interims assignment and Calculation
                 #      decoupling from Analysis. See comments PR#593
                 analysis = create_analysis(instance, service)
-                # TODO Remove when the `create_analysis` function supports this
-                # Set the interim fields only for new created Analysis
-                self._update_interims(analysis, service)
                 new_analyses.append(analysis)
 
             # Set the price of the Analysis
@@ -287,15 +284,6 @@ class ARAnalysesField(ObjectField):
         state = api.get_workflow_status_of(
             analysis, state_var='worksheetanalysis_review_state')
         return state == "assigned"
-
-    def _update_interims(self, analysis, service):
-        """Update Interim Fields of the Analysis
-
-        :param analysis: Analysis Object
-        :param service: Analysis Service Object
-        """
-        service_interims = service.getInterimFields()
-        analysis.setInterimFields(service_interims)
 
     def _update_price(self, analysis, service, prices):
         """Update the Price of the Analysis
