@@ -710,10 +710,6 @@ class Instrument(ATFolder):
             # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
 
-            # copy the interimfields
-            if calc:
-                ref_analysis.setInterimFields(calc.getInterimFields())
-
             # Comes from a worksheet or has been attached directly?
             ws = ref_analysis.getBackReferences('WorksheetAnalysis')
             if not ws or len(ws) == 0:
