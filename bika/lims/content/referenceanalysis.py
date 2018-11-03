@@ -154,6 +154,13 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
+    def getDependents(self, retracted=False):
+        """It doesn't make sense for a ReferenceAnalysis to use
+        dependents, since them are only used in calculations for
+        routine analyses
+        """
+        return []
+
     def workflow_script_attach(self):
         if skip(self, "attach"):
             return
