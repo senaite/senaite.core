@@ -66,7 +66,8 @@ class InterimFieldsField(RecordsField):
         # Ensure the service includes the interims from the calculation
         an_keys = map(lambda interim: interim['keyword'], an_interims)
         calc_interims = calculation.getInterimFields()
-        calc_interims = filter(lambda key: key not in an_keys, calc_interims)
+        calc_interims = filter(lambda inter: inter['keyword'] not in an_keys,
+                               calc_interims)
         return an_interims + calc_interims
 
 

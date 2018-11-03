@@ -504,7 +504,7 @@ Append interim field `B` to the `Total Hardness` Analysis Service:
 
     >>> analysisservice4.setInterimFields([interim2])
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
-    ['B']
+    ['B', 'A']
 
 Now we assign the `Total Hardness` Analysis Service:
 
@@ -519,7 +519,7 @@ The created Analysis has the same Calculation attached, as the Analysis Service:
     >>> analysis_calc
     <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
 
-And therofore, also the same Interim Fields as the Calculation:
+And therefore, also the same Interim Fields as the Calculation:
 
     >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
     ['A']
@@ -527,7 +527,7 @@ And therofore, also the same Interim Fields as the Calculation:
 The Analysis also inherits the Interim Fields of the Analysis Service:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
-    ['B']
+    ['B', 'A']
 
 But what happens if the Interim Fields of either the Analysis Service or of the
 Calculation change and the AR is updated with the same Analysis Service?
@@ -541,8 +541,11 @@ Change the Interim Field of the Calculation to `C`:
 Change the Interim Fields of the Analysis Service to `D`:
 
     >>> analysisservice4.setInterimFields([interim4])
+
+The Analysis Service returns the interim fields from the Calculation too:
+
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
-    ['D']
+    ['D', 'C']
 
 Update the AR with the new Analysis Service:
 
@@ -570,10 +573,11 @@ And therefore, also the same Interim Fields as the Calculation:
     >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
     ['C']
 
-The existing Analysis retains the initial Interim Fields of the Analysis Service:
+The existing Analysis retains the initial Interim Fields of the Analysis
+Service, together with the interim from the associated Calculation:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
-    ['B']
+    ['B', 'A']
 
 
 Worksheets
