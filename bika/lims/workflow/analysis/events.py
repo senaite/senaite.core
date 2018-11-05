@@ -25,9 +25,9 @@ def after_submit(analysis):
     bika.lims.workfow.AfterTransitionEventHandler
     """
 
-    # Cascade to other analyses that depends on this analysis
-    for dependent in analysis.getDependents():
-        doActionFor(dependent, "submit")
+    # Promote to analyses this analysis depends on
+    for dependency in analysis.getDependencies():
+        doActionFor(dependency, "submit")
 
     # TODO: REFLEX TO REMOVE
     # Do all the reflex rules process
@@ -110,7 +110,7 @@ def after_verify(analysis):
     bika.lims.workfow.AfterTransitionEventHandler
     """
 
-    # If the analysis has dependencies, transition them
+    # Promote to analyses this analysis depends on
     for dependency in analysis.getDependencies():
         doActionFor(dependency, 'verify')
 

@@ -560,23 +560,12 @@ Set a result for `Cu` and submit:
     >>> api.get_workflow_status_of(cu_analysis)
     'to_be_verified'
 
-And `Fe` will follow:
+But `Fe` won't follow, cause only dependencies follow, but not dependents:
 
     >>> api.get_workflow_status_of(fe_analysis)
-    'to_be_verified'
-
-While Analysis Request remains to `sample_received`:
-
-    >>> api.get_workflow_status_of(ar)
     'sample_received'
 
-Because `Au` hasn't been automatically transitioned (there is a missing value
-for an interim):
-
-    >>> api.get_workflow_status_of(au_analysis)
-    'sample_received'
-
-Even if we try to submit `Au`, the submission will not take place:
+If we try to submit `Au`, the submission will not take place:
 
     >>> transitioned = do_action_for(au_analysis, "submit")
     >>> transitioned[0]
@@ -598,7 +587,12 @@ And now we are able to submit `Au`:
     >>> api.get_workflow_status_of(au_analysis)
     'to_be_verified'
 
-And Analysis Request is transitioned too:
+And since `Fe` is a dependency of `Au`, `Fe` will be automatically transitioned:
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+As well as the Analysis Request:
 
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'

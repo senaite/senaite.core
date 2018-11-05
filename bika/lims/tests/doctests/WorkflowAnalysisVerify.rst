@@ -281,3 +281,70 @@ Unless we verify the analysis `Au`:
 
     >>> api.get_workflow_status_of(ar0)
     'verified'
+
+
+Verification of results for analyses with dependencies
+------------------------------------------------------
+
+If an analysis is associated to a calculation that uses the result of other
+analyses (dependents), then the verification of a dependency will auto-verify
+its dependents.
+
+Reset the interim fields for analysis `Au`:
+
+    >>> Au.setInterimFields([])
+
+Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
+
+    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe.setFormula("[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
+
+Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
+
+    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> calc_au.setFormula("([Fe])/2")
+    >>> Au.setCalculation(calc_au)
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> cu_analysis = filter(lambda an: an.getKeyword()=="Cu", analyses)[0]
+    >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
+    >>> au_analysis = filter(lambda an: an.getKeyword()=="Au", analyses)[0]
+
+TODO This should not be like this, but the calculation is performed by
+`ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
+'api.analysis.calculate`:
+
+    >>> cu_analysis.setResult(20)
+    >>> fe_analysis.setResult(12)
+    >>> au_analysis.setResult(10)
+
+Submit `Au` analysis and the rest will follow:
+
+    >>> try_transition(au_analysis, "submit", "to_be_verified")
+    True
+    >>> api.get_workflow_status_of(au_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(fe_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(cu_analysis)
+    'to_be_verified'
+
+If I verify `Au`, the rest of analyses (dependents) will follow too:
+
+    >>> try_transition(au_analysis, "verify", "verified")
+    True
+    >>> api.get_workflow_status_of(au_analysis)
+    'verified'
+    >>> api.get_workflow_status_of(fe_analysis)
+    'verified'
+    >>> api.get_workflow_status_of(cu_analysis)
+    'verified'
+
+And Analysis Request is transitioned too:
+
+    >>> api.get_workflow_status_of(ar)
+    'verified'

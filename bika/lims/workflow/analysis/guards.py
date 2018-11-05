@@ -108,6 +108,7 @@ def guard_verify(analysis):
     if not api.is_active(analysis):
         return False
 
+    # Check dependencies (analyses this analysis depends on)
     for dependency in analysis.getDependencies():
         if not isTransitionAllowed(dependency, "verify"):
             if not wasTransitionPerformed(dependency, "verify"):
