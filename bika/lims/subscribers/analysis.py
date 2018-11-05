@@ -11,7 +11,7 @@ from bika.lims.utils import changeWorkflowState
 
 
 def ObjectInitializedEventHandler(instance, event):
-
+    # TODO Workflow Revisit when an Analysis is added to an AR
     wf_tool = getToolByName(instance, 'portal_workflow')
 
     ar = instance.getRequest()
