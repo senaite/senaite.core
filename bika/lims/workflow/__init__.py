@@ -8,6 +8,7 @@
 from bika.lims import enum, api
 from bika.lims import PMF
 from bika.lims.browser import ulocalized_time
+from bika.lims.decorators import timeit
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
@@ -17,6 +18,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
 from zope.interface import implements
+import collections
 import sys
 
 # This is required to authorize AccessControl.ZopeGuards to access to this
@@ -56,7 +58,7 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id):
+def doActionFor(instance, action_id, reindex_on_success=True):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
@@ -65,6 +67,7 @@ def doActionFor(instance, action_id):
 
     :param instance: Object to be transitioned
     :param action_id: transition id
+    :param reindex_on_success: reindex the object after transition success
     :returns: true if the transition has been performed and message
     :rtype: list
     """
@@ -83,14 +86,18 @@ def doActionFor(instance, action_id):
             )
         return doActionFor(instance=instance[0], action_id=action_id)
 
-    if skip(instance, action_id, peek=True):
-        # TODO Workflow Remove/Replace this skip thing
-        return False, ""
+    # Ensure the same action is not triggered twice for the same object.
+    pool = ActionHandlerPool.get_instance()
+    first_call = pool.is_empty()
+    if not first_call and pool.succeed(instance):
+        return
 
+    succeed = False
+    message = ""
     workflow = getToolByName(instance, "portal_workflow")
     try:
         workflow.doActionFor(instance, action_id)
-        return True, ""
+        succeed = True
     except WorkflowException as e:
         message = str(e)
         curr_state = getCurrentState(instance)
@@ -99,7 +106,13 @@ def doActionFor(instance, action_id):
             "Transition '{0}' not allowed: {1} '{2}' ({3})"\
             .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
-        return False, message
+
+    # Resume the pool of actions
+    pool.push(instance, action_id, succeed)
+    if first_call:
+        pool.resume(reindex_on_success)
+
+    return succeed, message
 
 
 def _logTransitionFailure(obj, transition_id):
@@ -545,3 +558,78 @@ class JSONReadExtender(object):
         include_fields = get_include_fields(request)
         if not include_fields or "transitions" in include_fields:
             data['transitions'] = get_workflow_actions(self.context)
+
+
+class ActionsPool(object):
+    """Handles transitions of multiple objects at once
+    """
+    def __init__(self):
+        self.actions_pool = collections.OrderedDict()
+
+    def add(self, instance, action_id):
+        uid = api.get_uid(instance)
+        self.actions_pool[uid] = {"instance": instance,
+                                  "action_id": action_id}
+
+    def clear(self):
+        self.actions_pool = collections.OrderedDict()
+
+    def resume(self, reindex_on_success=True):
+        outcome = collections.OrderedDict()
+        for uid, values in self.actions_pool.items():
+            instance = values["instance"]
+            action_id = values["action_id"]
+            outcome[uid] = doActionFor(instance, action_id,
+                                       reindex_on_success=reindex_on_success)
+        self.clear()
+        return outcome
+
+
+class ActionHandlerPool:
+    """Singleton to handle concurrent transitions
+    """
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if ActionHandlerPool.__instance == None:
+            ActionHandlerPool()
+        return ActionHandlerPool.__instance
+
+    def __init__(self):
+        if ActionHandlerPool.__instance != None:
+            raise Exception("Use ActionHandler.get_instance()")
+        ActionHandlerPool.__instance = self
+        self.actions= collections.OrderedDict()
+
+    def __len__(self):
+        return len(self.actions)
+
+    def is_empty(self):
+        return len(self) == 0
+
+    def push(self, instance, action, success):
+        uid = api.get_uid(instance)
+        info = self.actions.get(uid, {})
+        info[action] = {'instance': instance, 'success': success}
+        self.actions[uid]=info
+
+    def succeed(self, instance, action):
+        uid = api.get_uid(instance)
+        return self.actions.get(uid, {}).get(action, {}).get('success', False)
+
+    def resume(self, reindex_on_success=True):
+        if not reindex_on_success:
+            # Do nothing
+            self.clear()
+        processed = list()
+        for uid, info in self.actions.items():
+            if uid in processed:
+                continue
+            instance = info[info.keys()[0]]["instance"]
+            instance.reindexObject()
+            processed.append(uid)
+        self.clear()
+
+    def clear(self):
+        self.actions = collections.OrderedDict()

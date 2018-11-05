@@ -25,9 +25,6 @@ def after_submit(analysis):
     bika.lims.workfow.AfterTransitionEventHandler
     """
 
-    # Reindex the analysis
-    analysis.reindexObject()
-
     # Cascade to other analyses that depends on this analysis
     for dependent in analysis.getDependents():
         doActionFor(dependent, "submit")
