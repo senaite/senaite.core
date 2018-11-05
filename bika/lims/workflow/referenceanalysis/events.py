@@ -8,9 +8,17 @@
 from bika.lims.workflow.analysis import events as analysis_events
 
 
-def after_submit(obj):
+def after_submit(reference_analysis):
     """Method triggered after a 'submit' transition for the reference analysis
     passed in is performed.
     Delegates to bika.lims.workflow.analysis.events.after_submit
     """
-    analysis_events.after_submit(obj)
+    analysis_events.after_submit(reference_analysis)
+
+
+def after_verify(reference_analysis):
+    """Function called after a 'verify' transition for the reference analysis
+    passed in is performed
+    Delegates to bika.lims.workflow.analysis.events.after_verify
+    """
+    analysis_events.after_verify(reference_analysis)

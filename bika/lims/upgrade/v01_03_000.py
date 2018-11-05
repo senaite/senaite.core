@@ -35,32 +35,6 @@ PORTLETS_TO_PURGE = [
     'portlet_verified-pt'
 ]
 
-TRANSITIONS_PROPERTIES = {
-    'bika_analysis_workflow': {
-        'submit': {
-            'guard': {
-                'guard_permissions': 'BIKA: Edit Results',
-                'guard_expr': 'python:here.guard_handler("submit")' }
-        }
-    },
-    'bika_duplicateanalysis_workflow': {
-        'submit': {
-            'guard': {
-                'guard_permissions': 'BIKA: Edit Results',
-                'guard_expr': 'python:here.guard_handler("submit")' }
-        }
-    },
-    'bika_referenceanalysis_workflow': {
-        'submit': {
-            'properties': {
-                'new_state_id': 'to_be_verified', },
-            'guard': {
-                'guard_permissions': 'BIKA: Edit Results',
-                'guard_expr': 'python:here.guard_handler("submit")' },
-        }
-    },
-}
-
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -102,7 +76,7 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1072
     rebind_calculations(portal)
 
-    # Update analysis workflow
+    # Update workflows
     update_workflows(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
@@ -320,28 +294,55 @@ def rebind_calculations(portal):
 
 def update_workflows(portal):
     logger.info("Updating workflows ...")
+
+    # Need to know first for which workflows we'll need later to update role
+    # mappings. This will allow us to update role mappings for those required
+    # objects instead of all them. I know, would be easier to just do all them,
+    # but we cannot afford such an approach for huge databases
+    rm_queries = get_role_mappings_candidates(portal)
+
+    # Re-import workflow tool
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, 'workflow')
+
+    # Update role mappings
+    update_role_mappings(portal, rm_queries)
+
+
+def get_role_mappings_candidates(portal):
+    logger.info("Getting candidates for role mappings ...")
+
+    candidates = list()
     wf_tool = api.get_tool("portal_workflow")
-    for wf_id, transition_ids in TRANSITIONS_PROPERTIES.items():
+
+    # Analysis workflow - Analyses in submitted state but not verified
+    workflow = wf_tool.getWorkflowById("bika_analysis_workflow")
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            ("bika_analysis_workflow",
+             dict(portal_type="Analysis", review_state="to_be_verified"),
+             CATALOG_ANALYSIS_LISTING))
+
+    return []
+
+
+def update_role_mappings(portal, queries):
+    logger.info("Updating role mappings ...")
+    processed = dict()
+    for rm_query in queries:
+        wf_tool = api.get_tool("portal_workflow")
+        wf_id = rm_query[0]
         workflow = wf_tool.getWorkflowById(wf_id)
-        for transition_id,  items in transition_ids.items():
-            if transition_id not in workflow.transitions:
-                logger.warn("Transition '{}' for '{}' not found!"
-                            .format(transition_id, wf_id))
+        brains = api.search(rm_query[1], rm_query[2])
+        total = len(brains)
+        for num, brain in enumerate(brains):
+            if num % 100 == 0:
+                logger.info("Updating role mappings '{0}': {1}/{2}"
+                            .format(wf_id, num, total))
+            if api.get_uid(brain) in processed.get(wf_id, []):
+                # Already processed, skip
                 continue
-
-            logger.info("Updating transition '{}' from '{}'"
-                        .format(transition_id, wf_id))
-            transition = workflow.transitions.get(transition_id)
-
-            if 'properties' in items:
-                # Update transition properties
-                properties = items['properties']
-                for prop_name, prop_value in properties.items():
-                    if hasattr(transition, prop_name):
-                        setattr(transition, prop_name, prop_value)
-            
-            if 'guard' in items:
-                properties = items['guard']
-                guard = transition.guard or Guard()
-                guard.changeFromProperties(properties)
-                transition.guard = guard
+            workflow.updateRoleMappingsFor(api.get_object(brain))
+            if wf_id not in processed:
+                processed[wf_id] = []
+            processed[wf_id].append(api.get_uid(brain))

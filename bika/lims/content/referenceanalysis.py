@@ -200,31 +200,5 @@ class ReferenceAnalysis(AbstractAnalysis):
                 workflow.doActionFor(ws, 'retract')
         self.reindexObject()
 
-    def workflow_script_verify(self):
-        if skip(self, "verify"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # If all other analyses on the worksheet are verified,
-        # then verify the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        if ws and len(ws) > 0:
-            ws = ws[0]
-            ws_state = workflow.getInfoFor(ws, 'review_state')
-            if ws_state == 'to_be_verified' and not skip(ws, "verify",
-                                                         peek=True):
-                all_verified = True
-                for a in ws.getAnalyses():
-                    if workflow.getInfoFor(a, 'review_state') in \
-                            ('sample_due', 'sample_received', 'attachment_due',
-                             'to_be_verified', 'assigned'):
-                        all_verified = False
-                        break
-                if all_verified:
-                    if "verify all analyses" \
-                            not in self.REQUEST['workflow_skiplist']:
-                        self.REQUEST["workflow_skiplist"].append(
-                            "verify all analyses")
-                    workflow.doActionFor(ws, "verify")
-        self.reindexObject()
 
 registerType(ReferenceAnalysis, PROJECTNAME)

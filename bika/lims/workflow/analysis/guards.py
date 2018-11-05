@@ -6,8 +6,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims.permissions import Unassign
-from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isBasicTransitionAllowed, isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
 
@@ -75,54 +76,13 @@ def unassign(obj):
     return False
 
 
-def verify(obj):
-    if not isBasicTransitionAllowed(obj):
-        return False
-
-    if obj.isVerifiable():
-        mtool = getToolByName(obj, 'portal_membership')
-        member = mtool.getAuthenticatedMember()
-        return obj.isUserAllowedToVerify(member)
-
-    return False
-
-# TODO Workflow Analysis - Enable and review together with bika_listing stuff
-def new_verify(obj):
-    """
-    Checks if the verify transition can be performed to the Analysis passed in
-    by the current user depending on the user roles, the current status of the
-    object and the number of verifications already performed.
-    :returns: true or false
-    """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
-    nmvers = obj.getNumberOfVerifications()
-    if nmvers == 0:
-        # No verification has been done yet.
-        # The analysis can only be verified it all its dependencies have
-        # already been verified
-        for dep in obj.getDependencies():
-            if not verify(dep):
-                return False
-
-    revers = obj.getNumberOfRequiredVerifications()
-    if revers - nmvers == 1:
-        # All verifications performed except the last one. Check if the user
-        # can perform the verification and if so, then allow the analysis to
-        # be transitioned to the definitive "verified" state (otherwise will
-        # remain in "to_be_verified" until all remmaining verifications - 1 are
-        # performed
-        mtool = getToolByName(obj, 'portal_membership')
-        member = mtool.getAuthenticatedMember()
-        return obj.isUserAllowedToVerify(member)
-
-    return False
-
-
 def guard_submit(analysis):
     """Return whether the transition "submit" can be performed or not
     """
+    # Cannot submit if the analysis is cancelled
+    if not api.is_active(analysis):
+        return False
+
     # Cannot submit without a result
     if not analysis.getResult():
         return False
@@ -134,7 +94,25 @@ def guard_submit(analysis):
 
     # Check dependencies (analyses this analysis depends on)
     for dependency in analysis.getDependencies():
-        if not wasTransitionPerformed(dependency, "submit"):
-            return False
+        if not isTransitionAllowed(dependency, "submit"):
+            if not wasTransitionPerformed(dependency, "submit"):
+                return False
 
     return True
+
+
+def guard_verify(analysis):
+    """Return whether the transition "verify" can be performed or not
+    """
+    # Cannot verify if the analysis is cancelled
+    if not api.is_active(analysis):
+        return False
+
+    for dependency in analysis.getDependencies():
+        if not isTransitionAllowed(dependency, "verify"):
+            if not wasTransitionPerformed(dependency, "verify"):
+                return False
+
+    # Check if the user that submitted the result is the current user
+    m_tool = getToolByName(analysis, 'portal_membership')
+    return analysis.isUserAllowedToVerify(m_tool.getAuthenticatedMember())

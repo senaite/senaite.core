@@ -101,7 +101,7 @@ def after_retract(obj):
     _reindex_request(obj)
 
 
-def after_verify(obj):
+def after_verify(analysis):
     """
     Method triggered after a 'verify' transition for the analysis passed in
     is performed. Promotes the transition to the Analysis Request and to
@@ -111,27 +111,22 @@ def after_verify(obj):
     """
 
     # If the analysis has dependencies, transition them
-    for dependency in obj.getDependencies():
+    for dependency in analysis.getDependencies():
         doActionFor(dependency, 'verify')
 
+    # TODO: REFLEX TO REMOVE
     # Do all the reflex rules process
-    obj._reflex_rule_process('verify')
+    if IRequestAnalysis.providedBy(analysis):
+        analysis._reflex_rule_process('verify')
 
-    # Escalate to Analysis Request. Note that the guard for verify transition
-    # from Analysis Request will check if the AR can be transitioned, so there
-    # is no need to check here if all analyses within the AR have been
-    # transitioned already.
-    ar = obj.getRequest()
-    doActionFor(ar, 'verify')
-
-    # Ecalate to Worksheet. Note that the guard for verify transition from
-    # Worksheet will check if the Worksheet can be transitioned, so there is no
-    # need to check here if all analyses within the WS have been transitioned
-    # already
-    ws = obj.getWorksheet()
+    # Promote transition to worksheet
+    ws = analysis.getWorksheet()
     if ws:
         doActionFor(ws, 'verify')
-    _reindex_request(obj)
+
+    # Promote transition to Analysis Request
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), 'verify')
 
 
 def after_assign(obj):

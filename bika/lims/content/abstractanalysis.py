@@ -1308,10 +1308,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return guards.attach(self)
 
     @security.public
-    def guard_verify_transition(self):
-        return guards.verify(self)
-
-    @security.public
     def guard_assign_transition(self):
         return guards.assign(self)
 

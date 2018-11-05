@@ -172,9 +172,5 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
     def workflow_script_retract(self):
         events.after_retract(self)
 
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
-
 
 registerType(DuplicateAnalysis, PROJECTNAME)

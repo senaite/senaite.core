@@ -12,3 +12,9 @@ def guard_submit(reference_analysis):
     """Return whether the transition "submit" can be performed or not
     """
     return analysis_guards.guard_submit(reference_analysis)
+
+
+def guard_verify(reference_analysis):
+    """Return whether the transition "verify" can be performed or not
+    """
+    return analysis_guards.guard_verify(reference_analysis)
