@@ -174,3 +174,110 @@ To ensure consistency amongst tests, we disable self-verification:
     >>> bikasetup.setSelfVerificationEnabled(False)
     >>> bikasetup.getSelfVerificationEnabled()
     False
+
+
+Auto verification of Worksheets when all its analyses are verified
+------------------------------------------------------------------
+
+The same behavior as for Analysis Requests applies to the worksheet when all its
+analyses are verified.
+
+Enable self verification of results:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> bikasetup.getSelfVerificationEnabled()
+    True
+
+Create two Analysis Requests:
+
+    >>> ar0 = new_ar([Cu, Fe, Au])
+    >>> ar1 = new_ar([Cu, Fe])
+
+Create a worksheet:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+
+And assign all the analyses from the Analysis Requests created before, except
+`Au` from the first Analysis Request:
+
+    >>> analyses_ar0 = ar0.getAnalyses(full_objects=True)
+    >>> analyses_ar1 = ar1.getAnalyses(full_objects=True)
+    >>> analyses = filter(lambda an: an.getKeyword() != 'Au', analyses_ar0)
+    >>> analyses += analyses_ar1
+    >>> for analysis in analyses:
+    ...     worksheet.addAnalysis(analysis)
+
+And submit results for all analyses:
+
+    >>> submit_analyses(ar0)
+    >>> submit_analyses(ar1)
+
+Of course I cannot verify the whole worksheet, because a worksheet can only be
+verified once all the analyses it contains are in verified state (and this is
+done automatically):
+
+    >>> try_transition(worksheet, "verify", "verified")
+    False
+
+And verify all analyses from worksheet except one:
+
+    >>> ws_analyses = worksheet.getAnalyses()
+    >>> analysis_1 = analyses[0]
+    >>> analysis_2 = analyses[1]
+    >>> analysis_3 = analyses[2]
+    >>> analysis_4 = analyses[3]
+
+    >>> try_transition(analysis_2, "verify", "verified")
+    True
+    >>> try_transition(analysis_3, "verify", "verified")
+    True
+    >>> try_transition(analysis_4, "verify", "verified")
+    True
+
+The Analysis Request number 1 has been automatically transitioned to `verified`
+cause all the contained analyses have been verified:
+
+    >>> api.get_workflow_status_of(ar1)
+    'verified'
+
+While Analysis Request number 0 has not been transitioned because have two
+analyses to be verifed still:
+
+    >>> api.get_workflow_status_of(ar0)
+    'to_be_verified'
+
+And same with worksheet, cause there is one analysis pending:
+
+    >>> api.get_workflow_status_of(worksheet)
+    'to_be_verified'
+
+And again, I cannot verify the whole worksheet by myself, because a worksheet
+can only be verified once all the analyses it contains are in verified state
+(and this is done automatically):
+
+    >>> try_transition(worksheet, "verify", "verified")
+    False
+
+If we verify the pending analysis from the worksheet:
+
+    >>> try_transition(analysis_1, "verify", "verified")
+    True
+
+The worksheet will follow:
+
+    >>> api.get_workflow_status_of(worksheet)
+    'verified'
+
+But the Analysis Request number 0 will remain in `to_be_verified` state:
+
+    >>> api.get_workflow_status_of(ar0)
+    'to_be_verified'
+
+Unless we verify the analysis `Au`:
+
+    >>> au_an = filter(lambda an: an.getKeyword() == 'Au', analyses_ar0)[0]
+    >>> try_transition(au_an, "verify", "verified")
+    True
+
+    >>> api.get_workflow_status_of(ar0)
+    'verified'
