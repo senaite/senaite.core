@@ -11,14 +11,15 @@ Test Setup
 
 Needed Imports:
 
-    >>> import transaction
-    >>> from DateTime import DateTime
-    >>> from plone import api as ploneapi
-
+    >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
-
+    >>> from bika.lims.workflow import isTransitionAllowed
+    >>> from DateTime import DateTime
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_PASSWORD
 
 Functional Helpers:
 
@@ -30,32 +31,11 @@ Functional Helpers:
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
-Needed Imports:
-
-    >>> import re
-    >>> from AccessControl.PermissionRole import rolesForPermissionOn
-    >>> from bika.lims import api
-    >>> from bika.lims.content.analysisrequest import AnalysisRequest
-    >>> from bika.lims.content.sample import Sample
-    >>> from bika.lims.content.samplepartition import SamplePartition
-    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.utils.sample import create_sample
-    >>> from bika.lims.utils import tmpID
-    >>> from bika.lims.workflow import doActionFor
-    >>> from bika.lims.workflow import getCurrentState
-    >>> from bika.lims.workflow import getAllowedTransitions
-    >>> from DateTime import DateTime
-    >>> from plone.app.testing import TEST_USER_ID
-    >>> from plone.app.testing import TEST_USER_PASSWORD
-    >>> from plone.app.testing import setRoles
-
-Functional Helpers:
-
     >>> def start_server():
     ...     from Testing.ZopeTestCase.utils import startZServer
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
-    ...
+
     >>> def new_ar(services):
     ...     values = {
     ...         'Client': client.UID(),
@@ -66,7 +46,7 @@ Functional Helpers:
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     ...     transitioned = do_action_for(ar, "receive")
     ...     return ar
-    ...
+
     >>> def to_new_worksheet_with_reference(ar, reference):
     ...     worksheet = api.create(portal.worksheets, "Worksheet")
     ...     service_uids = list()
@@ -75,17 +55,20 @@ Functional Helpers:
     ...         service_uids.append(analysis.getServiceUID())
     ...     worksheet.addReferenceAnalyses(reference, service_uids)
     ...     return worksheet
-    ...
+
     >>> def submit_regular_analyses(worksheet):
     ...     for analysis in worksheet.getRegularAnalyses():
     ...         analysis.setResult(13)
     ...         do_action_for(analysis, "submit")
-    ...
+
     >>> def try_transition(object, transition_id, target_state_id):
     ...      success = do_action_for(object, transition_id)[0]
     ...      state = api.get_workflow_status_of(object)
     ...      return success and state == target_state_id
-    ...
+
+    >>> def get_roles_for_permission(permission, context):
+    ...     allowed = set(rolesForPermissionOn(permission, context))
+    ...     return sorted(allowed)
 
 Variables:
 
@@ -434,3 +417,55 @@ and the blank of `Cu` cannot be used as a dependent:
     >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
     >>> try_transition(fe_analysis, "submit", "to_be_verified")
     False
+
+
+Check permissions for Submit transition
+---------------------------------------
+
+Create a Worksheet and submit regular analyses:
+
+    >>> ar = new_ar([Cu])
+    >>> worksheet = to_new_worksheet_with_reference(ar, blank_sample)
+    >>> submit_regular_analyses(worksheet)
+
+Set a result:
+
+    >>> blank = worksheet.getReferenceAnalyses()[0]
+    >>> blank.setResult(23)
+
+Exactly these roles can submit:
+
+    >>> get_roles_for_permission("BIKA: Edit Results", blank)
+    ['Analyst', 'LabManager', 'Manager']
+
+And these roles can view results:
+
+    >>> get_roles_for_permission("BIKA: View Results", blank)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'RegulatoryInspector']
+
+Current user can submit because has the `LabManager` role:
+
+    >>> isTransitionAllowed(blank, "submit")
+    True
+
+But cannot for other roles:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk', 'RegulatoryInspector', 'Sampler'])
+    >>> isTransitionAllowed(blank, "submit")
+    False
+
+Even if is `Owner`
+
+    >>> setRoles(portal, TEST_USER_ID, ['Owner'])
+    >>> isTransitionAllowed(blank, "submit")
+    False
+
+And Clients cannot neither:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Client'])
+    >>> isTransitionAllowed(blank, "submit")
+    False
+
+Reset the roles for current user:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
