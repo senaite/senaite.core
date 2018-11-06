@@ -503,12 +503,6 @@ It also grants local `Owner` role on the client object::
     >>> sorted(user.getRolesInContext(client))
     ['Authenticated', 'Member', 'Owner']
 
-This allows the user to see the client in the clients folder::
-
-    >>> browser.open(clients.absolute_url())
-    >>> "client-1" in browser.contents
-    True
-
 The user is able to modify the client properties::
 
     >>> browser.open(client.absolute_url() + "/base_edit")

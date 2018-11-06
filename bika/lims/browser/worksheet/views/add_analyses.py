@@ -101,6 +101,11 @@ class AddAnalysesView(BikaListingView):
         ]
 
     def __call__(self):
+
+        # handle subpath calls
+        if len(self.traverse_subpath) > 0:
+            return self.handle_subpath()
+
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
             return

@@ -1,0 +1,56 @@
+/* Listing Styles */
+
+/* Colors taken from https://mdbootstrap.com/css/colors */
+#ajax-contents-table tr { border-left:2px solid transparent; }
+
+#ajax-contents-table tr.state-active { border-left:2px solid transparent; }
+#ajax-contents-table tr.state-inactive { border-left:2px solid #616161; }
+
+#ajax-contents-table tr.state-sample_due { border-left:2px solid #ffff8d !important; }
+#ajax-contents-table tr.state-sample_received { border-left:2px solid #795548 !important; }
+#ajax-contents-table tr.state-to_be_verified { border-left:2px solid #18ffff !important; }
+#ajax-contents-table tr.state-verified { border-left:2px solid #0091ea !important; }
+#ajax-contents-table tr.state-published { border-left:2px solid #00c853 !important; }
+#ajax-contents-table tr.state-retracted { border-left:2px solid #ff8a80 !important; }
+#ajax-contents-table tr.state-invalid { border-left:2px solid #b71c1c !important; }
+#ajax-contents-table tr.state-open { border-left:2px solid #ab47bc !important; }
+#ajax-contents-table tr.state-attachment_due { border-left:2px solid #ffc107 !important; }
+#ajax-contents-table tr.state-unassigned { border-left:2px solid #4a148c !important; }
+#ajax-contents-table tr.state-empty-worksheet { border-left:2px solid #f8bbd0 !important; }
+#ajax-contents-table tr.state-cancelled { border-left:2px solid #000000 !important; }
+
+#ajax-contents-table th.sortable { cursor: pointer; }
+#ajax-contents-table th.sortable:hover { Background-color: #ccc; }
+#ajax-contents-table th:not(.sortable) { cursor: not-allowed; }
+
+#ajax-contents-table th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
+#ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em; }
+
+#ajax-contents-table tr.category { cursor: pointer; font-weight: bold; font-size: 115%; color: #3E4551; background-color: #fcf8e3; }
+
+#table-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+  background: #ccc;
+  opacity: 0.3;
+}
+
+/* progress bar */
+#ajax-contents-table tr td div.progress { width: 55px; margin-bottom: 0; height: 17px; }
+#ajax-contents-table tr td div.progress div.progress-bar { color: #f5f5f5; background-color: #33b5e5; line-height: 17px; font-size: 9px; font-weight:bold; }
+
+/* collapsible rows */
+#ajax-contents-table tr.togglerow { cursor: pointer; }
+#ajax-contents-table tr.childrow td:first-child { padding-left: 1em; }
+#ajax-contents-table tr.childrow td:first-child:before { content: "➥ "; }
+
+/* after item */
+#ajax-contents-table tr span.after-item { padding-left: 3px; }
+#ajax-contents-table tr span.after-item img { padding-left: 2px; }
+
+/* Vertical spacers */
+.spacer5 { height: 10px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
