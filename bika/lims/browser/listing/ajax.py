@@ -3,15 +3,15 @@
 import inspect
 import json
 import urllib
-from time import time
 
 from bika.lims import api
-from bika.lims import logger
+from bika.lims import api
 from bika.lims.browser import BrowserView
-from bika.lims.utils import t
-from DateTime import DateTime
+from bika.lims.browser.listing.decorators import inject_runtime
+from bika.lims.browser.listing.decorators import returns_safe_json
+from bika.lims.browser.listing.decorators import set_application_json_header
+from bika.lims.browser.listing.decorators import translate
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.i18nmessageid import Message
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
@@ -29,11 +29,6 @@ class AjaxListingView(BrowserView):
     def __init__(self, context, request):
         super(AjaxListingView, self).__init__(context, request)
         self.traverse_subpath = []
-
-    def set_content_type_header(self, content_type="application/json"):
-        """Set the content-type response header
-        """
-        self.request.response.setHeader("content-type", content_type)
 
     @property
     def review_states_by_id(self):
@@ -109,6 +104,7 @@ class AjaxListingView(BrowserView):
 
         return json.loads(body, object_hook=encode_hook)
 
+    @returns_safe_json
     def fail(self, message, status=500, **kw):
         """Set a JSON error object and a status to the response
         """
@@ -117,55 +113,19 @@ class AjaxListingView(BrowserView):
         result.update(kw)
         return result
 
-    def translate_data(self, thing):
-        """Translate i18n `Message` objects in data structures
-
-        N.B. This is needed because only page templates translate i18n Message
-             objects directly on rendering, but not when they are used in a JS
-             application.
-        """
-        # Deconstruct lists
-        if isinstance(thing, list):
-            return map(self.translate_data, thing)
-        # Deconstruct dictionaries
-        if isinstance(thing, dict):
-            for key, value in thing.items():
-                thing[key] = self.translate_data(value)
-        # Translate i18n Message strings
-        if isinstance(thing, Message):
-            return t(thing)
-        return thing
-
-    def to_safe_json(self, thing, default=None):
-        """Returns a safe JSON string
-        """
-        def default(obj):
-            """This function handles unhashable objects
-            """
-            # Convert `DateTime` objects to ISO8601 format
-            if isinstance(obj, DateTime):
-                obj = obj.ISO8601()
-            # Convert objects and brains to UIDs
-            if api.is_object(obj):
-                obj = api.get_uid(obj)
-            if isinstance(obj, basestring):
-                return obj
-            return str(obj)
-
-        # translate all i18n Message objects
-        thing = self.translate_data(thing)
-
-        return json.dumps(thing, default=default)
-
+    @returns_safe_json
+    @translate
     def ajax_columns(self):
         """Returns the `column` dictionary of the view
         """
-        return self.to_safe_json(self.columns)
+        return self.columns
 
+    @returns_safe_json
+    @translate
     def ajax_review_states(self):
         """Returns the `review_states` list of the view
         """
-        return self.to_safe_json(self.review_states)
+        return self.review_states
 
     def to_form_data(self, data):
         """Prefix all data keys with `self.form_id`
@@ -260,31 +220,6 @@ class AjaxListingView(BrowserView):
 
         return transitions
 
-    def ajax_transitions(self):
-        """Returns a list of possible transitions
-        """
-        start = time()
-        # Get the HTTP POST JSON Payload
-        payload = self.get_json()
-        # Get the selected UIDs
-        uids = payload.get("uids", [])
-        objs = map(api.get_object_by_uid, uids)
-        transitions = self.get_allowed_transitions_for(objs)
-        end = time()
-
-        # calculate the runtime
-        _runtime = end - start
-
-        logger.info("AjaxListingView::ajax_transitions:"
-                    "Loaded transitions for {} UIDs in {:.2f}s".format(
-                        len(uids), _runtime))
-
-        data = {
-            "transitions": transitions,
-        }
-
-        return self.to_safe_json(data)
-
     def base_info(self, brain_or_object):
         """Object/Brain Base info
         """
@@ -309,14 +244,9 @@ class AjaxListingView(BrowserView):
             return attr()
         return attr
 
+    @translate
     def get_folderitems(self):
         """This method calls the folderitems method
-
-        For performance reasons this method should do the following:
-
-        1. Check if categories are requested
-        2. Extract the category data from the brains
-        3. Return the minimum brain information if categories are requested
         """
         # workaround for `pagesize` handling in BikaListing
         pagesize = self.get_pagesize()
@@ -377,6 +307,9 @@ class AjaxListingView(BrowserView):
 
         return config
 
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
     def ajax_folderitems(self):
         """Calls the `folderitems` method of the view and returns it as JSON
 
@@ -385,9 +318,6 @@ class AjaxListingView(BrowserView):
         3. Call the `folderitems` method
         4. Prepare a data structure for the ReactJS listing app
         """
-
-        # take the start time
-        start = time()
 
         # Get the HTTP POST JSON Payload
         payload = self.get_json()
@@ -417,15 +347,8 @@ class AjaxListingView(BrowserView):
         # get the view config
         config = self.get_listing_config()
 
-        # take the end time
-        end = time()
-
-        # calculate the total runtime
-        runtime = end - start
-
         # prepare the response object
         data = {
-            "_runtime": runtime,
             "count": len(folderitems),
             "folderitems": folderitems,
             "query_string": query_string,
@@ -442,14 +365,65 @@ class AjaxListingView(BrowserView):
         if sort_on in self.get_catalog_indexes():
             data["sort_on"] = sort_on
 
-        # some performance logging
-        logger.info("AjaxListingView::ajax_folderitems:"
-                    "Loaded {} folderitems in {:.2f}s".format(
-                        len(folderitems), runtime))
+        return data
 
-        # set the json content type header
-        # Note: This is not really needed for the ReactJS App, but more correct
-        #       and to show the results nicely in the browser
-        self.set_content_type_header()
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
+    def ajax_transitions(self):
+        """Returns a list of possible transitions
+        """
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+        # Get the selected UIDs
+        uids = payload.get("uids", [])
+        objs = map(api.get_object_by_uid, uids)
 
-        return self.to_safe_json(data)
+        # get the allowed transitions
+        transitions = self.get_allowed_transitions_for(objs)
+
+        # prepare the response object
+        data = {
+            "transitions": transitions,
+        }
+
+        return data
+
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
+    def ajax_query_folderitems(self):
+        """Get folderitems with a catalog query
+
+        Required POST JSON Payload:
+
+        :query: Catalog query to use
+        :type query: dictionary
+        """
+
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+
+        # extract the catalog query
+        query = payload.get("query", {})
+
+        valid_catalog_indexes = self.get_catalog_indexes()
+
+        # sanity check
+        for key, value in query.iteritems():
+            if key not in valid_catalog_indexes:
+                return self.fail("{} is not a valid catalog index".format(key))
+
+        # set the content filter
+        self.contentFilter = query
+
+        # get the folderitems
+        folderitems = self.get_folderitems()
+
+        # prepare the response object
+        data = {
+            "count": len(folderitems),
+            "folderitems": folderitems,
+        }
+
+        return data
