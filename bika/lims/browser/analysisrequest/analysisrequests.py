@@ -46,11 +46,11 @@ class AnalysisRequestsView(BikaListingView):
         # catalog used for the query
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
 
-        # https://docs.plone.org/develop/plone/searching_and_indexing/query.html#searching-for-content-within-a-folder
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
             "cancellation_state": "active",
+            "isRootAncestor": True,  # only root ancestors
         }
 
         # Filter by Department
@@ -667,7 +667,7 @@ class AnalysisRequestsView(BikaListingView):
         self.portal_catalog = api.get_tool("portal_catalog")
         items = BikaListingView.folderitems(self, full_objects, classic)
         # Keep the original sorting, but display partitions below parents
-        return self.fold_partitions(items)
+        return items
 
     def folderitem(self, obj, item, index):
         # Additional info from AnalysisRequest to be added in the item
@@ -864,27 +864,6 @@ class AnalysisRequestsView(BikaListingView):
         # XXX This should be a list of preservers...
         item["getPreserver"] = ""
         item["getDatePreserved"] = ""
-        # TODO-performance: If inline preservation wants to be used, we
-        # have to get the full object to check the user permissions, so
-        # far this is a performance hit.
-        # inline edits for Preserver and Date Preserved
-        # if checkPermission(PreserveSample, obj):
-        #     item['required'] = ['getPreserver', 'getDatePreserved']
-        #     item['allow_edit'] = ['getPreserver', 'getDatePreserved']
-        #     preservers = getUsers(obj, ['Preserver',
-        #                           'LabManager', 'Manager'])
-        #     username = self.member.getUserName()
-        #     users = [({'ResultValue': u,
-        #                'ResultText': preservers.getValue(u)})
-        #              for u in preservers]
-        #     item['choices'] = {'getPreserver': users}
-        #     preserver = username in preservers.keys() and username or ''
-        #     item['getPreserver'] = preserver
-        #     item['getDatePreserved'] = self.ulocalized_time(
-        #         DateTime(),
-        #         long_format=1)
-        #     item['class']['getPreserver'] = 'provisional'
-        #     item['class']['getDatePreserved'] = 'provisional'
 
         # Submitting user may not verify results
         # Thee conditions to improve performance, some functions to check
@@ -903,47 +882,10 @@ class AnalysisRequestsView(BikaListingView):
                         "submitted-by-current-user.png",
                         title=t(_("Cannot verify: Submitted by current user")))
 
-        # Partition?
-        item["primary_uid"] = obj.getRawParentAnalysisRequest or ''
-        if item["primary_uid"]:
-            row_class = "{} partition".format(item.get("table_row_class", ""))
-            item["table_row_class"] = row_class.strip()
+        # Append partitions UIDs of this AR as children
+        item["children"] = obj.getDescendantsUIDs or []
+
         return item
-
-    def fold_partitions(self, items):
-        """Resort the partitions below each parent but keeping the top-level
-        original sorting
-        """
-        nodes = {item["uid"]: item for item in items}
-        forest = dict(uid=None, children=[])
-        for item in items:
-            node = nodes[item["uid"]]
-            parent_uid = item["primary_uid"]
-            if not parent_uid:
-                # This is a root item
-                forest["children"].append(node)
-            elif parent_uid not in nodes:
-                # There is no parent item in the items list, probably because
-                # the search performed did not return the parent or it fall
-                # into another page. Treat this one as a root, but apply a
-                # different css class
-                node["table_row_class"] += " orphan-partition"
-                forest["children"].append(node)
-            else:
-                # This a partition with an existing parent
-                parent = nodes[parent_uid]
-                if not "children" in parent:
-                    parent["children"] = []
-                parent["children"].append(node)
-
-        # Now make a flat list
-        def to_flat(node):
-            flat_list = node['uid'] and [node] or []
-            for child in node.get("children", []):
-                flat_list.extend(to_flat(child))
-            return flat_list
-
-        return to_flat(forest)
 
     @property
     def copy_to_new_allowed(self):
