@@ -882,7 +882,11 @@ class AnalysisRequestsView(BikaListingView):
                         "submitted-by-current-user.png",
                         title=t(_("Cannot verify: Submitted by current user")))
 
-        # Append partitions UIDs of this AR as children
+        # Advanced partitioning
+        #
+        # append the UID of the primary AR as parent
+        item["parent"] = obj.getRawParentAnalysisRequest or ""
+        # append partition UIDs of this AR as children
         item["children"] = obj.getDescendantsUIDs or []
 
         return item

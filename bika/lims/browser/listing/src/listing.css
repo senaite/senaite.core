@@ -30,6 +30,8 @@
 
 #table-overlay {
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 1000;
   height: 100%;
   width: 100%;
@@ -37,6 +39,12 @@
   opacity: 0.3;
 }
 
-#ajax-contents-table tr td div.progress {
-  width:54px;
-}
+/* progress bar */
+#ajax-contents-table tr td div.progress { width: 55px; margin-bottom: 0; height: 17px; }
+#ajax-contents-table tr td div.progress div.progress-bar { color: black; background-color: #33b5e5; line-height: 17px; font-size: 8px; }
+
+/* collapsible rows */
+#ajax-contents-table tr.togglerow { cursor: pointer; }
+#ajax-contents-table tr.childrow td:first-child { padding-left: 1em; }
+#ajax-contents-table tr.childrow td:first-child:before { content: "➥ "; }
+

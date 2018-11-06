@@ -627,6 +627,7 @@ class ListingController extends React.Component
      * Listing Table
     ###
     <div className="listing-container">
+      {@state.loading and <div id="table-overlay"/>}
       <div className="row">
         <div className="col-sm-8">
           <FilterBar
@@ -647,7 +648,6 @@ class ListingController extends React.Component
       </div>
       <div className="row">
         <div className="col-sm-12 table-responsive">
-          {@state.loading and <div id="table-overlay"/>}
           {@state.show_column_toggles and
             <TableContextMenu
               show={@state.contextmenu_show}
@@ -691,8 +691,7 @@ class ListingController extends React.Component
             on_category_click={@toggleCategory}
             on_row_click={@toggleRow}
             filter={@state.filter}
-            parent_row_title={_("Primary")}
-            child_row_title={_("Partition")}
+            toggle_row_title={_("Partitions")}
             on_editable_field_change={@setEditableField}
             />
         </div>

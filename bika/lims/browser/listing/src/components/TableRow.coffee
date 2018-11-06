@@ -49,6 +49,12 @@ class TableRow extends React.Component
       return no
     return yes
 
+  is_child_row: (item) ->
+    ###
+     * Checks if the item is a child row
+    ###
+    return yes if item.parent or no
+
   get_row_css_class: (item) ->
     ###
      * Calculate the row CSS class
@@ -75,34 +81,54 @@ class TableRow extends React.Component
     item = @props.item
     uid = item.uid
     row_cls = @get_row_css_class item
+    expanded = @is_expanded item
     has_children = @has_children item
+    children = @props.children[uid] or []
 
-    # Handle row
+    # Handle parent row
     rows.push(
       <tr key={uid}
-          uid={uid}
-          onClick={has_children and @on_row_click or undefined}
           className={row_cls}>
         {@build_cells(item)}
       </tr>
     )
 
-    # return only the parent row if it is not expanded
-    if not @is_expanded item
+    # return the parent row if there are no children
+    if not has_children
       return rows
 
-    children = @props.children[uid] or []
-    for child in children
-      child_uid = child.uid
-      child_cls = @get_row_css_class child
-      # Handle child row
-      rows.push(
-        <tr key={child_uid}
-            uid={child_uid}
-            className={child_cls}>
-          {@build_cells(child)}
-        </tr>
-      )
+    # calculate the CSS class for expanded
+    if expanded
+      icon_cls = "glyphicon glyphicon-chevron-down"
+    else
+      icon_cls = "glyphicon glyphicon-chevron-up"
+
+    default_toggle_row_title = if expanded then "Collapse" else "Expand"
+
+    # Insert a expand row
+    rows.push(
+      <tr key={uid + "_toggle_children"}
+          uid={uid}
+          onClick={@on_row_click}
+          className={row_cls + " togglerow"}>
+        <td colSpan={@props.column_count}>
+          <span className={icon_cls}></span> {@props.toggle_row_title or default_toggle_row_title}
+        </td>
+      </tr>
+    )
+
+    if expanded
+      for child in children
+        child_uid = child.uid
+        child_cls = @get_row_css_class child
+        # Handle child row
+        rows.push(
+          <tr key={child_uid}
+              uid={child_uid}
+              className={child_cls + " childrow"}>
+            {@build_cells(child)}
+          </tr>
+        )
 
     return rows
 
