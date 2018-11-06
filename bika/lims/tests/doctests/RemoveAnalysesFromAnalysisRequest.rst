@@ -11,13 +11,13 @@ Test Setup
 
 Needed Imports:
 
-    >>> import transaction
-    >>> from DateTime import DateTime
-    >>> from plone import api as ploneapi
-
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from DateTime import DateTime
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_PASSWORD
 
 
 Functional Helpers:
@@ -30,32 +30,11 @@ Functional Helpers:
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
-Needed Imports:
-
-    >>> import re
-    >>> from AccessControl.PermissionRole import rolesForPermissionOn
-    >>> from bika.lims import api
-    >>> from bika.lims.content.analysisrequest import AnalysisRequest
-    >>> from bika.lims.content.sample import Sample
-    >>> from bika.lims.content.samplepartition import SamplePartition
-    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.utils.sample import create_sample
-    >>> from bika.lims.utils import tmpID
-    >>> from bika.lims.workflow import doActionFor
-    >>> from bika.lims.workflow import getCurrentState
-    >>> from bika.lims.workflow import getAllowedTransitions
-    >>> from DateTime import DateTime
-    >>> from plone.app.testing import TEST_USER_ID
-    >>> from plone.app.testing import TEST_USER_PASSWORD
-    >>> from plone.app.testing import setRoles
-
-Functional Helpers:
-
     >>> def start_server():
     ...     from Testing.ZopeTestCase.utils import startZServer
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
-    ...
+
     >>> def new_ar(services):
     ...     values = {
     ...         'Client': client.UID(),
@@ -65,7 +44,6 @@ Functional Helpers:
     ...     service_uids = map(api.get_uid, services)
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     ...     return ar
-    ...
 
 Variables:
 
@@ -84,7 +62,6 @@ We need to create some basic objects for the test:
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
