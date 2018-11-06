@@ -18,8 +18,6 @@
   <permission>BIKA: Retract</permission>
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
-
-  <!-- TODO Workflow Replace "BIKA: Verify" by "Review portal content"? -->
   <permission>Review portal content</permission>
 
   <state state_id="sample_registered" title="Registered" i18n:attributes="title">
