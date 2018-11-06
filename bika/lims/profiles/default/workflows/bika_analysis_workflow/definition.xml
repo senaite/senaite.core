@@ -258,6 +258,7 @@
     <permission-map name="BIKA: Verify" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
   </state>
 

@@ -18,6 +18,7 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from bika.lims.workflow import isTransitionAllowed
 
 
 Functional Helpers:
@@ -55,7 +56,7 @@ Functional Helpers:
     ...     from Testing.ZopeTestCase.utils import startZServer
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
-    ...
+
     >>> def new_ar(services):
     ...     values = {
     ...         'Client': client.UID(),
@@ -66,17 +67,21 @@ Functional Helpers:
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     ...     transitioned = do_action_for(ar, "receive")
     ...     return ar
-    ...
+
     >>> def try_transition(object, transition_id, target_state_id):
     ...      success = do_action_for(object, transition_id)[0]
     ...      state = api.get_workflow_status_of(object)
     ...      return success and state == target_state_id
-    ...
+
     >>> def submit_analyses(ar):
     ...     for analysis in ar.getAnalyses(full_objects=True):
     ...         analysis.setResult(13)
     ...         do_action_for(analysis, "submit")
-    ...
+
+    >>> def get_roles_for_permission(permission, context):
+    ...     allowed = set(rolesForPermissionOn(permission, context))
+    ...     return sorted(allowed)
+
 
 Variables:
 
@@ -348,3 +353,81 @@ And Analysis Request is transitioned too:
 
     >>> api.get_workflow_status_of(ar)
     'verified'
+
+To ensure consistency amongst tests, we disable self-verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(False)
+    >>> bikasetup.getSelfVerificationEnabled()
+    False
+
+
+Check permissions for Verify transition
+---------------------------------------
+
+Enable self verification of results:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> bikasetup.getSelfVerificationEnabled()
+    True
+
+Create an Analysis Request and submit results:
+
+    >>> ar = new_ar([Cu])
+    >>> submit_analyses(ar)
+
+The status of the Analysis Request and its analyses is `to_be_verified`:
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> map(api.get_workflow_status_of, analyses)
+    ['to_be_verified']
+
+Exactly these roles can verify:
+
+    >>> analysis = analyses[0]
+    >>> get_roles_for_permission("BIKA: Verify", analysis)
+    ['LabManager', 'Manager', 'Verifier']
+
+Current user can verify because has the `LabManager` role:
+
+    >>> isTransitionAllowed(analysis, "verify")
+    True
+
+Also if the user has the roles `Manager` or `Verifier`:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+    >>> isTransitionAllowed(analysis, "verify")
+    True
+    >>> setRoles(portal, TEST_USER_ID, ['Verifier',])
+    >>> isTransitionAllowed(analysis, "verify")
+    True
+
+But cannot for other roles:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Analyst', 'Authenticated', 'LabClerk'])
+    >>> isTransitionAllowed(analysis, "verify")
+    False
+
+Even if is `Owner`
+
+    >>> setRoles(portal, TEST_USER_ID, ['Owner'])
+    >>> isTransitionAllowed(analysis, "verify")
+    False
+
+And Clients cannot neither:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Client'])
+    >>> isTransitionAllowed(analysis, "verify")
+    False
+
+Reset the roles for current user:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+
+And to ensure consistency amongst tests, we disable self-verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(False)
+    >>> bikasetup.getSelfVerificationEnabled()
+    False
