@@ -11,14 +11,15 @@ Test Setup
 
 Needed Imports:
 
-    >>> import transaction
-    >>> from DateTime import DateTime
-    >>> from plone import api as ploneapi
-
+    >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
-
+    >>> from bika.lims.workflow import isTransitionAllowed
+    >>> from DateTime import DateTime
+    >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_PASSWORD
 
 Functional Helpers:
 
@@ -30,32 +31,11 @@ Functional Helpers:
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
-Needed Imports:
-
-    >>> import re
-    >>> from AccessControl.PermissionRole import rolesForPermissionOn
-    >>> from bika.lims import api
-    >>> from bika.lims.content.analysisrequest import AnalysisRequest
-    >>> from bika.lims.content.sample import Sample
-    >>> from bika.lims.content.samplepartition import SamplePartition
-    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.utils.sample import create_sample
-    >>> from bika.lims.utils import tmpID
-    >>> from bika.lims.workflow import doActionFor
-    >>> from bika.lims.workflow import getCurrentState
-    >>> from bika.lims.workflow import getAllowedTransitions
-    >>> from DateTime import DateTime
-    >>> from plone.app.testing import TEST_USER_ID
-    >>> from plone.app.testing import TEST_USER_PASSWORD
-    >>> from plone.app.testing import setRoles
-
-Functional Helpers:
-
     >>> def start_server():
     ...     from Testing.ZopeTestCase.utils import startZServer
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
-    ...
+
     >>> def new_ar(services):
     ...     values = {
     ...         'Client': client.UID(),
@@ -66,24 +46,27 @@ Functional Helpers:
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     ...     transitioned = do_action_for(ar, "receive")
     ...     return ar
-    ...
+
     >>> def to_new_worksheet_with_duplicate(ar):
     ...     worksheet = api.create(portal.worksheets, "Worksheet")
     ...     for analysis in ar.getAnalyses(full_objects=True):
     ...         worksheet.addAnalysis(analysis)
     ...     worksheet.addDuplicateAnalyses(1)
     ...     return worksheet
-    ...
+
     >>> def submit_regular_analyses(worksheet):
     ...     for analysis in worksheet.getRegularAnalyses():
     ...         analysis.setResult(13)
     ...         do_action_for(analysis, "submit")
-    ...
+
     >>> def try_transition(object, transition_id, target_state_id):
     ...      success = do_action_for(object, transition_id)[0]
     ...      state = api.get_workflow_status_of(object)
     ...      return success and state == target_state_id
-    ...
+
+    >>> def get_roles_for_permission(permission, context):
+    ...     allowed = set(rolesForPermissionOn(permission, context))
+    ...     return sorted(allowed)
 
 Variables:
 
@@ -102,7 +85,6 @@ We need to create some basic objects for the test:
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
-    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
@@ -424,3 +406,55 @@ and the duplicate of `Cu` cannot be used as a dependent:
     >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
     >>> try_transition(fe_analysis, "submit", "to_be_verified")
     False
+
+
+Check permissions for Submit transition
+---------------------------------------
+
+Create a Worksheet and submit regular analyses:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> submit_regular_analyses(worksheet)
+
+Set a result:
+
+    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
+    >>> duplicate.setResult(23)
+
+Exactly these roles can submit:
+
+    >>> get_roles_for_permission("BIKA: Edit Results", duplicate)
+    ['Analyst', 'LabManager', 'Manager']
+
+And these roles can view results:
+
+    >>> get_roles_for_permission("BIKA: View Results", duplicate)
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'RegulatoryInspector']
+
+Current user can submit because has the `LabManager` role:
+
+    >>> isTransitionAllowed(duplicate, "submit")
+    True
+
+But cannot for other roles:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk', 'RegulatoryInspector', 'Sampler'])
+    >>> isTransitionAllowed(duplicate, "submit")
+    False
+
+Even if is `Owner`
+
+    >>> setRoles(portal, TEST_USER_ID, ['Owner'])
+    >>> isTransitionAllowed(duplicate, "submit")
+    False
+
+And Clients cannot neither:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Client'])
+    >>> isTransitionAllowed(duplicate, "submit")
+    False
+
+Reset the roles for current user:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])

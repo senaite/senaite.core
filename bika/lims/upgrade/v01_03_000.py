@@ -320,7 +320,17 @@ def get_role_mappings_candidates(portal):
     if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             ("bika_analysis_workflow",
-             dict(portal_type="Analysis", review_state="to_be_verified"),
+             dict(portal_type="Analysis",
+                  review_state="to_be_verified"),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Duplicate Analysis Workflow - Analyses in submitted state but not verified
+    workflow = wf_tool.getWorkflowById("bika_duplicateanalysis_workflow")
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            ("bika_duplicateanalysis_workflow",
+             dict(portal_type="DuplicateAnalysis",
+                  review_state="to_be_verified"),
              CATALOG_ANALYSIS_LISTING))
 
     return []
