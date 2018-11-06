@@ -48,5 +48,9 @@ def listing_searchable_text(instance):
         parsed = api.to_searchable_text_metadata(brain_value or instance_value)
         entries.add(parsed)
 
+    # add metadata of all descendants
+    for descendant in instance.getDescendants():
+        entries.add(listing_searchable_text(descendant)())
+
     # Concatenate all strings to one text blob
     return " ".join(entries)

@@ -30,6 +30,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters, getMultiAdapter
+from bika.lims.browser.listing.ajax import AjaxListingView
 
 COOKIE_LISTING_FILTER_BAR = "bika_listing_filter_bar"
 
@@ -278,7 +279,7 @@ class WorkflowAction:
         return len(transitioned), dest
 
 
-class BikaListingView(BrowserView):
+class BikaListingView(AjaxListingView, BrowserView):
     """Base View for Bika Table Listings
     """
     template = ViewPageTemplateFile("templates/bika_listing.pt")
@@ -562,6 +563,10 @@ class BikaListingView(BrowserView):
 
         # Always update on __call__
         self.update()
+
+        # handle subpath calls
+        if len(self.traverse_subpath) > 0:
+            return self.handle_subpath()
 
         form_id = self.get_form_id()
 
@@ -932,7 +937,7 @@ class BikaListingView(BrowserView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
-        self.total = len(brains)
+        self.total = len(brains) + self.limit_from
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -1442,7 +1447,7 @@ class BikaListingView(BrowserView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
-        self.total = len(brains)
+        self.total = len(brains) + self.limit_from
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -1624,8 +1629,21 @@ class BikaListingView(BrowserView):
            <table/> tag will be printed (form tags, authenticator, etc).
            Then you can insert your own form tags around it.
         """
-        table = BikaListingTable(bika_listing=self, table_only=table_only)
-        return table.render(self)
+        ajax = True
+        # Override with request parameter
+        if self.request.get("legacy", False):
+            ajax = False
+        # We can only use the new-style listing view is registered and not
+        # directly instantiated like in AnalysisRequestView
+        elif not self.__name__:
+            ajax = False
+        # don't render for these views
+        elif self.__name__ in ["analyses"]:
+            ajax = False
+        if not ajax:
+            table = BikaListingTable(bika_listing=self, table_only=table_only)
+            return table.render(self)
+        return self.ajax_contents_table()
 
     def rendered_items(self):
         """If you set table_only to true, then nothing outside of the

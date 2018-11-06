@@ -99,19 +99,19 @@ class ClientFolderContentsView(BikaListingView):
                 "contentFilter": {"review_state": "active"},
                 "title": _("Active"),
                 "transitions": [{"id": "deactivate"}, ],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _("Dormant"),
                 "contentFilter": {"review_state": "inactive"},
                 "transitions": [{"id": "activate"}, ],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _("All"),
                 "contentFilter": {},
                 "transitions": [],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             },
         ]
 

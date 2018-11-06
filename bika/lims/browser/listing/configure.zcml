@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Register the static resource directory -->
+  <browser:resourceDirectory
+      name="senaite.core.browser.listing.static"
+      directory="static"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+</configure>
