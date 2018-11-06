@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1076 Instrument QC Viewlet Availability
 - #1071 Reinvented Listing Tables
 - #1066 Set default page size for listings to 50
 - #1063 Permission for ar_add changed to "AddAnalysisRequest"
