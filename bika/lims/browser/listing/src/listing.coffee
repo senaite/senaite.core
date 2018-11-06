@@ -646,6 +646,7 @@ class ListingController extends React.Component
             placeholder={_("Search")} />
         </div>
       </div>
+      <div className="spacer5"></div>
       <div className="row">
         <div className="col-sm-12 table-responsive">
           {@state.show_column_toggles and
