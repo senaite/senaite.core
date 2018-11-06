@@ -315,25 +315,34 @@ def get_role_mappings_candidates(portal):
     candidates = list()
     wf_tool = api.get_tool("portal_workflow")
 
-    # Analysis workflow - Analyses in submitted state but not verified
+    # Analysis workflow
     workflow = wf_tool.getWorkflowById("bika_analysis_workflow")
     if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             ("bika_analysis_workflow",
              dict(portal_type="Analysis",
-                  review_state="to_be_verified"),
+                  review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
-    # Duplicate Analysis Workflow - Analyses in submitted state but not verified
+    # Duplicate Analysis Workflow
     workflow = wf_tool.getWorkflowById("bika_duplicateanalysis_workflow")
     if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             ("bika_duplicateanalysis_workflow",
              dict(portal_type="DuplicateAnalysis",
-                  review_state="to_be_verified"),
+                  review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
-    return []
+    # Reference Analysis Workflow
+    workflow = wf_tool.getWorkflowById("bika_referenceanalysis_workflow")
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            ("bika_referenceanalysis_workflow",
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    return candidates
 
 
 def update_role_mappings(portal, queries):
