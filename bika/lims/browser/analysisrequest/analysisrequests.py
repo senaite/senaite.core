@@ -6,12 +6,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import collections
-import json
-import traceback
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
     AnalysisRequestsBikaListingFilterBar
 from bika.lims.browser.bika_listing import BikaListingView
@@ -26,11 +23,8 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
 from plone.api import user
-from plone.protect import CheckAuthenticator
-from plone.protect import PostOnly
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.component import queryUtility
 
 
 class AnalysisRequestsView(BikaListingView):
