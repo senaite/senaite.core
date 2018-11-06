@@ -48,3 +48,6 @@
 #ajax-contents-table tr.childrow td:first-child { padding-left: 1em; }
 #ajax-contents-table tr.childrow td:first-child:before { content: "➥ "; }
 
+/* after item */
+#ajax-contents-table tr span.after-item { padding-left: 5px; }
+
