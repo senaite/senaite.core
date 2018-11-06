@@ -3096,25 +3096,52 @@ class AnalysisRequest(BaseFolder):
             return [parent]
         return [parent] + parent.getAncestors(all_ancestors=True)
 
-    def getDescendants(self, all_descendants=True):
-        """Returns the descendant Analysis Requests
-        :param all_descendants: include all descendants, not only the children
+    def isRootAncestor(self):
+        """Returns True if the AR is the root ancestor
+
+        :returns: True if the AR has no more parents
         """
+        parent = self.getParentAnalysisRequest()
+        if parent:
+            return False
+        return True
+
+    def getDescendants(self, all_descendants=False):
+        """Returns the descendant Analysis Requests
+
+        :param all_descendants: recursively include all descendants
+        """
+
+        # N.B. full objects returned here from
+        #      `Products.Archetypes.Referenceable.getBRefs`
+        #      -> don't add this method into Metadata
         children = self.getBackReferences(
-            'AnalysisRequestParentAnalysisRequest')
-        if not all_descendants:
-            return children
+            "AnalysisRequestParentAnalysisRequest")
 
         descendants = []
-        for child in children:
-            descendants.append(child)
-            descendants += child.getDescendants()
+
+        # recursively include all children
+        if all_descendants:
+            for child in children:
+                descendants.append(child)
+                descendants += child.getDescendants(all_descendants=True)
+        else:
+            descendants = children
+
         return descendants
+
+    def getDescendantsUIDs(self, all_descendants=False):
+        """Returns the UIDs of the descendant Analysis Requests
+
+        This method is used as metadata
+        """
+        descendants = self.getDescendants(all_descendants=all_descendants)
+        return map(api.get_uid, descendants)
 
     def isPartition(self):
         """Returns true if this Analysis Request is a partition
         """
-        return self.getParentAnalysisRequest() and True or False
+        return not self.isRootAncestor()
 
 
 registerType(AnalysisRequest, PROJECTNAME)
