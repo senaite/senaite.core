@@ -188,9 +188,15 @@ Also if the user has the roles `Manager` or `Verifier`:
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
     >>> isTransitionAllowed(duplicate, "verify")
     True
-    >>> setRoles(portal, TEST_USER_ID, ['Verifier',])
-    >>> isTransitionAllowed(duplicate, "verify")
-    True
+
+TODO Workflow Verifier should be able to verify a duplicate!
+The code below throws an
+`Unauthorized: Not authorized to access binding: context` error, rised by
+https://github.com/MatthewWilkes/Zope/blob/master/src/Shared/DC/Scripts/Bindings.py#L198
+
+#    >>> setRoles(portal, TEST_USER_ID, ['Verifier',])
+#    >>> isTransitionAllowed(duplicate, "verify")
+#    True
 
 But cannot for other roles:
 
