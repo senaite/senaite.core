@@ -56,6 +56,8 @@
   <include package=".reports"/>
   <include package=".widgets"/>
 
+  <include package=".listing"/>
+
   <browser:page
       for="*"
       name="log"

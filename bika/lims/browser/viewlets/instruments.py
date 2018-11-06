@@ -5,8 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
 from plone.app.layout.viewlets import ViewletBase
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
@@ -20,23 +20,24 @@ class InstrumentQCFailuresViewlet(ViewletBase):
             context, request, view, manager=manager)
         self.nr_failed = 0
         self.failed = {
-            'out-of-date': [],
-            'qc-fail': [],
-            'next-test': [],
-            'validation': [],
-            'calibration': [],
+            "out-of-date": [],
+            "qc-fail": [],
+            "next-test": [],
+            "validation": [],
+            "calibration": [],
         }
 
     def get_failed_instruments(self):
-        """ Find all active instruments who have failed QC tests
-            Find instruments whose certificate is out of date
-            Find instruments which are disposed until next calibration test
+        """Find invalid instruments
 
-            Return a dictionary with all info about expired/invalid instruments
+        - instruments who have failed QC tests
+        - instruments whose certificate is out of date
+        - instruments which are disposed until next calibration test
 
+        Return a dictionary with all info about expired/invalid instruments
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        insts = bsc(portal_type='Instrument', inactive_state='active')
+        bsc = api.get_tool("bika_setup_catalog")
+        insts = bsc(portal_type="Instrument", inactive_state="active")
         for i in insts:
             i = i.getObject()
             instr = {
@@ -74,11 +75,31 @@ class InstrumentQCFailuresViewlet(ViewletBase):
                 self.nr_failed += 1
                 self.failed['next-test'].append(instr)
 
+    def available(self):
+        """Control availability of the viewlet
+        """
+        url = api.get_url(self.context)
+        # render on the portal root
+        if self.context == api.get_portal():
+            return True
+        # render on the front-page
+        if url.endswith("/front-page"):
+            return True
+        # render for manage_results
+        if url.endswith("/manage_results"):
+            return True
+        return False
+
     def render(self):
-        mtool = getToolByName(self.context, 'portal_membership')
+        """Render the viewlet
+        """
+        if not self.available():
+            return ""
+
+        mtool = api.get_tool("portal_membership")
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
-        allowed = 'LabManager' in roles or 'Manager' in roles
+        allowed = "LabManager" in roles or "Manager" in roles
 
         self.get_failed_instruments()
 

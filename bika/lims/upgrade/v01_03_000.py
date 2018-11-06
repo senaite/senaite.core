@@ -183,18 +183,28 @@ def add_partitioning_indexes(portal):
     """Adds the indexes for partitioning
     """
     logger.info("Adding partitioning indexes")
+
     add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
               index_name="getAncestorsUIDs",
               index_attribute="getAncestorsUIDs",
               index_metatype="KeywordIndex")
+
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_REQUEST_LISTING,
+              index_name="isRootAncestor",
+              index_attribute="isRootAncestor",
+              index_metatype="BooleanIndex")
 
 
 def add_partitioning_metadata(portal):
     """Add metadata columns required for partitioning machinery
     """
     logger.info("Adding partitioning metadata")
+
     add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING,
                  'getRawParentAnalysisRequest')
+
+    add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING,
+                 "getDescendantsUIDs")
 
 
 def add_index(portal, catalog_id, index_name, index_attribute, index_metatype):

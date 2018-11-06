@@ -61,7 +61,7 @@
         </table>
 
         <!-- Searchform -->
-        <form class="criteria form-inline" name="criteria">
+        <form class="criteria form-inline" name="criteria" tal:condition="python:False">
           <h3 i18n:translate="">Filter Analyses</h3>
 
           <div class="form-group">
