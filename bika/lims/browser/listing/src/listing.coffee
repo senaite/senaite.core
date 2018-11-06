@@ -42,6 +42,7 @@ class ListingController extends React.Component
     @toggleContextMenu = @toggleContextMenu.bind @
     @toggleColumn = @toggleColumn.bind @
     @toggleCategory = @toggleCategory.bind @
+    @toggleRow = @toggleRow.bind @
     @setEditableField = @setEditableField.bind @
 
     # get the container element
@@ -86,10 +87,14 @@ class ListingController extends React.Component
       review_states: @review_states
       # The data from the folderitems view call
       folderitems: []
+      # Mapping of UID -> list of children from the folderitems
+      children: {}
       # The categories of the folderitems
       categories: []
       # Expanded categories
       expanded_categories: []
+      # Expanded Rows
+      expanded_rows: []
       # total number of items in the database
       total: 0
       # UIDs of selected rows are stored in selected_uids.
@@ -176,6 +181,46 @@ class ListingController extends React.Component
     # set the new expanded categories
     @setState
       expanded_categories: expanded
+
+  toggleRow: (uid) ->
+    ###
+     * Expand/Collapse the row
+    ###
+    console.debug "ListingController::toggleRow: uid=#{uid}"
+
+    # get the current expanded rows
+    expanded = @state.expanded_rows
+
+    # check if the current row is in there
+    index = expanded.indexOf uid
+
+    if index > -1
+      # remove the category
+      expanded.splice index, 1
+    else
+      # add the category
+      expanded.push uid
+
+    # check if the children are already fetched
+    me = this
+    if uid not of @state.children
+      by_uid = @get_folderitems_by_uid()
+      item = by_uid[uid]
+      query =
+        UID: item.children or []
+      promise = @fetch_folderitems_by_query
+        query:
+          UID: item.children or []
+      promise.then (data) ->
+        children = me.state.children
+        children[uid] = data.folderitems
+        me.setState
+          children: children
+          expanded_rows: expanded
+    else
+      # set the new expanded categories
+      @setState
+        expanded_rows: expanded
 
   toggleColumn: (column) ->
     ###
@@ -558,6 +603,25 @@ class ListingController extends React.Component
 
     return promise
 
+  fetch_folderitems_by_query: (query) ->
+    ###
+     * Fetch the folderitems with the given catalog query
+    ###
+
+    # turn loader on
+    @toggle_loader on
+
+    # fetch the folderitems from the server
+    promise = @api.query_folderitems query
+
+    me = this
+    promise.then (data) ->
+      console.debug "ListingController::query_folderitems: GOT RESPONSE=", data
+      # turn loader off
+      me.toggle_loader off
+
+    return promise
+
   render: ->
     ###
      * Listing Table
@@ -614,6 +678,7 @@ class ListingController extends React.Component
             review_state={@state.review_state}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
+            children={@state.children}
             folderitems_by_uid={@get_folderitems_by_uid()}
             selected_uids={@state.selected_uids}
             select_checkbox_name={@state.select_checkbox_name}
@@ -621,8 +686,10 @@ class ListingController extends React.Component
             show_select_all_checkbox={@state.show_select_all_checkbox}
             categories={@state.categories}
             expanded_categories={@state.expanded_categories}
+            expanded_rows={@state.expanded_rows}
             show_categories={@state.show_categories}
             on_category_click={@toggleCategory}
+            on_row_click={@toggleRow}
             filter={@state.filter}
             parent_row_title={_("Primary")}
             child_row_title={_("Partition")}

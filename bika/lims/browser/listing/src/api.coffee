@@ -68,6 +68,16 @@ class ListingAPI
     return @get_json "review_states",
       method: "GET"
 
+  query_folderitems: (data) ->
+    ###
+     * Query folderitems
+     * @returns {Promise}
+    ###
+    options =
+      data: data or {}
+      method: "POST"
+    return @get_json "query_folderitems", options
+
   fetch_folderitems: (data) ->
     ###
      * Fetch folder items
