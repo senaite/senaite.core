@@ -152,6 +152,11 @@ Until we verify all the analyses it contains:
     >>> api.get_workflow_status_of(ar)
     'verified'
 
+And we cannot re-verify an analysis that has been verified already:
+
+    >>> try_transition(analyses[2], "verify", "verified")
+    False
+
 To ensure consistency amongst tests, we disable self-verification:
 
     >>> bikasetup.setSelfVerificationEnabled(False)

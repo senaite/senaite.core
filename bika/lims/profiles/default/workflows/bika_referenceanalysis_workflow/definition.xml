@@ -10,6 +10,7 @@
 
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: Retract</permission>
+  <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
 
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
@@ -156,18 +157,20 @@
     </guard>
   </transition>
 
-  <!-- Transition: verify -->
   <transition transition_id="unassign" title="Remove" new_state="unassigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Remove</action>
     <guard>
     </guard>
   </transition>
 
-  <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <!-- Transition: verify -->
+  <transition transition_id="verify" title="Verify" new_state="verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
       <guard-permission>BIKA: Verify</guard-permission>
-      <guard-expression>python:here.guard_verify_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("verify")</guard-expression>
     </guard>
   </transition>
 

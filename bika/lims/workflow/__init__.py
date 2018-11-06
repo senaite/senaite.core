@@ -8,7 +8,6 @@
 from bika.lims import enum, api
 from bika.lims import PMF
 from bika.lims.browser import ulocalized_time
-from bika.lims.decorators import timeit
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
