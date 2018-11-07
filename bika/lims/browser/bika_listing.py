@@ -242,28 +242,7 @@ class WorkflowAction:
                 allowed_transitions = \
                     [it['id'] for it in workflow.getTransitionsFor(item)]
                 if action in allowed_transitions:
-                    # if action is "verify" and the item is an analysis or
-                    # reference analysis, check if the if the required number
-                    # of verifications done for the analysis is, at least,
-                    # the number of verifications performed previously+1
-                    if (action == 'verify' and
-                            hasattr(item, 'getNumberOfVerifications') and
-                            hasattr(item, 'getNumberOfRequiredVerifications')):
-                        success = True
-                        message = "Unknown error while submitting."
-                        revers = item.getNumberOfRequiredVerifications()
-                        nmvers = item.getNumberOfVerifications()
-                        member = get_current_user()
-                        username = member.getUserName()
-                        item.addVerificator(username)
-                        if revers - nmvers <= 1:
-                            success, message = doActionFor(item, action)
-                            if not success:
-                                # If failed, delete last verificator.
-                                item.deleteLastVerificator()
-                        item.reindexObject()
-                    else:
-                        success, message = doActionFor(item, action)
+                    success, message = doActionFor(item, action)
                     if success:
                         transitioned.append(item.UID())
                     else:

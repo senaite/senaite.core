@@ -221,6 +221,7 @@
   </state>
 
   <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+    <exit-transition transition_id="multi_verify" />
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
@@ -380,6 +381,17 @@
   <transition transition_id="to_be_preserved" title="To be preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">To be preserved</action>
     <guard>
+    </guard>
+  </transition>
+
+  <!-- Transition: multi_verify (for when multi-verification is enabled) -->
+  <transition transition_id="multi_verify" title="Verify" new_state="to_be_verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Verify</action>
+    <guard>
+      <guard-permission>BIKA: Verify</guard-permission>
+      <guard-expression>python:here.guard_handler("multi_verify")</guard-expression>
     </guard>
   </transition>
 

@@ -1444,8 +1444,7 @@ class AnalysisRequestDigester:
     def _verifiers_data(self, ar_uid):
         verifiers = dict()
         for brain in self.get_analyses(ar_uid):
-            an_verifiers = brain.getVerificators or ''
-            an_verifiers = an_verifiers.split(',')
+            an_verifiers = brain.getVerificators
             for user_id in an_verifiers:
                 user_data = self._user_contact_data(user_id)
                 if not user_data:

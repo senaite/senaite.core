@@ -14,6 +14,12 @@ def guard_submit(duplicate_analysis):
     return analysis_guards.guard_submit(duplicate_analysis)
 
 
+def guard_multi_verify(duplicate_analysis):
+    """Return whether the transition "multi_verify" can be performed or not
+    """
+    return analysis_guards.guard_multi_verify(duplicate_analysis)
+
+
 def guard_verify(duplicate_analysis):
     """Return whether the transition "verify" can be performed or not
     """

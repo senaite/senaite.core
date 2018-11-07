@@ -76,6 +76,23 @@ def unassign(obj):
     return False
 
 
+def dependencies_guard(analysis, transition_id):
+    """Return whether the transition(s) passed in can be performed or not to
+    the dependencies of the analysis passed in
+    """
+    if isinstance(transition_id, list):
+        for transition_id in transition_id:
+            if not dependencies_guard(analysis, transition_id):
+                return False
+        return True
+
+    for dependency in analysis.getDependencies():
+        if not isTransitionAllowed(dependency, transition_id):
+            if not wasTransitionPerformed(dependency, transition_id):
+                return False
+    return True
+
+
 def guard_submit(analysis):
     """Return whether the transition "submit" can be performed or not
     """
@@ -93,12 +110,43 @@ def guard_submit(analysis):
             return False
 
     # Check dependencies (analyses this analysis depends on)
-    for dependency in analysis.getDependencies():
-        if not isTransitionAllowed(dependency, "submit"):
-            if not wasTransitionPerformed(dependency, "submit"):
-                return False
+    return dependencies_guard(analysis, "submit")
 
-    return True
+
+def guard_multi_verify(analysis):
+    """Return whether the transition "multi_verify" can be performed or not
+    The transition multi_verify will only take place if multi-verification of
+    results is enabled.
+    """
+    if not api.is_active(analysis):
+        return False
+
+    # If there is only one remaining verification, return False
+    remaining_verifications = analysis.getNumberOfRemainingVerifications()
+    if remaining_verifications <= 1:
+        return False
+
+    # Check if the current user is the same who submitted the result
+    m_tool = getToolByName(analysis, 'portal_membership')
+    user_id = m_tool.getAuthenticatedMember().getUser().getId()
+    if (analysis.getSubmittedBy() == user_id):
+        if not analysis.isSelfVerificationEnabled():
+            return False
+
+    # Check if user is the last verifier and consecutive multi-verification is
+    # disabled
+    verifiers = analysis.getVerificators()
+    mv_type = analysis.bika_setup.getTypeOfmultiVerification()
+    if verifiers and verifiers[:-1] == user_id \
+            and mv_type == "self_multi_not_cons":
+        return False
+
+    # Check if user verified before and self multi-verification is disabled
+    if user_id in verifiers and mv_type == "self_multi_disabled":
+        return False
+
+    # Check dependencies (analyses this analysis depends on)
+    return dependencies_guard(analysis, ["verify", "multi_verify"])
 
 
 def guard_verify(analysis):
@@ -108,12 +156,35 @@ def guard_verify(analysis):
     if not api.is_active(analysis):
         return False
 
-    # Check dependencies (analyses this analysis depends on)
-    for dependency in analysis.getDependencies():
-        if not isTransitionAllowed(dependency, "verify"):
-            if not wasTransitionPerformed(dependency, "verify"):
-                return False
+    # Check if multi-verification
+    remaining_verifications = analysis.getNumberOfRemainingVerifications()
+    if remaining_verifications > 1:
+        return False
 
-    # Check if the user that submitted the result is the current user
+    # Check if the current user is the same that submitted the result
     m_tool = getToolByName(analysis, 'portal_membership')
-    return analysis.isUserAllowedToVerify(m_tool.getAuthenticatedMember())
+    user_id = m_tool.getAuthenticatedMember().getUser().getId()
+    if (analysis.getSubmittedBy() == user_id):
+        if not analysis.isSelfVerificationEnabled():
+            return False
+
+    if analysis.getNumberOfRequiredVerifications() <= 1:
+        # Check dependencies (analyses this analysis depends on)
+        return dependencies_guard(analysis, "verify")
+
+    # This analysis requires more than one verification
+    # Check if user is the last verifier and consecutive multi-verification is
+    # disabled
+    verifiers = analysis.getVerificators()
+    mv_type = analysis.bika_setup.getTypeOfmultiVerification()
+    if verifiers and verifiers[:-1] == user_id \
+            and mv_type == "self_multi_not_cons":
+        return False
+
+    # Check if user verified before and self multi-verification is disabled
+    if user_id in verifiers and mv_type == "self_multi_disabled":
+        return False
+
+    # Check dependencies (analyses this analysis depends on)
+    return dependencies_guard(analysis, ["verify", "multi_verify"])
+

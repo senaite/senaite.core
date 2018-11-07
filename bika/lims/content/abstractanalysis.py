@@ -32,6 +32,7 @@ from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
+from bika.lims import workflow as wf
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import wasTransitionPerformed
@@ -102,14 +103,6 @@ NumberOfRequiredVerifications = IntegerField(
     default=1
 )
 
-# This field keeps the user_ids of members who verified this analysis.
-# After each verification, user_id will be added end of this string
-# seperated by comma- ',' .
-Verificators = StringField(
-    'Verificators',
-    default=''
-)
-
 # Routine Analyses and Reference Analysis have a versioned link to
 # the calculation at creation time.
 Calculation = HistoryAwareReferenceField(
@@ -146,7 +139,6 @@ schema = schema.copy() + Schema((
     ResultCaptureDate,
     Retested,
     Uncertainty,
-    Verificators,
     Calculation,
     InterimFields
 ))
@@ -172,50 +164,33 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getNumberOfVerifications(self):
-        verificators = self.getVerificators()
-        if not verificators:
+        return len(self.getVerificators())
+
+    @security.public
+    def getNumberOfRemainingVerifications(self):
+        required = self.getNumberOfRequiredVerifications()
+        done = self.getNumberOfVerifications()
+        if done >= required:
             return 0
-        return len(verificators.split(','))
+        return required-done
 
-    @security.public
-    def addVerificator(self, username):
-        verificators = self.getVerificators()
-        if not verificators:
-            self.setVerificators(username)
-        else:
-            self.setVerificators(verificators + "," + username)
-        self.reindexObject()
-
-    @security.public
-    def deleteLastVerificator(self):
-        verificators_str = self.getVerificators()
-        if not verificators_str:
-            return
-        verificators = verificators_str.split(',')
-        del verificators[-1]
-        self.setVerificators(",".join(verificators))
-        self.reindexObject()
-
-    @security.public
-    def wasVerifiedByUser(self, username):
-        verificators_str = self.getVerificators()
-        if not verificators_str:
-            return False
-        verificators = verificators_str.split(',')
-        return username in verificators
-
+    # TODO Workflow - analysis . Remove?
     @security.public
     def getLastVerificator(self):
-        verificators = self.getVerificators()
-        if not verificators:
-            return None
-        return verificators.split(',')[-1]
+        verifiers = self.getVerificators()
+        return verifiers and verifiers[-1] or None
 
     @security.public
-    def setVerificator(self, value):
-        field = self.Schema().getField('Verificators')
-        field.set(self, value)
-        self.reindexObject()
+    def getVerificators(self):
+        """Returns the user ids of the users that verified this analysis
+        """
+        verifiers = list()
+        actions = ["verify", "multi_verify"]
+        for event in wf.getReviewHistory(self):
+            if event['action'] in actions:
+                verifiers.append(event['actor'])
+        sorted(verifiers, reverse=True)
+        return verifiers
 
     @security.public
     def getDefaultUncertainty(self, result=None):
@@ -1001,38 +976,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return analyst_member.getProperty('fullname')
         return ''
 
-    # TODO Workflow, Analysis - Move to analysis.guard.verify?
+    # TODO Workflow, Analysis - Remove
     @security.public
     def isVerifiable(self):
         """Checks it the current analysis can be verified. This is, its not a
         cancelled analysis and has no dependenant analyses not yet verified
         :return: True or False
         """
-        # Check if the analysis is active
-        workflow = getToolByName(self, "portal_workflow")
-        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
-        if objstate == "cancelled":
-            return False
+        return guards.guard_verify(self) or guards.guard_multi_verify(self)
 
-        # Check if the analysis state is to_be_verified
-        review_state = workflow.getInfoFor(self, "review_state")
-        if review_state != 'to_be_verified':
-            return False
-
-        # If the analysis has at least one dependency that hasn't been verified
-        # yet and because of its current state cannot be verified, then return
-        # false. The idea is that an analysis that requires from results of
-        # other analyses cannot be verified unless all its dependencies have
-        # already been verified or are in a suitable state for doing so.
-        for d in self.getDependencies():
-            if not d.isVerifiable() \
-                    and not wasTransitionPerformed(d, 'verify'):
-                return False
-
-        # All checks passed
-        return True
-
-    # TODO Workflow, Analysis - Move to analysis.guard.verify?
+    # TODO Workflow, Analysis - Remove
     @security.public
     def isUserAllowedToVerify(self, member):
         """
@@ -1046,44 +999,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :member: user to be tested
         :return: true or false
         """
-        # Check if the user has "Bika: Verify" privileges
-        username = member.getUserName()
-        allowed = has_permission(VerifyPermission, username=username)
-        if not allowed:
-            return False
-
-        # Check if the user who submited the result is the same as the current
-        self_submitted = self.getSubmittedBy() == member.getUser().getId()
-
-        # The submitter and the user must be different unless the analysis has
-        # the option SelfVerificationEnabled set to true
-        selfverification = self.isSelfVerificationEnabled()
-        if self_submitted and not selfverification:
-            return False
-
-        # Checking verifiability depending on multi-verification type of
-        # bika_setup
-        if self.bika_setup.getNumberOfRequiredVerifications() > 1:
-            mv_type = self.bika_setup.getTypeOfmultiVerification()
-            # If user verified before and self_multi_disabled, then return False
-            if mv_type == 'self_multi_disabled' and self.wasVerifiedByUser(
-                    username):
-                return False
-
-            # If user is the last verificator and consecutively
-            # multi-verification
-            # is disabled, then return False
-            # Comparing was added just to check if this method is called
-            # before/after
-            # verification
-            elif mv_type == 'self_multi_not_cons' and username == \
-                    self.getLastVerificator() and \
-                            self.getNumberOfVerifications() < \
-                            self.getNumberOfRequiredVerifications():
-                return False
-
-        # All checks pass
-        return True
+        return guards.guard_verify(self) or guards.guard_multi_verify(self)
 
     @security.public
     def getObjectWorkflowStates(self):

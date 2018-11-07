@@ -234,6 +234,22 @@ def add_metadata(portal, catalog_id, column, refresh_catalog=False):
         handler = ZLogHandler(steps=100)
         catalog.refreshCatalog(pghandler=handler)
 
+
+def del_metadata(portal, catalog_id, column, refresh_catalog=False):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+    catalog.delColumn(column)
+
+    if refresh_catalog:
+        logger.info("Refreshing catalog '{}' ...".format(catalog_id))
+        handler = ZLogHandler(steps=100)
+        catalog.refreshCatalog(pghandler=handler)
+
+
 def remove_sample_prep_workflow(portal):
     """Removes sample_prep and sample_prep_complete transitions
     """
@@ -334,6 +350,14 @@ def get_role_mappings_candidates(portal):
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
+    # Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            ("bika_analysis_workflow",
+             dict(portal_type="Analysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
     # Duplicate Analysis Workflow
     workflow = wf_tool.getWorkflowById("bika_duplicateanalysis_workflow")
     if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
@@ -343,12 +367,28 @@ def get_role_mappings_candidates(portal):
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
+    # Duplicate Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            ("bika_analysis_workflow",
+             dict(portal_type="Analysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
     # Reference Analysis Workflow
     workflow = wf_tool.getWorkflowById("bika_referenceanalysis_workflow")
     if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             ("bika_referenceanalysis_workflow",
              dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Refernce Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            ("bika_analysis_workflow",
+             dict(portal_type="Analysis",
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 

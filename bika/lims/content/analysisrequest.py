@@ -2366,8 +2366,7 @@ class AnalysisRequest(BaseFolder):
         """
         verifiers_ids = list()
         for brain in self.getAnalyses():
-            verifiers = brain.getVerificators or ""
-            verifiers_ids += verifiers.split(",")
+            verifiers_ids += brain.getVerificators
         return list(set(verifiers_ids))
 
     @security.public

@@ -421,7 +421,7 @@ def create_retest(ar):
         nan = _createObjectByType("Analysis", retest, an.getKeyword())
 
         # Make a copy
-        ignore_fieldnames = ['Verificators', 'DataAnalysisPublished']
+        ignore_fieldnames = ['DataAnalysisPublished']
         copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
         nan.unmarkCreationFlag()
 

@@ -927,7 +927,7 @@ class AnalysesView(BikaListingView):
             # Don't display icons and additional info about verification
             return
 
-        verifiers = analysis_brain.getVerificators.split(',')
+        verifiers = analysis_brain.getVerificators
         in_verifiers = submitter in verifiers
         if in_verifiers:
             # If analysis has been submitted and verified by the same person,
