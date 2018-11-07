@@ -27,8 +27,7 @@ if context.portal_type == "AnalysisRequest":
     for a in context.getAnalyses(full_objects=True):
         has_analyses = True
         review_state = workflow.getInfoFor(a, 'review_state')
-        if review_state in ('to_be_sampled', 'to_be_preserved',
-                            'sample_due', 'sample_received',):
+        if review_state == "registered":
             return False
     return has_analyses
 
@@ -40,7 +39,7 @@ if context.portal_type == "Worksheet":
     for a in context.getAnalyses():
         has_analyses = True
         review_state = workflow.getInfoFor(a, 'review_state', '')
-        if review_state in ('sample_received', 'assigned',):
+        if review_state in ('registered', 'assigned',):
             # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
             return False
     return has_analyses

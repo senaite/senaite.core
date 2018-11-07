@@ -34,7 +34,6 @@ def duplicateAnalysis(analysis):
     cnt = [x for x in ar.objectValues("Analysis") if x.getId().startswith(kw)]
     a_id = "{0}-{1}".format(kw, len(cnt))
     dup = create_analysis(ar, analysis, id=a_id, Retested=True)
-    changeWorkflowState(dup, "bika_analysis_workflow", "sample_received")
     return dup
 
 

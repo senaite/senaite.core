@@ -558,7 +558,7 @@ class DashboardView(BrowserView):
         name = _('Assignment pending')
         desc = _('Assignment pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=default'
-        query['review_state'] = ['sample_received', 'attachment_due', ]
+        query['review_state'] = ['registered', 'attachment_due', ]
         query['worksheetanalysis_review_state'] = ['unassigned']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
@@ -566,7 +566,7 @@ class DashboardView(BrowserView):
         name = _('Results pending')
         desc = _('Results pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
-        query['review_state'] = ['sample_received', 'attachment_due', ]
+        query['review_state'] = ['registered', 'attachment_due', ]
         del query['worksheetanalysis_review_state']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
@@ -684,9 +684,7 @@ class DashboardView(BrowserView):
 
     def get_states_map(self, portal_type):
         if portal_type == 'Analysis':
-            return {'to_be_sampled':   _('Reception pending'),
-                    'sample_due':      _('Reception pending'),
-                    'sample_received': _('Assignment pending'),
+            return {'registered':      _('Assignment pending'),
                     'assigned':        _('Results pending'),
                     'attachment_due':  _('Results pending'),
                     'to_be_verified':  _('To be verified'),

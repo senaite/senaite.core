@@ -73,6 +73,146 @@ We need to create some basic objects for the test:
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
 
 
+Basic constraints for Analysis submission
+-----------------------------------------
+
+Create an Analysis Request:
+
+    >>> values = {'Client': client.UID(),
+    ...           'Contact': contact.UID(),
+    ...           'DateSampled': date_now,
+    ...           'SampleType': sampletype.UID()}
+    >>> service_uids = map(api.get_uid, [Cu])
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+
+Cannot submit if the Analysis Request has not been yet received:
+
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> analysis.setResult(12)
+    >>> isTransitionAllowed(analysis, "submit")
+    False
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+    >>> api.get_workflow_status_of(analysis)
+    'registered'
+
+But if I receive the Analysis Request:
+
+    >>> transitioned = do_action_for(ar, "receive")
+    >>> transitioned[0]
+    True
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+I can then submit the analysis:
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    True
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+And I cannot resubmit the analysis:
+
+    >>> isTransitionAllowed(analysis, "submit")
+    False
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+
+Basic constraints for "field" Analysis submission
+-------------------------------------------------
+
+Set analysis `Cu` with Point of Capture "field":
+
+    >>> Cu.setPointOfCapture("field")
+    >>> Cu.getPointOfCapture()
+    'field'
+
+And activate sampling workflow:
+
+    >>> bikasetup.setSamplingWorkflowEnabled(True)
+    >>> bikasetup.getSamplingWorkflowEnabled()
+    True
+
+Create an Analysis Request:
+
+    >>> values = {'Client': client.UID(),
+    ...           'Contact': contact.UID(),
+    ...           'DateSampled': date_now,
+    ...           'SampleType': sampletype.UID()}
+    >>> service_uids = map(api.get_uid, [Cu, Fe])
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> cu = filter(lambda an: an.getKeyword() == "Cu", analyses)[0]
+    >>> fe = filter(lambda an: an.getKeyword() == "Fe", analyses)[0]
+
+Cannot submit `Cu`, because the Analysis Request has not been yet sampled:
+
+    >>> cu.setResult(12)
+    >>> isTransitionAllowed(cu, "submit")
+    False
+    >>> api.get_workflow_status_of(ar)
+    'to_be_sampled'
+
+I cannot submit `Fe` neither, cause the Analysis Request has not been received:
+
+    >>> fe.setResult(12)
+    >>> isTransitionAllowed(fe, "submit")
+    False
+
+If I sample the Analysis Request:
+
+    >>> transitioned = do_action_for(ar, "sample")
+    >>> transitioned[0]
+    True
+    >>> api.get_workflow_status_of(ar)
+    'sample_due'
+
+Then I can submit `Cu`:
+
+    >>> transitioned = do_action_for(cu, "submit")
+    >>> transitioned[0]
+    True
+    >>> api.get_workflow_status_of(cu)
+    'to_be_verified'
+
+But cannot submit `Fe`:
+
+    >>> cu.setResult(12)
+    >>> isTransitionAllowed(fe, "submit")
+    False
+
+Unless I receive the Analysis Request:
+
+    >>> transitioned = do_action_for(ar, "receive")
+    >>> transitioned[0]
+    True
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+    >>> transitioned = do_action_for(fe, "submit")
+    >>> transitioned[0]
+    True
+    >>> api.get_workflow_status_of(fe)
+    'to_be_verified'
+
+And I cannot resubmit again:
+
+    >>> isTransitionAllowed(cu, "submit")
+    False
+    >>> isTransitionAllowed(fe, "submit")
+    False
+
+Deactivate the workflow sampling and rest `Cu` as a lab analysis:
+
+    >>> Cu.setPointOfCapture("lab")
+    >>> bikasetup.setSamplingWorkflowEnabled(False)
+
+
 Auto submission of Analysis Requests when all its analyses are submitted
 ------------------------------------------------------------------------
 
@@ -86,10 +226,10 @@ Set results for some of the analyses only:
     >>> analyses[0].setResult('12')
     >>> analyses[1].setResult('12')
 
-We've set some results, but all analyses are still in `sample_received`:
+We've set some results, but all analyses are still in `registered`:
 
     >>> map(api.get_workflow_status_of, analyses)
-    ['sample_received', 'sample_received', 'sample_received']
+    ['registered', 'registered', 'registered']
 
 Transition some of them:
 
@@ -119,7 +259,7 @@ If we try to transition the remaining analysis w/o result, nothing happens:
     False
 
     >>> api.get_workflow_status_of(analyses[2])
-    'sample_received'
+    'registered'
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
@@ -132,7 +272,7 @@ Even if we try with an empty or None result:
     False
 
     >>> api.get_workflow_status_of(analyses[2])
-    'sample_received'
+    'registered'
 
     >>> analyses[2].setResult(None)
     >>> transitioned = do_action_for(analyses[2], "submit")
@@ -140,7 +280,7 @@ Even if we try with an empty or None result:
     False
 
     >>> api.get_workflow_status_of(analyses[2])
-    'sample_received'
+    'registered'
 
 But will work if we try with a result of 0:
 
@@ -295,7 +435,7 @@ Cannot submit if no result is set:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
 But even if we set a result, we cannot submit because interims are missing:
 
@@ -308,7 +448,7 @@ But even if we set a result, we cannot submit because interims are missing:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
 So, if the analysis has interims defined, all them are required too:
 
@@ -324,7 +464,7 @@ So, if the analysis has interims defined, all them are required too:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
 Even if we set a non-valid (None, empty value) to an interim:
 
@@ -337,7 +477,7 @@ Even if we set a non-valid (None, empty value) to an interim:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
     >>> analysis.setInterimValue("interim_2", '')
     >>> analysis.getInterimValue("interim_2")
@@ -348,7 +488,7 @@ Even if we set a non-valid (None, empty value) to an interim:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
 But it will work if the value is 0:
 
@@ -380,7 +520,7 @@ Might happen the other way round. We set interims but not a result:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
 Still, the result is required:
 
@@ -431,7 +571,7 @@ Cannot submit if no result is set:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
 TODO This should not be like this, but the calculation is performed by
 `ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
@@ -450,7 +590,7 @@ Cannot transition because IT3 and IT4 have None/empty values as default:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
 Let's set a value for those interims:
 
@@ -461,7 +601,7 @@ Let's set a value for those interims:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'sample_received'
+    'registered'
 
     >>> analysis.setInterimValue("IT4", 4)
 
@@ -522,7 +662,7 @@ Cannot submit `Fe`, because there is no result for `Cu` yet:
     False
 
     >>> api.get_workflow_status_of(fe_analysis)
-    'sample_received'
+    'registered'
 
 And we cannot submit `Au`, because `Cu`, a dependency of `Fe`, has no result:
 
@@ -531,7 +671,7 @@ And we cannot submit `Au`, because `Cu`, a dependency of `Fe`, has no result:
     False
 
     >>> api.get_workflow_status_of(au_analysis)
-    'sample_received'
+    'registered'
 
 Set a result for `Cu` and submit:
 
@@ -546,7 +686,7 @@ Set a result for `Cu` and submit:
 But `Fe` won't follow, cause only dependencies follow, but not dependents:
 
     >>> api.get_workflow_status_of(fe_analysis)
-    'sample_received'
+    'registered'
 
 If we try to submit `Au`, the submission will not take place:
 
@@ -555,7 +695,7 @@ If we try to submit `Au`, the submission will not take place:
     False
 
     >>> api.get_workflow_status_of(au_analysis)
-    'sample_received'
+    'registered'
 
 Because of the missing interim. Set the interim for `Au`:
 
@@ -588,14 +728,16 @@ Create an Analysis Request and submit results:
 
     >>> ar = new_ar([Cu])
 
-The status of the Analysis Request and its analyses is `sample_received`:
+The status of the Analysis Request is `sample_received`:
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
 
+And the status of the Analysis is `registered`:
+
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> map(api.get_workflow_status_of, analyses)
-    ['sample_received']
+    ['registered']
 
 Set a result:
 

@@ -101,7 +101,7 @@ class ManageResultsView(BrowserView):
             }
         """
         outdict = {}
-        allowed_states = ['sample_received']
+        allowed_states = ['registered']
         for analysis in self._getAnalyses():
             wf = getToolByName(analysis, 'portal_workflow')
             if wf.getInfoFor(analysis, 'review_state') not in allowed_states:

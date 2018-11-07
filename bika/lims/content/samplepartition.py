@@ -120,10 +120,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         (Analyses). If all sibling partitions are in the targe state, promotes
         the transition to its parent Sample
         """
-        # Transition our analyses
-        for analysis in self.getAnalyses():
-            doActionFor(analysis, actionid)
-
         # If all sibling partitions are received, promote Sample. Sample
         # transition will, in turn, transition the Analysis Requests
         sample = self.aq_parent
@@ -204,11 +200,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     def workflow_script_preserve(self):
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.aq_parent
-        # Transition our analyses
-        analyses = self.getAnalyses()
-        if analyses:
-            for analysis in analyses:
-                doActionFor(analysis, "preserve")
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
@@ -231,10 +222,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
             return
         sample = self.aq_parent
         workflow = getToolByName(self, 'portal_workflow')
-        # Transition our analyses
-        analyses = self.getAnalyses()
-        for analysis in analyses:
-            doActionFor(analysis, "to_be_preserved")
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:

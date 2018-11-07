@@ -238,15 +238,11 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                 part.reindexObject()
 
         if new:
-            ar_state = getCurrentState(ar)
             if wasTransitionPerformed(ar, 'to_be_verified'):
                 # Apply to AR only; we don't want this transition to cascade.
                 ar.REQUEST['workflow_skiplist'].append("retract all analyses")
                 workflow.doActionFor(ar, 'retract')
                 ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
-                ar_state = getCurrentState(ar)
-            for analysis in new:
-                changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')

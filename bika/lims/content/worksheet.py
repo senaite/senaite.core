@@ -803,17 +803,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         bac = api.get_tool("bika_analysis_catalog")
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
-
         query = {
             "portal_type": "Analysis",
             "getServiceUID": wst_service_uids,
-            "review_state": "sample_received",
+            "review_state": "registered",
             "worksheetanalysis_review_state": "unassigned",
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
         }
 
-        analyses = bac(query)
+        # Filter analyses their Analysis Requests have been received
+        analyses = filter(lambda an: an.getDateReceived, bac(query))
 
         # No analyses, nothing to do
         if not analyses:
@@ -1630,7 +1630,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in new_ws.getAnalyses():
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'to_be_verified':
-                changeWorkflowState(analysis, "bika_analysis_workflow", "sample_received")
+                changeWorkflowState(analysis, "bika_analysis_workflow", "registered")
         self.REQUEST['context_uid'] = self.UID()
         self.setLayout(old_layout)
         self.setAnalyses(old_ws_analyses)

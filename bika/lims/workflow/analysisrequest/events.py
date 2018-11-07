@@ -106,6 +106,9 @@ def after_receive(obj):
     # is no need to transition neither the analyses nor partitions here
     _promote_transition(obj, 'receive')
 
+    # Reindex the analyses this Analysis Request contains
+    for analysis in obj.getAnalyses(full_objects=True):
+        analysis.reindexObject()
 
 def after_reject(obj):
     """Method triggered after a 'reject' transition for the Analysis Request

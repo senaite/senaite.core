@@ -356,8 +356,7 @@ class AnalysisResultsImporter(Logger):
                                        'attachment_due',
                                        'to_be_verified']
         if not self._allowed_analysis_states:
-            self._allowed_analysis_states = ['sampled',
-                                             'sample_received',
+            self._allowed_analysis_states = ['registered',
                                              'attachment_due',
                                              'to_be_verified']
         if not self._idsearch:

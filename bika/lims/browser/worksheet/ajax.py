@@ -61,7 +61,7 @@ class AttachAnalyses():
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
-        attachable_states = ('assigned', 'sample_received', 'to_be_verified')
+        attachable_states = ('assigned', 'registered', 'to_be_verified')
         wf = getToolByName(self.context, 'portal_workflow')
         analysis_to_slot = {}
         for s in self.context.getLayout():

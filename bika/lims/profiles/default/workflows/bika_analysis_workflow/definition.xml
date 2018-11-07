@@ -4,7 +4,7 @@
              title="Bika Analysis Workflow"
              description=""
              state_variable="review_state"
-             initial_state="sample_registered"
+             initial_state="registered"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
@@ -20,12 +20,35 @@
   <permission>BIKA: View Results</permission>
   <permission>Review portal content</permission>
 
-  <state state_id="sample_registered" title="Registered" i18n:attributes="title">
-    <exit-transition transition_id="sampling_workflow"/>
-    <exit-transition transition_id="no_sampling_workflow"/>
+  <!-- State: registered (initial state) -->
+  <state state_id="registered" title="Registered" i18n:attributes="title">
+    <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
   </state>
 
+  <!-- TODO Workflow - Analysis. Remove "not_requested" state -->
   <state state_id="not_requested" title="Not requested" i18n:attributes="title">
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="reject" />

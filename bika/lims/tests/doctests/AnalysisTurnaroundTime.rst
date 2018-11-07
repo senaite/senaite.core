@@ -40,15 +40,12 @@ Functional Helpers:
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
-    >>> def change_receive_date(analysis, days):
-    ...     tool = api.get_tool("portal_workflow")
-    ...     review_history = getReviewHistory(analysis)
-    ...     for event in review_history:
-    ...         if event.get('action') != 'receive':
-    ...             continue
-    ...         event["time"] = event.get('time') + days
-    ...         tool.setStatusOf("bika_analysis_workflow", analysis, event)
-    ...         return
+    >>> def change_receive_date(ar, days):
+    ...     prev_date = ar.getDateReceived()
+    ...     ar.Schema().getField('DateReceived').set(ar, prev_date + days)
+    ...     for analysis in ar.getAnalyses(full_objects=True):
+    ...         an_created = analysis.created()
+    ...         analysis.getField('creation_date').set(analysis, an_created + days)
 
     >>> def compute_due_date(analysis):
     ...     start = DT2dt(analysis.getStartProcessDate())
@@ -184,8 +181,7 @@ Test TAT with analyses received 2d ago
 We manually force a receive date 2d before so we can test:
 
     >>> new_received = map(lambda rec: rec-2, received)
-    >>> for analysis in analyses:
-    ...     change_receive_date(analysis, -2)
+    >>> change_receive_date(ar, -2)
     >>> received = map(lambda an: an.getDateReceived(), analyses)
     >>> start_process = map(lambda an: an.getStartProcessDate(), analyses)
     >>> new_received == received == start_process

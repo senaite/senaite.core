@@ -216,13 +216,6 @@ the invalidated:
     >>> api.get_workflow_status_of(retest)
     'sample_received'
 
-    >>> not_received = 0
-    >>> for analysis in retest.getAnalyses(full_objects=True):
-    ...     if api.get_workflow_status_of(analysis) != 'sample_received':
-    ...         not_received += 1
-    >>> not_received
-    0
-
     >>> retest_ans = map(lambda an: an.getKeyword(), retest.getAnalyses(full_objects=True))
     >>> invalid_ans = map(lambda an: an.getKeyword(), ar.getAnalyses(full_objects=True))
     >>> len(set(retest_ans)-set(invalid_ans))
@@ -288,11 +281,11 @@ as the invalidated (retest):
     >>> api.get_workflow_status_of(retest2)
     'sample_received'
 
-    >>> not_received = 0
+    >>> not_registered = 0
     >>> for analysis in retest2.getAnalyses(full_objects=True):
-    ...     if api.get_workflow_status_of(analysis) != 'sample_received':
-    ...         not_received += 1
-    >>> not_received
+    ...     if api.get_workflow_status_of(analysis) != 'registered':
+    ...         registered += 1
+    >>> not_registered
     0
 
     >>> retest_ans = map(lambda an: an.getKeyword(), retest2.getAnalyses(full_objects=True))

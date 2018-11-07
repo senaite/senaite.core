@@ -7,9 +7,9 @@
 
 from Products.CMFCore.utils import getToolByName
 from bika.lims import api
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import Unassign
-from bika.lims.workflow import isBasicTransitionAllowed, isTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
+from bika.lims import workflow as wf
 
 
 def sample(obj):
@@ -17,18 +17,18 @@ def sample(obj):
     passed in.
     :returns: true or false
     """
-    return isBasicTransitionAllowed(obj)
+    return wf.isBasicTransitionAllowed(obj)
 
 def retract(obj):
     """ Returns true if the sample transition can be performed for the sample
     passed in.
     :returns: true or false
     """
-    return isBasicTransitionAllowed(obj)
+    return wf.isBasicTransitionAllowed(obj)
 
 
 def receive(obj):
-    return isBasicTransitionAllowed(obj)
+    return wf.isBasicTransitionAllowed(obj)
 
 
 def publish(obj):
@@ -41,15 +41,15 @@ def publish(obj):
     care of them.
     :returns: true or false
     """
-    return isBasicTransitionAllowed(obj)
+    return wf.isBasicTransitionAllowed(obj)
 
 
 def import_transition(obj):
-    return isBasicTransitionAllowed(obj)
+    return wf.isBasicTransitionAllowed(obj)
 
 
 def attach(obj):
-    if not isBasicTransitionAllowed(obj):
+    if not wf.isBasicTransitionAllowed(obj):
         return False
     if not obj.getAttachment():
         return obj.getAttachmentOption() != 'r'
@@ -57,20 +57,20 @@ def attach(obj):
 
 
 def assign(obj):
-    return isBasicTransitionAllowed(obj)
+    return wf.isBasicTransitionAllowed(obj)
 
 
 def unassign(obj):
     """Check permission against parent worksheet
     """
     mtool = getToolByName(obj, "portal_membership")
-    if not isBasicTransitionAllowed(obj):
+    if not wf.isBasicTransitionAllowed(obj):
         return False
     ws = obj.getBackReferences("WorksheetAnalysis")
     if not ws:
         return False
     ws = ws[0]
-    if isBasicTransitionAllowed(ws):
+    if wf.isBasicTransitionAllowed(ws):
         if mtool.checkPermission(Unassign, ws):
             return True
     return False
@@ -87,8 +87,8 @@ def dependencies_guard(analysis, transition_id):
         return True
 
     for dependency in analysis.getDependencies():
-        if not isTransitionAllowed(dependency, transition_id):
-            if not wasTransitionPerformed(dependency, transition_id):
+        if not wf.isTransitionAllowed(dependency, transition_id):
+            if not wf.wasTransitionPerformed(dependency, transition_id):
                 return False
     return True
 
@@ -104,10 +104,26 @@ def guard_submit(analysis):
     if not analysis.getResult():
         return False
 
-    # Check interims
+    # Cannot submit with interims without value
     for interim in analysis.getInterimFields():
         if not interim.get("value", ""):
             return False
+
+    # Check if can submit based on the Analysis Request state
+    if IRequestAnalysis.providedBy(analysis):
+        analysis_request = analysis.getRequest()
+        if analysis.getPointOfCapture() == "lab":
+            # Cannot submit if the AR has not been received
+            if not wf.wasTransitionPerformed(analysis_request, "receive"):
+                # TODO Workflow - Analysis. Remove this check as soon as changeWorkflowAction is removed from everywhere!
+                if not api.get_workflow_status_of(analysis_request) == "sample_received":
+                    return False
+        if analysis.getPointOfCapture() == "field":
+            # Cannot submit if the AR has not been sampled
+            if not wf.wasTransitionPerformed(analysis_request, "sample"):
+                # TODO Workflow - Analysis. Remove this check as soon as changeWorkflowAction is removed from everywhere!
+                if not api.get_workflow_status_of(analysis_request) in ["sample_due", "sample_received"]:
+                    return False
 
     # Check dependencies (analyses this analysis depends on)
     return dependencies_guard(analysis, "submit")

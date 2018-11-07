@@ -5,41 +5,36 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
 from bika.lims.subscribers import doActionFor
 from bika.lims.utils import changeWorkflowState
+from bika.lims import workflow as wf
 
+# TODO Workflow - Analysis. Move to after_register workflow event?
+def ObjectInitializedEventHandler(analysis, event):
+    """Actions to be done when an analysis is added in an Analysis Request
+    If the analysis request is in state after submission (eg: to_be_verified,
+    verified, etc.), forces its transition to "sample_received"
+    """
+    analysis_request = analysis.getRequest()
+    if wf.wasTransitionPerformed(analysis_request, "submit"):
+        # Move the AR to 'sample_received' state
+        # TODO Workflow - AR - Do a rollback_to_receive transition or such
+        changeWorkflowState(analysis_request, "bika_ar_workflow",
+                            "sample_received")
 
-def ObjectInitializedEventHandler(instance, event):
-    # TODO Workflow Revisit when an Analysis is added to an AR
-    wf_tool = getToolByName(instance, 'portal_workflow')
-
-    ar = instance.getRequest()
-    ar_state = wf_tool.getInfoFor(ar, 'review_state')
-
-    # Set the state of the analysis depending on the state of the AR.
-    if ar_state in ('sample_registered',
-                    'to_be_sampled',
-                    'sampled',
-                    'to_be_preserved',
-                    'sample_due',
-                    'sample_received'):
-        changeWorkflowState(instance, "bika_analysis_workflow", ar_state)
-    elif ar_state in ('to_be_verified'):
-        # Apply to AR only; we don't want this transition to cascade.
-        changeWorkflowState(ar, "bika_ar_workflow", "sample_received")
-
+    # Reindex the indexes for UIDReference fields on creation!
+    analysis.reindexObject(idxs=["getServiceUID"])
     return
 
 
-def ObjectRemovedEventHandler(instance, event):
+def ObjectRemovedEventHandler(analysis, event):
     """Actions to be done when an analysis is removed from an Analysis Request
     """
     # If all the remaining analyses have been submitted (or verified), try to
     # promote the transition to the Analysis Request
     # Note there is no need to check if the Analysis Request allows a given
     # transition, cause this is already managed by doActionFor
-    analysis_request = instance.getRequest()
+    analysis_request = analysis.getRequest()
     doActionFor(analysis_request, "submit")
     doActionFor(analysis_request, "verify")
     return

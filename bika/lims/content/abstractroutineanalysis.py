@@ -200,10 +200,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     @security.public
     def getDateReceived(self):
         """Used to populate catalog values.
-        Returns the date on which the "receive" transition was invoked on this
-        analysis' Sample.
+        Returns the date the Analysis Request this analysis belongs to was
+        received. If the analysis was created after, then returns the date
+        the analysis was created.
         """
-        return getTransitionDate(self, 'receive', return_as_datetime=True)
+        request = self.getRequest()
+        if request:
+            ar_date = request.getDateReceived()
+            if ar_date and self.created() > ar_date:
+                return self.created()
+            return ar_date
+        return None
 
     @security.public
     def getDatePublished(self):
@@ -218,12 +225,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """Used to populate catalog values.
         Only has value when sampling_workflow is active.
         """
-        return getTransitionDate(self, 'sample', return_as_datetime=True)
+        request = self.getRequest()
+        if request:
+            return getTransitionDate(request, 'sample', return_as_datetime=True)
+        return None
 
     @security.public
     def getStartProcessDate(self):
-        """Returns the date time when the analysis was received. If the
-        analysis hasn't yet been received, returns None
+        """Returns the date time when the analysis request the analysis belongs
+        to was received. If the analysis request hasn't yet been received,
+        returns None
         Overrides getStartProcessDateTime from the base class
         :return: Date time when the analysis is ready to be processed.
         :rtype: DateTime

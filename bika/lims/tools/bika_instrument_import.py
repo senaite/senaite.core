@@ -128,7 +128,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                             continue
 
 
-                    if (as_state not in updateable_states):
+                    if (as_state not in ["registered", "assigned"]):
                         results[sample_id]['errors'].append('%s in %s status '
                                    '- not updated' % (service_title, as_state))
                         continue

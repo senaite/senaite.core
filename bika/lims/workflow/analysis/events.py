@@ -79,8 +79,6 @@ def after_retract(obj):
 
     # Create new analysis from the retracted obj
     analysis = create_analysis(parent, obj)
-    changeWorkflowState(
-        analysis, "bika_analysis_workflow", "sample_received")
 
     # Assign the new analysis to this same worksheet, if any.
     ws = obj.getWorksheet()
@@ -181,9 +179,7 @@ def after_attach(obj):
     if state == "attachment_due" and not skip(ar, "attach", peek=True):
         can_attach = True
         for a in ar.getAnalyses():
-            if a.review_state in ("to_be_sampled", "to_be_preserved",
-                                  "sample_due", "sample_received",
-                                  "attachment_due"):
+            if a.review_state in ("registered", "attachment_due"):
                 can_attach = False
                 break
         if can_attach:
@@ -198,9 +194,7 @@ def after_attach(obj):
             can_attach = True
             for a in ws.getAnalyses():
                 state = workflow.getInfoFor(a, "review_state")
-                if state in ("to_be_sampled", "to_be_preserved",
-                             "sample_due", "sample_received",
-                             "attachment_due", "assigned"):
+                if state in ("registered", "attachment_due", "assigned"):
                     can_attach = False
                     break
             if can_attach:

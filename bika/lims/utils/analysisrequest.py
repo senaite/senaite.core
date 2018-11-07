@@ -425,12 +425,6 @@ def create_retest(ar):
         copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
         nan.unmarkCreationFlag()
 
-        # Set the workflow state of the analysis to 'sample_received'. Since we
-        # keep the results of the previous analyses, these will be preserved,
-        # only awaiting for their submission
-        changeWorkflowState(nan, 'bika_analysis_workflow', 'sample_received')
-        nan.reindexObject()
-
     # 3. Assign the source to retest
     retest.setInvalidated(ar)
 

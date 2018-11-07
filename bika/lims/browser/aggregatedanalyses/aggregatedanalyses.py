@@ -62,7 +62,7 @@ class AggregatedAnalysesView(AnalysesView):
              'transitions': [{'id': 'submit'}, ],
              'contentFilter': {
                  'worksheetanalysis_review_state': ['unassigned'],
-                 'review_state': ['sample_received', 'attachment_due'],
+                 'review_state': ['registered', 'attachment_due'],
                  'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Service',
@@ -81,7 +81,7 @@ class AggregatedAnalysesView(AnalysesView):
              'transitions': [{'id': 'submit'},
                              ],
              'contentFilter': {
-                 'review_state': ['sample_received', 'attachment_due'],
+                 'review_state': ['registered', 'attachment_due'],
                  'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
