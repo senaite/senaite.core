@@ -1,9 +1,9 @@
-Duplicate Analysis multi-verification guard and event
-=====================================================
+Reference Analysis (Blank) multi-verification guard and event
+=============================================================
 
 Running this test from the buildout directory:
 
-    bin/test test_textual_doctests -t WorkflowDuplicateAnalysisMultiVerify
+    bin/test test_textual_doctests -t WorkflowReferenceAnalysisBlankMultiVerify
 
 
 Test Setup
@@ -49,11 +49,13 @@ Functional Helpers:
     ...     transitioned = do_action_for(ar, "receive")
     ...     return ar
 
-    >>> def to_new_worksheet_with_duplicate(ar):
+    >>> def to_new_worksheet_with_reference(ar, reference):
     ...     worksheet = api.create(portal.worksheets, "Worksheet")
+    ...     service_uids = list()
     ...     for analysis in ar.getAnalyses(full_objects=True):
     ...         worksheet.addAnalysis(analysis)
-    ...     worksheet.addDuplicateAnalyses(1)
+    ...         service_uids.append(analysis.getServiceUID())
+    ...     worksheet.addReferenceAnalyses(reference, service_uids)
     ...     return worksheet
 
     >>> def submit_regular_analyses(worksheet):
@@ -87,10 +89,19 @@ We need to create some basic objects for the test:
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(bikasetup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> supplier = api.create(bikasetup.bika_suppliers, "Supplier", Name="Naralabs")
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-
+    >>> blank_def = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
+    >>> blank_refs = [{'uid': api.get_uid(Cu), 'result': '0', 'min': '0', 'max': '0'},
+    ...               {'uid': api.get_uid(Fe), 'result': '0', 'min': '0', 'max': '0'},
+    ...               {'uid': api.get_uid(Au), 'result': '0', 'min': '0', 'max': '0'},]
+    >>> blank_def.setReferenceResults(blank_refs)
+    >>> blank_sample = api.create(supplier, "ReferenceSample", title="Blank",
+    ...                    ReferenceDefinition=blank_def,
+    ...                    Blank=True, ExpiryDate=date_future,
+    ...                    ReferenceResults=blank_refs)
 
 Multiverify not allowed if multi-verification is not enabled
 ------------------------------------------------------------
@@ -104,44 +115,44 @@ Enable self verification:
 Create a Worksheet and submit regular analyses:
 
     >>> ar = new_ar([Cu])
-    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> worksheet = to_new_worksheet_with_reference(ar, blank_sample)
     >>> submit_regular_analyses(worksheet)
 
-Get the duplicate and submit:
+Get the blank and submit:
 
-    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
-    >>> duplicate.setResult(12)
-    >>> try_transition(duplicate, "submit", "to_be_verified")
+    >>> blank = worksheet.getReferenceAnalyses()[0]
+    >>> blank.setResult(0)
+    >>> try_transition(blank, "submit", "to_be_verified")
     True
 
-The status of duplicate and others is `to_be_verified`:
+The status of blank and others is `to_be_verified`:
 
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'
     >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
 
-I cannot multi verify the analysis because multi-verification is not set:
+I cannot multi verify the blank because multi-verification is not set:
 
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     False
-    >>> try_transition(duplicate, "multi_verify", "to_be_verified")
+    >>> try_transition(blank, "multi_verify", "to_be_verified")
     False
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
 But I can verify:
 
-    >>> isTransitionAllowed(duplicate, "verify")
+    >>> isTransitionAllowed(blank, "verify")
     True
-    >>> try_transition(duplicate, "verify", "verified")
+    >>> try_transition(blank, "verify", "verified")
     True
 
-And the status of the duplicate is now `verified`:
+And the status of the blank is now `verified`:
 
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'verified'
 
 While the rest remain in `to_be_verified` state because the regular analysis
@@ -163,7 +174,7 @@ Multiverify transition with multi-verification enabled
 ------------------------------------------------------
 
 The system allows to set multiple verifiers, both at Setup or Analysis Service
-level. If set, the analysis will transition to verified when the total number
+level. If set, the blank will transition to verified when the total number
 of verifications equals to the value set in multiple-verifiers.
 
 Enable self verification of results:
@@ -183,19 +194,19 @@ Set the multi-verification to "Not allow same user to verify multiple times":
 Create a Worksheet and submit regular analyses:
 
     >>> ar = new_ar([Cu])
-    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> worksheet = to_new_worksheet_with_reference(ar, blank_sample)
     >>> submit_regular_analyses(worksheet)
 
-Get the duplicate and submit:
+Get the blank and submit:
 
-    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
-    >>> duplicate.setResult(12)
-    >>> try_transition(duplicate, "submit", "to_be_verified")
+    >>> blank = worksheet.getReferenceAnalyses()[0]
+    >>> blank.setResult(12)
+    >>> try_transition(blank, "submit", "to_be_verified")
     True
 
-The status of duplicate and others is `to_be_verified`:
+The status of blank and others is `to_be_verified`:
 
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'
@@ -204,11 +215,11 @@ The status of duplicate and others is `to_be_verified`:
 
 I cannot `verify`:
 
-    >>> isTransitionAllowed(duplicate, "verify")
+    >>> isTransitionAllowed(blank, "verify")
     False
-    >>> try_transition(duplicate, "verify", "verified")
+    >>> try_transition(blank, "verify", "verified")
     False
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
 Because multi-verification is enabled:
@@ -218,54 +229,54 @@ Because multi-verification is enabled:
 
 And there are 3 verifications remaining:
 
-    >>> duplicate.getNumberOfRemainingVerifications()
+    >>> blank.getNumberOfRemainingVerifications()
     3
 
 But I can multi-verify:
 
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     True
-    >>> try_transition(duplicate, "multi_verify", "to_be_verified")
+    >>> try_transition(blank, "multi_verify", "to_be_verified")
     True
 
 And while the status remains to `to_be_verified`:
 
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
 The transition `multi_verify` has taken place:
 
-    >>> wasTransitionPerformed(duplicate, "multi_verify")
+    >>> wasTransitionPerformed(blank, "multi_verify")
     True
 
 And my user id is recorded as such:
 
-    >>> action = getReviewHistory(duplicate)[0]
+    >>> action = getReviewHistory(blank)[0]
     >>> action['actor'] == TEST_USER_ID
     True
 
 And now, there are two verifications remaining:
 
-    >>> duplicate.getNumberOfRemainingVerifications()
+    >>> blank.getNumberOfRemainingVerifications()
     2
 
 So, I cannot verify yet:
 
-    >>> isTransitionAllowed(duplicate, "verify")
+    >>> isTransitionAllowed(blank, "verify")
     False
-    >>> try_transition(duplicate, "verify", "verified")
+    >>> try_transition(blank, "verify", "verified")
     False
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
 But I cannot multi-verify neither, cause I am the same user who did the last
 multi-verification:
 
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     False
-    >>> try_transition(duplicate, "multi_verify", "to_be_verified")
+    >>> try_transition(blank, "multi_verify", "to_be_verified")
     False
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
 And the system is configured to not allow same user to verify multiple times:
@@ -276,47 +287,47 @@ And the system is configured to not allow same user to verify multiple times:
 But I can multi-verify if I change the type of multi-verification:
 
     >>> bikasetup.setTypeOfmultiVerification('self_multi_enabled')
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     True
-    >>> try_transition(duplicate, "multi_verify", "to_be_verified")
+    >>> try_transition(blank, "multi_verify", "to_be_verified")
     True
 
 And while the status remains to `to_be_verified`:
 
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
 The transition `multi_verify` has taken place:
 
-    >>> wasTransitionPerformed(duplicate, "multi_verify")
+    >>> wasTransitionPerformed(blank, "multi_verify")
     True
 
 Since there is only one verification remaining, I cannot multi-verify again:
 
-    >>> duplicate.getNumberOfRemainingVerifications()
+    >>> blank.getNumberOfRemainingVerifications()
     1
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     False
-    >>> try_transition(duplicate, "multi_verify", "to_be_verified")
+    >>> try_transition(blank, "multi_verify", "to_be_verified")
     False
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'to_be_verified'
 
 But now, I can verify:
 
-    >>> isTransitionAllowed(duplicate, "verify")
+    >>> isTransitionAllowed(blank, "verify")
     True
-    >>> try_transition(duplicate, "verify", "verified")
+    >>> try_transition(blank, "verify", "verified")
     True
 
 There is no verifications remaining:
 
-    >>> duplicate.getNumberOfRemainingVerifications()
+    >>> blank.getNumberOfRemainingVerifications()
     0
 
-And the status of the duplicate is now `verified`:
+And the status of the blank is now `verified`:
 
-    >>> api.get_workflow_status_of(duplicate)
+    >>> api.get_workflow_status_of(blank)
     'verified'
 
 While the rest remain in `to_be_verified` state because the regular analysis
@@ -371,57 +382,57 @@ Set the multi-verification to "Allow same user to verify multiple times":
 Create a Worksheet and submit regular analyses:
 
     >>> ar = new_ar([Cu])
-    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> worksheet = to_new_worksheet_with_reference(ar, blank_sample)
     >>> submit_regular_analyses(worksheet)
 
-Get the duplicate and submit:
+Get the blank and submit:
 
-    >>> duplicate = worksheet.getDuplicateAnalyses()[0]
-    >>> duplicate.setResult(12)
-    >>> try_transition(duplicate, "submit", "to_be_verified")
+    >>> blank = worksheet.getReferenceAnalyses()[0]
+    >>> blank.setResult(12)
+    >>> try_transition(blank, "submit", "to_be_verified")
     True
 
 Exactly these roles can multi_verify:
 
-    >>> get_roles_for_permission("BIKA: Verify", duplicate)
+    >>> get_roles_for_permission("BIKA: Verify", blank)
     ['LabManager', 'Manager', 'Verifier']
 
 Current user can multi_verify because has the `LabManager` role:
 
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     True
 
 Also if the user has the roles `Manager` or `Verifier`:
 
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     True
 
-TODO Workflow Verifier should be able to multi_verify a duplicate!
+TODO Workflow Verifier should be able to multi_verify a blank!
 The code below throws an
 `Unauthorized: Not authorized to access binding: context` error, rised by
 https://github.com/MatthewWilkes/Zope/blob/master/src/Shared/DC/Scripts/Bindings.py#L198
 
-#    >>> setRoles(portal, TEST_USER_ID, ['Verifier',])
-#    >>> isTransitionAllowed(duplicate, "multi_verify")
-#    True
+    >>> setRoles(portal, TEST_USER_ID, ['Verifier',])
+    >>> isTransitionAllowed(blank, "multi_verify")
+    True
 
 But cannot for other roles:
 
     >>> setRoles(portal, TEST_USER_ID, ['Analyst', 'Authenticated', 'LabClerk'])
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     False
 
 Even if is `Owner`
 
     >>> setRoles(portal, TEST_USER_ID, ['Owner'])
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     False
 
 And Clients cannot neither:
 
     >>> setRoles(portal, TEST_USER_ID, ['Client'])
-    >>> isTransitionAllowed(duplicate, "multi_verify")
+    >>> isTransitionAllowed(blank, "multi_verify")
     False
 
 Reset the roles for current user:
