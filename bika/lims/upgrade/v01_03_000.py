@@ -76,6 +76,14 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1072
     rebind_calculations(portal)
 
+    # Reindex Multifiles, so that the fields are searchable by the catalog
+    # https://github.com/senaite/senaite.core/pull/1080
+    reindex_multifiles(portal)
+
+    # Reindex Clients, so that the fields are searchable by the catalog
+    # https://github.com/senaite/senaite.core/pull/1080
+    reindex_clients(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -297,3 +305,33 @@ def rebind_calculations(portal):
                             calc.getInterimFields())
         analysis.setCalculation(calc)
         analysis.setInterimFields(an_interims + calc_interims)
+
+
+def reindex_multifiles(portal):
+    """Reindex Multifiles to be searchable by the catalog
+    """
+    logger.info("Reindexing Multifiles ...")
+
+    brains = api.search(dict(portal_type="Multifile"), "bika_setup_catalog")
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Reindexing Multifile: {0}/{1}".format(num, total))
+        obj = api.get_object(brain)
+        obj.reindexObject()
+
+
+def reindex_clients(portal):
+    """Reindex Clients to be searchable by their ClientName
+    """
+    logger.info("Reindexing Clients ...")
+
+    brains = api.search(dict(portal_type="Client"), "portal_catalog")
+    total = len(brains)
+
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Reindexing Client: {0}/{1}".format(num, total))
+        obj = api.get_object(brain)
+        obj.reindexObject()

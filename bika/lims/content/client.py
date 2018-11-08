@@ -29,7 +29,6 @@ from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
 from Products.ATContentTypes.content import schemata
-from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 
@@ -167,8 +166,7 @@ class Client(Organisation):
     def Title(self):
         """Return the Organisation's Name as its title
         """
-        name = self.schema["Name"].get(self)
-        return safe_unicode(name).encode("utf-8")
+        return self.getName()
 
     security.declarePublic("getContactFromUsername")
 
