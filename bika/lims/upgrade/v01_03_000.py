@@ -77,9 +77,11 @@ def upgrade(tool):
     rebind_calculations(portal)
 
     # Reindex Multifiles, so that the fields are searchable by the catalog
+    # https://github.com/senaite/senaite.core/pull/1080
     reindex_multifiles(portal)
 
     # Reindex Clients, so that the fields are searchable by the catalog
+    # https://github.com/senaite/senaite.core/pull/1080
     reindex_clients(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
