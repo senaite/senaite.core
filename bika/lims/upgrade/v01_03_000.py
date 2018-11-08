@@ -15,6 +15,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.workflow import changeWorkflowState
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -336,6 +337,9 @@ def update_workflows(portal):
               index_attribute="isAnalysisRequestReceived",
               index_metatype="BooleanIndex")
 
+    # Fix analyses stuck in sample* states
+    decouple_analyses_from_sample_workflow(portal)
+
     # Update role mappings
     update_role_mappings(portal, rm_queries)
 
@@ -362,6 +366,7 @@ def get_role_mappings_candidates(portal):
              dict(portal_type="Analysis",
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
+
 
     # Duplicate Analysis Workflow
     workflow = wf_tool.getWorkflowById("bika_duplicateanalysis_workflow")
@@ -398,6 +403,32 @@ def get_role_mappings_candidates(portal):
              CATALOG_ANALYSIS_LISTING))
 
     return candidates
+
+
+def decouple_analyses_from_sample_workflow(portal):
+    logger.info("Decoupling analyses from sample workflow ...")
+
+    wf_id = "bika_analysis_workflow"
+    affected_rs = ["sample_registered", "to_be_sampled", "sampled",
+                   "sample_due", "sample_received", "to_be_preserved"]
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="Analysis", review_state=affected_rs)
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Restoring state to 'registered': {0}/{1}"
+                        .format(num, total))
+        # Set state
+        analysis = api.get_object(brain)
+        changeWorkflowState(analysis, wf_id, "registered")
+
+        # Update role mappings
+        workflow.updateRoleMappingsFor(analysis)
+
+        # Reindex
+        analysis.reindexObject()
 
 
 def update_role_mappings(portal, queries):
