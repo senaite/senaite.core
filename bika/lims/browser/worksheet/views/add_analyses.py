@@ -41,7 +41,7 @@ class AddAnalysesView(BikaListingView):
         self.sort_on = 'Priority'
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'registered',
-                              'isAnalysisRequestReceived': True,
+                              'isSampleReceived': True,
                               'worksheetanalysis_review_state':'unassigned',
                               'sort_on': 'getPrioritySortkey',
                               'cancellation_state':'active'}

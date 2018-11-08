@@ -10,7 +10,4 @@
   <!-- Partitioning. Analyses masking in searches -->
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
 
-  <!-- To store if an Analysis Request from an analysis has been received -->
-  <adapter name="isAnalysisRequestReceived" factory=".requestanalysis.isAnalysisRequestReceived"/>
-
 </configure>

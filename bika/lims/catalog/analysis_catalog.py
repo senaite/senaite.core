@@ -55,7 +55,7 @@ _indexes_dict = {
     'getOriginalReflexedAnalysisUID': 'FieldIndex',
     'getPrioritySortkey': 'FieldIndex',
     'getAncestorsUIDs': 'KeywordIndex',
-    'isAnalysisRequestReceived': 'BooleanIndex',
+    'isSampleReceived': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [

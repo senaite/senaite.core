@@ -724,7 +724,7 @@ As well as the Analysis Request:
 Check permissions for Submit transition
 ---------------------------------------
 
-Create an Analysis Request and submit results:
+Create an Analysis Request:
 
     >>> ar = new_ar([Cu])
 

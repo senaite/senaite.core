@@ -111,30 +111,24 @@ def guard_submit(analysis):
 
     # Check if can submit based on the Analysis Request state
     if IRequestAnalysis.providedBy(analysis):
-        analysis_request = analysis.getRequest()
-        if analysis.getPointOfCapture() == "lab":
-            # Cannot submit if the AR has not been received
-            if not wf.wasTransitionPerformed(analysis_request, "receive"):
-                # TODO Workflow - Analysis. Remove this check as soon as changeWorkflowAction is removed from everywhere!
-                if not api.get_workflow_status_of(analysis_request) == "sample_received":
-                    return False
-        if analysis.getPointOfCapture() == "field":
-            # Cannot submit if the AR has not been sampled
-            if not wf.wasTransitionPerformed(analysis_request, "sample"):
-                # TODO Workflow - Analysis. Remove this check as soon as changeWorkflowAction is removed from everywhere!
-                if not api.get_workflow_status_of(analysis_request) in ["sample_due", "sample_received"]:
-                    return False
+        point_of_capture = analysis.getPointOfCapture()
+        # Cannot submit if the Sample has not been received
+        if point_of_capture == "lab" and not analysis.isSampleReceived():
+            return False
+        # Cannot submit if the Sample has not been sampled
+        if point_of_capture == "field" and not analysis.isSampleSampled():
+            return False
 
     # Check if the current user can submit if is not assigned
     if not analysis.bika_setup.getAllowToSubmitNotAssigned():
-        m_tool = getToolByName(analysis, 'portal_membership')
-        member = m_tool.getAuthenticatedMember()
+        member = api.get_current_user()
         super_roles = ["LabManager", "Manager"]
         if (len(set(super_roles) - set(member.getRoles())) == len(super_roles)):
-            # User does not have a "super-role"
+            # Cannot submit if unassigned
             if not analysis.getAnalyst():
                 return False
-            if analysis.getAnalyst() != member.getUser().getId():
+            # Cannot submit if assigned analyst is not the current user
+            if analysis.getAnalyst() != member.getId():
                 return False
 
     # Check dependencies (analyses this analysis depends on)
@@ -155,8 +149,7 @@ def guard_multi_verify(analysis):
         return False
 
     # Check if the current user is the same who submitted the result
-    m_tool = getToolByName(analysis, 'portal_membership')
-    user_id = m_tool.getAuthenticatedMember().getUser().getId()
+    user_id = api.get_current_user().getId()
     if (analysis.getSubmittedBy() == user_id):
         if not analysis.isSelfVerificationEnabled():
             return False
@@ -190,8 +183,7 @@ def guard_verify(analysis):
         return False
 
     # Check if the current user is the same that submitted the result
-    m_tool = getToolByName(analysis, 'portal_membership')
-    user_id = m_tool.getAuthenticatedMember().getUser().getId()
+    user_id = api.get_current_user().getId()
     if (analysis.getSubmittedBy() == user_id):
         if not analysis.isSelfVerificationEnabled():
             return False
@@ -215,4 +207,3 @@ def guard_verify(analysis):
 
     # Check dependencies (analyses this analysis depends on)
     return dependencies_guard(analysis, ["verify", "multi_verify"])
-

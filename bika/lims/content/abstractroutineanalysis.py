@@ -213,6 +213,13 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return None
 
     @security.public
+    def isSampleReceived(instance):
+        """Returns whether if the Analysis Request this analysis comes from has
+        been received or not
+        """
+        return instance.getDateReceived() and True or False
+
+    @security.public
     def getDatePublished(self):
         """Used to populate catalog values.
         Returns the date on which the "publish" transition was invoked on this
@@ -229,6 +236,13 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         if request:
             return getTransitionDate(request, 'sample', return_as_datetime=True)
         return None
+
+    @security.public
+    def isSampleSampled(instance):
+        """Returns whether if the Analysis Request this analysis comes from has
+        been received or not
+        """
+        return instance.getDateSampled() and True or False
 
     @security.public
     def getStartProcessDate(self):

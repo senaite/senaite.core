@@ -184,7 +184,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Allow to submit results for unassigned analyses or "
+            label=_("Allow to submit results for unassigned analyses or for "
                     "analyses assigned to others"),
             description=_(
                 "If unchecked, users will only be able to submit results "

@@ -807,7 +807,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "portal_type": "Analysis",
             "getServiceUID": wst_service_uids,
             "review_state": "registered",
-            "isAnalysisRequestReceived": True,
+            "isSampleReceived": True,
             "worksheetanalysis_review_state": "unassigned",
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
