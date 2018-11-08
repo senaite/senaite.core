@@ -11,3 +11,10 @@ def getAncestorsUIDs(instance):
     request = instance.getRequest()
     parents = map(lambda ar: api.get_uid(ar), request.getAncestors())
     return [api.get_uid(request)] + parents
+
+
+@indexer(IRequestAnalysis)
+def isAnalysisRequestReceived(instance):
+    """Returns whether if the Analysis Request this analysis comes from has
+    been received or not"""
+    return instance.getDateReceived() and True or False

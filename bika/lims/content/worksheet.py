@@ -807,13 +807,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "portal_type": "Analysis",
             "getServiceUID": wst_service_uids,
             "review_state": "registered",
+            "isAnalysisRequestReceived": True,
             "worksheetanalysis_review_state": "unassigned",
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
         }
 
         # Filter analyses their Analysis Requests have been received
-        analyses = filter(lambda an: an.getDateReceived, bac(query))
+        analyses = bac(query)
 
         # No analyses, nothing to do
         if not analyses:

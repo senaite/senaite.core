@@ -331,6 +331,11 @@ def update_workflows(portal):
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, 'workflow')
 
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="isAnalysisRequestReceived",
+              index_attribute="isAnalysisRequestReceived",
+              index_metatype="BooleanIndex")
+
     # Update role mappings
     update_role_mappings(portal, rm_queries)
 
