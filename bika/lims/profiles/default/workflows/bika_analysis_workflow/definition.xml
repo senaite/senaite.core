@@ -11,14 +11,15 @@
   <permission>BIKA: Cancel and reinstate</permission>
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
-  <permission>BIKA: Manage Invoices</permission>
-  <permission>BIKA: Preserve Sample</permission>
-  <permission>BIKA: Receive Sample</permission>
-  <permission>BIKA: Results not requested</permission>
   <permission>BIKA: Retract</permission>
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
+
+  <!-- TODO Workflow - Analysis. What to do with this? -->
   <permission>Review portal content</permission>
+
+  <!-- TODO Workflow - Analysis. Remove these permissions? -->
+  <permission>BIKA: Results not requested</permission>
 
 
   <!-- ******* STATES ******* -->
