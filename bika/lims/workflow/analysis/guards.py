@@ -125,6 +125,18 @@ def guard_submit(analysis):
                 if not api.get_workflow_status_of(analysis_request) in ["sample_due", "sample_received"]:
                     return False
 
+    # Check if the current user can submit if is not assigned
+    if not analysis.bika_setup.getAllowToSubmitNotAssigned():
+        m_tool = getToolByName(analysis, 'portal_membership')
+        member = m_tool.getAuthenticatedMember()
+        super_roles = ["LabManager", "Manager"]
+        if (len(set(super_roles) - set(member.getRoles())) == len(super_roles)):
+            # User does not have a "super-role"
+            if not analysis.getAnalyst():
+                return False
+            if analysis.getAnalyst() != member.getUser().getId():
+                return False
+
     # Check dependencies (analyses this analysis depends on)
     return dependencies_guard(analysis, "submit")
 

@@ -30,7 +30,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
-      <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
