@@ -105,7 +105,6 @@ Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
 Publish = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
-ResultsNotRequested = 'BIKA: Results not requested'
 ManageInvoices = 'BIKA: Manage Invoices'
 ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
@@ -250,7 +249,6 @@ def setup_permissions(portal):
     mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
     mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
     mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
-    mp(ResultsNotRequested, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
     mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
     mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)

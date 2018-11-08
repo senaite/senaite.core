@@ -19,7 +19,6 @@
   <permission>BIKA: Preserve Sample</permission>
   <permission>BIKA: Publish</permission>
   <permission>BIKA: Receive Sample</permission>
-  <permission>BIKA: Results not requested</permission>
   <permission>BIKA: Schedule Sampling</permission>
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
@@ -79,8 +78,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
@@ -170,8 +167,6 @@
     <permission-map name="BIKA: Preserve Sample" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Receive Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
       <permission-role>Manager</permission-role>
@@ -272,8 +267,6 @@
     <permission-map name="BIKA: Receive Sample" acquired="False">
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-    </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
@@ -363,8 +356,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="True">
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
@@ -463,8 +454,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
@@ -565,11 +554,6 @@
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -658,11 +642,6 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
@@ -758,8 +737,6 @@
     </permission-map>
     <permission-map name="BIKA: Receive Sample" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-    </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -843,11 +820,6 @@
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Verify" acquired="False">
@@ -924,11 +896,6 @@
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -983,11 +950,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
@@ -1044,8 +1006,6 @@
     </permission-map>
     <permission-map name="BIKA: Publish" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
-    </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -1079,8 +1039,6 @@
     <permission-map name="BIKA: Manage Invoices" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Results not requested" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
     </permission-map>

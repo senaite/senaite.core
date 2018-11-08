@@ -533,11 +533,6 @@ class DashboardView(BrowserView):
         """ Returns the section dictionary related with Analyses,
             that contains some informative panels (analyses pending
             analyses assigned, etc.)
-
-            sample_registered, not_requested, published, retracted,
-            sample_due, sample_received, sampled, to_be_preserved,
-            to_be_sampled, , to_be_verified, rejected, verified, to_be_verified,
-            assigned
         """
         out = []
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)

@@ -52,6 +52,7 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, 'typeinfo')
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -84,6 +85,9 @@ def upgrade(tool):
     # Reindex Clients, so that the fields are searchable by the catalog
     # https://github.com/senaite/senaite.core/pull/1080
     reindex_clients(portal)
+
+    # Removed `not requested analyses` from AR view
+    remove_not_requested_analyses_view(portal)
 
     # Update workflows
     update_workflows(portal)
@@ -357,6 +361,15 @@ def reindex_clients(portal):
         obj.reindexObject()
 
 
+def remove_not_requested_analyses_view(portal):
+    """Remove the view 'Not requested analyses" from inside AR
+    """
+    logger.info("Removing 'Analyses not requested' view ...")
+    ar_ptype = portal.portal_types.AnalysisRequest
+    ar_ptype._actions = filter(lambda act: act.id != "analyses_not_requested",
+                               ar_ptype.listActions())
+
+
 def update_workflows(portal):
     logger.info("Updating workflows ...")
 
@@ -448,7 +461,8 @@ def decouple_analyses_from_sample_workflow(portal):
 
     wf_id = "bika_analysis_workflow"
     affected_rs = ["sample_registered", "to_be_sampled", "sampled",
-                   "sample_due", "sample_received", "to_be_preserved"]
+                   "sample_due", "sample_received", "to_be_preserved",
+                   "not_requested"]
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById(wf_id)
     query = dict(portal_type="Analysis", review_state=affected_rs)

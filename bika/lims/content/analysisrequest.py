@@ -2052,19 +2052,11 @@ class AnalysisRequest(BaseFolder):
                   Profile Price". The second list contains the profiles with
                   activated "Use Analysis Profile Price".
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        # REMEMBER: Analysis != Analysis services
-        analyses = []
         analysis_profiles = []
         to_be_billed = []
-        # Getting all analysis request analyses
-        # Getting all analysis request analyses
-        ar_analyses = self.getAnalyses(cancellation_state='active',
-                                       full_objects=True)
-        for analysis in ar_analyses:
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state not in ('not_requested', 'retracted'):
-                analyses.append(analysis)
+        exclude_rs = ['retracted', 'rejected']
+        analyses = filter(lambda an: an.review_state not in exclude_rs,
+                          self.getAnalyses(cancellation_state='active'))
         # Getting analysis request profiles
         for profile in self.getProfiles():
             # Getting the analysis profiles which has "Use Analysis Profile
@@ -2093,9 +2085,11 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword() \
-                            and analysis.getKeyword() not in to_be_billed:
+                    if analysis_service.getKeyword() == analysis.getKeyword \
+                            and analysis.getKeyword not in to_be_billed:
                         analyses.remove(analysis)
+
+        analyses = map(api.get_object, analyses)
         return analyses, analysis_profiles
 
     def getServicesAndProfiles(self):
@@ -2108,15 +2102,13 @@ class AnalysisRequest(BaseFolder):
         """
         # Getting requested analyses
         workflow = getToolByName(self, 'portal_workflow')
-        analyses = []
         # profile_analyses contains the profile's analyses (analysis !=
         # service") objects to obtain
         # the correct price later
         profile_analyses = []
-        for analysis in self.objectValues('Analysis'):
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state != 'not_requested':
-                analyses.append(analysis)
+        exclude_rs = ['retracted', 'rejected']
+        analyses = filter(lambda an: an.review_state not in exclude_rs,
+                          self.getAnalyses(cancellation_state='active'))
         # Getting all profiles
         analysis_profiles = self.getProfiles() if len(
             self.getProfiles()) > 0 else []
@@ -2124,9 +2116,12 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword():
+                    if analysis_service.getKeyword() == analysis.getKeyword:
                         analyses.remove(analysis)
                         profile_analyses.append(analysis)
+
+        analyses = map(api.get_object, analyses)
+        profile_analyses = map(api.get_object, profile_analyses)
         return analyses, analysis_profiles, profile_analyses
 
     security.declareProtected(View, 'getSubtotal')
@@ -2464,33 +2459,6 @@ class AnalysisRequest(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(self, 'review_state') == 'invalid'
 
-    def getRequestedAnalyses(self):
-        """It returns all requested analyses, even if they belong to an
-        analysis profile or not.
-        """
-        #
-        # title=Get requested analyses
-        #
-        result = []
-        cats = {}
-        workflow = getToolByName(self, 'portal_workflow')
-        for analysis in self.getAnalyses(full_objects=True):
-            review_state = workflow.getInfoFor(analysis, 'review_state')
-            if review_state == 'not_requested':
-                continue
-            category_name = analysis.getCategoryTitle()
-            if category_name not in cats:
-                cats[category_name] = {}
-            cats[category_name][analysis.Title()] = analysis
-        cat_keys = sorted(cats.keys(), key=methodcaller('lower'))
-        for cat_key in cat_keys:
-            analyses = cats[cat_key]
-            analysis_keys = sorted(analyses.keys(),
-                                   key=methodcaller('lower'))
-            for analysis_key in analysis_keys:
-                result.append(analyses[analysis_key])
-        return result
-
     def getSamplingRoundUID(self):
         """Obtains the sampling round UID
         :returns: UID
@@ -2683,9 +2651,8 @@ class AnalysisRequest(BaseFolder):
 
         :returns: a list with the full partition objects
         """
-        analyses = self.getRequestedAnalyses()
         partitions = []
-        for analysis in analyses:
+        for analysis in self.getAnalyses(full_objects=True):
             if analysis.getSamplePartition() not in partitions:
                 partitions.append(analysis.getSamplePartition())
         return partitions

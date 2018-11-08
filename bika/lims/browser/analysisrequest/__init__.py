@@ -30,7 +30,6 @@ from .invoice import InvoiceView
 from .manage_analyses import AnalysisRequestAnalysesView
 from .manage_results import AnalysisRequestManageResultsView
 from .published_results import AnalysisRequestPublishedResults
-from .results_not_requested import AnalysisRequestResultsNotRequestedView
 from .workflow import AnalysisRequestWorkflowAction
 
 

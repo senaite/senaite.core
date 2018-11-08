@@ -18,9 +18,6 @@
   <!-- TODO Workflow - Analysis. What to do with this? -->
   <permission>Review portal content</permission>
 
-  <!-- TODO Workflow - Analysis. Remove these permissions? -->
-  <permission>BIKA: Results not requested</permission>
-
 
   <!-- ******* STATES ******* -->
 
@@ -42,27 +39,6 @@
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-  </state>
-
-  <!-- TODO Workflow - Analysis. Remove "not_requested" state -->
-  <state state_id="not_requested" title="Not requested" i18n:attributes="title">
-    <exit-transition transition_id="verify" />
-    <exit-transition transition_id="reject" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -269,14 +245,6 @@
     <action url="" category="workflow" icon="">Add attachment</action>
     <guard>
       <guard-expression>python:here.guard_attach_transition()</guard-expression>
-    </guard>
-  </transition>
-
-  <transition transition_id="import" title="Import" new_state="not_requested" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Import</action>
-    <guard>
-      <guard-permission>BIKA: Import analysis</guard-permission>
-      <guard-expression>python:here.guard_import_transition()</guard-expression>
     </guard>
   </transition>
 

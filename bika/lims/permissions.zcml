@@ -83,7 +83,6 @@
 
 <permission id="bika.lims.AccessJSONAPI" title="BIKA: Access JSON API"/>
 
-<permission id="bika.lims.ResultsNotRequested" title="BIKA: Results not requested"/>
 <permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
 
 <permission id="bika.lims.ViewLogTab" title="BIKA: View Log Tab"/>
