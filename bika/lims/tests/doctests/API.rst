@@ -45,11 +45,18 @@ The Portal is the Bika LIMS root object::
 Getting the Bika Setup object
 -----------------------------
 
-The Bika Setup object gives access to all of the Bika configuration settings::
+The Setup object gives access to all of the Bika configuration settings::
+
+    >>> setup = api.get_setup()
+    >>> setup
+    <BikaSetup at /plone/bika_setup>
 
     >>> bika_setup = api.get_bika_setup()
-    >>> bika_setup
+    >>> setup
     <BikaSetup at /plone/bika_setup>
+
+    >>> setup == bika_setup
+    True
 
 
 Creating new Content
@@ -678,6 +685,11 @@ This function returns the state of a given object::
     >>> api.get_workflow_status_of(client)
     'active'
 
+It is also able to return the state from a brain without waking it up::
+
+    >>> api.get_workflow_status_of(brain)
+    'active'
+
 It is also capable to get the state of another state variable::
 
     >>> api.get_workflow_status_of(client, "review_state")
@@ -1223,6 +1235,7 @@ Checks if an UID is a valid 23 alphanumeric uid and with a brain:
     >>> api.is_uid(uid, validate=True)
     True
 
+
 Check if a Date is valid
 ------------------------
 
@@ -1501,3 +1514,18 @@ Convert to dhm format
 
     >>> api.to_dhm_format(minutes=122.4567, seconds=6)
     '2h 3m'
+
+
+Get a registry record
+---------------------
+
+Fetch a value of a registry record::
+
+    >>> key = "Products.CMFPlone.i18nl10n.override_dateformat.Enabled"
+    >>> api.get_registry_record(key)
+    False
+
+If the record is not found, the default is returned::
+
+    >>> api.get_registry_record(key, default="NX_KEY")
+    'NX_KEY'
