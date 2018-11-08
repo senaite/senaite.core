@@ -762,9 +762,8 @@ def get_workflow_status_of(brain_or_object, state_var="review_state"):
     # Try to get the state from the catalog brain first
     if is_brain(brain_or_object):
         if state_var in brain_or_object.schema():
-            state = brain_or_object[state_var]
-            if state is not Missing.Value:
-                return state
+            return brain_or_object[state_var]
+
     # Retrieve the sate from the object
     workflow = get_tool("portal_workflow")
     obj = get_object(brain_or_object)
