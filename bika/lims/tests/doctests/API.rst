@@ -1527,5 +1527,6 @@ Fetch a value of a registry record::
 
 If the record is not found, the default is returned::
 
+    >>> key = "non.existing.key"
     >>> api.get_registry_record(key, default="NX_KEY")
     'NX_KEY'
