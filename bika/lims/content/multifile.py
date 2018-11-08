@@ -20,6 +20,7 @@ schema = BikaSchema.copy() + atapi.Schema((
     atapi.StringField(
         "DocumentID",
         required=1,
+        searchable=True,
         validators=("uniquefieldvalidator",),
         widget=atapi.StringWidget(
             label=_("Document ID"),
@@ -44,6 +45,7 @@ schema = BikaSchema.copy() + atapi.Schema((
 
     atapi.StringField(
         "DocumentLocation",
+        searchable=True,
         widget=atapi.StringWidget(
             label=_("Document Location"),
             description=_("Location where the document set is shelved"),
@@ -53,6 +55,7 @@ schema = BikaSchema.copy() + atapi.Schema((
     atapi.StringField(
         "DocumentType",
         required=1,
+        searchable=True,
         widget=atapi.StringWidget(
             label=_("Document Type"),
             description=_("Type of document (e.g. user manual, instrument "
@@ -76,6 +79,11 @@ class Multifile(BaseContent):
         # ResourceLockedError: Object "multifile..." is locked via WebDAV
         self.wl_clearLocks()
         renameAfterCreation(self)
+
+    def Title(self):
+        """Return the DocumentID as Title
+        """
+        return self.getDocumentID()
 
 
 atapi.registerType(Multifile, config.PROJECTNAME)
