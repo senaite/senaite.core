@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1077 Deassociate Analysis portal type from `worksheetanalysis_workflow`
 - #1081 API functions improved
 - #1076 Instrument QC Viewlet Availability
 - #1071 Reinvented Listing Tables
@@ -17,8 +18,10 @@ Changelog
 - #1063 Permission for ar_add changed to "AddAnalysisRequest"
 - #1064 Python 2.x is not supported by WeasyPrint v43. Pinned version: 0.42.3
 
+
 **Removed**
 
+- #1077 Remove `worksheetanalysis_workflow`
 - #1059 Remove updates alert viewlet
 - #1060 Remove classic portlets
 - #1058 Remove gpw dependency

@@ -709,13 +709,6 @@ class Instrument(ATFolder):
             # the same Reference Sample and same Worksheet)
             # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
-
-            # Comes from a worksheet or has been attached directly?
-            ws = ref_analysis.getBackReferences('WorksheetAnalysis')
-            if not ws or len(ws) == 0:
-                # This is a reference analysis attached directly to the
-                # Instrument, we apply the assign state
-                wf.doActionFor(ref_analysis, 'assign')
             ref_analysis.setInstrument(self)
             ref_analysis.reindexObject()
             addedanalyses.append(ref_analysis)

@@ -232,6 +232,18 @@ def add_index(portal, catalog_id, index_name, index_attribute, index_metatype):
     catalog.manage_reindexIndex(index_name)
 
 
+def del_index(portal, catalog_id, index_name):
+    logger.info("Removing '{}' index from '{}' ..."
+                .format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name not in catalog.indexes():
+        logger.info("Index '{}' not in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.delIndex(index_name)
+    logger.info("Removing old index '{}' ...".format(index_name))
+
+
 def add_metadata(portal, catalog_id, column, refresh_catalog=False):
     logger.info("Adding '{}' metadata to '{}' ...".format(column, catalog_id))
     catalog = api.get_tool(catalog_id)
@@ -383,13 +395,11 @@ def update_workflows(portal):
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, 'workflow')
 
-    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
-              index_name="isSampleReceived",
-              index_attribute="isSampleReceived",
-              index_metatype="BooleanIndex")
-
     # Fix analyses stuck in sample* states
     decouple_analyses_from_sample_workflow(portal)
+
+    # Remove worksheet_analysis workflow
+    remove_worksheet_analysis_workflow(portal)
 
     # Update role mappings
     update_role_mappings(portal, rm_queries)
@@ -459,6 +469,11 @@ def get_role_mappings_candidates(portal):
 def decouple_analyses_from_sample_workflow(portal):
     logger.info("Decoupling analyses from sample workflow ...")
 
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="isSampleReceived",
+              index_attribute="isSampleReceived",
+              index_metatype="BooleanIndex")
+
     wf_id = "bika_analysis_workflow"
     affected_rs = ["sample_registered", "to_be_sampled", "sampled",
                    "sample_due", "sample_received", "to_be_preserved",
@@ -481,6 +496,21 @@ def decouple_analyses_from_sample_workflow(portal):
 
         # Reindex
         analysis.reindexObject()
+
+
+def remove_worksheet_analysis_workflow(portal):
+    logger.info("Purging worksheet analysis workflow remanents ...")
+    del_metadata(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+                 column="worksheetanalysis_review_state",
+                 refresh_catalog=False)
+
+    del_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="worksheetanalysis_review_state")
+
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="isWorksheetAssigned",
+              index_attribute="isWorksheetAssigned",
+              index_metatype="BooleanIndex")
 
 
 def update_role_mappings(portal, queries):

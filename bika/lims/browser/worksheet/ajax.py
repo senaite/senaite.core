@@ -62,7 +62,6 @@ class AttachAnalyses():
         sord = self.request['sord']
         sidx = self.request['sidx']
         attachable_states = ('assigned', 'registered', 'to_be_verified')
-        wf = getToolByName(self.context, 'portal_workflow')
         analysis_to_slot = {}
         for s in self.context.getLayout():
             analysis_to_slot[s['analysis_uid']] = int(s['position'])

@@ -2441,15 +2441,15 @@ class AnalysisRequest(BaseFolder):
 
         for an in ans:
             an = an.getObject()
-            br = an.getBackReferences('WorksheetAnalysis')
-            if len(br) > 0:
-                ws = br[0]
-                was = ws.getAnalyses()
-                for wa in was:
-                    if valid_dup(wa):
-                        qcanalyses.append(wa)
-                    elif valid_ref(wa):
-                        qcanalyses.append(wa)
+            ws = an.getWorksheet()
+            if not ws:
+                continue
+            was = ws.getAnalyses()
+            for wa in was:
+                if valid_dup(wa):
+                    qcanalyses.append(wa)
+                elif valid_ref(wa):
+                    qcanalyses.append(wa)
 
         return qcanalyses
 

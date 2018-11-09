@@ -5,7 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import json
 from datetime import datetime
 from operator import itemgetter
 
@@ -13,6 +12,7 @@ from Products.ATContentTypes.utils import DT2dt
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
@@ -166,23 +166,16 @@ class ReferenceAnalysesView(AnalysesView):
         if not item:
             return None
         item['Category'] = obj.getCategoryTitle
-        wss = self.rc.getBackReferences(
-            obj.UID,
-            relationship="WorksheetAnalysis")
-        if not wss:
+        ref_analysis = api.get_object(obj)
+        ws = ref_analysis.getWorksheet()
+        if not ws:
             logger.warn(
                 'No Worksheet found for ReferenceAnalysis {}'
                 .format(obj.getId))
-        elif wss and len(wss) == 1:
-            # TODO-performance: We are getting the object here...
-            ws = wss[0].getSourceObject()
+        else:
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
-        else:
-            logger.warn(
-                'More than one Worksheet found for ReferenceAnalysis {}'
-                .format(obj.getId))
 
         # Add the analysis to the QC Chart
         self.chart.add_analysis(obj)

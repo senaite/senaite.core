@@ -60,8 +60,7 @@ if context.portal_type == "AnalysisRequest":
     # if all analyses are at least to_be_verified
     for a in context.getAnalyses(full_objects=True):
         review_state = workflow.getInfoFor(a, 'review_state')
-        if review_state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                            'sample_received', 'attachment_due'):
+        if review_state in ('registered', 'attachment_due'):
             return False
 
 if context.portal_type == "Worksheet":
@@ -69,8 +68,7 @@ if context.portal_type == "Worksheet":
     # if all analyses are at least to_be_verified
     for a in context.getAnalyses():
         review_state = workflow.getInfoFor(a, 'review_state')
-        if review_state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                            'sample_received', 'attachment_due', 'assigned'):
+        if review_state in ('registered', 'attachment_due', 'assigned'):
             # Note: referenceanalyses and duplicateanalysis can
             # still have review_state = "assigned".
             return False

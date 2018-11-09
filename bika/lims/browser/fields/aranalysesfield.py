@@ -172,10 +172,9 @@ class ARAnalysesField(ObjectField):
             analysis.setAttachment([])
 
             # If it is assigned to a worksheet, unassign it before deletion.
-            if self._is_assigned_to_worksheet(analysis):
-                backrefs = self._get_assigned_worksheets(analysis)
-                ws = backrefs[0]
-                ws.removeAnalysis(analysis)
+            worksheet = analysis.getWorksheet()
+            if worksheet:
+                worksheet.removeAnalysis(analysis)
 
             # Unset the partition reference
             part = analysis.getSamplePartition()
@@ -264,26 +263,6 @@ class ARAnalysesField(ObjectField):
         if set(FROZEN_TRANSITIONS).intersection(performed_transitions):
             return True
         return False
-
-    def _get_assigned_worksheets(self, analysis):
-        """Return the assigned worksheets of this Analysis
-
-        :param analysis: Analysis Brain/Object
-        :returns: Worksheet Backreferences
-        """
-        analysis = api.get_object(analysis)
-        return analysis.getBackReferences("WorksheetAnalysis")
-
-    def _is_assigned_to_worksheet(self, analysis):
-        """Check if the Analysis is assigned to a worksheet
-
-        :param analysis: Analysis Brain/Object
-        :returns: True if the Analysis is assigned to a WS
-        """
-        analysis = api.get_object(analysis)
-        state = api.get_workflow_status_of(
-            analysis, state_var='worksheetanalysis_review_state')
-        return state == "assigned"
 
     def _update_price(self, analysis, service, prices):
         """Update the Price of the Analysis

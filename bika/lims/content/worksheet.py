@@ -196,11 +196,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
 
-        doActionFor(analysis, 'assign')
-
-        # Reindex the worksheet in order to update its columns
+        # Reindex the worksheet
         self.reindexObject()
-        analysis.reindexObject(idxs=['getWorksheetUID', ])
+
+        if IDuplicateAnalysis.providedBy(analysis):
+            # TODO Workflow - Analysis. Remove this after dup wf refactoring
+            doActionFor(analysis, "assign")
+        else:
+            analysis.reindexObject()
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 
@@ -209,24 +212,22 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
-        doActionFor(analysis, 'unassign')
-
-        # remove analysis from context.Analyses *after* unassign,
-        # (doActionFor requires worksheet in analysis.getBackReferences)
-        Analyses = self.getAnalyses()
-        if analysis in Analyses:
-            Analyses.remove(analysis)
-            self.setAnalyses(Analyses)
-            analysis.reindexObject()
+        analyses = filter(lambda an: an != analysis, self.getAnalyses())
+        self.setAnalyses(analyses)
         layout = [
             slot for slot in self.getLayout()
             if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
 
-        if analysis.portal_type == "DuplicateAnalysis":
-            self.manage_delObjects(ids=[analysis.id])
-        # Reindex the worksheet in order to update its columns
+        # Reindex the worksheet
         self.reindexObject()
+
+        if IDuplicateAnalysis.providedBy(analysis):
+            # If duplicate, remove the analyssi from system
+            self.manage_delObjects(ids=[analysis.id])
+        else:
+            analysis.reindexObject()
+
 
     def _getMethodsVoc(self):
         """
@@ -495,7 +496,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Add the duplicate in the worksheet
         self.setAnalyses(self.getAnalyses() + [duplicate, ])
-        doActionFor(duplicate, 'assign')
+        doActionFor(duplicate, "assign")
+        duplicate.reindexObject()
         self.reindexObject()
 
         return duplicate
@@ -808,7 +810,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "getServiceUID": wst_service_uids,
             "review_state": "registered",
             "isSampleReceived": True,
-            "worksheetanalysis_review_state": "unassigned",
+            "isWorksheetAssigned": False,
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
         }
@@ -1609,7 +1611,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                                     new_ws, duplicate_id)
                 new_duplicate.unmarkCreationFlag()
                 copy_src_fields_to_dst(analysis, new_duplicate)
-                workflow.doActionFor(new_duplicate, 'assign')
                 new_duplicate.reindexObject()
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())

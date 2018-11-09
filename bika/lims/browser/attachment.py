@@ -166,7 +166,7 @@ class AttachmentsView(BrowserView):
                 if not analysis.getServiceUID() == service_uid:
                     continue
                 review_state = workflow.getInfoFor(analysis, 'review_state', '')
-                if review_state not in ['assigned', 'sample_received', 'to_be_verified']:
+                if review_state not in ['registered', 'to_be_verified']:
                     continue
 
                 # create attachment

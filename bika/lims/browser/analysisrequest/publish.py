@@ -1328,10 +1328,9 @@ class AnalysisRequestDigester:
         if analysis.portal_type == 'DuplicateAnalysis':
             andict['reftype'] = 'd'
 
-        ws = analysis.getBackReferences('WorksheetAnalysis')
-        andict['worksheet'] = ws[0].id if ws and len(ws) > 0 else None
-        andict['worksheet_url'] = ws[0].absolute_url() \
-            if ws and len(ws) > 0 else None
+        ws = analysis.getWorksheet()
+        andict['worksheet'] = ws and ws.id or None
+        andict['worksheet_url'] = ws.absolute_url() or None
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())

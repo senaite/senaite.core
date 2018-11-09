@@ -554,7 +554,7 @@ class DashboardView(BrowserView):
         desc = _('Assignment pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=default'
         query['review_state'] = ['registered', 'attachment_due', ]
-        query['worksheetanalysis_review_state'] = ['unassigned']
+        query['isWorksheetAssigned'] = False
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
@@ -562,7 +562,7 @@ class DashboardView(BrowserView):
         desc = _('Results pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
         query['review_state'] = ['registered', 'attachment_due', ]
-        del query['worksheetanalysis_review_state']
+        del query['isWorksheetAssigned']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified

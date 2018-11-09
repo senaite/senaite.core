@@ -144,13 +144,10 @@ def after_unassign(obj):
 def after_cancel(obj):
     if skip(obj, "cancel"):
         return
-    workflow = getToolByName(obj, "portal_workflow")
     # If it is assigned to a worksheet, unassign it.
-    state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
-    if state == 'assigned':
-        ws = obj.getWorksheet()
-        skip(obj, "cancel", unskip=True)
-        ws.removeAnalysis(obj)
+    worksheet = obj.getWorksheet()
+    if worksheet:
+        worksheet.removeAnalysis(obj)
     obj.reindexObject()
     _reindex_request(obj)
 
@@ -158,12 +155,10 @@ def after_cancel(obj):
 def after_reject(obj):
     if skip(obj, "reject"):
         return
-    workflow = getToolByName(obj, "portal_workflow")
     # If it is assigned to a worksheet, unassign it.
-    state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
-    if state == 'assigned':
-        ws = obj.getWorksheet()
-        ws.removeAnalysis(obj)
+    worksheet = obj.getWorksheet()
+    if worksheet:
+        worksheet.removeAnalysis(obj)
     obj.reindexObject()
     _reindex_request(obj)
 
@@ -186,7 +181,7 @@ def after_attach(obj):
             workflow.doActionFor(ar, "attach")
     # If assigned to a worksheet and all analyses on the worksheet have
     # been attached, then attach the worksheet.
-    ws = obj.getBackReferences('WorksheetAnalysis')
+    ws = obj.getWorksheet()
     if ws:
         ws_state = workflow.getInfoFor(ws, "review_state")
         if ws_state == "attachment_due" \

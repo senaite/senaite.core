@@ -167,8 +167,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         workflow = getToolByName(self, 'portal_workflow')
         # If all analyses on the worksheet have been attached,
         # then attach the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
+        ws = self.getWorksheet()
         ws_state = workflow.getInfoFor(ws, 'review_state')
         if ws_state == 'attachment_due' and not skip(ws, "attach", peek=True):
             can_attach = True
@@ -187,8 +186,7 @@ class ReferenceAnalysis(AbstractAnalysis):
             return
         workflow = getToolByName(self, 'portal_workflow')
         # Escalate action to the Worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
+        ws = self.getWorksheet()
         if not skip(ws, "retract", peek=True):
             if workflow.getInfoFor(ws, 'review_state') == 'open':
                 skip(ws, "retract")

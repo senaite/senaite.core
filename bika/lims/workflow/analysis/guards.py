@@ -66,10 +66,9 @@ def unassign(obj):
     mtool = getToolByName(obj, "portal_membership")
     if not wf.isBasicTransitionAllowed(obj):
         return False
-    ws = obj.getBackReferences("WorksheetAnalysis")
+    ws = obj.getWorksheet()
     if not ws:
         return False
-    ws = ws[0]
     if wf.isBasicTransitionAllowed(ws):
         if mtool.checkPermission(Unassign, ws):
             return True

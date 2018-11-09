@@ -959,9 +959,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         analyst = field and field.get(self) or ''
         if not analyst:
             # Is assigned to a worksheet?
-            wss = self.getBackReferences('WorksheetAnalysis')
-            if len(wss) > 0:
-                analyst = wss[0].getAnalyst()
+            worksheet = self.getWorksheet()
+            if worksheet:
+                analyst = worksheet.getAnalyst()
                 field.set(self, analyst)
         return analyst if analyst else ''
 
@@ -1087,6 +1087,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         parent = self.aq_parent
         if parent:
             return parent.Title()
+
+    @security.public
+    def isWorksheetAssigned(self):
+        return self.getWorksheet() and True or False
 
     @security.public
     def getWorksheetUID(self):

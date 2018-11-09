@@ -127,8 +127,8 @@ Create a new Worksheet and add the analyses:
     <Analysis at /plone/clients/client-1/W-0001-R01/TotalTerpenes>
     >>> worksheet.addAnalysis(analysis)
     >>> transaction.commit()
-    >>> api.get_workflow_status_of(analysis, state_var='worksheetanalysis_review_state')
-    'assigned'
+    >>> analysis.getWorksheet().UID() == worksheet.UID()
+    True
 
 Add a blank and a control:
 

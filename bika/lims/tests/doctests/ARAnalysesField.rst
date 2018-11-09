@@ -598,12 +598,12 @@ Create a new Worksheet and assign the Analysis to it:
     >>> analysis = new_analyses[0]
     >>> ws.addAnalysis(analysis)
 
-The analysis should be now in the 'assigned' state:
+The analysis is associated to the Worksheet:
 
-    >>> api.get_workflow_status_of(analysis, state_var='worksheetanalysis_review_state')
-    'assigned'
+    >>> analysis.getWorksheet().UID() == ws.UID()
+    True
 
-The worksheet has now the Analysis assigned:
+The worksheet contains now the Analysis:
 
     >>> ws.getAnalyses()
     [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]

@@ -61,7 +61,7 @@ class AggregatedAnalysesView(AnalysesView):
              'title': _('Assignment pending'),
              'transitions': [{'id': 'submit'}, ],
              'contentFilter': {
-                 'worksheetanalysis_review_state': ['unassigned'],
+                 'isWorksheetAssigned': False,
                  'review_state': ['registered', 'attachment_due'],
                  'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',

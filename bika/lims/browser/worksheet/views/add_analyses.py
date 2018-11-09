@@ -42,7 +42,7 @@ class AddAnalysesView(BikaListingView):
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'registered',
                               'isSampleReceived': True,
-                              'worksheetanalysis_review_state':'unassigned',
+                              'isWorksheetAssigned': False,
                               'sort_on': 'getPrioritySortkey',
                               'cancellation_state':'active'}
         self.base_url = self.context.absolute_url()

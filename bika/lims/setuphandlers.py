@@ -287,7 +287,6 @@ class BikaGenerator(object):
         addIndex(bc, 'description', 'FieldIndex', 'Description')
         addIndex(bc, 'review_state', 'FieldIndex')
         addIndex(bc, 'inactive_state', 'FieldIndex')
-        addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
         addIndex(bc, 'Identifiers', 'KeywordIndex')
 
