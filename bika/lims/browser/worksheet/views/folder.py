@@ -297,10 +297,15 @@ class FolderView(BikaListingView):
         # Department filtering is enabled. Check if at least one of the
         # analyses associated to this worksheet belongs to at least one
         # of the departments currently selected.
-        cdepuids = self.request.get('filter_by_department_info', '')
-        cdepuids = cdepuids.split(',') if cdepuids else []
+        cdepuids = self.request.get("filter_by_department_info", "")
+        cdepuids = cdepuids.split(",") if cdepuids else []
         allowed = [d for d in obj.getDepartmentUIDs if d in cdepuids]
         return len(allowed) > 0
+
+    def folderitems(self):
+        """Return folderitems as brains
+        """
+        return super(FolderView, self).folderitems(classic=False)
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
