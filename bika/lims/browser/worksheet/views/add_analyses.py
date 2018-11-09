@@ -89,7 +89,6 @@ class AddAnalysesView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter': {},
-             'transitions': [{'id':'assign'}, ],
              'columns':['Priority',
                         'Client',
                         'getClientOrderNumber',
@@ -98,6 +97,8 @@ class AddAnalysesView(BikaListingView):
                         'Title',
                         'getDateReceived',
                         'getDueDate'],
+             'custom_transitions': [{'id': 'assign',
+                                     'title': _("Assign")}]
             },
         ]
 
