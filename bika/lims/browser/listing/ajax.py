@@ -5,7 +5,6 @@ import json
 import urllib
 
 from bika.lims import api
-from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
@@ -158,6 +157,11 @@ class AjaxListingView(BrowserView):
 
         # allowed transitions
         transitions = []
+
+        # Call the update and before_render hook, because these might modify
+        # the allowed and custom transitions
+        self.update()
+        self.before_render()
 
         # allowed transitions of the current workflow
         allowed_transitions = self.review_state.get("transitions", [])
