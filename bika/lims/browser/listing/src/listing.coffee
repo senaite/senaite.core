@@ -568,7 +568,7 @@ class ListingController extends React.Component
     @toggle_loader on
 
     # fetch the transitions from the server
-    promise = @api.fetch_transitions uids: selected_uids
+    promise = @api.fetch_transitions @getRequestOptions()
 
     me = this
     promise.then (data) ->

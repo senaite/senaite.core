@@ -158,11 +158,6 @@ class AjaxListingView(BrowserView):
         # allowed transitions
         transitions = []
 
-        # Call the update and before_render hook, because these might modify
-        # the allowed and custom transitions
-        self.update()
-        self.before_render()
-
         # allowed transitions of the current workflow
         allowed_transitions = self.review_state.get("transitions", [])
         allowed_transition_ids = map(
@@ -383,9 +378,34 @@ class AjaxListingView(BrowserView):
         """
         # Get the HTTP POST JSON Payload
         payload = self.get_json()
+
         # Get the selected UIDs
-        uids = payload.get("uids", [])
+        uids = payload.get("selected_uids", [])
         objs = map(api.get_object_by_uid, uids)
+
+        # ----------------------------------8<---------------------------------
+        # XXX Temporary (cut out as soon as possible)
+        #
+        # Some listings inject custom transitions before rendering the
+        # folderitems, e.g. the worksheets folder listing view.
+        # This can be removed as soon as all the relevant permission checks are
+        # done on the object only and not by manual role checking in the view.
+
+        # Fake a HTTP GET request with parameters, so that the `bika_listing`
+        # view handles them correctly.
+        form_data = self.to_form_data(payload)
+
+        # this serves `request.form.get` calls
+        self.request.form.update(form_data)
+
+        # this serves `request.get` calls
+        self.request.other.update(form_data)
+
+        # Call the update and before_render hook, because these might modify
+        # the allowed and custom transitions (and columns probably as well)
+        self.update()
+        self.before_render()
+        # ----------------------------------8<---------------------------------
 
         # get the allowed transitions
         transitions = self.get_allowed_transitions_for(objs)
