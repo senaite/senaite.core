@@ -124,11 +124,17 @@ def get_portal():
     return ploneapi.portal.getSite()
 
 
-def get_bika_setup():
+def get_setup():
     """Fetch the `bika_setup` folder.
     """
     portal = get_portal()
     return portal.get("bika_setup")
+
+
+def get_bika_setup():
+    """Fetch the `bika_setup` folder.
+    """
+    return get_setup()
 
 
 def create(container, portal_type, *args, **kwargs):
@@ -512,7 +518,6 @@ def get_object_by_path(path, default=_marker):
         fail("get_object_by_path first argument must be a path; {} received"
              .format(path))
 
-    pc = get_portal_catalog()
     portal = get_portal()
     portal_path = get_path(portal)
     portal_url = get_url(portal)
@@ -530,12 +535,7 @@ def get_object_by_path(path, default=_marker):
     if path == portal_path:
         return portal
 
-    res = pc(path=dict(query=path, depth=0))
-    if not res:
-        if default is not _marker:
-            return default
-        fail("Object at path '{}' not found".format(path))
-    return get_object(res[0])
+    return portal.restrictedTraverse(path, default)
 
 
 def get_path(brain_or_object):
@@ -759,6 +759,12 @@ def get_workflow_status_of(brain_or_object, state_var="review_state"):
     :returns: Status
     :rtype: str
     """
+    # Try to get the state from the catalog brain first
+    if is_brain(brain_or_object):
+        if state_var in brain_or_object.schema():
+            return brain_or_object[state_var]
+
+    # Retrieve the sate from the object
     workflow = get_tool("portal_workflow")
     obj = get_object(brain_or_object)
     return workflow.getInfoFor(ob=obj, name=state_var, default='')
@@ -1370,3 +1376,15 @@ def to_searchable_text_metadata(value):
     if not isinstance(value, basestring):
         value = str(value)
     return safe_unicode(value)
+
+
+def get_registry_record(name, default=None):
+    """Returns the value of a registry record
+
+    :param name: [required] name of the registry record
+    :type name: str
+    :param default: The value returned if the record is not found
+    :type default: anything
+    :returns: value of the registry record
+    """
+    return ploneapi.portal.get_registry_record(name, default=default)
