@@ -5,256 +5,288 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
 import json
 
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
+from bika.lims.utils import get_display_list
+from bika.lims.utils import get_link
 from bika.lims.utils import getUsers
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.utils import user_fullname, get_display_list
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
+from bika.lims.utils import user_fullname
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class FolderView(BikaListingView):
-
-    implements(IFolderContentsView, IViewView)
-
+    """Listing view for Worksheets
+    """
     template = ViewPageTemplateFile("../templates/worksheets.pt")
 
     def __init__(self, context, request):
         super(FolderView, self).__init__(context, request)
+
         self.catalog = CATALOG_WORKSHEET_LISTING
         self.contentFilter = {
-            'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
-            'sort_on':'CreationDate',
-            'sort_order': 'reverse'}
-        self.context_actions = {_('Add'):
-                                {'url': 'worksheet_add',
-                                 'icon': '++resource++bika.lims.images/add.png',
-                                 'class': 'worksheet_add'}}
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_all_checkbox = True
-        self.show_select_column = True
-        self.restrict_results = False
-        self.selected_state = ''
-        self.analyst_choices = []
-        self.can_reassign = False
-        self.can_manage = False
-        self.wf = getToolByName(self, 'portal_workflow')
-        self.rc = getToolByName(self, REFERENCE_CATALOG)
-        self.pm = getToolByName(self.context, "portal_membership")
-        request.set('disable_border', 1)
+            "review_state": ["open", "to_be_verified", "verified", "rejected"],
+            "sort_on": "created",
+            "sort_order": "reverse"
+        }
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = self.context.translate(_("Worksheets"))
         self.description = ""
 
-        # this is a property of self, because self.getAnalysts returns it
-        self.analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
-        self.analysts = self.analysts.sortedByKey()
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/worksheet_big.png"
+        )
 
-        self.allowed_department_filtering = \
-            self.context.bika_setup.getAllowDepartmentFiltering()
-
-        self.columns = {
-            'Title': {'title': _('Worksheet'),
-                      'index': 'getId'},
-            'Analyst': {'title': _('Analyst'),
-                        'index': 'getAnalyst', },
-            'Template': {'title': _('Template'),
-                         'attr': 'getWorksheetTemplateTitle',
-                         'replace_url': 'getWorksheetTemplateURL', },
-            'NumRegularSamples': {
-                'title': _('Samples'),
-                'sortable': False, },
-            'NumQCAnalyses': {
-                'title': _('QC Analyses'),
-                'sortable': False, },
-            'NumRegularAnalyses': {
-                'title': _('Routine Analyses'),
-                'sortable': False, },
-            'CreationDate': {'title': PMF('Date Created'),
-                             'index': 'created'},
-            'state_title': {'title': _('State'),
-                            'index': 'review_state',
-                            'attr': 'state_title'},
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=InstrumentMaintenanceTask",
+                "icon": "++resource++bika.lims.images/add.png"}
         }
+
+        self.context_actions = {
+            _("Add"): {
+                "url": "worksheet_add",
+                "icon": "++resource++bika.lims.images/add.png",
+                "class": "worksheet_add"}
+        }
+
+        self.show_select_column = True
+        self.show_select_all_checkbox = True
+        self.restrict_results = False
+        self.selected_state = ""
+        self.analyst_choices = []
+        self.can_reassign = False
+        self.can_manage = False
+
+        self.wf = getToolByName(self, "portal_workflow")
+        self.rc = getToolByName(self, REFERENCE_CATALOG)
+        self.pm = getToolByName(self.context, "portal_membership")
+
+        # this is a property of self, because self.getAnalysts returns it
+        self.analysts = getUsers(self, ["Manager", "LabManager", "Analyst"])
+        self.analysts = self.analysts.sortedByKey()
+        self.analyst_choices = []
+        for a in self.analysts:
+            self.analyst_choices.append({
+                "ResultValue": a,
+                "ResultText": self.analysts.getValue(a),
+            })
+
+        self.allowed_department_filtering = self.context.bika_setup.getAllowDepartmentFiltering()
+
+        self.columns = collections.OrderedDict((
+            ("Title", {
+                "title": _("Worksheet"),
+                "index": "getId"}),
+            ("Analyst", {
+                "title": _("Analyst"),
+                "index": "getAnalyst"}),
+            ("Template", {
+                "title": _("Template"),
+                "attr": "getWorksheetTemplateTitle",
+                "replace_url": "getWorksheetTemplateURL"}),
+            ("NumRegularSamples", {
+                "title": _("Samples"),
+                "sortable": False}),
+            ("NumQCAnalyses", {
+                "title": _("QC Analyses"),
+                "sortable": False}),
+            ("NumRegularAnalyses", {
+                "title": _("Routine Analyses"),
+                "sortable": False}),
+            ("CreationDate", {
+                "title": _("Date Created"),
+                "index": "created"}),
+            ("state_title", {
+                "title": _("State"),
+                "index": "review_state",
+                "attr": "state_title"}),
+        ))
         self.review_states = [
-            {'id':'default',
-             'title': _('All'),
-             'contentFilter': {'review_state': ['open',
-                                                'to_be_verified', 'verified'],
-                               'sort_on':'CreationDate',
-                               'sort_order': 'reverse'},
-             'transitions':[{'id':'retract'},
-                            {'id':'verify'},
-                            {'id':'reject'}],
-             'columns':['Title',
-                        'Analyst',
-                        'Template',
-                        'NumRegularSamples',
-                        'NumQCAnalyses',
-                        'NumRegularAnalyses',
-                        'CreationDate',
-                        'state_title']},
-            # getAuthenticatedMember does not work in __init__
-            # so 'mine' is configured further in 'folderitems' below.
-            {'id':'mine',
-             'title': _('Mine'),
-             'contentFilter': {'review_state':['open', 'to_be_verified',
-                                               'verified', 'rejected'],
-                               'sort_on':'CreationDate',
-                               'sort_order': 'reverse'},
-             'transitions':[{'id':'retract'},
-                            {'id':'verify'},
-                            {'id':'reject'}],
-             'columns':['Title',
-                        'Analyst',
-                        'Template',
-                        'NumRegularSamples',
-                        'NumQCAnalyses',
-                        'NumRegularAnalyses',
-                        'CreationDate',
-                        'state_title']},
-            {'id':'open',
-             'title': _('Open'),
-             'contentFilter': {'review_state':'open',
-                               'sort_on':'CreationDate',
-                               'sort_order': 'reverse'},
-             'transitions':[],
-             'columns':['Title',
-                        'Analyst',
-                        'Template',
-                        'NumRegularSamples',
-                        'NumQCAnalyses',
-                        'NumRegularAnalyses',
-                        'CreationDate',
-                        'state_title']},
-            {'id':'to_be_verified',
-             'title': _('To be verified'),
-             'contentFilter': {'review_state':'to_be_verified',
-                               'sort_on':'CreationDate',
-                               'sort_order': 'reverse'},
-             'transitions':[{'id':'retract'},
-                            {'id':'verify'},
-                            {'id':'reject'}],
-             'columns':['Title',
-                        'Analyst',
-                        'Template',
-                        'NumRegularSamples',
-                        'NumQCAnalyses',
-                        'NumRegularAnalyses',
-                        'CreationDate',
-                        'state_title']},
-            {'id':'verified',
-             'title': _('Verified'),
-             'contentFilter': {'review_state':'verified',
-                               'sort_on':'CreationDate',
-                               'sort_order': 'reverse'},
-             'transitions':[],
-             'columns':['Title',
-                        'Analyst',
-                        'Template',
-                        'NumRegularSamples',
-                        'NumQCAnalyses',
-                        'NumRegularAnalyses',
-                        'CreationDate',
-                        'state_title']},
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {
+                    "review_state": [
+                        "open",
+                        "to_be_verified",
+                        "verified"
+                    ],
+                    "sort_on":"CreationDate",
+                    "sort_order": "reverse"},
+                "transitions":[
+                    {"id": "retract"},
+                    {"id": "verify"},
+                    {"id": "reject"}
+                ],
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
+                # getAuthenticatedMember does not work in __init__ so "mine" is
+                # configured further in "folderitems" below.
+                "id": "mine",
+                "title": _("Mine"),
+                "contentFilter": {
+                    "review_state": [
+                        "open",
+                        "to_be_verified",
+                        "verified",
+                        "rejected"
+                    ],
+                    "sort_on":"CreationDate",
+                    "sort_order": "reverse"},
+                "transitions":[
+                    {"id": "retract"},
+                    {"id": "verify"},
+                    {"id": "reject"}
+                ],
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "open",
+                "title": _("Open"),
+                "contentFilter": {
+                    "review_state": "open",
+                    "sort_on": "CreationDate",
+                    "sort_order": "reverse"},
+                "transitions": [],
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "to_be_verified",
+                "title": _("To be verified"),
+                "contentFilter": {
+                    "review_state": "to_be_verified",
+                    "sort_on": "CreationDate",
+                    "sort_order": "reverse"},
+                "transitions": [
+                    {"id": "retract"},
+                    {"id": "verify"},
+                    {"id": "reject"}
+                ],
+                "custom_transitions": [],
+                "columns": self.columns.keys()
+            }, {
+                "id": "verified",
+                "title": _("Verified"),
+                "contentFilter": {
+                    "review_state": "verified",
+                    "sort_on": "CreationDate",
+                    "sort_order": "reverse"
+                },
+                "transitions": [],
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }
         ]
 
-    def _get_worksheet_templates_brains(self):
-        """
-        Returns available Worksheet Templates as brains. Only active Worksheet
-        Templates are considered
-        :return: list of brains
-        """
-        catalog = api.get_tool('bika_setup_catalog')
-        brains = catalog(portal_type='WorksheetTemplate',
-                         inactive_state='active')
-        return brains
-
-    def _get_instruments_brains(self):
-        """
-        Returns available Instruments as brains. Only active Instruments
-        are considered
-        :return: list of brains
-        """
-        catalog = api.get_tool('bika_setup_catalog')
-        brains = catalog(portal_type='Instrument',
-                         inactive_state='active')
-        return brains
-
     def before_render(self):
+        """Before render hook of the listing base view
         """
-        This function is called before the template is being rendered.
-        """
-        if not self.isManagementAllowed():
+        super(FolderView, self).before_render()
+
+        # disable the editable border of the Add-, Display- and Workflow menu
+        self.request.set("disable_border", 1)
+
+        # the current selected WF state
+        self.selected_state = self.get_selected_state()
+
+        self.allow_edit = self.is_edit_allowed()
+        self.can_manage = self.is_manage_allowed()
+
+        # Check if analysts can be assigned
+        if self.is_analyst_assignment_allowed():
+            self.can_reassign = True
+            self.allow_analyst_reassignment()
+
+        if not self.can_manage:
             # The current has no prvileges to manage WS.
             # Remove the add button
             self.context_actions = {}
+
         roles = self.member.getRoles()
-        self.restrict_results = 'Manager' not in roles \
-            and 'LabManager' not in roles \
-            and 'LabClerk' not in roles \
-            and 'RegulatoryInspector' not in roles \
+        self.restrict_results = "Manager" not in roles \
+            and "LabManager" not in roles \
+            and "LabClerk" not in roles \
+            and "RegulatoryInspector" not in roles \
             and self.context.bika_setup.getRestrictWorksheetUsersAccess()
+
         if self.restrict_results:
             # Remove 'Mine' button and hide 'Analyst' column
             del self.review_states[1]  # Mine
-            self.columns['Analyst']['toggle'] = False
+            self.columns["Analyst"]["toggle"] = False
 
-        self.can_manage = self.pm.\
-            checkPermission(ManageWorksheets, self.context)
-        self.selected_state = self.request\
-            .get("%s_review_state" % self.form_id, 'default')
+    def is_analyst_assignment_allowed(self):
+        """Check if the analyst can be assigned
+        """
+        if not self.allow_edit:
+            return False
+        if not self.can_manage:
+            return False
+        if self.restrict_results:
+            return False
+        return True
 
-        self.analyst_choices = []
-        for a in self.analysts:
-            self.analyst_choices.append(
-                {'ResultValue': a, 'ResultText': self.analysts.getValue(a)})
+    def allow_analyst_reassignment(self):
+        """Allow the Analyst reassignment
+        """
+        reassing_analyst_transition = {
+            "id": "reassign",
+            "title": _("Reassign")}
+        for rs in self.review_states:
+            if rs["id"] not in ["default", "mine", "open"]:
+                continue
+            rs["custom_transitions"].append(reassing_analyst_transition)
+        self.show_select_column = True
+        self.show_workflow_action_buttons = True
 
-        self.allow_edit = self.isEditionAllowed()
+    def is_manage_allowed(self):
+        """Check if the User is allowed to manage
+        """
+        checkPermission = self.context.portal_membership.checkPermission
+        return checkPermission(ManageWorksheets, self.context)
 
-        # Default value for this attr
-        self.can_reassign = False
-
-    def isManagementAllowed(self):
-        return self.pm.checkPermission(ManageWorksheets, self.context)
-
-    def isEditionAllowed(self):
+    def is_edit_allowed(self):
+        """Check if edit is allowed
+        """
         checkPermission = self.context.portal_membership.checkPermission
         return checkPermission(EditWorksheet, self.context)
 
-    def isItemAllowed(self, obj):
+    def get_selected_state(self):
+        """Returns the current selected state
         """
-        Only show "my" worksheets
-        this cannot be setup in contentFilter,
-        because AuthenticatedMember is not available in __init__
-        It also checks if the worksheet can be added to the list depending
-        on the department filter. It checks the department of each analysis
-        service from each analysis belonguing to the given worksheet.
+        form_key = "{}_review_state".format(self.form_id)
+        return self.request.get(form_key, "default")
+
+    def isItemAllowed(self, obj):
+        """Only show "my" worksheets
+
+        This cannot be setup in contentFilter, because AuthenticatedMember is
+        not available in __init__.
+        It also checks if the worksheet can be added to the list depending on
+        the department filter.
+        It checks the department of each analysis service from each analysis
+        belonguing to the given worksheet.
         If department filtering is disabled in bika_setup, will return True.
+
         :param obj: An object that represents a Worksheet
         :type obj: CatalogBrain
         :returns: True if the worksheet object meets with the criteria for
             being displayed
         :rtype: bool
         """
-        if (self.selected_state == 'mine' or self.restrict_results) \
-            and obj.getAnalyst != _c(self.member.getId()):
+        if (self.selected_state == "mine" or self.restrict_results) and \
+           obj.getAnalyst != _c(self.member.getId()):
             # Check if the current WS is assigned to the current user
             return False
 
@@ -265,89 +297,81 @@ class FolderView(BikaListingView):
         # Department filtering is enabled. Check if at least one of the
         # analyses associated to this worksheet belongs to at least one
         # of the departments currently selected.
-        cdepuids = self.request.get('filter_by_department_info', '')
-        cdepuids = cdepuids.split(',') if cdepuids else []
-        deps = obj.getDepartmentUIDs
+        cdepuids = self.request.get("filter_by_department_info", "")
+        cdepuids = cdepuids.split(",") if cdepuids else []
         allowed = [d for d in obj.getDepartmentUIDs if d in cdepuids]
         return len(allowed) > 0
 
-    def folderitem(self, obj, item, index):
+    def folderitems(self):
+        """Return folderitems as brains
         """
-        :obj: is a worksheet brain.
-        """
-        # Additional info from Worksheet to be added in the item generated by
-        # default by bikalisting.
+        return super(FolderView, self).folderitems(classic=False)
 
-        # Call the folderitem method from the base class
-        item = BikaListingView.folderitem(self, obj, item, index)
-        item['CreationDate'] = self.ulocalized_time(obj.created)
-        if len(obj.getAnalysesUIDs) == 0:
-            item['table_row_class'] = 'state-empty-worksheet'
+    def folderitem(self, obj, item, index):
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
+        """
 
         layout = obj.getLayout
-        item['Title'] = obj.Title
-        turl = "manage_results" if len(layout) > 0 else "add_analyses"
-        item['replace']['Title'] = "<a href='%s/%s'>%s</a>" % \
-            (item['url'], turl, item['Title'])
+        title = api.get_title(obj)
+        url = api.get_url(obj)
+
+        item["CreationDate"] = self.ulocalized_time(obj.created)
+        if len(obj.getAnalysesUIDs) == 0:
+            item["table_row_class"] = "state-empty-worksheet"
+
+        title_link = "{}/{}".format(url, "add_analyses")
+        if len(layout) > 0:
+            title_link = "{}/{}".format(url, "manage_results")
+
+        item["Title"] = title
+        item["replace"]["Title"] = get_link(title_link, value=title)
 
         pos_parent = {}
         for slot in layout:
             # compensate for bad data caused by a stupid bug.
-            if type(slot['position']) in (list, tuple):
-                slot['position'] = slot['position'][0]
-            if slot['position'] == 'new':
+            if type(slot["position"]) in (list, tuple):
+                slot["position"] = slot["position"][0]
+            if slot["position"] == "new":
                 continue
-            if slot['position'] in pos_parent:
+            if slot["position"] in pos_parent:
                 continue
-            pos_parent[slot['position']] =\
-                self.rc.lookupObject(slot.get('container_uid'))
+            pos_parent[slot["position"]] =\
+                self.rc.lookupObject(slot.get("container_uid"))
 
         # Total QC Analyses
-        item['NumQCAnalyses'] = str(obj.getNumberOfQCAnalyses)
+        item["NumQCAnalyses"] = str(obj.getNumberOfQCAnalyses)
         # Total Routine Analyses
-        item['NumRegularAnalyses'] = str(obj.getNumberOfRegularAnalyses)
+        item["NumRegularAnalyses"] = str(obj.getNumberOfRegularAnalyses)
         # Total Number of Samples
-        item['NumRegularSamples'] = str(obj.getNumberOfRegularSamples)
+        item["NumRegularSamples"] = str(obj.getNumberOfRegularSamples)
 
-        if item['review_state'] == 'open' \
-            and self.allow_edit \
-            and not self.restrict_results \
-                and self.can_manage:
-            item['Analyst'] = obj.getAnalyst
-            item['allow_edit'] = ['Analyst', ]
-            item['required'] = ['Analyst', ]
-            item['choices'] = {'Analyst': self.analyst_choices}
-            self.can_reassign = True
+        review_state = item["review_state"]
+        if self.can_reassign and review_state == "open":
+            item["Analyst"] = obj.getAnalyst
+            item["allow_edit"] = ["Analyst"]
+            item["required"] = ["Analyst"]
+            item["choices"] = {"Analyst": self.analyst_choices}
         else:
-            item['Analyst'] = user_fullname(self.context, obj.getAnalyst)
+            fullname = user_fullname(self.context, obj.getAnalyst)
+            item["Analyst"] = fullname
 
         return item
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self, classic=False)
-
-        # can_reassigned value is assigned in folderitem(obj,item,index) function
-        if self.can_reassign:
-            for x in range(len(self.review_states)):
-                if self.review_states[x]['id'] in ['default', 'mine', 'open']:
-                    self.review_states[x]['custom_transitions'] = [{'id': 'reassign',
-                                                                'title': _('Reassign')}, ]
-
-        self.show_select_column = self.can_reassign
-        self.show_workflow_action_buttons = self.can_reassign
-
-        return items
-
     def getAnalysts(self):
-        """ Present the LabManagers and Analysts as options for analyst
-            Used in bika_listing.pt
+        """Returns all analysts
         """
         return self.analysts
 
     def getWorksheetTemplates(self):
-        """
-        Returns a DisplayList with available Worksheet Templates, sorted by
-        title ascending. Only active Worksheet Templates are considered
+        """Returns a DisplayList with all active worksheet templates
+
         :return: DisplayList of worksheet templates (uid, title)
         :rtype: DisplayList
         """
@@ -355,9 +379,8 @@ class FolderView(BikaListingView):
         return get_display_list(brains)
 
     def getInstruments(self):
-        """
-        Returns a DisplayList with available Instruments, sorted by title
-        ascending. Only active Instruments are considered
+        """Returns a DisplayList with all active Instruments
+
         :return: DisplayList of worksheet templates (uid, title)
         :rtype: DisplayList
         """
@@ -365,8 +388,7 @@ class FolderView(BikaListingView):
         return get_display_list(brains)
 
     def getTemplateInstruments(self):
-        """ Distionary of instruments per template
-            Used in bika_listing.pt
+        """Returns worksheet templates as JSON
         """
         items = dict()
         templates = self._get_worksheet_templates_brains()
@@ -374,9 +396,30 @@ class FolderView(BikaListingView):
             template_obj = api.get_object(template)
             uid_template = api.get_uid(template_obj)
             instrument = template_obj.getInstrument()
-            uid_instrument = ''
+            uid_instrument = ""
             if instrument:
                 uid_instrument = api.get_uid(instrument)
             items[uid_template] = uid_instrument
 
         return json.dumps(items)
+
+    def _get_worksheet_templates_brains(self):
+        """Returns all active worksheet templates
+
+        :returns: list of brains
+        """
+        catalog = api.get_tool('bika_setup_catalog')
+        brains = catalog(portal_type='WorksheetTemplate',
+                         inactive_state='active')
+        return brains
+
+    def _get_instruments_brains(self):
+        """Returns all active Instruments
+
+        :returns: list of brains
+        """
+        query = {
+            "portal_type": "Instrument",
+            "inactive_state": "active"
+        }
+        return api.search(query, "bika_setup_catalog")
