@@ -527,6 +527,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # This field is a mirror of a field in Sample with the same name
+    # TODO Workflow - Request - Fix DateSampled inconsistencies. At the moment,
+    # one can create an AR (using code) with DateSampled set when sampling_wf at
+    # the same time sampling workflow is active. This might cause
+    # inconsistencies: AR still in `to_be_sampled`, but getDateSampled returns
+    # a valid date!
     ProxyField(
         'DateSampled',
         proxy="context.getSample()",

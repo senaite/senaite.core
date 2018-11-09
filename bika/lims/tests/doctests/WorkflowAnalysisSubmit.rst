@@ -143,7 +143,6 @@ Create an Analysis Request:
 
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
-    ...           'DateSampled': date_now,
     ...           'SampleType': sampletype.UID()}
     >>> service_uids = map(api.get_uid, [Cu, Fe])
     >>> ar = create_analysisrequest(client, request, values, service_uids)
