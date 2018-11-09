@@ -229,12 +229,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
     @security.public
     def getDateSampled(self):
-        """Used to populate catalog values.
-        Only has value when sampling_workflow is active.
+        """Returns the date when the Sample was Sampled
         """
         request = self.getRequest()
         if request:
-            return getTransitionDate(request, 'sample', return_as_datetime=True)
+            return request.getDateSampled()
         return None
 
     @security.public

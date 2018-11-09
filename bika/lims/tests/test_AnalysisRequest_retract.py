@@ -45,7 +45,7 @@ class TestAnalysisRequestRetract(DataTestCase):
         values = {
             "Client": api.get_uid(client),
             "Contact": api.get_uid(contact),
-            "SamplingDate": self.timestamp(),
+            "DateSampled": self.timestamp(),
             "SampleType": api.get_uid(sampletype)}
 
         services = self.get_services()[:3]
