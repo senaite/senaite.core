@@ -328,7 +328,7 @@ class FolderView(BikaListingView):
 
         title_link = "{}/{}".format(url, "add_analyses")
         if len(layout) > 0:
-            title_link = "{}/{}".format(url, "manage_analyses")
+            title_link = "{}/{}".format(url, "manage_results")
 
         item["Title"] = title
         item["replace"]["Title"] = get_link(title_link, value=title)
