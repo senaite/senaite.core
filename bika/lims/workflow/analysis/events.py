@@ -26,8 +26,24 @@ def after_unassign(analysis):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed.
     """
-    pass
-
+    worksheet = analysis.getWorksheet()
+    analyses = filter(lambda an: an != analysis, worksheet.getAnalyses())
+    worksheet.setAnalyses(analyses)
+    worksheet.purgeLayout()
+    if analyses:
+        # Maybe this analysis was the only one that was not yet submitted or
+        # verified, so try to submit or verify the Worksheet to be aligned with
+        # the current states of the analyses it contains.
+        # We do reindex_on_success=False here because even if submit or verify
+        # transitions succeed, only the worksheet will be affected. Since we
+        # have to reindex the worksheet regardless of this transition challenge,
+        # better to do this reindex only once.
+        doActionFor(worksheet, "submit", reindex_on_success=False)
+        doActionFor(worksheet, "verify", reindex_on_success=False)
+    worksheet.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+    if IRequestAnalysis.providedBy(analysis):
+        request = analysis.getRequest()
+        request.reindexObject(idxs=["assigned_state"])
 
 def after_submit(analysis):
     """Method triggered after a 'submit' transition for the analysis passed in

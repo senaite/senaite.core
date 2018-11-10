@@ -5,28 +5,23 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import enum, api
+import collections
+import sys
+
+from AccessControl.SecurityInfo import ModuleSecurityInfo
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
+from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
 from bika.lims import PMF
+from bika.lims import enum, api
+from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
-from bika.lims import logger
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
 from zope.interface import implements
-import collections
-import sys
 
-# This is required to authorize AccessControl.ZopeGuards to access to this
-# module (bika.lims.workflow) and function/s via skin's python scripts.
-# In this particular case, the function guard_handler is accessed through
-# bika/lims/skins/bika/guard_handler.py, which is called by guard expressions
-# from workflows:
-#       python: here.guard_handler(state_change.transition.id)
-from AccessControl.SecurityInfo import ModuleSecurityInfo
 security = ModuleSecurityInfo('bika.lims.workflow')
 security.declarePublic('guard_handler')
 
@@ -78,11 +73,12 @@ def doActionFor(instance, action_id, reindex_on_success=True):
         # This check is here because sometimes Plone creates a list
         # from submitted form elements.
         if len(instance) > 1:
-            logger.error(
+            logger.warn(
                 "doActionFor is getting an instance parameter which is a list "
                 "with more than one item. Instance: '{}', action_id: '{}'"
                 .format(instance, action_id)
             )
+
         return doActionFor(instance=instance[0], action_id=action_id)
 
     # Ensure the same action is not triggered twice for the same object.
@@ -140,16 +136,15 @@ def _logTransitionFailure(obj, transition_id):
     logger.warning("Transition not found. Check the workflow definition!")
 
 
-def doActionsFor(instance, actions):
+def doActionsFor(instance, actions, reindex_on_success=True):
     """Performs a set of transitions to the instance passed in
     """
-    startpoint = False
-    prevevents = getReviewHistoryActionsList(instance)
+    pool = ActionHandlerPool.get_instance()
+    first_call = pool.is_empty()
     for action in actions:
-        if not startpoint and action in prevevents:
-            continue
-        startpoint = True
-        doActionFor(instance, action)
+        doActionFor(instance, action, reindex_on_success=True)
+    if first_call:
+        pool.resume(reindex_on_success)
 
 
 def BeforeTransitionEventHandler(instance, event):
@@ -461,7 +456,6 @@ def guard_handler(instance, transition_id):
     """
     if not instance:
         return True
-
     clazz_name = instance.portal_type
     # Inspect if bika.lims.workflow.<clazzname>.<guards> module exists
     wf_module = _load_wf_module('{0}.guards'.format(clazz_name.lower()))

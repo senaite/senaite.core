@@ -598,6 +598,20 @@ Create a new Worksheet and assign the Analysis to it:
     >>> analysis = new_analyses[0]
     >>> ws.addAnalysis(analysis)
 
+The analysis is not associated to the Worksheet because the AR is not received:
+
+    >>> analysis.getWorksheet() is None
+    True
+    >>> ws.getAnalyses()
+    []
+    >>> success = do_action_for(ar, "receive")
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+Try to assign again the Analysis to the Worksheet:
+
+    >>> ws.addAnalysis(analysis)
+
 The analysis is associated to the Worksheet:
 
     >>> analysis.getWorksheet().UID() == ws.UID()

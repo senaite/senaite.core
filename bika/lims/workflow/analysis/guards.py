@@ -98,7 +98,12 @@ def guard_unassign(analysis):
             return False
 
     # Cannot unassign if the analysis does not have a worksheet assigned
-    if not analysis.getWorksheet():
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        return False
+
+    # Cannot unassign if the worksheet is not open
+    if api.get_workflow_status_of(worksheet) != "open":
         return False
 
     return True

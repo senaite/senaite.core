@@ -25,7 +25,8 @@ from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import changeWorkflowState, tmpID, to_int
-from bika.lims.workflow import doActionFor, getCurrentState, skip
+from bika.lims.workflow import doActionFor, getCurrentState, skip, \
+    isTransitionAllowed
 from bika.lims.workflow.worksheet import events, guards
 from DateTime import DateTime
 from plone.api.user import has_permission
@@ -154,55 +155,44 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
-        # Analyses can only be added if the state of the worksheet is open
+        # Analysis can only be added if the state of the worksheet is open
         if api.get_workflow_status_of(self) != "open":
             return
 
-        analysis_uid = analysis.UID()
-        parent_uid = analysis.aq_parent.UID()
-        analyses = self.getAnalyses()
-        layout = self.getLayout()
-
-        # check if this analysis is already in the layout
-        if analysis_uid in [l['analysis_uid'] for l in layout]:
+        # Cannot add an analysis that is assigned already
+        if analysis.getWorksheet():
             return
 
-        # If the ws has an instrument assigned for which the analysis
-        # is allowed, set it
-        instr = self.getInstrument()
-        if instr and analysis.isInstrumentAllowed(instr):
-            # TODO After enabling multiple methods for instruments, we are
-            # setting intrument's first method as a method.
-            methods = instr.getMethods()
-            if len(methods) > 0:
+        # Just in case
+        analyses = self.getAnalyses()
+        if analysis in analyses:
+            analyses = filter(lambda an: an != analysis, analyses)
+            self.setAnalyses(analyses)
+            self.updateLayout()
+
+        # Cannot add an analysis if the assign transition is not possible
+        if not isTransitionAllowed(analysis, "assign"):
+            return
+
+        # Assign the instrument from the worksheet to the analysis, if possible
+        instrument = self.getInstrument()
+        if instrument and analysis.isInstrumentAllowed(instrument):
+            # TODO Analysis Instrument + Method assignment
+            methods = instrument.getMethods()
+            if methods:
                 # Set the first method assigned to the selected instrument
                 analysis.setMethod(methods[0])
-            analysis.setInstrument(instr)
-        # If the ws DOESN'T have an instrument assigned but it has a method,
-        # set the method to the analysis
-        method = self.getMethod()
-        if not instr and method and analysis.isMethodAllowed(method):
-            # Set the method
-            analysis.setMethod(method)
+            analysis.setInstrument(instrument)
+        elif not instrument:
+            # If the ws doesn't have an instrument try to set the method
+            method = self.getMethod()
+            if method and analysis.isMethodAllowed(method):
+                analysis.setMethod(method)
 
         # Transition analysis to "assigned"
         doActionFor(analysis, "assign", reindex_on_success=False)
-        self.setAnalyses(analyses + [analysis, ])
-
-        # if our parent has a position, use that one.
-        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout]:
-            position = [int(slot['position']) for slot in layout if
-                        slot['container_uid'] == analysis.aq_parent.UID()][0]
-        else:
-            # prefer supplied position parameter
-            if not position:
-                used_positions = [0, ] + [int(slot['position']) for slot in layout]
-                position = [pos for pos in range(1, max(used_positions) + 2)
-                            if pos not in used_positions][0]
-        self.setLayout(layout + [{'position': position,
-                                  'type': 'a',
-                                  'container_uid': parent_uid,
-                                  'analysis_uid': analysis.UID()}, ])
+        self.setAnalyses(analyses + [analysis])
+        self.addToLayout(analysis, position)
 
         # Reindex
         analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID"])
@@ -214,36 +204,39 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 
     def removeAnalysis(self, analysis):
-        """ delete an analyses from the worksheet and un-assign it
+        """ Unassigns the analysis passed in from the worksheet.
+        Delegates to 'unassign' transition for the analysis passed in
         """
-        # Analyses can only be removed if the state of the worksheet is open
-        if api.get_workflow_status_of(self) != "open":
-            return
+        doActionFor(analysis, "unassign")
 
-        # Transition analysis to "unassigned"
-        doActionFor(analysis, "unassign", reindex_on_success=False)
+    def addToLayout(self, analysis, position=None):
+        """ Adds the analysis passed in to the worksheet's layout
+        """
+        # TODO Redux
+        layout = self.getLayout()
+        parent_uid = api.get_uid(analysis.aq_parent.UID())
+        container_uids = map(lambda slot: slot['container_uid'], layout)
 
-        # overwrite saved context UID for event subscriber
-        self.REQUEST['context_uid'] = self.UID()
-        analyses = filter(lambda an: an != analysis, self.getAnalyses())
-        self.setAnalyses(analyses)
-        layout = [
-            slot for slot in self.getLayout()
-            if slot['analysis_uid'] != analysis.UID()]
+        if parent_uid in container_uids:
+            position = [int(slot['position']) for slot in layout if
+                        slot['container_uid'] == parent_uid][0]
+        elif not position:
+            used_positions = [0, ] + [int(slot['position']) for slot in
+                                      layout]
+            position = [pos for pos in range(1, max(used_positions) + 2)
+                        if pos not in used_positions][0]
+        self.setLayout(layout + [{'position': position,
+                                  'type': 'a',
+                                  'container_uid': parent_uid,
+                                  'analysis_uid': api.get_uid(analysis)}, ])
+
+    def purgeLayout(self):
+        """ Purges the layout of not assigned analyses
+        """
+        uids = map(api.get_uid, self.getAnalyses())
+        layout = filter(lambda slot: slot.get("analysis_uid", None) in uids,
+                        self.getLayout())
         self.setLayout(layout)
-
-        # We've removed one analysis try to submit+verify the Worksheet
-        # TODO Workflow - Worksheet - Revisit this
-        if self.getAnalyses():
-            doActionFor(self, "submit")
-            doActionFor(self, "verify")
-
-        # Reindex
-        analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID"])
-        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
-        if IRequestAnalysis.providedBy(analysis):
-            request = analysis.getRequest()
-            request.reindexObject(idxs=["assigned_state"])
 
     def _getMethodsVoc(self):
         """
