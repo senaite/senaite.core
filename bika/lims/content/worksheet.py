@@ -20,6 +20,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import (IAnalysisRequest, IDuplicateAnalysis,
                                   IReferenceAnalysis, IReferenceSample,
                                   IRoutineAnalysis, IWorksheet)
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.utils import to_utf8 as _c
@@ -153,6 +154,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
+        # Analyses can only be added if the state of the worksheet is open
+        if api.get_workflow_status_of(self) != "open":
+            return
+
         analysis_uid = analysis.UID()
         parent_uid = analysis.aq_parent.UID()
         analyses = self.getAnalyses()
@@ -179,6 +184,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not instr and method and analysis.isMethodAllowed(method):
             # Set the method
             analysis.setMethod(method)
+
+        # Transition analysis to "assigned"
+        doActionFor(analysis, "assign", reindex_on_success=False)
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
@@ -196,20 +204,25 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
 
-        # Reindex the worksheet
-        self.reindexObject()
-
-        if IDuplicateAnalysis.providedBy(analysis):
-            # TODO Workflow - Analysis. Remove this after dup wf refactoring
-            doActionFor(analysis, "assign")
-        else:
-            analysis.reindexObject()
+        # Reindex
+        analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID"])
+        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+        if IRequestAnalysis.providedBy(analysis):
+            request = analysis.getRequest()
+            request.reindexObject(idxs=["assigned_state"])
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 
     def removeAnalysis(self, analysis):
         """ delete an analyses from the worksheet and un-assign it
         """
+        # Analyses can only be removed if the state of the worksheet is open
+        if api.get_workflow_status_of(self) != "open":
+            return
+
+        # Transition analysis to "unassigned"
+        doActionFor(analysis, "unassign", reindex_on_success=False)
+
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
         analyses = filter(lambda an: an != analysis, self.getAnalyses())
@@ -219,15 +232,18 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
 
-        # Reindex the worksheet
-        self.reindexObject()
+        # We've removed one analysis try to submit+verify the Worksheet
+        # TODO Workflow - Worksheet - Revisit this
+        if self.getAnalyses():
+            doActionFor(self, "submit")
+            doActionFor(self, "verify")
 
-        if IDuplicateAnalysis.providedBy(analysis):
-            # If duplicate, remove the analyssi from system
-            self.manage_delObjects(ids=[analysis.id])
-        else:
-            analysis.reindexObject()
-
+        # Reindex
+        analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID"])
+        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+        if IRequestAnalysis.providedBy(analysis):
+            request = analysis.getRequest()
+            request.reindexObject(idxs=["assigned_state"])
 
     def _getMethodsVoc(self):
         """
@@ -808,9 +824,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         query = {
             "portal_type": "Analysis",
             "getServiceUID": wst_service_uids,
-            "review_state": "registered",
+            "review_state": "unassigned",
             "isSampleReceived": True,
-            "isWorksheetAssigned": False,
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
         }
@@ -1632,7 +1647,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in new_ws.getAnalyses():
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'to_be_verified':
-                changeWorkflowState(analysis, "bika_analysis_workflow", "registered")
+                # TODO Workflow - Analysis Retest transition within a Worksheet
+                changeWorkflowState(analysis, "bika_analysis_workflow", "assigned")
         self.REQUEST['context_uid'] = self.UID()
         self.setLayout(old_layout)
         self.setAnalyses(old_ws_analyses)

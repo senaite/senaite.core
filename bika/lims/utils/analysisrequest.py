@@ -120,7 +120,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         part_num += 1
 
     # At this point, we have a fully created AR, with a Sample, Partitions and
-    # Analyses, but the state of all them is the initial ("sample_registered").
+    # Analyses, but the state of all them is the initial ("unassigned").
     # We can now transition the whole thing (instead of doing it manually for
     # each object we created). After and Before transitions will take care of
     # cascading and promoting the transitions in all the objects "associated"

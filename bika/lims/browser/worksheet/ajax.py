@@ -61,7 +61,7 @@ class AttachAnalyses():
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
-        attachable_states = ('assigned', 'registered', 'to_be_verified')
+        attachable_states = ('assigned', 'unassigned', 'to_be_verified')
         analysis_to_slot = {}
         for s in self.context.getLayout():
             analysis_to_slot[s['analysis_uid']] = int(s['position'])

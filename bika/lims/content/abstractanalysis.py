@@ -951,30 +951,23 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalyst(self):
-        """Returns the identifier of the assigned analyst. If there is no
-        analyst assigned, and this analysis is attached to a worksheet,
-        retrieves the analyst assigned to the parent worksheet
+        """Returns the Analyst assigned to the worksheet this
+        analysis is assigned to
         """
-        field = self.getField('Analyst')
-        analyst = field and field.get(self) or ''
-        if not analyst:
-            # Is assigned to a worksheet?
-            worksheet = self.getWorksheet()
-            if worksheet:
-                analyst = worksheet.getAnalyst()
-                field.set(self, analyst)
-        return analyst if analyst else ''
+        worksheet = self.getWorksheet()
+        if worksheet:
+            return worksheet.getAnalyst() or ""
+        return ""
 
     @security.public
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
         """
-        mtool = getToolByName(self, 'portal_membership')
-        analyst = self.getAnalyst().strip()
-        analyst_member = mtool.getMemberById(analyst)
-        if analyst_member:
-            return analyst_member.getProperty('fullname')
-        return ''
+        analyst = self.getAnalyst()
+        if analyst:
+            user = api.get_user(analyst.strip())
+            return user and user.getProperty("fullname") or ""
+        return ""
 
     # TODO Workflow, Analysis - Remove
     @security.public
@@ -1089,10 +1082,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return parent.Title()
 
     @security.public
-    def isWorksheetAssigned(self):
-        return self.getWorksheet() and True or False
-
-    @security.public
     def getWorksheetUID(self):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
@@ -1204,33 +1193,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return interims[0].get('value', '')
 
     @security.public
-    def guard_sample_transition(self):
-        return guards.sample(self)
-
-    @security.public
     def guard_retract_transition(self):
         return guards.retract(self)
-
-    @security.public
-    def guard_receive_transition(self):
-        return guards.receive(self)
 
     @security.public
     def guard_publish_transition(self):
         return guards.publish(self)
 
     @security.public
-    def guard_import_transition(self):
-        return guards.import_transition(self)
-
-    @security.public
     def guard_attach_transition(self):
         return guards.attach(self)
-
-    @security.public
-    def guard_assign_transition(self):
-        return guards.assign(self)
-
-    @security.public
-    def guard_unassign_transition(self):
-        return guards.unassign(self)

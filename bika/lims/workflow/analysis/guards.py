@@ -5,29 +5,16 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.permissions import Unassign
 from bika.lims import workflow as wf
 
-
-def sample(obj):
-    """ Returns true if the sample transition can be performed for the sample
-    passed in.
-    :returns: true or false
-    """
-    return wf.isBasicTransitionAllowed(obj)
 
 def retract(obj):
     """ Returns true if the sample transition can be performed for the sample
     passed in.
     :returns: true or false
     """
-    return wf.isBasicTransitionAllowed(obj)
-
-
-def receive(obj):
     return wf.isBasicTransitionAllowed(obj)
 
 
@@ -44,35 +31,12 @@ def publish(obj):
     return wf.isBasicTransitionAllowed(obj)
 
 
-def import_transition(obj):
-    return wf.isBasicTransitionAllowed(obj)
-
-
 def attach(obj):
     if not wf.isBasicTransitionAllowed(obj):
         return False
     if not obj.getAttachment():
         return obj.getAttachmentOption() != 'r'
     return True
-
-
-def assign(obj):
-    return wf.isBasicTransitionAllowed(obj)
-
-
-def unassign(obj):
-    """Check permission against parent worksheet
-    """
-    mtool = getToolByName(obj, "portal_membership")
-    if not wf.isBasicTransitionAllowed(obj):
-        return False
-    ws = obj.getWorksheet()
-    if not ws:
-        return False
-    if wf.isBasicTransitionAllowed(ws):
-        if mtool.checkPermission(Unassign, ws):
-            return True
-    return False
 
 
 def dependencies_guard(analysis, transition_id):
@@ -89,6 +53,54 @@ def dependencies_guard(analysis, transition_id):
         if not wf.isTransitionAllowed(dependency, transition_id):
             if not wf.wasTransitionPerformed(dependency, transition_id):
                 return False
+    return True
+
+
+def guard_assign(analysis):
+    """Return whether the transition "assign" can be performed or not
+    """
+    # Cannot assign if the analysis is cancelled
+    if not api.is_active(analysis):
+        return False
+
+    # Cannot assign if the Sample has not been received
+    if not analysis.isSampleReceived():
+        return False
+
+    # Check if only LabManager and Manager roles can manage worksheets
+    if analysis.bika_setup.getRestrictWorksheetManagement():
+        member = api.get_current_user()
+        super_roles = ["LabManager", "Manager"]
+        if (len(set(super_roles) - set(member.getRoles())) == len(super_roles)):
+            # Current user is not a "super-user"
+            return False
+
+    # Cannot assign if the analysis has a worksheet assigned already
+    if analysis.getWorksheet():
+        return False
+
+    return True
+
+
+def guard_unassign(analysis):
+    """Return whether the transition "unassign" can be performed or not
+    """
+    # Cannot assign if the analysis is cancelled
+    if not api.is_active(analysis):
+        return False
+
+    # Check if only LabManager and Manager roles can manage worksheets
+    if analysis.bika_setup.getRestrictWorksheetManagement():
+        member = api.get_current_user()
+        super_roles = ["LabManager", "Manager"]
+        if (len(set(super_roles) - set(member.getRoles())) == len(super_roles)):
+            # Current user is not a "super-user"
+            return False
+
+    # Cannot unassign if the analysis does not have a worksheet assigned
+    if not analysis.getWorksheet():
+        return False
+
     return True
 
 

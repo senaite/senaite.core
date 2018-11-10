@@ -251,7 +251,6 @@ def add_metadata(portal, catalog_id, column, refresh_catalog=False):
         logger.info("Metadata '{}' already in catalog '{}' [SKIP]"
                     .format(column, catalog_id))
         return
-
     catalog.addColumn(column)
 
     if refresh_catalog:
@@ -267,6 +266,7 @@ def del_metadata(portal, catalog_id, column, refresh_catalog=False):
     if column not in catalog.schema():
         logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
                     .format(column, catalog_id))
+        return
     catalog.delColumn(column)
 
     if refresh_catalog:
@@ -385,6 +385,8 @@ def remove_not_requested_analyses_view(portal):
 def update_workflows(portal):
     logger.info("Updating workflows ...")
 
+    # IMPORTANT: The order of function calls is important!
+
     # Need to know first for which workflows we'll need later to update role
     # mappings. This will allow us to update role mappings for those required
     # objects instead of all them. I know, would be easier to just do all them,
@@ -477,19 +479,22 @@ def decouple_analyses_from_sample_workflow(portal):
     wf_id = "bika_analysis_workflow"
     affected_rs = ["sample_registered", "to_be_sampled", "sampled",
                    "sample_due", "sample_received", "to_be_preserved",
-                   "not_requested"]
+                   "not_requested", "registered"]
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById(wf_id)
     query = dict(portal_type="Analysis", review_state=affected_rs)
     brains = api.search(query, CATALOG_ANALYSIS_LISTING)
     total = len(brains)
     for num, brain in enumerate(brains):
-        if num % 100 == 0:
-            logger.info("Restoring state to 'registered': {0}/{1}"
-                        .format(num, total))
         # Set state
         analysis = api.get_object(brain)
-        changeWorkflowState(analysis, wf_id, "registered")
+        target_state = analysis.getWorksheet() and "assigned" or "unassigned"
+
+        if num % 100 == 0:
+            logger.info("Restoring state to '{}': {}/{}"
+                        .format(target_state, num, total))
+
+        changeWorkflowState(analysis, wf_id, target_state)
 
         # Update role mappings
         workflow.updateRoleMappingsFor(analysis)
@@ -499,18 +504,14 @@ def decouple_analyses_from_sample_workflow(portal):
 
 
 def remove_worksheet_analysis_workflow(portal):
-    logger.info("Purging worksheet analysis workflow remanents ...")
+    logger.info("Purging worksheet analysis workflow residues ...")
+
     del_metadata(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
                  column="worksheetanalysis_review_state",
                  refresh_catalog=False)
 
     del_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
               index_name="worksheetanalysis_review_state")
-
-    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
-              index_name="isWorksheetAssigned",
-              index_attribute="isWorksheetAssigned",
-              index_metatype="BooleanIndex")
 
 
 def update_role_mappings(portal, queries):

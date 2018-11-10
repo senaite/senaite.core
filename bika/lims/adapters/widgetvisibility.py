@@ -249,9 +249,10 @@ class SampleDateReceived(object):
             # In states earlier than `sample_received`, the field is uneditable
             if not wf.wasTransitionPerformed(context, "receive"):
                 return mode == 'edit' and 'invisible' or 'visible'
-            # The edition of Sample Date Received is only permitted if all the
-            # analyses are in "registered" state (w/o submitted results)
+            # The edition of Sample Date Received is only permitted if no
+            # results have been submitted yet
+            pending_states = ["unassigned", "assigned"]
             for analysis in context.getAnalyses():
-                if analysis.review_state != "registered":
+                if analysis.review_state not in pending_states:
                     return mode == 'edit' and 'invisible' or 'visible'
         return state

@@ -84,7 +84,7 @@ class AnalysisCategory(BaseContent):
         dept = field.get(self)
         return dept.Title() if dept else ''
 
-    def workflow_script_deactivat(self):
+    def workflow_script_deactivate(self):
         # A instance cannot be deactivated if it contains services
         pu = getToolByName(self, 'plone_utils')
         bsc = getToolByName(self, 'bika_setup_catalog')

@@ -4,11 +4,13 @@
              title="Bika Analysis Workflow"
              description=""
              state_variable="review_state"
-             initial_state="registered"
+             initial_state="unassigned"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
   <permission>BIKA: Cancel and reinstate</permission>
+  <permission>BIKA: Assign analyses</permission>
+  <permission>BIKA: Unassign analyses</permission>
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: Retract</permission>
@@ -19,10 +21,14 @@
   <permission>Review portal content</permission>
 
 
-  <!-- ******* STATES ******* -->
-
-  <!-- State: registered (initial state) -->
-  <state state_id="registered" title="Registered" i18n:attributes="title">
+  <!-- State: unassigned (initial state)
+  Analysis is not assigned to a Worksheet.
+  Same exit-transitions and Permissions as "assigned" state, cause by default,
+  the system allows users to submit results directly from the Analysis Request
+  manage results view, without the need of assigning them to a Worksheet first.
+  -->
+  <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
+    <exit-transition transition_id="assign" />
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
@@ -45,6 +51,56 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Assign analyses" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: assigned (initial state)
+  Analysis is assigned to a Worksheet.
+  -->
+  <state state_id="assigned" title="Assigned" i18n:attributes="title">
+    <exit-transition transition_id="unassign" />
+    <exit-transition transition_id="submit"/>
+    <exit-transition transition_id="reject" />
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Unassign analyses" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
     </permission-map>
   </state>
 
@@ -189,8 +245,27 @@
     </permission-map>
   </state>
 
+  <!-- Transition: assign (to a worksheet) -->
+  <transition transition_id="assign" title="Assign" new_state="assigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Assign to worksheet</action>
+    <guard>
+      <guard-permission>BIKA: Assign analyses</guard-permission>
+      <guard-expression>python:here.guard_handler("assign")</guard-expression>
+    </guard>
+  </transition>
 
-  <!-- ******* TRANSITIONS ******* -->
+  <!-- Transition: unassign (from a worksheet) -->
+  <transition transition_id="unassign" title="Unassign" new_state="unassigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Unassign from worksheet</action>
+    <guard>
+      <guard-permission>BIKA: Unassign analyses</guard-permission>
+      <guard-expression>python:here.guard_handler("unassign")</guard-expression>
+    </guard>
+  </transition>
 
   <!-- Transition: submit -->
   <transition transition_id="submit" title="Submit" new_state="to_be_verified"

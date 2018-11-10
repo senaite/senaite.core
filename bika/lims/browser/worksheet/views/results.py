@@ -86,7 +86,7 @@ class ManageResultsView(BrowserView):
     def getWideInterims(self):
         """ Returns a dictionary with the analyses services from the current
             worksheet which have at least one interim with 'Wide' attribute
-            set to true and state 'sample_received'
+            set to true and that have not been yet submitted
             The structure of the returned dictionary is the following:
             <Analysis_keyword>: {
                 'analysis': <Analysis_name>,
@@ -101,9 +101,10 @@ class ManageResultsView(BrowserView):
             }
         """
         outdict = {}
-        allowed_states = ['registered']
+        allowed_states = ['assigned', 'unassigned']
         for analysis in self._getAnalyses():
             wf = getToolByName(analysis, 'portal_workflow')
+            # TODO Workflow - Analysis Use a query instead of this
             if wf.getInfoFor(analysis, 'review_state') not in allowed_states:
                 continue
 
@@ -152,6 +153,7 @@ class ManageResultsView(BrowserView):
             message = "%s: %s" % (message, (', '.join(invalid)))
             self.context.plone_utils.addPortalMessage(message, 'warn')
 
+    # TODO Department filtering
     def _getAnalyses(self):
         """
         This function returns a list with the analyses related to the worksheet
@@ -162,6 +164,7 @@ class ManageResultsView(BrowserView):
         ans = [a for a in self.context.getAnalyses() if self._isItemAllowed(a)]
         return ans
 
+    # TODO Department filtering
     def _isItemAllowed(self, obj):
         """
         It checks if the analysis service can be added to the list depending

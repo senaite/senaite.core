@@ -40,9 +40,8 @@ class AddAnalysesView(BikaListingView):
         # add_analyses search view - first batch of analyses, latest first.
         self.sort_on = 'Priority'
         self.contentFilter = {'portal_type': 'Analysis',
-                              'review_state':'registered',
+                              'review_state':'unassigned',
                               'isSampleReceived': True,
-                              'isWorksheetAssigned': False,
                               'sort_on': 'getPrioritySortkey',
                               'cancellation_state':'active'}
         self.base_url = self.context.absolute_url()

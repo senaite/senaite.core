@@ -283,7 +283,7 @@ as the invalidated (retest):
 
     >>> not_registered = 0
     >>> for analysis in retest2.getAnalyses(full_objects=True):
-    ...     if api.get_workflow_status_of(analysis) != 'registered':
+    ...     if api.get_workflow_status_of(analysis) != 'unassigned':
     ...         registered += 1
     >>> not_registered
     0

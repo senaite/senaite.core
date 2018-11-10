@@ -8,11 +8,25 @@
 import transaction
 from Products.CMFCore.utils import getToolByName
 
+from bika.lims import logger
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
+
+
+def after_assign(analysis):
+    """Function triggered after an 'assign' transition for the analysis passed
+    in is performed.
+    """
+    pass
+
+
+def after_unassign(analysis):
+    """Function triggered after an 'unassign' transition for the analysis passed
+    in is performed.
+    """
+    pass
 
 
 def after_submit(analysis):
@@ -24,7 +38,6 @@ def after_submit(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
-
     # Promote to analyses this analysis depends on
     for dependency in analysis.getDependencies():
         doActionFor(dependency, "submit")
@@ -127,20 +140,6 @@ def after_verify(analysis):
         doActionFor(analysis.getRequest(), 'verify')
 
 
-def after_assign(obj):
-    """Function triggered after an 'assign' transition for the analysis passed
-    in is performed."""
-    # Reindex the entire request to update the FieldIndex `assigned_state`
-    _reindex_request(obj, idxs=['assigned_state',])
-
-
-def after_unassign(obj):
-    """Function triggered after an 'unassign' transition for the analysis passed
-    in is performed."""
-    # Reindex the entire request to update the FieldIndex `assigned_state`
-    _reindex_request(obj, idxs=['assigned_state',])
-
-
 def after_cancel(obj):
     if skip(obj, "cancel"):
         return
@@ -174,7 +173,7 @@ def after_attach(obj):
     if state == "attachment_due" and not skip(ar, "attach", peek=True):
         can_attach = True
         for a in ar.getAnalyses():
-            if a.review_state in ("registered", "attachment_due"):
+            if a.review_state in ("unassigned", "assigned", "attachment_due"):
                 can_attach = False
                 break
         if can_attach:
@@ -189,7 +188,7 @@ def after_attach(obj):
             can_attach = True
             for a in ws.getAnalyses():
                 state = workflow.getInfoFor(a, "review_state")
-                if state in ("registered", "attachment_due", "assigned"):
+                if state in ("unassigned", "assigned", "attachment_due"):
                     can_attach = False
                     break
             if can_attach:

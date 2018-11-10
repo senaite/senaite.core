@@ -95,7 +95,7 @@ Cannot submit if the Analysis Request has not been yet received:
     >>> transitioned[0]
     False
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 But if I receive the Analysis Request:
 
@@ -225,10 +225,10 @@ Set results for some of the analyses only:
     >>> analyses[0].setResult('12')
     >>> analyses[1].setResult('12')
 
-We've set some results, but all analyses are still in `registered`:
+We've set some results, but all analyses are still in `unassigned`:
 
     >>> map(api.get_workflow_status_of, analyses)
-    ['registered', 'registered', 'registered']
+    ['unassigned', 'unassigned', 'unassigned']
 
 Transition some of them:
 
@@ -258,7 +258,7 @@ If we try to transition the remaining analysis w/o result, nothing happens:
     False
 
     >>> api.get_workflow_status_of(analyses[2])
-    'registered'
+    'unassigned'
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
@@ -271,7 +271,7 @@ Even if we try with an empty or None result:
     False
 
     >>> api.get_workflow_status_of(analyses[2])
-    'registered'
+    'unassigned'
 
     >>> analyses[2].setResult(None)
     >>> transitioned = do_action_for(analyses[2], "submit")
@@ -279,7 +279,7 @@ Even if we try with an empty or None result:
     False
 
     >>> api.get_workflow_status_of(analyses[2])
-    'registered'
+    'unassigned'
 
 But will work if we try with a result of 0:
 
@@ -434,7 +434,7 @@ Cannot submit if no result is set:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 But even if we set a result, we cannot submit because interims are missing:
 
@@ -447,7 +447,7 @@ But even if we set a result, we cannot submit because interims are missing:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 So, if the analysis has interims defined, all them are required too:
 
@@ -463,7 +463,7 @@ So, if the analysis has interims defined, all them are required too:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 Even if we set a non-valid (None, empty value) to an interim:
 
@@ -476,7 +476,7 @@ Even if we set a non-valid (None, empty value) to an interim:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
     >>> analysis.setInterimValue("interim_2", '')
     >>> analysis.getInterimValue("interim_2")
@@ -487,7 +487,7 @@ Even if we set a non-valid (None, empty value) to an interim:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 But it will work if the value is 0:
 
@@ -519,7 +519,7 @@ Might happen the other way round. We set interims but not a result:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 Still, the result is required:
 
@@ -570,7 +570,7 @@ Cannot submit if no result is set:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 TODO This should not be like this, but the calculation is performed by
 `ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
@@ -589,7 +589,7 @@ Cannot transition because IT3 and IT4 have None/empty values as default:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
 Let's set a value for those interims:
 
@@ -600,7 +600,7 @@ Let's set a value for those interims:
     False
 
     >>> api.get_workflow_status_of(analysis)
-    'registered'
+    'unassigned'
 
     >>> analysis.setInterimValue("IT4", 4)
 
@@ -661,7 +661,7 @@ Cannot submit `Fe`, because there is no result for `Cu` yet:
     False
 
     >>> api.get_workflow_status_of(fe_analysis)
-    'registered'
+    'unassigned'
 
 And we cannot submit `Au`, because `Cu`, a dependency of `Fe`, has no result:
 
@@ -670,7 +670,7 @@ And we cannot submit `Au`, because `Cu`, a dependency of `Fe`, has no result:
     False
 
     >>> api.get_workflow_status_of(au_analysis)
-    'registered'
+    'unassigned'
 
 Set a result for `Cu` and submit:
 
@@ -685,7 +685,7 @@ Set a result for `Cu` and submit:
 But `Fe` won't follow, cause only dependencies follow, but not dependents:
 
     >>> api.get_workflow_status_of(fe_analysis)
-    'registered'
+    'unassigned'
 
 If we try to submit `Au`, the submission will not take place:
 
@@ -694,7 +694,7 @@ If we try to submit `Au`, the submission will not take place:
     False
 
     >>> api.get_workflow_status_of(au_analysis)
-    'registered'
+    'unassigned'
 
 Because of the missing interim. Set the interim for `Au`:
 
@@ -732,11 +732,11 @@ The status of the Analysis Request is `sample_received`:
     >>> api.get_workflow_status_of(ar)
     'sample_received'
 
-And the status of the Analysis is `registered`:
+And the status of the Analysis is `unassigned`:
 
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> map(api.get_workflow_status_of, analyses)
-    ['registered']
+    ['unassigned']
 
 Set a result:
 

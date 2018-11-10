@@ -19,9 +19,13 @@ def assigned_state(instance):
     Request has at least one analysis in `unassigned` state.
     Otherwise, returns `assigned`
     """
-    analyses = instance.getAnalyses(full_objects=True,
-                                    isWorksheetAssigned=False)
-    return analyses and "unassigned" or "assigned"
+    analyses = instance.getAnalyses()
+    if not analyses:
+        return "unassigned"
+    for analysis in analyses:
+        if not analysis.getWorksheetUID:
+            return "unassigned"
+    return "assigned"
 
 
 @indexer(IAnalysisRequest)

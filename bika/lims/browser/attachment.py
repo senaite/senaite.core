@@ -159,14 +159,14 @@ class AttachmentsView(BrowserView):
             # XXX: refactor out dependency to this view.
             view = api.get_view("manage_results", context=self.context, request=self.request)
             analyses = view._getAnalyses()
-
+            allowed_states = ["assigned", "unassigned", "to_be_verified"]
             for analysis in analyses:
                 if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
                     continue
                 if not analysis.getServiceUID() == service_uid:
                     continue
                 review_state = workflow.getInfoFor(analysis, 'review_state', '')
-                if review_state not in ['registered', 'to_be_verified']:
+                if review_state not in allowed_states:
                     continue
 
                 # create attachment

@@ -356,9 +356,9 @@ class AnalysisResultsImporter(Logger):
                                        'attachment_due',
                                        'to_be_verified']
         if not self._allowed_analysis_states:
-            self._allowed_analysis_states = ['registered',
-                                             'attachment_due',
-                                             'to_be_verified']
+            self._allowed_analysis_states = [
+                'unassigned', 'assigned', 'attachment_due', 'to_be_verified'
+            ]
         if not self._idsearch:
             self._idsearch = ['getId']
         self.instrument_uid = instrument_uid

@@ -55,7 +55,6 @@ _indexes_dict = {
     'getPrioritySortkey': 'FieldIndex',
     'getAncestorsUIDs': 'KeywordIndex',
     'isSampleReceived': 'BooleanIndex',
-    'isWorksheetAssigned': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
