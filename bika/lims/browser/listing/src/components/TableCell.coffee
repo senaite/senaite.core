@@ -94,24 +94,6 @@ class TableCell extends React.Component
                  dangerouslySetInnerHTML={{__html: after[item_key]}}>
            </span>
 
-  get_editable_fields: ->
-    ###
-     * Workaround for manual editable fields
-    ###
-
-    editable_fields =
-      # seems like these fields in add_analyses view should be always editable
-      add_analyses: [
-        "warn_min"
-        "min"
-        "warn_max"
-        "max"
-        "Price"
-        "Hidden"
-      ]
-
-    return []
-
   is_edit_allowed: ->
     ###
      * Checks if the field key is listed in the `allow_edit` list
@@ -127,13 +109,6 @@ class TableCell extends React.Component
 
     # check if the field is listed in the item's allow_edit list
     if item_key in item.allow_edit
-      return yes
-
-    # XXX Fix inconsistent behavior
-    if item_key of item.choices
-      return yes
-
-    if item_key in @get_editable_fields()
       return yes
 
     return no
@@ -178,7 +153,7 @@ class TableCell extends React.Component
         <Select
           key={name}
           name={fieldname}
-          value={value}
+          defaultValue={value}
           title={column_title}
           disabled={disabled}
           required={required}
