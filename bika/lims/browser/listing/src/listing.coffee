@@ -403,7 +403,16 @@ class ListingController extends React.Component
      * Set the editable field of a table cell
     ###
     console.debug "ListingController::setEditableField: uid=#{uid} name=#{name} value=#{value}"
-    @selectUID uid, on
+
+    # Select the whole row if an editable field changed its value
+    if not @is_uid_selected uid
+      @selectUID uid, on
+
+  is_uid_selected: (uid) ->
+    ###
+     * Check if the UID is selected
+    ###
+    return uid in @state.selected_uids
 
   get_review_state_by_id: (id) ->
     ###
