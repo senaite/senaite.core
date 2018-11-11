@@ -1,14 +1,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal"
-    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    metal:use-macro="here/main_template/macros/master"
-    i18n:domain="senaite.core">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
   <head>
     <title></title>
     <metal:block fill-slot="javascript_head_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
-
       <!-- TODO move to senaite.lims bootstrap css -->
       <style type="text/css">
        #remarks-widget {
@@ -27,91 +26,107 @@
     </metal:block>
   </head>
 
-<body>
+  <body>
 
-  <metal:content-title fill-slot="content-title">
-    <h1>
-      <img tal:condition="view/icon | nothing"
-           src="" tal:attributes="src view/icon"/>
-      <span class="documentFirstHeading" tal:content="context/id"></span>
-      <span class="barcode" tal:attributes="value context/id"></span>
-      <img tal:condition="python:context.getSample().getSampleType().getHazardous()"
-           title="Hazardous"
-           i18n:attributes="value"
-           tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
-      <img tal:condition="python:context.getInvoiceExclude()"
-           title="Exclude from invoice"
-           i18n:attributes="value"
-           tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
-      <img tal:condition="python:context.getRetest()"
-           title="Results have been withdrawn"
-           i18n:attributes="value"
-           tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/delete_big.png"/>
-    </h1>
-  </metal:content-title>
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <!-- AR Icon -->
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <!-- Title -->
+        <span class="documentFirstHeading" tal:content="context/id"></span>
+        <!-- Barcode -->
+        <span class="barcode" tal:attributes="value context/id"></span>
+        <!-- Hazardous Icon -->
+        <img tal:condition="python:view.is_hazardous()"
+             title="Hazardous"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
+        <!-- Exclude Invoice Icon -->
+        <img tal:condition="python:view.exclude_invoice()"
+             title="Exclude from invoice"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
+        <!-- Retest Icon -->
+        <img tal:condition="python:view.is_retest()"
+             title="Results have been withdrawn"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/delete_big.png"/>
+      </h1>
+    </metal:content-title>
 
-  <metal:content-description fill-slot="content-description">
-  </metal:content-description>
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
 
-  <metal:content-core fill-slot="content-core">
+    <metal:content-core fill-slot="content-core">
 
-    <!-- Header Table -->
-    <span tal:replace="structure view/header_table"/>
+      <!-- Header Table -->
+      <span tal:replace="structure view/header_table"/>
 
-    <!-- Refactored Remarks Widget
-         https://github.com/senaite/senaite.core/pull/920 -->
-    <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-             mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
-             field python:context.Schema()['Remarks'];
-             errors python:{};">
-      <h3>
-        <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
-        <span i18n:translate="">Remarks</span>
-      </h3>
-      <div class="well">
-        <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
-      </div>
-    </div>
-
-    <form id="analysisrequest_edit_form"
-          name="analysisrequest_edit_form"
-          action="workflow_action"
-          method="POST"
-          enctype="multipart/form-data">
-
-      <!-- POC Tables -->
-      <tal:poc_tables tal:repeat="poc python:view.get_points_of_capture()">
-        <h3 style="margin-top:1em;"
-            tal:define="title python:view.get_poc_title(poc)">
-          <img tal:attributes="title title;
-                               src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
-          <span tal:content="title"/>
+      <!-- Remarks Widget
+           https://github.com/senaite/senaite.core/pull/920 -->
+      <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+               mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+               field python:context.Schema()['Remarks'];
+               errors python:{};">
+        <h3>
+          <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+          <span i18n:translate="">Remarks</span>
         </h3>
-        <span tal:replace="structure python:view.render_analyses_table(table=poc)"/>
-      </tal:poc_tables>
-      <!-- /POC Tables -->
+        <div class="well">
+          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+        </div>
+      </div>
+      <!-- /Remarks Widget -->
 
-      <!-- QC Table -->
-      <h3 style="margin-top:1em;"
-          tal:define="title string:QC">
-        <img tal:attributes="title title;
-                             src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
-        <span tal:content="title"/>
-      </h3>
-      <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
-      <!-- QC Table -->
+      <form id="analysisrequest_edit_form"
+            name="analysisrequest_edit_form"
+            action="workflow_action"
+            method="POST"
+            enctype="multipart/form-data">
 
-    </form>
+        <!-- POC Tables -->
+        <tal:poc_tables tal:repeat="poc python:view.get_points_of_capture()">
+          <div class="row">
+            <div class="col-sm-12">
+              <h3 style="margin-top:1em;"
+                  tal:define="title python:view.get_poc_title(poc)">
+                <img tal:attributes="title title;
+                                     src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+                <span tal:content="title"/>
+              </h3>
+              <span tal:replace="structure python:view.render_analyses_table(table=poc)"/>
+            </div>
+          </div>
+        </tal:poc_tables>
+        <!-- /POC Tables -->
 
-    <!-- Results interpretation -->
-    <h3 style="margin-top:1em;">
-        <img title="Results interpretation"
-             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/referencesample.png"/>
-        <span i18n:translate="">Results interpretation</span>
-    </h3>
-    <tal:parts replace="structure view/riview"/>
-    <!-- /Results interpretation -->
+        <!-- QC Table -->
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+              <span i18n:translate="">QC Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
+          </div>
+        </div>
+        <!-- QC Table -->
 
-  </metal:content-core>
-</body>
+      </form>
+
+      <!-- Results interpretation -->
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/referencesample.png"/>
+            <span i18n:translate="">Results interpretation</span>
+          </h3>
+          <tal:parts replace="structure view/riview"/>
+        </div>
+      </div>
+      <!-- /Results interpretation -->
+
+    </metal:content-core>
+  </body>
 </html>

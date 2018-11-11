@@ -165,6 +165,22 @@ class AnalysisRequestViewView(BrowserView):
         """
         return api.get_cancellation_status(self.context) == "cancelled"
 
+    def is_hazardous(self):
+        """Checks if the AR is hazardous
+        """
+        sample = self.context.getSample()
+        sample_type = sample.getSampleType()
+        return sample_type.getHazardous()
+
+    def is_retest(self):
+        """Checks if the AR is a retest
+        """
+        return self.context.getRetest()
+
+    def exclude_invoice(self):
+        """True if the invoice should be excluded
+        """
+
     def show_categories(self):
         """Check the setup if analysis services should be categorized
         """
