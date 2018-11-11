@@ -415,9 +415,9 @@ def update_workflows(portal):
 
 def remove_orphan_duplicates(portal):
     logger.info("Removing orphan duplicates ...")
-    query = dict(portal_type="DuplicateAnalysis")
-    brains = filter(lambda dup: not dup.getWorksheetUID,
-                  api.search(query, CATALOG_ANALYSIS_LISTING))
+    query = dict(portal_type="DuplicateAnalysis",
+                 review_state="unassigned")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
     total = len(brains)
     for num, brain in enumerate(brains):
         orphan = api.get_object(brain)
@@ -437,9 +437,9 @@ def remove_orphan_duplicates(portal):
 
 def remove_orphan_reference_analyses(portal):
     logger.info("Removing orphan reference analyses ...")
-    query = dict(portal_type="ReferenceAnalysis")
-    brains = filter(lambda ref: not ref.getWorksheetUID,
-                    api.search(query, CATALOG_ANALYSIS_LISTING))
+    query = dict(portal_type="ReferenceAnalysis",
+                 review_state="unassigned")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
     total = len(brains)
     for num, brain in enumerate(brains):
         orphan = api.get_object(brain)
@@ -450,7 +450,7 @@ def remove_orphan_reference_analyses(portal):
             total -= 1
             continue
         elif orphan.getInstrument():
-            # This is an calibration test, do nothing!
+            # This is a calibration test, do nothing!
             if not brain.getInstrumentUID:
                 orphan.reindexObject()
             total -= 1
