@@ -129,6 +129,9 @@ class TableHeaderRow extends React.Component
       title = column.title
       index = @get_sort_index key, column
       sortable = index or no
+      # overwrite if sortable is explicitly set to false
+      if column.sortable is no
+        sortable = no
       # sort_on is the current sort index
       sort_on = @props.sort_on or "created"
       sort_order = @props.sort_order or "ascending"
@@ -138,7 +141,7 @@ class TableHeaderRow extends React.Component
       cls = [key]
       if sortable
         cls.push "sortable"
-      if is_sort_column
+      if is_sort_column and sortable
         cls.push "active #{sort_order}"
       cls = cls.join " "
 
@@ -150,7 +153,7 @@ class TableHeaderRow extends React.Component
           index={index}
           sort_order={sort_order}
           className={cls}
-          onClick={@on_header_column_click}
+          onClick={if sortable then @on_header_column_click else undefined}
           />
       )
 
