@@ -6,9 +6,9 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims.browser.analyses.view import AnalysesView
-from bika.lims.browser.analyses.qc import QCAnalysesView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.analyses.qc import QCAnalysesView
+from bika.lims.browser.analyses.view import AnalysesView
 
 
 class BaseAnalysesTable(AnalysesView):
