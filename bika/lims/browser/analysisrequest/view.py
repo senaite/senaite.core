@@ -55,9 +55,6 @@ class AnalysisRequestViewView(BrowserView):
 
     @timeit()
     def __call__(self):
-        ar = self.context
-        workflow = api.get_tool("portal_workflow")
-
         if "transition" in self.request.form:
             doActionFor(self.context, self.request.form["transition"])
 
@@ -71,8 +68,9 @@ class AnalysisRequestViewView(BrowserView):
 
             # Redirect to manage results view if not cancelled
             if not self.is_cancelled():
-                manage_results_url = "/".join([self.context.absolute_url(),
-                                               "manage_results"])
+                manage_results_url = "{}/{}".format(
+                    self.context.absolute_url(),
+                    "manage_results")
                 self.request.response.redirect(manage_results_url)
                 return
 
@@ -101,51 +99,14 @@ class AnalysisRequestViewView(BrowserView):
         # render header table
         self.header_table = HeaderTableView(self.context, self.request)()
 
-        # Create Field and Lab Analyses tables
-        self.tables = {}
-        for poc in POINTS_OF_CAPTURE:
-            if self.context.getAnalyses(getPointOfCapture=poc):
-                t = self.createAnalysesView(
-                    self.context,
-                    self.request,
-                    getPointOfCapture=poc,
-                    show_categories=self.show_categories(),
-                    getRequestUID=api.get_uid(self.context))
-                t.allow_edit = True
-                t.form_id = "%s_analyses" % poc
-                t.review_states[0]["transitions"] = [{"id": "submit"},
-                                                     {"id": "retract"},
-                                                     {"id": "verify"}]
-                t.show_workflow_action_buttons = True
-                t.show_select_column = True
-                if self.can_edit_field_results() and poc == "field":
-                    t.review_states[0]["columns"].remove("DueDate")
-                self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
-
-        # Create QC Analyses View for this AR
-        qcview = self.createQCAnalyesView(
-            self.context,
-            self.request,
-            show_categories=self.show_categories())
-
-        qcview.allow_edit = False
-        qcview.show_select_column = False
-        qcview.show_workflow_action_buttons = False
-        qcview.form_id = "%s_qcanalyses"
-        qcview.review_states[0]["transitions"] = [
-            {"id": "submit"},
-            {"id": "retract"},
-            {"id": "verify"}]
-        self.qctable = qcview.contents_table()
-
         # Create the ResultsInterpretation by department view
         from resultsinterpretation import ARResultsInterpretationView
-        self.riview = ARResultsInterpretationView(ar, self.request)
+        self.riview = ARResultsInterpretationView(self.context, self.request)
 
         # If a general retracted is done, rise a waring
-        if workflow.getInfoFor(ar, 'review_state') == 'sample_received':
+        if api.get_workflow_status_of(self.context) == "sample_received":
             allstatus = list()
-            for analysis in ar.getAnalyses():
+            for analysis in self.context.getAnalyses():
                 status = api.get_workflow_status_of(analysis)
                 if status not in ["retracted", "to_be_verified", "verified"]:
                     allstatus = []
@@ -158,6 +119,24 @@ class AnalysisRequestViewView(BrowserView):
 
         self.renderMessages()
         return self.template()
+
+    def render_analyses_table(self, table="lab"):
+        """Render Analyses Table
+        """
+        view_name = "table_{}_analyses".format(table)
+        view = api.get_view(
+            view_name, context=self.context, request=self.request)
+        return view.contents_table()
+
+    def get_points_of_capture(self):
+        """Get the registered points of capture
+        """
+        return POINTS_OF_CAPTURE.keys()
+
+    def get_poc_title(self, poc):
+        """Return the title of the point of capture
+        """
+        return POINTS_OF_CAPTURE.getValue(poc)
 
     def can_edit_results(self):
         """Checks if the current user has the permission "EditResults"

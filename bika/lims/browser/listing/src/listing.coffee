@@ -22,7 +22,11 @@ document.addEventListener "DOMContentLoaded", ->
 
   tables = document.getElementsByClassName "ajax-contents-table"
   for table in tables
-    controller = ReactDOM.render <ListingController root_el={table} />, table
+    # XXX Avoid multiple renderings - why does this happen and how to handle that right?
+    if table.children.length == 0
+      ReactDOM.render <ListingController root_el={table} />, table
+    else
+      console.debug "Skipping ReactJS rendering of table"
 
 
 class ListingController extends React.Component
