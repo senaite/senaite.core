@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow.analysis import events as analysis_events
 
@@ -18,11 +19,19 @@ def after_submit(duplicate_analysis):
 
 
 def after_verify(duplicate_analysis):
-    """Function called after a 'verify' transition for the reference analysis
+    """Function called after a 'verify' transition for the duplicate analysis
     passed in is performed
     Delegates to bika.lims.workflow.analysis.events.after_verify
     """
     analysis_events.after_verify(duplicate_analysis)
+
+
+def after_unassign(duplicate_analysis):
+    """Removes the duplicate from the system
+    """
+    analysis_events.after_unassign(duplicate_analysis)
+    worksheet = duplicate_analysis.getWorksheet()
+    worksheet.manage_delObjects(duplicate_analysis.getId())
 
 
 def after_retract(obj):

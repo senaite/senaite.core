@@ -53,7 +53,7 @@ class AddBlankView(BrowserView):
             reference_uid = form['reference_uid']
             reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
-            ref_analyses = self.context.addReferences(position, reference, service_uids)
+            self.context.addReferenceAnalyses(reference, service_uids, position)
             self.request.response.redirect(self.context.absolute_url() + "/manage_results")
         else:
             self.Services = ServicesView(self.context, self.request)

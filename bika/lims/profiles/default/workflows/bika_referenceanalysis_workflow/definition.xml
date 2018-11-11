@@ -4,7 +4,7 @@
              title="Bika Reference Analysis Workflow"
              description=""
              state_variable="review_state"
-             initial_state="unassigned"
+             initial_state="assigned"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
@@ -12,10 +12,17 @@
   <permission>BIKA: Retract</permission>
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
+  <permission>Delete objects</permission>
 
+  <!-- State: assigned (initial state)
+  Reference analyses are assigned to a Worksheet or to an Instrument if is an
+  internal calibration test. This is the initial state because ref analyses can
+  only exist if associated to a Worksheet and/or to an Instrument
+  For this same reason, an "unassigned" state does not exist
+  -->
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
-    <exit-transition transition_id="submit" />
     <exit-transition transition_id="unassign" />
+    <exit-transition transition_id="submit" />
     <permission-map name="BIKA: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
@@ -27,6 +34,16 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
     </permission-map>
   </state>
 
@@ -94,19 +111,6 @@
     </permission-map>
   </state>
 
-  <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
-    <exit-transition transition_id="assign" />
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-  </state>
-
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="unassign" />
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -120,30 +124,19 @@
     </permission-map>
   </state>
 
-  <transition transition_id="assign" title="Assign" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Assign</action>
+  <!-- Transition: unassign from a worksheet. Deletes the duplicate! -->
+  <transition transition_id="unassign" title="Remove" new_state="assigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Remove</action>
     <guard>
-    </guard>
-  </transition>
-
-  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Add attachment</action>
-    <guard>
-      <guard-expression>python:here.guard_attach_transition()</guard-expression>
-    </guard>
-  </transition>
-
-  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Reject</action>
-    <guard>
-      <guard-permission>BIKA: Reject Worksheet</guard-permission>
-    </guard>
-  </transition>
-
-  <transition transition_id="retract" title="Retract" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Retract</action>
-    <guard>
-      <guard-permission>BIKA: Retract</guard-permission>
+      <!-- The guard permission is "Delete objects" because since a Reference
+      Analysis cannot exist if not bound to a Worksheet and/or Instrument, the
+      unassignment of the analysis causes its removal of the system.
+      Note this transition "unassign" can only take place when the analysis has
+      no results submitted yet -->
+      <guard-permission>Delete objects</guard-permission>
+      <guard-expression>python:here.guard_handler("unassign")</guard-expression>
     </guard>
   </transition>
 
@@ -155,12 +148,6 @@
     <guard>
       <guard-permission>BIKA: Edit Results</guard-permission>
       <guard-expression>python:here.guard_handler("submit")</guard-expression>
-    </guard>
-  </transition>
-
-  <transition transition_id="unassign" title="Remove" new_state="unassigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Remove</action>
-    <guard>
     </guard>
   </transition>
 
@@ -186,6 +173,7 @@
     </guard>
   </transition>
 
+  <!-- VARIABLES -->
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>
     <default>

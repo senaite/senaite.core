@@ -45,7 +45,7 @@ def _children_are_ready(obj, transition_id, dettached_states=None):
     return True
 
 
-def submit(obj):
+def guard_submit(obj):
     """Returns if 'submit' transition can be applied to the worksheet passed in.
     By default, the target state for the 'submit' transition for a worksheet is
     'to_be_verified', so this guard returns true if all the analyses assigned
@@ -62,7 +62,7 @@ def submit(obj):
     return _children_are_ready(obj, 'submit', dettached)
 
 
-def verify(obj):
+def guard_verify(obj):
     """Returns True if 'verify' transition can be applied to the Worksheet
     passed in. This is, returns true if all the analyses assigned
     have already been verified. Those analyses that are in an inactive state

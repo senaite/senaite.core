@@ -679,6 +679,7 @@ class Instrument(ATFolder):
     def addReferences(self, reference, service_uids):
         """ Add reference analyses to reference
         """
+        # TODO Workflow - Analyses. Assignment of refanalysis to Instrument
         addedanalyses = []
         wf = getToolByName(self, 'portal_workflow')
         bsc = getToolByName(self, 'bika_setup_catalog')
@@ -702,8 +703,7 @@ class Instrument(ATFolder):
             calc = service.getCalculation()
             if calc and calc.getDependentServices():
                 continue
-            ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-            ref_analysis = bac(portal_type='ReferenceAnalysis', UID=ref_uid)[0].getObject()
+            ref_analysis = reference.addReferenceAnalysis(service)
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)

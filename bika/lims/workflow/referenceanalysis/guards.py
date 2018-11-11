@@ -24,3 +24,9 @@ def guard_verify(reference_analysis):
     """Return whether the transition "verify" can be performed or not
     """
     return analysis_guards.guard_verify(reference_analysis)
+
+
+def guard_unassign(reference_analysis):
+    """Return whether the transition 'unassign' can be performed or not
+    """
+    return analysis_guards.guard_unassign(reference_analysis)

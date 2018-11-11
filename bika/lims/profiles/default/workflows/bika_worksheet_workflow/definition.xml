@@ -243,7 +243,7 @@
   <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
-      <guard-expression>python:here.guard_verify_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("verify")</guard-expression>
     </guard>
   </transition>
 

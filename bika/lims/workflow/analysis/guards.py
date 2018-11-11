@@ -59,6 +59,15 @@ def dependencies_guard(analysis, transition_id):
 def guard_assign(analysis):
     """Return whether the transition "assign" can be performed or not
     """
+    # TODO Workflow - Analysis. Assign guard to retun True only in WS.Add?
+    #      We need "unassigned" analyses to appear in Worksheet Add analyses.
+    #      Hence, it returns True if the analysis has not been assigned to any
+    #      worksheet yet. The problem is this can end up (if the 'assign'
+    #      transition is displayed in listings other than WS Add Analyses)
+    #      with an analysis transitioned to 'assigned' state, but without
+    #      a worksheet assigned!. This transition should only be triggered by
+    #      content.worksheet.addAnalysis (see that func for more info)
+
     # Cannot assign if the analysis is cancelled
     if not api.is_active(analysis):
         return False

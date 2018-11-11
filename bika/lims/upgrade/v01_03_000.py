@@ -393,6 +393,12 @@ def update_workflows(portal):
     # but we cannot afford such an approach for huge databases
     rm_queries = get_role_mappings_candidates(portal)
 
+    # Remove duplicates not assigned to any worksheet
+    remove_orphan_duplicates(profile)
+
+    # Remove reference analyses not assigned to any worksheet or instrument
+    remove_orphan_reference_analyses(profile)
+
     # Re-import workflow tool
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, 'workflow')
@@ -405,6 +411,56 @@ def update_workflows(portal):
 
     # Update role mappings
     update_role_mappings(portal, rm_queries)
+
+
+def remove_orphan_duplicates(portal):
+    logger.info("Removing orphan duplicates ...")
+    query = dict(portal_type="DuplicateAnalysis")
+    brains = filter(lambda dup: not dup.getWorksheetUID,
+                  api.search(query, CATALOG_ANALYSIS_LISTING))
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        orphan = api.get_object(brain)
+        worksheet = orphan.getWorksheet()
+        if worksheet:
+            # This one has a worksheet! reindex and do nothing
+            orphan.reindexObject()
+            total -= 1
+            continue
+
+        if num % 100 == 0:
+            logger.info("Removing orphan duplicate: {}/{}"
+                        .format(num, total))
+        # Remove the duplicate
+        worksheet.manage_delObjects(orphan.getId())
+
+
+def remove_orphan_reference_analyses(portal):
+    logger.info("Removing orphan reference analyses ...")
+    query = dict(portal_type="ReferenceAnalysis")
+    brains = filter(lambda ref: not ref.getWorksheetUID,
+                    api.search(query, CATALOG_ANALYSIS_LISTING))
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        orphan = api.get_object(brain)
+        worksheet = orphan.getWorksheet()
+        if worksheet:
+            # This one has a worksheet! reindex and do nothing
+            orphan.reindexObject()
+            total -= 1
+            continue
+        elif orphan.getInstrument():
+            # This is an calibration test, do nothing!
+            if not brain.getInstrumentUID:
+                orphan.reindexObject()
+            total -= 1
+            continue
+
+        if num % 100 == 0:
+            logger.info("Removing orphan reference analysis: {}/{}"
+                        .format(num, total))
+        # Remove the duplicate
+        orphan.aq_parent.manage_delObjects(orphan.getId())
 
 
 def get_role_mappings_candidates(portal):
@@ -430,10 +486,17 @@ def get_role_mappings_candidates(portal):
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
-
     # Duplicate Analysis Workflow
     workflow = wf_tool.getWorkflowById("bika_duplicateanalysis_workflow")
     if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            ("bika_duplicateanalysis_workflow",
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Duplicate Analysis Workflow: unasssigned
+    if "unassigned" in workflow.states:
         candidates.append(
             ("bika_duplicateanalysis_workflow",
              dict(portal_type="DuplicateAnalysis",
@@ -465,6 +528,14 @@ def get_role_mappings_candidates(portal):
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
+    # Reference Analysis Workflow: unasssigned
+    if "unassigned" in workflow.states:
+        candidates.append(
+            ("bika_duplicateanalysis_workflow",
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
     return candidates
 
 
@@ -482,7 +553,8 @@ def decouple_analyses_from_sample_workflow(portal):
                    "not_requested", "registered"]
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById(wf_id)
-    query = dict(portal_type="Analysis", review_state=affected_rs)
+    query = dict(portal_type=["Analysis" "DuplicateAnalysis"],
+                 review_state=affected_rs)
     brains = api.search(query, CATALOG_ANALYSIS_LISTING)
     total = len(brains)
     for num, brain in enumerate(brains):

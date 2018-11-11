@@ -22,3 +22,11 @@ def after_verify(reference_analysis):
     Delegates to bika.lims.workflow.analysis.events.after_verify
     """
     analysis_events.after_verify(reference_analysis)
+
+
+def after_unassign(reference_analysis):
+    """Removes the reference analysis from the system
+    """
+    analysis_events.after_unassign(reference_analysis)
+    ref_sample = reference_analysis.aq_parent
+    ref_sample.manage_delObjects([reference_analysis.getId()])
