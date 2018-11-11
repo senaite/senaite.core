@@ -49,6 +49,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.table_only = True
         self.show_select_all_checkbox = False
         self.pagesize = 999999
+        self.show_search = False
 
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
@@ -246,11 +247,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item['Price'] = obj.getPrice()
             item['class']['Price'] = 'nowrap'
             item['allow_edit'] = list()
-            if item['selected']:
-                item['allow_edit'] = ['Partition', 'min', 'max', 'warn_min',
-                                      'warn_max']
-                if not logged_in_client(self.context):
-                    item['allow_edit'].append('Price')
+            item['allow_edit'] = ['Partition', 'min', 'max', 'warn_min',
+                                    'warn_max']
+            if not logged_in_client(self.context):
+                item['allow_edit'].append('Price')
 
             item['required'].append('Partition')
             item['choices']['Partition'] = partitions

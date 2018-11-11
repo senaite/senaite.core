@@ -1641,7 +1641,7 @@ class BikaListingView(AjaxListingView, BrowserView):
         elif not self.__name__:
             ajax = False
         # don't render for these views
-        elif self.__name__ in ["analyses"]:
+        elif self.__name__ in []:
             ajax = False
         if not ajax:
             table = BikaListingTable(bika_listing=self, table_only=table_only)

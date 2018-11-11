@@ -592,7 +592,7 @@
       /*jshint validthis:true */
       var Dependants, Dependencies, _, cb, dep, dep_services, dep_titles, element, elements_i, html, i, lims, service_uid;
       auto_yes = auto_yes || false;
-      jarn.i18n.loadCatalog("senaite.core");
+      jarn.i18n.loadCatalog('senaite.core');
       _ = window.jarn.i18n.MessageFactory("senaite.core");
       dep = void 0;
       i = void 0;
@@ -734,49 +734,7 @@
         }
       });
     };
-    that.load = function() {
-      $('[name^=\'min\\.\'], [name^=\'max\\.\'], [name^=\'error\\.\']').live('change', function() {
-        validate_spec_field_entry(this);
-      });
-      $.each($('[name=\'uids:list\']'), function(x, cb) {
-        var cbid, cbname, el, element, elname, elval, i, new_element, row_data, service_uid, specfields;
-        service_uid = $(cb).val();
-        row_data = $.parseJSON($('#' + service_uid + '_row_data').val());
-        if (row_data.disabled === true) {
-          $(cb).prop('disabled', true);
-          cbname = $(cb).attr('name');
-          cbid = $(cb).attr('id');
-          $(cb).removeAttr('name').removeAttr('id');
-          $(cb).after('<input type=\'hidden\' name=\'' + cbname + '\' value=\'' + service_uid + '\' id=\'' + cbid + '\'/>');
-          el = $('[name=\'Price.' + service_uid + ':records\']');
-          elname = $(el).attr('name');
-          elval = $(el).val();
-          $(el).after('<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>');
-          $(el).prop('disabled', true);
-          el = $('[name=\'Partition.' + service_uid + ':records\']');
-          elname = $(el).attr('name');
-          elval = $(el).val();
-          $(el).after('<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>');
-          $(el).prop('disabled', true);
-          specfields = ['min', 'max', 'error'];
-          for (i in specfields) {
-            element = $('[name=\'' + specfields[i] + '.' + service_uid + ':records\']');
-            new_element = '' + '<input type=\'hidden\' field=\'' + specfields[i] + '\' value=\'' + element.val() + '\' ' + 'name=\'' + specfields[i] + '.' + service_uid + ':records\' uid=\'' + service_uid + '\'>';
-            $(element).replaceWith(new_element);
-          }
-        }
-      });
-      $('[name=\'uids:list\']').live('click', function() {
-        var service_uid;
-        calcdependencies([this], true);
-        service_uid = $(this).val();
-        if ($(this).prop('checked')) {
-          check_service(service_uid);
-        } else {
-          uncheck_service(service_uid);
-        }
-      });
-    };
+    that.load = function() {};
   };
 
 }).call(this);
