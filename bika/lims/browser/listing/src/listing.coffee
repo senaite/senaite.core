@@ -120,6 +120,7 @@ class ListingController extends React.Component
       expand_all_categories: no
       show_more: no
       limit_from: 0
+      show_search: yes
 
   getRequestOptions: ->
     ###
@@ -646,6 +647,7 @@ class ListingController extends React.Component
         </div>
         <div className="col-sm-3 text-right">
           <SearchBox
+            show_search={@state.show_search}
             on_search={@filterBySearchterm}
             filter={@state.filter}
             placeholder={_("Search")} />

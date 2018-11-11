@@ -386,6 +386,9 @@ class BikaListingView(AjaxListingView, BrowserView):
     # it only searches visible items
     manual_sort_on = None
 
+    # Show the searchbox
+    show_search = True
+
     # Column definitions:
     #
     # The keys of the columns dictionary must all exist in all

@@ -20,6 +20,7 @@ class BaseAnalysesTable(AnalysesView):
         self.allow_edit = True
         self.show_workflow_action_buttons = True
         self.show_select_column = True
+        self.show_search = False
 
         self.review_states = [
             {
@@ -73,3 +74,4 @@ class QCAnalysesTable(QCAnalysesView):
         self.allow_edit = False
         self.show_select_column = False
         self.show_workflow_action_buttons = False
+        self.show_search = False
