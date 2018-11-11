@@ -159,7 +159,7 @@ class TableCell extends React.Component
           required={required}
           options={options}
           onChange={@on_cell_select_field_change}
-          className=""
+          className="form-control input-sm"
           />
       ]
       if disabled
@@ -214,7 +214,7 @@ class TableCell extends React.Component
           placeholder={column_title}
           disabled={disabled}
           onChange={@on_cell_numeric_field_change}
-          className=""
+          className="form-control input-sm"
           />
       ]
       if disabled

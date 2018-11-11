@@ -45,7 +45,6 @@ class NumericField extends React.Component
            name={@props.name}
            defaultValue={@props.defaultValue}
            title={@props.title}
-           size={@props.size or "5"}
            disabled={@props.disabled}
            className={@props.className}
            placeholder={@props.placeholder}

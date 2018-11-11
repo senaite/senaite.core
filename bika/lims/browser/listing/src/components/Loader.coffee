@@ -7,7 +7,8 @@ class Loader extends React.Component
 
   render: ->
     if not @props.loading
-      return null
+      # render a placeholder to avoid vertical jumps
+      return <div className="loader"></div>
 
     <div className="loader">
       <span className="dot dot_1"></span>
