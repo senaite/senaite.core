@@ -79,31 +79,34 @@
           method="POST"
           enctype="multipart/form-data">
 
-      <tal:tables tal:repeat="table python:view.tables.items()">
-        <h3 style="margin-top:1em;">
-          <img title="analyses"
-               tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png">
-          <span tal:content="python: table[0]"/>
+      <!-- POC Tables -->
+      <tal:poc_tables tal:repeat="poc python:view.get_points_of_capture()">
+        <h3 style="margin-top:1em;"
+            tal:define="title python:view.get_poc_title(poc)">
+          <img tal:attributes="title title;
+                               src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+          <span tal:content="title"/>
         </h3>
-        <span tal:replace="structure python: table[1]"/>
-      </tal:tables>
-      <br/>
+        <span tal:replace="structure python:view.render_analyses_table(table=poc)"/>
+      </tal:poc_tables>
+      <!-- /POC Tables -->
 
-      <!-- QC Analyses Table -->
-      <h3 style="margin-top:1em;">
-        <img title="QC Analyses"
-             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/referencesample.png">
-        <span i18n:translate="">QC Analyses</span>
+      <!-- QC Table -->
+      <h3 style="margin-top:1em;"
+          tal:define="title string:QC">
+        <img tal:attributes="title title;
+                             src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+        <span tal:content="title"/>
       </h3>
-      <tal:parts replace="structure view/qctable"/>
-      <!-- QC Analyses Table -->
+      <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
+      <!-- QC Table -->
 
     </form>
 
     <!-- Results interpretation -->
     <h3 style="margin-top:1em;">
         <img title="Results interpretation"
-             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/referencesample.png">
+             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/referencesample.png"/>
         <span i18n:translate="">Results interpretation</span>
     </h3>
     <tal:parts replace="structure view/riview"/>

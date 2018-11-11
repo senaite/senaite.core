@@ -126,7 +126,9 @@ class AnalysisRequestViewView(BrowserView):
         view_name = "table_{}_analyses".format(table)
         view = api.get_view(
             view_name, context=self.context, request=self.request)
-        return view.contents_table()
+        view.update()
+        view.before_render()
+        return view.ajax_contents_table()
 
     def get_points_of_capture(self):
         """Get the registered points of capture

@@ -7,6 +7,7 @@
 
 from bika.lims import api
 from bika.lims.browser.analyses.view import AnalysesView
+from bika.lims.browser.analyses.qc import QCAnalysesView
 from bika.lims import bikaMessageFactory as _
 
 
@@ -15,9 +16,6 @@ class BaseAnalysesTable(AnalysesView):
     """
     def __init__(self, context, request):
         super(BaseAnalysesTable, self).__init__(context, request)
-        self.contentFilter.update({
-            "getRequestUID": api.get_uid(context)
-        })
 
         self.allow_edit = True
         self.show_workflow_action_buttons = True
@@ -37,11 +35,6 @@ class BaseAnalysesTable(AnalysesView):
              },
         ]
 
-    def contents_table(self):
-        self.update()
-        self.before_render()
-        return self.ajax_contents_table()
-
 
 class LabAnalysesTable(BaseAnalysesTable):
     """Lab Analyses Listing Table for ARs
@@ -51,6 +44,7 @@ class LabAnalysesTable(BaseAnalysesTable):
         super(LabAnalysesTable, self).__init__(context, request)
         self.contentFilter.update({
             "getPointOfCapture": "lab",
+            "getRequestUID": api.get_uid(context)
         })
         self.form_id = "lab_analyses"
 
@@ -63,19 +57,17 @@ class FieldAnalysesTable(BaseAnalysesTable):
         super(FieldAnalysesTable, self).__init__(context, request)
         self.contentFilter.update({
             "getPointOfCapture": "field",
+            "getRequestUID": api.get_uid(context)
         })
         self.form_id = "field_analyses"
 
 
-class QCAnalysesTable(BaseAnalysesTable):
+class QCAnalysesTable(QCAnalysesView):
     """QC Analyses Listing Table for ARs
     """
 
     def __init__(self, context, request):
         super(QCAnalysesTable, self).__init__(context, request)
-
-        self.contentFilter.update({
-        })
 
         self.form_id = "qc_analyses"
         self.allow_edit = False
