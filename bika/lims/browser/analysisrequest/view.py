@@ -5,64 +5,74 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from functools import wraps
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.header_table import HeaderTableView
-from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.permissions import *
+from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditResults
+from bika.lims.utils import check_permission
 from bika.lims.utils import isActive
-from bika.lims.utils import t, check_permission
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import wasTransitionPerformed
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
+from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.decorators import timeit
+
+
+def XXX_REMOVEME(func):
+    @wraps(func)
+    def decorator(self, *args, **kwargs):
+        logger.warn("~~~~~~~ XXX REMOVEME marked method called: {}.{}".format(
+            self.__class__.__name__, func.func_name))
+        return func(self, *args, **kwargs)
+    return decorator
 
 
 class AnalysisRequestViewView(BrowserView):
-
-    """ AR View form
-        The AR fields are printed in a table, using analysisrequest_view.py
+    """Main AR View
     """
-
-    implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
     messages = []
 
     def __init__(self, context, request):
         self.init__ = super(AnalysisRequestViewView, self).__init__(context,
                                                                     request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "/++resource++bika.lims.images/analysisrequest_big.png",
+        )
         self.messages = []
 
+    @timeit()
     def __call__(self):
         ar = self.context
-        workflow = getToolByName(self.context, 'portal_workflow')
-        if 'transition' in self.request.form:
-            doActionFor(self.context, self.request.form['transition'])
+        workflow = api.get_tool("portal_workflow")
+
+        if "transition" in self.request.form:
+            doActionFor(self.context, self.request.form["transition"])
 
         # If the analysis request has been received and hasn't been yet
         # verified yet, redirect the user to manage_results view, but only if
         # the user has privileges to Edit(Field)Results, cause otherwise she/he
         # will receive an InsufficientPrivileges error!
         if (self.request.PATH_TRANSLATED.endswith(self.context.id) and
-            check_permission(EditResults, self.context) and
-            check_permission(EditFieldResults, self.context) and
-            wasTransitionPerformed(self.context, 'receive') and
-            not wasTransitionPerformed(self.context, 'verify')):
+            self.can_edit_results() and self.can_edit_field_results() and
+           self.is_received() and not self.is_verified()):
+
             # Redirect to manage results view if not cancelled
-            if api.get_workflow_status_of(ar, 'cancellation_state') != \
-                    "cancelled":
+            if not self.is_cancelled():
                 manage_results_url = "/".join([self.context.absolute_url(),
-                                               'manage_results'])
+                                               "manage_results"])
                 self.request.response.redirect(manage_results_url)
                 return
 
@@ -75,8 +85,9 @@ class AnalysisRequestViewView(BrowserView):
             contacts.remove(contact)
         ccemails = []
         for cc in contacts:
-            ccemails.append("%s &lt;<a href='mailto:%s'>%s</a>&gt;"
-                % (cc.Title(), cc.getEmailAddress(), cc.getEmailAddress()))
+            email = cc.getEmailAddress()
+            ccemails.append("%s &lt;<a href='mailto:%s'>%s</a>&gt;" %
+                            (cc.Title(), email, email))
         # CC Emails become mailto links
         emails = self.context.getCCEmails()
         if isinstance(emails, str):
@@ -86,44 +97,45 @@ class AnalysisRequestViewView(BrowserView):
         for cc in emails:
             cc_emails.append(cc)
             cc_hrefs.append("<a href='mailto:%s'>%s</a>" % (cc, cc))
+
         # render header table
         self.header_table = HeaderTableView(self.context, self.request)()
-        # Create Partitions View for this ARs sample
-        p = SamplePartitionsView(self.context.getSample(), self.request)
-        p.show_column_toggles = False
-        self.parts = p.contents_table()
+
         # Create Field and Lab Analyses tables
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
             if self.context.getAnalyses(getPointOfCapture=poc):
-                t = self.createAnalysesView(ar,
-                                 self.request,
-                                 getPointOfCapture=poc,
-                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices(),
-                                 getRequestUID=self.context.UID())
+                t = self.createAnalysesView(
+                    self.context,
+                    self.request,
+                    getPointOfCapture=poc,
+                    show_categories=self.show_categories(),
+                    getRequestUID=api.get_uid(self.context))
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
-                t.review_states[0]['transitions'] = [{'id': 'submit'},
-                                                     {'id': 'retract'},
-                                                     {'id': 'verify'}]
+                t.review_states[0]["transitions"] = [{"id": "submit"},
+                                                     {"id": "retract"},
+                                                     {"id": "verify"}]
                 t.show_workflow_action_buttons = True
                 t.show_select_column = True
-                if getSecurityManager().checkPermission(EditFieldResults, self.context) \
-                   and poc == 'field':
-                    t.review_states[0]['columns'].remove('DueDate')
+                if self.can_edit_field_results() and poc == "field":
+                    t.review_states[0]["columns"].remove("DueDate")
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
+
         # Create QC Analyses View for this AR
-        show_cats = self.context.bika_setup.getCategoriseAnalysisServices()
-        qcview = self.createQCAnalyesView(ar,
-                                self.request,
-                                show_categories=show_cats)
+        qcview = self.createQCAnalyesView(
+            self.context,
+            self.request,
+            show_categories=self.show_categories())
+
         qcview.allow_edit = False
         qcview.show_select_column = False
         qcview.show_workflow_action_buttons = False
         qcview.form_id = "%s_qcanalyses"
-        qcview.review_states[0]['transitions'] = [{'id': 'submit'},
-                                                  {'id': 'retract'},
-                                                  {'id': 'verify'}]
+        qcview.review_states[0]["transitions"] = [
+            {"id": "submit"},
+            {"id": "retract"},
+            {"id": "verify"}]
         self.qctable = qcview.contents_table()
 
         # Create the ResultsInterpretation by department view
@@ -134,65 +146,49 @@ class AnalysisRequestViewView(BrowserView):
         if workflow.getInfoFor(ar, 'review_state') == 'sample_received':
             allstatus = list()
             for analysis in ar.getAnalyses():
-                status = workflow.getInfoFor(analysis.getObject(), 'review_state')
-                if status not in ['retracted','to_be_verified','verified']:
+                status = api.get_workflow_status_of(analysis)
+                if status not in ["retracted", "to_be_verified", "verified"]:
                     allstatus = []
                     break
                 else:
                     allstatus.append(status)
             if len(allstatus) > 0:
                 message = "General Retract Done.  Submit this AR manually."
-                self.addMessage(message, 'warning')
+                self.addMessage(message, "warning")
 
         self.renderMessages()
         return self.template()
 
-    def getAttachments(self):
-        attachments = []
-        ar_atts = self.context.getAttachment()
-        analyses = self.context.getAnalyses(full_objects=True)
-        for att in ar_atts:
-            fsize = 0
-            file = att.getAttachmentFile()
-            if file:
-                fsize = file.get_size()
-            if fsize < 1024:
-                fsize = '%s b' % fsize
-            else:
-                fsize = '%s Kb' % (fsize / 1024)
-            attachments.append({
-                'keywords': att.getAttachmentKeys(),
-                'analysis': '',
-                'size': fsize,
-                'name': file.filename,
-                'Icon': file.icon,
-                'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
-                'absolute_url': att.absolute_url(),
-                'UID': att.UID(),
-                'report_option': att.getReportOption(),
-            })
+    def can_edit_results(self):
+        """Checks if the current user has the permission "EditResults"
+        """
+        return check_permission(EditResults, self.context)
 
-        for analysis in analyses:
-            an_atts = analysis.getAttachment()
-            for att in an_atts:
-                file = att.getAttachmentFile()
-                fsize = file.get_size() if file else 0
-                if fsize < 1024:
-                    fsize = '%s b' % fsize
-                else:
-                    fsize = '%s Kb' % (fsize / 1024)
-                attachments.append({
-                    'keywords': att.getAttachmentKeys(),
-                    'analysis': analysis.Title(),
-                    'size': fsize,
-                    'name': file.filename,
-                    'Icon': file.icon,
-                    'type': att.getAttachmentType().UID() if att.getAttachmentType() else '',
-                    'absolute_url': att.absolute_url(),
-                    'UID': att.UID(),
-                    'report_option': att.getReportOption(),
-                })
-        return attachments
+    def can_edit_field_results(self):
+        """Checks if the current user has the permission "EditFieldResults"
+        """
+        return check_permission(EditFieldResults, self.context)
+
+    def is_received(self):
+        """Checks if the AR is received
+        """
+        return wasTransitionPerformed(self.context, "receive")
+
+    def is_verified(self):
+        """Checks if the AR is verified
+        """
+        return wasTransitionPerformed(self.context, "verify")
+
+    def is_cancelled(self):
+        """Checks if the AR is cancelled
+        """
+        return api.get_cancellation_status(self.context) == "cancelled"
+
+    def show_categories(self):
+        """Check the setup if analysis services should be categorized
+        """
+        setup = api.get_setup()
+        return setup.getCategoriseAnalysisServices()
 
     def addMessage(self, message, msgtype='info'):
         self.messages.append({'message': message, 'msgtype': msgtype})
@@ -202,25 +198,26 @@ class AnalysisRequestViewView(BrowserView):
             self.context.plone_utils.addPortalMessage(
                 message['message'], message['msgtype'])
 
+    @XXX_REMOVEME
     def createAnalysesView(self, context, request, **kwargs):
         return AnalysesView(context, request, **kwargs)
 
+    @XXX_REMOVEME
     def createQCAnalyesView(self, context, request, **kwargs):
         return QCAnalysesView(context, request, **kwargs)
 
+    @XXX_REMOVEME
     def tabindex(self):
         i = 0
         while True:
             i += 1
             yield i
 
+    @XXX_REMOVEME
     def now(self):
         return DateTime()
 
-    def getMemberDiscountApplies(self):
-        client = self.context.portal_type == 'Client' and self.context or self.context.aq_parent
-        return client and client.portal_type == 'Client' and client.getMemberDiscountApplies() or False
-
+    @XXX_REMOVEME
     def analysisprofiles(self):
         """ Return applicable client and Lab AnalysisProfile records
         """
@@ -243,6 +240,7 @@ class AnalysisRequestViewView(BrowserView):
         res += profiles
         return res
 
+    @XXX_REMOVEME
     def artemplates(self):
         """ Return applicable client and Lab ARTemplate records
         """
@@ -265,6 +263,7 @@ class AnalysisRequestViewView(BrowserView):
         res += templates
         return res
 
+    @XXX_REMOVEME
     def samplingdeviations(self):
         """ SamplingDeviation vocabulary for AR Add
         """
@@ -275,6 +274,7 @@ class AnalysisRequestViewView(BrowserView):
         res.sort(lambda x, y: cmp(x[0], y[0]))
         return res
 
+    @XXX_REMOVEME
     def sampleconditions(self):
         """ SampleConditions vocabulary for AR Add
         """
@@ -285,6 +285,7 @@ class AnalysisRequestViewView(BrowserView):
         res.sort(lambda x, y: cmp(x[0], y[0]))
         return res
 
+    @XXX_REMOVEME
     def containertypes(self):
         """ DefaultContainerType vocabulary for AR Add
         """
@@ -294,6 +295,7 @@ class AnalysisRequestViewView(BrowserView):
         res.sort(lambda x, y: cmp(x[0], y[0]))
         return res
 
+    @XXX_REMOVEME
     def SelectedServices(self):
         """ return information about services currently selected in the
             context AR.
@@ -310,6 +312,7 @@ class AnalysisRequestViewView(BrowserView):
                         analysis.getServiceUID()])
         return res
 
+    @XXX_REMOVEME
     def getRestrictedCategories(self):
         # we are in portal_factory AR context right now
         parent = self.context.aq_parent
@@ -317,6 +320,7 @@ class AnalysisRequestViewView(BrowserView):
             return parent.getRestrictedCategories()
         return []
 
+    @XXX_REMOVEME
     def Categories(self):
         """ Dictionary keys: poc
             Dictionary values: (Category UID,category Title)
@@ -336,6 +340,7 @@ class AnalysisRequestViewView(BrowserView):
                 cats[poc].append(cat)
         return cats
 
+    @XXX_REMOVEME
     def getDefaultCategories(self):
         # we are in portal_factory AR context right now
         parent = self.context.aq_parent
@@ -343,6 +348,7 @@ class AnalysisRequestViewView(BrowserView):
             return parent.getDefaultCategories()
         return []
 
+    @XXX_REMOVEME
     def DefaultCategories(self):
         """ Used in AR add context, to return list of UIDs for
         automatically-expanded categories.
@@ -350,6 +356,7 @@ class AnalysisRequestViewView(BrowserView):
         cats = self.getDefaultCategories()
         return [cat.UID() for cat in cats]
 
+    @XXX_REMOVEME
     def getDefaultSpec(self):
         """ Returns 'lab' or 'client' to set the initial value of the
             specification radios
@@ -362,18 +369,14 @@ class AnalysisRequestViewView(BrowserView):
         default_spec = ('Clients' in member_groups) and 'client' or 'lab'
         return default_spec
 
-    def getAnalysisProfileTitle(self):
-        """Grab the context's current AnalysisProfile Title if any
-        """
-        return self.context.getProfile() and \
-               self.context.getProfile().Title() or ''
-
+    @XXX_REMOVEME
     def getARTemplateTitle(self):
         """Grab the context's current ARTemplate Title if any
         """
         return self.context.getTemplate() and \
                self.context.getTemplate().Title() or ''
 
+    @XXX_REMOVEME
     def get_requested_analyses(self):
         #
         # title=Get requested analyses
@@ -397,6 +400,7 @@ class AnalysisRequestViewView(BrowserView):
                 result.append(analyses[analysis_key])
         return result
 
+    @XXX_REMOVEME
     def get_analyses_not_requested(self):
         #
         # title=Get analyses which have not been requested by the client
@@ -408,6 +412,7 @@ class AnalysisRequestViewView(BrowserView):
                 result.append(analysis)
         return result
 
+    @XXX_REMOVEME
     def get_analysisrequest_verifier(self, analysisrequest):
         """Get the name of the member who last verified this AR
         """
