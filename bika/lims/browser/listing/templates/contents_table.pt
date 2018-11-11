@@ -20,12 +20,12 @@
     <input type="hidden" name="submitted" value="1"/>
 
     <!-- ReactJS managed component -->
-    <div id="ajax-contents-table"
-        tal:attributes="data-form_id python:view.form_id;
-                        data-pagesize python:view.pagesize;
-                        data-api_url python:view.get_api_url();
-                        data-columns python:view.ajax_columns();
-                        data-review_states python:view.ajax_review_states();">
+    <div class="ajax-contents-table"
+         tal:attributes="data-form_id python:view.form_id;
+                         data-pagesize python:view.pagesize;
+                         data-api_url python:view.get_api_url();
+                         data-columns python:view.ajax_columns();
+                         data-review_states python:view.ajax_review_states();">
     </div>
   </form>
 

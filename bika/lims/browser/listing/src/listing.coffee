@@ -15,13 +15,14 @@ import TableContextMenu from "./components/TableContextMenu.coffee"
 
 import "./listing.css"
 
-CONTAINER_ID = "ajax-contents-table"
-
 
 # DOCUMENT READY ENTRY POINT
 document.addEventListener "DOMContentLoaded", ->
   console.debug "*** SENAITE.CORE.LISTING::DOMContentLoaded: --> Loading ReactJS Controller"
-  controller = ReactDOM.render <ListingController/>, document.getElementById CONTAINER_ID
+
+  tables = document.getElementsByClassName "ajax-contents-table"
+  for table in tables
+    controller = ReactDOM.render <ListingController root_el={table} />, table
 
 
 class ListingController extends React.Component
@@ -45,15 +46,15 @@ class ListingController extends React.Component
     @toggleRow = @toggleRow.bind @
     @setEditableField = @setEditableField.bind @
 
-    # get the container element
-    @el = document.getElementById CONTAINER_ID
+    # root element
+    @root_el = @props.root_el
 
     # get initial configuration data from the HTML attribute
-    @columns = JSON.parse @el.dataset.columns
-    @review_states = JSON.parse @el.dataset.review_states
-    @form_id = @el.dataset.form_id
-    @api_url = @el.dataset.api_url
-    @pagesize = parseInt @el.dataset.pagesize
+    @columns = JSON.parse @root_el.dataset.columns
+    @review_states = JSON.parse @root_el.dataset.review_states
+    @form_id = @root_el.dataset.form_id
+    @api_url = @root_el.dataset.api_url
+    @pagesize = parseInt @root_el.dataset.pagesize
 
     # the API is responsible for async calls and knows about the endpoints
     @api = new ListingAPI
