@@ -6,11 +6,6 @@ import "./Loader.css"
 class Loader extends React.Component
 
   render: ->
-    ###
-     * Render the Button component
-    ###
-
-  render: ->
     if not @props.loading
       return null
 
