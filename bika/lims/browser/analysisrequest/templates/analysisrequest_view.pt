@@ -89,8 +89,7 @@
         <tal:poc_tables tal:repeat="poc python:view.get_points_of_capture()">
           <div class="row">
             <div class="col-sm-12">
-              <h3 style="margin-top:1em;"
-                  tal:define="title python:view.get_poc_title(poc)">
+              <h3 tal:define="title python:view.get_poc_title(poc)">
                 <img tal:attributes="title title;
                                      src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
                 <span tal:content="title"/>
