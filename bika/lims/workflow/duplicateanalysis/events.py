@@ -29,7 +29,6 @@ def after_verify(duplicate_analysis):
 def after_unassign(duplicate_analysis):
     """Removes the duplicate from the system
     """
-    analysis_events.after_unassign(duplicate_analysis)
     worksheet = duplicate_analysis.getWorksheet()
     worksheet.manage_delObjects(duplicate_analysis.getId())
 

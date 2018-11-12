@@ -196,7 +196,26 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Unassigns the analysis passed in from the worksheet.
         Delegates to 'unassign' transition for the analysis passed in
         """
+        # Removal of a routine analysis causes the removal of its duplicates
+        if not IDuplicateAnalysis.providedBy(analysis):
+            for dup in self.get_duplicates_for(analysis):
+                self.removeAnalysis(dup)
+
         # Transition analysis to "unassigned"
+        analyses = filter(lambda an: an != analysis, self.getAnalyses())
+        self.setAnalyses(analyses)
+        self.purgeLayout()
+        if analyses:
+            # Maybe this analysis was the only one that was not yet submitted or
+            # verified, so try to submit or verify the Worksheet to be aligned with
+            # the current states of the analyses it contains.
+            # We do reindex_on_success=False here because even if submit or verify
+            # transitions succeed, only the worksheet will be affected. Since we
+            # have to reindex the worksheet regardless of this transition challenge,
+            # better to do this reindex only once.
+            doActionFor(self, "submit", reindex_on_success=False)
+            doActionFor(self, "verify", reindex_on_success=False)
+        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
         doActionFor(analysis, "unassign")
 
     def addToLayout(self, analysis, position=None):
@@ -586,18 +605,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         if not analysis:
             return list()
-        analysis_uid = api.get_uid(analysis)
-        matches = list()
-        duplicates = self.getDuplicates()
-
-        for duplicate in duplicates:
-            dup_analysis = duplicate.getAnalysis()
-            dup_analysis_uid = api.get_uid(dup_analysis)
-            if dup_analysis_uid != analysis_uid:
-                continue
-            matches.append(dup_analysis)
-
-        return matches
+        uid = api.get_uid(analysis)
+        return filter(lambda dup: api.get_uid(dup.getAnalysis()) == uid,
+                      self.getDuplicateAnalyses())
 
     def get_analyses_at(self, slot):
         """Returns the list of analyses assigned to the slot passed in, sorted by
