@@ -56,5 +56,6 @@
 .ajax-contents-table tr span.after-item { padding-left: 3px; }
 .ajax-contents-table tr span.after-item img { padding-left: 2px; }
 
-/* Vertical spacers */
-.spacer5 { height: 10px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+/* Top toolbar */
+.ajax-contents-table .top-toolbar { padding-bottom: .5em; }
+

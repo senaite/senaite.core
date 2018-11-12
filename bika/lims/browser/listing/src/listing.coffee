@@ -637,32 +637,43 @@ class ListingController extends React.Component
 
     return promise
 
+  render_toolbar_top: ->
+    ###
+     * Control if the top toolbar should be loaded
+    ###
+    if @state.show_more
+      return yes
+    if @state.review_states.length > 1
+      return yes
+    return no
+
   render: ->
     ###
      * Listing Table
     ###
     <div className="listing-container">
       {@state.loading and <div id="table-overlay"/>}
-      <div className="row">
-        <div className="col-sm-8">
-          <FilterBar
-            className="filterbar nav nav-pills"
-            on_filter_button_clicked={@filterByState}
-            review_state={@state.review_state}
-            review_states={@state.review_states}/>
+      {@render_toolbar_top() and
+        <div className="row top-toolbar">
+          <div className="col-sm-8">
+            <FilterBar
+              className="filterbar nav nav-pills"
+              on_filter_button_clicked={@filterByState}
+              review_state={@state.review_state}
+              review_states={@state.review_states}/>
+          </div>
+          <div className="col-sm-1 text-right">
+            <Loader loading={@state.loading} />
+          </div>
+          <div className="col-sm-3 text-right">
+            <SearchBox
+              show_search={@state.show_search}
+              on_search={@filterBySearchterm}
+              filter={@state.filter}
+              placeholder={_("Search")} />
+          </div>
         </div>
-        <div className="col-sm-1 text-right">
-          <Loader loading={@state.loading} />
-        </div>
-        <div className="col-sm-3 text-right">
-          <SearchBox
-            show_search={@state.show_search}
-            on_search={@filterBySearchterm}
-            filter={@state.filter}
-            placeholder={_("Search")} />
-        </div>
-      </div>
-      <div className="spacer5"></div>
+      }
       <div className="row">
         <div className="col-sm-12 table-responsive">
           {@state.show_column_toggles and
