@@ -21,12 +21,17 @@ document.addEventListener "DOMContentLoaded", ->
   console.debug "*** SENAITE.CORE.LISTING::DOMContentLoaded: --> Loading ReactJS Controller"
 
   tables = document.getElementsByClassName "ajax-contents-table"
+  window.listings ?= {}
   for table in tables
-    # XXX Avoid multiple renderings - why does this happen and how to handle that right?
-    if table.children.length == 0
-      ReactDOM.render <ListingController root_el={table} />, table
-    else
-      console.debug "Skipping ReactJS rendering of table"
+    form_id = table.dataset.form_id
+    # N.B. At the moment this JS is included in every contents table template,
+    #      which has the side-effect that this initializer is called as many
+    #      times as tables are on the page. This check avoids that
+    #      multi-rendering.
+    if form_id of window.listings
+      continue
+    controller = ReactDOM.render <ListingController root_el={table} />, table
+    window.listings[form_id] = controller
 
 
 class ListingController extends React.Component
