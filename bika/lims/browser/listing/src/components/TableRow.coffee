@@ -2,6 +2,7 @@ import React from "react"
 
 import Checkbox from "./Checkbox.coffee"
 import TableCell from "./TableCell.coffee"
+import TableRemarksRow from "./TableRemarksRow.coffee"
 
 
 class TableRow extends React.Component
@@ -91,6 +92,12 @@ class TableRow extends React.Component
           className={row_cls}>
         {@build_cells(item)}
       </tr>
+      <TableRemarksRow
+        className={row_cls}
+        key={uid + "_remarks"}
+        {...@props}
+        item={item}
+        />
     )
 
     # return the parent row if there are no children

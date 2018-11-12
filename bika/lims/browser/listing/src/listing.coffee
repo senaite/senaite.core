@@ -726,6 +726,7 @@ class ListingController extends React.Component
             filter={@state.filter}
             toggle_row_title={_("Partitions")}
             on_editable_field_change={@setEditableField}
+            remarks_row_title={_("Remarks")}
             />
         </div>
       </div>
