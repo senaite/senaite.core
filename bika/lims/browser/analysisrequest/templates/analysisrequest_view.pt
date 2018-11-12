@@ -88,49 +88,41 @@
       </div>
       <!-- /Remarks Widget -->
 
-      <form id="analysisrequest_edit_form"
-            name="analysisrequest_edit_form"
-            action="workflow_action"
-            method="POST"
-            enctype="multipart/form-data">
-
-        <tal:lab_analyses condition="python:view.has_lab_analyses()">
-          <div class="row">
-            <div class="col-sm-12">
-              <h3>
-                <img i18n:attributes="title" title="Lab Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
-                <span i18n:translate="">Lab Analyses</span>
-              </h3>
-              <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
-            </div>
+      <tal:lab_analyses condition="python:view.has_lab_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="Lab Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <span i18n:translate="">Lab Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
           </div>
-        </tal:lab_analyses>
+        </div>
+      </tal:lab_analyses>
 
-        <tal:field_analyses condition="python:view.has_field_analyses()">
-          <div class="row">
-            <div class="col-sm-12">
-              <h3>
-                <img i18n:attributes="title" title="Field Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
-                <span i18n:translate="">Field Analyses</span>
-              </h3>
-              <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
-            </div>
+      <tal:field_analyses condition="python:view.has_field_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="Field Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <span i18n:translate="">Field Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
           </div>
-        </tal:field_analyses>
+        </div>
+      </tal:field_analyses>
 
-        <tal:qc_analyses condition="python:view.has_qc_analyses()">
-          <div class="row">
-            <div class="col-sm-12">
-              <h3>
-                <img i18n:attributes="title" title="QC Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
-                <span i18n:translate="">QC Analyses</span>
-              </h3>
-              <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
-            </div>
+      <tal:qc_analyses condition="python:view.has_qc_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="QC Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <span i18n:translate="">QC Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
           </div>
-        </tal:qc_analyses>
-
-      </form>
+        </div>
+      </tal:qc_analyses>
 
       <!-- Results interpretation -->
       <div class="row">
