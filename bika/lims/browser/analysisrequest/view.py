@@ -14,7 +14,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.header_table import HeaderTableView
-from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.decorators import timeit
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.utils import check_permission
@@ -26,14 +26,16 @@ from bika.lims.workflow import wasTransitionPerformed
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.decorators import timeit
+from resultsinterpretation import ARResultsInterpretationView
 
 
 def XXX_REMOVEME(func):
     @wraps(func)
     def decorator(self, *args, **kwargs):
-        logger.warn("~~~~~~~ XXX REMOVEME marked method called: {}.{}".format(
-            self.__class__.__name__, func.func_name))
+        msg = "~~~~~~~ XXX REMOVEME marked method called: {}.{}".format(
+            self.__class__.__name__, func.func_name)
+        raise RuntimeError(msg)
+        logger.error(msg)
         return func(self, *args, **kwargs)
     return decorator
 
@@ -55,6 +57,8 @@ class AnalysisRequestViewView(BrowserView):
 
     @timeit()
     def __call__(self):
+
+        # Handle form submission
         if "transition" in self.request.form:
             doActionFor(self.context, self.request.form["transition"])
 
@@ -69,10 +73,8 @@ class AnalysisRequestViewView(BrowserView):
             # Redirect to manage results view if not cancelled
             if not self.is_cancelled():
                 manage_results_url = "{}/{}".format(
-                    self.context.absolute_url(),
-                    "manage_results")
-                self.request.response.redirect(manage_results_url)
-                return
+                    self.context.absolute_url(), "manage_results")
+                return self.request.response.redirect(manage_results_url)
 
         # Contacts get expanded for view
         contact = self.context.getContact()
@@ -100,7 +102,6 @@ class AnalysisRequestViewView(BrowserView):
         self.header_table = HeaderTableView(self.context, self.request)()
 
         # Create the ResultsInterpretation by department view
-        from resultsinterpretation import ARResultsInterpretationView
         self.riview = ARResultsInterpretationView(self.context, self.request)
 
         # If a general retracted is done, rise a waring
@@ -123,22 +124,36 @@ class AnalysisRequestViewView(BrowserView):
     def render_analyses_table(self, table="lab"):
         """Render Analyses Table
         """
+        if table not in ["lab", "field", "qc"]:
+            raise KeyError("Table '{}' does not exist".format(table))
         view_name = "table_{}_analyses".format(table)
         view = api.get_view(
             view_name, context=self.context, request=self.request)
+        # Call listing hooks
         view.update()
         view.before_render()
         return view.ajax_contents_table()
 
-    def get_points_of_capture(self):
-        """Get the registered points of capture
+    def has_lab_analyses(self):
+        """Check if the AR contains lab analyses
         """
-        return POINTS_OF_CAPTURE.keys()
+        # Negative performance impact - add a Metadata column
+        analyses = self.context.getAnalyses(getPointOfCapture="lab")
+        return len(analyses) > 0
 
-    def get_poc_title(self, poc):
-        """Return the title of the point of capture
+    def has_field_analyses(self):
+        """Check if the AR contains field analyses
         """
-        return POINTS_OF_CAPTURE.getValue(poc)
+        # Negative performance impact - add a Metadata column
+        analyses = self.context.getAnalyses(getPointOfCapture="field")
+        return len(analyses) > 0
+
+    def has_qc_analyses(self):
+        """Check if the AR contains field analyses
+        """
+        # Negative performance impact - add a Metadata column
+        analyses = self.context.getQCAnalyses()
+        return len(analyses) > 0
 
     def can_edit_results(self):
         """Checks if the current user has the permission "EditResults"

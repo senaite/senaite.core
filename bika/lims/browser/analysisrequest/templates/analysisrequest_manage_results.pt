@@ -7,9 +7,7 @@
 
   <head>
     <title></title>
-    <metal:block fill-slot="javascript_head_slot"
-                 tal:define="portal context/@@plone_portal_state/portal;">
-
+    <metal:block fill-slot="javascript_head_slot">
       <!-- TODO move to senaite.lims bootstrap css -->
       <style type="text/css">
        #remarks-widget {
@@ -67,43 +65,60 @@
             method="POST"
             enctype="multipart/form-data">
 
-        <!-- POC Tables -->
-        <tal:poc_tables tal:repeat="poc python:view.get_points_of_capture()">
+        <tal:lab_analyses condition="python:view.has_lab_analyses()">
           <div class="row">
             <div class="col-sm-12">
-              <h3 tal:define="title python:view.get_poc_title(poc)">
-                <img tal:attributes="title title;
-                                     src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
-                <span tal:content="title"/>
+              <h3>
+                <img i18n:attributes="title" title="Lab Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+                <span i18n:translate="">Lab Analyses</span>
               </h3>
-              <span tal:replace="structure python:view.render_analyses_table(table=poc)"/>
+              <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
             </div>
           </div>
-        </tal:poc_tables>
-        <!-- /POC Tables -->
+        </tal:lab_analyses>
+
+        <tal:field_analyses condition="python:view.has_field_analyses()">
+          <div class="row">
+            <div class="col-sm-12">
+              <h3>
+                <img i18n:attributes="title" title="Field Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+                <span i18n:translate="">Field Analyses</span>
+              </h3>
+              <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
+            </div>
+          </div>
+        </tal:field_analyses>
+
       </form>
 
       <!-- Remarks Widget
            https://github.com/senaite/senaite.core/pull/920 -->
-      <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-               mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
-               field python:context.Schema()['Remarks'];
-               errors python:{};">
-        <h3>
-          <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
-          <span i18n:translate="">Remarks</span>
-        </h3>
-        <div class="well">
-          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+      <div class="row">
+        <div id="remarks-widget"
+             class="col-sm-12"
+             tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                 mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                 field python:context.Schema()['Remarks'];
+                 errors python:{};">
+          <h3>
+            <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+            <span i18n:translate="">Remarks</span>
+          </h3>
+          <div class="well">
+            <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+          </div>
         </div>
       </div>
       <!-- /Remarks Widget -->
 
-      <tal:rejection define="field python:context.Schema()['RejectionReasons'];
-                             widget python:field.widget;
-                             errors python:{};">
-        <div class="row">
-          <div class="col-sm-12">
+      <!-- Rejection Widget
+           XXX How is this meant to work?
+      -->
+      <div class="row">
+        <div class="col-sm-12">
+          <tal:rejection define="field python:context.Schema()['RejectionReasons'];
+                                 widget python:field.widget;
+                                 errors python:{};">
             <table style="display: none;">
               <td>
                 <span tal:replace="python:widget.label"/>
@@ -112,9 +127,10 @@
                 <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
               </td>
             </table>
-          </div>
+          </tal:rejection>
         </div>
-      </tal:rejection>
+      </div>
+      <!-- /Rejection Widget -->
 
     </metal:content-core>
 
