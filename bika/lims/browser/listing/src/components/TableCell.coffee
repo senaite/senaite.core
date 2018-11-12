@@ -107,6 +107,10 @@ class TableCell extends React.Component
     if not allow_edit
       return no
 
+    # calculated field
+    if (item_key == "Result") and item.calculation
+      return no
+
     # check if the field is listed in the item's allow_edit list
     if item_key in item.allow_edit
       return yes

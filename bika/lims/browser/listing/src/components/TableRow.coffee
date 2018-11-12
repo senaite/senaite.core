@@ -181,6 +181,10 @@ class TableRow extends React.Component
       # replacement html or plain value of the current column
       formatted_value = item.replace[key] or value
 
+      # use the formatted result
+      if key == "Result"
+        formatted_value = item.formatted_result or formatted_value
+
       cells.push(
         <TableCell
           key={key}  # internal key
