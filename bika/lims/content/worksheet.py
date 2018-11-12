@@ -295,7 +295,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def addReferenceAnalyses(self, reference, service_uids, slot=None):
+    def addReferenceAnalyses(self, reference, services, slot=None):
         """ Creates and add reference analyses to the slot by using the
         reference sample and service uids passed in.
         If no destination slot is defined, the most suitable slot will be used,
@@ -305,6 +305,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :param slot: slot where reference analyses must be stored
         :return: the list of reference analyses added
         """
+        service_uids = list()
+        for service in services:
+            if api.is_uid(service):
+                service_uids.append(service)
+            else:
+                service_uids.append(api.get_uid(service))
+        service_uids = list(set(service_uids))
+
         # Reference analyses can only be added if the state of the ws is open
         if api.get_workflow_status_of(self) != "open":
             return []
