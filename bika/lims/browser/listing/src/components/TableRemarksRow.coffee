@@ -41,7 +41,9 @@ class TableRemarksRow extends React.Component
     display = if @has_remarks() then "block" else "none"
     style =
       display: @has_remarks() and "block" or "none"
-      padding: "1em"
+      paddingTop: ".5em"
+      paddingBottom: ".5em"
+      paddingLeft: "2em"
 
     if not @can_edit()
       field = (
