@@ -30,6 +30,8 @@ def after_unassign(duplicate_analysis):
     """Removes the duplicate from the system
     """
     parent = duplicate_analysis.aq_parent
+    logger.info("Removing duplicate '{}' from '{}'"
+                .format(duplicate_analysis.getId(), parent.getId()))
     parent.manage_delObjects([duplicate_analysis.getId()])
 
 

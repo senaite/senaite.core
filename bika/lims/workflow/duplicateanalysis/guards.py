@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.workflow.analysis import guards as analysis_guards
 
@@ -36,6 +37,8 @@ def guard_unassign(duplicate_analysis):
         # from can be unassigned
         analysis = duplicate_analysis.getAnalysis()
         if not analysis:
-            return False
+            logger.warn("Duplicate '{}' not associated to any analysis"
+                        .format(duplicate_analysis.getId()))
+            return True
         return wf.isTransitionAllowed(analysis, "unassign")
     return can_unassign
