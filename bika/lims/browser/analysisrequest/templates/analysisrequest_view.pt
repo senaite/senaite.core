@@ -88,18 +88,6 @@
       </div>
       <!-- /Remarks Widget -->
 
-      <tal:lab_analyses condition="python:view.has_lab_analyses()">
-        <div class="row">
-          <div class="col-sm-12">
-            <h3>
-              <img i18n:attributes="title" title="Lab Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
-              <span i18n:translate="">Lab Analyses</span>
-            </h3>
-            <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
-          </div>
-        </div>
-      </tal:lab_analyses>
-
       <tal:field_analyses condition="python:view.has_field_analyses()">
         <div class="row">
           <div class="col-sm-12">
@@ -111,6 +99,18 @@
           </div>
         </div>
       </tal:field_analyses>
+
+      <tal:lab_analyses condition="python:view.has_lab_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="Lab Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <span i18n:translate="">Lab Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
+          </div>
+        </div>
+      </tal:lab_analyses>
 
       <tal:qc_analyses condition="python:view.has_qc_analyses()">
         <div class="row">
