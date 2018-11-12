@@ -1,6 +1,6 @@
 /* Listing Styles */
 
-/* Colors taken from https://mdbootstrap.com/css/colors */
+/* Colors taken from https://mdbootstrap.com/css/colors/ */
 .ajax-contents-table tr { border-left:2px solid transparent; }
 
 .ajax-contents-table tr.state-active { border-left:2px solid transparent; }
@@ -8,7 +8,7 @@
 .ajax-contents-table tr.state-unassigned { border-left:2px solid #4a148c; }
 
 .ajax-contents-table tr.state-sample_due { border-left:2px solid #ffff8d !important; }
-.ajax-contents-table tr.state-sample_received { border-left:2px solid #795548 !important; }
+.ajax-contents-table tr.state-sample_received { border-left:2px solid #a1887f !important; }
 .ajax-contents-table tr.state-to_be_verified { border-left:2px solid #18ffff !important; }
 .ajax-contents-table tr.state-verified { border-left:2px solid #0091ea !important; }
 .ajax-contents-table tr.state-published { border-left:2px solid #00c853 !important; }
