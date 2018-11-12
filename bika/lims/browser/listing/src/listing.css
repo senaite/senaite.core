@@ -3,6 +3,10 @@
 /* Colors taken from https://mdbootstrap.com/css/colors/ */
 .ajax-contents-table tr { border-left:2px solid transparent; }
 
+/* state retracted */
+.ajax-contents-table tr.state-retracted { border-left:2px solid #ff6f00 !important; }
+.ajax-contents-table tr.state-retracted td { background-color: rgba(255, 152, 0, 0.1); font-style: italic; }
+
 .ajax-contents-table tr.state-active { border-left:2px solid transparent; }
 .ajax-contents-table tr.state-inactive { border-left:2px solid #616161; }
 .ajax-contents-table tr.state-unassigned { border-left:2px solid #4a148c; }
@@ -12,7 +16,6 @@
 .ajax-contents-table tr.state-to_be_verified { border-left:2px solid #18ffff !important; }
 .ajax-contents-table tr.state-verified { border-left:2px solid #0091ea !important; }
 .ajax-contents-table tr.state-published { border-left:2px solid #00c853 !important; }
-.ajax-contents-table tr.state-retracted { border-left:2px solid #ff6f00 !important; }
 .ajax-contents-table tr.state-invalid { border-left:2px solid #e65100 !important; }
 .ajax-contents-table tr.state-open { border-left:2px solid #ab47bc !important; }
 .ajax-contents-table tr.state-attachment_due { border-left:2px solid #ffc107 !important; }
@@ -20,7 +23,7 @@
 .ajax-contents-table tr.state-cancelled { border-left:2px solid #000000 !important; }
 
 .ajax-contents-table th.sortable { cursor: pointer; }
-.ajax-contents-table th.sortable:hover { Background-color: #ccc; }
+.ajax-contents-table th.sortable:hover { background-color: #ccc; }
 .ajax-contents-table th:not(.sortable) { cursor: not-allowed; }
 
 .ajax-contents-table th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
