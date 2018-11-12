@@ -196,27 +196,30 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Unassigns the analysis passed in from the worksheet.
         Delegates to 'unassign' transition for the analysis passed in
         """
+        # Cannot remove an analysis if unassign transition is not possible
+        if not isTransitionAllowed(analysis, "unassign"):
+            return
+
         # Removal of a routine analysis causes the removal of its duplicates
         if not IDuplicateAnalysis.providedBy(analysis):
             for dup in self.get_duplicates_for(analysis):
                 self.removeAnalysis(dup)
 
         # Transition analysis to "unassigned"
+        doActionFor(analysis, "unassign")
+
         analyses = filter(lambda an: an != analysis, self.getAnalyses())
         self.setAnalyses(analyses)
         self.purgeLayout()
-        if analyses:
-            # Maybe this analysis was the only one that was not yet submitted or
-            # verified, so try to submit or verify the Worksheet to be aligned with
-            # the current states of the analyses it contains.
-            # We do reindex_on_success=False here because even if submit or verify
-            # transitions succeed, only the worksheet will be affected. Since we
-            # have to reindex the worksheet regardless of this transition challenge,
-            # better to do this reindex only once.
-            doActionFor(self, "submit", reindex_on_success=False)
-            doActionFor(self, "verify", reindex_on_success=False)
-        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
-        doActionFor(analysis, "unassign")
+
+        # Maybe this analysis was the only one that was not yet submitted or
+        # verified, so try to submit or verify the Worksheet to be aligned with
+        # the current states of the analyses it contains.
+        if analyses and isTransitionAllowed(self, "submit"):
+            doActionFor(self, "submit")
+        if analyses and isTransitionAllowed(self, "verify"):
+            doActionFor(self, "verify")
+        return
 
     def addToLayout(self, analysis, position=None):
         """ Adds the analysis passed in to the worksheet's layout

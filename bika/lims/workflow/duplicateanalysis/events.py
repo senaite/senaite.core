@@ -29,8 +29,8 @@ def after_verify(duplicate_analysis):
 def after_unassign(duplicate_analysis):
     """Removes the duplicate from the system
     """
-    worksheet = duplicate_analysis.getWorksheet()
-    worksheet.manage_delObjects(duplicate_analysis.getId())
+    parent = duplicate_analysis.aq_parent
+    parent.manage_delObjects([duplicate_analysis.getId()])
 
 
 def after_retract(obj):

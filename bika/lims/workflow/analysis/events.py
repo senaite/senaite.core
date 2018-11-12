@@ -29,6 +29,7 @@ def after_unassign(analysis):
     request = analysis.getRequest()
     request.reindexObject(idxs=["assigned_state"])
 
+
 def after_submit(analysis):
     """Method triggered after a 'submit' transition for the analysis passed in
     is performed. Promotes the submit transition to the Worksheet to which the

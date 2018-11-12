@@ -432,7 +432,7 @@ def remove_orphan_duplicates(portal):
             logger.info("Removing orphan duplicate: {}/{}"
                         .format(num, total))
         # Remove the duplicate
-        worksheet.manage_delObjects(orphan.getId())
+        worksheet.manage_delObjects([orphan.getId()])
 
 
 def remove_orphan_reference_analyses(portal):
@@ -460,7 +460,7 @@ def remove_orphan_reference_analyses(portal):
             logger.info("Removing orphan reference analysis: {}/{}"
                         .format(num, total))
         # Remove the duplicate
-        orphan.aq_parent.manage_delObjects(orphan.getId())
+        orphan.aq_parent.manage_delObjects([orphan.getId()])
 
 
 def get_role_mappings_candidates(portal):
