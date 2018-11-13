@@ -1193,10 +1193,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return interims[0].get('value', '')
 
     @security.public
-    def guard_retract_transition(self):
-        return guards.retract(self)
-
-    @security.public
     def guard_publish_transition(self):
         return guards.publish(self)
 

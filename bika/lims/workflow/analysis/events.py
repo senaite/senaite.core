@@ -9,9 +9,10 @@ import transaction
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims import logger
+from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, wasTransitionPerformed
 from bika.lims.workflow import skip
 
 
@@ -58,59 +59,50 @@ def after_submit(analysis):
         doActionFor(analysis.getRequest(), 'submit')
 
 
-def after_retract(obj):
+def after_retract(analysis):
     """Function triggered after a 'retract' transition for the analysis passed
-    in is performed. Retracting an analysis cause its transition to 'retracted'
-    state and the creation of a new copy of the same analysis as a retest.
-    Note that retraction only affects to single Analysis and has no other
-    effect in the status of the Worksheet to which the Analysis is assigned or
-    to the Analysis Request to which belongs (transition is never proomoted)
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
+    in is performed. The analysis transitions to "retracted" state and a new
+    copy of the analysis is created. The copy initial state is "unassigned",
+    unless the the retracted analysis was assigned to a worksheet. In such case,
+    the copy is transitioned to 'assigned' state too
     """
-    # TODO Workflow Analysis - review this function
     # Rename the analysis to make way for it's successor.
     # Support multiple retractions by renaming to *-0, *-1, etc
-    parent = obj.aq_parent
-    kw = obj.getKeyword()
-    analyses = [x for x in parent.objectValues("Analysis")
-                if x.getId().startswith(obj.getId())]
+    parent = analysis.aq_parent
+    keyword = analysis.getKeyword()
+    analyses = filter(lambda an: an.getKeyword() == keyword,
+                      parent.objectValues("Analysis"))
 
-    # LIMS-1290 - Analyst must be able to retract, which creates a new
-    # Analysis.  So, _verifyObjectPaste permission check must be cancelled:
-    parent._verifyObjectPaste = str
-    # This is needed for tests:
+    # Rename the retracted analysis
     # https://docs.plone.org/develop/plone/content/rename.html
-    # Testing warning: Rename mechanism relies of Persistent attribute
-    # called _p_jar to be present on the content object. By default, this is
-    # not the case on unit tests. You need to call transaction.savepoint() to
-    # make _p_jar appear on persistent objects.
-    # If you don't do this, you'll receive a "CopyError" when calling
-    # manage_renameObjects that the operation is not supported.
-    transaction.savepoint()
-    parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
+    # _verifyObjectPaste permission check must be cancelled
+    parent._verifyObjectPaste = str
+    retracted_id = '{}-{}'.format(keyword, len(analyses))
+    # Make sure all persistent objects have _p_jar attribute
+    transaction.savepoint(optimistic=True)
+    parent.manage_renameObject(analysis.getId(), retracted_id)
     delattr(parent, '_verifyObjectPaste')
 
-    # Create new analysis from the retracted obj
-    analysis = create_analysis(parent, obj)
+    # Create a copy of the retracted analysis
+    new_analysis = create_analysis(parent, analysis)
 
     # Assign the new analysis to this same worksheet, if any.
-    ws = obj.getWorksheet()
-    if ws:
-        ws.addAnalysis(analysis)
-    analysis.reindexObject()
+    worksheet = analysis.getWorksheet()
+    if worksheet:
+        worksheet.addAnalysis(new_analysis)
 
-    # retract our dependencies
-    dependencies = obj.getDependencies()
-    for dependency in dependencies:
-        doActionFor(dependency, 'retract')
-
-    # Retract our dependents
-    dependents = obj.getDependents()
+    # Retract our dependents (analyses that depends on this analysis)
+    dependents = analysis.getDependents()
     for dependent in dependents:
         doActionFor(dependent, 'retract')
 
-    _reindex_request(obj)
+    if IRequestAnalysis.providedBy(analysis):
+        # If all the analyses before these retraction were submitted already,
+        # we need to rollback the Analysis Request to `received` state.
+        # Note we don't need to check anything, cause doActionFor already checks
+        # if the transition can be performed or not.
+        analysis_request = analysis.getRequest()
+        doActionFor(analysis_request, "rollback_to_received")
 
 
 def after_verify(analysis):

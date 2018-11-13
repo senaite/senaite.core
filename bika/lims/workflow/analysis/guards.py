@@ -10,14 +10,6 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 
 
-def retract(obj):
-    """ Returns true if the sample transition can be performed for the sample
-    passed in.
-    :returns: true or false
-    """
-    return wf.isBasicTransitionAllowed(obj)
-
-
 def publish(obj):
     """ Returns true if the 'publish' transition can be performed to the
     analysis passed in.
@@ -232,3 +224,22 @@ def guard_verify(analysis):
 
     # Check dependencies (analyses this analysis depends on)
     return dependencies_guard(analysis, ["verify", "multi_verify"])
+
+
+def guard_retract(analysis):
+    """ Return whether the transition "retract" can be performed or not
+    """
+    # Cannot retract if the analysis is cancelled
+    if not api.is_active(analysis):
+        return False
+
+    dependencies = analysis.getDependencies()
+    if not dependencies:
+        return True
+
+    # At least one dependency has not been verified yet
+    for dependency in analysis.getDependencies():
+        if not wf.wasTransitionPerformed(dependency, "verify"):
+            return True
+
+    return False
