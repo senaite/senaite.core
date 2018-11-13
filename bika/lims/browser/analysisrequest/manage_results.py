@@ -12,6 +12,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class AnalysisRequestManageResultsView(AnalysisRequestViewView):
+    """Manage Results View
+    """
     template = ViewPageTemplateFile(
         "templates/analysisrequest_manage_results.pt")
 
@@ -20,12 +22,13 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         return self.template()
 
     def checkInstrumentsValidity(self):
-        """ Checks the validity of the instruments used in the Analyses
-            If an analysis with an invalid instrument (out-of-date or
-            with calibration tests failed) is found, a warn message
-            will be displayed.
+        """Checks the validity of the instruments used in the Analyses
+
+        If an analysis with an invalid instrument (out-of-date or with
+        calibration tests failed) is found, a warn message will be displayed.
         """
         invalid = []
+
         ans = [a.getObject() for a in self.context.getAnalyses()]
         for an in ans:
             valid = an.isInstrumentValid()

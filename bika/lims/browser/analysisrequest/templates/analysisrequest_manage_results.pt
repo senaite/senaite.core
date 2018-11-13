@@ -103,9 +103,7 @@
       </div>
       <!-- /Remarks Widget -->
 
-      <!-- Rejection Widget
-           XXX How is this meant to work?
-      -->
+      <!-- Rejection Widget -->
       <div class="row">
         <div class="col-sm-12">
           <tal:rejection define="field python:context.Schema()['RejectionReasons'];
