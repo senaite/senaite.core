@@ -695,7 +695,7 @@ class ListingController extends React.Component
               on_context_menu={@toggleContextMenu}
               />}
           <Table
-            className="contentstable table table-condensed table-hover table-striped table-sm small"
+            className="contentstable table table-condensed table-hover small"
             allow_edit={@state.allow_edit}
             on_header_column_click={@sortBy}
             on_select_checkbox_checked={@selectUID}
