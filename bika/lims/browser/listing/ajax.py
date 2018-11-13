@@ -146,13 +146,18 @@ class AjaxListingView(BrowserView):
         view_name = self.__name__
         return "{}/{}".format(url, view_name)
 
-    def get_allowed_transitions_for(self, objects):
-        """Retrieves all transitions from the given objects and calculate the
+    def get_transitions_for(self, obj):
+        """Get the allowed transitions for the given object
+        """
+        return api.get_transitions_for(obj)
+
+    def get_allowed_transitions_for(self, uids):
+        """Retrieves all transitions from the given UIDs and calculate the
         ones which have all in common (intersection).
         """
 
         # Handle empty list of objects
-        if not objects:
+        if not uids:
             return []
 
         # allowed transitions
@@ -179,9 +184,10 @@ class AjaxListingView(BrowserView):
         # transition ids all objects have in common
         common_tids = None
 
-        for obj in objects:
-            # get the allowed transitions for this object
-            obj_transitions = api.get_transitions_for(obj)
+        for uid in uids:
+            # TODO: Research how to avoid the object wakeup here
+            obj = api.get_object_by_uid(uid)
+            obj_transitions = self.get_transitions_for(obj)
             tids = []
             for transition in obj_transitions:
                 tid = transition.get("id")
@@ -345,8 +351,7 @@ class AjaxListingView(BrowserView):
         # Process selected UIDs and their allowed transitions
         uids_to_keep = payload.get("selected_uids")
         selected_uids = self.get_selected_uids(folderitems, uids_to_keep)
-        selected_objs = map(api.get_object_by_uid, selected_uids)
-        transitions = self.get_allowed_transitions_for(selected_objs)
+        transitions = self.get_allowed_transitions_for(selected_uids)
 
         # get the view config
         config = self.get_listing_config()
