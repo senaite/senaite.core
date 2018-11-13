@@ -331,7 +331,7 @@ class ListingController extends React.Component
 
     # handle clear button separate
     if id == "clear_selection"
-      @setState selected_uids: []
+      @selectUID "all", off
       return
 
     # get the form element
@@ -387,9 +387,14 @@ class ListingController extends React.Component
           # push the uid into the list of selected_uids
           selected_uids.push uid
     else
-      # flush all selected UIDs when the select_all checkbox is deselected
+      # flush all selected UIDs when the select_all checkbox is deselected or
+      # when the deselect all button was clicked
       if uid == "all"
-        selected_uids = []
+        # Keep readonly items
+        by_uid = @get_folderitems_by_uid()
+        selected_uids = selected_uids.filter (uid) ->
+          item = by_uid[uid]
+          return item.readonly
       else
         # remove the selected UID from the list of selected_uids
         pos = selected_uids.indexOf uid
