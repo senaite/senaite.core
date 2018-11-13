@@ -69,11 +69,9 @@ ResultCaptureDate = DateTimeField(
     'ResultCaptureDate'
 )
 
-# If the analysis has previously been retracted, this flag is set True
-# to indicate that this is a re-test.
-Retested = BooleanField(
-    'Retested',
-    default=False
+# Returns the retracted analysis this analysis is a retest of
+RetestOf = UIDReferenceField(
+    'RetestOf'
 )
 
 # If the result is outside of the detection limits of the method or instrument,
@@ -137,7 +135,7 @@ schema = schema.copy() + Schema((
     NumberOfRequiredVerifications,
     Result,
     ResultCaptureDate,
-    Retested,
+    RetestOf,
     Uncertainty,
     Calculation,
     InterimFields
@@ -1191,6 +1189,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                          .format(keyword, self.getKeyword()))
             return None
         return interims[0].get('value', '')
+
+    def isRetest(self):
+        """Returns whether this analysis is a retest or not
+        """
+        return self.getRetestOf() and True or False
+
+    def getRetestOfUID(self):
+        """Returns the UID of the retracted analysis this is a retest of
+        """
+        retest_of = self.getRetestOf()
+        if retest_of:
+            return api.get_uid(retest_of)
 
     @security.public
     def guard_publish_transition(self):

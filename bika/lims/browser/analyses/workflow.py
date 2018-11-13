@@ -81,10 +81,6 @@ class AnalysesWorkflowAction(WorkflowAction):
             if uid in remarks:
                 analysis.setRemarks(remarks[uid])
 
-            # Retested?
-            if uid in retested:
-                analysis.setRetested(retested[uid])
-
             # Need to save the instrument?
             if uid in instruments:
                 instrument = instruments[uid] or None

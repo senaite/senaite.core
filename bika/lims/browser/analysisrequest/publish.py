@@ -1314,7 +1314,7 @@ class AnalysisRequestDigester:
                   'formatted_result': '',
                   'uncertainty': analysis.getUncertainty(),
                   'formatted_uncertainty': '',
-                  'retested': analysis.getRetested(),
+                  'retested': analysis.isRetest(),
                   'remarks': to_utf8(analysis.getRemarks()),
                   'outofrange': False,
                   'type': analysis.portal_type,

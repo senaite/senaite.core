@@ -85,6 +85,7 @@ def after_retract(analysis):
 
     # Create a copy of the retracted analysis
     new_analysis = create_analysis(parent, analysis)
+    new_analysis.setRetestOf(analysis)
 
     # Assign the new analysis to this same worksheet, if any.
     worksheet = analysis.getWorksheet()

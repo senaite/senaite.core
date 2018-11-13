@@ -14,6 +14,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState
@@ -397,10 +398,13 @@ def update_workflows(portal):
     rm_queries = get_role_mappings_candidates(portal)
 
     # Remove duplicates not assigned to any worksheet
-    remove_orphan_duplicates(profile)
+    remove_orphan_duplicates(portal)
 
     # Remove reference analyses not assigned to any worksheet or instrument
-    remove_orphan_reference_analyses(profile)
+    remove_orphan_reference_analyses(portal)
+
+    # Assign retracted analyses to retests
+    assign_retracted_to_retests(portal)
 
     # Re-import workflow tool
     setup = portal.portal_setup
@@ -469,6 +473,87 @@ def remove_orphan_reference_analyses(portal):
         orphan.aq_parent.manage_delObjects([orphan.getId()])
 
 
+def assign_retracted_to_retests(portal):
+    logger.info("Reassigning retracted to retests ...")
+    # Note this is confusing, getRetested index tells us if the analysis is a
+    # retest, not the other way round! (the analysis has been retested)
+    catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+    if "getRetested" not in catalog.indexes():
+        return
+
+    processed = list()
+    query = dict(getRetested="True")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        retest = api.get_object(brain)
+        retest_uid = api.get_uid(retest)
+        if retest.getRetestOf():
+            # We've been resolved this inconsistency already
+            total -= 1
+            continue
+        # Look for the retest
+        if IDuplicateAnalysis.providedBy(retest):
+            worksheet = retest.getWorksheet()
+            if not worksheet:
+                total -= 1
+                continue
+            for dup in worksheet.get_duplicates_for(retest.getAnalysis()):
+                if api.get_uid(dup) != retest_uid \
+                        and api.get_workflow_status_of(dup) == "retracted":
+                    retest.setRetestOf(dup)
+                    processed.append(retest)
+                    break
+        elif IReferenceAnalysis.providedBy(retest):
+            worksheet = retest.getWorksheet()
+            if not worksheet:
+                total -= 1
+                continue
+            ref_type = retest.getReferenceType()
+            slot = worksheet.get_slot_position(retest.getSample(), ref_type)
+            for ref in worksheet.get_analyses_at(slot):
+                if api.get_uid(ref) != retest_uid \
+                        and api.get_workflow_status_of(ref) == "retracted":
+                    retest.setRetestOf(ref)
+                    processed.append(retest)
+                    break
+        else:
+            request = retest.getRequest()
+            keyword = retest.getKeyword()
+            analyses = request.getAnalyses(review_state="retracted",
+                                           getKeyword=keyword)
+            if not analyses:
+                total -= 1
+                continue
+            retest.setRetestOf(analyses[-1])
+            processed.append(retest)
+
+        if num % 100 == 0:
+            logger.info("Reassigning retracted analysis: {}/{}"
+                        .format(num, total))
+
+    del_metadata(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+                 column="getRetested")
+
+    add_metadata(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+                 column="getRetestOfUID")
+
+    del_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="getRetested")
+
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="isRetest",
+              index_attribute="isRetest",
+              index_metatype="BooleanIndex")
+
+    total = len(processed)
+    for num, analysis in enumerate(processed):
+        if num % 100 == 0:
+            logger.info("Reindexing retests: {}/{}"
+                        .format(num, total))
+        analysis.reindexObject(idxs="isRetest")
+
+
 def get_role_mappings_candidates(portal):
     logger.info("Getting candidates for role mappings ...")
 
@@ -526,7 +611,7 @@ def get_role_mappings_candidates(portal):
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
-    # Refernce Analysis workflow: multi-verify transition
+    # Reference Analysis workflow: multi-verify transition
     if "multi_verify" not in workflow.transitions:
         candidates.append(
             ("bika_analysis_workflow",
@@ -546,16 +631,16 @@ def get_role_mappings_candidates(portal):
     workflow = wf_tool.getWorkflowById("bika_ar_workflow")
     if "rollback_to_receive" not in workflow.transitions:
         candidates.append(
-            (CATALOG_ANALYSIS_REQUEST_LISTING,
+            ("bika_ar_workflow",
              dict(portal_type="AnalysisRequest",
                   review_state=["to_be_verified"]),
-             CATALOG_ANALYSIS_LISTING))
+             CATALOG_ANALYSIS_REQUEST_LISTING))
 
     # Worksheet workflow: rollback_to_open
     workflow = wf_tool.getWorkflowById("bika_worksheet_workflow")
     if "rollback_to_receive" not in workflow.transitions:
         candidates.append(
-            (CATALOG_ANALYSIS_REQUEST_LISTING,
+            ("bika_worksheet_workflow",
              dict(portal_type="Worksheet",
                   review_state=["to_be_verified"]),
              CATALOG_WORKSHEET_LISTING))

@@ -43,7 +43,6 @@ _indexes_dict = {
     'getSampleUID': 'FieldIndex',
     'getSampleTypeUID': 'FieldIndex',
     'getSamplePointUID': 'FieldIndex',
-    'getRetested': 'FieldIndex',
     'getReferenceAnalysesGroupID': 'FieldIndex',
     'getMethodUID': 'FieldIndex',
     'getInstrumentUID': 'FieldIndex',
@@ -55,6 +54,7 @@ _indexes_dict = {
     'getPrioritySortkey': 'FieldIndex',
     'getAncestorsUIDs': 'KeywordIndex',
     'isSampleReceived': 'BooleanIndex',
+    'isRetest': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
@@ -77,7 +77,7 @@ _columns_list = [
     'getInterimFields',
     'getSamplePartitionID',
     'getRemarks',
-    'getRetested',
+    'getRetestOfUID',
     'getExpiryDate',
     'getDateSampled',
     'getDueDate',

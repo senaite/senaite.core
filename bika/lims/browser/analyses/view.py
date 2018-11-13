@@ -423,7 +423,7 @@ class AnalysesView(BikaListingView):
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
-        item['retested'] = obj.getRetested
+        item['retested'] = obj.getRetestOfUID and True or False
         item['class']['retested'] = 'center'
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
