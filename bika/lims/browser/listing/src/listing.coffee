@@ -53,7 +53,8 @@ class ListingController extends React.Component
     @toggleColumn = @toggleColumn.bind @
     @toggleCategory = @toggleCategory.bind @
     @toggleRow = @toggleRow.bind @
-    @setEditableField = @setEditableField.bind @
+    @saveEditableField = @saveEditableField.bind @
+    @updateEditableField = @updateEditableField.bind @
 
     # root element
     @root_el = @props.root_el
@@ -408,11 +409,17 @@ class ListingController extends React.Component
       # fetch all possible transitions
       me.fetch_transitions()
 
-  setEditableField: (uid, name, value) ->
+  saveEditableField: (uid, name, value) ->
     ###
-     * Set the editable field of a table cell
+     * Save the editable field of a table cell
     ###
-    console.debug "ListingController::setEditableField: uid=#{uid} name=#{name} value=#{value}"
+    console.debug "ListingController::saveEditableField: uid=#{uid} name=#{name} value=#{value}"
+
+  updateEditableField: (uid, name, value) ->
+    ###
+     * Update the editable field
+    ###
+    console.debug "ListingController::updateEditableField: uid=#{uid} name=#{name} value=#{value}"
 
     # Select the whole row if an editable field changed its value
     if not @is_uid_selected uid
@@ -732,7 +739,8 @@ class ListingController extends React.Component
             on_row_click={@toggleRow}
             filter={@state.filter}
             toggle_row_title={_("Partitions")}
-            on_editable_field_change={@setEditableField}
+            update_editable_field={@updateEditableField}
+            save_editable_field={@saveEditableField}
             remarks_row_title={_("Remarks")}
             />
         </div>

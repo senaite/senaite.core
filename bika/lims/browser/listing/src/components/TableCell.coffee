@@ -16,23 +16,20 @@ class TableCell extends React.Component
   constructor: (props) ->
     super(props)
 
-    # bind context of event handlers
-    @on_cell_select_field_change = @on_cell_select_field_change.bind @
+    # Bind checkbox field events
     @on_cell_checkbox_field_change = @on_cell_checkbox_field_change.bind @
+
+    # Bind select field events
+    @on_cell_select_field_blur = @on_cell_select_field_blur.bind @
+    @on_cell_select_field_change = @on_cell_select_field_change.bind @
+
+    # Bind numeric field events
+    @on_cell_numeric_field_blur = @on_cell_numeric_field_blur.bind @
     @on_cell_numeric_field_change = @on_cell_numeric_field_change.bind @
+
+    # Bind string field events
+    @on_cell_string_field_blur = @on_cell_string_field_blur.bind @
     @on_cell_string_field_change = @on_cell_string_field_change.bind @
-
-  on_cell_select_field_change: (event) ->
-    ###
-     * Event handler when the select field changed
-    ###
-    el = event.currentTarget
-    name = el.name
-    value = el.value
-    console.debug "TableCell:on_cell_select_field_change: value=#{value}"
-
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
 
   on_cell_checkbox_field_change: (event) ->
     ###
@@ -43,8 +40,52 @@ class TableCell extends React.Component
     value = el.checked
     console.debug "TableCell:on_cell_checkbox_field_change: checked=#{value}"
 
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value
+
+    # Call the *save* field handler (no blur event here necessary)
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value
+
+  on_cell_select_field_blur: (event) ->
+    ###
+     * Event handler when the select field blurred
+    ###
+    el = event.currentTarget
+    name = el.name
+    value = el.value
+    console.debug "TableCell:on_cell_select_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value
+
+  on_cell_select_field_change: (event) ->
+    ###
+     * Event handler when the select field changed
+    ###
+    el = event.currentTarget
+    name = el.name
+    value = el.value
+    console.debug "TableCell:on_cell_select_field_change: value=#{value}"
+
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value
+
+  on_cell_numeric_field_blur: (event) ->
+    ###
+     * Event handler when the numeric field blurred
+    ###
+    el = event.currentTarget
+    name = el.name
+    value = el.value
+    console.debug "TableCell:on_cell_numeric_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value
 
   on_cell_numeric_field_change: (event) ->
     ###
@@ -55,8 +96,22 @@ class TableCell extends React.Component
     value = el.value
     console.debug "TableCell:on_cell_numeric_field_change: value=#{value}"
 
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value
+
+  on_cell_string_field_blur: (event) ->
+    ###
+     * Event handler when the string field blurred
+    ###
+    el = event.currentTarget
+    name = el.name
+    value = el.value
+    console.debug "TableCell:on_cell_string_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value
 
   on_cell_string_field_change: (event) ->
     ###
@@ -67,8 +122,9 @@ class TableCell extends React.Component
     value = el.value
     console.debug "TableCell:on_cell_string_field_change: value=#{value}"
 
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value
 
   render_before_content: ->
     ###
@@ -163,6 +219,7 @@ class TableCell extends React.Component
           required={required}
           options={options}
           onChange={@on_cell_select_field_change}
+          onBlur={@on_cell_select_field_blur}
           className="form-control input-sm"
           />
       ]
@@ -218,6 +275,7 @@ class TableCell extends React.Component
           placeholder={column_title}
           disabled={readonly}
           onChange={@on_cell_numeric_field_change}
+          onBlur={@on_cell_numeric_field_blur}
           className="form-control input-sm"
           />
       ]
