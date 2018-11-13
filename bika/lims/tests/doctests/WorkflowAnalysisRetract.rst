@@ -161,6 +161,60 @@ And again, the Analysis Request has been transitioned to `sample_received`:
     >>> api.get_workflow_status_of(ar)
     'sample_received'
 
+Auto-rollback of Worksheet on analysis retraction
+-------------------------------------------------
+
+When retracting an analysis from a Worksheet that is in "to_be_verified" state
+causes the rollback of the worksheet to "open" state.
+
+Create an Analysis Request and submit results:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+
+Create a new Worksheet, assign all analyses and submit:
+
+    >>> ws = api.create(portal.worksheets, "Worksheet")
+    >>> for analysis in ar.getAnalyses(full_objects=True):
+    ...     ws.addAnalysis(analysis)
+    >>> submit_analyses(ar)
+
+The state for both the Analysis Request and Worksheet is "to_be_verified":
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(ws)
+    'to_be_verified'
+
+Retract one analysis:
+
+    >>> analysis = ws.getAnalyses()[0]
+    >>> try_transition(analysis, "retract", "retracted")
+    True
+
+A rollback of the state of Analysis Request and Worksheet takes place:
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+    >>> api.get_workflow_status_of(ws)
+    'open'
+
+And both contain an additional analysis:
+
+    >>> len(ar.getAnalyses())
+    4
+    >>> len(ws.getAnalyses())
+    4
+
+The state of this additional analysis, the retest, is "assigned":
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> retest = filter(lambda an: api.get_workflow_status_of(an) == "assigned", analyses)[0]
+    >>> retest.getKeyword() == analysis.getKeyword()
+    True
+    >>> retest in ws.getAnalyses()
+    True
+
+
 Retraction of results for analyses with dependents
 --------------------------------------------------
 
