@@ -7,6 +7,7 @@
 
 from Products.CMFCore.utils import getToolByName
 
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
@@ -153,3 +154,12 @@ def publish(obj):
     """
     return isBasicTransitionAllowed(obj)
 
+def guard_rollback_to_receive(analysis_request):
+    """Return whether 'rollback_to_receive' transition can be performed or not
+    """
+    analyses = analysis_request.getAnalyses()
+    for analysis in analyses:
+        analysis_object = api.get_object(analysis)
+        if getCurrentState(analysis_object) in ["unassigned", "assigned"]:
+            return False
+    return True

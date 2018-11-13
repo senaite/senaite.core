@@ -786,6 +786,7 @@
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="rollback_to_receive" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -1138,6 +1139,27 @@
     <action url="" category="workflow" icon="">Retract</action>
     <guard>
       <guard-expression>python:here.guard_retract_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: rollback_to_receive
+  # TODO Workflow - AR - revisit rollback_to_receive permissions
+  This transition is used for rolling back the Analysis Request to sample_due
+  state when transitions performed to its analyses might cause state an
+  inconsistent state. E.g. if the AR is in "to_be_verified" state and a single
+  analysis is retracted, then the AR must be transitioned to "sample_received".
+  This prevents the "bad" use of changeWorkflowState func in favor of a
+  consistent transition.
+  No need of guard-permission here, because:
+    1) This transition is governed by the permissions set in analysis workflow.
+    2) The guard always returns False unless there is an inconsistency
+  -->
+  <transition transition_id="rollback_to_receive" title="Rollback"
+              new_state="sample_received" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Rollback</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("rollback_to_receive")</guard-expression>
     </guard>
   </transition>
 

@@ -259,3 +259,8 @@ def after_cancel(obj):
     parts = obj.getDescendants(all_descendants=False)
     for part in parts:
         doActionFor(part, "cancel")
+
+def after_rollback_to_receive(analysis_request):
+    """Function triggered after rollback_to_receive transition finishes
+    """
+    pass

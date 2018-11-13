@@ -16,6 +16,8 @@ from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import doActionFor as do_action_for
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -412,6 +414,9 @@ def update_workflows(portal):
     # Update role mappings
     update_role_mappings(portal, rm_queries)
 
+    # Rollback to receive inconsistent ARs
+    rollback_to_receive_inconsistent_ars(portal)
+
 
 def remove_orphan_duplicates(portal):
     logger.info("Removing orphan duplicates ...")
@@ -536,6 +541,14 @@ def get_role_mappings_candidates(portal):
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
+    # Analysis Request workflow: rollback_to_receive
+    if "rollback_to_receive" not in workflow.transitions:
+        candidates.append(
+            (CATALOG_ANALYSIS_REQUEST_LISTING,
+             dict(portal_type="AnalysisRequest",
+                  review_state=["to_be_verified"]),
+             CATALOG_ANALYSIS_LISTING))
+
     return candidates
 
 
@@ -584,6 +597,26 @@ def remove_worksheet_analysis_workflow(portal):
 
     del_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
               index_name="worksheetanalysis_review_state")
+
+
+def rollback_to_receive_inconsistent_ars(portal):
+    logger.info("Rolling back inconsistent Analysis Requests ...")
+    review_states = ["to_be_verified"]
+    query = dict(portal_type="AnalysisRequest", review_state=review_states)
+
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        request = api.get_object(brain)
+        if not isTransitionAllowed(request, "rollback_to_receive"):
+            total -= 1
+            continue
+
+        if num % 100 == 0:
+            logger.info("Rolling back inconsistent AR '{}': {}/{}"
+                        .format(request.getId(), num, total))
+
+        do_action_for(request, "rollback_to_receive")
 
 
 def update_role_mappings(portal, queries):
