@@ -354,7 +354,11 @@ class ListingController extends React.Component
     # Override the form action when a custom URL is given
     if url then form.action = url
 
-    # inject all hidden input fields for UIDs that are currently not in the DOM
+    # TODO
+    # Inject all hidden input fields for UIDs that are currently not in the DOM.
+    # This happens when an item was selected and then the results were filtered,
+    # e.g. by a searchbox search. However, eventually set field values of the
+    # selected items get lost. Therefore, this needs to get refactored soon.
     for uid in @state.selected_uids
       # skip injection if the element is currently in the DOM
       if document.querySelectorAll("input[value='#{uid}']:not([disabled])").length > 0
