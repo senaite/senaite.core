@@ -5,8 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.subscribers import doActionFor
-from bika.lims.utils import changeWorkflowState
+from bika.lims.workflow import doActionFor
 from bika.lims import workflow as wf
 
 # TODO Workflow - Analysis. Move to after_register workflow event?
@@ -18,9 +17,7 @@ def ObjectInitializedEventHandler(analysis, event):
     analysis_request = analysis.getRequest()
     if wf.wasTransitionPerformed(analysis_request, "submit"):
         # Move the AR to 'sample_received' state
-        # TODO Workflow - AR - Do a rollback_to_receive transition or such
-        changeWorkflowState(analysis_request, "bika_ar_workflow",
-                            "sample_received")
+        doActionFor(analysis_request, "rollback_to_receive")
 
     # Reindex the indexes for UIDReference fields on creation!
     analysis.reindexObject(idxs=["getServiceUID"])

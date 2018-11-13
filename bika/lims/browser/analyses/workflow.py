@@ -22,7 +22,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.subscribers import doActionFor
+from bika.lims.workflow import doActionFor
 from bika.lims.workflow import in_state, isTransitionAllowed
 from bika.lims.workflow import ActionsPool
 
