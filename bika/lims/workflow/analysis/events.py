@@ -91,18 +91,10 @@ def after_retract(analysis):
     if worksheet:
         worksheet.addAnalysis(new_analysis)
 
-    # Retract our dependents (analyses that depends on this analysis)
+    # Retract our dependents (analyses that depend on this analysis)
     dependents = analysis.getDependents()
     for dependent in dependents:
         doActionFor(dependent, 'retract')
-
-    if IRequestAnalysis.providedBy(analysis):
-        # If all the analyses before these retraction were submitted already,
-        # we need to rollback the Analysis Request to `received` state.
-        # Note we don't need to check anything, cause doActionFor already checks
-        # if the transition can be performed or not.
-        analysis_request = analysis.getRequest()
-        doActionFor(analysis_request, "rollback_to_received")
 
 
 def after_verify(analysis):

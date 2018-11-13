@@ -160,3 +160,81 @@ And again, the Analysis Request has been transitioned to `sample_received`:
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
+
+Retraction of results for analyses with dependents
+--------------------------------------------------
+
+When retracting an analysis other analyses depends on (dependents), then the
+retraction of a dependency causes the auto-retraction of its dependents.
+
+Prepare a calculation that depends on `Cu`and assign it to `Fe` analysis:
+
+    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe.setFormula("[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
+
+Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
+
+    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> calc_au.setFormula("([Fe])/2")
+    >>> Au.setCalculation(calc_au)
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> cu_analysis = filter(lambda an: an.getKeyword()=="Cu", analyses)[0]
+    >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
+    >>> au_analysis = filter(lambda an: an.getKeyword()=="Au", analyses)[0]
+
+TODO This should not be like this, but the calculation is performed by
+`ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
+'api.analysis.calculate`:
+
+    >>> cu_analysis.setResult(20)
+    >>> fe_analysis.setResult(12)
+    >>> au_analysis.setResult(10)
+
+Submit `Au` analysis and the rest will follow:
+
+    >>> try_transition(au_analysis, "submit", "to_be_verified")
+    True
+    >>> api.get_workflow_status_of(au_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(fe_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(cu_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+If I retract `Fe`, `Au` analysis is retracted automatically too:
+
+    >>> try_transition(fe_analysis, "retract", "retracted")
+    True
+    >>> api.get_workflow_status_of(fe_analysis)
+    'retracted'
+    >>> api.get_workflow_status_of(au_analysis)
+    'retracted'
+
+And two new analyses will be generated in accordance:
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> len(analyses)
+    5
+    >>> au_analyses = filter(lambda an: an.getKeyword()=="Au", analyses)
+    >>> sorted(map(api.get_workflow_status_of, au_analyses))
+    ['retracted', 'unassigned']
+    >>> fe_analyses = filter(lambda an: an.getKeyword()=="Fe", analyses)
+    >>> sorted(map(api.get_workflow_status_of, fe_analyses))
+    ['retracted', 'unassigned']
+
+While `Cu` analysis remains in `to_be_verified` state:
+
+    >>> api.get_workflow_status_of(cu_analysis)
+    'to_be_verified'
+
+And the current state of the Analysis Request is `sample_received` now:
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'

@@ -18,6 +18,7 @@ from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from zope.interface import implements
 

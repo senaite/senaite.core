@@ -5,22 +5,21 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.workflow import doActionFor
 from bika.lims import workflow as wf
 
-# TODO Workflow - Analysis. Move to after_register workflow event?
 def ObjectInitializedEventHandler(analysis, event):
     """Actions to be done when an analysis is added in an Analysis Request
-    If the analysis request is in state after submission (eg: to_be_verified,
-    verified, etc.), forces its transition to "sample_received"
     """
-    analysis_request = analysis.getRequest()
-    if wf.wasTransitionPerformed(analysis_request, "submit"):
-        # Move the AR to 'sample_received' state
-        doActionFor(analysis_request, "rollback_to_receive")
+    # Try to transition the analysis_request to "sample_received". There are
+    # some cases that can end up with an inconsistent state between the AR
+    # and the analyses it contains: retraction of an analysis when the state
+    # of the AR was "to_be_verified", addition of a new analysis when the
+    # state was "to_be_verified", etc.
+    wf.doActionFor(analysis.getRequest(), "rollback_to_receive")
 
     # Reindex the indexes for UIDReference fields on creation!
-    analysis.reindexObject(idxs=["getServiceUID"])
+    idxs = ["getServiceUID", "getDepartmentUIDs", "assigned_state"]
+    analysis.reindexObject(idxs=idxs)
     return
 
 
@@ -32,6 +31,6 @@ def ObjectRemovedEventHandler(analysis, event):
     # Note there is no need to check if the Analysis Request allows a given
     # transition, cause this is already managed by doActionFor
     analysis_request = analysis.getRequest()
-    doActionFor(analysis_request, "submit")
-    doActionFor(analysis_request, "verify")
+    wf.doActionFor(analysis_request, "submit")
+    wf.doActionFor(analysis_request, "verify")
     return
