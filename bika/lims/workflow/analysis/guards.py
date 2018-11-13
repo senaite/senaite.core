@@ -238,7 +238,7 @@ def guard_retract(analysis):
         return True
 
     # At least one dependency has not been verified yet
-    for dependency in analysis.getDependencies():
+    for dependency in dependencies:
         if not wf.wasTransitionPerformed(dependency, "verify"):
             return True
 

@@ -146,6 +146,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
+        # Cannot add an analysis if not open, unless a retest
+        if api.get_workflow_status_of(self) != "open":
+            retracted = analysis.getRetestOf()
+            if retracted not in self.getAnalyses():
+                return
+
         # Cannot add an analysis that is assigned already
         if analysis.getWorksheet():
             return
@@ -229,12 +235,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         # TODO Redux
         layout = self.getLayout()
-        container_uid = None
-        if IReferenceAnalysis.providedBy(analysis):
-            container_uid = api.get_uid(analysis.getSample())
-        else:
-            container_uid = analysis.getRequestUID()
-
+        container_uid = self.get_container_for(analysis)
         if IRequestAnalysis.providedBy(analysis) and \
                 not IDuplicateAnalysis.providedBy(analysis):
             container_uids = map(lambda slot: slot['container_uid'], layout)
@@ -247,12 +248,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = [pos for pos in range(1, max(used_positions) + 2)
                             if pos not in used_positions][0]
 
-        an_type = 'a'
-        if IReferenceAnalysis.providedBy(analysis):
-            an_type = analysis.getReferenceType()
-        elif IDuplicateAnalysis.providedBy(analysis):
-            an_type = "d"
-
+        an_type = self.get_analysis_type(analysis)
         self.setLayout(layout + [{'position': position,
                                   'type': an_type,
                                   'container_uid': container_uid,
@@ -424,6 +420,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :return: the list of duplicate analyses added
         """
         # Duplicate analyses can only be added if the state of the ws is open
+        # unless we are adding a retest
         if api.get_workflow_status_of(self) != "open":
             return []
 
@@ -442,8 +439,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         processed = map(lambda an: api.get_uid(an.getAnalysis()),
                         self.get_analyses_at(slot_to))
-        src_analyses = filter(lambda an: api.get_uid(an) not in processed,
-                              self.get_analyses_at(slot_from))
+        src_analyses = list()
+        for analysis in self.get_analyses_at(slot_from):
+            if api.get_uid(analysis) in processed:
+                if api.get_workflow_status_of(analysis) != "retracted":
+                    continue
+            src_analyses.append(analysis)
         ref_gid = None
         duplicates = list()
         for analysis in src_analyses:
@@ -722,6 +723,35 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 continue
             return to_int(pos['position'])
         return None
+
+    def get_analysis_type(self, instance):
+        """Returns the string used in slots to differentiate amongst analysis
+        types
+        """
+        if IDuplicateAnalysis.providedBy(instance):
+            return 'd'
+        elif IReferenceAnalysis.providedBy(instance):
+            return instance.getReferenceType()
+        elif IRoutineAnalysis.providedBy(instance):
+            return 'a'
+        return None
+
+    def get_container_for(self, instance):
+        """Returns the container id used in slots to group analyses
+        """
+        if IReferenceAnalysis.providedBy(instance):
+            return api.get_uid(instance.getSample())
+        return instance.getRequestUID()
+
+    def get_slot_position_for(self, instance):
+        """Returns the slot where the instance passed in is located. If not
+        found, returns None
+        """
+        analysis_type = self.get_analysis_type(instance)
+        container = self.get_container_for(instance)
+        slot = self.get_slot_position(container, analysis_type)
+        analyses = self.get_analyses_at(slot)
+        return instance in analyses and slot or None
 
     def resolve_available_slots(self, worksheet_template, type='a'):
         """Returns the available slots from the current worksheet that fits

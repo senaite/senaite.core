@@ -42,3 +42,9 @@ def guard_unassign(duplicate_analysis):
             return True
         return wf.isTransitionAllowed(analysis, "unassign")
     return can_unassign
+
+
+def guard_retract(duplicate_analysis):
+    """Return whether the transition 'retract' can be performed or not
+    """
+    return analysis_guards.guard_retract(duplicate_analysis)

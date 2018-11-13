@@ -157,6 +157,21 @@
     </permission-map>
   </state>
 
+  <state state_id="retracted" title="Retracted" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
   <!-- Transition: unassign from a worksheet. Deletes the duplicate! -->
   <transition transition_id="unassign" title="Remove" new_state="assigned"
               trigger="USER" before_script="" after_script=""
@@ -181,6 +196,19 @@
     <guard>
       <guard-permission>BIKA: Edit Results</guard-permission>
       <guard-expression>python:here.guard_handler("submit")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: retract
+  The analysis transitions to "retracted" state and a new copy of the duplicate
+  is created. The initial state of the new copy is "assigned". -->
+  <transition transition_id="retract" title="Retract" new_state="retracted"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Retract</action>
+    <guard>
+      <guard-permission>BIKA: Retract</guard-permission>
+      <guard-expression>python:here.guard_handler("retract")</guard-expression>
     </guard>
   </transition>
 
@@ -217,13 +245,6 @@
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
       <guard-permission>BIKA: Reject Worksheet</guard-permission>
-    </guard>
-  </transition>
-
-  <transition transition_id="retract" title="Retract" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Retract</action>
-    <guard>
-      <guard-permission>BIKA: Retract</guard-permission>
     </guard>
   </transition>
 
