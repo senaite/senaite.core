@@ -150,7 +150,7 @@ class TableRow extends React.Component
     uid = item.uid
     selected = @is_selected item
     expanded = @is_expanded item
-    readonly = item.readonly
+    readonly = item.readonly or no
 
     # global allow_edit
     allow_edit = @props.allow_edit
