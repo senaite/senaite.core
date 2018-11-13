@@ -102,6 +102,7 @@ class AnalysesView(BikaListingView):
             ("Method", {
                 "title": _("Method"),
                 "sortable": False,
+                "ajax": True,
                 "toggle": True}),
             ("Instrument", {
                 "title": _("Instrument"),
@@ -110,6 +111,7 @@ class AnalysesView(BikaListingView):
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
+                "ajax": True,
                 "toggle": True}),
             ("state_title", {
                 "title": _("Status"),
@@ -122,6 +124,7 @@ class AnalysesView(BikaListingView):
                 "title": _("Result"),
                 "input_width": "6",
                 "input_class": "ajax_calculate numeric",
+                "ajax": True,
                 "sortable": False}),
             ("Specification", {
                 "title": _("Specification"),
@@ -148,7 +151,7 @@ class AnalysesView(BikaListingView):
                 "title": _("Hidden"),
                 "toggle": True,
                 "sortable": False,
-                "input_class": "autosave",
+                "ajax": True,
                 "type": "boolean"}),
         ))
 

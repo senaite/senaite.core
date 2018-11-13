@@ -68,6 +68,16 @@ class ListingAPI
     return @get_json "review_states",
       method: "GET"
 
+  set: (data) ->
+    ###
+     * Set value of an editable field to the server
+     * @returns {Promise}
+    ###
+    options =
+      data: data or {}
+      method: "POST"
+    return @get_json "set", options
+
   query_folderitems: (data) ->
     ###
      * Query folderitems

@@ -413,13 +413,46 @@ class ListingController extends React.Component
       # fetch all possible transitions
       me.fetch_transitions()
 
-  saveEditableField: (uid, name, value) ->
+  saveEditableField: (uid, name, value, item) ->
     ###
      * Save the editable field of a table cell
     ###
+
+    # Skip fields which are not editable
+    return unless name in item.allow_edit
+
+    # Skip fields which do not have `ajax` set to a truthy value in the column definition
+    return unless @state.columns[name].ajax
+
     console.debug "ListingController::saveEditableField: uid=#{uid} name=#{name} value=#{value}"
 
-  updateEditableField: (uid, name, value) ->
+    # turn loader on
+    @toggle_loader on
+
+    promise = @api.set
+      uid: uid
+      name: name
+      value: value
+      item: item
+
+    me = this
+    promise.then (data) ->
+      console.debug "ListingController::saveEditableField: GOT DATA=", data
+      # get the current folderitems as a UID -> folderitem mapping object
+      by_uid = me.get_folderitems_by_uid()
+      # the server updated folderitems
+      folderitems = data.folderitems or []
+      # update the existing folderitems
+      for folderitem in folderitems
+        by_uid[folderitem.uid] = folderitem
+      # set the new folderitems
+      me.set_state
+        folderitems: Object.values by_uid
+      , ->
+        # turn loader off
+        me.toggle_loader off
+
+  updateEditableField: (uid, name, value, item) ->
     ###
      * Update the editable field
     ###

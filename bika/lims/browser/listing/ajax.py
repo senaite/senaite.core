@@ -5,6 +5,7 @@ import json
 import urllib
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
@@ -12,6 +13,7 @@ from bika.lims.browser.listing.decorators import set_application_json_header
 from bika.lims.browser.listing.decorators import translate
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
+from zope.lifecycleevent import modified
 from zope.publisher.interfaces import IPublishTraverse
 
 
@@ -63,7 +65,7 @@ class AjaxListingView(BrowserView):
         func_name = "{}{}".format(prefix, func_arg)
         func = getattr(self, func_name, None)
         if func is None:
-            return self.fail("Invalid function", status=400)
+            raise NameError("Invalid function name")
 
         # Additional provided path segments after the function name are handled
         # as positional arguments
@@ -75,8 +77,8 @@ class AjaxListingView(BrowserView):
         required_args = func_sig.args[1:]
 
         if len(args) < len(required_args):
-            return self.fail("Wrong signature, please use '{}/{}'"
-                             .format(func_arg, "/".join(required_args)), 400)
+            raise ValueError("Wrong signature, please use '{}/{}'"
+                             .format(func_arg, "/".join(required_args)))
         return func(*args)
 
     def get_json(self, encoding="utf8"):
@@ -103,8 +105,7 @@ class AjaxListingView(BrowserView):
 
         return json.loads(body, object_hook=encode_hook)
 
-    @returns_safe_json
-    def fail(self, message, status=500, **kw):
+    def error(self, message, status=500, **kw):
         """Set a JSON error object and a status to the response
         """
         self.request.response.setStatus(status)
@@ -445,10 +446,78 @@ class AjaxListingView(BrowserView):
         # sanity check
         for key, value in query.iteritems():
             if key not in valid_catalog_indexes:
-                return self.fail("{} is not a valid catalog index".format(key))
+                return self.error("{} is not a valid catalog index".format(key))
 
         # set the content filter
         self.contentFilter = query
+
+        # get the folderitems
+        folderitems = self.get_folderitems()
+
+        # prepare the response object
+        data = {
+            "count": len(folderitems),
+            "folderitems": folderitems,
+        }
+
+        return data
+
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
+    def ajax_set(self):
+        """Set a value of an editable field
+
+        The POST Payload needs to provide the following data:
+
+        :uid: UID of the object changed
+        :name: Column name as provided by the self.columns key
+        :value: The value to save
+        :item: The folderitem containing the data
+        """
+
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+
+        required = ["uid", "name", "value", "item"]
+        if not all(map(lambda k: k in payload, required)):
+            return self.error("Payload needs to provide the keys {}"
+                              .format(", ".join(required)), status=400)
+
+        uid = payload.get("uid")
+        name = payload.get("name")
+        fieldname = name.lstrip("get")
+        value = payload.get("value")
+
+
+        # get the object
+        obj = api.get_object_by_uid(uid)
+
+        field = obj.getField(fieldname)
+        if field is None:
+            return self.error("Field {} not found"
+                              .format(fieldname), status=400)
+
+        # update the object
+        obj.edit(**{fieldname: value})
+        modified(obj)
+
+        # XXX Result specific handling for calculated fields
+        UID = [uid]
+        if name == "Result":
+            for dep in obj.getDependents():
+                success = dep.calculateResult(override=True, cascade=True)
+                if success:
+                    dep.reindexObject()
+                    UID.append(api.get_uid(dep))
+
+        logger.info("AjaxListingView::ajax_set: Set value '{}' on {}"
+                    .format(value, repr(obj)))
+
+        # prepare the response
+        self.contentFilter.update({
+            "UID": UID
+        })
 
         # get the folderitems
         folderitems = self.get_folderitems()

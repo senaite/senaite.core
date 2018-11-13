@@ -36,95 +36,95 @@ class TableCell extends React.Component
      * Event handler when the checkbox field changed
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.checked
     console.debug "TableCell:on_cell_checkbox_field_change: checked=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
     # Call the *save* field handler (no blur event here necessary)
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value
+      @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_cell_select_field_blur: (event) ->
     ###
      * Event handler when the select field blurred
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
     console.debug "TableCell:on_cell_select_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value
+      @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_cell_select_field_change: (event) ->
     ###
      * Event handler when the select field changed
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
     console.debug "TableCell:on_cell_select_field_change: value=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
   on_cell_numeric_field_blur: (event) ->
     ###
      * Event handler when the numeric field blurred
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
     console.debug "TableCell:on_cell_numeric_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value
+      @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_cell_numeric_field_change: (event) ->
     ###
      * Event handler when the numeric field changed
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
     console.debug "TableCell:on_cell_numeric_field_change: value=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
   on_cell_string_field_blur: (event) ->
     ###
      * Event handler when the string field blurred
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
     console.debug "TableCell:on_cell_string_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value
+      @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_cell_string_field_change: (event) ->
     ###
      * Event handler when the string field changed
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
     console.debug "TableCell:on_cell_string_field_change: value=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
   render_before_content: ->
     ###
@@ -213,6 +213,7 @@ class TableCell extends React.Component
         <Select
           key={name}
           name={fieldname}
+          item_key={item_key}
           defaultValue={value}
           title={column_title}
           disabled={readonly}
@@ -228,6 +229,7 @@ class TableCell extends React.Component
           <HiddenField
             key={name + "_hidden"}
             name={fieldname}
+            item_key={item_key}
             value={value}
             className=""
           />
@@ -241,6 +243,7 @@ class TableCell extends React.Component
         <Checkbox
           key={name}
           name={fieldname}
+          item_key={item_key}
           value="on"
           title={column_title}
           defaultChecked={value}
@@ -255,6 +258,7 @@ class TableCell extends React.Component
           <HiddenField
             key={name + "_hidden"}
             name={fieldname}
+            item_key={item_key}
             value={value}
             className=""
           />
@@ -268,6 +272,7 @@ class TableCell extends React.Component
         <NumericField
           key={name}
           name={fieldname}
+          item_key={item_key}
           defaultValue={value}
           editable={editable}
           title={column_title}
@@ -284,6 +289,7 @@ class TableCell extends React.Component
           <HiddenField
             key={name + "_hidden"}
             name={fieldname}
+            item_key={item_key}
             value={value}
             className=""
           />
