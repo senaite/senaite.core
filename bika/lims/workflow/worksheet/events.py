@@ -44,3 +44,9 @@ def after_verify(obj):
 
 def after_retract(obj):
     pass
+
+
+def after_rollback_to_receive(analysis_request):
+    """Function triggered after rollback_to_receive transition finishes
+    """
+    pass

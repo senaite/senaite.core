@@ -7,6 +7,7 @@
 
 from bika.lims import api
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
@@ -76,3 +77,12 @@ def guard_verify(obj):
 
     dettached = ['rejected', 'retracted', 'attachment_due']
     return _children_are_ready(obj, 'verify', dettached)
+
+
+def guard_rollback_to_receive(worksheet):
+    """Return whether 'rollback_to_receive' transition can be performed or not
+    """
+    for analysis in worksheet.getAnalyses():
+        if getCurrentState(worksheet) in ["assigned"]:
+            return True
+    return False

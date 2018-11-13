@@ -12,6 +12,7 @@ from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -542,12 +543,22 @@ def get_role_mappings_candidates(portal):
              CATALOG_ANALYSIS_LISTING))
 
     # Analysis Request workflow: rollback_to_receive
+    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
     if "rollback_to_receive" not in workflow.transitions:
         candidates.append(
             (CATALOG_ANALYSIS_REQUEST_LISTING,
              dict(portal_type="AnalysisRequest",
                   review_state=["to_be_verified"]),
              CATALOG_ANALYSIS_LISTING))
+
+    # Worksheet workflow: rollback_to_open
+    workflow = wf_tool.getWorkflowById("bika_worksheet_workflow")
+    if "rollback_to_receive" not in workflow.transitions:
+        candidates.append(
+            (CATALOG_ANALYSIS_REQUEST_LISTING,
+             dict(portal_type="Worksheet",
+                  review_state=["to_be_verified"]),
+             CATALOG_WORKSHEET_LISTING))
 
     return candidates
 
@@ -603,7 +614,6 @@ def rollback_to_receive_inconsistent_ars(portal):
     logger.info("Rolling back inconsistent Analysis Requests ...")
     review_states = ["to_be_verified"]
     query = dict(portal_type="AnalysisRequest", review_state=review_states)
-
     brains = api.search(query, CATALOG_ANALYSIS_LISTING)
     total = len(brains)
     for num, brain in enumerate(brains):
@@ -617,6 +627,25 @@ def rollback_to_receive_inconsistent_ars(portal):
                         .format(request.getId(), num, total))
 
         do_action_for(request, "rollback_to_receive")
+
+
+def rollback_to_open_inconsistent_ars(portal):
+    logger.info("Rolling back inconsistent Worksheets ...")
+    review_states = ["to_be_verified"]
+    query = dict(portal_type="Worksheet", review_state=review_states)
+    brains = api.search(query, CATALOG_WORKSHEET_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        ws = api.get_object(brain)
+        if not isTransitionAllowed(ws, "rollback_to_open"):
+            total -= 1
+            continue
+
+        if num % 100 == 0:
+            logger.info("Rolling back inconsistent Worksheet '{}': {}/{}"
+                        .format(ws.getId(), num, total))
+
+        do_action_for(ws, "rollback_to_open")
 
 
 def update_role_mappings(portal, queries):

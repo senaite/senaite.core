@@ -146,10 +146,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
-        # Analysis can only be added if the state of the worksheet is open
-        if api.get_workflow_status_of(self) != "open":
-            return
-
         # Cannot add an analysis that is assigned already
         if analysis.getWorksheet():
             return
@@ -192,6 +188,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             request = analysis.getRequest()
             request.reindexObject(idxs=["assigned_state"])
 
+        # Try to rollback the worksheet to prevent inconsistencies
+        doActionFor(self, "rollback_to_open")
+
+
     def removeAnalysis(self, analysis):
         """ Unassigns the analysis passed in from the worksheet.
         Delegates to 'unassign' transition for the analysis passed in
@@ -212,13 +212,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.setAnalyses(analyses)
         self.purgeLayout()
 
-        # Maybe this analysis was the only one that was not yet submitted or
-        # verified, so try to submit or verify the Worksheet to be aligned with
-        # the current states of the analyses it contains.
-        if analyses and isTransitionAllowed(self, "submit"):
+        if analyses:
+            # Maybe this analysis was the only one that was not yet submitted or
+            # verified, so try to submit or verify the Worksheet to be aligned
+            # with the current states of the analyses it contains.
             doActionFor(self, "submit")
-        if analyses and isTransitionAllowed(self, "verify"):
             doActionFor(self, "verify")
+        else:
+            # We've removed all analyses. Rollback to "open"
+            doActionFor(self, "rollback_to_open")
+
         return
 
     def addToLayout(self, analysis, position=None):
