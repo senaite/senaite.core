@@ -123,30 +123,35 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
         self.selected = self.analyses.keys()
 
+    @view.memoize
     def show_prices(self):
         """Checks if prices should be shown or not
         """
         setup = api.get_setup()
         return setup.getShowPrices()
 
+    @view.memoize
     def show_partitions(self):
         """Checks if partitions should be shown
         """
         setup = api.get_setup()
         return setup.getShowPartitions()
 
+    @view.memoize
     def show_ar_specs(self):
         """Checks if AR specs should be shown or not
         """
         setup = api.get_setup()
         return setup.getEnableARSpecs()
 
+    @view.memoize
     def allow_department_filtering(self):
         """Checks if department filtering is allowed
         """
         setup = api.get_setup()
         return setup.getAllowDepartmentFiltering()
 
+    @view.memoize
     def get_results_range(self):
         """Get the results Range from the AR
         """
@@ -155,6 +160,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             return dicts_to_dict(spec, "keyword")
         return ResultsRangeDict()
 
+    @view.memoize
     def get_partitions(self):
         """Get the partitions
         """
@@ -168,28 +174,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         if not partition:
             return self.get_partitions()[0]
         return partition
-
-    def isItemAllowed(self, obj):
-        """Checks if the item can be added to the list depending on the
-        department filter. If the analysis service is not assigned to a
-        department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        """
-        if not self.allow_department_filtering():
-            return True
-
-        # Gettin the department from analysis service
-        obj_dep = obj.getDepartment()
-        result = True
-        if obj_dep:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get(
-                "filter_by_department_info", "no")
-            # Comparing departments' UIDs
-            result = True if obj_dep.UID() in\
-                cookie_dep_uid.split(",") else False
-            return result
-        return result
 
     @view.memoize
     def get_currency_symbol(self):
@@ -218,6 +202,28 @@ class AnalysisRequestAnalysesView(BikaListingView):
         if not self.get_logged_in_client():
             columns.append("Price")
         return columns
+
+    def isItemAllowed(self, obj):
+        """Checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        """
+        if not self.allow_department_filtering():
+            return True
+
+        # Gettin the department from analysis service
+        obj_dep = obj.getDepartment()
+        result = True
+        if obj_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get(
+                "filter_by_department_info", "no")
+            # Comparing departments' UIDs
+            result = True if obj_dep.UID() in\
+                cookie_dep_uid.split(",") else False
+            return result
+        return result
 
     def folderitems(self):
         """XXX refactor if possible to non-classic mode
