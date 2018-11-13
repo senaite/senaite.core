@@ -1143,7 +1143,6 @@
   </transition>
 
   <!-- Transition: rollback_to_receive
-  # TODO Workflow - AR - revisit rollback_to_receive permissions
   This transition is used for rolling back the Analysis Request to sample_due
   state when transitions performed to its analyses might cause state an
   inconsistent state. E.g. if the AR is in "to_be_verified" state and a single

@@ -18,8 +18,7 @@ def ObjectInitializedEventHandler(analysis, event):
     wf.doActionFor(analysis.getRequest(), "rollback_to_receive")
 
     # Reindex the indexes for UIDReference fields on creation!
-    idxs = ["getServiceUID", "getDepartmentUIDs", "assigned_state"]
-    analysis.reindexObject(idxs=idxs)
+    analysis.reindexObject(idxs="getServiceUID")
     return
 
 
