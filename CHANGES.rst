@@ -6,11 +6,21 @@ Changelog
 
 **Added**
 
+- #1077 Creation of retests for duplicates via retraction
+- #1077 Auto-retraction of dependents on retract transitions
+- #1077 The removal of a routine analysis causes the removal of its duplicates
+- #1077 Added `rollback_to_received` transition in `ar_workflow`
+- #1077 Added `rollback_to_open` transition in `worksheet_workflow`
+- #1077 Battery of doctests for `referenceanalysis_workflow`
+- #1077 Battery of doctests for `duplicateanalysis_workflow`
+- #1077 Battery of doctests for `analysis_workflow`
 - #1066 Enhanced partitioning system (partition magic)
 
 **Changed**
 
-- #1077 Deassociate Analysis portal type from `worksheetanalysis_workflow`
+- #1077 Refactored `referenceanalysis_workflow` + after transitions and guards
+. #1077 Refactored `duplicateanalysis_workflow` + after transitions and guards
+- #1077 Refactored `analysis_workflow` + after transitions and guards
 - #1081 API functions improved
 - #1076 Instrument QC Viewlet Availability
 - #1071 Reinvented Listing Tables
@@ -18,9 +28,9 @@ Changelog
 - #1063 Permission for ar_add changed to "AddAnalysisRequest"
 - #1064 Python 2.x is not supported by WeasyPrint v43. Pinned version: 0.42.3
 
-
 **Removed**
 
+- #1077 Remove Sample-specific states from analysis workflow
 - #1077 Remove `worksheetanalysis_workflow`
 - #1059 Remove updates alert viewlet
 - #1060 Remove classic portlets
@@ -41,6 +51,8 @@ Changelog
 
 
 **Security**
+
+- #1077 Transitions and states strongly bound to DC Workflow + guards security
 
 
 1.2.9 (2018-10-08)
