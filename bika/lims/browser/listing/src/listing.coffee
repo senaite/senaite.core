@@ -653,6 +653,8 @@ class ListingController extends React.Component
     ###
     if @state.show_more
       return yes
+    if @state.show_search
+      return yes
     if @state.review_states.length > 1
       return yes
     return no
