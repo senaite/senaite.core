@@ -161,6 +161,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
         sample = self.context.getSample()
         return sample.objectValues("SamplePartition")
 
+    def get_partition(self, analysis):
+        """Get the partition of the Analysis
+        """
+        partition = analysis.getSamplePartition()
+        if not partition:
+            return self.get_partitions()[0]
+        return partition
+
     def isItemAllowed(self, obj):
         """Checks if the item can be added to the list depending on the
         department filter. If the analysis service is not assigned to a
@@ -233,18 +241,37 @@ class AnalysisRequestAnalysesView(BikaListingView):
         uid = api.get_uid(obj)
 
         # settings for this analysis
-        service = self.context.getAnalysisServiceSettings(uid)
-
-        # get the specification of this object
-        keyword = obj.getKeyword()
-        rr = self.get_results_range()
-        spec = rr.get(keyword, ResultsRangeDict())
+        service_settings = self.context.getAnalysisServiceSettings(uid)
+        hidden = service_settings.get("hidden", obj.getHidden())
 
         # get the category
         category = obj.getCategoryTitle()
         item["category"] = category
         if category not in self.categories:
             self.categories.append(category)
+
+        parts = filter(api.is_active, self.get_partitions())
+        partitions = map(lambda part: {
+            "ResultValue": part.Title(), "ResultText": part.getId()}, parts)
+
+        keyword = obj.getKeyword()
+        partition = None
+        if uid in self.analyses:
+            analysis = self.analyses[uid]
+            # Might differ from the service keyword
+            keyword = analysis.getKeyword()
+            # Mark the row as readonly if the analysis was submitted
+            item["readonly"] = self.is_submitted(analysis)
+            # get the hidden status of the analysis
+            hidden = analysis.getHidden()
+            # get the partition of the analysis
+            partition = self.get_partition(analysis)
+        else:
+            partition = self.get_partitions()[0]
+
+        # get the specification of this object
+        rr = self.get_results_range()
+        spec = rr.get(keyword, ResultsRangeDict())
 
         item["Title"] = obj.Title()
         item["Unit"] = obj.getUnit()
@@ -256,14 +283,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         item["max"] = str(spec.get("max", ""))
         item["warn_min"] = str(spec.get("warn_min", ""))
         item["warn_max"] = str(spec.get("warn_max", ""))
-        item["Hidden"] = service.get("hidden", obj.getHidden())
-
-        # Mark the row as readonly
-        item["readonly"] = self.is_submitted(obj)
-
-        parts = filter(api.is_active, self.get_partitions())
-        partitions = map(lambda part: {
-            "ResultValue": part.Title(), "ResultText": part.getId()}, parts)
+        item["Hidden"] = hidden
+        item["Partition"] = partition.getId()
         item["choices"]["Partition"] = partitions
 
         # Icons
