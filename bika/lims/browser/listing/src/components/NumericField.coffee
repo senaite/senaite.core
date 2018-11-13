@@ -35,6 +35,7 @@ class NumericField extends React.Component
 
   render: ->
     <input type="text"
+           size={@props.size or 5}
            name={@props.name}
            defaultValue={@props.defaultValue}
            title={@props.title}

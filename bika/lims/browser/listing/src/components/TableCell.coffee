@@ -129,7 +129,7 @@ class TableCell extends React.Component
     formatted_value = @props.formatted_value
     title = @props.title
     choices = item.choices or {}
-    disabled = @props.disabled
+    readonly = @props.readonly
     column_title = @props.column.title
     editable = @is_edit_allowed()
     required_fields = item.required or []
@@ -159,14 +159,14 @@ class TableCell extends React.Component
           name={fieldname}
           defaultValue={value}
           title={column_title}
-          disabled={disabled}
+          disabled={readonly}
           required={required}
           options={options}
           onChange={@on_cell_select_field_change}
           className="form-control input-sm"
           />
       ]
-      if disabled
+      if readonly
         field.push (
           <HiddenField
             key={name + "_hidden"}
@@ -187,13 +187,13 @@ class TableCell extends React.Component
           value="on"
           title={column_title}
           defaultChecked={value}
-          disabled={disabled}
+          disabled={readonly}
           editable={editable}
           onChange={@on_cell_checkbox_field_change}
           className=""
           />
       ]
-      if disabled
+      if readonly
         field.push (
           <HiddenField
             key={name + "_hidden"}
@@ -216,12 +216,12 @@ class TableCell extends React.Component
           title={column_title}
           formatted_value={formatted_value}
           placeholder={column_title}
-          disabled={disabled}
+          disabled={readonly}
           onChange={@on_cell_numeric_field_change}
           className="form-control input-sm"
           />
       ]
-      if disabled
+      if readonly
         field.push (
           <HiddenField
             key={name + "_hidden"}

@@ -150,13 +150,7 @@ class TableRow extends React.Component
     uid = item.uid
     selected = @is_selected item
     expanded = @is_expanded item
-
-    # XXX Refactor this!
-    # A JSON structure coming from bika.lims.analysisrequest.manage_analyses to
-    # determine if the row can be selected or not
-    row_data = item.row_data or "{}"
-    row_data = JSON.parse row_data
-    disabled = row_data.disabled
+    readonly = item.readonly
 
     # global allow_edit
     allow_edit = @props.allow_edit
@@ -168,7 +162,7 @@ class TableRow extends React.Component
           <Checkbox
             name={checkbox_name}
             value={uid}
-            disabled={disabled}
+            disabled={readonly}
             checked={selected}
             allow_edit={allow_edit}
             onChange={@props.on_select_checkbox_checked}/>
@@ -202,7 +196,7 @@ class TableRow extends React.Component
           value={value}  # the form field value
           formatted_value={formatted_value}  # the formatted value for readonly fields
           selected={selected}  # true if the row is selected
-          disabled={disabled}  # true if the fields should be frozen
+          readonly={readonly}  # true if the fields should be frozen
           allow_edit={allow_edit}  # the global allow_edit flag
           column={column}  # the current rendered column object
           className={key}  # set the column key as the CSS class name
