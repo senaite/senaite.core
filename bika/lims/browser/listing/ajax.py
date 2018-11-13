@@ -387,7 +387,6 @@ class AjaxListingView(BrowserView):
 
         # Get the selected UIDs
         uids = payload.get("selected_uids", [])
-        objs = map(api.get_object_by_uid, uids)
 
         # ----------------------------------8<---------------------------------
         # XXX Temporary (cut out as soon as possible)
@@ -414,7 +413,7 @@ class AjaxListingView(BrowserView):
         # ----------------------------------8<---------------------------------
 
         # get the allowed transitions
-        transitions = self.get_allowed_transitions_for(objs)
+        transitions = self.get_allowed_transitions_for(uids)
 
         # prepare the response object
         data = {
