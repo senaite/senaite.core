@@ -77,6 +77,7 @@
 .ajax-contents-table tr span.after-item { display: table-cell; vertical-align: top;  padding-left: 5px; }
 
 /* Render table form-controls smaller */
+.ajax-contents-table tr td div.form-group { display: inline-table; }
 
 /* Top toolbar */
 .ajax-contents-table .top-toolbar { padding-bottom: .5em; }

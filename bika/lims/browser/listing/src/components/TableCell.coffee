@@ -234,7 +234,7 @@ class TableCell extends React.Component
 
   render: ->
     <td className={@props.className}>
-      <div className="input-group">
+      <div className="form-group">
         {@render_before_content()}
         {@render_content()}
         {@render_after_content()}
