@@ -288,11 +288,9 @@ class AjaxListingView(BrowserView):
         """
 
         config = {
-            # N.B.: form_id, review_states and columns are passed in as data
-            #       attributes and therefore not needed here.
-            # "form_id": self.form_id,
-            # "review_states": self.review_states,
-            # "columns": self.columns,
+            "form_id": self.form_id,
+            "review_states": self.review_states,
+            "columns": self.columns,
             "allow_edit": self.allow_edit,
             "api_url": self.get_api_url(),
             "catalog": self.catalog,

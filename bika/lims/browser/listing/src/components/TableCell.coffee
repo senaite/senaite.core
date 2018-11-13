@@ -191,6 +191,12 @@ class TableCell extends React.Component
     required_fields = item.required or []
     required = item_key in required_fields
 
+    # XXX Refactor to an own component
+    interims = item.interimfields or []
+    for interim in interims
+      if interim.keyword == item_key
+        value = interim.value
+
     # Render readonly fields
     if not editable
       field = [

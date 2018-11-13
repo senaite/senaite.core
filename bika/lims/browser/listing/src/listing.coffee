@@ -475,7 +475,7 @@ class ListingController extends React.Component
     current = null
 
     # review_states is the list of review_state items from the listing view
-    for review_state in @review_states
+    for review_state in @state.review_states
       if review_state.id == id
         current = review_state
         break
@@ -516,7 +516,7 @@ class ListingController extends React.Component
 
     columns = []
     for key in @get_column_order()
-      column = @columns[key]
+      column = @state.columns[key]
       if column.toggle
         columns.push key
     return columns

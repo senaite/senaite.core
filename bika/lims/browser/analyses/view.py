@@ -496,7 +496,9 @@ class AnalysesView(BikaListingView):
                     "title": self.interim_columns[col_id],
                     "input_width": "6",
                     "input_class": "ajax_calculate numeric",
-                    "sortable": False
+                    "sortable": False,
+                    "toggle": True,
+                    "ajax": True,
                 }
 
         if self.allow_edit:
@@ -516,6 +518,8 @@ class AnalysesView(BikaListingView):
                 pos = "Result" in state["columns"] and \
                       state["columns"].index("Uncertainty") + 1 or len(
                     state["columns"])
+                if "retested" in state["columns"]:
+                    state["columns"].remove("retested")
                 state["columns"].insert(pos, "retested")
                 new_states.append(state)
             self.review_states = new_states
