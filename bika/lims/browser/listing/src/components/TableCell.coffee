@@ -364,7 +364,7 @@ class TableCell extends React.Component
         )
 
     # render select field
-    else if type == "select"
+    else if type in ["select", "choices"]
       fieldname = "#{name}:records"
       options = item.choices[item_key]
       field.push (
