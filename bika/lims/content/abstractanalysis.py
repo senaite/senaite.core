@@ -506,6 +506,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         for i in interims:
             if 'keyword' not in i:
                 continue
+            # skip unset values
+            if i['value'] == '':
+                continue
             try:
                 ivalue = float(i['value'])
                 mapping[i['keyword']] = ivalue
