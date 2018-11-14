@@ -123,9 +123,7 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
                 sorted_brains.extend(curr_brains)
 
                 # Add analyses in the worksheet
-                for brain in sorted_brains:
-                    analysis = brain.getObject()
-                    self.context.addAnalysis(analysis)
+                self.context.addAnalyses(sorted_brains)
 
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)

@@ -531,6 +531,7 @@ class JSONReadExtender(object):
             data['transitions'] = get_workflow_actions(self.context)
 
 
+# TODO Workflow - ActionsPool - Better use ActionHandlerPool
 class ActionsPool(object):
     """Handles transitions of multiple objects at once
     """

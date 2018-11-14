@@ -34,7 +34,7 @@ from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.utils import changeWorkflowState, tmpID, to_int
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.workflow import doActionFor, getCurrentState, skip, \
-    isTransitionAllowed
+    isTransitionAllowed, ActionHandlerPool
 from zope.interface import implements
 
 ALL_ANALYSES_TYPES = "all"
@@ -141,7 +141,27 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         new_layout = sorted(value, key=lambda k: k['position'])
         self.getField('Layout').set(self, new_layout)
 
-    def addAnalysis(self, analysis, position=None):
+    def addAnalyses(self, analyses):
+        """Adds a collection of analyses to the Worksheet at once
+        """
+        # TODO Workflow - ActionsPool - Might be improved
+        actions_pool = ActionHandlerPool.get_instance()
+        actions_pool.start()
+        requests = list()
+        for analysis in analyses:
+            analysis = api.get_object(analysis)
+            if IRequestAnalysis.providedBy(analysis) and \
+                    not IDuplicateAnalysis.providedBy(analysis):
+                request = analysis.getRequest()
+                if request not in requests:
+                    requests.append(request)
+            self.addAnalysis(analysis, reindex=False)
+        actions_pool.resume()
+        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+        for request in requests:
+            request.reindexObject(idxs=["assigned_state"])
+
+    def addAnalysis(self, analysis, position=None, reindex=True):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
@@ -183,16 +203,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 analysis.setMethod(method)
 
         # Transition analysis to "assigned"
-        doActionFor(analysis, "assign", reindex_on_success=False)
+        doActionFor(analysis, "assign")
         self.setAnalyses(analyses + [analysis])
         self.addToLayout(analysis, position)
 
         # Reindex
-        analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID"])
-        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
-        if IRequestAnalysis.providedBy(analysis):
-            request = analysis.getRequest()
-            request.reindexObject(idxs=["assigned_state"])
+        if reindex:
+            analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID"])
+            self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+            if IRequestAnalysis.providedBy(analysis):
+                request = analysis.getRequest()
+                request.reindexObject(idxs=["assigned_state"])
 
         # Try to rollback the worksheet to prevent inconsistencies
         doActionFor(self, "rollback_to_open")
