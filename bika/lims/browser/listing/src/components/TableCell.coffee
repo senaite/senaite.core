@@ -159,10 +159,6 @@ class TableCell extends React.Component
     if not @props.allow_edit
       return no
 
-    # calculated field
-    if (item_key == "Result") and item.calculation
-      return no
-
     # check if the field is listed in the item's allow_edit list
     if item_key in item.allow_edit
       return yes
@@ -192,17 +188,7 @@ class TableCell extends React.Component
     ###
      * Get the field value
     ###
-
     value = item[item_key]
-
-    # XXX Refactor this in the server
-    # Interims have an object set as value, e.g.:
-    # {formatted_value: "", keyword: "", title: "", value: ""}
-    interims = item.interimfields or []
-    for interim in interims
-      if interim.keyword == item_key
-        value = interim.value
-
     return value
 
   get_formatted_value: (item_key, item) ->
@@ -239,6 +225,18 @@ class TableCell extends React.Component
     if item_key of choices
       return "select"
 
+    # check if the field is an interim
+    interims = item.interimfields or []
+    if interims.length > 0
+      interim_keys = item.interimfields.map (interim) ->
+        return interim.keyword
+      if item_key in interim_keys
+        return "interim"
+
+    # check if the field is a calculated field
+    if (item_key == "Result") and item.calculation
+      return "calculated"
+
     # the default
     return "numeric"
 
@@ -271,7 +269,7 @@ class TableCell extends React.Component
     # field type to render
     type = @get_type item_key, item
 
-    # Render readonly field
+    # render readonly field
     if not editable
       field = [
         <ReadonlyField
@@ -285,7 +283,62 @@ class TableCell extends React.Component
       ]
       return field
 
-    # Select
+    # render calculated field
+    if type == "calculated"
+      fieldname = "#{name}:records"
+      field = [
+        <ReadonlyField
+          key={name}
+          name={fieldname}
+          value={value}
+          title={title}
+          formatted_value={formatted_value}
+          className="readonly"
+          />
+        <HiddenField
+          key={name + "_hidden"}
+          name={fieldname}
+          item_key={item_key}
+          value={value}
+          className="hidden"
+          />
+      ]
+      return field
+
+    # render interim field
+    if type == "interim"
+      fieldname = "#{name}:records"
+      value = value.value
+      field = [
+        <NumericField
+          key={name}
+          name={fieldname}
+          item_key={item_key}
+          defaultValue={value}
+          title={title}
+          formatted_value={formatted_value}
+          placeholder={title}
+          disabled={disabled}
+          onChange={@on_numeric_field_change}
+          onBlur={@on_numeric_field_blur}
+          className="form-control input-sm"
+          />
+      ]
+      # N.B. Disabled fields are not send on form submit.
+      #      Therefore, we render a hidden field when disabled.
+      if disabled
+        field.push (
+          <HiddenField
+            key={name + "_hidden"}
+            name={fieldname}
+            item_key={item_key}
+            value={value}
+            className="hidden"
+          />
+        )
+      return field
+
+    # render select field
     if type == "select"
       fieldname = "#{name}:records"
       options = item.choices[item_key]
@@ -318,7 +371,7 @@ class TableCell extends React.Component
         )
       return field
 
-    # Checkbox
+    # render checkbox field
     if type == "boolean"
       fieldname = "#{name}:record:ignore-empty"
       field = [
@@ -348,7 +401,7 @@ class TableCell extends React.Component
         )
       return field
 
-    # Numeric
+    # render numeric field
     if type == "numeric"
       fieldname = "#{name}:records"
       field = [
