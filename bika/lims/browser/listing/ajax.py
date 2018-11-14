@@ -359,26 +359,24 @@ class AjaxListingView(BrowserView):
 
         # check if the object is an analysis and has an interim
         if self.is_analysis(obj):
-            # update calculations
-            if fieldname == "Result":
-                updated_objects.extend(self.recalculate_results(obj))
-            else:
-                calc = obj.getCalculation()
-                calc_interims = calc.getInterimFields()
-                obj_interims = obj.getInterimFields()
-                interims = calc_interims + obj_interims
+            interims = obj.getInterimFields()
+            interim_keys = map(lambda i: i.get("keyword"), interims)
+            if fieldname in interim_keys:
                 for interim in interims:
                     if interim.get("keyword") == name:
                         interim["value"] = value
-                        obj.setInterimFields(interims)
-                        updated_objects.append(obj)
-                        updated_objects.extend(self.recalculate_results(obj))
+                # set the new interim fields
+                obj.setInterimFields(interims)
+            # recalculate dependent results for result and interim fields
+            if fieldname == "Result" or fieldname in interim_keys:
+                updated_objects.append(obj)
+                updated_objects.extend(self.recalculate_results(obj))
 
         # unify the list of updated objects
         updated_objects = list(set(updated_objects))
 
         # notify modification event to all updated objects
-        map(modified, set())
+        map(modified, updated_objects)
 
         return updated_objects
 
