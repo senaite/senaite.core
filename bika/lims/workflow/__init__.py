@@ -89,8 +89,10 @@ def doActionFor(instance, action_id, reindex_on_success=True):
 
     # Ensure the same action is not triggered twice for the same object.
     pool = ActionHandlerPool.get_instance()
-    first_call = pool.is_empty()
-    if not first_call and pool.succeed(instance):
+    busy = pool.is_busy()
+    if not busy:
+        pool.start()
+    elif pool.succeed(instance, action_id):
         return
 
     succeed = False
@@ -110,7 +112,7 @@ def doActionFor(instance, action_id, reindex_on_success=True):
 
     # Resume the pool of actions
     pool.push(instance, action_id, succeed)
-    if first_call:
+    if not busy:
         pool.resume(reindex_on_success)
 
     return succeed, message
@@ -567,15 +569,19 @@ class ActionHandlerPool:
 
     def __init__(self):
         if ActionHandlerPool.__instance != None:
-            raise Exception("Use ActionHandler.get_instance()")
+            raise Exception("Use ActionHandlerPool.get_instance()")
+        self.actions = collections.OrderedDict()
+        self.is_new = True
         ActionHandlerPool.__instance = self
-        self.actions= collections.OrderedDict()
 
     def __len__(self):
         return len(self.actions)
 
-    def is_empty(self):
-        return len(self) == 0
+    def is_busy(self):
+        return not self.is_new
+
+    def start(self):
+        self.is_new = False
 
     def push(self, instance, action, success):
         uid = api.get_uid(instance)
@@ -588,6 +594,7 @@ class ActionHandlerPool:
         return self.actions.get(uid, {}).get(action, {}).get('success', False)
 
     def resume(self, reindex_on_success=True):
+        logger.info("Resume actions for {} objects".format(len(self)))
         if not reindex_on_success:
             # Do nothing
             self.clear()
@@ -598,7 +605,9 @@ class ActionHandlerPool:
             instance = info[info.keys()[0]]["instance"]
             instance.reindexObject()
             processed.append(uid)
+        logger.info("Objects processed: {}".format(len(processed)))
         self.clear()
 
     def clear(self):
         self.actions = collections.OrderedDict()
+        self.is_new = True
