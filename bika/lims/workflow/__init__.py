@@ -72,6 +72,7 @@ def doActionFor(instance, action_id, reindex_on_success=True):
         # TODO Workflow . Check if this is strictly necessary
         # This check is here because sometimes Plone creates a list
         # from submitted form elements.
+        logger.warn("Got a list of obj in doActionFor!")
         if len(instance) > 1:
             logger.warn(
                 "doActionFor is getting an instance parameter which is a list "
@@ -80,6 +81,11 @@ def doActionFor(instance, action_id, reindex_on_success=True):
             )
 
         return doActionFor(instance=instance[0], action_id=action_id)
+
+    # Return False if transition is not permitted
+    if not isTransitionAllowed(instance, action_id):
+        return False, "Transition {} for {} is not allowed"\
+            .format(action_id, instance.getId())
 
     # Ensure the same action is not triggered twice for the same object.
     pool = ActionHandlerPool.get_instance()
