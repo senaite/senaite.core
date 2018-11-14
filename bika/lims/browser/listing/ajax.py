@@ -11,6 +11,7 @@ from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
 from bika.lims.browser.listing.decorators import set_application_json_header
 from bika.lims.browser.listing.decorators import translate
+from bika.lims.interfaces import IRoutineAnalysis
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from zope.lifecycleevent import modified
@@ -316,6 +317,71 @@ class AjaxListingView(BrowserView):
 
         return config
 
+    def recalculate_results(self, obj):
+        """Recalculate the result of the object and its dependents
+
+        :returns: List of recalculated objects
+        """
+        recalculated_objects = []
+        # recalculate own result
+        obj.calculateResult(override=True, cascade=True)
+        # recalculate dependent analyses
+        for dep in obj.getDependents():
+            if dep.calculateResult(override=True, cascade=True):
+                recalculated_objects.append(dep)
+        return recalculated_objects
+
+    def is_analysis(self, obj):
+        """Check if the object is an analysis
+        """
+        return IRoutineAnalysis.providedBy(obj)
+
+    def set_field(self, obj, name, value):
+        """Set the value
+
+        :returns: List of updated/changed objects
+        """
+
+        # set of updated objects
+        updated_objects = []
+
+
+        # sanitize the name
+        fieldname = name.lstrip("get")
+
+        # fetch the schema field
+        field = obj.getField(fieldname)
+
+        # field exists, set it with the value
+        if field:
+            obj.edit(**{fieldname: value})
+            updated_objects.append(obj)
+
+        # check if the object is an analysis and has an interim
+        if self.is_analysis(obj):
+            # update calculations
+            if fieldname == "Result":
+                updated_objects.extend(self.recalculate_results(obj))
+            else:
+                calc = obj.getCalculation()
+                calc_interims = calc.getInterimFields()
+                obj_interims = obj.getInterimFields()
+                interims = calc_interims + obj_interims
+                for interim in interims:
+                    if interim.get("keyword") == name:
+                        interim["value"] = value
+                        obj.setInterimFields(interims)
+                        updated_objects.append(obj)
+                        updated_objects.extend(self.recalculate_results(obj))
+
+        # unify the list of updated objects
+        updated_objects = list(set(updated_objects))
+
+        # notify modification event to all updated objects
+        map(modified, set())
+
+        return updated_objects
+
     @set_application_json_header
     @returns_safe_json
     @inject_runtime
@@ -477,47 +543,26 @@ class AjaxListingView(BrowserView):
         # Get the HTTP POST JSON Payload
         payload = self.get_json()
 
-        required = ["uid", "name", "value", "item"]
+        required = ["uid", "name", "value"]
         if not all(map(lambda k: k in payload, required)):
             return self.error("Payload needs to provide the keys {}"
                               .format(", ".join(required)), status=400)
 
         uid = payload.get("uid")
         name = payload.get("name")
-        fieldname = name.lstrip("get")
         value = payload.get("value")
-
 
         # get the object
         obj = api.get_object_by_uid(uid)
 
-        field = obj.getField(fieldname)
-        if field is None:
-            return self.error("Field {} not found"
-                              .format(fieldname), status=400)
+        # set the field
+        updated_objects = self.set_field(obj, name, value)
 
-        # update the object
-        obj.edit(**{fieldname: value})
-        modified(obj)
-
-        # XXX Result specific handling for calculated fields
-        UID = [uid]
-        if name == "Result":
-            for dep in obj.getDependents():
-                success = dep.calculateResult(override=True, cascade=True)
-                if success:
-                    dep.reindexObject()
-                    UID.append(api.get_uid(dep))
-
-        logger.info("AjaxListingView::ajax_set: Set value '{}' on {}"
-                    .format(value, repr(obj)))
-
-        # prepare the response
-        self.contentFilter.update({
-            "UID": UID
-        })
+        if not updated_objects:
+            return self.error("Failed to set field '{}'".format(name), 500)
 
         # get the folderitems
+        self.contentFilter["UID"] = map(api.get_uid, updated_objects)
         folderitems = self.get_folderitems()
 
         # prepare the response object
