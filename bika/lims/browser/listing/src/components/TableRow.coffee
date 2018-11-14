@@ -72,6 +72,7 @@ class TableRow extends React.Component
 
     return cls
 
+
   build_rows: ->
     ###
      * Build the Table row and eventual child-rows
@@ -149,11 +150,7 @@ class TableRow extends React.Component
     checkbox_name = "#{@props.select_checkbox_name}:list"
     uid = item.uid
     selected = @is_selected item
-    expanded = @is_expanded item
-    readonly = item.readonly or no
-
-    # global allow_edit
-    allow_edit = @props.allow_edit
+    disabled = item.disabled or no
 
     # insert select column
     if @props.show_select_column
@@ -162,9 +159,8 @@ class TableRow extends React.Component
           <Checkbox
             name={checkbox_name}
             value={uid}
-            disabled={readonly}
+            disabled={disabled}
             checked={selected}
-            allow_edit={allow_edit}
             onChange={@props.on_select_checkbox_checked}/>
         </td>
     )
@@ -172,19 +168,8 @@ class TableRow extends React.Component
     # insert visible columns in the right order
     for key in @props.table_columns
 
-      # get the column
+      # get the column definition from the listing view
       column = @props.columns[key]
-
-      # form field name
-      name = "#{key}.#{uid}"
-      # form field value
-      value = item[key]
-      # replacement html or plain value of the current column
-      formatted_value = item.replace[key] or value
-
-      # use the formatted result
-      if key == "Result"
-        formatted_value = item.formatted_result or formatted_value
 
       cells.push(
         <TableCell
@@ -192,14 +177,8 @@ class TableRow extends React.Component
           {...@props}  # pass in all properties from the table component
           item={item}  # a single folderitem
           item_key={key}  # the current rendered column key
-          name={name}  # the form field name
-          value={value}  # the form field value
-          formatted_value={formatted_value}  # the formatted value for readonly fields
-          selected={selected}  # true if the row is selected
-          readonly={readonly}  # true if the fields should be frozen
-          allow_edit={allow_edit}  # the global allow_edit flag
           column={column}  # the current rendered column object
-          className={key}  # set the column key as the CSS class name
+          selected={selected}  # true if the row is selected
           />
       )
 
