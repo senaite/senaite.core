@@ -71,9 +71,15 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
     This function is called to do the worflow actions that apply to analyses in
     worksheets
     """
+
     def __call__(self):
         form = self.request.form
         CheckAuthenticator(form)
+        analysis_uids = form.get("uids", [])
+        if not analysis_uids:
+            self.destination_url = self.context.absolute_url()
+            self.request.response.redirect(self.destination_url)
+            return
         bac = api.get_tool("bika_analysis_catalog")
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
@@ -82,51 +88,9 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
             # Calls to its parent class AnalysesWorkflowAction
             self.workflow_action_submit()
 
-        # assign
         elif action == "assign":
-            if not self.context.checkUserManage():
-                self.request.response.redirect(self.context.absolute_url())
-                return
-
-            analysis_uids = form.get("uids", [])
-            if analysis_uids:
-                # We retrieve the analyses from the database sorted by AR ID
-                # ascending, so the positions of the ARs inside the WS are
-                # consistent with the order of the ARs
-                catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
-                brains = catalog({
-                    "UID": analysis_uids,
-                    "sort_on": "getRequestID"})
-
-                # Now, we need the analyses within a request ID to be sorted by
-                # sortkey (sortable_title index), so it will appear in the same
-                # order as they appear in Analyses list from AR view
-                curr_arid = None
-                curr_brains = []
-                sorted_brains = []
-                for brain in brains:
-                    arid = brain.getRequestID
-                    if curr_arid != arid:
-                        # Sort the brains we've collected until now, that
-                        # belong to the same Analysis Request
-                        curr_brains.sort(key=attrgetter("getPrioritySortkey"))
-                        sorted_brains.extend(curr_brains)
-                        curr_arid = arid
-                        curr_brains = []
-
-                    # Now we are inside the same AR
-                    curr_brains.append(brain)
-                    continue
-
-                # Sort the last set of brains we've collected
-                curr_brains.sort(key=attrgetter('getPrioritySortkey'))
-                sorted_brains.extend(curr_brains)
-
-                # Add analyses in the worksheet
-                self.context.addAnalyses(sorted_brains)
-
-            self.destination_url = self.context.absolute_url()
-            self.request.response.redirect(self.destination_url)
+            # Assign the analyses
+            self.do_assign(analysis_uids)
 
         # unassign
         elif action == "unassign":
@@ -163,3 +127,42 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
+
+    def do_assign(self, analysis_uids):
+        # We retrieve the analyses from the database sorted by AR ID
+        # ascending, so the positions of the ARs inside the WS are
+        # consistent with the order of the ARs
+        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+        brains = catalog({
+            "UID": analysis_uids,
+            "sort_on": "getRequestID"})
+
+        # Now, we need the analyses within a request ID to be sorted by
+        # sortkey (sortable_title index), so it will appear in the same
+        # order as they appear in Analyses list from AR view
+        curr_arid = None
+        curr_brains = []
+        sorted_brains = []
+        for brain in brains:
+            arid = brain.getRequestID
+            if curr_arid != arid:
+                # Sort the brains we've collected until now, that
+                # belong to the same Analysis Request
+                curr_brains.sort(key=attrgetter("getPrioritySortkey"))
+                sorted_brains.extend(curr_brains)
+                curr_arid = arid
+                curr_brains = []
+
+            # Now we are inside the same AR
+            curr_brains.append(brain)
+            continue
+
+        # Sort the last set of brains we've collected
+        curr_brains.sort(key=attrgetter('getPrioritySortkey'))
+        sorted_brains.extend(curr_brains)
+
+        # Add analyses into the worksheet
+        self.context.addAnalyses(sorted_brains)
+
+        self.destination_url = self.context.absolute_url()
+        self.request.response.redirect(self.destination_url)
