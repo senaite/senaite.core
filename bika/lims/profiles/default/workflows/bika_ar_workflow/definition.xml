@@ -1163,7 +1163,7 @@
     <action url="" category="workflow" icon="">Create partitions</action>
     <guard>
       <guard-permission>BIKA: Edit Results</guard-permission>
-      <guard-expression>python:here.guard_handle("create_partitions")</guard-expression>
+      <guard-expression>python:here.guard_handler("create_partitions")</guard-expression>
     </guard>
   </transition>
   <!-- /Transition: create_partitions -->
