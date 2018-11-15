@@ -87,12 +87,17 @@ def doActionFor(instance, action_id, reindex_on_success=True):
         return False, "Transition {} for {} is not allowed"\
             .format(action_id, instance.getId())
 
-    # Ensure the same action is not triggered twice for the same object.
+    # Since a given transition can cascade or promote to other objects, we want
+    # to reindex all objects for which the transition succeed at once, at the
+    # end of process. Otherwise, same object will be reindexed multiple times
+    # unnecessarily. Also, ActionsHandlerPool ensures the same transition is not
+    # applied twice to the same object due to cascade/promote recursions.
     pool = ActionHandlerPool.get_instance()
     busy = pool.is_busy()
-    if not busy:
-        pool.start()
-    elif pool.succeed(instance, action_id):
+    pool.start()
+
+    # Ensure the same action is not triggered twice for the same object.
+    if pool.succeed(instance, action_id):
         return
 
     succeed = False
@@ -110,8 +115,10 @@ def doActionFor(instance, action_id, reindex_on_success=True):
             .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
 
-    # Resume the pool of actions
+    # Add the current object to the pool
     pool.push(instance, action_id, succeed)
+
+    # Resume the pool of actions performed
     if not busy:
         pool.resume(reindex_on_success)
 
