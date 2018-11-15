@@ -44,6 +44,7 @@ _indexes_dict = {
     # Searchable Text Index by wildcards
     # http://zope.readthedocs.io/en/latest/zope2book/SearchingZCatalog.html#textindexng
     'listing_searchable_text': 'TextIndexNG3',
+    'isRootAncestor': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
@@ -85,11 +86,13 @@ _columns_list = [
     'getDateReceived',
     'getDateVerified',
     'getDatePublished',
+    'getDescendantsUIDs',
     'getDistrict',
     'getProfilesUID',
     'getProfilesURL',
     'getProfilesTitle',
     'getProfilesTitleStr',
+    'getRawParentAnalysisRequest',
     'getProvince',
     'getTemplateUID',
     'getTemplateURL',
