@@ -210,6 +210,7 @@ class AjaxListingView(BrowserView):
             transition_weights = {
                 "invalidate": 100,
                 "retract": 90,
+                "reject": 90,
                 "cancel": 80,
                 "deactivate": 70,
                 "publish": 60,
