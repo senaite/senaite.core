@@ -144,14 +144,16 @@ def _logTransitionFailure(obj, transition_id):
     logger.warning("Transition not found. Check the workflow definition!")
 
 
+# TODO Workflow - remove doAction(s)For?
 def doActionsFor(instance, actions, reindex_on_success=True):
     """Performs a set of transitions to the instance passed in
     """
     pool = ActionHandlerPool.get_instance()
-    first_call = pool.is_empty()
+    busy = pool.is_busy()
+    pool.start()
     for action in actions:
         doActionFor(instance, action, reindex_on_success=True)
-    if first_call:
+    if not busy:
         pool.resume(reindex_on_success)
 
 
