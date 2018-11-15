@@ -1117,17 +1117,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if method:
             self.setMethod(method, True)
 
-    def exportAnalyses(self, REQUEST=None, RESPONSE=None):
-        """ Export analyses from this worksheet """
-        import bika.lims.InstrumentExport as InstrumentExport
-        instrument = REQUEST.form['getInstrument']
-        try:
-            func = getattr(InstrumentExport, "%s_export" % instrument)
-        except:
-            return
-        func(self, REQUEST, RESPONSE)
-        return
-
     def getInstrumentTitle(self):
         """
         Returns the instrument title
