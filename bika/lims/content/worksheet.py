@@ -333,8 +333,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 service_uids.append(api.get_uid(service))
         service_uids = list(set(service_uids))
 
-        # Reference analyses can only be added if the state of the ws is open
-        if api.get_workflow_status_of(self) != "open":
+        # Cannot add a reference analysis if not open, unless a retest
+        if api.get_workflow_status_of(self) not in ["open", "to_be_verified"]:
             return []
 
         slot_to = to_int(slot)
@@ -346,8 +346,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             slot_to = self.get_suitable_slot_for_reference(reference)
             return self.addReferenceAnalyses(reference, service_uids, slot_to)
 
-        processed = map(lambda an: api.get_uid(an.getAnalysisService()),
-                        self.get_analyses_at(slot_to))
+        processed = list()
+        for analysis in self.get_analyses_at(slot_to):
+            if getCurrentState(analysis) != "retracted":
+                service = analysis.getAnalysisService()
+                processed.append(api.get_uid(service))
         query = dict(portal_type="AnalysisService", UID=service_uids,
                      sort_on="sortable_title")
         services = filter(lambda service: api.get_uid(service) not in processed,

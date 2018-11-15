@@ -141,6 +141,8 @@
     </permission-map>
   </state>
 
+  <!-- State: retracted
+  The reference analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="BIKA: Edit Field Results" acquired="False">

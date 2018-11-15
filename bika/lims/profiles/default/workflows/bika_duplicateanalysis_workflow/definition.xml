@@ -88,6 +88,8 @@
     </permission-map>
   </state>
 
+  <!-- State: to_be_verified
+  Results have been submitted and awaiting for review -->
   <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
     <!-- A duplicate can only live together with the analysis it comes from
     bounded in a Worksheet. Hence, we can unassign a duplicate once submitted
@@ -157,6 +159,8 @@
     </permission-map>
   </state>
 
+  <!-- State: retracted
+  The duplicate analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="BIKA: Edit Results" acquired="False">

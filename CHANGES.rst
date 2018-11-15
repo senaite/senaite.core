@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1077 Creation of retests for blanks and controls via retraction
 - #1077 Creation of retests for duplicates via retraction
 - #1077 Auto-retraction of dependents on retract transitions
 - #1077 The removal of a routine analysis causes the removal of its duplicates

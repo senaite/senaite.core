@@ -2953,10 +2953,6 @@ class AnalysisRequest(BaseFolder):
         events.after_reject(self)
 
     @security.public
-    def workflow_script_retract(self):
-        events.after_retract(self)
-
-    @security.public
     def workflow_script_invalidate(self):
         events.after_invalidate(self)
 

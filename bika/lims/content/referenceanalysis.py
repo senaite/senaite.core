@@ -181,22 +181,5 @@ class ReferenceAnalysis(AbstractAnalysis):
                 workflow.doActionFor(ws, 'attach')
         self.reindexObject()
 
-    def workflow_script_retract(self):
-        if skip(self, "retract"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # Escalate action to the Worksheet.
-        ws = self.getWorksheet()
-        if not skip(ws, "retract", peek=True):
-            if workflow.getInfoFor(ws, 'review_state') == 'open':
-                skip(ws, "retract")
-            else:
-                if "retract all analyses" \
-                        not in self.REQUEST['workflow_skiplist']:
-                    self.REQUEST["workflow_skiplist"].append(
-                        "retract all analyses")
-                workflow.doActionFor(ws, 'retract')
-        self.reindexObject()
-
 
 registerType(ReferenceAnalysis, PROJECTNAME)
