@@ -345,7 +345,6 @@ class AjaxListingView(BrowserView):
         # set of updated objects
         updated_objects = []
 
-
         # sanitize the name
         fieldname = name.lstrip("get")
 
