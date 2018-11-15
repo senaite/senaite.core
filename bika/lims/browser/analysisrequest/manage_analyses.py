@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import collections
-import json
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _

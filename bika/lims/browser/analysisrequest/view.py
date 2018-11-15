@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.permissions import EditFieldResults
@@ -50,18 +49,6 @@ class AnalysisRequestViewView(BrowserView):
 
         # Create the ResultsInterpretation by department view
         self.riview = ARResultsInterpretationView(self.context, self.request)
-
-        # XXX is general retraction still possible?
-        # If a general retracted is done, rise a waring
-        if api.get_workflow_status_of(self.context) == "sample_received":
-            analyses = self.context.getAnalyses()
-            states = map(api.get_workflow_status_of, analyses)
-            valid_states = [
-                "sample_received", "retracted", "to_be_verified", "verified"]
-            invalid_states = filter(lambda s: s not in valid_states, states)
-            if len(invalid_states) > 0:
-                message = _("General Retract Done. Submit this AR manually.")
-                self.add_status_message(message, level="warning")
 
         return self.template()
 
@@ -146,7 +133,3 @@ class AnalysisRequestViewView(BrowserView):
         setup = api.get_setup()
         return setup.getCategoriseAnalysisServices()
 
-    def add_status_message(self, message, level="info"):
-        """Render a status message
-        """
-        self.context.plone_utils.addPortalMessage(message, level)
