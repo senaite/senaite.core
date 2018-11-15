@@ -98,6 +98,27 @@ def after_retract(analysis):
         doActionFor(dependent, 'retract')
 
 
+def after_reject(analysis):
+    """Function triggered after the "reject" transition for the analysis passed
+    in is performed."""
+    worksheet = analysis.getWorksheet()
+    if worksheet:
+        worksheet.removeAnalysis(analysis)
+
+    # Reject our dependents (analyses that depend on this analysis)
+    dependents = analysis.getDependents()
+    for dependent in dependents:
+        doActionFor(dependent, "reject")
+
+    # Try to rollback the Analysis Request (all analyses rejected)
+    if IRequestAnalysis.providedBy(analysis) and \
+            not IDuplicateAnalysis.providedBy(analysis):
+        request = analysis.getRequest()
+        doActionFor(request, "rollback_to_receive")
+
+# Reject our dependents (analyses that depend on this analysis)
+
+
 def after_verify(analysis):
     """
     Method triggered after a 'verify' transition for the analysis passed in
@@ -128,17 +149,6 @@ def after_verify(analysis):
 
 def after_cancel(obj):
     if skip(obj, "cancel"):
-        return
-    # If it is assigned to a worksheet, unassign it.
-    worksheet = obj.getWorksheet()
-    if worksheet:
-        worksheet.removeAnalysis(obj)
-    obj.reindexObject()
-    _reindex_request(obj)
-
-
-def after_reject(obj):
-    if skip(obj, "reject"):
         return
     # If it is assigned to a worksheet, unassign it.
     worksheet = obj.getWorksheet()

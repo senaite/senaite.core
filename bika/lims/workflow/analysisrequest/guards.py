@@ -158,9 +158,14 @@ def publish(obj):
 def guard_rollback_to_receive(analysis_request):
     """Return whether 'rollback_to_receive' transition can be performed or not
     """
+    # Can rollback to receive if at least one analysis hasn't been submitted yet
+    # or if all analyses have been rejected
     analyses = analysis_request.getAnalyses()
     for analysis in analyses:
         analysis_object = api.get_object(analysis)
-        if getCurrentState(analysis_object) in ["unassigned", "assigned"]:
+        state = getCurrentState(analysis_object)
+        if state in ["unassigned", "assigned"]:
             return True
-    return False
+        if state != "rejected":
+            return False
+    return True

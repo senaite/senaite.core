@@ -15,6 +15,7 @@
   <permission>BIKA: Retract</permission>
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
+  <permission>Reject</permission>
   <permission>Review portal content</permission>
 
 
@@ -55,6 +56,10 @@
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
     </permission-map>
+    <permission-map name="Reject" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
   </state>
 
   <!-- State: assigned
@@ -91,6 +96,10 @@
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
     </permission-map>
+    <permission-map name="Reject" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
   </state>
 
   <!-- State: to_be_verified
@@ -122,6 +131,10 @@
       <permission-role>Manager</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+    <permission-map name="Reject" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
   </state>
 
   <state state_id="published" title="Published" i18n:attributes="title">
@@ -142,7 +155,7 @@
   </state>
 
   <!-- State: retracted
-  The reference analysis has been retracted and a retest has been created -->
+  The analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="BIKA: Edit Field Results" acquired="False">
@@ -200,6 +213,8 @@
     </permission-map>
   </state>
 
+  <!-- State: rejected
+  The analysis has been rejected and cannot be used anymore -->
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="BIKA: Edit Field Results" acquired="False">
@@ -266,6 +281,19 @@
     </guard>
   </transition>
 
+  <!-- Transition: reject
+  The analysis transitions to "rejected" state, but does not create a new copy
+  of the analysis (this is the main difference with "retract"). -->
+  <transition transition_id="reject" title="Reject" new_state="rejected"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reject</action>
+    <guard>
+      <guard-permission>Reject</guard-permission>
+      <guard-expression>python:here.guard_handler("reject")</guard-expression>
+    </guard>
+  </transition>
+
   <!-- Transition: multi_verify (for when multi-verification is enabled) -->
   <transition transition_id="multi_verify" title="Verify" new_state="to_be_verified"
               trigger="USER" before_script="" after_script=""
@@ -296,12 +324,6 @@
     </guard>
   </transition>
 
-  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Reject</action>
-    <guard>
-      <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
-    </guard>
-  </transition>
 
   <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Add attachment</action>

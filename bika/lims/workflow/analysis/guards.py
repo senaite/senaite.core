@@ -51,7 +51,7 @@ def dependencies_guard(analysis, transition_id):
 def guard_assign(analysis):
     """Return whether the transition "assign" can be performed or not
     """
-    # TODO Workflow - Analysis. Assign guard to retun True only in WS.Add?
+    # TODO Workflow - Analysis. Assign guard to return True only in WS.Add?
     #      We need "unassigned" analyses to appear in Worksheet Add analyses.
     #      Hence, it returns True if the analysis has not been assigned to any
     #      worksheet yet. The problem is this can end up (if the 'assign'
@@ -233,13 +233,32 @@ def guard_retract(analysis):
     if not api.is_active(analysis):
         return False
 
+    # Cannot retract if there are dependents that cannot be retracted
+    for dependent in analysis.getDependents():
+        if not wf.isTransitionAllowed(dependent, "retract"):
+            return False
+
+    # Cannot retract if all dependencies have been verified
     dependencies = analysis.getDependencies()
     if not dependencies:
         return True
-
-    # At least one dependency has not been verified yet
     for dependency in dependencies:
         if not wf.wasTransitionPerformed(dependency, "verify"):
             return True
 
     return False
+
+
+def guard_reject(analysis):
+    """Return whether the transition "reject" can be performed or not
+    """
+    # Cannot reject if the analysis is cancelled
+    if not api.is_active(analysis):
+        return False
+
+    # Cannot reject if there are dependents that cannot be rejected
+    for dependent in analysis.getDependents():
+        if not wf.isTransitionAllowed(dependent, "reject"):
+            return False
+
+    return True
