@@ -222,7 +222,11 @@ I submit the results for the rest of analyses:
 And since there is a duplicate that has not been yet submitted, the Worksheet
 remains in `open` state:
 
-    >>> duplicate = worksheet.getDuplicateAnalyses()[1]
+    >>> duplicates = worksheet.getDuplicateAnalyses()
+    >>> duplicate = filter(lambda dup: api.get_workflow_status_of(dup) == "assigned", duplicates)
+    >>> len(duplicate)
+    1
+    >>> duplicate = duplicate[0]
     >>> api.get_workflow_status_of(duplicate)
     'assigned'
     >>> api.get_workflow_status_of(worksheet)
