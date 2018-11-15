@@ -5,6 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import copy
+
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
@@ -65,7 +67,8 @@ class InterimFieldsField(RecordsField):
 
         # Ensure the service includes the interims from the calculation
         an_keys = map(lambda interim: interim['keyword'], an_interims)
-        calc_interims = calculation.getInterimFields()
+        # Avoid references from the service interims to the calculation interims
+        calc_interims = copy.deepcopy(calculation.getInterimFields())
         calc_interims = filter(lambda inter: inter['keyword'] not in an_keys,
                                calc_interims)
         return an_interims + calc_interims
