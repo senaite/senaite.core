@@ -13,11 +13,15 @@
         class="form form-inline"
         method="post"
         i18n:domain="senaite.core"
+        tal:omit-tag="view/omit_form"
         tal:attributes="id python:view.form_id;
                         action python:view.getPOSTAction()">
 
-    <input tal:replace="structure context/@@authenticator/authenticator"/>
-    <input type="hidden" name="submitted" value="1"/>
+    <input tal:condition="not: view/omit_form"
+           tal:replace="structure context/@@authenticator/authenticator"/>
+
+    <input tal:condition="not: view/omit_form"
+           type="hidden" name="submitted" value="1"/>
 
     <!-- ReactJS managed component -->
     <div class="ajax-contents-table"

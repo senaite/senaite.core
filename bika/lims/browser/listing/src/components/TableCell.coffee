@@ -305,7 +305,6 @@ class TableCell extends React.Component
           value={value}
           title={title}
           formatted_value={formatted_value}
-          className="readonly"
           />
       )
 
@@ -319,7 +318,6 @@ class TableCell extends React.Component
           value={value}
           title={title}
           formatted_value={formatted_value}
-          className="readonly"
           />
       )
       field.push (
@@ -328,7 +326,6 @@ class TableCell extends React.Component
           name={fieldname}
           value={value}
           title={title}
-          className="hidden"
           />
       )
 
@@ -359,7 +356,6 @@ class TableCell extends React.Component
             key={name + "_item_data"}
             name="item_data"
             value={JSON.stringify item_data}
-            className="hidden"
           />
         )
 
@@ -396,7 +392,6 @@ class TableCell extends React.Component
           defaultChecked={value}
           disabled={disabled}
           onChange={@on_checkbox_field_change}
-          className="hidden"
           />
       )
 
@@ -428,7 +423,6 @@ class TableCell extends React.Component
           name={fieldname}
           item_key={item_key}
           value={value}
-          className="hidden"
         />
       )
 

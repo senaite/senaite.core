@@ -389,6 +389,9 @@ class BikaListingView(AjaxListingView, BrowserView):
     # Show the searchbox
     show_search = True
 
+    # Omit the outer form wrapper
+    omit_form = False
+
     # Column definitions:
     #
     # The keys of the columns dictionary must all exist in all
