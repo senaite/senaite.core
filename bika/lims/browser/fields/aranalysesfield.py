@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import copy
 import itertools
 
 from AccessControl import ClassSecurityInfo
@@ -295,6 +296,8 @@ class ARAnalysesField(ObjectField):
         :param service: Analysis Service Object
         """
         service_interims = service.getInterimFields()
+        # avoid references from the analyses interims to the service interims
+        service_interims = copy.deepcopy(service_interims)
         analysis.setInterimFields(service_interims)
 
     def _update_price(self, analysis, service, prices):
