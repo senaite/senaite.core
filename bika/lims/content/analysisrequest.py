@@ -2904,58 +2904,6 @@ class AnalysisRequest(BaseFolder):
     def guard_prepublish_transition(self):
         return guards.prepublish(self)
 
-    @security.public
-    def workflow_script_no_sampling_workflow(self):
-        events.after_no_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sampling_workflow(self):
-        events.after_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sample(self):
-        events.after_sample(self)
-
-    @security.public
-    def workflow_script_receive(self):
-        events.after_receive(self)
-
-    @security.public
-    def workflow_script_preserve(self):
-        events.after_preserve(self)
-
-    @security.public
-    def workflow_script_attach(self):
-        events.after_attach(self)
-
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
-
-    @security.public
-    def workflow_script_publish(self):
-        events.after_publish(self)
-
-    @security.public
-    def workflow_script_reinstate(self):
-        events.after_reinstate(self)
-
-    @security.public
-    def workflow_script_cancel(self):
-        events.after_cancel(self)
-
-    @security.public
-    def workflow_script_schedule_sampling(self):
-        events.after_schedule_sampling(self)
-
-    @security.public
-    def workflow_script_reject(self):
-        events.after_reject(self)
-
-    @security.public
-    def workflow_script_invalidate(self):
-        events.after_invalidate(self)
-
     def SearchableText(self):
         """
         Override searchable text logic based on the requirements.

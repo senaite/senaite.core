@@ -8,14 +8,12 @@
 """Sample represents a physical sample submitted for testing
 """
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.WorkflowCore import WorkflowException
-from bika.lims import bikaMessageFactory as _, logger
+from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.utils import t, getUsers
 from Products.ATExtensions.field import RecordsField
-from bika.lims import deprecated
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import RemarksWidget
@@ -24,17 +22,9 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ScheduleSampling
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import skip
 from bika.lims.workflow.sample import guards
-from bika.lims.workflow.sample import events
-from DateTime import DateTime
 from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.Archetypes.public import DisplayList
 from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
@@ -820,58 +810,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 continue
             batch_uids.append(batch_uid)
         return batch_uids
-
-    @security.public
-    def workflow_script_no_sampling_workflow(self):
-        events.after_no_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sampling_workflow(self):
-        events.after_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sample(self):
-        events.after_sample(self)
-
-    @security.public
-    def workflow_script_sample_due(self):
-        events.after_sample_due(self)
-
-    @security.public
-    def workflow_script_receive(self):
-        events.after_receive(self)
-
-    @security.public
-    def workflow_script_preserve(self):
-        events.after_preserve(self)
-
-    @security.public
-    def workflow_script_expire(self):
-        events.after_expire(self)
-
-    @security.public
-    def workflow_script_dispose(self):
-        events.after_dispose(self)
-
-    @security.public
-    def workflow_script_to_be_preserved(self):
-        events.after_to_be_preserved(self)
-
-    @security.public
-    def workflow_script_reinstate(self):
-        events.after_reinstate(self)
-
-    @security.public
-    def workflow_script_cancel(self):
-        events.after_cancel(self)
-
-    @security.public
-    def workflow_script_reject(self):
-        events.after_reject(self)
-
-    @security.public
-    def workflow_script_schedule_sampling(self):
-        events.after_schedule_sampling(self)
 
     @security.public
     def guard_to_be_preserved(self):
