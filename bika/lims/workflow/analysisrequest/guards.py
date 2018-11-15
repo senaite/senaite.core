@@ -159,13 +159,14 @@ def guard_rollback_to_receive(analysis_request):
     """Return whether 'rollback_to_receive' transition can be performed or not
     """
     # Can rollback to receive if at least one analysis hasn't been submitted yet
-    # or if all analyses have been rejected
+    # or if all analyses have been rejected or retracted
     analyses = analysis_request.getAnalyses()
+    skipped = 0
     for analysis in analyses:
         analysis_object = api.get_object(analysis)
         state = getCurrentState(analysis_object)
         if state in ["unassigned", "assigned"]:
             return True
-        if state != "rejected":
-            return False
-    return True
+        if state in ["retracted", "rejected"]:
+            skipped += 1
+    return len(analyses) == skipped

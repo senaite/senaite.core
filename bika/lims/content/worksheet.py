@@ -333,8 +333,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 service_uids.append(api.get_uid(service))
         service_uids = list(set(service_uids))
 
-        # Cannot add a reference analysis if not open, unless a retest
-        if api.get_workflow_status_of(self) not in ["open", "to_be_verified"]:
+        # Cannot add a reference analysis if not open
+        if api.get_workflow_status_of(self) != "open":
             return []
 
         slot_to = to_int(slot)
