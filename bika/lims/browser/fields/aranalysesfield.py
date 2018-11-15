@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import copy
 import itertools
 
 from AccessControl import ClassSecurityInfo
@@ -141,8 +142,6 @@ class ARAnalysesField(ObjectField):
             if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                # TODO Entry point for interims assignment and Calculation
-                #      decoupling from Analysis. See comments PR#593
                 analysis = create_analysis(instance, service)
                 new_analyses.append(analysis)
 

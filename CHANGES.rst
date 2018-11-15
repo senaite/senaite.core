@@ -43,6 +43,7 @@ Changelog
 
 **Fixed**
 
+- #1089 Deepcopy Service Interims to Analyses
 - #1082 Worksheet folder listing fixtures for direct analyst assignment
 - #1080 Improve searchability of Client and Multifile fields
 - #1072 Calculations with dependents do not work after 1.2.9 update
