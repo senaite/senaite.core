@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import collections
+import itertools
 from operator import itemgetter
 
 from AccessControl import ClassSecurityInfo
@@ -45,8 +46,8 @@ class ARTemplateAnalysesView(BikaListingView):
         self.show_search = False
         self.omit_form = True
 
+        # Categories
         self.categories = []
-        self.selected = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
             self.show_categories = True
@@ -93,15 +94,34 @@ class ARTemplateAnalysesView(BikaListingView):
             }
         ]
 
-        services = self.context.getAnalysisServicesSettings()
-        self.selected = map(itemgetter("uid"), services)
-        self.fieldvalue = self.context.getAnalyses()
-
     def update(self):
         """Update hook
         """
         super(ARTemplateAnalysesView, self).update()
         self.allow_edit = self.is_edit_allowed()
+        self.configuration = self.get_configuration()
+
+    def get_settings(self):
+        """Returns a mapping of UID -> setting
+        """
+        settings = self.context.getAnalysisServicesSettings()
+        mapping = dict(map(lambda s: (s.get("uid"), s), settings))
+        return mapping
+
+    def get_configuration(self):
+        """Returns a mapping of UID -> configuration
+        """
+        mapping = {}
+        settings = self.get_settings()
+        for record in self.context.getAnalyses():
+            uid = record.get("service_uid")
+            setting = settings.get(uid, {})
+            config = {
+                "partition": record.get("partition"),
+                "hidden": setting.get("hidden", False),
+            }
+            mapping[uid] = config
+        return mapping
 
     @view.memoize
     def show_prices(self):
@@ -138,13 +158,6 @@ class ARTemplateAnalysesView(BikaListingView):
         columns = ["Partition", "Hidden"]
         return columns
 
-    def is_service_hidden(self, service):
-        """Checks if the service is hidden
-        """
-        uid = api.get_uid(service)
-        settings = self.context.getAnalysisServiceSettings(uid)
-        return settings.get("hidden", service.getHidden())
-
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
 
@@ -165,12 +178,17 @@ class ARTemplateAnalysesView(BikaListingView):
         if category not in self.categories:
             self.categories.append(category)
 
+        config = self.configuration.get(uid, {})
+        partition = config.get("partition", "part-1")
+        hidden = config.get("hidden", False)
+
         item["Price"] = obj.getPrice()
         item["allow_edit"] = self.get_editable_columns()
         item["required"].append("Partition")
         item["choices"]["Partition"] = self.partition_choices
-        item["Hidden"] = self.is_service_hidden(obj)
-        item["selected"] = uid in self.selected
+        item["Partition"] = partition
+        item["Hidden"] = hidden
+        item["selected"] = uid in self.configuration
 
         # Icons
         after_icons = ""
@@ -210,35 +228,51 @@ class ARTemplateAnalysesWidget(TypesWidget):
 
     security.declarePublic("process_form")
 
-    def process_form(self, instance, field, form, **kwargs):
+    def process_form(self, instance, field, form, empty_marker=None,
+                     emptyReturnsMarker=False):
         """Return a list of dictionaries fit for ARTemplate/Analyses field
            consumption.
         """
         value = []
 
-        service_uids = form.get("uids", None)
-        Partitions = form.get("Partition", None)
+        # selected services
+        service_uids = form.get("uids", [])
+        # defined partitions
+        partitions = form.get("Partition", [])
+        partitions = partitions and partitions[0] or {}
+        # hidden services
+        hidden_services = form.get("Hidden", {})
 
-        if Partitions and service_uids:
-            Partitions = Partitions[0]
-            for service_uid in service_uids:
-                if service_uid in Partitions.keys() \
-                   and Partitions[service_uid] != '':
-                    value.append({
-                        "service_uid": service_uid,
-                        "partition": Partitions[service_uid]
-                    })
+        # get the service objects
+        services = map(api.get_object_by_uid, service_uids)
+        # get dependencies
+        dependencies = map(lambda s: s.getServiceDependencies(), services)
+        dependencies = list(itertools.chain.from_iterable(dependencies))
+        # Merge dependencies and services
+        services = set(services + dependencies)
 
-        if instance.portal_type == "ARTemplate":
-            # Hidden analyses?
-            outs = []
-            hiddenans = form.get("Hidden", {})
-            if service_uids:
-                for uid in service_uids:
-                    hidden = hiddenans.get(uid, "") == "on"
-                    outs.append({"uid": uid, "hidden": hidden})
-            instance.setAnalysisServicesSettings(outs)
+        # get the profile
+        profile_uid = form.get("AnalysisProfile_uid")
+        if profile_uid:
+            profile = api.get_object_by_uid(profile_uid)
+            # update the services with those from the profile
+            services.update(profile.getService())
 
+        as_settings = []
+        for service in services:
+            service_uid = api.get_uid(service)
+            value.append({
+                "service_uid": service_uid,
+                "partition": partitions.get(service_uid, "part-1")
+            })
+
+            hidden = hidden_services.get(service_uid, "") == "on"
+            as_settings.append({"uid": service_uid, "hidden": hidden})
+
+        # set the analysis services settings
+        instance.setAnalysisServicesSettings(as_settings)
+
+        # This returns the value for the Analyses Schema Field
         return value, {}
 
     security.declarePublic("Analyses")
@@ -248,7 +282,9 @@ class ARTemplateAnalysesWidget(TypesWidget):
         """
         instance = getattr(self, "instance", field.aq_parent)
         view = api.get_view(
-            "table_ar_template_analyses", context=instance)
+            "table_ar_template_analyses",
+            context=instance,
+            request=self.REQUEST)
         # Call listing hooks
         view.update()
         view.before_render()
