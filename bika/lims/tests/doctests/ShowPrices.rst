@@ -170,22 +170,6 @@ Analysis Profiles contain prices in the list of available analyses.
     >>> True if "409.17" not in browser.contents else "Profile Analyses should NOT be showing Price."
     True
 
-
-Analysis Request Templates
---------------------------
-
-Analysis Request Templates contain prices in the list of available analyses.
-
-    >>> enableShowPrices()
-    >>> browser.open(template.absolute_url())
-    >>> True if "409.17"  in browser.contents else "AR Templates should be showing Price."
-    True
-
-    >>> disableShowPrices()
-    >>> browser.open(template.absolute_url())
-    >>> True if "409.17"  not in browser.contents else "AR Templates should NOT be showing Price."
-    True
-
 Client discount fields show/hide
 --------------------------------
 

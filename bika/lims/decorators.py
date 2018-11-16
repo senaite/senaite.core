@@ -17,6 +17,18 @@ from senaite.core.supermodel.interfaces import ISuperModel
 from zope.component import queryAdapter
 
 
+def XXX_REMOVEME(func):
+    """Decorator for dead code removal
+    """
+    @wraps(func)
+    def decorator(self, *args, **kwargs):
+        msg = "~~~~~~~ XXX REMOVEME marked method called: {}.{}".format(
+            self.__class__.__name__, func.func_name)
+        raise RuntimeError(msg)
+        return func(self, *args, **kwargs)
+    return decorator
+
+
 def returns_json(func):
     """Decorator for functions which return JSON
     """

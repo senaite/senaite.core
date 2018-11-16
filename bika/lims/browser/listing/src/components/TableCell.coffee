@@ -16,59 +16,115 @@ class TableCell extends React.Component
   constructor: (props) ->
     super(props)
 
-    # bind context of event handlers
-    @on_cell_select_field_change = @on_cell_select_field_change.bind @
-    @on_cell_checkbox_field_change = @on_cell_checkbox_field_change.bind @
-    @on_cell_numeric_field_change = @on_cell_numeric_field_change.bind @
-    @on_cell_string_field_change = @on_cell_string_field_change.bind @
+    # Bind checkbox field events
+    @on_checkbox_field_change = @on_checkbox_field_change.bind @
 
-  on_cell_select_field_change: (event) ->
-    ###
-     * Event handler when the select field changed
-    ###
-    el = event.currentTarget
-    name = el.name
-    value = el.value
-    console.debug "TableCell:on_cell_select_field_change: value=#{value}"
+    # Bind select field events
+    @on_select_field_blur = @on_select_field_blur.bind @
+    @on_select_field_change = @on_select_field_change.bind @
 
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
+    # Bind numeric field events
+    @on_numeric_field_blur = @on_numeric_field_blur.bind @
+    @on_numeric_field_change = @on_numeric_field_change.bind @
 
-  on_cell_checkbox_field_change: (event) ->
+    # Bind string field events
+    @on_string_field_blur = @on_string_field_blur.bind @
+    @on_string_field_change = @on_string_field_change.bind @
+
+  on_checkbox_field_change: (event) ->
     ###
      * Event handler when the checkbox field changed
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.checked
-    console.debug "TableCell:on_cell_checkbox_field_change: checked=#{value}"
+    console.debug "TableCell:on_checkbox_field_change: checked=#{value}"
 
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
-  on_cell_numeric_field_change: (event) ->
+    # Call the *save* field handler (no blur event here necessary)
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value, @props.item
+
+  on_select_field_blur: (event) ->
+    ###
+     * Event handler when the select field blurred
+    ###
+    el = event.currentTarget
+    name = el.getAttribute("item_key") or el.name
+    value = el.value
+    console.debug "TableCell:on_select_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value, @props.item
+
+  on_select_field_change: (event) ->
+    ###
+     * Event handler when the select field changed
+    ###
+    el = event.currentTarget
+    name = el.getAttribute("item_key") or el.name
+    value = el.value
+    console.debug "TableCell:on_select_field_change: value=#{value}"
+
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value, @props.item
+
+  on_numeric_field_blur: (event) ->
+    ###
+     * Event handler when the numeric field blurred
+    ###
+    el = event.currentTarget
+    name = el.getAttribute("item_key") or el.name
+    value = el.value
+    console.debug "TableCell:on_numeric_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value, @props.item
+
+  on_numeric_field_change: (event) ->
     ###
      * Event handler when the numeric field changed
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
-    console.debug "TableCell:on_cell_numeric_field_change: value=#{value}"
+    console.debug "TableCell:on_numeric_field_change: value=#{value}"
 
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
-  on_cell_string_field_change: (event) ->
+  on_string_field_blur: (event) ->
+    ###
+     * Event handler when the string field blurred
+    ###
+    el = event.currentTarget
+    name = el.getAttribute("item_key") or el.name
+    value = el.value
+    console.debug "TableCell:on_string_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value, @props.item
+
+  on_string_field_change: (event) ->
     ###
      * Event handler when the string field changed
     ###
     el = event.currentTarget
-    name = el.name
+    name = el.getAttribute("item_key") or el.name
     value = el.value
-    console.debug "TableCell:on_cell_string_field_change: value=#{value}"
+    console.debug "TableCell:on_string_field_change: value=#{value}"
 
-    if @props.on_editable_field_change
-      @props.on_editable_field_change @props.item.uid, name, value
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
   render_before_content: ->
     ###
@@ -94,17 +150,13 @@ class TableCell extends React.Component
                  dangerouslySetInnerHTML={{__html: after[item_key]}}>
            </span>
 
-  is_edit_allowed: ->
+  is_edit_allowed: (item_key, item) ->
     ###
      * Checks if the field key is listed in the `allow_edit` list
     ###
-    item = @props.item
-    item_key = @props.item_key
-    allow_edit = @props.allow_edit
-    selected = @props.selected
 
     # the global allow_edit overrides all row specific settings
-    if not allow_edit
+    if not @props.allow_edit
       return no
 
     # check if the field is listed in the item's allow_edit list
@@ -113,124 +165,272 @@ class TableCell extends React.Component
 
     return no
 
+  is_disabled: (item_key, item) ->
+    ###
+     * Checks if the field is marked as disabled
+    ###
+    return item.disabled or no
+
+  is_required: (item_key, item) ->
+    ###
+     * Check if the field is marked as required
+    ###
+    required_fields = item.required or []
+    return item_key in required_fields
+
+  get_name: (item_key, item) ->
+    ###
+     * Get the field name
+    ###
+    return "#{item_key}.#{item.uid}"
+
+  get_value: (item_key, item) ->
+    ###
+     * Get the field value
+    ###
+    value = item[item_key]
+
+    # check if the field is an interim
+    interims = item.interimfields or []
+    for interim in interims
+      if interim.keyword == item_key
+        value = interim.value
+        break
+
+    return value
+
+  is_result_field: (item_key, item) ->
+    ###
+     * Check if the field is a result field
+    ###
+    return item_key == "Result"
+
+  get_formatted_value: (item_key, item) ->
+    ###
+     * Get the formatted field value
+    ###
+
+    # replacement html or plain value of the current column
+    formatted_value = item.replace[item_key] or @get_value item_key, item
+
+    # use the formatted result
+    if item_key == "Result"
+      formatted_value = item.formatted_result or formatted_value
+
+    return formatted_value
+
+  get_type: (item_key, item) ->
+    ###
+     * Get the field type
+    ###
+
+    # true if the field is editable
+    editable = @is_edit_allowed item_key, item
+    resultfield = @is_result_field item_key, item
+
+    # readonly field
+    if not editable
+      return "readonly"
+
+    # type definition of the column has precedence
+    column = @props.column or {}
+    if "type" of column
+      return column["type"]
+
+    # check if the field is a boolean
+    value = @get_value item_key, item
+    if typeof(value) == "boolean"
+      return "boolean"
+
+    # check if the field is listed in choices
+    choices = item.choices or {}
+    if item_key of choices
+      return "select"
+
+    # check if the field is an interim
+    interims = item.interimfields or []
+    if interims.length > 0
+      interim_keys = item.interimfields.map (interim) ->
+        return interim.keyword
+      if item_key in interim_keys
+        return "interim"
+
+    # check if the field is a calculated field
+    if resultfield and item.calculation
+      return "calculated"
+
+    # the default
+    return "numeric"
+
   render_content: ->
     ###
       * Render the table cell content
     ###
 
-    item = @props.item
+    # the current rendered column cell name
     item_key = @props.item_key
-    name = @props.name
-    value = @props.value
-    formatted_value = @props.formatted_value
-    title = @props.title
-    choices = item.choices or {}
-    disabled = @props.disabled
-    column_title = @props.column.title
-    editable = @is_edit_allowed()
-    required_fields = item.required or []
-    required = item_key in required_fields
+    # single folderitem
+    item = @props.item
+    # the current column definition
+    column = @props.column
 
-    # Render readonly fields
-    if not editable
-      field = [
+    # form field title
+    title = column.title or item_key
+    # form field name
+    name = @get_name item_key, item
+    # form field value
+    value = @get_value item_key, item
+    # formatted display value of the form field
+    formatted_value = @get_formatted_value item_key, item
+    # true if the field should be disabled
+    disabled = @is_disabled item_key, item
+    # true if the field is required
+    required = @is_required item_key, item
+    # field type to render
+    type = @get_type item_key, item
+    # interim fields
+    interims = item.interimfields or []
+    # result field
+    result_field = @is_result_field item_key, item
+
+    # the field to return
+    field = []
+
+    # render readonly field
+    if type == "readonly"
+      field.push (
         <ReadonlyField
           key={name}
           name={name}
           value={value}
-          title={column_title}
+          title={title}
           formatted_value={formatted_value}
-          className="readonly"
           />
-      ]
-      return field
+      )
 
-    # Select
-    if item_key of choices
+    # render calculated field
+    else if type == "calculated"
       fieldname = "#{name}:records"
-      options = choices[item_key]
-      field = [
-        <Select
+      field.push (
+        <ReadonlyField
           key={name}
           name={fieldname}
-          defaultValue={value}
-          title={column_title}
-          disabled={disabled}
-          required={required}
-          options={options}
-          onChange={@on_cell_select_field_change}
-          className=""
+          value={value}
+          title={title}
+          formatted_value={formatted_value}
           />
-      ]
-      if disabled
-        field.push (
-          <HiddenField
-            key={name + "_hidden"}
-            name={fieldname}
-            value={value}
-            className=""
-          />
-        )
-      return field
-
-    # Checkbox
-    if typeof(value) == "boolean"
-      fieldname = "#{name}:record:ignore-empty"
-      field = [
-        <Checkbox
-          key={name}
+      )
+      field.push (
+        <HiddenField
+          key={name + "_hidden"}
           name={fieldname}
-          value="on"
-          title={column_title}
-          defaultChecked={value}
-          disabled={disabled}
-          editable={editable}
-          onChange={@on_cell_checkbox_field_change}
-          className=""
+          value={value}
+          title={title}
           />
-      ]
-      if disabled
-        field.push (
-          <HiddenField
-            key={name + "_hidden"}
-            name={fieldname}
-            value={value}
-            className=""
-          />
-        )
-      return field
+      )
 
-    # Numeric
-    if typeof(value) == "string"
+    # render interim field
+    else if type == "interim"
       fieldname = "#{name}:records"
-      field = [
+      field.push (
         <NumericField
           key={name}
           name={fieldname}
+          item_key={item_key}
           defaultValue={value}
-          editable={editable}
-          title={column_title}
+          title={title}
           formatted_value={formatted_value}
-          placeholder={column_title}
+          placeholder={title}
           disabled={disabled}
-          onChange={@on_cell_numeric_field_change}
-          className=""
+          onChange={@on_numeric_field_change}
+          onBlur={@on_numeric_field_blur}
+          className="form-control input-sm"
           />
-      ]
-      if disabled
+      )
+      # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
+      if interims.length > 0
+        item_data = {}
+        item_data[item.uid] = interims
         field.push (
           <HiddenField
-            key={name + "_hidden"}
-            name={fieldname}
-            value={value}
-            className=""
+            key={name + "_item_data"}
+            name="item_data"
+            value={JSON.stringify item_data}
           />
         )
-      return field
+
+    # render select field
+    else if type in ["select", "choices"]
+      fieldname = "#{name}:records"
+      options = item.choices[item_key]
+      field.push (
+        <Select
+          key={name}
+          name={fieldname}
+          item_key={item_key}
+          defaultValue={value}
+          title={title}
+          disabled={disabled}
+          required={required}
+          options={options}
+          onChange={@on_select_field_change}
+          onBlur={@on_select_field_blur}
+          className="form-control input-sm"
+          />
+      )
+
+    # render checkbox field
+    else if type == "boolean"
+      fieldname = "#{name}:record:ignore-empty"
+      field.push (
+        <Checkbox
+          key={name}
+          name={fieldname}
+          item_key={item_key}
+          value="on"
+          title={title}
+          defaultChecked={value}
+          disabled={disabled}
+          onChange={@on_checkbox_field_change}
+          />
+      )
+
+    # render numeric field
+    else if type == "numeric"
+      fieldname = "#{name}:records"
+      field.push (
+        <NumericField
+          key={name}
+          name={fieldname}
+          item_key={item_key}
+          defaultValue={value}
+          title={title}
+          formatted_value={formatted_value}
+          placeholder={title}
+          disabled={disabled}
+          onChange={@on_numeric_field_change}
+          onBlur={@on_numeric_field_blur}
+          className="form-control input-sm"
+          />
+      )
+
+    # N.B. Disabled fields are not send on form submit.
+    #      Therefore, we render a hidden field when disabled.
+    if disabled
+      field.push (
+        <HiddenField
+          key={name + "_hidden"}
+          name={fieldname}
+          item_key={item_key}
+          value={value}
+        />
+      )
+
+    return field
 
   render: ->
     <td className={@props.className}>
-      <div className="input-group">
+      <div className="form-group">
         {@render_before_content()}
         {@render_content()}
         {@render_after_content()}
