@@ -218,7 +218,8 @@ schema = BikaSchema.copy() + Schema((
         relationship="ARTemplateAnalysisProfile",
         widget=ReferenceWidget(
             label=_("Analysis Profile"),
-            description=_("The Analysis Profile selection for this template"),
+            description=_("Add analyses from the selected profile "
+                          "to the template"),
             visible={
                 "edit": "visible",
                 "view": "visible",
