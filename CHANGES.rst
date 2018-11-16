@@ -44,6 +44,7 @@ Changelog
 
 **Fixed**
 
+- #1090 Primary AR does not recognize created Partitions
 - #1089 Deepcopy Service Interims to Analyses
 - #1082 Worksheet folder listing fixtures for direct analyst assignment
 - #1080 Improve searchability of Client and Multifile fields

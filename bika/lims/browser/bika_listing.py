@@ -365,6 +365,12 @@ class BikaListingView(AjaxListingView, BrowserView):
     # it only searches visible items
     manual_sort_on = None
 
+    # Show the searchbox
+    show_search = True
+
+    # Omit the outer form wrapper
+    omit_form = False
+
     # Column definitions:
     #
     # The keys of the columns dictionary must all exist in all
@@ -1617,7 +1623,7 @@ class BikaListingView(AjaxListingView, BrowserView):
         elif not self.__name__:
             ajax = False
         # don't render for these views
-        elif self.__name__ in ["analyses"]:
+        elif self.__name__ in []:
             ajax = False
         if not ajax:
             table = BikaListingTable(bika_listing=self, table_only=table_only)

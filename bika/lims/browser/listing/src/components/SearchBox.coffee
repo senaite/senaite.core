@@ -63,6 +63,9 @@ class SearchBox extends React.Component
     return value
 
   render: ->
+    if @props.show_search is no
+      return null
+
     <div className="input-group input-group-sm">
       <input type="text"
              className="form-control"

@@ -5,11 +5,13 @@ import json
 import urllib
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
 from bika.lims.browser.listing.decorators import set_application_json_header
 from bika.lims.browser.listing.decorators import translate
+from bika.lims.interfaces import IRoutineAnalysis
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -63,7 +65,7 @@ class AjaxListingView(BrowserView):
         func_name = "{}{}".format(prefix, func_arg)
         func = getattr(self, func_name, None)
         if func is None:
-            return self.fail("Invalid function", status=400)
+            raise NameError("Invalid function name")
 
         # Additional provided path segments after the function name are handled
         # as positional arguments
@@ -75,8 +77,8 @@ class AjaxListingView(BrowserView):
         required_args = func_sig.args[1:]
 
         if len(args) < len(required_args):
-            return self.fail("Wrong signature, please use '{}/{}'"
-                             .format(func_arg, "/".join(required_args)), 400)
+            raise ValueError("Wrong signature, please use '{}/{}'"
+                             .format(func_arg, "/".join(required_args)))
         return func(*args)
 
     def get_json(self, encoding="utf8"):
@@ -103,8 +105,7 @@ class AjaxListingView(BrowserView):
 
         return json.loads(body, object_hook=encode_hook)
 
-    @returns_safe_json
-    def fail(self, message, status=500, **kw):
+    def error(self, message, status=500, **kw):
         """Set a JSON error object and a status to the response
         """
         self.request.response.setStatus(status)
@@ -146,13 +147,18 @@ class AjaxListingView(BrowserView):
         view_name = self.__name__
         return "{}/{}".format(url, view_name)
 
-    def get_allowed_transitions_for(self, objects):
-        """Retrieves all transitions from the given objects and calculate the
+    def get_transitions_for(self, obj):
+        """Get the allowed transitions for the given object
+        """
+        return api.get_transitions_for(obj)
+
+    def get_allowed_transitions_for(self, uids):
+        """Retrieves all transitions from the given UIDs and calculate the
         ones which have all in common (intersection).
         """
 
         # Handle empty list of objects
-        if not objects:
+        if not uids:
             return []
 
         # allowed transitions
@@ -179,9 +185,10 @@ class AjaxListingView(BrowserView):
         # transition ids all objects have in common
         common_tids = None
 
-        for obj in objects:
-            # get the allowed transitions for this object
-            obj_transitions = api.get_transitions_for(obj)
+        for uid in uids:
+            # TODO: Research how to avoid the object wakeup here
+            obj = api.get_object_by_uid(uid)
+            obj_transitions = self.get_transitions_for(obj)
             tids = []
             for transition in obj_transitions:
                 tid = transition.get("id")
@@ -203,6 +210,7 @@ class AjaxListingView(BrowserView):
             transition_weights = {
                 "invalidate": 100,
                 "retract": 90,
+                "reject": 90,
                 "cancel": 80,
                 "deactivate": 70,
                 "publish": 60,
@@ -281,11 +289,9 @@ class AjaxListingView(BrowserView):
         """
 
         config = {
-            # N.B.: form_id, review_states and columns are passed in as data
-            #       attributes and therefore not needed here.
-            # "form_id": self.form_id,
-            # "review_states": self.review_states,
-            # "columns": self.columns,
+            "form_id": self.form_id,
+            "review_states": self.review_states,
+            "columns": self.columns,
             "allow_edit": self.allow_edit,
             "api_url": self.get_api_url(),
             "catalog": self.catalog,
@@ -306,9 +312,72 @@ class AjaxListingView(BrowserView):
             "show_workflow_action_buttons": self.show_workflow_action_buttons,
             "sort_on": self.get_sort_on(),
             "sort_order": self.get_sort_order(),
+            "show_search": self.show_search,
         }
 
         return config
+
+    def recalculate_results(self, obj):
+        """Recalculate the result of the object and its dependents
+
+        :returns: List of recalculated objects
+        """
+        recalculated_objects = []
+        # recalculate own result
+        obj.calculateResult(override=True, cascade=True)
+        # recalculate dependent analyses
+        for dep in obj.getDependents():
+            if dep.calculateResult(override=True, cascade=True):
+                recalculated_objects.append(dep)
+        return recalculated_objects
+
+    def is_analysis(self, obj):
+        """Check if the object is an analysis
+        """
+        return IRoutineAnalysis.providedBy(obj)
+
+    def set_field(self, obj, name, value):
+        """Set the value
+
+        :returns: List of updated/changed objects
+        """
+
+        # set of updated objects
+        updated_objects = []
+
+        # sanitize the name
+        fieldname = name.lstrip("get")
+
+        # fetch the schema field
+        field = obj.getField(fieldname)
+
+        # field exists, set it with the value
+        if field:
+            obj.edit(**{fieldname: value})
+            updated_objects.append(obj)
+
+        # check if the object is an analysis and has an interim
+        if self.is_analysis(obj):
+            interims = obj.getInterimFields()
+            interim_keys = map(lambda i: i.get("keyword"), interims)
+            if fieldname in interim_keys:
+                for interim in interims:
+                    if interim.get("keyword") == name:
+                        interim["value"] = value
+                # set the new interim fields
+                obj.setInterimFields(interims)
+            # recalculate dependent results for result and interim fields
+            if fieldname == "Result" or fieldname in interim_keys:
+                updated_objects.append(obj)
+                updated_objects.extend(self.recalculate_results(obj))
+
+        # unify the list of updated objects
+        updated_objects = list(set(updated_objects))
+
+        # reindex updated objects
+        map(lambda o: o.reindexObject(), updated_objects)
+
+        return updated_objects
 
     @set_application_json_header
     @returns_safe_json
@@ -344,8 +413,7 @@ class AjaxListingView(BrowserView):
         # Process selected UIDs and their allowed transitions
         uids_to_keep = payload.get("selected_uids")
         selected_uids = self.get_selected_uids(folderitems, uids_to_keep)
-        selected_objs = map(api.get_object_by_uid, selected_uids)
-        transitions = self.get_allowed_transitions_for(selected_objs)
+        transitions = self.get_allowed_transitions_for(selected_uids)
 
         # get the view config
         config = self.get_listing_config()
@@ -381,7 +449,6 @@ class AjaxListingView(BrowserView):
 
         # Get the selected UIDs
         uids = payload.get("selected_uids", [])
-        objs = map(api.get_object_by_uid, uids)
 
         # ----------------------------------8<---------------------------------
         # XXX Temporary (cut out as soon as possible)
@@ -408,7 +475,7 @@ class AjaxListingView(BrowserView):
         # ----------------------------------8<---------------------------------
 
         # get the allowed transitions
-        transitions = self.get_allowed_transitions_for(objs)
+        transitions = self.get_allowed_transitions_for(uids)
 
         # prepare the response object
         data = {
@@ -440,12 +507,59 @@ class AjaxListingView(BrowserView):
         # sanity check
         for key, value in query.iteritems():
             if key not in valid_catalog_indexes:
-                return self.fail("{} is not a valid catalog index".format(key))
+                return self.error("{} is not a valid catalog index".format(key))
 
         # set the content filter
         self.contentFilter = query
 
         # get the folderitems
+        folderitems = self.get_folderitems()
+
+        # prepare the response object
+        data = {
+            "count": len(folderitems),
+            "folderitems": folderitems,
+        }
+
+        return data
+
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
+    def ajax_set(self):
+        """Set a value of an editable field
+
+        The POST Payload needs to provide the following data:
+
+        :uid: UID of the object changed
+        :name: Column name as provided by the self.columns key
+        :value: The value to save
+        :item: The folderitem containing the data
+        """
+
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+
+        required = ["uid", "name", "value"]
+        if not all(map(lambda k: k in payload, required)):
+            return self.error("Payload needs to provide the keys {}"
+                              .format(", ".join(required)), status=400)
+
+        uid = payload.get("uid")
+        name = payload.get("name")
+        value = payload.get("value")
+
+        # get the object
+        obj = api.get_object_by_uid(uid)
+
+        # set the field
+        updated_objects = self.set_field(obj, name, value)
+
+        if not updated_objects:
+            return self.error("Failed to set field '{}'".format(name), 500)
+
+        # get the folderitems
+        self.contentFilter["UID"] = map(api.get_uid, updated_objects)
         folderitems = self.get_folderitems()
 
         # prepare the response object

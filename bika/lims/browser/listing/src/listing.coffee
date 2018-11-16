@@ -15,13 +15,23 @@ import TableContextMenu from "./components/TableContextMenu.coffee"
 
 import "./listing.css"
 
-CONTAINER_ID = "ajax-contents-table"
-
 
 # DOCUMENT READY ENTRY POINT
 document.addEventListener "DOMContentLoaded", ->
   console.debug "*** SENAITE.CORE.LISTING::DOMContentLoaded: --> Loading ReactJS Controller"
-  controller = ReactDOM.render <ListingController/>, document.getElementById CONTAINER_ID
+
+  tables = document.getElementsByClassName "ajax-contents-table"
+  window.listings ?= {}
+  for table in tables
+    form_id = table.dataset.form_id
+    # N.B. At the moment this JS is included in every contents table template,
+    #      which has the side-effect that this initializer is called as many
+    #      times as tables are on the page. This check avoids that
+    #      multi-rendering.
+    if form_id of window.listings
+      continue
+    controller = ReactDOM.render <ListingController root_el={table} />, table
+    window.listings[form_id] = controller
 
 
 class ListingController extends React.Component
@@ -43,17 +53,18 @@ class ListingController extends React.Component
     @toggleColumn = @toggleColumn.bind @
     @toggleCategory = @toggleCategory.bind @
     @toggleRow = @toggleRow.bind @
-    @setEditableField = @setEditableField.bind @
+    @saveEditableField = @saveEditableField.bind @
+    @updateEditableField = @updateEditableField.bind @
 
-    # get the container element
-    @el = document.getElementById CONTAINER_ID
+    # root element
+    @root_el = @props.root_el
 
     # get initial configuration data from the HTML attribute
-    @columns = JSON.parse @el.dataset.columns
-    @review_states = JSON.parse @el.dataset.review_states
-    @form_id = @el.dataset.form_id
-    @api_url = @el.dataset.api_url
-    @pagesize = parseInt @el.dataset.pagesize
+    @columns = JSON.parse @root_el.dataset.columns
+    @review_states = JSON.parse @root_el.dataset.review_states
+    @form_id = @root_el.dataset.form_id
+    @api_url = @root_el.dataset.api_url
+    @pagesize = parseInt @root_el.dataset.pagesize
 
     # the API is responsible for async calls and knows about the endpoints
     @api = new ListingAPI
@@ -115,6 +126,7 @@ class ListingController extends React.Component
       expand_all_categories: no
       show_more: no
       limit_from: 0
+      show_search: yes
 
   getRequestOptions: ->
     ###
@@ -320,7 +332,7 @@ class ListingController extends React.Component
 
     # handle clear button separate
     if id == "clear_selection"
-      @setState selected_uids: []
+      @selectUID "all", off
       return
 
     # get the form element
@@ -342,7 +354,11 @@ class ListingController extends React.Component
     # Override the form action when a custom URL is given
     if url then form.action = url
 
-    # inject all hidden input fields for UIDs that are currently not in the DOM
+    # TODO
+    # Inject all hidden input fields for UIDs that are currently not in the DOM.
+    # This happens when an item was selected and then the results were filtered,
+    # e.g. by a searchbox search. However, eventually set field values of the
+    # selected items get lost. Therefore, this needs to get refactored soon.
     for uid in @state.selected_uids
       # skip injection if the element is currently in the DOM
       if document.querySelectorAll("input[value='#{uid}']:not([disabled])").length > 0
@@ -376,9 +392,14 @@ class ListingController extends React.Component
           # push the uid into the list of selected_uids
           selected_uids.push uid
     else
-      # flush all selected UIDs when the select_all checkbox is deselected
+      # flush all selected UIDs when the select_all checkbox is deselected or
+      # when the deselect all button was clicked
       if uid == "all"
-        selected_uids = []
+        # Keep readonly items
+        by_uid = @get_folderitems_by_uid()
+        selected_uids = selected_uids.filter (uid) ->
+          item = by_uid[uid]
+          return item.readonly
       else
         # remove the selected UID from the list of selected_uids
         pos = selected_uids.indexOf uid
@@ -392,12 +413,60 @@ class ListingController extends React.Component
       # fetch all possible transitions
       me.fetch_transitions()
 
-  setEditableField: (uid, name, value) ->
+  saveEditableField: (uid, name, value, item) ->
     ###
-     * Set the editable field of a table cell
+     * Save the editable field of a table cell
     ###
-    console.debug "ListingController::setEditableField: uid=#{uid} name=#{name} value=#{value}"
-    @selectUID uid, on
+
+    # Skip fields which are not editable
+    return unless name in item.allow_edit
+
+    # Skip fields which do not have `ajax` set to a truthy value in the column definition
+    return unless @state.columns[name].ajax
+
+    console.debug "ListingController::saveEditableField: uid=#{uid} name=#{name} value=#{value}"
+
+    # turn loader on
+    @toggle_loader on
+
+    promise = @api.set
+      uid: uid
+      name: name
+      value: value
+      item: item
+
+    me = this
+    promise.then (data) ->
+      console.debug "ListingController::saveEditableField: GOT DATA=", data
+      # get the current folderitems as a UID -> folderitem mapping object
+      by_uid = me.get_folderitems_by_uid()
+      # the server updated folderitems
+      folderitems = data.folderitems or []
+      # update the existing folderitems
+      for folderitem in folderitems
+        by_uid[folderitem.uid] = folderitem
+      # set the new folderitems
+      me.set_state
+        folderitems: Object.values by_uid
+      , ->
+        # turn loader off
+        me.toggle_loader off
+
+  updateEditableField: (uid, name, value, item) ->
+    ###
+     * Update the editable field
+    ###
+    console.debug "ListingController::updateEditableField: uid=#{uid} name=#{name} value=#{value}"
+
+    # Select the whole row if an editable field changed its value
+    if not @is_uid_selected uid
+      @selectUID uid, on
+
+  is_uid_selected: (uid) ->
+    ###
+     * Check if the UID is selected
+    ###
+    return uid in @state.selected_uids
 
   get_review_state_by_id: (id) ->
     ###
@@ -406,7 +475,7 @@ class ListingController extends React.Component
     current = null
 
     # review_states is the list of review_state items from the listing view
-    for review_state in @review_states
+    for review_state in @state.review_states
       if review_state.id == id
         current = review_state
         break
@@ -447,7 +516,7 @@ class ListingController extends React.Component
 
     columns = []
     for key in @get_column_order()
-      column = @columns[key]
+      column = @state.columns[key]
       if column.toggle
         columns.push key
     return columns
@@ -622,31 +691,45 @@ class ListingController extends React.Component
 
     return promise
 
+  render_toolbar_top: ->
+    ###
+     * Control if the top toolbar should be loaded
+    ###
+    if @state.show_more
+      return yes
+    if @state.show_search
+      return yes
+    if @state.review_states.length > 1
+      return yes
+    return no
+
   render: ->
     ###
      * Listing Table
     ###
     <div className="listing-container">
       {@state.loading and <div id="table-overlay"/>}
-      <div className="row">
-        <div className="col-sm-8">
-          <FilterBar
-            className="filterbar nav nav-pills"
-            on_filter_button_clicked={@filterByState}
-            review_state={@state.review_state}
-            review_states={@state.review_states}/>
+      {@render_toolbar_top() and
+        <div className="row top-toolbar">
+          <div className="col-sm-8">
+            <FilterBar
+              className="filterbar nav nav-pills"
+              on_filter_button_clicked={@filterByState}
+              review_state={@state.review_state}
+              review_states={@state.review_states}/>
+          </div>
+          <div className="col-sm-1 text-right">
+            <Loader loading={@state.loading} />
+          </div>
+          <div className="col-sm-3 text-right">
+            <SearchBox
+              show_search={@state.show_search}
+              on_search={@filterBySearchterm}
+              filter={@state.filter}
+              placeholder={_("Search")} />
+          </div>
         </div>
-        <div className="col-sm-1 text-right">
-          <Loader loading={@state.loading} />
-        </div>
-        <div className="col-sm-3 text-right">
-          <SearchBox
-            on_search={@filterBySearchterm}
-            filter={@state.filter}
-            placeholder={_("Search")} />
-        </div>
-      </div>
-      <div className="spacer5"></div>
+      }
       <div className="row">
         <div className="col-sm-12 table-responsive">
           {@state.show_column_toggles and
@@ -663,7 +746,7 @@ class ListingController extends React.Component
               on_context_menu={@toggleContextMenu}
               />}
           <Table
-            className="contentstable table table-condensed table-hover table-striped table-sm small"
+            className="contentstable table table-condensed table-hover small"
             allow_edit={@state.allow_edit}
             on_header_column_click={@sortBy}
             on_select_checkbox_checked={@selectUID}
@@ -693,7 +776,9 @@ class ListingController extends React.Component
             on_row_click={@toggleRow}
             filter={@state.filter}
             toggle_row_title={_("Partitions")}
-            on_editable_field_change={@setEditableField}
+            update_editable_field={@updateEditableField}
+            save_editable_field={@saveEditableField}
+            remarks_row_title={_("Remarks")}
             />
         </div>
       </div>

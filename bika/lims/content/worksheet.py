@@ -158,8 +158,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.addAnalysis(analysis, reindex=False)
         actions_pool.resume()
         self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
-        for request in requests:
-            request.reindexObject(idxs=["assigned_state"])
 
     def addAnalysis(self, analysis, position=None, reindex=True):
         """- add the analysis to self.Analyses().
@@ -209,11 +207,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Reindex
         if reindex:
-            analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID"])
             self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
-            if IRequestAnalysis.providedBy(analysis):
-                request = analysis.getRequest()
-                request.reindexObject(idxs=["assigned_state"])
 
         # Try to rollback the worksheet to prevent inconsistencies
         doActionFor(self, "rollback_to_open")

@@ -8,26 +8,33 @@ class NumericField extends React.Component
 
   constructor: (props) ->
     super(props)
+
+    # remember the initial value
+    @value = props.defaultValue or ""
+    @changed = no
+
     # bind event handler to the current context
+    @on_blur = @on_blur.bind @
     @on_change = @on_change.bind @
 
-    @allowed_keys = [
-      8,    # backspace
-      9,    # tab
-      13,   # enter
-      35,   # end
-      36,   # home
-      37,   # left arrow
-      39,   # right arrow
-      46,   # delete - We don't support the del key in Opera because del == . == 46.
-      44,   # ,
-      60,   # <
-      62,   # >
-      45,   # -
-      69,   # E
-      101,  # e,
-      61    # =
-    ]
+  on_blur: (event) ->
+    ###
+     * Event handler when the input for blur event
+    ###
+    el = event.currentTarget
+    value = el.value
+
+    # Only propagate for new values
+    if not @changed
+      return
+
+    # reset the change flag
+    @changed = no
+
+    console.debug "NumericField::on_blur: value=#{value}"
+
+    # propagate event
+    if @props.onBlur then @props.onBlur event
 
   on_change: (event) ->
     ###
@@ -35,21 +42,37 @@ class NumericField extends React.Component
     ###
     el = event.currentTarget
     value = el.value
+
+    if /[^-.\d]/g.test value
+      el.value = value.replace /[^.\d]/g, ""
+
+    # Only propagate for new values
+    if value == @value
+      return
+
     console.debug "NumericField::on_change: value=#{value}"
+
+    # store the new value
+    @value = value
+
+    # set the change flag
+    @changed = yes
 
     # propagate event
     if @props.onChange then @props.onChange event
 
   render: ->
     <input type="text"
+           size={@props.size or 5}
            name={@props.name}
-           defaultValue={@props.defaultValue}
+           item_key={@props.item_key}
+           defaultValue={@props.defaultValue or ""}
            title={@props.title}
-           size={@props.size or "5"}
            disabled={@props.disabled}
            className={@props.className}
            placeholder={@props.placeholder}
-           onChange={@on_change} />
+           onBlur={@on_blur}
+           onChange={@on_change}/>
 
 
 export default NumericField

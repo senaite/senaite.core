@@ -566,7 +566,7 @@ class ActionsPool(object):
         return outcome
 
 
-class ActionHandlerPool:
+class ActionHandlerPool(object):
     """Singleton to handle concurrent transitions
     """
     __instance = None
@@ -593,10 +593,10 @@ class ActionHandlerPool:
     def start(self):
         self.is_new = False
 
-    def push(self, instance, action, success):
+    def push(self, instance, action, success, idxs=None):
         uid = api.get_uid(instance)
         info = self.actions.get(uid, {})
-        info[action] = {'instance': instance, 'success': success}
+        info[action] = {'instance': instance, 'success': success, 'idxs': idxs}
         self.actions[uid]=info
 
     def succeed(self, instance, action):
@@ -613,7 +613,9 @@ class ActionHandlerPool:
             if uid in processed:
                 continue
             instance = info[info.keys()[0]]["instance"]
-            instance.reindexObject()
+            idxs = info[info.keys()[0]]["idxs"]
+            idxs = idxs and idxs or []
+            instance.reindexObject(idxs=idxs)
             processed.append(uid)
         logger.info("Objects processed: {}".format(len(processed)))
         self.clear()
@@ -621,3 +623,10 @@ class ActionHandlerPool:
     def clear(self):
         self.actions = collections.OrderedDict()
         self.is_new = True
+
+
+def push_reindex_to_actions_pool(obj, idxs=None):
+    """Push a reindex job to the actions handler pool
+    """
+    pool = ActionHandlerPool.get_instance()
+    pool.push(obj, "reindex", success=True, idxs=idxs)
