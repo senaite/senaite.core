@@ -2045,8 +2045,7 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):
-        """Returns a tuple with the analyses to be billed individually in first
-        position and the profiles to be billed in second position.
+        """Returns the items to be billed
         """
         def get_keywords_set(profiles):
             keys = list()
@@ -2056,26 +2055,25 @@ class AnalysisRequest(BaseFolder):
 
         # Profiles with a fixed price, regardless of their analyses
         profiles = self.getProfiles()
-        priced_profiles = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
+        billable_items = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
                                  profiles)
         # Profiles w/o a fixed price. The price is the sum of the individual
         # price for each analysis
-        billable_keys = get_keywords_set(profiles - priced_profiles) - \
-                        get_keywords_set(priced_profiles)
+        billable_keys = get_keywords_set(profiles - billable_items) - \
+                        get_keywords_set(billable_items)
 
         # Get the analyses to be billed
-        billable_analyses = list()
         exclude_rs = ['retracted', 'rejected']
         for analysis in self.getAnalyses(cancellation_state="active"):
             if analysis.review_state in exclude_rs:
                 continue
             if analysis.getKeyword not in billable_keys:
                 continue
-            billable_analyses.append(api.get_object(analysis))
+            billable_items.append(api.get_object(analysis))
 
         # Return the analyses that need to be billed individually, together with
         # the profiles with a fixed price
-        return billable_analyses, priced_profiles
+        return billable_items
 
     def getServicesAndProfiles(self):
         """This function gets all analysis services and all profiles and removes
@@ -2114,24 +2112,14 @@ class AnalysisRequest(BaseFolder):
     def getSubtotal(self):
         """Compute Subtotal (without member discount and without vat)
         """
-        analyses, a_profiles = self.getBillableItems()
-        return sum(
-            [Decimal(obj.getPrice()) for obj in analyses] +
-            [Decimal(obj.getAnalysisProfilePrice()) for obj in a_profiles]
-        )
+        return sum([Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getSubtotalVATAmount')
 
     def getSubtotalVATAmount(self):
         """Compute VAT amount without member discount
         """
-        analyses, a_profiles = self.getBillableItems()
-        if len(analyses) > 0 or len(a_profiles) > 0:
-            return sum(
-                [Decimal(o.getVATAmount()) for o in analyses] +
-                [Decimal(o.getVATAmount()) for o in a_profiles]
-            )
-        return 0
+        return sum([Decimal(o.getVATAmount()) for o in self.getBillableItems()])
 
     security.declareProtected(View, 'getSubtotalTotalPrice')
 
