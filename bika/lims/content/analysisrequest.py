@@ -2059,7 +2059,8 @@ class AnalysisRequest(BaseFolder):
                                  profiles)
         # Profiles w/o a fixed price. The price is the sum of the individual
         # price for each analysis
-        billable_keys = get_keywords_set(profiles - billable_items) - \
+        non_billable = filter(lambda p: p not in billable_items, profiles)
+        billable_keys = get_keywords_set(non_billable) - \
                         get_keywords_set(billable_items)
 
         # Get the analyses to be billed
@@ -2075,6 +2076,7 @@ class AnalysisRequest(BaseFolder):
         # the profiles with a fixed price
         return billable_items
 
+    # TODO Cleanup - Remove this function, only used in invoice and too complex
     def getServicesAndProfiles(self):
         """This function gets all analysis services and all profiles and removes
         the services belonging to a profile.
