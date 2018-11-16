@@ -137,14 +137,19 @@ class PartitionMagicView(BrowserView):
         analyses = map(self.get_object_by_uid, analyses_uids)
         services = map(lambda an: an.getAnalysisService(), analyses)
 
-        ar = crar(
+        partition = crar(
             client,
             self.request,
             record,
             analyses=services,
             specifications=self.get_specifications_for(ar)
         )
-        return ar
+
+        # Reindex Parent Analysis Request
+        # TODO Workflow - AnalysisRequest - Partitions creation
+        ar.reindexObject(idxs=["isRootAncestor"])
+
+        return partition
 
     def get_specifications_for(self, ar):
         """Returns a mapping of service uid -> specification
