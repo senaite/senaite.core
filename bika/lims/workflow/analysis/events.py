@@ -7,6 +7,7 @@
 
 import transaction
 from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IDuplicateAnalysis
 
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import changeWorkflowState
@@ -31,6 +32,7 @@ def after_submit(obj):
     if IRequestAnalysis.providedBy(obj):
         ar = obj.getRequest()
         doActionFor(ar, 'submit')
+        reindex_request(obj)
 
 
 def after_retract(obj):
@@ -87,7 +89,7 @@ def after_retract(obj):
     for dependent in dependents:
         doActionFor(dependent, 'retract')
 
-    _reindex_request(obj)
+    reindex_request(obj)
 
 
 def after_verify(obj):
@@ -120,21 +122,21 @@ def after_verify(obj):
     ws = obj.getWorksheet()
     if ws:
         doActionFor(ws, 'verify')
-    _reindex_request(obj)
+    reindex_request(obj)
 
 
 def after_assign(obj):
     """Function triggered after an 'assign' transition for the analysis passed
     in is performed."""
     # Reindex the entire request to update the FieldIndex `assigned_state`
-    _reindex_request(obj, idxs=['assigned_state',])
+    reindex_request(obj, idxs=['assigned_state',])
 
 
 def after_unassign(obj):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed."""
     # Reindex the entire request to update the FieldIndex `assigned_state`
-    _reindex_request(obj, idxs=['assigned_state',])
+    reindex_request(obj, idxs=['assigned_state',])
 
 
 def after_cancel(obj):
@@ -148,7 +150,7 @@ def after_cancel(obj):
         skip(obj, "cancel", unskip=True)
         ws.removeAnalysis(obj)
     obj.reindexObject()
-    _reindex_request(obj)
+    reindex_request(obj)
 
 
 def after_reject(obj):
@@ -161,7 +163,7 @@ def after_reject(obj):
         ws = obj.getWorksheet()
         ws.removeAnalysis(obj)
     obj.reindexObject()
-    _reindex_request(obj)
+    reindex_request(obj)
 
 
 def after_attach(obj):
@@ -200,14 +202,23 @@ def after_attach(obj):
             if can_attach:
                 workflow.doActionFor(ws, "attach")
     obj.reindexObject()
-    _reindex_request(obj)
+    reindex_request(obj)
 
 
-def _reindex_request(obj, idxs=None):
-    if not IRequestAnalysis.providedBy(obj):
+# TODO Workflow - Analysis - revisit reindexing of ancestors
+def reindex_request(analysis, idxs=None):
+    """Reindex the Analysis Request the analysis belongs to, as well as the
+    ancestors recursively
+    """
+    if not IRequestAnalysis.providedBy(analysis) or \
+            IDuplicateAnalysis.providedBy(analysis):
+        # Analysis not directly bound to an Analysis Request. Do nothing
         return
-    request = obj.getRequest()
-    if idxs is None:
-        request.reindexObject()
-    else:
-        request.reindexObject(idxs=idxs)
+
+    n_idxs = ['assigned_state', 'isRootAncestor', 'getDueDate']
+    n_idxs = idxs and list(set(idxs + n_idxs)) or n_idxs
+    analysis_request = analysis.getRequest()
+    analysis_request.reindexObject(idxs=n_idxs)
+    ancestors = analysis_request.getAncestors(all_ancestors=True)
+    for ancestor in ancestors:
+        ancestor.reindexObject(idxs=n_idxs)
