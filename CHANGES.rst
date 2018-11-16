@@ -35,7 +35,7 @@ Changelog
 - #1082 Worksheet folder listing fixtures for direct analyst assignment
 - #1080 Improve searchability of Client and Multifile fields
 - #1072 Calculations with dependents do not work after 1.2.9 update
-- #1069 Cannot get the allowed transitions (guard_sample_prep_transition)
+- #1070 Cannot get the allowed transitions (guard_sample_prep_transition)
 - #1065 Creation of reflex rules does not work with senaite.lims add-on
 
 
