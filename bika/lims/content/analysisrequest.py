@@ -2045,57 +2045,37 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):
-        """The main purpose of this function is to obtain the analysis services
-        and profiles from the analysis request
-        whose prices are needed to quote the analysis request.
-        If an analysis belongs to a profile, this analysis will only be
-        included in the analyses list if the profile
-        has disabled "Use Analysis Profile Price".
-
-        :returns: a tuple of two lists. The first one only contains analysis
-                  services not belonging to a profile with active "Use Analysis
-                  Profile Price". The second list contains the profiles with
-                  activated "Use Analysis Profile Price".
+        """Returns a tuple with the analyses to be billed individually in first
+        position and the profiles to be billed in second position.
         """
-        analysis_profiles = []
-        to_be_billed = []
-        exclude_rs = ['retracted', 'rejected']
-        analyses = filter(lambda an: an.review_state not in exclude_rs,
-                          self.getAnalyses(cancellation_state='active'))
-        # Getting analysis request profiles
-        for profile in self.getProfiles():
-            # Getting the analysis profiles which has "Use Analysis Profile
-            # Price" enabled
-            if profile.getUseAnalysisProfilePrice():
-                analysis_profiles.append(profile)
-            else:
-                # we only need the analysis service keywords from these
-                # profiles
-                to_be_billed += [service.getKeyword() for service in
-                                 profile.getService()]
-        # So far we have three arrays:
-        #   - analyses: has all analyses (even if they are included inside a
-        # profile or not)
-        #   - analysis_profiles: has the profiles with "Use Analysis Profile
-        # Price" enabled
-        #   - to_be_quoted: has analysis services keywords from analysis
-        # profiles with "Use Analysis Profile Price"
-        #     disabled
-        # If a profile has its own price, we don't need their analises'
-        # prices, so we have to quit all
-        # analysis belonging to that profile. But if another profile has the
-        # same analysis service but has
-        # "Use Analysis Profile Price" disabled, the service must be included
-        #  as billable.
-        for profile in analysis_profiles:
-            for analysis_service in profile.getService():
-                for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword \
-                            and analysis.getKeyword not in to_be_billed:
-                        analyses.remove(analysis)
+        def get_keywords_set(profiles):
+            keys = list()
+            for profile in profiles:
+                keys += map(lambda s: s.getKeyword(), profile.getService())
+            return set(keys)
 
-        analyses = map(api.get_object, analyses)
-        return analyses, analysis_profiles
+        # Profiles with a fixed price, regardless of their analyses
+        profiles = self.getProfiles()
+        priced_profiles = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
+                                 profiles)
+        # Profiles w/o a fixed price. The price is the sum of the individual
+        # price for each analysis
+        billable_keys = get_keywords_set(profiles - priced_profiles) - \
+                        get_keywords_set(priced_profiles)
+
+        # Get the analyses to be billed
+        billable_analyses = list()
+        exclude_rs = ['retracted', 'rejected']
+        for analysis in self.getAnalyses(cancellation_state="active"):
+            if analysis.review_state in exclude_rs:
+                continue
+            if analysis.getKeyword not in billable_keys:
+                continue
+            billable_analyses.append(api.get_object(analysis))
+
+        # Return the analyses that need to be billed individually, together with
+        # the profiles with a fixed price
+        return billable_analyses, priced_profiles
 
     def getServicesAndProfiles(self):
         """This function gets all analysis services and all profiles and removes
