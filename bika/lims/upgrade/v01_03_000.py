@@ -15,6 +15,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState
@@ -416,6 +417,9 @@ def update_workflows(portal):
     # Remove worksheet_analysis workflow
     remove_worksheet_analysis_workflow(portal)
 
+    # Fix cancelled analyses inconsistencies
+    fix_cancelled_analyses_inconsistencies(portal)
+
     # Update role mappings
     update_role_mappings(portal, rm_queries)
 
@@ -554,6 +558,29 @@ def assign_retracted_to_retests(portal):
         analysis.reindexObject(idxs="isRetest")
 
 
+def fix_cancelled_analyses_inconsistencies(portal):
+    logger.info("Resolving cancelled analyses inconsistencies ...")
+    wf_id = "bika_analysis_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="Analysis", cancellation_state="cancelled")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if brain.review_state == "cancelled":
+            continue
+        if num % 100 == 0:
+            logger.info("Resolving state to 'cancelled': {}/{}"
+                        .format(num, total))
+        # Set state
+        analysis = api.get_object(brain)
+        changeWorkflowState(analysis, wf_id, "cancelled")
+        # Update role mappings
+        workflow.updateRoleMappingsFor(analysis)
+        # Reindex
+        analysis.reindexObject(idxs=["cancellation_state"])
+
+
 def get_role_mappings_candidates(portal):
     logger.info("Getting candidates for role mappings ...")
 
@@ -597,8 +624,8 @@ def get_role_mappings_candidates(portal):
     # Duplicate Analysis workflow: multi-verify transition
     if "multi_verify" not in workflow.transitions:
         candidates.append(
-            ("bika_analysis_workflow",
-             dict(portal_type="Analysis",
+            ("bika_duplicateanalysis_workflow",
+             dict(portal_type="DuplicateAnalysis",
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
@@ -614,16 +641,16 @@ def get_role_mappings_candidates(portal):
     # Reference Analysis workflow: multi-verify transition
     if "multi_verify" not in workflow.transitions:
         candidates.append(
-            ("bika_analysis_workflow",
-             dict(portal_type="Analysis",
+            ("bika_referenceanalysis_workflow",
+             dict(portal_type="ReferenceAnalysis",
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
     # Reference Analysis Workflow: unasssigned
     if "unassigned" in workflow.states:
         candidates.append(
-            ("bika_duplicateanalysis_workflow",
-             dict(portal_type="DuplicateAnalysis",
+            ("bika_referenceanalysis_workflow",
+             dict(portal_type="ReferenceAnalysis",
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
@@ -636,9 +663,17 @@ def get_role_mappings_candidates(portal):
                   review_state=["to_be_verified"]),
              CATALOG_ANALYSIS_REQUEST_LISTING))
 
+    # Analysis Request workflow: cancel permissions - do not allow cancel
+    # transition from attachment_due and to_be_verified states
+    candidates.append(
+        ("bika_ar_workflow",
+        dict(portal_type="AnalysisRequest",
+             review_state=["attachment_due", "to_be_verified"]),
+             CATALOG_ANALYSIS_REQUEST_LISTING))
+
     # Worksheet workflow: rollback_to_open
     workflow = wf_tool.getWorkflowById("bika_worksheet_workflow")
-    if "rollback_to_receive" not in workflow.transitions:
+    if "rollback_to_open" not in workflow.transitions:
         candidates.append(
             ("bika_worksheet_workflow",
              dict(portal_type="Worksheet",

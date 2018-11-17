@@ -71,7 +71,6 @@
     <!-- Analysis -->
     <type type_id="Analysis">
       <bound-workflow workflow_id="bika_analysis_workflow"/>
-      <bound-workflow workflow_id="bika_cancellation_workflow"/>
     </type>
 
     <!-- Analysis Categories -->

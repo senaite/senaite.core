@@ -29,6 +29,33 @@ def after_unassign(analysis):
     reindex_request(analysis)
 
 
+def after_cancel(analysis):
+    """Function triggered after a "cancel" transition is performed. Removes the
+    cancelled analysis from the worksheet, if any.
+    """
+    worksheet = analysis.getWorksheet()
+    if worksheet:
+        # Remove the analysis from the worksheet
+        analyses = filter(lambda an: an != analysis, worksheet.getAnalyses())
+        worksheet.setAnalyses(analyses)
+        worksheet.purgeLayout()
+        if analyses:
+            # Maybe this analysis was the only one that was not yet submitted,
+            # so try to submit or verify the Worksheet to be consistent with
+            # the current states of the analyses it contains.
+            doActionFor(worksheet, "submit")
+            doActionFor(worksheet, "verify")
+        else:
+            # We've removed all analyses. Rollback to "open"
+            doActionFor(worksheet, "rollback_to_open")
+
+
+def after_reinstate(analysis):
+    """Function triggered after a "reinstate" transition is performed.
+    """
+    pass
+
+
 def after_submit(analysis):
     """Method triggered after a 'submit' transition for the analysis passed in
     is performed. Promotes the submit transition to the Worksheet to which the

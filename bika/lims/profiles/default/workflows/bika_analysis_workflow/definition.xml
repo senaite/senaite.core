@@ -23,12 +23,12 @@
   Analysis is not assigned to a Worksheet.
   Same exit-transitions and Permissions as "assigned" state, cause by default,
   the system allows users to submit results directly from the Analysis Request
-  manage results view, without the need of assigning them to a Worksheet first.
-  -->
+  manage results view, without the need of assigning them to a Worksheet -->
   <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
     <exit-transition transition_id="assign" />
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="cancel" />
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -63,8 +63,7 @@
   </state>
 
   <!-- State: assigned
-  Analysis is assigned to a Worksheet.
-  -->
+  Analysis is assigned to a Worksheet. -->
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
     <exit-transition transition_id="unassign" />
     <exit-transition transition_id="submit"/>
@@ -99,6 +98,27 @@
     <permission-map name="Reject" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: cancelled
+  This analysis has been cancelled due to the cancellation of the Analysis
+  Request the analysis belongs to. Cancellation can be understood as a request,
+  and therefore its analyses, the client did not want to do or did it wrong.
+  Hence, with cancellation, no notifications to involved personnel take place
+  and the analyses are not considered in most places, including reports, etc.
+  Analyses can only be cancelled before results being submitted -->
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+    <permission-map name="Review portal content" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
   </state>
 
@@ -233,6 +253,9 @@
     </permission-map>
   </state>
 
+
+
+
   <!-- Transition: assign (to a worksheet) -->
   <transition transition_id="assign" title="Assign" new_state="assigned"
               trigger="USER" before_script="" after_script=""
@@ -252,6 +275,38 @@
     <guard>
       <guard-permission>BIKA: Unassign analyses</guard-permission>
       <guard-expression>python:here.guard_handler("unassign")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: cancel
+  The cancellation cannot be done manually (see the guard), it takes place
+  automatically when the Analysis Request is cancelled -->
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <!-- There is no guard-permission here (all roles can cancel) because this
+      transition takes place automatically as soon as the Analysis Request  is
+      cancelled. Hence, this transition is governed by the permission
+      "Cancel and reinstate" assigned to Analysis Request -->
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: reinstate
+  Reinstate cannot be done manually (see the guard), it takes place
+  automatically when the Analysis Request is reinstated. -->
+  <transition transition_id="reinstate" title="Reinstate" new_state="unassigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <!-- There is no guard-permission here (all roles can reinstate) because
+      this transition takes place automatically as soon as the Analysis Request
+      is reinstated. Hence, this transition is governed by the permission
+      "Cancel and reinstate" assigned to Analysis Request -->
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
     </guard>
   </transition>
 
@@ -333,8 +388,9 @@
   </transition>
 
 
-  <!-- ******* VARIABLES ******* -->
 
+
+  <!-- ******* VARIABLES ******* -->
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>
     <default>

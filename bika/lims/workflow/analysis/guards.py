@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 
@@ -108,6 +109,22 @@ def guard_unassign(analysis):
         return False
 
     return True
+
+
+def guard_cancel(analysis):
+    """Return whether the transition "cancel" can be performed or not. Returns
+    True only when the Analysis Request the analysis belongs to is in cancelled
+    state. Otherwise, returns False.
+    """
+    return not api.is_active(analysis.getRequest())
+
+
+def guard_reinstate(analysis):
+    """Return whether the transition "reinstate" can be performed or not.
+    Returns True only when the Analysis Request the analysis belongs to is in a
+    non-cancelled state. Otherwise, returns False.
+    """
+    return api.is_active(analysis.getRequest())
 
 
 def guard_submit(analysis):

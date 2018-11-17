@@ -225,40 +225,39 @@ def after_publish(obj):
         doActionFor(part, "publish")
 
 
-def after_reinstate(obj):
+def after_reinstate(analysis_request):
     """Method triggered after a 'reinstate' transition for the Analysis Request
-    passed in is performed. Activates all analyses contained in the object.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
+    passed in is performed. Reinstates all parent analysis requests, as well as
+    the contained analyses
     """
-    ans = obj.getAnalyses(full_objects=True, cancellation_state='cancelled')
-    for analysis in ans:
-        doActionFor(analysis, 'reinstate')
+    # TODO Workflow - AR - Remove after Sample removal
+    _promote_transition(analysis_request, "reinstate")
 
-    # Promote to parent AR
-    parent_ar = obj.getParentAnalysisRequest()
+    # Promote to parent Analysis Request
+    parent_ar = analysis_request.getParentAnalysisRequest()
     if parent_ar:
         doActionFor(parent_ar, "reinstate")
 
+    # Cascade to analyses
+    for analysis in analysis_request.getAnalyses(full_objects=True):
+        doActionFor(analysis, 'reinstate')
 
-def after_cancel(obj):
+
+def after_cancel(analysis_request):
     """Method triggered after a 'cancel' transition for the Analysis Request
-    passed in is performed. Deactivates all analyses contained in the object.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
+    passed in is performed. Cascades this transition to its analyses and
+    partitions.
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    ans = obj.getAnalyses(full_objects=True, cancellation_state='active')
-    for analysis in ans:
+    # Cascade to partitions
+    for part in analysis_request.getDescendants(all_descendants=False):
+        doActionFor(part, "cancel")
+
+    # Cascade to analyses
+    for analysis in analysis_request.getAnalyses(full_objects=True):
         doActionFor(analysis, 'cancel')
 
-    # Cascade to partitions
-    parts = obj.getDescendants(all_descendants=False)
-    for part in parts:
-        doActionFor(part, "cancel")
 
 def after_rollback_to_receive(analysis_request):
     """Function triggered after rollback_to_receive transition finishes
