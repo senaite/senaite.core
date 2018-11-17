@@ -61,10 +61,6 @@ def guard_assign(analysis):
     #      a worksheet assigned!. This transition should only be triggered by
     #      content.worksheet.addAnalysis (see that func for more info)
 
-    # Cannot assign if the analysis is cancelled
-    if not api.is_active(analysis):
-        return False
-
     # Cannot assign if the Sample has not been received
     if not analysis.isSampleReceived():
         return False
@@ -87,10 +83,6 @@ def guard_assign(analysis):
 def guard_unassign(analysis):
     """Return whether the transition "unassign" can be performed or not
     """
-    # Cannot assign if the analysis is cancelled
-    if not api.is_active(analysis):
-        return False
-
     # Check if only LabManager and Manager roles can manage worksheets
     if analysis.bika_setup.getRestrictWorksheetManagement():
         member = api.get_current_user()
@@ -130,10 +122,6 @@ def guard_reinstate(analysis):
 def guard_submit(analysis):
     """Return whether the transition "submit" can be performed or not
     """
-    # Cannot submit if the analysis is cancelled
-    if not api.is_active(analysis):
-        return False
-
     # Cannot submit without a result
     if not analysis.getResult():
         return False
@@ -174,9 +162,6 @@ def guard_multi_verify(analysis):
     The transition multi_verify will only take place if multi-verification of
     results is enabled.
     """
-    if not api.is_active(analysis):
-        return False
-
     # If there is only one remaining verification, return False
     remaining_verifications = analysis.getNumberOfRemainingVerifications()
     if remaining_verifications <= 1:
@@ -207,10 +192,6 @@ def guard_multi_verify(analysis):
 def guard_verify(analysis):
     """Return whether the transition "verify" can be performed or not
     """
-    # Cannot verify if the analysis is cancelled
-    if not api.is_active(analysis):
-        return False
-
     # Check if multi-verification
     remaining_verifications = analysis.getNumberOfRemainingVerifications()
     if remaining_verifications > 1:
@@ -246,10 +227,6 @@ def guard_verify(analysis):
 def guard_retract(analysis):
     """ Return whether the transition "retract" can be performed or not
     """
-    # Cannot retract if the analysis is cancelled
-    if not api.is_active(analysis):
-        return False
-
     # Cannot retract if there are dependents that cannot be retracted
     for dependent in analysis.getDependents():
         if not wf.isTransitionAllowed(dependent, "retract"):
@@ -269,10 +246,6 @@ def guard_retract(analysis):
 def guard_reject(analysis):
     """Return whether the transition "reject" can be performed or not
     """
-    # Cannot reject if the analysis is cancelled
-    if not api.is_active(analysis):
-        return False
-
     # Cannot reject if there are dependents that cannot be rejected
     for dependent in analysis.getDependents():
         if not wf.isTransitionAllowed(dependent, "reject"):
