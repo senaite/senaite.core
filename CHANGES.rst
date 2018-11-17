@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1091 New Worksheet blank/control/duplicate listings
 - #1081 API functions improved
 - #1076 Instrument QC Viewlet Availability
 - #1071 Reinvented Listing Tables
