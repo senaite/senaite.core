@@ -5,7 +5,6 @@ import json
 import urllib
 
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
@@ -195,6 +194,9 @@ class AjaxListingView(BrowserView):
                 if allowed_transition_ids:
                     if tid not in allowed_transition_ids:
                         continue
+                    tids.append(tid)
+                else:
+                    # no restrictions by the selected review_state
                     tids.append(tid)
                 transitions_by_tid[tid] = transition
 
