@@ -13,6 +13,15 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Table Analysis Specification -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisSpec"
+      name="table_analysis_specifications"
+      class=".analysisspecificationwidget.AnalysisSpecificationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <browser:page
       for="*"
       name="referencewidget_search"
