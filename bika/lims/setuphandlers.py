@@ -327,6 +327,11 @@ class BikaGenerator(object):
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
         addIndex(bc, 'BatchUID', 'FieldIndex')
         addIndex(bc, 'getBatchUIDs', 'KeywordIndex')
+
+        # https://github.com/senaite/senaite.core/pull/1091
+        addIndex(bc, 'getSupportedServices', 'KeywordIndex')
+        addIndex(bc, 'isValid', 'BooleanIndex')
+
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
         addColumn(bc, 'id')
