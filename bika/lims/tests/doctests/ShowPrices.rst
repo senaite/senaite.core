@@ -154,22 +154,6 @@ And when ShowPrices is off, the Invoice tab should not be present at all:
     >>> True if 'contentview-invoice' not in browser.contents else "Invoice Tab is visible, but ShowPrices is False."
     True
 
-
-Analysis Profiles
------------------
-
-Analysis Profiles contain prices in the list of available analyses.
-
-    >>> enableShowPrices()
-    >>> browser.open(profile.absolute_url())
-    >>> True if "409.17" in browser.contents else "Profile Analyses should be showing Price."
-    True
-
-    >>> disableShowPrices()
-    >>> browser.open(profile.absolute_url())
-    >>> True if "409.17" not in browser.contents else "Profile Analyses should NOT be showing Price."
-    True
-
 Client discount fields show/hide
 --------------------------------
 
