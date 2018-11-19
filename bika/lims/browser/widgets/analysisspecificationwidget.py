@@ -230,7 +230,7 @@ class AnalysisSpecificationView(BikaListingView):
 
 
 class AnalysisSpecificationWidget(TypesWidget):
-    """
+    """Analysis Specification Widget
     """
     _properties = TypesWidget._properties.copy()
     _properties.update({
@@ -255,6 +255,10 @@ class AnalysisSpecificationWidget(TypesWidget):
 
         # selected services
         service_uids = form.get("uids", [])
+
+        if not service_uids:
+            # Inject empty fields for the validator
+            values = [dict.fromkeys(field.getSubfields())]
 
         for uid in service_uids:
             s_min = self._get_spec_value(form, uid, "min")
@@ -293,9 +297,6 @@ class AnalysisSpecificationWidget(TypesWidget):
                 "hidemax": self._get_spec_value(form, uid, "hidemax"),
                 "rangecomment": self._get_spec_value(form, uid, "rangecomment",
                                                      check_floatable=False)})
-        else:
-            # Inject empty fields for the validator
-            values.append(dict.fromkeys(field.getSubfields()))
         return values, {}
 
     def _get_spec_value(self, form, uid, key, check_floatable=True,
