@@ -219,6 +219,7 @@ class ReferenceResultsView(BikaListingView):
         self.show_workflow_action_buttons = False
         self.show_select_column = False
         self.pagesize = 999999
+        self.show_search = False
 
         # Categories
         if self.show_categories_enabled():
