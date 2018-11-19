@@ -24,6 +24,8 @@ Changelog
 - #1077 Refactored `referenceanalysis_workflow` + after transitions and guards
 . #1077 Refactored `duplicateanalysis_workflow` + after transitions and guards
 - #1077 Refactored `analysis_workflow` + after transitions and guards
+- #1093 Listing integration for Analysis Specification Widget
+- #1092 Listing integration for Profile Analyses Widget
 - #1081 API functions improved
 - #1076 Instrument QC Viewlet Availability
 - #1071 Reinvented Listing Tables
@@ -51,7 +53,7 @@ Changelog
 - #1082 Worksheet folder listing fixtures for direct analyst assignment
 - #1080 Improve searchability of Client and Multifile fields
 - #1072 Calculations with dependents do not work after 1.2.9 update
-- #1069 Cannot get the allowed transitions (guard_sample_prep_transition)
+- #1070 Cannot get the allowed transitions (guard_sample_prep_transition)
 - #1065 Creation of reflex rules does not work with senaite.lims add-on
 
 

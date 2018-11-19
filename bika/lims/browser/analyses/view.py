@@ -155,6 +155,15 @@ class AnalysesView(BikaListingView):
                 "type": "boolean"}),
         ))
 
+        # Inject Remarks column for listing
+        if self.analysis_remarks_enabled():
+            self.columns["Remarks"] = {
+                "title": "Remarks",
+                "toggle": False,
+                "sortable": False,
+                "type": "remarks"
+            }
+
         self.review_states = [
             {
                 "id": "default",
@@ -180,6 +189,12 @@ class AnalysesView(BikaListingView):
         """
         super(AnalysesView, self).before_render()
         self.request.set("disable_plone.rightcolumn", 1)
+
+    @viewcache.memoize
+    def analysis_remarks_enabled(self):
+        """Check if analysis remarks are enabled
+        """
+        return self.context.bika_setup.getEnableAnalysisRemarks()
 
     @viewcache.memoize
     def has_permission(self, permission, obj=None):
@@ -1103,16 +1118,9 @@ class AnalysesView(BikaListingView):
             # remarks field will be displayed without the option to hide it
             return
 
-        if not self.context.bika_setup.getEnableAnalysisRemarks():
+        if not self.analysis_remarks_enabled():
             # Remarks not enabled in Setup, so don't display the balloon button
             return
-
-        # Analysis can be edited. Add the remarks toggle button
-        title = t(_("Add Remark"))
-        img = get_image('comment_ico.png', title=title)
-        kwargs = {'class': "add-remark"}
-        anchor = get_link('#', img, **kwargs)
-        self._append_html_element(item, 'Service', anchor, after=False)
 
     def _append_html_element(self, item, element, html, glue="&nbsp;",
                              after=True):

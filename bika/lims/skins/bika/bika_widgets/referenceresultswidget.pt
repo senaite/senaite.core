@@ -3,25 +3,25 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       i18n:domain="plone">
-<head><title></title></head>
-<body>
+  <head><title></title></head>
+  <body>
 
-<metal:view_macro define-macro="view">
-   <span id="referenceresultswidget">
+    <metal:view_macro define-macro="view">
+      <span id="referenceresultswidget">
         <span tal:content="structure python:widget.ReferenceResults(field)"/>
-    </span>
-</metal:view_macro>
+      </span>
+    </metal:view_macro>
 
-<metal:edit_macro define-macro="edit">
-<metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-    <metal:body_macro fill-slot="widget_body">
+    <metal:edit_macro define-macro="edit">
+      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <metal:body_macro fill-slot="widget_body">
 
-	<div id="folderlisting-main-table"
-		tal:content="structure python:widget.ReferenceResults(field, allow_edit=True)"/>
+          <span id="referenceresultswidget">
+            <div tal:replace="structure python:widget.ReferenceResults(field, allow_edit=True)"/>
+          </span>
+        </metal:body_macro>
+      </metal:use>
+    </metal:edit_macro>
 
-    </metal:body_macro>
-</metal:use>
-</metal:edit_macro>
-
-</body>
+  </body>
 </html>

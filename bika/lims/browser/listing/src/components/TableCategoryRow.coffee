@@ -40,18 +40,10 @@ class TableCategoryRow extends React.Component
 
     # insert the toggle cell
     cells.push(
-      <td key="toggle" className={cls}>
-        <span className={icon_cls}></span>
-      </td>
-    )
-
-    # subtract 1 for the toggle cell
-    colspan = @props.column_count - 1
-
-    cells.push(
-      <td key={@props.category}
-          colSpan={colspan}>
-       {@props.category}
+      <td key="toggle"
+          className={cls}
+          colSpan={@props.column_count}>
+        <span className={icon_cls}></span> {@props.category}
       </td>
     )
 
