@@ -190,6 +190,14 @@ class ReferenceResultsWidget(TypesWidget):
         """
         values = []
 
+        # Process settings from the reference definition first
+        ref_def = form.get("ReferenceDefinition")
+        ref_def_uid = ref_def and ref_def[0]
+        if ref_def_uid:
+            ref_def_obj = api.get_object_by_uid(ref_def_uid)
+            rr = ref_def_obj.getReferenceResults()
+            values.extend(rr)
+
         # selected services
         service_uids = form.get("uids", [])
 

@@ -7,7 +7,6 @@
 
 import collections
 from datetime import datetime
-from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -16,6 +15,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
+from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
