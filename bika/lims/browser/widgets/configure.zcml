@@ -31,36 +31,20 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Table Reference Results -->
+  <browser:page
+      for="*"
+      name="table_reference_results"
+      class=".referenceresultswidget.ReferenceResultsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <browser:page
       for="*"
       name="referencewidget_search"
       class="bika.lims.browser.widgets.referencewidget.ajaxReferenceWidgetSearch"
       permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- AJAX call to obtain theAnalysis services -->
-  <browser:page
-      for="*"
-      name="reference_results_widget_view"
-      class="bika.lims.browser.widgets.referenceresultswidget.ReferenceResultsView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:page
-      for="*"
-      name="analysis_spec_widget_view"
-      class="bika.lims.browser.widgets.analysisspecificationwidget.AnalysisSpecificationView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:page
-      for="*"
-      name="ajax_services_expand_category"
-      class="bika.lims.browser.widgets.serviceswidget.AJAXCategoryExpand"
-      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
