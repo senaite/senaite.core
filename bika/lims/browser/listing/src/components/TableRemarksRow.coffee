@@ -3,32 +3,20 @@ import React from "react"
 
 class TableRemarksRow extends React.Component
   ###
-   * The table remarks row component renders Remarks for Analyses, Duplicate
-   * Analyses and Reference Analyses
+   * The table remarks row component renders a textarea below the parent row
   ###
 
   constructor: (props) ->
     super(props)
-    @types_with_remarks = ["Analysis", "DuplicateAnalysis", "ReferenceAnalysis"]
-
-  has_remarks: ->
-    ###
-     * Checks if the remarks field exists
-    ###
-    item = @props.item
-    if item.portal_type not in @types_with_remarks
-      return no
-    if not item.Remarks
-      return no
-    return yes
 
   can_edit: ->
     ###
      * Checks if the Remarks field is in the list of editable fields
     ###
     item = @props.item
+    item_key = @props.item_key
     allow_edit = item.allow_edit or []
-    return "Remarks" in allow_edit
+    return item_key in allow_edit
 
   render_remarks_field: ->
     ###
@@ -36,11 +24,14 @@ class TableRemarksRow extends React.Component
     ###
     item = @props.item
     uid = item.uid
-    name = "Remarks.#{uid}:records"
-    value = item.Remarks
-    display = if @has_remarks() then "block" else "none"
+    item_key = @props.item_key
+    name = "#{item_key}.#{uid}:records"
+    value = item[item_key] or ""
+    # show the remarks if the row is selected or if a value was set
+    show = @props.selected or value.length > 0
+
     style =
-      display: @has_remarks() and "block" or "none"
+      display: if show then "block" else "none"
       paddingTop: ".5em"
       paddingBottom: ".5em"
       paddingLeft: "2em"
@@ -48,7 +39,7 @@ class TableRemarksRow extends React.Component
     if not @can_edit()
       field = (
         <span className=""
-              dangerouslySetInnerHTML={{__html: item.Remarks}}/>
+              dangerouslySetInnerHTML={{__html: value}}/>
       )
     else
       field = (

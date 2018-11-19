@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1093 Listing integration for Analysis Specification Widget
 - #1092 Listing integration for Profile Analyses Widget
 - #1081 API functions improved
 - #1076 Instrument QC Viewlet Availability

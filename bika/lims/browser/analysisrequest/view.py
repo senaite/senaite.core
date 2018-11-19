@@ -132,4 +132,3 @@ class AnalysisRequestViewView(BrowserView):
         """
         setup = api.get_setup()
         return setup.getCategoriseAnalysisServices()
-
