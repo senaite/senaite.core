@@ -100,6 +100,7 @@ class AnalysisSpecificationView(BikaListingView):
             ("rangecomment", {
                 "title": _("Range comment"),
                 "sortable": False,
+                "type": "remarks",
                 "toggle": False}),
         ))
 
@@ -191,7 +192,7 @@ class AnalysisSpecificationView(BikaListingView):
         item["warn_max"] = spec.get("warn_max", "")
         item["hidemin"] = spec.get("hidemin", "")
         item["hidemax"] = spec.get("hidemax", "")
-        item["Remarks"] = spec.get("rangecomment", "")
+        item["rangecomment"] = spec.get("rangecomment", "")
 
         # Add methods
         methods = obj.getMethods()
@@ -262,10 +263,11 @@ class AnalysisSpecificationWidget(TypesWidget):
             if s_min > s_max:
                 continue
 
-            min_operator = self._get_spec_value(form, uid, "min_operator",
-                                                check_floatable=False)
-            max_operator = self._get_spec_value(form, uid, "max_operator",
-                                                check_floatable=False)
+            min_operator = self._get_spec_value(
+                form, uid, "min_operator", check_floatable=False)
+            max_operator = self._get_spec_value(
+                form, uid, "max_operator", check_floatable=False)
+
             if not min_operator and not max_operator:
                 # Values for min operator and max operator are required
                 continue
