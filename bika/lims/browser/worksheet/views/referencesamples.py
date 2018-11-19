@@ -122,7 +122,8 @@ class ReferenceSamplesView(BikaListingView):
             reference_uid = references.get(uid)
             position = positions.get(uid)
             reference = api.get_object(reference_uid)
-            self.context.addReferenceAnalyses(reference, [uid], slot=position)
+            self.context.addReferenceAnalyses(
+                reference, [uid], dest_slot=position)
         redirect_url = "{}/{}".format(
             api.get_url(self.context), "manage_results")
         self.request.response.redirect(redirect_url)
