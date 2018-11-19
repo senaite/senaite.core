@@ -47,6 +47,18 @@ Functional Helpers:
     ...     transitioned = do_action_for(ar, "receive")
     ...     return ar
 
+    >>> def to_new_worksheet_with_duplicate(ar):
+    ...     worksheet = api.create(portal.worksheets, "Worksheet")
+    ...     for analysis in ar.getAnalyses(full_objects=True):
+    ...         worksheet.addAnalysis(analysis)
+    ...     worksheet.addDuplicateAnalyses(1)
+    ...     return worksheet
+
+    >>> def submit_regular_analyses(worksheet):
+    ...     for analysis in worksheet.getRegularAnalyses():
+    ...         analysis.setResult(13)
+    ...         do_action_for(analysis, "submit")
+
     >>> def try_transition(object, transition_id, target_state_id):
     ...      success = do_action_for(object, transition_id)[0]
     ...      state = api.get_workflow_status_of(object)
@@ -84,8 +96,8 @@ We need to create some basic objects for the test:
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
 
 
-Retract transition and guard basic constraints
-----------------------------------------------
+Reject transition and guard basic constraints
+---------------------------------------------
 
 Create an Analysis Request:
 
@@ -155,6 +167,78 @@ I cannot 'reject' a verified analysis:
     >>> bikasetup.setSelfVerificationEnabled(False)
     >>> bikasetup.getSelfVerificationEnabled()
     False
+
+
+Rejection of an analysis causes the duplicates to be removed
+------------------------------------------------------------
+
+When the analysis a duplicate comes from is rejected, the duplicate is rejected
+too, regardless of its state.
+
+Create a Worksheet and submit regular analyses:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> submit_regular_analyses(worksheet)
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(worksheet)
+    'open'
+
+    >>> ar_ans = ar.getAnalyses(full_objects=True)
+    >>> an_au = filter(lambda an: an.getKeyword() == 'Au', ar_ans)[0]
+    >>> an_cu = filter(lambda an: an.getKeyword() == 'Cu', ar_ans)[0]
+    >>> an_fe = filter(lambda an: an.getKeyword() == 'Fe', ar_ans)[0]
+    >>> duplicates = worksheet.getDuplicateAnalyses()
+    >>> du_au = filter(lambda dup: dup.getKeyword() == 'Au', duplicates)[0]
+    >>> du_cu = filter(lambda dup: dup.getKeyword() == 'Cu', duplicates)[0]
+    >>> du_fe = filter(lambda dup: dup.getKeyword() == 'Fe', duplicates)[0]
+
+When the analysis `Cu` (`to_be_verified`) is rejected, the duplicate is removed:
+
+    >>> du_cu_uid = api.get_uid(du_cu)
+    >>> try_transition(an_cu, "reject", "rejected")
+    True
+    >>> du_cu in worksheet.getDuplicateAnalyses()
+    False
+    >>> api.get_object_by_uid(du_cu_uid, None) is None
+    True
+
+Submit the result for duplicate `Au` and reject `Au` analysis afterwards:
+
+    >>> du_au_uid = api.get_uid(du_au)
+    >>> du_au.setResult(12)
+    >>> try_transition(du_au, "submit", "to_be_verified")
+    True
+    >>> api.get_workflow_status_of(du_au)
+    'to_be_verified'
+    >>> try_transition(an_au, "reject", "rejected")
+    True
+    >>> api.get_workflow_status_of(an_au)
+    'rejected'
+    >>> du_au in worksheet.getDuplicateAnalyses()
+    False
+    >>> api.get_object_by_uid(du_au_uid, None) is None
+    True
+
+Submit and verify the result for duplicate `Fe` and reject `Fe` analysis:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> du_fe_uid = api.get_uid(du_fe)
+    >>> du_fe.setResult(12)
+    >>> try_transition(du_fe, "submit", "to_be_verified")
+    True
+    >>> try_transition(du_fe, "verify", "verified")
+    True
+    >>> try_transition(an_fe, "reject", "rejected")
+    True
+    >>> api.get_workflow_status_of(an_fe)
+    'rejected'
+    >>> du_fe in worksheet.getDuplicateAnalyses()
+    False
+    >>> api.get_object_by_uid(du_fe_uid, None) is None
+    True
+    >>> bikasetup.setSelfVerificationEnabled(False)
 
 
 Rejection of analyses with dependents

@@ -218,8 +218,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         Delegates to 'unassign' transition for the analysis passed in
         """
         # Cannot remove an analysis if unassign transition is not possible
-        if not isTransitionAllowed(analysis, "unassign"):
-            return
+        # unless the analysis has been rejected
+        if api.get_workflow_status_of(analysis) != "rejected":
+            if not isTransitionAllowed(analysis, "unassign"):
+                return
 
         # Removal of a routine analysis causes the removal of its duplicates
         if not IDuplicateAnalysis.providedBy(analysis):

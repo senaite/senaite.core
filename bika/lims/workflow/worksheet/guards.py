@@ -21,25 +21,20 @@ def _children_are_ready(obj, transition_id, dettached_states=None):
     this function to return true (if all children are in detached states, it
     always return False).
     """
-    query = dict(getWorksheetUID=api.get_uid(obj))
-    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
-    if not brains:
-        return False
     detached_count = 0
-
-    for brain in brains:
-        if dettached_states and brain.review_state in dettached_states:
-            detached_count += 1
-            # dismiss the brain and skip the rest of the checks
-            continue
-        if not api.is_active(brain):
+    analyses = obj.getAnalyses()
+    for analysis in analyses:
+        if dettached_states:
+            if api.get_review_status(analysis) in dettached_states:
+                detached_count += 1
+                continue
+        if not api.is_active(analysis):
             return False
-        analysis = api.get_object(brain)
         if not wasTransitionPerformed(analysis, transition_id):
             return False
 
-    if detached_count == len(brains):
-        # If all brains are in a detached state, it means that the
+    if detached_count == len(analyses):
+        # If all analyses are in a detached state, it means that the
         # condition of at least having one child for which the
         # transition is performed is not satisfied so return False
         return False
@@ -83,6 +78,6 @@ def guard_rollback_to_receive(worksheet):
     """Return whether 'rollback_to_receive' transition can be performed or not
     """
     for analysis in worksheet.getAnalyses():
-        if getCurrentState(worksheet) in ["assigned"]:
+        if api.get_review_status(analysis) in ["assigned"]:
             return True
     return False

@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.workflow.analysis import guards as analysis_guards
@@ -31,17 +32,10 @@ def guard_verify(duplicate_analysis):
 def guard_unassign(duplicate_analysis):
     """Return whether the transition 'unassign' can be performed or not
     """
-    can_unassign = analysis_guards.guard_unassign(duplicate_analysis)
-    if can_unassign and wf.wasTransitionPerformed(duplicate_analysis, "submit"):
-        # We can even unassign a duplicate after submit if the analysis it comes
-        # from can be unassigned
-        analysis = duplicate_analysis.getAnalysis()
-        if not analysis:
-            logger.warn("Duplicate '{}' not associated to any analysis"
-                        .format(duplicate_analysis.getId()))
-            return True
-        return wf.isTransitionAllowed(analysis, "unassign")
-    return can_unassign
+    analysis = duplicate_analysis.getAnalysis()
+    if api.get_review_status(analysis) in ["rejected", "unassigned"]:
+        return True
+    return analysis_guards.guard_unassign(duplicate_analysis)
 
 
 def guard_retract(duplicate_analysis):
