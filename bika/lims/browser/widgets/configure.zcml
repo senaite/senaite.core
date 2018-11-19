@@ -13,6 +13,24 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Table Analysis Profile Analyses -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisProfile"
+      name="table_analysis_profile_analyses"
+      class=".analysisprofileanalyseswidget.AnalysisProfileAnalysesView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Table Analysis Profile Specification  -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisSpec"
+      name="table_analysis_specifications"
+      class=".analysisspecificationwidget.AnalysisSpecificationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Table Reference Results -->
   <browser:page
       for="*"
