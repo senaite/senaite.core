@@ -173,17 +173,6 @@ def after_verify(analysis):
         reindex_request(analysis)
 
 
-def after_cancel(obj):
-    if skip(obj, "cancel"):
-        return
-    # If it is assigned to a worksheet, unassign it.
-    worksheet = obj.getWorksheet()
-    if worksheet:
-        worksheet.removeAnalysis(obj)
-    obj.reindexObject()
-    reindex_request(obj)
-
-
 def after_attach(obj):
     if skip(obj, "attach"):
         return
