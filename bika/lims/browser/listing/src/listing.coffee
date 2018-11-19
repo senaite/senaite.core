@@ -509,6 +509,16 @@ class ListingController extends React.Component
 
     return @get_default_columns()
 
+  get_remarks_columns: ->
+    ###
+     * Get a list of column names where the type is set to "remarks"
+    ###
+    columns = []
+    for key, value of @state.columns
+      if value.type == "remarks"
+        columns.push key
+    return columns
+
   get_default_columns: ->
     ###
      * Get the default visible columns of the listing
@@ -759,6 +769,7 @@ class ListingController extends React.Component
             column_count={@get_column_count()}
             column_order={@get_column_order()}
             table_columns={@get_visible_columns()}
+            remarks_columns={@get_remarks_columns()}
             review_state={@state.review_state}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
@@ -778,7 +789,6 @@ class ListingController extends React.Component
             toggle_row_title={_("Partitions")}
             update_editable_field={@updateEditableField}
             save_editable_field={@saveEditableField}
-            remarks_row_title={_("Remarks")}
             />
         </div>
       </div>

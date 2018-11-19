@@ -72,7 +72,6 @@ class TableRow extends React.Component
 
     return cls
 
-
   build_rows: ->
     ###
      * Build the Table row and eventual child-rows
@@ -82,10 +81,13 @@ class TableRow extends React.Component
     # The folderitem
     item = @props.item
     uid = item.uid
+    selected = @is_selected item
+    disabled = item.disabled or no
     row_cls = @get_row_css_class item
     expanded = @is_expanded item
     has_children = @has_children item
     children = @props.children[uid] or []
+    remarks_columns = @props.remarks_columns or []
 
     # Handle parent row
     rows.push(
@@ -93,13 +95,27 @@ class TableRow extends React.Component
           className={row_cls}>
         {@build_cells(item)}
       </tr>
-      <TableRemarksRow
-        className={row_cls}
-        key={uid + "_remarks"}
-        {...@props}
-        item={item}
-        />
     )
+
+    # Add remarks rows below the parent row
+    # Currently "Remarks" and "rangecomments" columns have this set
+    for remarks_column_key in remarks_columns
+      remarks_column = @props.columns[remarks_column_key]
+      remarks_column_title = remarks_column["title"] or ""
+      # XXX Refactor global _ (jsi18n) function
+      remarks_column_title = _(remarks_column_title)
+      rows.push(
+        <TableRemarksRow
+          {...@props}
+          key={"#{remarks_column_key}_remarks"}
+          item={item}  # the current folderitem
+          item_key={remarks_column_key}  # the remarks column key
+          column={remarks_column}  # the remarks column object
+          selected={selected}  # true if the row is selected
+          className={row_cls + " remarks"}  # row CSS class
+          remarks_row_title={remarks_column_title}  # remarks field label
+          />
+      )
 
     # return the parent row if there are no children
     if not has_children
@@ -113,7 +129,7 @@ class TableRow extends React.Component
 
     default_toggle_row_title = if expanded then "Collapse" else "Expand"
 
-    # Insert a expand row
+    # Insert an expand row
     rows.push(
       <tr key={uid + "_toggle_children"}
           uid={uid}
@@ -173,8 +189,8 @@ class TableRow extends React.Component
 
       cells.push(
         <TableCell
-          key={key}  # internal key
           {...@props}  # pass in all properties from the table component
+          key={key}  # internal key
           item={item}  # a single folderitem
           item_key={key}  # the current rendered column key
           column={column}  # the current rendered column object

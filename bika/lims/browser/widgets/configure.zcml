@@ -13,36 +13,38 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Table Analysis Profile Analyses -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisProfile"
+      name="table_analysis_profile_analyses"
+      class=".analysisprofileanalyseswidget.AnalysisProfileAnalysesView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Table Analysis Profile Specification  -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisSpec"
+      name="table_analysis_specifications"
+      class=".analysisspecificationwidget.AnalysisSpecificationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Table Reference Results -->
+  <browser:page
+      for="*"
+      name="table_reference_results"
+      class=".referenceresultswidget.ReferenceResultsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <browser:page
       for="*"
       name="referencewidget_search"
       class="bika.lims.browser.widgets.referencewidget.ajaxReferenceWidgetSearch"
       permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- AJAX call to obtain theAnalysis services -->
-  <browser:page
-      for="*"
-      name="reference_results_widget_view"
-      class="bika.lims.browser.widgets.referenceresultswidget.ReferenceResultsView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:page
-      for="*"
-      name="analysis_spec_widget_view"
-      class="bika.lims.browser.widgets.analysisspecificationwidget.AnalysisSpecificationView"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:page
-      for="*"
-      name="ajax_services_expand_category"
-      class="bika.lims.browser.widgets.serviceswidget.AJAXCategoryExpand"
-      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 

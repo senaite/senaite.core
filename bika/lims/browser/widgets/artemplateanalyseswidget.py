@@ -7,13 +7,13 @@
 
 import collections
 import itertools
-from operator import itemgetter
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_image
+from bika.lims.utils import get_link
 from bika.lims.utils import t
 from plone.memoize import view
 from Products.Archetypes.Registry import registerWidget
@@ -22,7 +22,7 @@ from zope.i18n.locales import locales
 
 
 class ARTemplateAnalysesView(BikaListingView):
-    """ bika listing to display Analyses table for an ARTemplate.
+    """Listing table to display Analyses Services for AR Templates
     """
 
     def __init__(self, context, request):
@@ -32,27 +32,24 @@ class ARTemplateAnalysesView(BikaListingView):
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
+            "sort_order": "ascending",
             "inactive_state": "active"
         }
         self.context_actions = {}
 
         self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_all_checkbox = False
         self.show_column_toggles = False
         self.show_select_column = True
+        self.show_select_all_checkbox = True
         self.pagesize = 999999
         self.allow_edit = True
         self.show_search = False
         self.omit_form = True
 
         # Categories
-        self.categories = []
-        self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
-        if self.do_cats:
+        if self.show_categories_enabled():
             self.show_categories = True
             self.expand_all_categories = False
-            self.ajax_categories = True
             self.category_index = "getCategoryTitle"
 
         self.partition_choices = []
@@ -68,6 +65,15 @@ class ARTemplateAnalysesView(BikaListingView):
                 "title": _("Service"),
                 "index": "sortable_title",
                 "sortable": False}),
+            ("Keyword", {
+                "title": _("Keyword"),
+                "sortable": False}),
+            ("Methods", {
+                "title": _("Methods"),
+                "sortable": False}),
+            ("Unit", {
+                "title": _("Unit"),
+                "sortable": False}),
             ("Price", {
                 "title": _("Price"),
                 "sortable": False}),
@@ -76,11 +82,11 @@ class ARTemplateAnalysesView(BikaListingView):
                 "sortable": False}),
             ("Hidden", {
                 "title": _("Hidden"),
-                "sortable": False,
-                "type": "boolean"}),
+                "sortable": False}),
         ))
 
-        columns = ["Title", "Price", "Partition", "Hidden"]
+        columns = ["Title", "Keyword", "Methods", "Unit", "Price",
+                   "Partition", "Hidden"]
         if not self.show_prices():
             columns.remove("Price")
 
@@ -89,7 +95,7 @@ class ARTemplateAnalysesView(BikaListingView):
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {"inactive_state": "active"},
-                "transitions": [],
+                "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": columns,
             }
         ]
@@ -124,6 +130,12 @@ class ARTemplateAnalysesView(BikaListingView):
         return mapping
 
     @view.memoize
+    def show_categories_enabled(self):
+        """Check in the setup if categories are enabled
+        """
+        return self.context.bika_setup.getCategoriseAnalysisServices()
+
+    @view.memoize
     def show_prices(self):
         """Checks if prices should be shown or not
         """
@@ -134,10 +146,28 @@ class ARTemplateAnalysesView(BikaListingView):
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
-        locale = locales.getLocale('en')
+        locale = locales.getLocale("en")
         setup = api.get_setup()
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
+
+    @view.memoize
+    def get_decimal_mark(self):
+        """Returns the decimal mark
+        """
+        setup = api.get_setup()
+        return setup.getDecimalMark()
+
+    @view.memoize
+    def format_price(self, price):
+        """Formats the price with the set decimal mark and correct currency
+        """
+        return u"{} {}{}{:02d}".format(
+            self.get_currency_symbol(),
+            price[0],
+            self.get_decimal_mark(),
+            price[1],
+        )
 
     @view.memoize
     def is_edit_allowed(self):
@@ -158,6 +188,13 @@ class ARTemplateAnalysesView(BikaListingView):
         columns = ["Partition", "Hidden"]
         return columns
 
+    def folderitems(self):
+        """TODO: Refactor to non-classic mode
+        """
+        items = super(ARTemplateAnalysesView, self).folderitems()
+        self.categories.sort()
+        return items
+
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
 
@@ -171,6 +208,8 @@ class ARTemplateAnalysesView(BikaListingView):
         # ensure we have an object and not a brain
         obj = api.get_object(obj)
         uid = api.get_uid(obj)
+        url = api.get_url(obj)
+        title = api.get_title(obj)
 
         # get the category
         category = obj.getCategoryTitle()
@@ -182,13 +221,25 @@ class ARTemplateAnalysesView(BikaListingView):
         partition = config.get("partition", "part-1")
         hidden = config.get("hidden", False)
 
-        item["Price"] = obj.getPrice()
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["Price"] = self.format_price(obj.Price)
         item["allow_edit"] = self.get_editable_columns()
         item["required"].append("Partition")
         item["choices"]["Partition"] = self.partition_choices
         item["Partition"] = partition
         item["Hidden"] = hidden
         item["selected"] = uid in self.configuration
+
+        # Add methods
+        methods = obj.getMethods()
+        if methods:
+            links = map(
+                lambda m: get_link(
+                    m.absolute_url(), value=m.Title(), css_class="link"),
+                methods)
+            item["replace"]["Methods"] = ", ".join(links)
+        else:
+            item["methods"] = ""
 
         # Icons
         after_icons = ""
@@ -205,13 +256,6 @@ class ARTemplateAnalysesView(BikaListingView):
             item["after"]["Title"] = after_icons
 
         return item
-
-    def folderitems(self):
-        """XXX refactor if possible to non-classic mode
-        """
-        items = super(ARTemplateAnalysesView, self).folderitems()
-        self.categories.sort()
-        return items
 
 
 class ARTemplateAnalysesWidget(TypesWidget):
@@ -281,14 +325,14 @@ class ARTemplateAnalysesWidget(TypesWidget):
         """Render Analyses Listing Table
         """
         instance = getattr(self, "instance", field.aq_parent)
-        view = api.get_view(
+        table = api.get_view(
             "table_ar_template_analyses",
             context=instance,
             request=self.REQUEST)
         # Call listing hooks
-        view.update()
-        view.before_render()
-        return view.ajax_contents_table()
+        table.update()
+        table.before_render()
+        return table.ajax_contents_table()
 
 
 registerWidget(ARTemplateAnalysesWidget,

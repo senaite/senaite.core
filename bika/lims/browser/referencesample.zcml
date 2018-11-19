@@ -13,16 +13,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!-- Retrieve the ReferenceResultsWidget table, with a ReferenceDefinition
-    -->
-    <browser:page
-      for="bika.lims.interfaces.IReferenceSample"
-      name="referenceresults"
-      class="bika.lims.browser.widgets.referenceresultswidget.TableRenderShim"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <!-- Single Reference Sample View -->
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
