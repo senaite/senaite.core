@@ -69,6 +69,7 @@ class NumericField extends React.Component
            defaultValue={@props.defaultValue or ""}
            title={@props.title}
            disabled={@props.disabled}
+           required={@props.required}
            className={@props.className}
            placeholder={@props.placeholder}
            onBlur={@on_blur}

@@ -146,6 +146,12 @@ class AnalysisSpecificationView(BikaListingView):
                    "rangecomment", "min_operator", "max_operator"]
         return columns
 
+    def get_required_columns(self):
+        """Return required editable fields
+        """
+        columns = ["min", "max"]
+        return columns
+
     def folderitems(self):
         """TODO: Refactor to non-classic mode
         """
@@ -181,6 +187,7 @@ class AnalysisSpecificationView(BikaListingView):
         item["choices"]["min_operator"] = self.min_operator_choices
         item["choices"]["max_operator"] = self.max_operator_choices
         item["allow_edit"] = self.get_editable_columns()
+        item["required"] = self.get_required_columns()
 
         spec = self.specification.get(keyword, {})
         item["selected"] = spec and True or False
@@ -286,6 +293,9 @@ class AnalysisSpecificationWidget(TypesWidget):
                 "hidemax": self._get_spec_value(form, uid, "hidemax"),
                 "rangecomment": self._get_spec_value(form, uid, "rangecomment",
                                                      check_floatable=False)})
+        else:
+            # Inject empty fields for the validator
+            values.append(dict.fromkeys(field.getSubfields()))
         return values, {}
 
     def _get_spec_value(self, form, uid, key, check_floatable=True,

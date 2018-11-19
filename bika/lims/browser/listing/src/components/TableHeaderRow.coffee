@@ -53,6 +53,19 @@ class TableHeaderRow extends React.Component
 
     @props.on_context_menu x, y
 
+  is_required_column: (key) ->
+    ###
+     * Check if the column is required
+    ###
+
+    # XXX This is a workaround for a missing key within the column definition
+    folderitems = @props.folderitems or []
+    if folderitems.length == 0
+      return no
+    first_item = folderitems[0]
+    required = first_item.required or []
+    return key in required
+
   get_sort_index: (key, column) ->
     ###
      * Get the sort index of the given column
@@ -137,12 +150,16 @@ class TableHeaderRow extends React.Component
       sort_order = @props.sort_order or "ascending"
       # check if the current sort_on is the index of this column
       is_sort_column = index is sort_on
+      # check if the column is required
+      required = @is_required_column key
 
       cls = [key]
       if sortable
         cls.push "sortable"
       if is_sort_column and sortable
         cls.push "active #{sort_order}"
+      if required
+        cls.push "required"
       cls = cls.join " "
 
       cells.push(

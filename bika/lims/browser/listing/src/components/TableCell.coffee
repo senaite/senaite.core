@@ -176,7 +176,10 @@ class TableCell extends React.Component
      * Check if the field is marked as required
     ###
     required_fields = item.required or []
-    return item_key in required_fields
+    required = item_key in required_fields
+    # make the field conditionally required if the row is selected
+    selected = @props.selected
+    return required and selected
 
   get_name: (item_key, item) ->
     ###
@@ -282,6 +285,8 @@ class TableCell extends React.Component
     value = @get_value item_key, item
     # formatted display value of the form field
     formatted_value = @get_formatted_value item_key, item
+    # true if the holding row is selected
+    selected = @props.selected
     # true if the field should be disabled
     disabled = @is_disabled item_key, item
     # true if the field is required
@@ -292,6 +297,9 @@ class TableCell extends React.Component
     interims = item.interimfields or []
     # result field
     result_field = @is_result_field item_key, item
+    # input field css class
+    field_css_class = "form-control input-sm"
+    if required then field_css_class += " required"
 
     # the field to return
     field = []
@@ -344,7 +352,7 @@ class TableCell extends React.Component
           disabled={disabled}
           onChange={@on_numeric_field_change}
           onBlur={@on_numeric_field_blur}
-          className="form-control input-sm"
+          className={field_css_class}
           />
       )
       # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
@@ -371,11 +379,12 @@ class TableCell extends React.Component
           defaultValue={value}
           title={title}
           disabled={disabled}
+          selected={selected}
           required={required}
           options={options}
           onChange={@on_select_field_change}
           onBlur={@on_select_field_blur}
-          className="form-control input-sm"
+          className={field_css_class}
           />
       )
 
@@ -408,9 +417,11 @@ class TableCell extends React.Component
           formatted_value={formatted_value}
           placeholder={title}
           disabled={disabled}
+          selected={selected}
+          required={required}
           onChange={@on_numeric_field_change}
           onBlur={@on_numeric_field_blur}
-          className="form-control input-sm"
+          className={field_css_class}
           />
       )
 
