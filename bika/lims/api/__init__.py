@@ -873,6 +873,8 @@ def is_active(brain_or_object):
     :returns: False if the object is in the state 'inactive' or 'cancelled'
     :rtype: bool
     """
+    if get_review_status(brain_or_object) == "cancelled":
+        return False
     if get_inactive_status(brain_or_object) == "inactive":
         return False
     if get_cancellation_status(brain_or_object) == "cancelled":
