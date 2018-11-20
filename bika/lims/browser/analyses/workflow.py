@@ -17,14 +17,9 @@ from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.interfaces import IReferenceAnalysis
-from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import in_state, isTransitionAllowed
 from bika.lims.workflow import ActionsPool
+from bika.lims.workflow import doActionFor
 
 
 class AnalysesWorkflowAction(WorkflowAction):
@@ -47,7 +42,6 @@ class AnalysesWorkflowAction(WorkflowAction):
         form = self.request.form
         remarks = form.get('Remarks', [{}])[0]
         results = form.get('Result', [{}])[0]
-        retested = form.get('retested', {})
         methods = form.get('Method', [{}])[0]
         instruments = form.get('Instrument', [{}])[0]
         analysts = self.request.form.get('Analyst', [{}])[0]
