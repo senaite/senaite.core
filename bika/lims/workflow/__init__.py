@@ -82,11 +82,6 @@ def doActionFor(instance, action_id):
 
         return doActionFor(instance=instance[0], action_id=action_id)
 
-    # Return False if transition is not permitted
-    if not isTransitionAllowed(instance, action_id):
-        return False, "Transition {} for {} is not allowed"\
-            .format(action_id, instance.getId())
-
     # Since a given transition can cascade or promote to other objects, we want
     # to reindex all objects for which the transition succeed at once, at the
     # end of process. Otherwise, same object will be reindexed multiple times
@@ -94,7 +89,13 @@ def doActionFor(instance, action_id):
     # applied twice to the same object due to cascade/promote recursions.
     pool = ActionHandlerPool.get_instance()
     if pool.succeed(instance, action_id):
-        return
+        return False, "Transition {} for {} already done"\
+             .format(action_id, instance.getId())
+
+    # Return False if transition is not permitted
+    if not isTransitionAllowed(instance, action_id):
+        return False, "Transition {} for {} is not allowed"\
+            .format(action_id, instance.getId())
 
     # Add this batch process to the queue
     pool.queue_pool()
