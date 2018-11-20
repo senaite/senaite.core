@@ -77,10 +77,9 @@ def after_retract(duplicate_analysis):
 
     # Create a copy (retest) of the duplicate and assign to worksheet
     ref_gid = duplicate_analysis.getReferenceAnalysesGroupID()
-    dup_of = duplicate_analysis.getAnalysis()
     retest = _createObjectByType("DuplicateAnalysis", worksheet, tmpID())
     copy_analysis_field_values(duplicate_analysis, retest)
-    retest.setAnalysis(dup_of)
+    retest.setAnalysis(duplicate_analysis.getAnalysis())
     retest.setRetestOf(duplicate_analysis)
     retest.setReferenceAnalysesGroupID(ref_gid)
     retest.setResult(duplicate_analysis.getResult())

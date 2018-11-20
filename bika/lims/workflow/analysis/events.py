@@ -119,8 +119,7 @@ def after_retract(analysis):
         worksheet.addAnalysis(new_analysis)
 
     # Retract our dependents (analyses that depend on this analysis)
-    dependents = analysis.getDependents()
-    for dependent in dependents:
+    for dependent in analysis.getDependents():
         doActionFor(dependent, 'retract')
 
 
@@ -132,14 +131,12 @@ def after_reject(analysis):
         worksheet.removeAnalysis(analysis)
 
     # Reject our dependents (analyses that depend on this analysis)
-    dependents = analysis.getDependents()
-    for dependent in dependents:
+    for dependent in analysis.getDependents():
         doActionFor(dependent, "reject")
 
     # Try to rollback the Analysis Request (all analyses rejected)
     if IRequestAnalysis.providedBy(analysis):
-        request = analysis.getRequest()
-        doActionFor(request, "rollback_to_receive")
+        doActionFor(analysis.getRequest(), "rollback_to_receive")
         reindex_request(analysis)
 
 

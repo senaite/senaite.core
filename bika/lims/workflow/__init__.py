@@ -530,6 +530,8 @@ class ActionHandlerPool(object):
 
     @staticmethod
     def get_instance():
+        """Returns the current instance of ActionHandlerPool
+        """
         if ActionHandlerPool.__instance == None:
             ActionHandlerPool()
         return ActionHandlerPool.__instance
@@ -537,42 +539,67 @@ class ActionHandlerPool(object):
     def __init__(self):
         if ActionHandlerPool.__instance != None:
             raise Exception("Use ActionHandlerPool.get_instance()")
-        self.actions = collections.OrderedDict()
+        self.objects = collections.OrderedDict()
         self.num_calls = 0
         ActionHandlerPool.__instance = self
 
     def __len__(self):
-        return len(self.actions)
+        """Number of objects in the pool
+        """
+        return len(self.objects)
 
     def queue_pool(self):
+        """Notifies that a new batch of jobs is about to begin
+        """
         self.num_calls += 1
 
     def push(self, instance, action, success, idxs=None):
+        """Adds an instance into the pool, to be reindexed on resume
+        """
         uid = api.get_uid(instance)
-        info = self.actions.get(uid, {})
+        info = self.objects.get(uid, {})
         info[action] = {'instance': instance, 'success': success, 'idxs': idxs}
-        self.actions[uid]=info
+        self.objects[uid] = info
 
     def succeed(self, instance, action):
+        """Returns if the task for the instance took place successfully
+        """
         uid = api.get_uid(instance)
-        return self.actions.get(uid, {}).get(action, {}).get('success', False)
+        return self.objects.get(uid, {}).get(action, {}).get('success', False)
 
     def resume(self):
+        """Resumes the pool and reindex all objects processed
+        """
         self.num_calls -= 1
         if self.num_calls > 0:
             return
         logger.info("Resume actions for {} objects".format(len(self)))
         processed = list()
-        for uid, info in self.actions.items():
+        for uid, info in self.objects.items():
             if uid in processed:
                 continue
             instance = info[info.keys()[0]]["instance"]
-            idxs = info[info.keys()[0]]["idxs"]
-            idxs = idxs and idxs or []
-            instance.reindexObject(idxs=idxs)
+            instance.reindexObject(idxs=self.get_indexes(uid))
             processed.append(uid)
         logger.info("Objects processed: {}".format(len(processed)))
-        self.actions = collections.OrderedDict()
+        self.objects = collections.OrderedDict()
+
+    def get_indexes(self, uid):
+        """Returns the names of the indexes to be reindexed for the object with
+        the uid passed in. If no indexes for this object have been specified
+        within the action pool job, returns an empty list (reindex all).
+        Otherwise, return all the indexes that have been specified for the
+        object within the action pool job.
+        """
+        idxs = []
+        info = self.objects.get(uid, {})
+        for action_id, value in info.items():
+            obj_idxs = value.get('idxs', None)
+            if not obj_idxs:
+                # Reindex all indexes
+                return []
+            idxs.extend(obj_idxs)
+        return list(set(idxs))
 
 
 def push_reindex_to_actions_pool(obj, idxs=None):
