@@ -219,16 +219,14 @@ class ListingController extends React.Component
     # check if the children are already fetched
     me = this
     if uid not of @state.children
-      by_uid = @get_folderitems_by_uid()
-      item = by_uid[uid]
-      query =
-        UID: item.children or []
-      promise = @fetch_folderitems_by_query
-        query:
-          UID: item.children or []
+      promise = @fetch_children parent_uid: uid
       promise.then (data) ->
         children = me.state.children
-        children[uid] = data.folderitems
+        item_children = data.children or []
+        children[uid] = item_children
+        for child in item_children
+          if child.selected
+            me.selectUID child.uid, yes
         me.setState
           children: children
           expanded_rows: expanded
@@ -689,6 +687,35 @@ class ListingController extends React.Component
     me = this
     promise.then (data) ->
       console.debug "ListingController::query_folderitems: GOT RESPONSE=", data
+      # turn loader off
+      me.toggle_loader off
+
+    return promise
+
+  fetch_children: ({parent_uid, child_uids}={}) ->
+    ###
+     * Fetch the children of the parent by uid
+    ###
+
+    # turn loader on
+    @toggle_loader on
+
+    # lookup child_uids from the folderitem
+    if not child_uids
+      by_uid = @get_folderitems_by_uid()
+      folderitem = by_uid[parent_uid]
+      if not folderitem
+        throw "No folderitem could be found for UID #{uid}"
+      child_uids = folderitem.children or []
+
+    # fetch the children from the server
+    promise = @api.fetch_children
+      parent_uid: parent_uid
+      child_uids: child_uids
+
+    me = this
+    promise.then (data) ->
+      console.debug "ListingController::fetch_children: GOT RESPONSE=", data
       # turn loader off
       me.toggle_loader off
 

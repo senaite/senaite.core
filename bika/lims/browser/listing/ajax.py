@@ -381,6 +381,11 @@ class AjaxListingView(BrowserView):
 
         return updated_objects
 
+    def get_children_hook(self, parent_uid, child_uids=None):
+        """Custom hook to be implemented by subclass
+        """
+        raise NotImplementedError("Must be implemented by subclass")
+
     @set_application_json_header
     @returns_safe_json
     @inject_runtime
@@ -482,6 +487,42 @@ class AjaxListingView(BrowserView):
         # prepare the response object
         data = {
             "transitions": transitions,
+        }
+
+        return data
+
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
+    def ajax_get_children(self):
+        """Get the children of a folderitem
+
+        Required POST JSON Payload:
+
+        :uid: UID of the parent folderitem
+        """
+
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+
+        # extract the parent UID
+        parent_uid = payload.get("parent_uid")
+        child_uids = payload.get("child_uids", [])
+
+        try:
+            children = self.get_children_hook(
+                parent_uid, child_uids=child_uids)
+        except NotImplementedError:
+            # lookup by catalog search
+            self.contentFilter = {"UID": child_uids}
+            children = self.get_folderitems()
+            # ensure the children have a reference to the parent
+            for child in children:
+                child["parent"] = parent_uid
+
+        # prepare the response object
+        data = {
+            "children": children
         }
 
         return data

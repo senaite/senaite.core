@@ -88,6 +88,16 @@ class ListingAPI
       method: "POST"
     return @get_json "query_folderitems", options
 
+  fetch_children: (data) ->
+    ###
+     * Query children
+     * @returns {Promise}
+    ###
+    options =
+      data: data or {}
+      method: "POST"
+    return @get_json "get_children", options
+
   fetch_folderitems: (data) ->
     ###
      * Fetch folder items

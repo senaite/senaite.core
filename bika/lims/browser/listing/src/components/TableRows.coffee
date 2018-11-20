@@ -32,10 +32,6 @@ class TableRows extends React.Component
     uid = item.uid
     children = @props.children or {}
     item_children = children[uid] or []
-    # XXX: This should be done on the server
-    # ensure the children are linked to the parent
-    item_children.forEach (item, index) ->
-      item["parent"] = uid
     return item_children
 
   is_category_expanded: (category) ->

@@ -25,9 +25,15 @@ class ReferenceSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
+        self.catalog = "bika_catalog"
         self.contentFilter = {
-            "UID": self.get_assigned_services_uids()
+            "portal_type": "ReferenceSample",
+            "getSupportedServices": self.get_assigned_services_uids(),
+            "isValid": True,
+            "review_state": "current",
+            "inactive_state": "active",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
         }
 
         self.context_actions = {}
@@ -42,11 +48,6 @@ class ReferenceSamplesView(BikaListingView):
         self.allow_edit = True
         self.show_search = False
 
-        if self.show_categories_enabled():
-            self.show_categories = True
-            self.expand_all_categories = True
-            self.categories = self.get_assigned_services_categories()
-
         self.icon = "{}/{}".format(
             self.portal_url,
             "/++resource++bika.lims.images/worksheet_big.png"
@@ -60,10 +61,7 @@ class ReferenceSamplesView(BikaListingView):
             })
 
         self.columns = collections.OrderedDict((
-            ("Service", {
-                "title": _("Service"),
-                "sortable": False}),
-            ("ReferenceSample", {
+            ("Title", {
                 "title": _("Reference Sample"),
                 "sortable": False}),
             ("Position", {
@@ -231,28 +229,45 @@ class ReferenceSamplesView(BikaListingView):
         url = api.get_url(obj)
         title = api.get_title(obj)
 
-        # show category
-        if self.show_categories_enabled():
-            category = obj.getCategoryTitle()
-            item["category"] = category
+        # Reference Sample
+        item["Title"] = title
+        item["replace"]["Title"] = get_link(url, value=title)
 
-        # Service
-        item["Service"] = title
-        item["replace"]["Service"] = get_link(url, value=title)
+        # Reference Sample
+        item["allow_edit"] = ["Position"]
+        supported_services = obj.getSupportedServices()
+        item["children"] = supported_services
 
-        # Check if reference samples are available for the assigned services
-        reference_choices = self.make_reference_sample_choices_for(obj)
-        if reference_choices:
-            # Reference Sample
-            item["allow_edit"] = ["ReferenceSample", "Position"]
-            item["ReferenceSample"] = reference_choices[0]["ResultValue"]
-            item["choices"]["ReferenceSample"] = reference_choices
-
-            # Position
-            item["Position"] = "new"
-            item["choices"]["Position"] = self.position_choices
-        else:
-            item["ReferenceSample"] = _("No reference samples available")
-            item["disabled"] = True
+        # Position
+        item["Position"] = "new"
+        item["choices"]["Position"] = self.position_choices
 
         return item
+
+    def get_children_hook(self, parent_uid, child_uids=None):
+        """Custom implenentation from ajax base class
+        """
+        children = []
+        obj = api.get_object_by_uid(parent_uid)
+        supported_services_uids = set(obj.getSupportedServices())
+        supported_services = map(api.get_object, supported_services_uids)
+        assigned_services = self.get_assigned_services()
+        for service in supported_services:
+            children.append({
+                "id": api.get_id(service),
+                "uid": api.get_uid(service),
+                "title": api.get_title(service),
+                "selected": service in assigned_services,
+                "url": api.get_url(service),
+                "parent": parent_uid,
+                "allow_edit": [],
+                "replace": {},
+                "choices": {},
+                "before": {},
+                "after": {},
+                "category": "None",
+                "Title": api.get_title(service),
+                "Position": "",
+
+            })
+        return children
