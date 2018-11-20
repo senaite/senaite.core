@@ -6,8 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims import logger
-from bika.lims import workflow as wf
 from bika.lims.workflow.analysis import guards as analysis_guards
 
 

@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 

@@ -33,8 +33,8 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.utils import changeWorkflowState, tmpID, to_int
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.workflow import doActionFor, getCurrentState, skip, \
-    isTransitionAllowed, ActionHandlerPool
+from bika.lims.workflow import doActionFor, skip, isTransitionAllowed, \
+    ActionHandlerPool
 from zope.interface import implements
 
 ALL_ANALYSES_TYPES = "all"
@@ -165,7 +165,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - if position is None, next available pos is used.
         """
         # Cannot add an analysis if not open, unless a retest
-        if api.get_workflow_status_of(self) != "open":
+        if api.get_review_status(self) != "open":
             retracted = analysis.getRetestOf()
             if retracted not in self.getAnalyses():
                 return
@@ -219,7 +219,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         # Cannot remove an analysis if unassign transition is not possible
         # unless the analysis has been rejected
-        if api.get_workflow_status_of(analysis) != "rejected":
+        if api.get_review_status(analysis) != "rejected":
             if not isTransitionAllowed(analysis, "unassign"):
                 return
 
@@ -344,7 +344,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         processed = list()
         for analysis in self.get_analyses_at(slot_to):
-            if getCurrentState(analysis) != "retracted":
+            if api.get_review_status(analysis) != "retracted":
                 service = analysis.getAnalysisService()
                 processed.append(api.get_uid(service))
         query = dict(portal_type="AnalysisService", UID=service_uids,
@@ -495,7 +495,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                            'routine analysis: {}'.format(src_analysis.getId()))
             return None
 
-        if getCurrentState(src_analysis) == 'retracted':
+        if api.get_review_status(src_analysis) == 'retracted':
             logger.warning('Cannot create duplicate analysis from a retracted'
                            'analysis: {}'.format(src_analysis.getId()))
             return None
