@@ -52,7 +52,7 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id, reindex_on_success=True):
+def doActionFor(instance, action_id):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
@@ -93,13 +93,11 @@ def doActionFor(instance, action_id, reindex_on_success=True):
     # unnecessarily. Also, ActionsHandlerPool ensures the same transition is not
     # applied twice to the same object due to cascade/promote recursions.
     pool = ActionHandlerPool.get_instance()
-    busy = pool.is_busy()
-    pool.start()
-
-    # Ensure the same action is not triggered twice for the same object.
     if pool.succeed(instance, action_id):
         return
 
+    # Add this batch process to the queue
+    pool.queue_pool()
     succeed = False
     message = ""
     workflow = getToolByName(instance, "portal_workflow")
@@ -115,53 +113,22 @@ def doActionFor(instance, action_id, reindex_on_success=True):
             .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
 
-    # Add the current object to the pool
+    # Add the current object to the pool and resume
     pool.push(instance, action_id, succeed)
-
-    # Resume the pool of actions performed
-    if not busy:
-        pool.resume(reindex_on_success)
+    pool.resume()
 
     return succeed, message
 
 
-def _logTransitionFailure(obj, transition_id):
-    wftool = getToolByName(obj, "portal_workflow")
-    chain = wftool.getChainFor(obj)
-    for wf_id in chain:
-        wf = wftool.getWorkflowById(wf_id)
-        if wf is not None:
-            sdef = wf._getWorkflowStateOf(obj)
-            if sdef is not None:
-                for tid in sdef.transitions:
-                    if tid != transition_id:
-                        continue
-                    tdef = wf.transitions.get(tid, None)
-                    if not tdef:
-                        continue
-                    if tdef.trigger_type != TRIGGER_USER_ACTION:
-                        logger.warning("  Trigger type is not manual")
-                    if not tdef.actbox_name:
-                        logger.warning("  No actbox_name set")
-                    if not wf._checkTransitionGuard(tdef, obj):
-                        guard = tdef.guard
-                        expr = guard.getExprText()
-                        logger.warning("  Guard failed: {0}".format(expr))
-                    return
-    logger.warning("Transition not found. Check the workflow definition!")
-
-
 # TODO Workflow - remove doAction(s)For?
-def doActionsFor(instance, actions, reindex_on_success=True):
+def doActionsFor(instance, actions):
     """Performs a set of transitions to the instance passed in
     """
     pool = ActionHandlerPool.get_instance()
-    busy = pool.is_busy()
-    pool.start()
+    pool.queue_pool()
     for action in actions:
-        doActionFor(instance, action, reindex_on_success=True)
-    if not busy:
-        pool.resume(reindex_on_success)
+        doActionFor(instance, action)
+    pool.resume()
 
 
 def call_workflow_event(instance, event, after=True):
@@ -264,28 +231,18 @@ def isBasicTransitionAllowed(context, permission=None):
     return True
 
 
-def isTransitionAllowed(instance, transition_id, active_only=True):
+def isTransitionAllowed(instance, transition_id):
     """Checks if the object can perform the transition passed in.
-    If active_only is set to true, the function will always return false if the
-    object's current state is inactive or cancelled.
-    Apart from the current state, it also checks if the guards meet the
-    conditions (as per workflowtool.getTransitionsFor)
     :returns: True if transition can be performed
     :rtype: bool
     """
-    # If the instance is not active, cancellation and inactive workflows have
-    # priority over the rest of workflows associated to the object, so only
-    # allow to transition if the transition_id belongs to any of these two
-    # workflows and dismiss the rest
-    if not isActive(instance):
-        inactive_transitions = ['reinstate', 'activate']
-        if transition_id not in inactive_transitions:
+    if transition_id not in ['reinstate', 'activate']:
+        if not api.is_active(instance):
             return False
 
-    wftool = getToolByName(instance, "portal_workflow")
-    chain = wftool.getChainFor(instance)
-    for wf_id in chain:
-        wf = wftool.getWorkflowById(wf_id)
+    wf_tool = getToolByName(instance, "portal_workflow")
+    for wf_id in wf_tool.getChainFor(instance):
+        wf = wf_tool.getWorkflowById(wf_id)
         if wf and wf.isActionSupported(instance, transition_id):
             return True
 
@@ -552,17 +509,16 @@ class ActionsPool(object):
         self.actions_pool[uid] = {"instance": instance,
                                   "action_id": action_id}
 
-    def clear(self):
-        self.actions_pool = collections.OrderedDict()
-
-    def resume(self, reindex_on_success=True):
+    def resume(self):
+        action_handler = ActionHandlerPool.get_instance()
+        action_handler.queue_pool()
         outcome = collections.OrderedDict()
         for uid, values in self.actions_pool.items():
             instance = values["instance"]
             action_id = values["action_id"]
-            outcome[uid] = doActionFor(instance, action_id,
-                                       reindex_on_success=reindex_on_success)
-        self.clear()
+            outcome[uid] = doActionFor(instance, action_id)
+        self.actions_pool = collections.OrderedDict()
+        action_handler.resume()
         return outcome
 
 
@@ -581,17 +537,14 @@ class ActionHandlerPool(object):
         if ActionHandlerPool.__instance != None:
             raise Exception("Use ActionHandlerPool.get_instance()")
         self.actions = collections.OrderedDict()
-        self.is_new = True
+        self.num_calls = 0
         ActionHandlerPool.__instance = self
 
     def __len__(self):
         return len(self.actions)
 
-    def is_busy(self):
-        return not self.is_new
-
-    def start(self):
-        self.is_new = False
+    def queue_pool(self):
+        self.num_calls += 1
 
     def push(self, instance, action, success, idxs=None):
         uid = api.get_uid(instance)
@@ -603,11 +556,11 @@ class ActionHandlerPool(object):
         uid = api.get_uid(instance)
         return self.actions.get(uid, {}).get(action, {}).get('success', False)
 
-    def resume(self, reindex_on_success=True):
+    def resume(self):
+        self.num_calls -= 1
+        if self.num_calls > 0:
+            return
         logger.info("Resume actions for {} objects".format(len(self)))
-        if not reindex_on_success:
-            # Do nothing
-            self.clear()
         processed = list()
         for uid, info in self.actions.items():
             if uid in processed:
@@ -618,11 +571,7 @@ class ActionHandlerPool(object):
             instance.reindexObject(idxs=idxs)
             processed.append(uid)
         logger.info("Objects processed: {}".format(len(processed)))
-        self.clear()
-
-    def clear(self):
         self.actions = collections.OrderedDict()
-        self.is_new = True
 
 
 def push_reindex_to_actions_pool(obj, idxs=None):

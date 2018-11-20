@@ -18,6 +18,7 @@ from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
+from bika.lims.workflow import ActionHandlerPool
 from plone import protect
 from plone.memoize.volatile import DontCache
 from plone.memoize.volatile import cache
@@ -1820,6 +1821,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {'errors': errors}
 
         # Process Form
+        actions = ActionHandlerPool.get_instance()
+        actions.queue_pool()
         ARs = OrderedDict()
         for n, record in enumerate(valid_records):
             client_uid = record.get("Client")
@@ -1856,6 +1859,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 _attachments.append(att)
             if _attachments:
                 ar.setAttachment(_attachments)
+        actions.resume()
 
         level = "info"
         if len(ARs) == 0:

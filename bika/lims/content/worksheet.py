@@ -146,7 +146,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         # TODO Workflow - ActionsPool - Might be improved
         actions_pool = ActionHandlerPool.get_instance()
-        actions_pool.start()
+        actions_pool.queue_pool()
         requests = list()
         for analysis in analyses:
             analysis = api.get_object(analysis)

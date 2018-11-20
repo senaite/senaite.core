@@ -117,7 +117,7 @@ class AnalysesWorkflowAction(WorkflowAction):
             actions_pool.add(analysis, "submit")
 
         # Submit all analyses
-        actions_pool.resume(reindex_on_success=True)
+        actions_pool.resume()
 
         # If a reference analysis with an out-of-range result and instrument
         # assigned has been submitted, retract then routine analyses that are

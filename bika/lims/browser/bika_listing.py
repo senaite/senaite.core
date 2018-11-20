@@ -23,7 +23,7 @@ from bika.lims.interfaces import (IFieldIcons, ITopLeftHTMLComponentsHook,
                                   ITopWideHTMLComponentsHook)
 from bika.lims.utils import (getFromString, getHiddenAttributesForClass,
                              isActive, t, to_utf8)
-from bika.lims.workflow import doActionFor, skip
+from bika.lims.workflow import doActionFor, ActionHandlerPool
 from plone.app.content.browser import tableview
 from plone.memoize import view as viewcache
 from Products.CMFCore.utils import getToolByName
@@ -228,27 +228,19 @@ class WorkflowAction:
             If no objects have been successfully transitioned, gets 0 value
         - destination: the destination url to be loaded immediately
         """
-        dest = None
         transitioned = []
-        workflow = getToolByName(self.context, 'portal_workflow')
-
-        # transition selected items from the bika_listing/Table.
+        actions = ActionHandlerPool.get_instance()
+        actions.queue_pool()
         for item in items:
-            # the only actions allowed on inactive/cancelled
-            # items are "reinstate" and "activate"
-            if not isActive(item) and action not in ('reinstate', 'activate'):
-                continue
-            if not skip(item, action, peek=True):
-                allowed_transitions = \
-                    [it['id'] for it in workflow.getTransitionsFor(item)]
-                if action in allowed_transitions:
-                    success, message = doActionFor(item, action)
-                    if success:
-                        transitioned.append(item.UID())
-                    else:
-                        self.addPortalMessage(message, 'error')
+            success, message = doActionFor(item, action)
+            if success:
+                transitioned.append(item.UID())
+            else:
+                self.addPortalMessage(message, 'error')
+        actions.resume()
 
         # automatic label printing
+        dest = None
         auto_stickers_action = self.portal.bika_setup.getAutoPrintStickers()
         if transitioned and action == auto_stickers_action:
             self.request.form['uids'] = transitioned
