@@ -13,7 +13,7 @@ from bika.lims.browser.analyses.workflow import AnalysesWorkflowAction
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.permissions import ManageWorksheets
-from bika.lims.subscribers import skip
+from bika.lims.workflow import ActionHandlerPool
 from plone.protect import CheckAuthenticator
 
 
@@ -80,7 +80,7 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
             return
-        bac = api.get_tool("bika_analysis_catalog")
+
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         if action == "submit":
@@ -92,32 +92,10 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
             # Assign the analyses
             self.do_assign(analysis_uids)
 
-        # unassign
         elif action == "unassign":
-            if not self.context.checkUserManage():
-                self.request.response.redirect(self.context.absolute_url())
-                return
+            # Unassign analyses
+            self.do_unassign(analysis_uids)
 
-            selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
-
-            for analysis_uid in selected_analysis_uids:
-                try:
-                    analysis = bac(UID=analysis_uid)[0].getObject()
-                except IndexError:
-                    # Duplicate analyses are removed when their analyses
-                    # get removed, so indexerror is expected.
-                    continue
-                if skip(analysis, action, peek=True):
-                    continue
-                self.context.removeAnalysis(analysis)
-
-            message = _("Changes saved.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url()
-            self.request.response.redirect(self.destination_url)
-
-        # verify
         elif action == "verify":
             # default bika_listing.py/WorkflowAction, but then go to view
             # screen.
@@ -128,7 +106,23 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
 
+    def do_unassign(self, analysis_uids):
+        actions = ActionHandlerPool.get_instance()
+        actions.queue_pool()
+        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+        for brain in catalog({"UID": analysis_uids}):
+            analysis = api.get_object(brain)
+            self.context.removeAnalysis(analysis)
+        actions.resume()
+
+        message = _("Changes saved.")
+        self.context.plone_utils.addPortalMessage(message, 'info')
+        self.destination_url = self.context.absolute_url()
+        self.request.response.redirect(self.destination_url)
+
     def do_assign(self, analysis_uids):
+        actions = ActionHandlerPool.get_instance()
+        actions.queue_pool()
         # We retrieve the analyses from the database sorted by AR ID
         # ascending, so the positions of the ARs inside the WS are
         # consistent with the order of the ARs
@@ -163,6 +157,7 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
 
         # Add analyses into the worksheet
         self.context.addAnalyses(sorted_brains)
+        actions.resume()
 
         self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
