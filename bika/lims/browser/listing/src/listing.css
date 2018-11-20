@@ -48,7 +48,7 @@
 .ajax-contents-table th.active.ascending span:after { content: "▲"; margin-left: 0.5em; }
 .ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em; }
 
-.ajax-contents-table tr.category { background-color: rgba(96, 125, 139, 0.1)!important; cursor: pointer; font-weight: bold; font-size: 115%; color: #3E4551; background-color: #fcf8e3; }
+.ajax-contents-table tr.categoryrow { background-color: rgba(96, 125, 139, 0.1)!important; cursor: pointer; font-weight: bold; font-size: 115%; color: #3E4551; background-color: #fcf8e3; }
 
 #table-overlay {
   position: absolute;
@@ -83,8 +83,24 @@
 .ajax-contents-table .top-toolbar { padding-bottom: .5em; }
 
 /* Mark required header columns with a red star */
-th.required :before {
+.ajax-contents-table th.required :before {
     color: red;
     content: "*";
+    padding-right: 0.25em;
+}
+
+/* Expandable Rows */
+.ajax-contents-table tr.contentrow.collapsed td:first-child:before {
+    content: "▶ ";
+    padding-right: 0.25em;
+}
+
+.ajax-contents-table tr.contentrow.expanded td:first-child:before {
+    content: "▼ ";
+    padding-right: 0.25em;
+}
+
+.ajax-contents-table tr.contentrow.child td:first-child:before {
+    content: "⋯ ";
     padding-right: 0.25em;
 }

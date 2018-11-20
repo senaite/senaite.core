@@ -200,6 +200,9 @@ class ListingController extends React.Component
     ###
     console.debug "ListingController::toggleRow: uid=#{uid}"
 
+    # skip if no uid is given
+    return unless uid
+
     # get the current expanded rows
     expanded = @state.expanded_rows
 
@@ -509,16 +512,6 @@ class ListingController extends React.Component
 
     return @get_default_columns()
 
-  get_remarks_columns: ->
-    ###
-     * Get a list of column names where the type is set to "remarks"
-    ###
-    columns = []
-    for key, value of @state.columns
-      if value.type == "remarks"
-        columns.push key
-    return columns
-
   get_default_columns: ->
     ###
      * Get the default visible columns of the listing
@@ -769,7 +762,6 @@ class ListingController extends React.Component
             column_count={@get_column_count()}
             column_order={@get_column_order()}
             table_columns={@get_visible_columns()}
-            remarks_columns={@get_remarks_columns()}
             review_state={@state.review_state}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
@@ -784,9 +776,8 @@ class ListingController extends React.Component
             expanded_rows={@state.expanded_rows}
             show_categories={@state.show_categories}
             on_category_click={@toggleCategory}
-            on_row_click={@toggleRow}
+            on_row_expand_click={@toggleRow}
             filter={@state.filter}
-            toggle_row_title={_("Partitions")}
             update_editable_field={@updateEditableField}
             save_editable_field={@saveEditableField}
             />

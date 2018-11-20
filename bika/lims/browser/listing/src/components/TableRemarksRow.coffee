@@ -2,26 +2,23 @@ import React from "react"
 
 
 class TableRemarksRow extends React.Component
-  ###
-   * The table remarks row component renders a textarea below the parent row
-  ###
 
   constructor: (props) ->
     super(props)
 
   can_edit: ->
-    ###
-     * Checks if the Remarks field is in the list of editable fields
-    ###
     item = @props.item
     item_key = @props.item_key
     allow_edit = item.allow_edit or []
     return item_key in allow_edit
 
+  get_column_title: ->
+    columns = @props.columns
+    item_key = @props.item_key
+    column = columns[item_key]
+    return column.title or ""
+
   render_remarks_field: ->
-    ###
-     * Render the remarks field
-    ###
     item = @props.item
     uid = item.uid
     item_key = @props.item_key
@@ -39,8 +36,7 @@ class TableRemarksRow extends React.Component
     if not @can_edit()
       field = (
         <span className=""
-              dangerouslySetInnerHTML={{__html: value}}/>
-      )
+              dangerouslySetInnerHTML={{__html: value}}/>)
     else
       field = (
         <textarea
@@ -49,19 +45,17 @@ class TableRemarksRow extends React.Component
           rows="2"
           name={name}
           defaultValue={value}>
-        </textarea>
-      )
+        </textarea>)
 
     return (
       <div key={item.uid}
            style={style}
            className="remarks-placeholder">
         <div className="">
-          {@props.remarks_row_title or "Remarks"}:
+          {@get_column_title()}:
         </div>
         {field}
-      </div>
-    )
+      </div>)
 
   render: ->
     <tr className={@props.className}>

@@ -1,17 +1,14 @@
 import React from "react"
 
-import Select from "./Select.coffee"
-import NumericField from "./NumericField.coffee"
 import Checkbox from "./Checkbox.coffee"
-import StringField from "./StringField.coffee"
-import ReadonlyField from "./ReadonlyField.coffee"
 import HiddenField from "./HiddenField.coffee"
+import NumericField from "./NumericField.coffee"
+import ReadonlyField from "./ReadonlyField.coffee"
+import Select from "./Select.coffee"
+import StringField from "./StringField.coffee"
 
 
 class TableCell extends React.Component
-  ###
-   * The table cell component renders a single cell
-  ###
 
   constructor: (props) ->
     super(props)
@@ -32,9 +29,6 @@ class TableCell extends React.Component
     @on_string_field_change = @on_string_field_change.bind @
 
   on_checkbox_field_change: (event) ->
-    ###
-     * Event handler when the checkbox field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.checked
@@ -49,9 +43,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_select_field_blur: (event) ->
-    ###
-     * Event handler when the select field blurred
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -62,9 +53,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_select_field_change: (event) ->
-    ###
-     * Event handler when the select field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -75,9 +63,6 @@ class TableCell extends React.Component
       @props.update_editable_field @props.item.uid, name, value, @props.item
 
   on_numeric_field_blur: (event) ->
-    ###
-     * Event handler when the numeric field blurred
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -88,9 +73,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_numeric_field_change: (event) ->
-    ###
-     * Event handler when the numeric field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -101,9 +83,6 @@ class TableCell extends React.Component
       @props.update_editable_field @props.item.uid, name, value, @props.item
 
   on_string_field_blur: (event) ->
-    ###
-     * Event handler when the string field blurred
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -114,9 +93,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_string_field_change: (event) ->
-    ###
-     * Event handler when the string field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -127,9 +103,6 @@ class TableCell extends React.Component
       @props.update_editable_field @props.item.uid, name, value, @props.item
 
   render_before_content: ->
-    ###
-     * Render additional content *before* the cell title
-    ###
     before = @props.item.before
     item_key = @props.item_key
     if @props.item_key not of before
@@ -139,9 +112,6 @@ class TableCell extends React.Component
            </span>
 
   render_after_content: ->
-    ###
-     * Render additional content *after* the cell title
-    ###
     after = @props.item.after
     item_key = @props.item_key
     if item_key not of after
@@ -151,10 +121,6 @@ class TableCell extends React.Component
            </span>
 
   is_edit_allowed: (item_key, item) ->
-    ###
-     * Checks if the field key is listed in the `allow_edit` list
-    ###
-
     # the global allow_edit overrides all row specific settings
     if not @props.allow_edit
       return no
@@ -166,15 +132,9 @@ class TableCell extends React.Component
     return no
 
   is_disabled: (item_key, item) ->
-    ###
-     * Checks if the field is marked as disabled
-    ###
     return item.disabled or no
 
   is_required: (item_key, item) ->
-    ###
-     * Check if the field is marked as required
-    ###
     required_fields = item.required or []
     required = item_key in required_fields
     # make the field conditionally required if the row is selected
@@ -182,15 +142,9 @@ class TableCell extends React.Component
     return required and selected
 
   get_name: (item_key, item) ->
-    ###
-     * Get the field name
-    ###
     return "#{item_key}.#{item.uid}"
 
   get_value: (item_key, item) ->
-    ###
-     * Get the field value
-    ###
     value = item[item_key]
 
     # check if the field is an interim
@@ -203,16 +157,9 @@ class TableCell extends React.Component
     return value
 
   is_result_field: (item_key, item) ->
-    ###
-     * Check if the field is a result field
-    ###
     return item_key == "Result"
 
   get_formatted_value: (item_key, item) ->
-    ###
-     * Get the formatted field value
-    ###
-
     # replacement html or plain value of the current column
     formatted_value = item.replace[item_key] or @get_value item_key, item
 
@@ -223,10 +170,6 @@ class TableCell extends React.Component
     return formatted_value
 
   get_type: (item_key, item) ->
-    ###
-     * Get the field type
-    ###
-
     # true if the field is editable
     editable = @is_edit_allowed item_key, item
     resultfield = @is_result_field item_key, item
@@ -266,10 +209,6 @@ class TableCell extends React.Component
     return "numeric"
 
   render_content: ->
-    ###
-      * Render the table cell content
-    ###
-
     # the current rendered column cell name
     item_key = @props.item_key
     # single folderitem
