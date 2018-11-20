@@ -398,18 +398,21 @@ def update_workflows(portal):
     # but we cannot afford such an approach for huge databases
     rm_queries = get_role_mappings_candidates(portal)
 
+    # Assign retracted analyses to retests
+    assign_retracted_to_retests(portal)
+
+    # Remove rejected duplicates
+    remove_rejected_duplicates(portal)
+
+    # Re-import workflow tool
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, 'workflow')
+
     # Remove duplicates not assigned to any worksheet
     remove_orphan_duplicates(portal)
 
     # Remove reference analyses not assigned to any worksheet or instrument
     remove_orphan_reference_analyses(portal)
-
-    # Assign retracted analyses to retests
-    assign_retracted_to_retests(portal)
-
-    # Re-import workflow tool
-    setup = portal.portal_setup
-    setup.runImportStepFromProfile(profile, 'workflow')
 
     # Fix analyses stuck in sample* states
     decouple_analyses_from_sample_workflow(portal)
@@ -429,6 +432,9 @@ def update_workflows(portal):
 
 def remove_orphan_duplicates(portal):
     logger.info("Removing orphan duplicates ...")
+    wf_id = "bika_duplicateanalysis_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
     query = dict(portal_type="DuplicateAnalysis",
                  review_state="unassigned")
     brains = api.search(query, CATALOG_ANALYSIS_LISTING)
@@ -437,20 +443,50 @@ def remove_orphan_duplicates(portal):
         orphan = api.get_object(brain)
         worksheet = orphan.getWorksheet()
         if worksheet:
+            logger.info("Reassigning orphan duplicate: {}/{}"
+                        .format(num, total))
             # This one has a worksheet! reindex and do nothing
+            changeWorkflowState(orphan, wf_id, "assigned")
+            # Update role mappings
+            workflow.updateRoleMappingsFor(orphan)
+            # Reindex
             orphan.reindexObject()
-            total -= 1
             continue
 
         if num % 100 == 0:
             logger.info("Removing orphan duplicate: {}/{}"
                         .format(num, total))
         # Remove the duplicate
-        worksheet.manage_delObjects([orphan.getId()])
+        orphan.aq_parent.manage_delObjects([orphan.getId()])
+
+
+def remove_rejected_duplicates(portal):
+    logger.info("Removing rejected duplicates ...")
+    query = dict(portal_type="DuplicateAnalysis",
+                 review_state="rejected")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Removing rejected duplicate: {}/{}"
+                        .format(num, total))
+        orphan = api.get_object(brain)
+        worksheet = orphan.getWorksheet()
+        if worksheet:
+            # Remove from the worksheet first
+            analyses = filter(lambda an: an != orphan, worksheet.getAnalyses())
+            worksheet.setAnalyses(analyses)
+            worksheet.purgeLayout()
+
+        # Remove the duplicate
+        orphan.aq_parent.manage_delObjects([orphan.getId()])
 
 
 def remove_orphan_reference_analyses(portal):
     logger.info("Removing orphan reference analyses ...")
+    wf_id = "bika_referenceanalysis_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
     query = dict(portal_type="ReferenceAnalysis",
                  review_state="unassigned")
     brains = api.search(query, CATALOG_ANALYSIS_LISTING)
@@ -459,9 +495,14 @@ def remove_orphan_reference_analyses(portal):
         orphan = api.get_object(brain)
         worksheet = orphan.getWorksheet()
         if worksheet:
+            logger.info("Reassigning orphan reference: {}/{}"
+                        .format(num, total))
             # This one has a worksheet! reindex and do nothing
+            changeWorkflowState(orphan, wf_id, "assigned")
+            # Update role mappings
+            workflow.updateRoleMappingsFor(orphan)
+            # Reindex
             orphan.reindexObject()
-            total -= 1
             continue
         elif orphan.getInstrument():
             # This is a calibration test, do nothing!
