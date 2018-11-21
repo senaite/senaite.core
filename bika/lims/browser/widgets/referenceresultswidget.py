@@ -73,7 +73,7 @@ class ReferenceResultsView(BikaListingView):
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
-                "transitions": [],
+                "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": self.columns.keys(),
             },
         ]
@@ -188,15 +188,17 @@ class ReferenceResultsWidget(TypesWidget):
         and max field will be included. If any of min, max, or result fields
         are blank, the row value is ignored here.
         """
-        values = []
+        values = {}
 
         # Process settings from the reference definition first
         ref_def = form.get("ReferenceDefinition")
         ref_def_uid = ref_def and ref_def[0]
         if ref_def_uid:
             ref_def_obj = api.get_object_by_uid(ref_def_uid)
-            rr = ref_def_obj.getReferenceResults()
-            values.extend(rr)
+            ref_results = ref_def_obj.getReferenceResults()
+            # store reference results by UID to avoid duplicates
+            rr_by_uid = dict(map(lambda r: (r.get("uid"), r), ref_results))
+            values.update(rr_by_uid)
 
         # selected services
         service_uids = form.get("uids", [])
@@ -213,15 +215,15 @@ class ReferenceResultsWidget(TypesWidget):
             s_max = self._get_spec_value(form, uid, "max", result)
 
             service = api.get_object_by_uid(uid)
-            values.append({
+            values[uid] = {
                 "keyword": service.getKeyword(),
                 "uid": uid,
                 "result": result,
                 "min": s_min,
                 "max": s_max
-            })
+            }
 
-        return values, {}
+        return values.values(), {}
 
     def _get_spec_value(self, form, uid, key, default=''):
         """Returns the value assigned to the passed in key for the analysis
