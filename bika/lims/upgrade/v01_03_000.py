@@ -352,6 +352,11 @@ def add_reference_sample_indexes(portal):
               index_metatype="KeywordIndex")
 
     add_index(portal, catalog_id="bika_catalog",
+              index_name="getBlank",
+              index_attribute="getBlank",
+              index_metatype="BooleanIndex")
+
+    add_index(portal, catalog_id="bika_catalog",
               index_name="isValid",
               index_attribute="isValid",
               index_metatype="BooleanIndex")

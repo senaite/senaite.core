@@ -11,6 +11,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import get_link
@@ -53,16 +54,13 @@ class ReferenceSamplesView(BikaListingView):
             "/++resource++bika.lims.images/worksheet_big.png"
         )
 
-        self.position_choices = []
-        for pos in self.get_available_positions():
-            self.position_choices.append({
-                "ResultValue": pos,
-                "ResultText": pos,
-            })
-
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _("Reference Sample"),
+                "sortable": False}),
+            ("SupportedServices", {
+                "title": _("Supported Services"),
+                "type": "multiselect",
                 "sortable": False}),
             ("Position", {
                 "title": _("Position"),
@@ -112,24 +110,19 @@ class ReferenceSamplesView(BikaListingView):
         form = self.request.form
         # Selected service UIDs
         uids = form.get("uids")
-        # service -> reference mapping
-        references = form.get("ReferenceSample")[0]
+        # reference sample -> selected services mapping
+        supported_services = form.get("SupportedServices")
         # service -> position mapping
         positions = form.get("Position")[0]
         for uid in uids:
-            reference_uid = references.get(uid)
             position = positions.get(uid)
-            reference = api.get_object(reference_uid)
+            service_uids = supported_services.get(uid)
+            referencesample = api.get_object_by_uid(uid)
             self.context.addReferenceAnalyses(
-                reference, [uid], dest_slot=position)
+                referencesample, service_uids, dest_slot=position)
         redirect_url = "{}/{}".format(
             api.get_url(self.context), "manage_results")
         self.request.response.redirect(redirect_url)
-
-    def show_categories_enabled(self):
-        """Get the shwo category setting from the setup
-        """
-        return self.context.bika_setup.getCategoriseAnalysisServices()
 
     @view.memoize
     def is_edit_allowed(self):
@@ -146,11 +139,20 @@ class ReferenceSamplesView(BikaListingView):
         return checkPermission(ManageWorksheets, self.context)
 
     @view.memoize
+    def get_editable_columns(self):
+        """Return editable fields
+        """
+        columns = ["Position", "SupportedServices"]
+        return columns
+
+    @view.memoize
     def get_assigned_services(self):
         """Get the current assigned services of this Worksheet
         """
         analyses = self.context.getAnalyses()
-        services = map(lambda an: an.getAnalysisService(), analyses)
+        routine_analyses = filter(
+            lambda an: IRoutineAnalysis.providedBy(an), analyses)
+        services = map(lambda an: an.getAnalysisService(), routine_analyses)
         return services
 
     @view.memoize
@@ -161,13 +163,39 @@ class ReferenceSamplesView(BikaListingView):
         uids = map(api.get_uid, services)
         return list(set(uids))
 
-    @view.memoize
-    def get_assigned_services_categories(self):
-        """Get the current assigned services categories of this Worksheet
+    def get_supported_services_uids(self, referencesample):
+        """Get the supported services of the reference sample
         """
-        services = self.get_assigned_services()
-        categories = map(lambda s: s.getCategoryTitle(), services)
-        return sorted(list(set(categories)))
+        uids = referencesample.getSupportedServices(only_uids=True)
+        return list(set(uids))
+
+    def make_supported_services_choices(self, referencesample):
+        """Create choices for supported services
+        """
+        choices = []
+        assigned_services = self.get_assigned_services_uids()
+        for uid in self.get_supported_services_uids(referencesample):
+            service = api.get_object(uid)
+            title = api.get_title(service)
+            selected = uid in assigned_services
+            choices.append({
+                "ResultValue": uid,
+                "ResultText": title,
+                "selected": selected,
+            })
+        return choices
+
+    @view.memoize
+    def make_position_choices(self):
+        """Create choices for available positions
+        """
+        choices = []
+        for pos in self.get_available_positions():
+            choices.append({
+                "ResultValue": pos,
+                "ResultText": pos,
+            })
+        return choices
 
     @view.memoize
     def get_available_positions(self):
@@ -182,35 +210,6 @@ class ReferenceSamplesView(BikaListingView):
                 pos not in used_positions]
             available_positions.extend(used)
         return available_positions
-
-    def get_available_reference_samples_for(self, service):
-        """Returns the available reference samples for this service
-        """
-        query = {
-            "portal_type": "ReferenceSample",
-            "getSupportedServices": api.get_uid(service),
-            "isValid": True,
-            "review_state": "current",
-            "inactive_state": "active",
-            "sort_on": "sortable_title",
-        }
-        return map(api.get_object, api.search(query))
-
-    def make_reference_sample_choices_for(self, service):
-        """Create a choices list of available reference samples
-        """
-        reference_samples = self.get_available_reference_samples_for(service)
-        choices = []
-        for rs in reference_samples:
-            text = api.get_title(rs)
-            ref_def = rs.getReferenceDefinition()
-            if ref_def:
-                text += " ({})".format(api.get_title(ref_def))
-            choices.append({
-                "ResultText": text,
-                "ResultValue": api.get_uid(rs),
-            })
-        return choices
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -229,45 +228,16 @@ class ReferenceSamplesView(BikaListingView):
         url = api.get_url(obj)
         title = api.get_title(obj)
 
-        # Reference Sample
         item["Title"] = title
         item["replace"]["Title"] = get_link(url, value=title)
+        item["allow_edit"] = self.get_editable_columns()
 
-        # Reference Sample
-        item["allow_edit"] = ["Position"]
-        supported_services = obj.getSupportedServices()
-        item["children"] = supported_services
+        # Supported Services
+        supported_services_choices = self.make_supported_services_choices(obj)
+        item["choices"]["SupportedServices"] = supported_services_choices
 
         # Position
         item["Position"] = "new"
-        item["choices"]["Position"] = self.position_choices
+        item["choices"]["Position"] = self.make_position_choices()
 
         return item
-
-    def get_children_hook(self, parent_uid, child_uids=None):
-        """Custom implenentation from ajax base class
-        """
-        children = []
-        obj = api.get_object_by_uid(parent_uid)
-        supported_services_uids = set(obj.getSupportedServices())
-        supported_services = map(api.get_object, supported_services_uids)
-        assigned_services = self.get_assigned_services()
-        for service in supported_services:
-            children.append({
-                "id": api.get_id(service),
-                "uid": api.get_uid(service),
-                "title": api.get_title(service),
-                "selected": service in assigned_services,
-                "url": api.get_url(service),
-                "parent": parent_uid,
-                "allow_edit": [],
-                "replace": {},
-                "choices": {},
-                "before": {},
-                "after": {},
-                "category": "None",
-                "Title": api.get_title(service),
-                "Position": "",
-
-            })
-        return children

@@ -330,6 +330,7 @@ class BikaGenerator(object):
 
         # https://github.com/senaite/senaite.core/pull/1091
         addIndex(bc, 'getSupportedServices', 'KeywordIndex')
+        addIndex(bc, 'getBlank', 'BooleanIndex')
         addIndex(bc, 'isValid', 'BooleanIndex')
 
         addColumn(bc, 'path')

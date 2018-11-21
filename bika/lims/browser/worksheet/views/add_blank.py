@@ -5,7 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from referencesamples import ReferenceSamplesView
 
@@ -16,21 +15,16 @@ class AddBlankView(ReferenceSamplesView):
 
     def __init__(self, context, request):
         super(AddBlankView, self).__init__(context, request)
-        self.title = _("Add Blank Reference")
 
-    def make_reference_sample_choices_for(self, service):
-        """Create a choices list of available reference samples
-        """
-        reference_samples = self.get_available_reference_samples_for(service)
-        blanks = filter(lambda r: r.getBlank(), reference_samples)
-        choices = []
-        for blank in blanks:
-            text = api.get_title(blank)
-            ref_def = blank.getReferenceDefinition()
-            if ref_def:
-                text += " ({})".format(api.get_title(ref_def))
-            choices.append({
-                "ResultText": text,
-                "ResultValue": api.get_uid(blank),
-            })
-        return choices
+        self.contentFilter = {
+            "portal_type": "ReferenceSample",
+            "getSupportedServices": self.get_assigned_services_uids(),
+            "isValid": True,
+            "getBlank": True,
+            "review_state": "current",
+            "inactive_state": "active",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+
+        self.title = _("Add Blank Reference")
