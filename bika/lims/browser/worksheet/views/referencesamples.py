@@ -116,6 +116,8 @@ class ReferenceSamplesView(BikaListingView):
         positions = form.get("Position")[0]
         for uid in uids:
             position = positions.get(uid)
+            if position == "new":
+                position = None
             service_uids = supported_services.get(uid)
             referencesample = api.get_object_by_uid(uid)
             self.context.addReferenceAnalyses(
