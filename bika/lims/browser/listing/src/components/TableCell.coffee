@@ -75,9 +75,9 @@ class TableCell extends React.Component
     name = el.getAttribute("item_key") or el.name
     console.debug "TableCell:on_multiselect_field_blur: value=#{value}"
 
-    # Call the *on_blur* field handler
-    if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value, @props.item
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_multiselect_field_change: (event) ->
     el = event.currentTarget
@@ -87,9 +87,9 @@ class TableCell extends React.Component
     name = el.getAttribute("item_key") or el.name
     console.debug "TableCell:on_multiselect_field_change: value=#{value}"
 
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value, @props.item
+    # Call the *on_blur* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value, @props.item
 
   on_numeric_field_blur: (event) ->
     el = event.currentTarget
