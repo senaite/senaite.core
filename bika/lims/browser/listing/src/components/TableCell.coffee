@@ -2,6 +2,7 @@ import React from "react"
 
 import Checkbox from "./Checkbox.coffee"
 import HiddenField from "./HiddenField.coffee"
+import MultiSelect from "./MultiSelect.coffee"
 import NumericField from "./NumericField.coffee"
 import ReadonlyField from "./ReadonlyField.coffee"
 import Select from "./Select.coffee"
@@ -19,6 +20,10 @@ class TableCell extends React.Component
     # Bind select field events
     @on_select_field_blur = @on_select_field_blur.bind @
     @on_select_field_change = @on_select_field_change.bind @
+
+    # Bind multiselect field events
+    @on_multiselect_field_blur = @on_multiselect_field_blur.bind @
+    @on_multiselect_field_change = @on_multiselect_field_change.bind @
 
     # Bind numeric field events
     @on_numeric_field_blur = @on_numeric_field_blur.bind @
@@ -61,6 +66,30 @@ class TableCell extends React.Component
     # Call the *update* field handler
     if @props.update_editable_field
       @props.update_editable_field @props.item.uid, name, value, @props.item
+
+  on_multiselect_field_blur: (event) ->
+    el = event.currentTarget
+    ul = el.parentNode.parentNode
+    checked = ul.querySelectorAll("input[type='checkbox']:checked")
+    value = (input.value for input in checked)
+    name = el.getAttribute("item_key") or el.name
+    console.debug "TableCell:on_multiselect_field_blur: value=#{value}"
+
+    # Call the *on_blur* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value, @props.item
+
+  on_multiselect_field_change: (event) ->
+    el = event.currentTarget
+    ul = el.parentNode.parentNode
+    checked = ul.querySelectorAll("input[type='checkbox']:checked")
+    value = (input.value for input in checked)
+    name = el.getAttribute("item_key") or el.name
+    console.debug "TableCell:on_multiselect_field_change: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_numeric_field_blur: (event) ->
     el = event.currentTarget
@@ -252,8 +281,7 @@ class TableCell extends React.Component
           value={value}
           title={title}
           formatted_value={formatted_value}
-          />
-      )
+          />)
 
     # render calculated field
     else if type == "calculated"
@@ -265,16 +293,14 @@ class TableCell extends React.Component
           value={value}
           title={title}
           formatted_value={formatted_value}
-          />
-      )
+          />)
       field.push (
         <HiddenField
           key={name + "_hidden"}
           name={fieldname}
           value={value}
           title={title}
-          />
-      )
+          />)
 
     # render interim field
     else if type == "interim"
@@ -292,8 +318,7 @@ class TableCell extends React.Component
           onChange={@on_numeric_field_change}
           onBlur={@on_numeric_field_blur}
           className={field_css_class}
-          />
-      )
+          />)
       # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
       if interims.length > 0
         item_data = {}
@@ -303,8 +328,7 @@ class TableCell extends React.Component
             key={name + "_item_data"}
             name="item_data"
             value={JSON.stringify item_data}
-          />
-        )
+            />)
 
     # render select field
     else if type in ["select", "choices"]
@@ -324,8 +348,28 @@ class TableCell extends React.Component
           onChange={@on_select_field_change}
           onBlur={@on_select_field_blur}
           className={field_css_class}
-          />
-      )
+          />)
+
+    # render multiselect field
+    else if type in ["multiselect", "multichoices"]
+      # This gives a dictionary of UID -> UID list of selected items
+      fieldname = "#{name}:record:list"
+      options = item.choices[item_key]
+      field.push (
+        <MultiSelect
+          key={name}
+          name={fieldname}
+          item_key={item_key}
+          defaultValue={value}
+          title={title}
+          disabled={disabled}
+          selected={selected}
+          required={required}
+          options={options}
+          onChange={@on_multiselect_field_change}
+          onBlur={@on_multiselect_field_blur}
+          className={field_css_class}
+          />)
 
     # render checkbox field
     else if type == "boolean"
@@ -340,8 +384,7 @@ class TableCell extends React.Component
           defaultChecked={value}
           disabled={disabled}
           onChange={@on_checkbox_field_change}
-          />
-      )
+          />)
 
     # render numeric field
     else if type == "numeric"
@@ -361,8 +404,7 @@ class TableCell extends React.Component
           onChange={@on_numeric_field_change}
           onBlur={@on_numeric_field_blur}
           className={field_css_class}
-          />
-      )
+          />)
 
     # N.B. Disabled fields are not send on form submit.
     #      Therefore, we render a hidden field when disabled.
@@ -373,8 +415,7 @@ class TableCell extends React.Component
           name={fieldname}
           item_key={item_key}
           value={value}
-        />
-      )
+          />)
 
     return field
 

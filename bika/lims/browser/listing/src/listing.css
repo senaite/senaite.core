@@ -91,16 +91,33 @@
 
 /* Expandable Rows */
 .ajax-contents-table tr.contentrow.collapsed td:first-child:before {
-    content: "▶ ";
+    content: "▶";
     padding-right: 0.25em;
 }
-
 .ajax-contents-table tr.contentrow.expanded td:first-child:before {
-    content: "▼ ";
+    content: "▼";
+    padding-right: 0.25em;
+}
+.ajax-contents-table tr.contentrow.child td:first-child:before {
+    content: "⋯";
     padding-right: 0.25em;
 }
 
-.ajax-contents-table tr.contentrow.child td:first-child:before {
-    content: "⋯ ";
-    padding-right: 0.25em;
+/* Multi select */
+.ajax-contents-table tr td div.multiselect {
+    max-height: 120px;
+    width: 200px;
+    overflow: auto;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.ajax-contents-table tr td div.multiselect ul {
+    padding: 0;
+    margin: 0;
+}
+.ajax-contents-table tr td div.multiselect li {
+    padding: 6px;
+}
+.ajax-contents-table tr td div.multiselect li:hover {
+    background-color: #f9f9f9;
 }
