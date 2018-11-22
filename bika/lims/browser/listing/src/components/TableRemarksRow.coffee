@@ -58,8 +58,9 @@ class TableRemarksRow extends React.Component
 
   render: ->
     <tr className={@props.className}>
-      <td></td>
-      <td colSpan={@props.colspan - 1}>
+      <td style={{padding: 0; borderTop: 0}}></td>
+      <td style={{padding: 0; borderTop: 0}}
+          colSpan={@props.colspan - 1}>
         {@render_remarks_field()}
       </td>
     </tr>
