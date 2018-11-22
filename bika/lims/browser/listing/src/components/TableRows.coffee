@@ -154,6 +154,9 @@ class TableRows extends React.Component
       # columns with type="remarks" set are rendered in their own row
       for column_key in @get_remarks_columns()
         column = @props.columns[column_key]
+        # support rowspanning for WS header slot
+        skip = item.skip or []
+        colspan = @props.column_count - skip.length
         rows.push(
           <TableRemarksRow
             {...@props}
@@ -163,7 +166,8 @@ class TableRows extends React.Component
             expanded={expanded}
             selected={selected}
             disabled={disabled}
-            className={css}
+            className={css + " remarksrow"}
+            colspan={colspan}
             />)
 
       # append expanded rows

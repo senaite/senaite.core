@@ -16,7 +16,9 @@ class TableRemarksRow extends React.Component
     columns = @props.columns
     item_key = @props.item_key
     column = columns[item_key]
-    return column.title or ""
+    title = column.title
+    if (typeof _ == "function") then title = _(title)
+    return title or ""
 
   render_remarks_field: ->
     item = @props.item
@@ -29,9 +31,6 @@ class TableRemarksRow extends React.Component
 
     style =
       display: if show then "block" else "none"
-      paddingTop: ".5em"
-      paddingBottom: ".5em"
-      paddingLeft: "2em"
 
     if not @can_edit()
       field = (
@@ -50,18 +49,18 @@ class TableRemarksRow extends React.Component
     return (
       <div key={item.uid}
            style={style}
-           className="remarks-placeholder">
-        <div className="">
-          {@get_column_title()}:
+           className="remarks text-muted">
+        <div className="text-info">
+          <span className="glyphicon glyphicon-hand-right"/> {@get_column_title()}:
         </div>
         {field}
       </div>)
 
   render: ->
     <tr className={@props.className}>
-      <td className="remarks text-muted"
-          colSpan={@props.column_count}
-          style={{padding: 0; borderTop: 0}}>
+      <td style={{padding: 0; borderTop: 0}}></td>
+      <td style={{padding: 0; borderTop: 0}}
+          colSpan={@props.colspan - 1}>
         {@render_remarks_field()}
       </td>
     </tr>

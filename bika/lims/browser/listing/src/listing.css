@@ -1,7 +1,8 @@
 /* Listing Styles */
 
 /* Colors taken from https://mdbootstrap.com/css/colors/ */
-.ajax-contents-table tr { border-left:2px solid transparent; }
+.ajax-contents-table tbody tr { border-left:2px solid #ddd; }
+.ajax-contents-table tbody tr:last-child { border-bottom:1px solid #ddd; }
 
 /* state sample_due */
 .ajax-contents-table tr.state-sample_due { border-left:2px solid #ffff8d !important; }
@@ -103,6 +104,20 @@
     padding-right: 0.25em;
 }
 
+/* Remark Rows */
+.ajax-contents-table tr.remarksrow td {
+    padding: 0;
+    border: none;
+}
+.ajax-contents-table tr.remarksrow td div.remarks {
+    min-height: 20px;
+    padding: 5px;
+    margin: 5px;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+}
+
 /* Multi select */
 .ajax-contents-table tr td div.multiselect {
     max-height: 120px;
@@ -121,3 +136,16 @@
 .ajax-contents-table tr td div.multiselect li:hover {
     background-color: #f9f9f9;
 }
+
+/* Rowspan support */
+.ajax-contents-table tr td[rowspan] {
+    border: 1px solid #ddd;
+    background-color: white!important;
+}
+.ajax-contents-table tr td[rowspan]:hover {
+    background-color: white!important;
+}
+
+/* support borderless table */
+.ajax-contents-table table.table-borderless td { border: none!important; }
+.ajax-contents-table table.table-borderless tr { border: none!important; }

@@ -420,8 +420,10 @@ class TableCell extends React.Component
     return field
 
   render: ->
-    <td className={@props.className}>
-      <div className="form-group">
+    <td className={@props.className}
+        colSpan={@props.colspan}
+        rowSpan={@props.rowspan}>
+      <div>
         {@render_before_content()}
         {@render_content()}
         {@render_after_content()}
