@@ -468,7 +468,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ref_gid = None
         duplicates = list()
         for analysis in src_analyses:
-            duplicate = self.add_duplicate(analysis, slot_to, ref_gid)
+            duplicate = self.add_duplicate_analysis(analysis, slot_to, ref_gid)
             if not duplicate:
                 continue
             # All duplicates from the same slot must have the same group id
@@ -476,7 +476,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             duplicates.append(duplicate)
         return duplicates
 
-    def add_duplicate(self, src_analysis, destination_slot, ref_gid=None):
+    def add_duplicate_analysis(self, src_analysis, destination_slot,
+                               ref_gid=None):
         """
         Creates a duplicate of the src_analysis passed in. If the analysis
         passed in is not an IRoutineAnalysis, is retracted or has dependent
