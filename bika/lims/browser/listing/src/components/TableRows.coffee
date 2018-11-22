@@ -121,7 +121,7 @@ class TableRows extends React.Component
     category ?= null
     folderitems ?= @props.folderitems
 
-    for item, index in folderitems
+    for item in folderitems
 
       # skip items of other categories
       if category and @get_item_category(item) != category
@@ -168,6 +168,7 @@ class TableRows extends React.Component
             disabled={disabled}
             className={css + " remarksrow"}
             colspan={colspan}
+            className={css}
             />)
 
       # append expanded rows
