@@ -140,12 +140,9 @@ Add a blank and a control:
     >>> controls.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
     >>> transaction.commit()
     >>> browser.open(worksheets_url)
-    >>> contents = browser.contents
     >>> for analysis in worksheet.getAnalyses():
     ...     if analysis.portal_type == 'ReferenceAnalysis':
     ...         if analysis.getReferenceType() == 'b' or analysis.getReferenceType() == 'c':
     ...             # 3 is the number of interim fields on the analysis/calculation
     ...             if len(analysis.getInterimFields()) != 3:
     ...                 self.fail("Blank or Control Analyses interim field are not correct")
-    >>> if contents.count("12.3") != contents.count("14.8") or contents.count("14.8") != contents.count('16.82'):
-    ...     self.fail("One of the analyses on the worksheet does not have interim fields")
