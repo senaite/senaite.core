@@ -168,7 +168,6 @@ class TableRows extends React.Component
             disabled={disabled}
             className={css + " remarksrow"}
             colspan={colspan}
-            className={css}
             />)
 
       # append expanded rows
