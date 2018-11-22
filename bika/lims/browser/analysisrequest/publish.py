@@ -1330,7 +1330,7 @@ class AnalysisRequestDigester:
 
         ws = analysis.getWorksheet()
         andict['worksheet'] = ws and ws.id or None
-        andict['worksheet_url'] = ws.absolute_url() or None
+        andict['worksheet_url'] = ws and ws.absolute_url() or None
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
