@@ -2,17 +2,11 @@ import React from "react"
 
 
 class ReadonlyField extends React.Component
-  ###
-   * The readonly field component renders a field which can not be edited
-  ###
 
   constructor: (props) ->
     super(props)
 
   is_boolean_field: ->
-    ###
-     * Check if the field is a boolean field
-    ###
     if typeof(@props.value) == "boolean"
       return yes
     return no

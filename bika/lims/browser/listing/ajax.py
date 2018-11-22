@@ -215,6 +215,7 @@ class AjaxListingView(BrowserView):
                 "reject": 90,
                 "cancel": 80,
                 "deactivate": 70,
+                "unassign": 70,
                 "publish": 60,
                 "republish": 50,
                 "prepublish": 50,
