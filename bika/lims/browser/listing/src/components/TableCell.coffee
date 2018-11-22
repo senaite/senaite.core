@@ -1,17 +1,15 @@
 import React from "react"
 
-import Select from "./Select.coffee"
-import NumericField from "./NumericField.coffee"
 import Checkbox from "./Checkbox.coffee"
-import StringField from "./StringField.coffee"
-import ReadonlyField from "./ReadonlyField.coffee"
 import HiddenField from "./HiddenField.coffee"
+import MultiSelect from "./MultiSelect.coffee"
+import NumericField from "./NumericField.coffee"
+import ReadonlyField from "./ReadonlyField.coffee"
+import Select from "./Select.coffee"
+import StringField from "./StringField.coffee"
 
 
 class TableCell extends React.Component
-  ###
-   * The table cell component renders a single cell
-  ###
 
   constructor: (props) ->
     super(props)
@@ -23,6 +21,10 @@ class TableCell extends React.Component
     @on_select_field_blur = @on_select_field_blur.bind @
     @on_select_field_change = @on_select_field_change.bind @
 
+    # Bind multiselect field events
+    @on_multiselect_field_blur = @on_multiselect_field_blur.bind @
+    @on_multiselect_field_change = @on_multiselect_field_change.bind @
+
     # Bind numeric field events
     @on_numeric_field_blur = @on_numeric_field_blur.bind @
     @on_numeric_field_change = @on_numeric_field_change.bind @
@@ -32,9 +34,6 @@ class TableCell extends React.Component
     @on_string_field_change = @on_string_field_change.bind @
 
   on_checkbox_field_change: (event) ->
-    ###
-     * Event handler when the checkbox field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.checked
@@ -49,9 +48,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_select_field_blur: (event) ->
-    ###
-     * Event handler when the select field blurred
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -62,9 +58,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_select_field_change: (event) ->
-    ###
-     * Event handler when the select field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -74,10 +67,31 @@ class TableCell extends React.Component
     if @props.update_editable_field
       @props.update_editable_field @props.item.uid, name, value, @props.item
 
+  on_multiselect_field_blur: (event) ->
+    el = event.currentTarget
+    ul = el.parentNode.parentNode
+    checked = ul.querySelectorAll("input[type='checkbox']:checked")
+    value = (input.value for input in checked)
+    name = el.getAttribute("item_key") or el.name
+    console.debug "TableCell:on_multiselect_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field @props.item.uid, name, value, @props.item
+
+  on_multiselect_field_change: (event) ->
+    el = event.currentTarget
+    ul = el.parentNode.parentNode
+    checked = ul.querySelectorAll("input[type='checkbox']:checked")
+    value = (input.value for input in checked)
+    name = el.getAttribute("item_key") or el.name
+    console.debug "TableCell:on_multiselect_field_change: value=#{value}"
+
+    # Call the *on_blur* field handler
+    if @props.update_editable_field
+      @props.update_editable_field @props.item.uid, name, value, @props.item
+
   on_numeric_field_blur: (event) ->
-    ###
-     * Event handler when the numeric field blurred
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -88,9 +102,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_numeric_field_change: (event) ->
-    ###
-     * Event handler when the numeric field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -101,9 +112,6 @@ class TableCell extends React.Component
       @props.update_editable_field @props.item.uid, name, value, @props.item
 
   on_string_field_blur: (event) ->
-    ###
-     * Event handler when the string field blurred
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -114,9 +122,6 @@ class TableCell extends React.Component
       @props.save_editable_field @props.item.uid, name, value, @props.item
 
   on_string_field_change: (event) ->
-    ###
-     * Event handler when the string field changed
-    ###
     el = event.currentTarget
     name = el.getAttribute("item_key") or el.name
     value = el.value
@@ -127,9 +132,6 @@ class TableCell extends React.Component
       @props.update_editable_field @props.item.uid, name, value, @props.item
 
   render_before_content: ->
-    ###
-     * Render additional content *before* the cell title
-    ###
     before = @props.item.before
     item_key = @props.item_key
     if @props.item_key not of before
@@ -139,9 +141,6 @@ class TableCell extends React.Component
            </span>
 
   render_after_content: ->
-    ###
-     * Render additional content *after* the cell title
-    ###
     after = @props.item.after
     item_key = @props.item_key
     if item_key not of after
@@ -151,10 +150,6 @@ class TableCell extends React.Component
            </span>
 
   is_edit_allowed: (item_key, item) ->
-    ###
-     * Checks if the field key is listed in the `allow_edit` list
-    ###
-
     # the global allow_edit overrides all row specific settings
     if not @props.allow_edit
       return no
@@ -166,15 +161,9 @@ class TableCell extends React.Component
     return no
 
   is_disabled: (item_key, item) ->
-    ###
-     * Checks if the field is marked as disabled
-    ###
     return item.disabled or no
 
   is_required: (item_key, item) ->
-    ###
-     * Check if the field is marked as required
-    ###
     required_fields = item.required or []
     required = item_key in required_fields
     # make the field conditionally required if the row is selected
@@ -182,15 +171,9 @@ class TableCell extends React.Component
     return required and selected
 
   get_name: (item_key, item) ->
-    ###
-     * Get the field name
-    ###
     return "#{item_key}.#{item.uid}"
 
   get_value: (item_key, item) ->
-    ###
-     * Get the field value
-    ###
     value = item[item_key]
 
     # check if the field is an interim
@@ -203,16 +186,9 @@ class TableCell extends React.Component
     return value
 
   is_result_field: (item_key, item) ->
-    ###
-     * Check if the field is a result field
-    ###
     return item_key == "Result"
 
   get_formatted_value: (item_key, item) ->
-    ###
-     * Get the formatted field value
-    ###
-
     # replacement html or plain value of the current column
     formatted_value = item.replace[item_key] or @get_value item_key, item
 
@@ -223,10 +199,6 @@ class TableCell extends React.Component
     return formatted_value
 
   get_type: (item_key, item) ->
-    ###
-     * Get the field type
-    ###
-
     # true if the field is editable
     editable = @is_edit_allowed item_key, item
     resultfield = @is_result_field item_key, item
@@ -266,10 +238,6 @@ class TableCell extends React.Component
     return "numeric"
 
   render_content: ->
-    ###
-      * Render the table cell content
-    ###
-
     # the current rendered column cell name
     item_key = @props.item_key
     # single folderitem
@@ -313,8 +281,7 @@ class TableCell extends React.Component
           value={value}
           title={title}
           formatted_value={formatted_value}
-          />
-      )
+          />)
 
     # render calculated field
     else if type == "calculated"
@@ -326,16 +293,14 @@ class TableCell extends React.Component
           value={value}
           title={title}
           formatted_value={formatted_value}
-          />
-      )
+          />)
       field.push (
         <HiddenField
           key={name + "_hidden"}
           name={fieldname}
           value={value}
           title={title}
-          />
-      )
+          />)
 
     # render interim field
     else if type == "interim"
@@ -353,8 +318,7 @@ class TableCell extends React.Component
           onChange={@on_numeric_field_change}
           onBlur={@on_numeric_field_blur}
           className={field_css_class}
-          />
-      )
+          />)
       # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
       if interims.length > 0
         item_data = {}
@@ -364,8 +328,7 @@ class TableCell extends React.Component
             key={name + "_item_data"}
             name="item_data"
             value={JSON.stringify item_data}
-          />
-        )
+            />)
 
     # render select field
     else if type in ["select", "choices"]
@@ -385,8 +348,28 @@ class TableCell extends React.Component
           onChange={@on_select_field_change}
           onBlur={@on_select_field_blur}
           className={field_css_class}
-          />
-      )
+          />)
+
+    # render multiselect field
+    else if type in ["multiselect", "multichoices"]
+      # This gives a dictionary of UID -> UID list of selected items
+      fieldname = "#{name}:record:list"
+      options = item.choices[item_key]
+      field.push (
+        <MultiSelect
+          key={name}
+          name={fieldname}
+          item_key={item_key}
+          defaultValue={value}
+          title={title}
+          disabled={disabled}
+          selected={selected}
+          required={required}
+          options={options}
+          onChange={@on_multiselect_field_change}
+          onBlur={@on_multiselect_field_blur}
+          className={field_css_class}
+          />)
 
     # render checkbox field
     else if type == "boolean"
@@ -401,8 +384,7 @@ class TableCell extends React.Component
           defaultChecked={value}
           disabled={disabled}
           onChange={@on_checkbox_field_change}
-          />
-      )
+          />)
 
     # render numeric field
     else if type == "numeric"
@@ -422,8 +404,7 @@ class TableCell extends React.Component
           onChange={@on_numeric_field_change}
           onBlur={@on_numeric_field_blur}
           className={field_css_class}
-          />
-      )
+          />)
 
     # N.B. Disabled fields are not send on form submit.
     #      Therefore, we render a hidden field when disabled.
@@ -434,8 +415,7 @@ class TableCell extends React.Component
           name={fieldname}
           item_key={item_key}
           value={value}
-        />
-      )
+          />)
 
     return field
 

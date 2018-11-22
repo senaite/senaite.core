@@ -5,100 +5,241 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from operator import itemgetter
+import collections
 
-from bika.lims.workflow import isActive
-from plone.app.layout.globals.interfaces import IViewView
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
-
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.referencesample import ReferenceSamplesView as BaseView
-from bika.lims.utils import t
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import ManageWorksheets
+from bika.lims.utils import get_link
+from plone.memoize import view
+from plone.protect import CheckAuthenticator
 
 
-class ReferenceSamplesView(BaseView):
-    """ Display reference samples matching services in this worksheet
-        add_blank and add_control use this to refresh the list of reference
-        samples when service checkboxes are selected
+class ReferenceSamplesView(BikaListingView):
+    """Displays reference control samples
     """
-    implements(IViewView)
 
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
-        self.catalog = 'bika_catalog'
-        self.contentFilter = {'portal_type': 'ReferenceSample'}
+
+        self.catalog = "bika_catalog"
+        self.contentFilter = {
+            "portal_type": "ReferenceSample",
+            "getSupportedServices": self.get_assigned_services_uids(),
+            "isValid": True,
+            "review_state": "current",
+            "inactive_state": "active",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+
         self.context_actions = {}
+        self.title = _("Add Control Reference")
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
-        self.show_select_column = False
-        self.show_workflow_action_buttons = False
-        self.pagesize = 50
-        # must set service_uids in __call__ before delegating to super
-        self.service_uids = []
-        # must set control_type='b' or 'c' in __call__ before delegating
-        self.control_type = ""
-        self.columns['Services'] = {'title': _('Services')}
-        self.columns['Definition'] = {'title': _('Reference Definition')}
+        self.show_column_toggles = False
+        self.show_select_column = True
+        self.show_categories = False
+        self.pagesize = 999999
+        self.allow_edit = True
+        self.show_search = False
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "/++resource++bika.lims.images/worksheet_big.png"
+        )
+
+        self.columns = collections.OrderedDict((
+            ("Title", {
+                "title": _("Reference Sample"),
+                "sortable": False}),
+            ("SupportedServices", {
+                "title": _("Supported Services"),
+                "type": "multiselect",
+                "sortable": False}),
+            ("Position", {
+                "title": _("Position"),
+                "sortable": False}),
+        ))
+
         self.review_states = [
-            {'id':'default',
-             'title': _('All'),
-             'contentFilter':{'review_state': 'current'},
-             'columns': ['ID',
-                         'Title',
-                         'Definition',
-                         'ExpiryDate',
-                         'Services']
-             },
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "transitions": [{"id": "add"}],
+                "custom_transitions": [
+                    {
+                        "id": "add",
+                        "title": _("Add"),
+                        "url": self.__name__,
+                    }
+                ],
+                "columns": self.columns.keys()
+            },
         ]
 
     def __call__(self):
-        self.service_uids = self.request.get('service_uids', '').split(",")
-        self.control_type = self.request.get('control_type', '')
-        if not self.control_type:
-            return t(_("No control type specified"))
-        return super(ReferenceSamplesView, self).contents_table()
+        template = super(ReferenceSamplesView, self).__call__()
+        # TODO: Refactor Worfklow
+        grant = self.is_edit_allowed() and self.is_manage_allowed()
+        if not grant:
+            redirect_url = api.get_url(self.context)
+            return self.request.response.redirect(redirect_url)
+        # TODO: Refactor this function call
+        showRejectionMessage(self.context)
+        # Handle form submission
+        if self.request.form.get("submitted"):
+            CheckAuthenticator(self.request)
+            self.handle_submit()
+        return template
 
-    def isItemAllowed(self, obj):
+    def update(self):
+        """Update hook
         """
-        Only valid reference samples (neither expired nor disposed) are allowed
+        super(ReferenceSamplesView, self).update()
+
+    def handle_submit(self):
+        """Handle form submission
         """
-        if not obj.isValid() or not isActive(obj):
-            return False
-        return super(ReferenceSamplesView, self).isItemAllowed(obj)
+        form = self.request.form
+        # Selected service UIDs
+        uids = form.get("uids")
+        # reference sample -> selected services mapping
+        supported_services = form.get("SupportedServices")
+        # service -> position mapping
+        positions = form.get("Position")[0]
+        for uid in uids:
+            position = positions.get(uid)
+            if position == "new":
+                position = None
+            service_uids = supported_services.get(uid)
+            referencesample = api.get_object_by_uid(uid)
+            self.context.addReferenceAnalyses(
+                referencesample, service_uids, dest_slot=position)
+        redirect_url = "{}/{}".format(
+            api.get_url(self.context), "manage_results")
+        self.request.response.redirect(redirect_url)
 
-    def folderitems(self):
-        translate = self.context.translate
-        workflow = getToolByName(self.context, 'portal_workflow')
-        items = super(ReferenceSamplesView, self).folderitems()
-        new_items = []
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            if self.control_type == 'b' and not obj.getBlank(): continue
-            if self.control_type == 'c' and obj.getBlank(): continue
-            ref_services = obj.getServices()
-            ws_ref_services = [rs for rs in ref_services if
-                               rs.UID() in self.service_uids]
-            if ws_ref_services:
-                if workflow.getInfoFor(obj, 'review_state') != 'current':
-                    continue
-                services = [rs.Title() for rs in ws_ref_services]
-                items[x]['nr_services'] = len(services)
-                items[x]['Definition'] = (obj.getReferenceDefinition() and obj.getReferenceDefinition().Title()) or ''
-                services.sort(lambda x, y: cmp(x.lower(), y.lower()))
-                items[x]['Services'] = ", ".join(services)
-                items[x]['replace'] = {}
+    @view.memoize
+    def is_edit_allowed(self):
+        """Check if edit is allowed
+        """
+        checkPermission = self.context.portal_membership.checkPermission
+        return checkPermission(EditWorksheet, self.context)
 
-                after_icons = "<a href='%s' target='_blank'><img src='++resource++bika.lims.images/referencesample.png' title='%s: %s'></a>" % \
-                    (obj.absolute_url(), \
-                     t(_("Reference sample")), obj.Title())
-                items[x]['before']['ID'] = after_icons
+    @view.memoize
+    def is_manage_allowed(self):
+        """Check if manage is allowed
+        """
+        checkPermission = self.context.portal_membership.checkPermission
+        return checkPermission(ManageWorksheets, self.context)
 
-                new_items.append(items[x])
+    @view.memoize
+    def get_editable_columns(self):
+        """Return editable fields
+        """
+        columns = ["Position", "SupportedServices"]
+        return columns
 
-        new_items = sorted(new_items, key = itemgetter('nr_services'))
-        new_items.reverse()
+    @view.memoize
+    def get_assigned_services(self):
+        """Get the current assigned services of this Worksheet
+        """
+        analyses = self.context.getAnalyses()
+        routine_analyses = filter(
+            lambda an: IRoutineAnalysis.providedBy(an), analyses)
+        services = map(lambda an: an.getAnalysisService(), routine_analyses)
+        return services
 
-        return new_items
+    @view.memoize
+    def get_assigned_services_uids(self):
+        """Get the current assigned services UIDs of this Worksheet
+        """
+        services = self.get_assigned_services()
+        uids = map(api.get_uid, services)
+        return list(set(uids))
+
+    def get_supported_services_uids(self, referencesample):
+        """Get the supported services of the reference sample
+        """
+        uids = referencesample.getSupportedServices(only_uids=True)
+        return list(set(uids))
+
+    def make_supported_services_choices(self, referencesample):
+        """Create choices for supported services
+        """
+        choices = []
+        assigned_services = self.get_assigned_services_uids()
+        for uid in self.get_supported_services_uids(referencesample):
+            service = api.get_object(uid)
+            title = api.get_title(service)
+            selected = uid in assigned_services
+            choices.append({
+                "ResultValue": uid,
+                "ResultText": title,
+                "selected": selected,
+            })
+        return choices
+
+    @view.memoize
+    def make_position_choices(self):
+        """Create choices for available positions
+        """
+        choices = []
+        for pos in self.get_available_positions():
+            choices.append({
+                "ResultValue": pos,
+                "ResultText": pos,
+            })
+        return choices
+
+    @view.memoize
+    def get_available_positions(self):
+        """Return a list of empty slot numbers
+        """
+        available_positions = ["new"]
+        layout = self.context.getLayout()
+        used_positions = [int(slot["position"]) for slot in layout]
+        if used_positions:
+            used = [
+                pos for pos in range(1, max(used_positions) + 1) if
+                pos not in used_positions]
+            available_positions.extend(used)
+        return available_positions
+
+    def folderitem(self, obj, item, index):
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
+        """
+        item = super(ReferenceSamplesView, self).folderitem(obj, item, index)
+
+        # ensure we have an object and not a brain
+        obj = api.get_object(obj)
+        url = api.get_url(obj)
+        title = api.get_title(obj)
+
+        item["Title"] = title
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["allow_edit"] = self.get_editable_columns()
+
+        # Supported Services
+        supported_services_choices = self.make_supported_services_choices(obj)
+        item["choices"]["SupportedServices"] = supported_services_choices
+
+        # Position
+        item["Position"] = "new"
+        item["choices"]["Position"] = self.make_position_choices()
+
+        return item

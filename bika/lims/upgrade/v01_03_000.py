@@ -84,6 +84,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1080
     reindex_clients(portal)
 
+    # Add catalog indexes for reference sample handling in Worksheets
+    # https://github.com/senaite/senaite.core/pull/1091
+    add_reference_sample_indexes(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -335,3 +339,24 @@ def reindex_clients(portal):
             logger.info("Reindexing Client: {0}/{1}".format(num, total))
         obj = api.get_object(brain)
         obj.reindexObject()
+
+
+def add_reference_sample_indexes(portal):
+    """Adds the indexes for partitioning
+    """
+    logger.info("Adding reference sample indexes")
+
+    add_index(portal, catalog_id="bika_catalog",
+              index_name="getSupportedServices",
+              index_attribute="getSupportedServices",
+              index_metatype="KeywordIndex")
+
+    add_index(portal, catalog_id="bika_catalog",
+              index_name="getBlank",
+              index_attribute="getBlank",
+              index_metatype="BooleanIndex")
+
+    add_index(portal, catalog_id="bika_catalog",
+              index_name="isValid",
+              index_attribute="isValid",
+              index_metatype="BooleanIndex")

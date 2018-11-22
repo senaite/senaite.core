@@ -1,45 +1,35 @@
 import React from "react"
-
 import TableRow from "./TableRow.coffee"
 
 
 class TableCategoryRow extends React.Component
-  ###
-   * A collapsible category table row
-  ###
 
   constructor: (props) ->
     super(props)
-
-    # bind event handler to local context
+    # Bind event handler to local context
     @on_category_click = @on_category_click.bind @
 
   on_category_click: (event) ->
-    ###
-     * Event handler when the row was clicked
-    ###
     el = event.currentTarget
     category = el.getAttribute "category"
     console.debug "TableCategoryRow::on_row_click: category #{category} clicked"
 
-    if @props.on_category_click then @props.on_category_click category
+    # notify parent event handler with the extracted values
+    if @props.on_category_click
+      # @param {string} category: The category title
+      @props.on_category_click category
 
-  build_category_cells: ->
-    ###
-     * Build the category cells
-    ###
-    cells = []
-
+  build_category: ->
+    # collaped css
     cls = "collapsed"
     icon_cls = "glyphicon glyphicon-collapse-up"
 
-    # calculate the CSS class for expanded
+    # expanded css
     if @props.expanded
       cls = "expanded"
       icon_cls = "glyphicon glyphicon-collapse-down"
 
-    # insert the toggle cell
-    cells.push(
+    return (
       <td key="toggle"
           className={cls}
           colSpan={@props.column_count}>
@@ -47,46 +37,12 @@ class TableCategoryRow extends React.Component
       </td>
     )
 
-    return cells
-
-  build_rows: ->
-    ###
-     * Build the category row + the content rows
-    ###
-    rows = []
-
-    rows.push(
-      <tr key={@props.category}
-          onClick={@on_category_click}
-          category={@props.category}
-          className={@props.className}>
-        {@build_category_cells()}
-      </tr>
-    )
-
-    # return only the category row if it is not expanded
-    if not @props.expanded
-      return rows
-
-    for index, item of @props.folderitems
-
-      # skip items of other categories
-      if item.category != @props.category
-        continue
-
-      rows.push(
-        <TableRow
-          key={index}  # internal key
-          {...@props}  # pass in all properties from the table component
-          className={item.state_class}
-          item={item}
-          />
-      )
-
-    return rows
-
   render: ->
-    @build_rows()
+    <tr category={@props.category}
+        onClick={@on_category_click}
+        className={@props.className}>
+      {@build_category()}
+    </tr>
 
 
 export default TableCategoryRow
