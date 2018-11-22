@@ -10,6 +10,7 @@ Changelog
 
 **Changed**
 
+- #1095 New worksheet results listing
 - #1091 New Worksheet blank/control/duplicate listings
 - #1093 Listing integration for Analysis Specification Widget
 - #1092 Listing integration for Profile Analyses Widget
