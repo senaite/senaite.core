@@ -15,7 +15,9 @@ class ButtonBar extends React.Component
 
     @css_mapping =
       "activate": "btn-success"
+      "submit": "btn-success"
       "cancel": "btn-warning"
+      "unassign": "btn-warning"
       "deactivate": "btn-danger"
       "default": "btn-default"
       "invalidate": "btn-danger"

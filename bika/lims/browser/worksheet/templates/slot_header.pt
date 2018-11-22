@@ -1,0 +1,53 @@
+<div class="slot-header"
+     i18n:domain="senaite.core"
+     tal:define="data options/data;">
+
+  <table class="table table-condensed table-borderless slot-header-table">
+    <colgroup>
+      <col class="col-sm-1"/>
+    </colgroup>
+    <tr>
+      <td>
+        <!-- Position -->
+        <span class="badge" tal:content="data/position"></span>
+      </td>
+      <td>
+        <!-- Object Type Icon -->
+        <img class="img" tal:replace="structure data/item_img"/>
+        <!-- Object Title Link -->
+        <a href=""
+           tal:attributes="href data/item_url|nothing">
+          <span tal:replace="data/item_title|nothing"/>
+        </a>
+        <span tal:repeat="icon data/additional_item_icons">
+          <span tal:replace="structure icon|nothing"/>
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <!-- Parent Type Icon -->
+        <img class="img" tal:replace="structure data/parent_img|nothing"/>
+        <!-- Parent Title Link -->
+        <a href=""
+           tal:attributes="href data/parent_url|nothing">
+          <span tal:replace="data/parent_title|nothing"/>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <!-- Sample Type Icon -->
+        <img class="img" tal:replace="structure data/sample_type_img|nothing"/>
+        <!-- Parent Title Link -->
+        <a href=""
+           tal:attributes="href data/sample_type_url|nothing">
+          <span tal:replace="data/sample_type_title|nothing"/>
+        </a>
+      </td>
+    </tr>
+  </table>
+
+</div>

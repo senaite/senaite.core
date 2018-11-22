@@ -5,7 +5,6 @@ import json
 import urllib
 
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
@@ -196,6 +195,9 @@ class AjaxListingView(BrowserView):
                     if tid not in allowed_transition_ids:
                         continue
                     tids.append(tid)
+                else:
+                    # no restrictions by the selected review_state
+                    tids.append(tid)
                 transitions_by_tid[tid] = transition
 
             if common_tids is None:
@@ -213,6 +215,7 @@ class AjaxListingView(BrowserView):
                 "reject": 90,
                 "cancel": 80,
                 "deactivate": 70,
+                "unassign": 70,
                 "publish": 60,
                 "republish": 50,
                 "prepublish": 50,
@@ -379,6 +382,11 @@ class AjaxListingView(BrowserView):
 
         return updated_objects
 
+    def get_children_hook(self, parent_uid, child_uids=None):
+        """Custom hook to be implemented by subclass
+        """
+        raise NotImplementedError("Must be implemented by subclass")
+
     @set_application_json_header
     @returns_safe_json
     @inject_runtime
@@ -480,6 +488,42 @@ class AjaxListingView(BrowserView):
         # prepare the response object
         data = {
             "transitions": transitions,
+        }
+
+        return data
+
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
+    def ajax_get_children(self):
+        """Get the children of a folderitem
+
+        Required POST JSON Payload:
+
+        :uid: UID of the parent folderitem
+        """
+
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+
+        # extract the parent UID
+        parent_uid = payload.get("parent_uid")
+        child_uids = payload.get("child_uids", [])
+
+        try:
+            children = self.get_children_hook(
+                parent_uid, child_uids=child_uids)
+        except NotImplementedError:
+            # lookup by catalog search
+            self.contentFilter = {"UID": child_uids}
+            children = self.get_folderitems()
+            # ensure the children have a reference to the parent
+            for child in children:
+                child["parent"] = parent_uid
+
+        # prepare the response object
+        data = {
+            "children": children
         }
 
         return data

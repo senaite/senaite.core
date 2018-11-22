@@ -25,6 +25,8 @@ Changelog
 - #1077 Refactored `referenceanalysis_workflow` + after transitions and guards
 . #1077 Refactored `duplicateanalysis_workflow` + after transitions and guards
 - #1077 Refactored `analysis_workflow` + after transitions and guards
+- #1095 New worksheet results listing
+- #1091 New Worksheet blank/control/duplicate listings
 - #1093 Listing integration for Analysis Specification Widget
 - #1092 Listing integration for Profile Analyses Widget
 - #1081 API functions improved

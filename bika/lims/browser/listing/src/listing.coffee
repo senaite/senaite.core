@@ -200,6 +200,9 @@ class ListingController extends React.Component
     ###
     console.debug "ListingController::toggleRow: uid=#{uid}"
 
+    # skip if no uid is given
+    return unless uid
+
     # get the current expanded rows
     expanded = @state.expanded_rows
 
@@ -216,16 +219,14 @@ class ListingController extends React.Component
     # check if the children are already fetched
     me = this
     if uid not of @state.children
-      by_uid = @get_folderitems_by_uid()
-      item = by_uid[uid]
-      query =
-        UID: item.children or []
-      promise = @fetch_folderitems_by_query
-        query:
-          UID: item.children or []
+      promise = @fetch_children parent_uid: uid
       promise.then (data) ->
         children = me.state.children
-        children[uid] = data.folderitems
+        item_children = data.children or []
+        children[uid] = item_children
+        for child in item_children
+          if child.selected
+            me.selectUID child.uid, yes
         me.setState
           children: children
           expanded_rows: expanded
@@ -509,16 +510,6 @@ class ListingController extends React.Component
 
     return @get_default_columns()
 
-  get_remarks_columns: ->
-    ###
-     * Get a list of column names where the type is set to "remarks"
-    ###
-    columns = []
-    for key, value of @state.columns
-      if value.type == "remarks"
-        columns.push key
-    return columns
-
   get_default_columns: ->
     ###
      * Get the default visible columns of the listing
@@ -701,6 +692,35 @@ class ListingController extends React.Component
 
     return promise
 
+  fetch_children: ({parent_uid, child_uids}={}) ->
+    ###
+     * Fetch the children of the parent by uid
+    ###
+
+    # turn loader on
+    @toggle_loader on
+
+    # lookup child_uids from the folderitem
+    if not child_uids
+      by_uid = @get_folderitems_by_uid()
+      folderitem = by_uid[parent_uid]
+      if not folderitem
+        throw "No folderitem could be found for UID #{uid}"
+      child_uids = folderitem.children or []
+
+    # fetch the children from the server
+    promise = @api.fetch_children
+      parent_uid: parent_uid
+      child_uids: child_uids
+
+    me = this
+    promise.then (data) ->
+      console.debug "ListingController::fetch_children: GOT RESPONSE=", data
+      # turn loader off
+      me.toggle_loader off
+
+    return promise
+
   render_toolbar_top: ->
     ###
      * Control if the top toolbar should be loaded
@@ -769,7 +789,6 @@ class ListingController extends React.Component
             column_count={@get_column_count()}
             column_order={@get_column_order()}
             table_columns={@get_visible_columns()}
-            remarks_columns={@get_remarks_columns()}
             review_state={@state.review_state}
             review_states={@state.review_states}
             folderitems={@state.folderitems}
@@ -784,9 +803,8 @@ class ListingController extends React.Component
             expanded_rows={@state.expanded_rows}
             show_categories={@state.show_categories}
             on_category_click={@toggleCategory}
-            on_row_click={@toggleRow}
+            on_row_expand_click={@toggleRow}
             filter={@state.filter}
-            toggle_row_title={_("Partitions")}
             update_editable_field={@updateEditableField}
             save_editable_field={@saveEditableField}
             />

@@ -2,26 +2,25 @@ import React from "react"
 
 
 class TableRemarksRow extends React.Component
-  ###
-   * The table remarks row component renders a textarea below the parent row
-  ###
 
   constructor: (props) ->
     super(props)
 
   can_edit: ->
-    ###
-     * Checks if the Remarks field is in the list of editable fields
-    ###
     item = @props.item
     item_key = @props.item_key
     allow_edit = item.allow_edit or []
     return item_key in allow_edit
 
+  get_column_title: ->
+    columns = @props.columns
+    item_key = @props.item_key
+    column = columns[item_key]
+    title = column.title
+    if (typeof _ == "function") then title = _(title)
+    return title or ""
+
   render_remarks_field: ->
-    ###
-     * Render the remarks field
-    ###
     item = @props.item
     uid = item.uid
     item_key = @props.item_key
@@ -32,15 +31,11 @@ class TableRemarksRow extends React.Component
 
     style =
       display: if show then "block" else "none"
-      paddingTop: ".5em"
-      paddingBottom: ".5em"
-      paddingLeft: "2em"
 
     if not @can_edit()
       field = (
         <span className=""
-              dangerouslySetInnerHTML={{__html: value}}/>
-      )
+              dangerouslySetInnerHTML={{__html: value}}/>)
     else
       field = (
         <textarea
@@ -49,25 +44,23 @@ class TableRemarksRow extends React.Component
           rows="2"
           name={name}
           defaultValue={value}>
-        </textarea>
-      )
+        </textarea>)
 
     return (
       <div key={item.uid}
            style={style}
-           className="remarks-placeholder">
-        <div className="">
-          {@props.remarks_row_title or "Remarks"}:
+           className="remarks text-muted">
+        <div className="text-info">
+          <span className="glyphicon glyphicon-hand-right"/> {@get_column_title()}:
         </div>
         {field}
-      </div>
-    )
+      </div>)
 
   render: ->
     <tr className={@props.className}>
-      <td className="remarks text-muted"
-          colSpan={@props.column_count}
-          style={{padding: 0; borderTop: 0}}>
+      <td style={{padding: 0; borderTop: 0}}></td>
+      <td style={{padding: 0; borderTop: 0}}
+          colSpan={@props.colspan - 1}>
         {@render_remarks_field()}
       </td>
     </tr>
