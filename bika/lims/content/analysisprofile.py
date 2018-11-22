@@ -184,6 +184,11 @@ class AnalysisProfile(BaseContent):
         price, vat = self.getAnalysisProfilePrice(), self.getAnalysisProfileVAT()
         return float(price) * float(vat) / 100
 
+    def getPrice(self):
+        """Returns the price of the profile, without VAT
+        """
+        return self.getAnalysisProfilePrice()
+
     def getTotalPrice(self):
         """
         Computes the final price using the VATAmount and the subtotal price

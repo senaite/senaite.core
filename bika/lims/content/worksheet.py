@@ -9,38 +9,33 @@ import re
 import sys
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims import api, deprecated, logger
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.config import PROJECTNAME, WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.interfaces import (IAnalysisRequest, IDuplicateAnalysis,
-                                  IReferenceAnalysis, IReferenceSample,
-                                  IRoutineAnalysis, IWorksheet)
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.permissions import EditWorksheet, ManageWorksheets
-from bika.lims.utils import to_utf8 as _c
-from bika.lims.utils import changeWorkflowState, tmpID, to_int
-from bika.lims.workflow import doActionFor, getCurrentState, skip
-from bika.lims.workflow.worksheet import events, guards
-from DateTime import DateTime
-from plone.api.user import has_permission
-from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.public import (BaseFolder, DisplayList,
                                         ReferenceField, Schema,
                                         SelectionWidget, StringField,
-                                        TextAreaWidget, TextField,
                                         registerType)
 from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from bika.lims import api, logger
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import RemarksWidget
+from bika.lims.config import PROJECTNAME, WORKSHEET_LAYOUT_OPTIONS
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import (IAnalysisRequest, IDuplicateAnalysis,
+                                  IReferenceAnalysis, IReferenceSample,
+                                  IRoutineAnalysis, IWorksheet)
+from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.permissions import EditWorksheet, ManageWorksheets
+from bika.lims.utils import changeWorkflowState, tmpID, to_int
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.workflow import doActionFor, skip, isTransitionAllowed, \
+    ActionHandlerPool
 from zope.interface import implements
-
 
 ALL_ANALYSES_TYPES = "all"
 ALLOWED_ANALYSES_TYPES = ["a", "b", "c", "d"]
@@ -146,87 +141,143 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         new_layout = sorted(value, key=lambda k: k['position'])
         self.getField('Layout').set(self, new_layout)
 
-    security.declareProtected(EditWorksheet, 'addAnalysis')
+    def addAnalyses(self, analyses):
+        """Adds a collection of analyses to the Worksheet at once
+        """
+        # TODO Workflow - ActionsPool - Might be improved
+        actions_pool = ActionHandlerPool.get_instance()
+        actions_pool.queue_pool()
+        requests = list()
+        for analysis in analyses:
+            analysis = api.get_object(analysis)
+            if IRequestAnalysis.providedBy(analysis) and \
+                    not IDuplicateAnalysis.providedBy(analysis):
+                request = analysis.getRequest()
+                if request not in requests:
+                    requests.append(request)
+            self.addAnalysis(analysis, reindex=False)
+        actions_pool.resume()
+        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
 
-    def addAnalysis(self, analysis, position=None):
+    def addAnalysis(self, analysis, position=None, reindex=True):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
-        analysis_uid = analysis.UID()
-        parent_uid = analysis.aq_parent.UID()
-        analyses = self.getAnalyses()
-        layout = self.getLayout()
+        # Cannot add an analysis if not open, unless a retest
+        if api.get_review_status(self) != "open":
+            retracted = analysis.getRetestOf()
+            if retracted not in self.getAnalyses():
+                return
 
-        # check if this analysis is already in the layout
-        if analysis_uid in [l['analysis_uid'] for l in layout]:
+        # Cannot add an analysis that is assigned already
+        if analysis.getWorksheet():
             return
 
-        # If the ws has an instrument assigned for which the analysis
-        # is allowed, set it
-        instr = self.getInstrument()
-        if instr and analysis.isInstrumentAllowed(instr):
-            # TODO After enabling multiple methods for instruments, we are
-            # setting intrument's first method as a method.
-            methods = instr.getMethods()
-            if len(methods) > 0:
+        # Just in case
+        analyses = self.getAnalyses()
+        if analysis in analyses:
+            analyses = filter(lambda an: an != analysis, analyses)
+            self.setAnalyses(analyses)
+            self.updateLayout()
+
+        # Cannot add an analysis if the assign transition is not possible
+        if not isTransitionAllowed(analysis, "assign"):
+            return
+
+        # Assign the instrument from the worksheet to the analysis, if possible
+        instrument = self.getInstrument()
+        if instrument and analysis.isInstrumentAllowed(instrument):
+            # TODO Analysis Instrument + Method assignment
+            methods = instrument.getMethods()
+            if methods:
                 # Set the first method assigned to the selected instrument
                 analysis.setMethod(methods[0])
-            analysis.setInstrument(instr)
-        # If the ws DOESN'T have an instrument assigned but it has a method,
-        # set the method to the analysis
-        method = self.getMethod()
-        if not instr and method and analysis.isMethodAllowed(method):
-            # Set the method
-            analysis.setMethod(method)
-        self.setAnalyses(analyses + [analysis, ])
+            analysis.setInstrument(instrument)
+        elif not instrument:
+            # If the ws doesn't have an instrument try to set the method
+            method = self.getMethod()
+            if method and analysis.isMethodAllowed(method):
+                analysis.setMethod(method)
 
-        # if our parent has a position, use that one.
-        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout]:
-            position = [int(slot['position']) for slot in layout if
-                        slot['container_uid'] == analysis.aq_parent.UID()][0]
-        else:
-            # prefer supplied position parameter
-            if not position:
-                used_positions = [0, ] + [int(slot['position']) for slot in layout]
-                position = [pos for pos in range(1, max(used_positions) + 2)
-                            if pos not in used_positions][0]
-        self.setLayout(layout + [{'position': position,
-                                  'type': 'a',
-                                  'container_uid': parent_uid,
-                                  'analysis_uid': analysis.UID()}, ])
+        # Transition analysis to "assigned"
+        doActionFor(analysis, "assign")
+        self.setAnalyses(analyses + [analysis])
+        self.addToLayout(analysis, position)
 
-        doActionFor(analysis, 'assign')
+        # Reindex
+        if reindex:
+            self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
 
-        # Reindex the worksheet in order to update its columns
-        self.reindexObject()
-        analysis.reindexObject(idxs=['getWorksheetUID', ])
+        # Try to rollback the worksheet to prevent inconsistencies
+        doActionFor(self, "rollback_to_open")
 
-    security.declareProtected(EditWorksheet, 'removeAnalysis')
 
     def removeAnalysis(self, analysis):
-        """ delete an analyses from the worksheet and un-assign it
+        """ Unassigns the analysis passed in from the worksheet.
+        Delegates to 'unassign' transition for the analysis passed in
         """
-        # overwrite saved context UID for event subscriber
-        self.REQUEST['context_uid'] = self.UID()
-        doActionFor(analysis, 'unassign')
+        # Cannot remove an analysis if unassign transition is not possible
+        # unless the analysis has been rejected
+        if api.get_review_status(analysis) != "rejected":
+            if not isTransitionAllowed(analysis, "unassign"):
+                return
 
-        # remove analysis from context.Analyses *after* unassign,
-        # (doActionFor requires worksheet in analysis.getBackReferences)
-        Analyses = self.getAnalyses()
-        if analysis in Analyses:
-            Analyses.remove(analysis)
-            self.setAnalyses(Analyses)
-            analysis.reindexObject()
-        layout = [
-            slot for slot in self.getLayout()
-            if slot['analysis_uid'] != analysis.UID()]
+        # Removal of a routine analysis causes the removal of its duplicates
+        if not IDuplicateAnalysis.providedBy(analysis):
+            for dup in self.get_duplicates_for(analysis):
+                self.removeAnalysis(dup)
+
+        # Transition analysis to "unassigned"
+        doActionFor(analysis, "unassign")
+
+        analyses = filter(lambda an: an != analysis, self.getAnalyses())
+        self.setAnalyses(analyses)
+        self.purgeLayout()
+
+        if analyses:
+            # Maybe this analysis was the only one that was not yet submitted or
+            # verified, so try to submit or verify the Worksheet to be aligned
+            # with the current states of the analyses it contains.
+            doActionFor(self, "submit")
+            doActionFor(self, "verify")
+        else:
+            # We've removed all analyses. Rollback to "open"
+            doActionFor(self, "rollback_to_open")
+
+        return
+
+    def addToLayout(self, analysis, position=None):
+        """ Adds the analysis passed in to the worksheet's layout
+        """
+        # TODO Redux
+        layout = self.getLayout()
+        container_uid = self.get_container_for(analysis)
+        if IRequestAnalysis.providedBy(analysis) and \
+                not IDuplicateAnalysis.providedBy(analysis):
+            container_uids = map(lambda slot: slot['container_uid'], layout)
+            if container_uid in container_uids:
+                position = [int(slot['position']) for slot in layout if
+                            slot['container_uid'] == container_uid][0]
+            elif not position:
+                used_positions = [0, ] + [int(slot['position']) for slot in
+                                          layout]
+                position = [pos for pos in range(1, max(used_positions) + 2)
+                            if pos not in used_positions][0]
+
+        an_type = self.get_analysis_type(analysis)
+        self.setLayout(layout + [{'position': position,
+                                  'type': an_type,
+                                  'container_uid': container_uid,
+                                  'analysis_uid': api.get_uid(analysis)}, ])
+
+    def purgeLayout(self):
+        """ Purges the layout of not assigned analyses
+        """
+        uids = map(api.get_uid, self.getAnalyses())
+        layout = filter(lambda slot: slot.get("analysis_uid", None) in uids,
+                        self.getLayout())
         self.setLayout(layout)
-
-        if analysis.portal_type == "DuplicateAnalysis":
-            self.manage_delObjects(ids=[analysis.id])
-        # Reindex the worksheet in order to update its columns
-        self.reindexObject()
 
     def _getMethodsVoc(self):
         """
@@ -260,62 +311,60 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    @deprecated("[1712] Use addReferenceAnalyses instead")
-    def addReferences(self, position, reference, service_uids):
-        """ Add reference analyses to reference, and add to worksheet layout
-        """
-        self.addReferenceAnalyses(reference, service_uids, position)
-
-    def addReferenceAnalyses(self, reference, service_uids, dest_slot=None):
-        """
-        Creates and add reference analyses to the dest_slot by using the
+    def addReferenceAnalyses(self, reference, services, slot=None):
+        """ Creates and add reference analyses to the slot by using the
         reference sample and service uids passed in.
         If no destination slot is defined, the most suitable slot will be used,
         typically a new slot at the end of the worksheet will be added.
         :param reference: reference sample to which ref analyses belong
         :param service_uids: he uid of the services to create analyses from
-        :param dest_slot: slot where reference aanalyses must be stored
+        :param slot: slot where reference analyses must be stored
         :return: the list of reference analyses added
         """
-        slot_to = to_int(dest_slot)
+        service_uids = list()
+        for service in services:
+            if api.is_uid(service):
+                service_uids.append(service)
+            else:
+                service_uids.append(api.get_uid(service))
+        service_uids = list(set(service_uids))
+
+        # Cannot add a reference analysis if not open
+        if api.get_workflow_status_of(self) != "open":
+            return []
+
+        slot_to = to_int(slot)
         if slot_to < 0:
-            return
+            return []
 
         if not slot_to:
             # Find the suitable slot to add these references
-            slot_to = self._get_suitable_slot_for_references(reference)
-            if slot_to < 1:
-                return
+            slot_to = self.get_suitable_slot_for_reference(reference)
+            return self.addReferenceAnalyses(reference, service_uids, slot_to)
 
-        dest = self.get_analyses_at(slot_to)
-        processed = [api.get_uid(an.getAnalysisService()) for an in dest]
+        processed = list()
+        for analysis in self.get_analyses_at(slot_to):
+            if api.get_review_status(analysis) != "retracted":
+                service = analysis.getAnalysisService()
+                processed.append(api.get_uid(service))
+        query = dict(portal_type="AnalysisService", UID=service_uids,
+                     sort_on="sortable_title")
+        services = filter(lambda service: api.get_uid(service) not in processed,
+                          api.search(query, "bika_setup_catalog"))
+
+        # Ref analyses from the same slot must have the same group id
+        ref_gid = self.nextRefAnalysesGroupID(reference)
         ref_analyses = list()
-
-        # We want the analyses to appear sorted within the slot
-        bsc = api.get_tool('bika_setup_catalog')
-        services = bsc(portal_type='AnalysisService',
-                       UID=service_uids,
-                       sort_on='sortable_title')
-        refgid = None
         for service in services:
-            service_uid = service.UID
-            if service_uid in processed:
+            service_obj = api.get_object(service)
+            ref_analysis = self.add_reference_analysis(reference, service_obj,
+                                                        slot_to, ref_gid)
+            if not ref_analysis:
                 continue
-
-            processed.append(service_uid)
-            ref_analysis = self._add_reference_analysis(reference,
-                                                        service_uid,
-                                                        slot_to,
-                                                        refgid)
-
-            if ref_analysis:
-                # All ref analyses from the same slot must have the same group id
-                refgid = ref_analysis.getReferenceAnalysesGroupID()
-                ref_analyses.append(ref_analysis)
+            ref_analyses.append(ref_analysis)
         return ref_analyses
 
-    def _add_reference_analysis(self, reference, service_uid, dest_slot,
-                                refgid=None):
+    def add_reference_analysis(self, reference, service, slot, ref_gid=None):
         """
         Creates a reference analysis in the destination slot (dest_slot) passed
         in, by using the reference and service_uid. If the analysis
@@ -323,12 +372,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         None. If no reference analyses group id (refgid) is set, the value will
         be generated automatically.
         :param reference: reference sample to create an analysis from
-        :param service_uid: the uid of the service to create an analysis from
-        :param dest_slot: slot where the reference analysis must be stored
+        :param service: the service object to create an analysis from
+        :param slot: slot where the reference analysis must be stored
         :param refgid: the reference analyses group id to be set
         :return: the reference analysis or None
         """
-        if not reference or not service_uid:
+        if not reference or not service:
             return None
 
         if not IReferenceSample.providedBy(reference):
@@ -336,44 +385,31 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                            'reference sample: {}'.format(reference.getId()))
             return None
 
-        uc = api.get_tool('uid_catalog')
-        brains = uc(portal_type='AnalysisService', UID=service_uid)
-        if not brains:
-            logger.warning('No Service found for UID {}'.format(service_uid))
-            return None
-
-        service = api.get_object(brains[0])
         calc = service.getCalculation()
         if calc and calc.getDependentServices():
             logger.warning('Cannot create reference analyses with dependent'
                            'services: {}'.format(service.getId()))
             return None
 
-        ref_type = reference.getBlank() and 'b' or 'c'
-        ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-        ref_analysis = uc(UID=ref_uid)[0]
-        ref_analysis = api.get_object(ref_analysis)
+        # Create the reference analysis
+        ref_analysis = reference.addReferenceAnalysis(service)
 
         # Set ReferenceAnalysesGroupID (same id for the analyses from
         # the same Reference Sample and same Worksheet)
-        self._set_referenceanalysis_groupid(ref_analysis, refgid)
+        gid = ref_gid and ref_gid or self.nextRefAnalysesGroupID(reference)
+        ref_analysis.setReferenceAnalysesGroupID(gid)
 
-        # Set the layout
-        layout = self.getLayout()
-        ref_pos = {'position': dest_slot,
-                   'type': ref_type,
-                   'container_uid': api.get_uid(reference),
-                   'analysis_uid': ref_uid}
-        layout.append(ref_pos)
-        self.setLayout(layout)
-
-        # Add the duplicate in the worksheet
+        # Add the reference analysis into the worksheet
         self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
-        doActionFor(ref_analysis, 'assign')
-        self.reindexObject()
+        self.addToLayout(ref_analysis, slot)
+
+        # Reindex
+        ref_analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
+                                         "getReferenceAnalysesGroupID"])
+        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
         return ref_analysis
 
-    def nextReferenceAnalysesGroupID(self, reference):
+    def nextRefAnalysesGroupID(self, reference):
         """ Returns the next ReferenceAnalysesGroupID for the given reference
             sample. Gets the last reference analysis registered in the system
             for the specified reference sample and increments in one unit the
@@ -395,60 +431,61 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             suffix = str(_id + 1).zfill(2)
         return '%s%s' % (prefix, suffix)
 
-    security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
-
     def addDuplicateAnalyses(self, src_slot, dest_slot=None):
-        """Creates and add duplicate analyes from the src_slot to the dest_slot
-
+        """ Creates and add duplicate analyes from the src_slot to the dest_slot
         If no destination slot is defined, the most suitable slot will be used,
         typically a new slot at the end of the worksheet will be added.
-
         :param src_slot: slot that contains the analyses to duplicate
-        :param dest_slot: slot where the duplicate analysis must be stored
+        :param dest_slot: slot where the duplicate analyses must be stored
         :return: the list of duplicate analyses added
         """
+        # Duplicate analyses can only be added if the state of the ws is open
+        # unless we are adding a retest
+        if api.get_workflow_status_of(self) != "open":
+            return []
+
         slot_from = to_int(src_slot, 0)
         if slot_from < 1:
-            return
+            return []
 
         slot_to = to_int(dest_slot, 0)
         if slot_to < 0:
-            return
+            return []
 
         if not slot_to:
-            # Just find the suitable slot to add these duplicates
-            slot_to = self._get_suitable_slot_for_duplicate(slot_from)
-            if slot_to < 1:
-                return
+            # Find the suitable slot to add these duplicates
+            slot_to = self.get_suitable_slot_for_duplicate(slot_from)
+            return self.addDuplicateAnalyses(src_slot, slot_to)
 
-        src_analyses = self.get_analyses_at(slot_from)
-        dest_analyses = self.get_analyses_at(slot_to)
-        processed = [api.get_uid(an.getAnalysis()) for an in dest_analyses]
+        processed = map(lambda an: api.get_uid(an.getAnalysis()),
+                        self.get_analyses_at(slot_to))
+        src_analyses = list()
+        for analysis in self.get_analyses_at(slot_from):
+            if api.get_uid(analysis) in processed:
+                if api.get_workflow_status_of(analysis) != "retracted":
+                    continue
+            src_analyses.append(analysis)
+        ref_gid = None
         duplicates = list()
-        refgid = None
         for analysis in src_analyses:
-            analysis_uid = api.get_uid(analysis)
-            if analysis_uid in processed:
+            duplicate = self.add_duplicate_analysis(analysis, slot_to, ref_gid)
+            if not duplicate:
                 continue
-
-            processed.append(analysis_uid)
-            duplicate = self._add_duplicate(analysis, slot_to, refgid)
-
-            if duplicate:
-                # All duplicates from the same slot must have the same group id
-                refgid = duplicate.getReferenceAnalysesGroupID()
-                duplicates.append(duplicate)
+            # All duplicates from the same slot must have the same group id
+            ref_gid = ref_gid or duplicate.getReferenceAnalysesGroupID()
+            duplicates.append(duplicate)
         return duplicates
 
-    def _add_duplicate(self, src_analysis, destination_slot, refgid=None):
+    def add_duplicate_analysis(self, src_analysis, destination_slot,
+                               ref_gid=None):
         """
         Creates a duplicate of the src_analysis passed in. If the analysis
         passed in is not an IRoutineAnalysis, is retracted or has dependent
-        services, returns None.If no reference analyses group id (refgid) is
+        services, returns None.If no reference analyses group id (ref_gid) is
         set, the value will be generated automatically.
         :param src_analysis: analysis to create a duplicate from
         :param destination_slot: slot where duplicate analysis must be stored
-        :param refgid: the reference analysis group id to be set
+        :param ref_gid: the reference analysis group id to be set
         :return: the duplicate analysis or None
         """
         if not src_analysis:
@@ -459,11 +496,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                            'routine analysis: {}'.format(src_analysis.getId()))
             return None
 
-        if getCurrentState(src_analysis) == 'retracted':
+        if api.get_review_status(src_analysis) == 'retracted':
             logger.warning('Cannot create duplicate analysis from a retracted'
                            'analysis: {}'.format(src_analysis.getId()))
             return None
 
+        # TODO Workflow - Duplicate Analyses - Consider duplicates with deps
+        # Removing this check from here and ensuring that duplicate.getSiblings
+        # returns the analyses sorted by priority (duplicates from same
+        # AR > routine analyses from same AR > duplicates from same WS >
+        # routine analyses from same WS) should be almost enough
         calc = src_analysis.getCalculation()
         if calc and calc.getDependentServices():
             logger.warning('Cannot create duplicate analysis from an'
@@ -477,53 +519,21 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Set ReferenceAnalysesGroupID (same id for the analyses from
         # the same Reference Sample and same Worksheet)
-        self._set_referenceanalysis_groupid(duplicate, refgid)
+        if not ref_gid:
+            ref_gid = self.nextRefAnalysesGroupID(duplicate.getSample())
+        duplicate.setReferenceAnalysesGroupID(ref_gid)
 
-        # Set the layout
-        layout = self.getLayout()
-        dup_pos = {'position': destination_slot,
-                   'type': 'd',
-                   'container_uid': duplicate.getRequestUID(),
-                   'analysis_uid': api.get_uid(duplicate)}
-        layout.append(dup_pos)
-        self.setLayout(layout)
-
-        # Add the duplicate in the worksheet
+        # Add the duplicate into the worksheet
+        self.addToLayout(duplicate, destination_slot)
         self.setAnalyses(self.getAnalyses() + [duplicate, ])
-        doActionFor(duplicate, 'assign')
-        self.reindexObject()
 
+        # Reindex
+        duplicate.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
+                                      "getReferenceAnalysesGroupID"])
+        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
         return duplicate
 
-    def _set_referenceanalysis_groupid(self, analysis, refgid=None):
-        """
-        Inferes and store the reference analysis group id to the analysis passed
-        in. If the analysis passed in is neither a reference analysis nor a
-        duplicate, does nothing. If no reference analyses group id (refgid) is
-        set, the value will be generated automatically.
-        Reference analysis group id is used to differentiate multiple reference
-        analyses for the same sample/analysis within a worksheet.
-        :param analysis: analysis to set the reference analysis group id
-        :param refgid: the reference analyses group id to be used
-        """
-        if not analysis:
-            return
-
-        is_duplicate = IDuplicateAnalysis.providedBy(analysis)
-        is_reference = IReferenceAnalysis.providedBy(analysis)
-        if not is_duplicate and not is_reference:
-            logger.warn('Cannot set a reference analysis group id to an '
-                        'analysis that is neither a reference analysis nor '
-                        'a duplicate: {}'.format(analysis.getId()))
-            return
-
-        sample = analysis.getSample()
-        if not refgid:
-            refgid = self.nextReferenceAnalysesGroupID(sample)
-        analysis.setReferenceAnalysesGroupID(refgid)
-        analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
-
-    def _get_suitable_slot_for_duplicate(self, src_slot):
+    def get_suitable_slot_for_duplicate(self, src_slot):
         """Returns the suitable position for a duplicate analysis, taking into
         account if there is a WorksheetTemplate assigned to this worksheet.
 
@@ -536,14 +546,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         slot_from = to_int(src_slot, 0)
         if slot_from < 1:
-            return 0
+            return -1
 
         # Are the analyses from src_slot suitable for duplicates creation?
         container = self.get_container_at(slot_from)
         if not container or not IAnalysisRequest.providedBy(container):
             # We cannot create duplicates from analyses other than routine ones,
             # those that belong to an Analysis Request.
-            return 0
+            return -1
 
         occupied = self.get_slot_positions(type='all')
         wst = self.getWorksheetTemplate()
@@ -576,20 +586,19 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         slot_to = max(occupied) + 1
         return slot_to
 
-    def _get_suitable_slot_for_references(self, reference):
+    def get_suitable_slot_for_reference(self, reference):
         """Returns the suitable position for reference analyses, taking into
         account if there is a WorksheetTemplate assigned to this worksheet.
 
         By default, returns a new slot at the end of the worksheet unless there
         is a slot defined for a reference of the same type (blank or control)
-        in the worksheet template's layout that hasn't been used yet template
-        layout not yet used.
+        in the worksheet template's layout that hasn't been used yet.
 
         :param reference: ReferenceSample the analyses will be created from
         :return: suitable slot position for reference analyses
         """
         if not IReferenceSample.providedBy(reference):
-            return 0
+            return -1
 
         occupied = self.get_slot_positions(type='all')
         wst = self.getWorksheetTemplate()
@@ -632,18 +641,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         if not analysis:
             return list()
-        analysis_uid = api.get_uid(analysis)
-        matches = list()
-        duplicates = self.getDuplicates()
-
-        for duplicate in duplicates:
-            dup_analysis = duplicate.getAnalysis()
-            dup_analysis_uid = api.get_uid(dup_analysis)
-            if dup_analysis_uid != analysis_uid:
-                continue
-            matches.append(dup_analysis)
-
-        return matches
+        uid = api.get_uid(analysis)
+        return filter(lambda dup: api.get_uid(dup.getAnalysis()) == uid,
+                      self.getDuplicateAnalyses())
 
     def get_analyses_at(self, slot):
         """Returns the list of analyses assigned to the slot passed in, sorted by
@@ -745,6 +745,35 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return to_int(pos['position'])
         return None
 
+    def get_analysis_type(self, instance):
+        """Returns the string used in slots to differentiate amongst analysis
+        types
+        """
+        if IDuplicateAnalysis.providedBy(instance):
+            return 'd'
+        elif IReferenceAnalysis.providedBy(instance):
+            return instance.getReferenceType()
+        elif IRoutineAnalysis.providedBy(instance):
+            return 'a'
+        return None
+
+    def get_container_for(self, instance):
+        """Returns the container id used in slots to group analyses
+        """
+        if IReferenceAnalysis.providedBy(instance):
+            return api.get_uid(instance.getSample())
+        return instance.getRequestUID()
+
+    def get_slot_position_for(self, instance):
+        """Returns the slot where the instance passed in is located. If not
+        found, returns None
+        """
+        analysis_type = self.get_analysis_type(instance)
+        container = self.get_container_for(instance)
+        slot = self.get_slot_position(container, analysis_type)
+        analyses = self.get_analyses_at(slot)
+        return instance in analyses and slot or None
+
     def resolve_available_slots(self, worksheet_template, type='a'):
         """Returns the available slots from the current worksheet that fits
         with the layout defined in the worksheet_template and type of analysis
@@ -798,16 +827,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         bac = api.get_tool("bika_analysis_catalog")
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
-
         query = {
             "portal_type": "Analysis",
             "getServiceUID": wst_service_uids,
-            "review_state": "sample_received",
-            "worksheetanalysis_review_state": "unassigned",
+            "review_state": "unassigned",
+            "isSampleReceived": True,
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
         }
 
+        # Filter analyses their Analysis Requests have been received
         analyses = bac(query)
 
         # No analyses, nothing to do
@@ -1085,19 +1114,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if method:
             self.setMethod(method, True)
 
-    def exportAnalyses(self, REQUEST=None, RESPONSE=None):
-        """ Export analyses from this worksheet """
-        import bika.lims.InstrumentExport as InstrumentExport
-        instrument = REQUEST.form['getInstrument']
-        try:
-            func = getattr(InstrumentExport, "%s_export" % instrument)
-        except:
-            return
-        func(self, REQUEST, RESPONSE)
-        return
-
-    security.declarePublic('getWorksheetServices')
-
     def getInstrumentTitle(self):
         """
         Returns the instrument title
@@ -1229,62 +1245,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # discarding any duplicate values
         return len(set(samples))
 
-    security.declareProtected(EditWorksheet, 'resequenceWorksheet')
-
-    def resequenceWorksheet(self, REQUEST=None, RESPONSE=None):
-        """  Reset the sequence of analyses in the worksheet """
-        """ sequence is [{'pos': , 'type': , 'uid', 'key'},] """
-        old_seq = self.getLayout()
-        new_dict = {}
-        new_seq = []
-        other_dict = {}
-        for seq in old_seq:
-            if seq['key'] == '':
-                if seq['pos'] not in other_dict:
-                    other_dict[seq['pos']] = []
-                other_dict[seq['pos']].append(seq)
-                continue
-            if seq['key'] not in new_dict:
-                new_dict[seq['key']] = []
-            analyses = new_dict[seq['key']]
-            analyses.append(seq)
-            new_dict[seq['key']] = analyses
-        new_keys = sorted(new_dict.keys())
-
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        seqno = 1
-        for key in new_keys:
-            analyses = {}
-            if len(new_dict[key]) == 1:
-                new_dict[key][0]['pos'] = seqno
-                new_seq.append(new_dict[key][0])
-            else:
-                for item in new_dict[key]:
-                    item['pos'] = seqno
-                    analysis = rc.lookupObject(item['uid'])
-                    service = analysis.Title()
-                    analyses[service] = item
-                a_keys = sorted(analyses.keys())
-                for a_key in a_keys:
-                    new_seq.append(analyses[a_key])
-            seqno += 1
-        other_keys = other_dict.keys()
-        other_keys.sort()
-        for other_key in other_keys:
-            for item in other_dict[other_key]:
-                item['pos'] = seqno
-                new_seq.append(item)
-            seqno += 1
-
-        self.setLayout(new_seq)
-        RESPONSE.redirect('%s/manage_results' % self.absolute_url())
-
-    security.declarePublic('current_date')
-
-    def current_date(self):
-        """ return current date """
-        return DateTime()
-
     def setInstrument(self, instrument, override_analyses=False):
         """ Sets the specified instrument to the Analysis from the
             Worksheet. Only sets the instrument if the Analysis
@@ -1342,14 +1302,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.getField('Method').set(self, method)
         return total
 
-    @deprecated('[1703] Orphan. No alternative')
-    def getFolderContents(self, contentFilter):
-        """
-        """
-        # The bika_listing machine passes contentFilter to all
-        # contentsMethod methods.  We ignore it.
-        return list(self.getAnalyses())
-
     def getAnalystName(self):
         """ Returns the name of the currently assigned analyst
         """
@@ -1359,76 +1311,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if analyst_member is not None:
             return analyst_member.getProperty('fullname')
         return analyst
-
-    def isVerifiable(self):
-        """
-        Checks it the current Worksheet can be verified. This is, its
-        not a cancelled Worksheet and all the analyses that contains
-        are verifiable too. Note that verifying a Worksheet is in fact,
-        the same as verifying all the analyses that contains. Therefore, the
-        'verified' state of a Worksheet shouldn't be a 'real' state,
-        rather a kind-of computed state, based on the statuses of the analyses
-        it contains. This is why this function checks if the analyses
-        contained are verifiable, cause otherwise, the Worksheet will
-        never be able to reach a 'verified' state.
-        :returns: True or False
-        """
-        # Check if the worksheet is active
-        workflow = getToolByName(self, "portal_workflow")
-        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
-        if objstate == "cancelled":
-            return False
-
-        # Check if the worksheet state is to_be_verified
-        review_state = workflow.getInfoFor(self, "review_state")
-        if review_state == 'to_be_verified':
-            # This means that all the analyses from this worksheet have
-            # already been transitioned to a 'verified' state, and so the
-            # woksheet itself
-            return True
-        else:
-            # Check if the analyses contained in this worksheet are
-            # verifiable. Only check those analyses not cancelled and that
-            # are not in a kind-of already verified state
-            canbeverified = True
-            omit = ['published', 'retracted', 'rejected', 'verified']
-            for a in self.getAnalyses():
-                st = workflow.getInfoFor(a, 'cancellation_state', 'active')
-                if st == 'cancelled':
-                    continue
-                st = workflow.getInfoFor(a, 'review_state')
-                if st in omit:
-                    continue
-                # Can the analysis be verified?
-                if not a.isVerifiable(self):
-                    canbeverified = False
-                    break
-            return canbeverified
-
-    def isUserAllowedToVerify(self, member):
-        """
-        Checks if the specified user has enough privileges to verify the
-        current WS. Apart from the roles, this function also checks if the
-        current user has enough privileges to verify all the analyses contained
-        in this Worksheet. Note that this function only returns if the
-        user can verify the worksheet according to his/her privileges
-        and the analyses contained (see isVerifiable function)
-        :member: user to be tested
-        :returns: true or false
-        """
-        # Check if the user has "Bika: Verify" privileges
-        username = member.getUserName()
-        allowed = has_permission(VerifyPermission, username=username)
-        if not allowed:
-            return False
-        # Check if the user is allowed to verify all the contained analyses
-        notallowed = [a for a in self.getAnalyses()
-                      if not a.isUserAllowedToVerify(member)]
-        return not notallowed
-
-    @security.public
-    def guard_verify_transition(self):
-        return guards.verify(self)
 
     def getObjectWorkflowStates(self):
         """
@@ -1445,18 +1327,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             states[w.state_var] = state
         return states
 
-    @security.public
-    def workflow_script_submit(self):
-        events.after_submit(self)
-
-    @security.public
-    def workflow_script_retract(self):
-        events.after_retract(self)
-
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
-
+    # TODO Workflow - Worksheet - Move to workflow.worksheet.events
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real
            create a new worksheet, with the original analyses, and new
@@ -1576,9 +1447,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'ReferenceAnalysis':
                 service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
-                reference_type = analysis.getReferenceType()
-                new_analysis_uid = reference.addReferenceAnalysis(service_uid,
-                                                                  reference_type)
+                new_reference = reference.addReferenceAnalysis(service_uid)
+                reference_type = new_reference.getReferenceType()
+                new_analysis_uid = api.get_uid(new_reference)
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
@@ -1591,8 +1462,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                    'analysis_uid': new_analysis_uid,
                                    'container_uid': reference.UID()})
                 workflow.doActionFor(analysis, 'reject')
-                new_reference = reference.uid_catalog(UID=new_analysis_uid)[0].getObject()
-                workflow.doActionFor(new_reference, 'assign')
                 analysis.reindexObject()
             # Duplicate analyses
             # - Create a new duplicate inside the new worksheet
@@ -1603,7 +1472,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                                     new_ws, duplicate_id)
                 new_duplicate.unmarkCreationFlag()
                 copy_src_fields_to_dst(analysis, new_duplicate)
-                workflow.doActionFor(new_duplicate, 'assign')
                 new_duplicate.reindexObject()
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
@@ -1625,12 +1493,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in new_ws.getAnalyses():
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'to_be_verified':
-                changeWorkflowState(analysis, "bika_analysis_workflow", "sample_received")
+                # TODO Workflow - Analysis Retest transition within a Worksheet
+                changeWorkflowState(analysis, "bika_analysis_workflow", "assigned")
         self.REQUEST['context_uid'] = self.UID()
         self.setLayout(old_layout)
         self.setAnalyses(old_ws_analyses)
         self.replaced_by = new_ws.UID()
 
+    # TODO Workflow - Worksheet - Remove this function
     def checkUserManage(self):
         """ Checks if the current user has granted access to this worksheet
             and if has also privileges for managing it.
@@ -1654,6 +1524,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         return granted
 
+    # TODO Workflow - Worksheet - Remove this function
     def checkUserAccess(self):
         """ Checks if the current user has granted access to this worksheet.
             Returns False if the user has no access, otherwise returns True

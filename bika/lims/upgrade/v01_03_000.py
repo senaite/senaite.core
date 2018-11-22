@@ -12,9 +12,15 @@ from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.workflow import changeWorkflowState
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import doActionFor as do_action_for
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -51,6 +57,7 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, 'typeinfo')
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -87,6 +94,12 @@ def upgrade(tool):
     # Add catalog indexes for reference sample handling in Worksheets
     # https://github.com/senaite/senaite.core/pull/1091
     add_reference_sample_indexes(portal)
+
+    # Removed `not requested analyses` from AR view
+    remove_not_requested_analyses_view(portal)
+
+    # Update workflows
+    update_workflows(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -228,6 +241,18 @@ def add_index(portal, catalog_id, index_name, index_attribute, index_metatype):
     catalog.manage_reindexIndex(index_name)
 
 
+def del_index(portal, catalog_id, index_name):
+    logger.info("Removing '{}' index from '{}' ..."
+                .format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name not in catalog.indexes():
+        logger.info("Index '{}' not in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.delIndex(index_name)
+    logger.info("Removing old index '{}' ...".format(index_name))
+
+
 def add_metadata(portal, catalog_id, column, refresh_catalog=False):
     logger.info("Adding '{}' metadata to '{}' ...".format(column, catalog_id))
     catalog = api.get_tool(catalog_id)
@@ -235,13 +260,29 @@ def add_metadata(portal, catalog_id, column, refresh_catalog=False):
         logger.info("Metadata '{}' already in catalog '{}' [SKIP]"
                     .format(column, catalog_id))
         return
-
     catalog.addColumn(column)
 
     if refresh_catalog:
         logger.info("Refreshing catalog '{}' ...".format(catalog_id))
         handler = ZLogHandler(steps=100)
         catalog.refreshCatalog(pghandler=handler)
+
+
+def del_metadata(portal, catalog_id, column, refresh_catalog=False):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.delColumn(column)
+
+    if refresh_catalog:
+        logger.info("Refreshing catalog '{}' ...".format(catalog_id))
+        handler = ZLogHandler(steps=100)
+        catalog.refreshCatalog(pghandler=handler)
+
 
 def remove_sample_prep_workflow(portal):
     """Removes sample_prep and sample_prep_complete transitions
@@ -360,3 +401,456 @@ def add_reference_sample_indexes(portal):
               index_name="isValid",
               index_attribute="isValid",
               index_metatype="BooleanIndex")
+
+
+def remove_not_requested_analyses_view(portal):
+    """Remove the view 'Not requested analyses" from inside AR
+    """
+    logger.info("Removing 'Analyses not requested' view ...")
+    ar_ptype = portal.portal_types.AnalysisRequest
+    ar_ptype._actions = filter(lambda act: act.id != "analyses_not_requested",
+                               ar_ptype.listActions())
+
+
+def update_workflows(portal):
+    logger.info("Updating workflows ...")
+
+    # IMPORTANT: The order of function calls is important!
+
+    # Need to know first for which workflows we'll need later to update role
+    # mappings. This will allow us to update role mappings for those required
+    # objects instead of all them. I know, would be easier to just do all them,
+    # but we cannot afford such an approach for huge databases
+    rm_queries = get_role_mappings_candidates(portal)
+
+    # Assign retracted analyses to retests
+    assign_retracted_to_retests(portal)
+
+    # Remove rejected duplicates
+    remove_rejected_duplicates(portal)
+
+    # Re-import workflow tool
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, 'workflow')
+
+    # Remove duplicates not assigned to any worksheet
+    remove_orphan_duplicates(portal)
+
+    # Remove reference analyses not assigned to any worksheet or instrument
+    remove_orphan_reference_analyses(portal)
+
+    # Fix analyses stuck in sample* states
+    decouple_analyses_from_sample_workflow(portal)
+
+    # Remove worksheet_analysis workflow
+    remove_worksheet_analysis_workflow(portal)
+
+    # Fix cancelled analyses inconsistencies
+    fix_cancelled_analyses_inconsistencies(portal)
+
+    # Update role mappings
+    update_role_mappings(portal, rm_queries)
+
+    # Rollback to receive inconsistent ARs
+    rollback_to_receive_inconsistent_ars(portal)
+
+
+def remove_orphan_duplicates(portal):
+    logger.info("Removing orphan duplicates ...")
+    wf_id = "bika_duplicateanalysis_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="DuplicateAnalysis",
+                 review_state="unassigned")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        orphan = api.get_object(brain)
+        worksheet = orphan.getWorksheet()
+        if worksheet:
+            logger.info("Reassigning orphan duplicate: {}/{}"
+                        .format(num, total))
+            # This one has a worksheet! reindex and do nothing
+            changeWorkflowState(orphan, wf_id, "assigned")
+            # Update role mappings
+            workflow.updateRoleMappingsFor(orphan)
+            # Reindex
+            orphan.reindexObject()
+            continue
+
+        if num % 100 == 0:
+            logger.info("Removing orphan duplicate: {}/{}"
+                        .format(num, total))
+        # Remove the duplicate
+        orphan.aq_parent.manage_delObjects([orphan.getId()])
+
+
+def remove_rejected_duplicates(portal):
+    logger.info("Removing rejected duplicates ...")
+    query = dict(portal_type="DuplicateAnalysis",
+                 review_state="rejected")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Removing rejected duplicate: {}/{}"
+                        .format(num, total))
+        orphan = api.get_object(brain)
+        worksheet = orphan.getWorksheet()
+        if worksheet:
+            # Remove from the worksheet first
+            analyses = filter(lambda an: an != orphan, worksheet.getAnalyses())
+            worksheet.setAnalyses(analyses)
+            worksheet.purgeLayout()
+
+        # Remove the duplicate
+        orphan.aq_parent.manage_delObjects([orphan.getId()])
+
+
+def remove_orphan_reference_analyses(portal):
+    logger.info("Removing orphan reference analyses ...")
+    wf_id = "bika_referenceanalysis_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="ReferenceAnalysis",
+                 review_state="unassigned")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        orphan = api.get_object(brain)
+        worksheet = orphan.getWorksheet()
+        if worksheet:
+            logger.info("Reassigning orphan reference: {}/{}"
+                        .format(num, total))
+            # This one has a worksheet! reindex and do nothing
+            changeWorkflowState(orphan, wf_id, "assigned")
+            # Update role mappings
+            workflow.updateRoleMappingsFor(orphan)
+            # Reindex
+            orphan.reindexObject()
+            continue
+        elif orphan.getInstrument():
+            # This is a calibration test, do nothing!
+            if not brain.getInstrumentUID:
+                orphan.reindexObject()
+            total -= 1
+            continue
+
+        if num % 100 == 0:
+            logger.info("Removing orphan reference analysis: {}/{}"
+                        .format(num, total))
+        # Remove the duplicate
+        orphan.aq_parent.manage_delObjects([orphan.getId()])
+
+
+def assign_retracted_to_retests(portal):
+    logger.info("Reassigning retracted to retests ...")
+    # Note this is confusing, getRetested index tells us if the analysis is a
+    # retest, not the other way round! (the analysis has been retested)
+    catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+    if "getRetested" not in catalog.indexes():
+        return
+
+    processed = list()
+    query = dict(getRetested="True")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        retest = api.get_object(brain)
+        retest_uid = api.get_uid(retest)
+        if retest.getRetestOf():
+            # We've been resolved this inconsistency already
+            total -= 1
+            continue
+        # Look for the retest
+        if IDuplicateAnalysis.providedBy(retest):
+            worksheet = retest.getWorksheet()
+            if not worksheet:
+                total -= 1
+                continue
+            for dup in worksheet.get_duplicates_for(retest.getAnalysis()):
+                if api.get_uid(dup) != retest_uid \
+                        and api.get_workflow_status_of(dup) == "retracted":
+                    retest.setRetestOf(dup)
+                    processed.append(retest)
+                    break
+        elif IReferenceAnalysis.providedBy(retest):
+            worksheet = retest.getWorksheet()
+            if not worksheet:
+                total -= 1
+                continue
+            ref_type = retest.getReferenceType()
+            slot = worksheet.get_slot_position(retest.getSample(), ref_type)
+            for ref in worksheet.get_analyses_at(slot):
+                if api.get_uid(ref) != retest_uid \
+                        and api.get_workflow_status_of(ref) == "retracted":
+                    retest.setRetestOf(ref)
+                    processed.append(retest)
+                    break
+        else:
+            request = retest.getRequest()
+            keyword = retest.getKeyword()
+            analyses = request.getAnalyses(review_state="retracted",
+                                           getKeyword=keyword)
+            if not analyses:
+                total -= 1
+                continue
+            retest.setRetestOf(analyses[-1])
+            processed.append(retest)
+
+        if num % 100 == 0:
+            logger.info("Reassigning retracted analysis: {}/{}"
+                        .format(num, total))
+
+    del_metadata(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+                 column="getRetested")
+
+    add_metadata(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+                 column="getRetestOfUID")
+
+    del_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="getRetested")
+
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="isRetest",
+              index_attribute="isRetest",
+              index_metatype="BooleanIndex")
+
+    total = len(processed)
+    for num, analysis in enumerate(processed):
+        if num % 100 == 0:
+            logger.info("Reindexing retests: {}/{}"
+                        .format(num, total))
+        analysis.reindexObject(idxs="isRetest")
+
+
+def fix_cancelled_analyses_inconsistencies(portal):
+    logger.info("Resolving cancelled analyses inconsistencies ...")
+    wf_id = "bika_analysis_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="Analysis", cancellation_state="cancelled")
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if brain.review_state == "cancelled":
+            continue
+        if num % 100 == 0:
+            logger.info("Resolving state to 'cancelled': {}/{}"
+                        .format(num, total))
+        # Set state
+        analysis = api.get_object(brain)
+        changeWorkflowState(analysis, wf_id, "cancelled")
+        # Update role mappings
+        workflow.updateRoleMappingsFor(analysis)
+        # Reindex
+        analysis.reindexObject(idxs=["cancellation_state"])
+
+
+def get_role_mappings_candidates(portal):
+    logger.info("Getting candidates for role mappings ...")
+
+    candidates = list()
+    wf_tool = api.get_tool("portal_workflow")
+
+    # Analysis workflow
+    workflow = wf_tool.getWorkflowById("bika_analysis_workflow")
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            ("bika_analysis_workflow",
+             dict(portal_type="Analysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            ("bika_analysis_workflow",
+             dict(portal_type="Analysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Duplicate Analysis Workflow
+    workflow = wf_tool.getWorkflowById("bika_duplicateanalysis_workflow")
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            ("bika_duplicateanalysis_workflow",
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Duplicate Analysis Workflow: unasssigned
+    if "unassigned" in workflow.states:
+        candidates.append(
+            ("bika_duplicateanalysis_workflow",
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Duplicate Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            ("bika_duplicateanalysis_workflow",
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Reference Analysis Workflow
+    workflow = wf_tool.getWorkflowById("bika_referenceanalysis_workflow")
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            ("bika_referenceanalysis_workflow",
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Reference Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            ("bika_referenceanalysis_workflow",
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Reference Analysis Workflow: unasssigned
+    if "unassigned" in workflow.states:
+        candidates.append(
+            ("bika_referenceanalysis_workflow",
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Analysis Request workflow: rollback_to_receive
+    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
+    if "rollback_to_receive" not in workflow.transitions:
+        candidates.append(
+            ("bika_ar_workflow",
+             dict(portal_type="AnalysisRequest",
+                  review_state=["to_be_verified"]),
+             CATALOG_ANALYSIS_REQUEST_LISTING))
+
+    # Analysis Request workflow: cancel permissions - do not allow cancel
+    # transition from attachment_due and to_be_verified states
+    candidates.append(
+        ("bika_ar_workflow",
+        dict(portal_type="AnalysisRequest",
+             review_state=["attachment_due", "to_be_verified"]),
+             CATALOG_ANALYSIS_REQUEST_LISTING))
+
+    # Worksheet workflow: rollback_to_open
+    workflow = wf_tool.getWorkflowById("bika_worksheet_workflow")
+    if "rollback_to_open" not in workflow.transitions:
+        candidates.append(
+            ("bika_worksheet_workflow",
+             dict(portal_type="Worksheet",
+                  review_state=["to_be_verified"]),
+             CATALOG_WORKSHEET_LISTING))
+
+    return candidates
+
+
+def decouple_analyses_from_sample_workflow(portal):
+    logger.info("Decoupling analyses from sample workflow ...")
+
+    add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="isSampleReceived",
+              index_attribute="isSampleReceived",
+              index_metatype="BooleanIndex")
+
+    wf_id = "bika_analysis_workflow"
+    affected_rs = ["sample_registered", "to_be_sampled", "sampled",
+                   "sample_due", "sample_received", "to_be_preserved",
+                   "not_requested", "registered"]
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type=["Analysis" "DuplicateAnalysis"],
+                 review_state=affected_rs)
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        # Set state
+        analysis = api.get_object(brain)
+        target_state = analysis.getWorksheet() and "assigned" or "unassigned"
+
+        if num % 100 == 0:
+            logger.info("Restoring state to '{}': {}/{}"
+                        .format(target_state, num, total))
+
+        changeWorkflowState(analysis, wf_id, target_state)
+
+        # Update role mappings
+        workflow.updateRoleMappingsFor(analysis)
+
+        # Reindex
+        analysis.reindexObject()
+
+
+def remove_worksheet_analysis_workflow(portal):
+    logger.info("Purging worksheet analysis workflow residues ...")
+
+    del_metadata(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+                 column="worksheetanalysis_review_state",
+                 refresh_catalog=False)
+
+    del_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
+              index_name="worksheetanalysis_review_state")
+
+
+def rollback_to_receive_inconsistent_ars(portal):
+    logger.info("Rolling back inconsistent Analysis Requests ...")
+    review_states = ["to_be_verified"]
+    query = dict(portal_type="AnalysisRequest", review_state=review_states)
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        request = api.get_object(brain)
+        if not isTransitionAllowed(request, "rollback_to_receive"):
+            total -= 1
+            continue
+
+        if num % 100 == 0:
+            logger.info("Rolling back inconsistent AR '{}': {}/{}"
+                        .format(request.getId(), num, total))
+
+        do_action_for(request, "rollback_to_receive")
+
+
+def rollback_to_open_inconsistent_ars(portal):
+    logger.info("Rolling back inconsistent Worksheets ...")
+    review_states = ["to_be_verified"]
+    query = dict(portal_type="Worksheet", review_state=review_states)
+    brains = api.search(query, CATALOG_WORKSHEET_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        ws = api.get_object(brain)
+        if not isTransitionAllowed(ws, "rollback_to_open"):
+            total -= 1
+            continue
+
+        if num % 100 == 0:
+            logger.info("Rolling back inconsistent Worksheet '{}': {}/{}"
+                        .format(ws.getId(), num, total))
+
+        do_action_for(ws, "rollback_to_open")
+
+
+def update_role_mappings(portal, queries):
+    logger.info("Updating role mappings ...")
+    processed = dict()
+    for rm_query in queries:
+        wf_tool = api.get_tool("portal_workflow")
+        wf_id = rm_query[0]
+        workflow = wf_tool.getWorkflowById(wf_id)
+        brains = api.search(rm_query[1], rm_query[2])
+        total = len(brains)
+        for num, brain in enumerate(brains):
+            if num % 100 == 0:
+                logger.info("Updating role mappings '{0}': {1}/{2}"
+                            .format(wf_id, num, total))
+            if api.get_uid(brain) in processed.get(wf_id, []):
+                # Already processed, skip
+                continue
+            workflow.updateRoleMappingsFor(api.get_object(brain))
+            if wf_id not in processed:
+                processed[wf_id] = []
+            processed[wf_id].append(api.get_uid(brain))

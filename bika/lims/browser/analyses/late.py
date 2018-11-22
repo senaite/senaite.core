@@ -26,7 +26,7 @@ class LateAnalysesView(BikaListingView):
             'portal_type':'Analysis',
             'getDueDate': {'query': [DateTime(),], 'range': 'max'},
             'review_state':['assigned',
-                            'sample_received',
+                            'unassigned',
                             'to_be_verified',
                             'verified'],
             'cancellation_state': 'active',

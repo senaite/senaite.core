@@ -527,6 +527,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # This field is a mirror of a field in Sample with the same name
+    # TODO Workflow - Request - Fix DateSampled inconsistencies. At the moment,
+    # one can create an AR (using code) with DateSampled set when sampling_wf at
+    # the same time sampling workflow is active. This might cause
+    # inconsistencies: AR still in `to_be_sampled`, but getDateSampled returns
+    # a valid date!
     ProxyField(
         'DateSampled',
         proxy="context.getSample()",
@@ -2040,64 +2045,38 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):
-        """The main purpose of this function is to obtain the analysis services
-        and profiles from the analysis request
-        whose prices are needed to quote the analysis request.
-        If an analysis belongs to a profile, this analysis will only be
-        included in the analyses list if the profile
-        has disabled "Use Analysis Profile Price".
-
-        :returns: a tuple of two lists. The first one only contains analysis
-                  services not belonging to a profile with active "Use Analysis
-                  Profile Price". The second list contains the profiles with
-                  activated "Use Analysis Profile Price".
+        """Returns the items to be billed
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        # REMEMBER: Analysis != Analysis services
-        analyses = []
-        analysis_profiles = []
-        to_be_billed = []
-        # Getting all analysis request analyses
-        # Getting all analysis request analyses
-        ar_analyses = self.getAnalyses(cancellation_state='active',
-                                       full_objects=True)
-        for analysis in ar_analyses:
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state not in ('not_requested', 'retracted'):
-                analyses.append(analysis)
-        # Getting analysis request profiles
-        for profile in self.getProfiles():
-            # Getting the analysis profiles which has "Use Analysis Profile
-            # Price" enabled
-            if profile.getUseAnalysisProfilePrice():
-                analysis_profiles.append(profile)
-            else:
-                # we only need the analysis service keywords from these
-                # profiles
-                to_be_billed += [service.getKeyword() for service in
-                                 profile.getService()]
-        # So far we have three arrays:
-        #   - analyses: has all analyses (even if they are included inside a
-        # profile or not)
-        #   - analysis_profiles: has the profiles with "Use Analysis Profile
-        # Price" enabled
-        #   - to_be_quoted: has analysis services keywords from analysis
-        # profiles with "Use Analysis Profile Price"
-        #     disabled
-        # If a profile has its own price, we don't need their analises'
-        # prices, so we have to quit all
-        # analysis belonging to that profile. But if another profile has the
-        # same analysis service but has
-        # "Use Analysis Profile Price" disabled, the service must be included
-        #  as billable.
-        for profile in analysis_profiles:
-            for analysis_service in profile.getService():
-                for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword() \
-                            and analysis.getKeyword() not in to_be_billed:
-                        analyses.remove(analysis)
-        return analyses, analysis_profiles
+        def get_keywords_set(profiles):
+            keys = list()
+            for profile in profiles:
+                keys += map(lambda s: s.getKeyword(), profile.getService())
+            return set(keys)
 
+        # Profiles with a fixed price, regardless of their analyses
+        profiles = self.getProfiles()
+        billable_items = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
+                                 profiles)
+        # Profiles w/o a fixed price. The price is the sum of the individual
+        # price for each analysis
+        non_billable = filter(lambda p: p not in billable_items, profiles)
+        billable_keys = get_keywords_set(non_billable) - \
+                        get_keywords_set(billable_items)
+
+        # Get the analyses to be billed
+        exclude_rs = ['retracted', 'rejected']
+        for analysis in self.getAnalyses(cancellation_state="active"):
+            if analysis.review_state in exclude_rs:
+                continue
+            if analysis.getKeyword not in billable_keys:
+                continue
+            billable_items.append(api.get_object(analysis))
+
+        # Return the analyses that need to be billed individually, together with
+        # the profiles with a fixed price
+        return billable_items
+
+    # TODO Cleanup - Remove this function, only used in invoice and too complex
     def getServicesAndProfiles(self):
         """This function gets all analysis services and all profiles and removes
         the services belonging to a profile.
@@ -2108,15 +2087,13 @@ class AnalysisRequest(BaseFolder):
         """
         # Getting requested analyses
         workflow = getToolByName(self, 'portal_workflow')
-        analyses = []
         # profile_analyses contains the profile's analyses (analysis !=
         # service") objects to obtain
         # the correct price later
         profile_analyses = []
-        for analysis in self.objectValues('Analysis'):
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state != 'not_requested':
-                analyses.append(analysis)
+        exclude_rs = ['retracted', 'rejected']
+        analyses = filter(lambda an: an.review_state not in exclude_rs,
+                          self.getAnalyses(cancellation_state='active'))
         # Getting all profiles
         analysis_profiles = self.getProfiles() if len(
             self.getProfiles()) > 0 else []
@@ -2124,9 +2101,12 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword():
+                    if analysis_service.getKeyword() == analysis.getKeyword:
                         analyses.remove(analysis)
                         profile_analyses.append(analysis)
+
+        analyses = map(api.get_object, analyses)
+        profile_analyses = map(api.get_object, profile_analyses)
         return analyses, analysis_profiles, profile_analyses
 
     security.declareProtected(View, 'getSubtotal')
@@ -2134,24 +2114,14 @@ class AnalysisRequest(BaseFolder):
     def getSubtotal(self):
         """Compute Subtotal (without member discount and without vat)
         """
-        analyses, a_profiles = self.getBillableItems()
-        return sum(
-            [Decimal(obj.getPrice()) for obj in analyses] +
-            [Decimal(obj.getAnalysisProfilePrice()) for obj in a_profiles]
-        )
+        return sum([Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getSubtotalVATAmount')
 
     def getSubtotalVATAmount(self):
         """Compute VAT amount without member discount
         """
-        analyses, a_profiles = self.getBillableItems()
-        if len(analyses) > 0 or len(a_profiles) > 0:
-            return sum(
-                [Decimal(o.getVATAmount()) for o in analyses] +
-                [Decimal(o.getVATAmount()) for o in a_profiles]
-            )
-        return 0
+        return sum([Decimal(o.getVATAmount()) for o in self.getBillableItems()])
 
     security.declareProtected(View, 'getSubtotalTotalPrice')
 
@@ -2366,8 +2336,7 @@ class AnalysisRequest(BaseFolder):
         """
         verifiers_ids = list()
         for brain in self.getAnalyses():
-            verifiers = brain.getVerificators or ""
-            verifiers_ids += verifiers.split(",")
+            verifiers_ids += brain.getVerificators
         return list(set(verifiers_ids))
 
     @security.public
@@ -2447,15 +2416,15 @@ class AnalysisRequest(BaseFolder):
 
         for an in ans:
             an = an.getObject()
-            br = an.getBackReferences('WorksheetAnalysis')
-            if len(br) > 0:
-                ws = br[0]
-                was = ws.getAnalyses()
-                for wa in was:
-                    if valid_dup(wa):
-                        qcanalyses.append(wa)
-                    elif valid_ref(wa):
-                        qcanalyses.append(wa)
+            ws = an.getWorksheet()
+            if not ws:
+                continue
+            was = ws.getAnalyses()
+            for wa in was:
+                if valid_dup(wa):
+                    qcanalyses.append(wa)
+                elif valid_ref(wa):
+                    qcanalyses.append(wa)
 
         return qcanalyses
 
@@ -2464,33 +2433,6 @@ class AnalysisRequest(BaseFolder):
         """
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(self, 'review_state') == 'invalid'
-
-    def getRequestedAnalyses(self):
-        """It returns all requested analyses, even if they belong to an
-        analysis profile or not.
-        """
-        #
-        # title=Get requested analyses
-        #
-        result = []
-        cats = {}
-        workflow = getToolByName(self, 'portal_workflow')
-        for analysis in self.getAnalyses(full_objects=True):
-            review_state = workflow.getInfoFor(analysis, 'review_state')
-            if review_state == 'not_requested':
-                continue
-            category_name = analysis.getCategoryTitle()
-            if category_name not in cats:
-                cats[category_name] = {}
-            cats[category_name][analysis.Title()] = analysis
-        cat_keys = sorted(cats.keys(), key=methodcaller('lower'))
-        for cat_key in cat_keys:
-            analyses = cats[cat_key]
-            analysis_keys = sorted(analyses.keys(),
-                                   key=methodcaller('lower'))
-            for analysis_key in analysis_keys:
-                result.append(analyses[analysis_key])
-        return result
 
     def getSamplingRoundUID(self):
         """Obtains the sampling round UID
@@ -2684,9 +2626,8 @@ class AnalysisRequest(BaseFolder):
 
         :returns: a list with the full partition objects
         """
-        analyses = self.getRequestedAnalyses()
         partitions = []
-        for analysis in analyses:
+        for analysis in self.getAnalyses(full_objects=True):
             if analysis.getSamplePartition() not in partitions:
                 partitions.append(analysis.getSamplePartition())
         return partitions
@@ -2932,62 +2873,6 @@ class AnalysisRequest(BaseFolder):
     @security.public
     def guard_prepublish_transition(self):
         return guards.prepublish(self)
-
-    @security.public
-    def workflow_script_no_sampling_workflow(self):
-        events.after_no_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sampling_workflow(self):
-        events.after_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sample(self):
-        events.after_sample(self)
-
-    @security.public
-    def workflow_script_receive(self):
-        events.after_receive(self)
-
-    @security.public
-    def workflow_script_preserve(self):
-        events.after_preserve(self)
-
-    @security.public
-    def workflow_script_attach(self):
-        events.after_attach(self)
-
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
-
-    @security.public
-    def workflow_script_publish(self):
-        events.after_publish(self)
-
-    @security.public
-    def workflow_script_reinstate(self):
-        events.after_reinstate(self)
-
-    @security.public
-    def workflow_script_cancel(self):
-        events.after_cancel(self)
-
-    @security.public
-    def workflow_script_schedule_sampling(self):
-        events.after_schedule_sampling(self)
-
-    @security.public
-    def workflow_script_reject(self):
-        events.after_reject(self)
-
-    @security.public
-    def workflow_script_retract(self):
-        events.after_retract(self)
-
-    @security.public
-    def workflow_script_invalidate(self):
-        events.after_invalidate(self)
 
     def SearchableText(self):
         """

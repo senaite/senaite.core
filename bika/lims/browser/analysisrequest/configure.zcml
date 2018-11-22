@@ -176,14 +176,6 @@
 
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="not_requested"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestResultsNotRequestedView"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
       name="published_results"
       class="bika.lims.browser.analysisrequest.AnalysisRequestPublishedResults"
       permission="bika.lims.ManageAnalysisRequests"

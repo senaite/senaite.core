@@ -5,35 +5,23 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import enum, api, deprecated
+import collections
+import sys
+
+from AccessControl.SecurityInfo import ModuleSecurityInfo
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
+from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
 from bika.lims import PMF
+from bika.lims import enum, api
+from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
-from bika.lims import logger
-from Products.CMFCore.interfaces import IContentish
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.interfaces import IWorkflowChain
-from Products.CMFPlone.workflow import ToolWorkflowChain
-from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
-from zope.component import adapts
-from zope.interface import implementer
 from zope.interface import implements
-from zope.interface import Interface
-import traceback
-import sys
-from AccessControl import ClassSecurityInfo
 
-# This is required to authorize AccessControl.ZopeGuards to access to this
-# module (bika.lims.workflow) and function/s via skin's python scripts.
-# In this particular case, the function guard_handler is accessed through
-# bika/lims/skins/bika/guard_handler.py, which is called by guard expressions
-# from workflows:
-#       python: here.guard_handler(state_change.transition.id)
-from AccessControl.SecurityInfo import ModuleSecurityInfo
 security = ModuleSecurityInfo('bika.lims.workflow')
 security.declarePublic('guard_handler')
 
@@ -64,195 +52,145 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
+def doActionFor(instance, action_id):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
-    allows the action_id passed in (delegate to isTransitionAllowed) and the
-    instance hasn't been flagged as to be skipped previously.
-    If active_only is set to True, the instance will only be transitioned if
-    it's current state is active (not cancelled nor inactive)
+    allows the action_id passed in and the instance hasn't been flagged as to
+    be skipped previously.
 
     :param instance: Object to be transitioned
     :param action_id: transition id
-    :param active_only: True if transition must apply to active objects
-    :param allowed_transition: True for a allowed transition check
+    :param reindex_on_success: reindex the object after transition success
     :returns: true if the transition has been performed and message
     :rtype: list
     """
-    actionperformed = False
-    message = ''
+    if not instance:
+        return False, ""
+
     if isinstance(instance, list):
+        # TODO Workflow . Check if this is strictly necessary
         # This check is here because sometimes Plone creates a list
         # from submitted form elements.
+        logger.warn("Got a list of obj in doActionFor!")
         if len(instance) > 1:
-            logger.error(
-                "doActionFor is getting an instance paramater which is alist  "
+            logger.warn(
+                "doActionFor is getting an instance parameter which is a list "
                 "with more than one item. Instance: '{}', action_id: '{}'"
                 .format(instance, action_id)
             )
-        instance = instance[0]
-    if not instance:
-        return actionperformed, message
 
+        return doActionFor(instance=instance[0], action_id=action_id)
+
+    # Since a given transition can cascade or promote to other objects, we want
+    # to reindex all objects for which the transition succeed at once, at the
+    # end of process. Otherwise, same object will be reindexed multiple times
+    # unnecessarily. Also, ActionsHandlerPool ensures the same transition is not
+    # applied twice to the same object due to cascade/promote recursions.
+    pool = ActionHandlerPool.get_instance()
+    if pool.succeed(instance, action_id):
+        return False, "Transition {} for {} already done"\
+             .format(action_id, instance.getId())
+
+    # Return False if transition is not permitted
+    if not isTransitionAllowed(instance, action_id):
+        return False, "Transition {} for {} is not allowed"\
+            .format(action_id, instance.getId())
+
+    # Add this batch process to the queue
+    pool.queue_pool()
+    succeed = False
+    message = ""
     workflow = getToolByName(instance, "portal_workflow")
-    skipaction = skip(instance, action_id, peek=True)
-    if skipaction:
-        #clazzname = instance.__class__.__name__
-        #msg = "Skipping transition '{0}': {1} '{2}'".format(action_id,
-        #                                                    clazzname,
-        #                                                    instance.getId())
-        #logger.info(msg)
-        return actionperformed, message
-
-    if allowed_transition:
-        allowed = isTransitionAllowed(instance, action_id, active_only)
-        if not allowed:
-            currstate = getCurrentState(instance)
-            clazzname = instance.__class__.__name__
-            msg = "Transition '{0}' not allowed: {1} '{2}' ({3})"
-            msg = msg.format(action_id, clazzname, instance.getId(), currstate)
-            logger.warning(msg)
-            #_logTransitionFailure(instance, action_id)
-            return actionperformed, message
-    else:
-        logger.warning(
-            "doActionFor should never (ever) be called with allowed_transition"
-            "set to True as it avoids permission checks.")
     try:
         workflow.doActionFor(instance, action_id)
-        actionperformed = True
+        succeed = True
     except WorkflowException as e:
         message = str(e)
+        curr_state = getCurrentState(instance)
+        clazz_name = instance.__class__.__name__
+        logger.warning(
+            "Transition '{0}' not allowed: {1} '{2}' ({3})"\
+            .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
-    return actionperformed, message
+
+    # Add the current object to the pool and resume
+    pool.push(instance, action_id, succeed)
+    pool.resume()
+
+    return succeed, message
 
 
-def _logTransitionFailure(obj, transition_id):
-    wftool = getToolByName(obj, "portal_workflow")
-    chain = wftool.getChainFor(obj)
-    for wf_id in chain:
-        wf = wftool.getWorkflowById(wf_id)
-        if wf is not None:
-            sdef = wf._getWorkflowStateOf(obj)
-            if sdef is not None:
-                for tid in sdef.transitions:
-                    if tid != transition_id:
-                        continue
-                    tdef = wf.transitions.get(tid, None)
-                    if not tdef:
-                        continue
-                    if tdef.trigger_type != TRIGGER_USER_ACTION:
-                        logger.warning("  Trigger type is not manual")
-                    if not tdef.actbox_name:
-                        logger.warning("  No actbox_name set")
-                    if not wf._checkTransitionGuard(tdef, obj):
-                        guard = tdef.guard
-                        expr = guard.getExprText()
-                        logger.warning("  Guard failed: {0}".format(expr))
-                    return
-    logger.warning("Transition not found. Check the workflow definition!")
-
-
+# TODO Workflow - remove doAction(s)For?
 def doActionsFor(instance, actions):
     """Performs a set of transitions to the instance passed in
     """
-    startpoint = False
-    prevevents = getReviewHistoryActionsList(instance)
+    pool = ActionHandlerPool.get_instance()
+    pool.queue_pool()
     for action in actions:
-        if not startpoint and action in prevevents:
-            continue
-        startpoint = True
         doActionFor(instance, action)
+    pool.resume()
+
+
+def call_workflow_event(instance, event, after=True):
+    """Calls the instance's workflow event
+    """
+    if not event.transition:
+        return False
+
+    portal_type = instance.portal_type
+    wf_module = _load_wf_module('{}.events'.format(portal_type.lower()))
+    if not wf_module:
+        return False
+
+    # Inspect if event_<transition_id> function exists in the module
+    prefix = after and "after" or "before"
+    func_name = "{}_{}".format(prefix, event.transition.id)
+    func = getattr(wf_module, func_name, False)
+    if not func:
+        return False
+
+    logger.info('WF event: {0}.events.{1}'
+                .format(portal_type.lower(), func_name))
+    func(instance)
+    return True
 
 
 def BeforeTransitionEventHandler(instance, event):
     """ This event is executed before each transition and delegates further
-    actions to 'before_x_transition_event' function if exists in the instance
-    passed in, where 'x' is the id of the event's transition.
-
-    If the passed in instance has not a function with the abovementioned
-    signature, or if there is no transition for the state change (like the
-    'creation' state, then the function does nothing.
-
+    actions to 'workflow.<portal_type>.events.before_<transition_id> function
+    if exists for the instance passed in.
     :param instance: the instance to be transitioned
     :type instance: ATContentType
     :param event: event that holds the transition to be performed
     :type event: IObjectEvent
     """
-    # there is no transition for the state change (creation doesn't have a
-    # 'transition')
-    if not event.transition:
-        return
-
-    clazzname = instance.__class__.__name__
-    currstate = getCurrentState(instance)
-    msg = "Transition '{0}' started: {1} '{2}' ({3})".format(
-        event.transition.id,  clazzname, instance.getId(), currstate)
-    logger.info(msg)
-
-    key = 'before_{0}_transition_event'.format(event.transition.id)
-    before_event = getattr(instance, key, False)
-    if not before_event:
-        # TODO: this conditional is only for backwards compatibility, to be
-        # removed when all workflow_before_* methods in contents are replaced
-        # by the more explicity signature 'before_*_transition_event'
-        key = 'workflow_before_' + event.transition.id
-        before_event = getattr(instance, key, False)
-
-    if not before_event:
-        return
-
-    msg = "BeforeTransition: '{0}.{1}'".format(clazzname, key)
-    logger.info(msg)
-    before_event()
+    call_workflow_event(instance, event, after=False)
 
 
 def AfterTransitionEventHandler(instance, event):
     """ This event is executed after each transition and delegates further
     actions to 'workflow.<portal_type>.events.after_<transition_id> function
     if exists for the instance passed in.
-
-    If the passed in instance has not a function with the abovementioned
-    signature, or if there is no transition for the state change (like the
-    'creation' state) or the same transition has already been run for the
-    the passed in instance during the current server request, then the
-    function does nothing.
-
     :param instance: the instance that has been transitioned
     :type instance: ATContentType
     :param event: event that holds the transition performed
     :type event: IObjectEvent
     """
-    # there is no transition for the state change (creation doesn't have a
-    # 'transition')
-    if not event.transition:
+    if call_workflow_event(instance, event, after=True):
         return
-
-    portal_type = instance.portal_type
-    wf_module = _load_wf_module('{}.events'.format(portal_type.lower()))
-    if wf_module:
-        # Inspect if event_<transition_id> function exists in the module
-        func_name = "after_{}".format(event.transition.id)
-        func = getattr(wf_module, func_name, False)
-        if func:
-            logger.info('AfterTransition call: {0}.events.{1}'
-                        .format(portal_type.lower(), func_name))
-            func(instance)
-            return
 
     # Try with old AfterTransitionHandler dance...
     # TODO CODE TO BE REMOVED AFTER PORTING workflow_script_*/*_transition_event
-
+    if not event.transition:
+        return
     # Set the request variable preventing cascade's from re-transitioning.
     if skip(instance, event.transition.id):
         return
-
     # Because at this point, the object has been transitioned already, but
     # further actions are probably needed still, so be sure is reindexed
     # before going forward.
     instance.reindexObject()
-
     key = 'after_{0}_transition_event'.format(event.transition.id)
     after_event = getattr(instance, key, False)
     if not after_event:
@@ -261,10 +199,8 @@ def AfterTransitionEventHandler(instance, event):
         # replaced by the more explicity signature 'after_*_transition_event'
         key = 'workflow_script_' + event.transition.id
         after_event = getattr(instance, key, False)
-
     if not after_event:
         return
-
     after_event()
 
 
@@ -296,28 +232,18 @@ def isBasicTransitionAllowed(context, permission=None):
     return True
 
 
-def isTransitionAllowed(instance, transition_id, active_only=True):
+def isTransitionAllowed(instance, transition_id):
     """Checks if the object can perform the transition passed in.
-    If active_only is set to true, the function will always return false if the
-    object's current state is inactive or cancelled.
-    Apart from the current state, it also checks if the guards meet the
-    conditions (as per workflowtool.getTransitionsFor)
     :returns: True if transition can be performed
     :rtype: bool
     """
-    # If the instance is not active, cancellation and inactive workflows have
-    # priority over the rest of workflows associated to the object, so only
-    # allow to transition if the transition_id belongs to any of these two
-    # workflows and dismiss the rest
-    if not isActive(instance):
-        inactive_transitions = ['reinstate', 'activate']
-        if transition_id not in inactive_transitions:
+    if transition_id not in ['reinstate', 'activate']:
+        if not api.is_active(instance):
             return False
 
-    wftool = getToolByName(instance, "portal_workflow")
-    chain = wftool.getChainFor(instance)
-    for wf_id in chain:
-        wf = wftool.getWorkflowById(wf_id)
+    wf_tool = getToolByName(instance, "portal_workflow")
+    for wf_id in wf_tool.getChainFor(instance):
+        wf = wf_tool.getWorkflowById(wf_id)
         if wf and wf.isActionSupported(instance, transition_id):
             return True
 
@@ -475,7 +401,6 @@ def guard_handler(instance, transition_id):
     """
     if not instance:
         return True
-
     clazz_name = instance.portal_type
     # Inspect if bika.lims.workflow.<clazzname>.<guards> module exists
     wf_module = _load_wf_module('{0}.guards'.format(clazz_name.lower()))
@@ -571,3 +496,114 @@ class JSONReadExtender(object):
         include_fields = get_include_fields(request)
         if not include_fields or "transitions" in include_fields:
             data['transitions'] = get_workflow_actions(self.context)
+
+
+# TODO Workflow - ActionsPool - Better use ActionHandlerPool
+class ActionsPool(object):
+    """Handles transitions of multiple objects at once
+    """
+    def __init__(self):
+        self.actions_pool = collections.OrderedDict()
+
+    def add(self, instance, action_id):
+        uid = api.get_uid(instance)
+        self.actions_pool[uid] = {"instance": instance,
+                                  "action_id": action_id}
+
+    def resume(self):
+        action_handler = ActionHandlerPool.get_instance()
+        action_handler.queue_pool()
+        outcome = collections.OrderedDict()
+        for uid, values in self.actions_pool.items():
+            instance = values["instance"]
+            action_id = values["action_id"]
+            outcome[uid] = doActionFor(instance, action_id)
+        self.actions_pool = collections.OrderedDict()
+        action_handler.resume()
+        return outcome
+
+
+class ActionHandlerPool(object):
+    """Singleton to handle concurrent transitions
+    """
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        """Returns the current instance of ActionHandlerPool
+        """
+        if ActionHandlerPool.__instance == None:
+            ActionHandlerPool()
+        return ActionHandlerPool.__instance
+
+    def __init__(self):
+        if ActionHandlerPool.__instance != None:
+            raise Exception("Use ActionHandlerPool.get_instance()")
+        self.objects = collections.OrderedDict()
+        self.num_calls = 0
+        ActionHandlerPool.__instance = self
+
+    def __len__(self):
+        """Number of objects in the pool
+        """
+        return len(self.objects)
+
+    def queue_pool(self):
+        """Notifies that a new batch of jobs is about to begin
+        """
+        self.num_calls += 1
+
+    def push(self, instance, action, success, idxs=None):
+        """Adds an instance into the pool, to be reindexed on resume
+        """
+        uid = api.get_uid(instance)
+        info = self.objects.get(uid, {})
+        info[action] = {'instance': instance, 'success': success, 'idxs': idxs}
+        self.objects[uid] = info
+
+    def succeed(self, instance, action):
+        """Returns if the task for the instance took place successfully
+        """
+        uid = api.get_uid(instance)
+        return self.objects.get(uid, {}).get(action, {}).get('success', False)
+
+    def resume(self):
+        """Resumes the pool and reindex all objects processed
+        """
+        self.num_calls -= 1
+        if self.num_calls > 0:
+            return
+        logger.info("Resume actions for {} objects".format(len(self)))
+        processed = list()
+        for uid, info in self.objects.items():
+            if uid in processed:
+                continue
+            instance = info[info.keys()[0]]["instance"]
+            instance.reindexObject(idxs=self.get_indexes(uid))
+            processed.append(uid)
+        logger.info("Objects processed: {}".format(len(processed)))
+        self.objects = collections.OrderedDict()
+
+    def get_indexes(self, uid):
+        """Returns the names of the indexes to be reindexed for the object with
+        the uid passed in. If no indexes for this object have been specified
+        within the action pool job, returns an empty list (reindex all).
+        Otherwise, return all the indexes that have been specified for the
+        object within the action pool job.
+        """
+        idxs = []
+        info = self.objects.get(uid, {})
+        for action_id, value in info.items():
+            obj_idxs = value.get('idxs', None)
+            if not obj_idxs:
+                # Reindex all indexes
+                return []
+            idxs.extend(obj_idxs)
+        return list(set(idxs))
+
+
+def push_reindex_to_actions_pool(obj, idxs=None):
+    """Push a reindex job to the actions handler pool
+    """
+    pool = ActionHandlerPool.get_instance()
+    pool.push(obj, "reindex", success=True, idxs=idxs)

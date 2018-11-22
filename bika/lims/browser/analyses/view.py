@@ -435,7 +435,7 @@ class AnalysesView(BikaListingView):
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
-        item['retested'] = obj.getRetested
+        item['retested'] = obj.getRetestOfUID and True or False
         item['class']['retested'] = 'center'
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
@@ -945,7 +945,7 @@ class AnalysesView(BikaListingView):
             # Don't display icons and additional info about verification
             return
 
-        verifiers = analysis_brain.getVerificators.split(',')
+        verifiers = analysis_brain.getVerificators
         in_verifiers = submitter in verifiers
         if in_verifiers:
             # If analysis has been submitted and verified by the same person,
@@ -1039,17 +1039,12 @@ class AnalysesView(BikaListingView):
             # We want this icon to only appear if the context is an AR
             return
 
-        if analysis_brain.worksheetanalysis_review_state != 'assigned':
-            # No need to go further. This analysis is not assigned to any WS
-            return
-
         analysis_obj = self.get_object(analysis_brain)
-        worksheet = analysis_obj.getBackReferences('WorksheetAnalysis')
+        worksheet = analysis_obj.getWorksheet()
         if not worksheet:
             # No worksheet assigned. Do nothing
             return
 
-        worksheet = worksheet[0]
         title = t(_("Assigned to: ${worksheet_id}",
                     mapping={'worksheet_id': safe_unicode(worksheet.id)}))
         img = get_image('worksheet.png', title=title)

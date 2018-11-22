@@ -3,17 +3,25 @@
              workflow_id="bika_duplicateanalysis_workflow"
              title="Bika Duplicate Analysis Workflow"
              description="" state_variable="review_state"
-             initial_state="unassigned"
+             initial_state="assigned"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
+  <permission>BIKA: Unassign analyses</permission>
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: Retract</permission>
+  <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
+  <permission>Delete objects</permission>
 
+
+  <!-- State: assigned (initial state)
+  Duplicate is assigned to a Worksheet. This is the initial state because
+  duplicates can only live inside a Worksheet.
+  For this same reason, an "unassigned" state does not exist -->
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
-    <exit-transition transition_id="submit" />
     <exit-transition transition_id="unassign" />
+    <exit-transition transition_id="submit" />
     <permission-map name="BIKA: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
@@ -24,14 +32,23 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
     </permission-map>
   </state>
 
   <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
     <exit-transition transition_id="attach" />
     <exit-transition transition_id="retract" />
-    <exit-transition transition_id="reject" />
-    <exit-transition transition_id="unassign" />
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Retract" acquired="False">
@@ -45,9 +62,64 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
   </state>
 
-  <state state_id="rejected" title="Rejected" i18n:attributes="title">
+  <!-- State: to_be_verified
+  Results have been submitted and awaiting for review -->
+  <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+    <!-- A duplicate can only live together with the analysis it comes from
+    bounded in a Worksheet. Hence, we can unassign a duplicate once submitted
+    if its counterpart analysis can be unassigned. More info in guard. -->
+    <exit-transition transition_id="unassign" />
+    <exit-transition transition_id="multi_verify" />
+    <exit-transition transition_id="verify" />
+    <exit-transition transition_id="retract" />
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <permission-map name="BIKA: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Verifier</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Retract" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="BIKA: Verify" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: retracted
+  The duplicate analysis has been retracted and a retest has been created -->
+  <state state_id="retracted" title="Retracted" i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
@@ -56,42 +128,16 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-    </permission-map>
-  </state>
-
-  <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
-    <exit-transition transition_id="verify" />
-    <exit-transition transition_id="retract" />
-    <exit-transition transition_id="reject" />
-    <exit-transition transition_id="unassign" />
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Retract" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-  </state>
-
-  <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
-    <exit-transition transition_id="assign" />
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
   </state>
 
   <state state_id="verified" title="Verified" i18n:attributes="title">
+    <!-- A duplicate can only live together with the analysis it comes from
+    bounded in a Worksheet. Hence, we can unassign a duplicate once verified
+    if its counterpart analysis can be unassigned. More info in guard. -->
     <exit-transition transition_id="unassign" />
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
@@ -101,11 +147,45 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
   </state>
 
-  <transition transition_id="assign" title="Assign" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Assign</action>
+
+
+
+  <!-- Transition: unassign from a worksheet. Deletes the duplicate! -->
+  <transition transition_id="unassign" title="Remove" new_state="assigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Remove</action>
     <guard>
+      <!-- The guard permission is "Delete objects" because since a Duplicate
+      Analysis cannot exist if not bound to a Worksheet, the unassignment of
+      the analysis causes its removal of the system.
+      Note this transition "unassign" can only take place when the analysis has
+      no results submitted yet -->
+      <guard-permission>Delete objects</guard-permission>
+      <guard-expression>python:here.guard_handler("unassign")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: submit -->
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Submit for verification</action>
+    <guard>
+      <guard-permission>BIKA: Edit Results</guard-permission>
+      <guard-expression>python:here.guard_handler("submit")</guard-expression>
     </guard>
   </transition>
 
@@ -116,40 +196,45 @@
     </guard>
   </transition>
 
-  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Reject</action>
-    <guard>
-      <guard-permission>BIKA: Reject Worksheet</guard-permission>
-    </guard>
-  </transition>
-
-  <transition transition_id="retract" title="Retract" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <!-- Transition: retract
+  The analysis transitions to "retracted" state and a new copy of the duplicate
+  is created. The initial state of the new copy is "assigned". -->
+  <transition transition_id="retract" title="Retract" new_state="retracted"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
     <action url="" category="workflow" icon="">Retract</action>
     <guard>
       <guard-permission>BIKA: Retract</guard-permission>
+      <guard-expression>python:here.guard_handler("retract")</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Submit for verification</action>
-    <guard>
-    </guard>
-  </transition>
-
-  <transition transition_id="unassign" title="Unassign" new_state="unassigned" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Remove</action>
-    <guard>
-    </guard>
-  </transition>
-
-  <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <!-- Transition: multi_verify (for when multi-verification is enabled) -->
+  <transition transition_id="multi_verify" title="Verify" new_state="to_be_verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
       <guard-permission>BIKA: Verify</guard-permission>
-      <guard-expression>python:here.guard_verify_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("multi_verify")</guard-expression>
     </guard>
   </transition>
 
+  <!-- Transition: verify -->
+  <transition transition_id="verify" title="Verify" new_state="verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Verify</action>
+    <guard>
+      <guard-permission>BIKA: Verify</guard-permission>
+      <guard-expression>python:here.guard_handler("verify")</guard-expression>
+    </guard>
+  </transition>
+
+
+
+
+  <!-- VARIABLES -->
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>
     <default>
@@ -158,7 +243,6 @@
     <guard>
     </guard>
   </variable>
-
   <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
     <description>The ID of the user who performed the last transition</description>
     <default>
@@ -167,7 +251,6 @@
     <guard>
     </guard>
   </variable>
-
   <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
     <description>Comment about the last transition</description>
     <default>
@@ -176,7 +259,6 @@
     <guard>
     </guard>
   </variable>
-
   <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
     <description>Provides access to workflow history</description>
     <default>
@@ -187,7 +269,6 @@
       <guard-permission>Review portal content</guard-permission>
     </guard>
   </variable>
-
   <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
     <description>When the previous transition was performed</description>
     <default>

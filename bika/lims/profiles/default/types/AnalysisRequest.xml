@@ -62,18 +62,6 @@
      <permission value="BIKA: Edit Results"/>
  </action>
 
- <action title="Results not requested"
-         action_id="analyses_not_requested"
-         category="object"
-         condition_expr="python:here.guard_cancelled_object()"
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/not_requested"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="BIKA: Results not requested"/>
- </action>
-
  <action title="Published results"
          action_id="published_results"
          category="object"

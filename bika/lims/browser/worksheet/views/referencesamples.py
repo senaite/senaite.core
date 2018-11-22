@@ -121,7 +121,7 @@ class ReferenceSamplesView(BikaListingView):
             service_uids = supported_services.get(uid)
             referencesample = api.get_object_by_uid(uid)
             self.context.addReferenceAnalyses(
-                referencesample, service_uids, dest_slot=position)
+                referencesample, service_uids, slot=position)
         redirect_url = "{}/{}".format(
             api.get_url(self.context), "manage_results")
         self.request.response.redirect(redirect_url)

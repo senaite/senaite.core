@@ -123,6 +123,8 @@ def after_sample(obj):
     _cascade_transition(obj, 'sample')
 
     if obj.getSamplingWorkflowEnabled():
+        # Set DateSampled
+        obj.setDateSampled(DateTime())
         to_be_preserved = []
         sample_due = []
         lowest_state = 'sample_due'

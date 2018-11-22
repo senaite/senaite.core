@@ -5,10 +5,13 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import copy
+
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IAnalysisService
 
 
 class InterimFieldsField(RecordsField):
@@ -50,6 +53,25 @@ class InterimFieldsField(RecordsField):
         },
     })
     security = ClassSecurityInfo()
+
+    security.declarePrivate('get')
+    def get(self, instance, **kwargs):
+        an_interims = RecordsField.get(self, instance, **kwargs) or []
+        if not IAnalysisService.providedBy(instance):
+            return an_interims
+
+        # This instance implements IAnalysisService
+        calculation = instance.getCalculation()
+        if not calculation:
+            return an_interims
+
+        # Ensure the service includes the interims from the calculation
+        an_keys = map(lambda interim: interim['keyword'], an_interims)
+        # Avoid references from the service interims to the calculation interims
+        calc_interims = copy.deepcopy(calculation.getInterimFields())
+        calc_interims = filter(lambda inter: inter['keyword'] not in an_keys,
+                               calc_interims)
+        return an_interims + calc_interims
 
 
 registerField(

@@ -679,6 +679,7 @@ class Instrument(ATFolder):
     def addReferences(self, reference, service_uids):
         """ Add reference analyses to reference
         """
+        # TODO Workflow - Analyses. Assignment of refanalysis to Instrument
         addedanalyses = []
         wf = getToolByName(self, 'portal_workflow')
         bsc = getToolByName(self, 'bika_setup_catalog')
@@ -702,24 +703,12 @@ class Instrument(ATFolder):
             calc = service.getCalculation()
             if calc and calc.getDependentServices():
                 continue
-            ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-            ref_analysis = bac(portal_type='ReferenceAnalysis', UID=ref_uid)[0].getObject()
+            ref_analysis = reference.addReferenceAnalysis(service)
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
             # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
-
-            # copy the interimfields
-            if calc:
-                ref_analysis.setInterimFields(calc.getInterimFields())
-
-            # Comes from a worksheet or has been attached directly?
-            ws = ref_analysis.getBackReferences('WorksheetAnalysis')
-            if not ws or len(ws) == 0:
-                # This is a reference analysis attached directly to the
-                # Instrument, we apply the assign state
-                wf.doActionFor(ref_analysis, 'assign')
             ref_analysis.setInstrument(self)
             ref_analysis.reindexObject()
             addedanalyses.append(ref_analysis)

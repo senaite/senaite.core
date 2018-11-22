@@ -1314,7 +1314,7 @@ class AnalysisRequestDigester:
                   'formatted_result': '',
                   'uncertainty': analysis.getUncertainty(),
                   'formatted_uncertainty': '',
-                  'retested': analysis.getRetested(),
+                  'retested': analysis.isRetest(),
                   'remarks': to_utf8(analysis.getRemarks()),
                   'outofrange': False,
                   'type': analysis.portal_type,
@@ -1328,10 +1328,9 @@ class AnalysisRequestDigester:
         if analysis.portal_type == 'DuplicateAnalysis':
             andict['reftype'] = 'd'
 
-        ws = analysis.getBackReferences('WorksheetAnalysis')
-        andict['worksheet'] = ws[0].id if ws and len(ws) > 0 else None
-        andict['worksheet_url'] = ws[0].absolute_url() \
-            if ws and len(ws) > 0 else None
+        ws = analysis.getWorksheet()
+        andict['worksheet'] = ws and ws.id or None
+        andict['worksheet_url'] = ws and ws.absolute_url() or None
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
@@ -1444,8 +1443,7 @@ class AnalysisRequestDigester:
     def _verifiers_data(self, ar_uid):
         verifiers = dict()
         for brain in self.get_analyses(ar_uid):
-            an_verifiers = brain.getVerificators or ''
-            an_verifiers = an_verifiers.split(',')
+            an_verifiers = brain.getVerificators
             for user_id in an_verifiers:
                 user_data = self._user_contact_data(user_id)
                 if not user_data:

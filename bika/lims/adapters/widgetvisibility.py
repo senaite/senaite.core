@@ -5,8 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.api import get_tool
-from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient
+from bika.lims import workflow as wf
+from bika.lims.interfaces import IBatch, IClient
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.utils import getHiddenAttributesForClass
 from Products.CMFCore.utils import getToolByName
@@ -246,14 +246,13 @@ class SampleDateReceived(object):
     def __call__(self, context, mode, field, default):
         state = default if default else 'visible'
         if field.getName() == 'DateReceived':
-            # if ONLY "sample_received" analyses exist, it is permitted
-            # to edit the field.
-            wf = get_tool('portal_workflow')
-            anwf = wf['bika_analysis_workflow']
-            state_ids = [s for s in anwf.states if s != 'sample_received']
-            if context.getAnalyses(review_state=state_ids):
-                if mode == 'edit':
-                    state = 'invisible'
-                elif mode == 'view':
-                    state = 'visible'
+            # In states earlier than `sample_received`, the field is uneditable
+            if not wf.wasTransitionPerformed(context, "receive"):
+                return mode == 'edit' and 'invisible' or 'visible'
+            # The edition of Sample Date Received is only permitted if no
+            # results have been submitted yet
+            pending_states = ["unassigned", "assigned"]
+            for analysis in context.getAnalyses():
+                if analysis.review_state not in pending_states:
+                    return mode == 'edit' and 'invisible' or 'visible'
         return state

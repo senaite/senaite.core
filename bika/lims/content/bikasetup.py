@@ -180,6 +180,20 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
+        'AllowToSubmitNotAssigned',
+        schemata="Security",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Allow to submit results for unassigned analyses or for "
+                    "analyses assigned to others"),
+            description=_(
+                "If unchecked, users will only be able to submit results "
+                "for the analyses they are assigned to, and the submission of "
+                "results for unassigned analyses won't be permitted. This "
+                "setting does not apply to users with role Lab Manager")
+        )
+    ),
+    BooleanField(
         'RestrictWorksheetManagement',
         schemata="Security",
         default=True,

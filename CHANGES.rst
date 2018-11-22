@@ -6,10 +6,25 @@ Changelog
 
 **Added**
 
+- #1077 Creation of retests for blanks and controls via retraction
+- #1077 Creation of retests for duplicates via retraction
+- #1077 Auto-retraction of dependents on retract transitions
+- #1077 The removal of a routine analysis causes the removal of its duplicates
+- #1077 Added `rollback_to_received` transition in `ar_workflow`
+- #1077 Added `rollback_to_open` transition in `worksheet_workflow`
+- #1077 Battery of doctests for `referenceanalysis_workflow`
+- #1077 Battery of doctests for `duplicateanalysis_workflow`
+- #1077 Battery of doctests for `analysis_workflow`
 - #1066 Enhanced partitioning system (partition magic)
 
 **Changed**
 
+- #1077 Rejection of an analysis causes the removal of its duplicates
+- #1077 Don't allow to cancel Analysis Requests with assigned/submitted analyses
+- #1077 Decouple `cancellation_workflow` from Analysis content type
+- #1077 Refactored `referenceanalysis_workflow` + after transitions and guards
+. #1077 Refactored `duplicateanalysis_workflow` + after transitions and guards
+- #1077 Refactored `analysis_workflow` + after transitions and guards
 - #1095 New worksheet results listing
 - #1091 New Worksheet blank/control/duplicate listings
 - #1093 Listing integration for Analysis Specification Widget
@@ -23,6 +38,8 @@ Changelog
 
 **Removed**
 
+- #1077 Remove Sample-specific states from analysis workflow
+- #1077 Remove `worksheetanalysis_workflow`
 - #1059 Remove updates alert viewlet
 - #1060 Remove classic portlets
 - #1058 Remove gpw dependency
@@ -44,6 +61,8 @@ Changelog
 
 
 **Security**
+
+- #1077 Transitions and states strongly bound to DC Workflow + guards security
 
 
 1.2.9 (2018-10-08)

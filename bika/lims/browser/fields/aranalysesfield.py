@@ -142,12 +142,7 @@ class ARAnalysesField(ObjectField):
             if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                # TODO Entry point for interims assignment and Calculation
-                #      decoupling from Analysis. See comments PR#593
                 analysis = create_analysis(instance, service)
-                # TODO Remove when the `create_analysis` function supports this
-                # Set the interim fields only for new created Analysis
-                self._update_interims(analysis, service)
                 new_analyses.append(analysis)
 
             # Set the price of the Analysis
@@ -176,10 +171,9 @@ class ARAnalysesField(ObjectField):
             analysis.setAttachment([])
 
             # If it is assigned to a worksheet, unassign it before deletion.
-            if self._is_assigned_to_worksheet(analysis):
-                backrefs = self._get_assigned_worksheets(analysis)
-                ws = backrefs[0]
-                ws.removeAnalysis(analysis)
+            worksheet = analysis.getWorksheet()
+            if worksheet:
+                worksheet.removeAnalysis(analysis)
 
             # Unset the partition reference
             part = analysis.getSamplePartition()
@@ -268,37 +262,6 @@ class ARAnalysesField(ObjectField):
         if set(FROZEN_TRANSITIONS).intersection(performed_transitions):
             return True
         return False
-
-    def _get_assigned_worksheets(self, analysis):
-        """Return the assigned worksheets of this Analysis
-
-        :param analysis: Analysis Brain/Object
-        :returns: Worksheet Backreferences
-        """
-        analysis = api.get_object(analysis)
-        return analysis.getBackReferences("WorksheetAnalysis")
-
-    def _is_assigned_to_worksheet(self, analysis):
-        """Check if the Analysis is assigned to a worksheet
-
-        :param analysis: Analysis Brain/Object
-        :returns: True if the Analysis is assigned to a WS
-        """
-        analysis = api.get_object(analysis)
-        state = api.get_workflow_status_of(
-            analysis, state_var='worksheetanalysis_review_state')
-        return state == "assigned"
-
-    def _update_interims(self, analysis, service):
-        """Update Interim Fields of the Analysis
-
-        :param analysis: Analysis Object
-        :param service: Analysis Service Object
-        """
-        service_interims = service.getInterimFields()
-        # avoid references from the analyses interims to the service interims
-        service_interims = copy.deepcopy(service_interims)
-        analysis.setInterimFields(service_interims)
 
     def _update_price(self, analysis, service, prices):
         """Update the Price of the Analysis

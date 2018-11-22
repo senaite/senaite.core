@@ -200,10 +200,24 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     @security.public
     def getDateReceived(self):
         """Used to populate catalog values.
-        Returns the date on which the "receive" transition was invoked on this
-        analysis' Sample.
+        Returns the date the Analysis Request this analysis belongs to was
+        received. If the analysis was created after, then returns the date
+        the analysis was created.
         """
-        return getTransitionDate(self, 'receive', return_as_datetime=True)
+        request = self.getRequest()
+        if request:
+            ar_date = request.getDateReceived()
+            if ar_date and self.created() > ar_date:
+                return self.created()
+            return ar_date
+        return None
+
+    @security.public
+    def isSampleReceived(instance):
+        """Returns whether if the Analysis Request this analysis comes from has
+        been received or not
+        """
+        return instance.getDateReceived() and True or False
 
     @security.public
     def getDatePublished(self):
@@ -215,15 +229,25 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
     @security.public
     def getDateSampled(self):
-        """Used to populate catalog values.
-        Only has value when sampling_workflow is active.
+        """Returns the date when the Sample was Sampled
         """
-        return getTransitionDate(self, 'sample', return_as_datetime=True)
+        request = self.getRequest()
+        if request:
+            return request.getDateSampled()
+        return None
+
+    @security.public
+    def isSampleSampled(instance):
+        """Returns whether if the Analysis Request this analysis comes from has
+        been received or not
+        """
+        return instance.getDateSampled() and True or False
 
     @security.public
     def getStartProcessDate(self):
-        """Returns the date time when the analysis was received. If the
-        analysis hasn't yet been received, returns None
+        """Returns the date time when the analysis request the analysis belongs
+        to was received. If the analysis request hasn't yet been received,
+        returns None
         Overrides getStartProcessDateTime from the base class
         :return: Date time when the analysis is ready to be processed.
         :rtype: DateTime
@@ -505,57 +529,3 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         part = self.getSamplePartition()
         return part and part.guard_to_be_preserved()
-
-    @security.public
-    def workflow_script_submit(self):
-        """
-        Method triggered after a 'submit' transition for the current analysis
-        is performed. Responsible of triggering cascade actions such as
-        transitioning dependent analyses, transitioning worksheets, etc
-        depending on the current analysis and other analyses that belong to the
-        same Analysis Request or Worksheet.
-        This function is called automatically by
-        bika.lims.workfow.AfterTransitionEventHandler
-        """
-        # The analyses that depends on this analysis to calculate their results
-        # must be transitioned too, otherwise the user will be forced to submit
-        # them individually. Note that the automatic transition of dependents
-        # must only take place if all their dependencies have been submitted
-        # already.
-        for dependent in self.getDependents():
-            # If this submit transition has already been done for this
-            # dependent analysis within the current request, continue.
-            if skip(dependent, 'submit', peek=True):
-                continue
-
-            # TODO Workflow. All below and inside this loop should be moved to
-            # a guard_submit_transition inside analysis
-
-            # If this dependent has already been submitted, omit
-            if dependent.getSubmittedBy():
-                continue
-
-            # The dependent cannot be transitioned if doesn't have result
-            if not dependent.getResult():
-                continue
-
-            # If the calculation associated to the dependent analysis requires
-            # the manual introduction of interim fields, do not transition the
-            # dependent automatically, force the user to do it manually.
-            calculation = dependent.getCalculation()
-            if calculation and calculation.getInterimFields():
-                continue
-
-            # All dependencies from this dependent analysis are ok?
-            deps = dependent.getDependencies()
-            dsub = [dep for dep in deps if wasTransitionPerformed(dep, 'submit')]
-            if len(deps) == len(dsub):
-                # The statuses of all dependencies of this dependent are ok
-                # (at least, all of them have been submitted already)
-                doActionFor(dependent, 'submit')
-
-        # Do all the reflex rules process
-        self._reflex_rule_process('submit')
-
-        # Delegate the transition of Worksheet to base class AbstractAnalysis
-        super(AbstractRoutineAnalysis, self).workflow_script_submit()

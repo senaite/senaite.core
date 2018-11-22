@@ -32,6 +32,7 @@ from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
+from bika.lims import workflow as wf
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import wasTransitionPerformed
@@ -68,11 +69,9 @@ ResultCaptureDate = DateTimeField(
     'ResultCaptureDate'
 )
 
-# If the analysis has previously been retracted, this flag is set True
-# to indicate that this is a re-test.
-Retested = BooleanField(
-    'Retested',
-    default=False
+# Returns the retracted analysis this analysis is a retest of
+RetestOf = UIDReferenceField(
+    'RetestOf'
 )
 
 # If the result is outside of the detection limits of the method or instrument,
@@ -100,14 +99,6 @@ Uncertainty = FixedPointField(
 NumberOfRequiredVerifications = IntegerField(
     'NumberOfRequiredVerifications',
     default=1
-)
-
-# This field keeps the user_ids of members who verified this analysis.
-# After each verification, user_id will be added end of this string
-# seperated by comma- ',' .
-Verificators = StringField(
-    'Verificators',
-    default=''
 )
 
 # Routine Analyses and Reference Analysis have a versioned link to
@@ -144,9 +135,8 @@ schema = schema.copy() + Schema((
     NumberOfRequiredVerifications,
     Result,
     ResultCaptureDate,
-    Retested,
+    RetestOf,
     Uncertainty,
-    Verificators,
     Calculation,
     InterimFields
 ))
@@ -172,50 +162,33 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getNumberOfVerifications(self):
-        verificators = self.getVerificators()
-        if not verificators:
+        return len(self.getVerificators())
+
+    @security.public
+    def getNumberOfRemainingVerifications(self):
+        required = self.getNumberOfRequiredVerifications()
+        done = self.getNumberOfVerifications()
+        if done >= required:
             return 0
-        return len(verificators.split(','))
+        return required-done
 
-    @security.public
-    def addVerificator(self, username):
-        verificators = self.getVerificators()
-        if not verificators:
-            self.setVerificators(username)
-        else:
-            self.setVerificators(verificators + "," + username)
-        self.reindexObject()
-
-    @security.public
-    def deleteLastVerificator(self):
-        verificators_str = self.getVerificators()
-        if not verificators_str:
-            return
-        verificators = verificators_str.split(',')
-        del verificators[-1]
-        self.setVerificators(",".join(verificators))
-        self.reindexObject()
-
-    @security.public
-    def wasVerifiedByUser(self, username):
-        verificators_str = self.getVerificators()
-        if not verificators_str:
-            return False
-        verificators = verificators_str.split(',')
-        return username in verificators
-
+    # TODO Workflow - analysis . Remove?
     @security.public
     def getLastVerificator(self):
-        verificators = self.getVerificators()
-        if not verificators:
-            return None
-        return verificators.split(',')[-1]
+        verifiers = self.getVerificators()
+        return verifiers and verifiers[-1] or None
 
     @security.public
-    def setVerificator(self, value):
-        field = self.Schema().getField('Verificators')
-        field.set(self, value)
-        self.reindexObject()
+    def getVerificators(self):
+        """Returns the user ids of the users that verified this analysis
+        """
+        verifiers = list()
+        actions = ["verify", "multi_verify"]
+        for event in wf.getReviewHistory(self):
+            if event['action'] in actions:
+                verifiers.append(event['actor'])
+        sorted(verifiers, reverse=True)
+        return verifiers
 
     @security.public
     def getDefaultUncertainty(self, result=None):
@@ -427,8 +400,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str('' if not value and value != 0 else value).strip()
         # Only allow DL if manually enabled in AS
-        val = str(value).strip()
         if val and val[0] in '<>':
             self.setDetectionLimitOperand(None)
             oper = val[0]
@@ -978,63 +952,34 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalyst(self):
-        """Returns the identifier of the assigned analyst. If there is no
-        analyst assigned, and this analysis is attached to a worksheet,
-        retrieves the analyst assigned to the parent worksheet
+        """Returns the Analyst assigned to the worksheet this
+        analysis is assigned to
         """
-        field = self.getField('Analyst')
-        analyst = field and field.get(self) or ''
-        if not analyst:
-            # Is assigned to a worksheet?
-            wss = self.getBackReferences('WorksheetAnalysis')
-            if len(wss) > 0:
-                analyst = wss[0].getAnalyst()
-                field.set(self, analyst)
-        return analyst if analyst else ''
+        worksheet = self.getWorksheet()
+        if worksheet:
+            return worksheet.getAnalyst() or ""
+        return ""
 
     @security.public
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
         """
-        mtool = getToolByName(self, 'portal_membership')
-        analyst = self.getAnalyst().strip()
-        analyst_member = mtool.getMemberById(analyst)
-        if analyst_member:
-            return analyst_member.getProperty('fullname')
-        return ''
+        analyst = self.getAnalyst()
+        if analyst:
+            user = api.get_user(analyst.strip())
+            return user and user.getProperty("fullname") or ""
+        return ""
 
-    # TODO Workflow, Analysis - Move to analysis.guard.verify?
+    # TODO Workflow, Analysis - Remove
     @security.public
     def isVerifiable(self):
         """Checks it the current analysis can be verified. This is, its not a
         cancelled analysis and has no dependenant analyses not yet verified
         :return: True or False
         """
-        # Check if the analysis is active
-        workflow = getToolByName(self, "portal_workflow")
-        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
-        if objstate == "cancelled":
-            return False
+        return guards.guard_verify(self) or guards.guard_multi_verify(self)
 
-        # Check if the analysis state is to_be_verified
-        review_state = workflow.getInfoFor(self, "review_state")
-        if review_state != 'to_be_verified':
-            return False
-
-        # If the analysis has at least one dependency that hasn't been verified
-        # yet and because of its current state cannot be verified, then return
-        # false. The idea is that an analysis that requires from results of
-        # other analyses cannot be verified unless all its dependencies have
-        # already been verified or are in a suitable state for doing so.
-        for d in self.getDependencies():
-            if not d.isVerifiable() \
-                    and not wasTransitionPerformed(d, 'verify'):
-                return False
-
-        # All checks passed
-        return True
-
-    # TODO Workflow, Analysis - Move to analysis.guard.verify?
+    # TODO Workflow, Analysis - Remove
     @security.public
     def isUserAllowedToVerify(self, member):
         """
@@ -1048,44 +993,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :member: user to be tested
         :return: true or false
         """
-        # Check if the user has "Bika: Verify" privileges
-        username = member.getUserName()
-        allowed = has_permission(VerifyPermission, username=username)
-        if not allowed:
-            return False
-
-        # Check if the user who submited the result is the same as the current
-        self_submitted = self.getSubmittedBy() == member.getUser().getId()
-
-        # The submitter and the user must be different unless the analysis has
-        # the option SelfVerificationEnabled set to true
-        selfverification = self.isSelfVerificationEnabled()
-        if self_submitted and not selfverification:
-            return False
-
-        # Checking verifiability depending on multi-verification type of
-        # bika_setup
-        if self.bika_setup.getNumberOfRequiredVerifications() > 1:
-            mv_type = self.bika_setup.getTypeOfmultiVerification()
-            # If user verified before and self_multi_disabled, then return False
-            if mv_type == 'self_multi_disabled' and self.wasVerifiedByUser(
-                    username):
-                return False
-
-            # If user is the last verificator and consecutively
-            # multi-verification
-            # is disabled, then return False
-            # Comparing was added just to check if this method is called
-            # before/after
-            # verification
-            elif mv_type == 'self_multi_not_cons' and username == \
-                    self.getLastVerificator() and \
-                            self.getNumberOfVerifications() < \
-                            self.getNumberOfRequiredVerifications():
-                return False
-
-        # All checks pass
-        return True
+        return guards.guard_verify(self) or guards.guard_multi_verify(self)
 
     @security.public
     def getObjectWorkflowStates(self):
@@ -1253,70 +1161,54 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     and analysis.getAnalysis().UID() == self.UID():
                 ws.removeAnalysis(analysis)
 
-    @security.public
-    def guard_sample_transition(self):
-        return guards.sample(self)
+    def setInterimValue(self, keyword, value):
+        """Sets a value to an interim of this analysis
+        :param keyword: the keyword of the interim
+        :param value: the value for the interim
+        """
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str('' if not value and value != 0 else value).strip()
+        interims = self.getInterimFields()
+        for interim in interims:
+            if interim['keyword'] == keyword:
+                interim['value'] = val
+                self.setInterimFields(interims)
+                return
 
-    @security.public
-    def guard_retract_transition(self):
-        return guards.retract(self)
+        logger.warning("Interim '{}' for analysis '{}' not found"
+                       .format(keyword, self.getKeyword()))
 
-    @security.public
-    def guard_receive_transition(self):
-        return guards.receive(self)
+    def getInterimValue(self, keyword):
+        """Returns the value of an interim of this analysis
+        """
+        interims = filter(lambda item: item["keyword"] == keyword,
+                          self.getInterimFields())
+        if not interims:
+            logger.warning("Interim '{}' for analysis '{}' not found"
+                           .format(keyword, self.getKeyword()))
+            return None
+        if len(interims) > 1:
+            logger.error("More than one interim '{}' found for '{}'"
+                         .format(keyword, self.getKeyword()))
+            return None
+        return interims[0].get('value', '')
+
+    def isRetest(self):
+        """Returns whether this analysis is a retest or not
+        """
+        return self.getRetestOf() and True or False
+
+    def getRetestOfUID(self):
+        """Returns the UID of the retracted analysis this is a retest of
+        """
+        retest_of = self.getRetestOf()
+        if retest_of:
+            return api.get_uid(retest_of)
 
     @security.public
     def guard_publish_transition(self):
         return guards.publish(self)
 
     @security.public
-    def guard_import_transition(self):
-        return guards.import_transition(self)
-
-    @security.public
     def guard_attach_transition(self):
         return guards.attach(self)
-
-    @security.public
-    def guard_verify_transition(self):
-        return guards.verify(self)
-
-    @security.public
-    def guard_assign_transition(self):
-        return guards.assign(self)
-
-    @security.public
-    def guard_unassign_transition(self):
-        return guards.unassign(self)
-
-    @security.public
-    def workflow_script_submit(self):
-        events.after_submit(self)
-
-    @security.public
-    def workflow_script_retract(self):
-        events.after_retract(self)
-
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
-
-    @security.public
-    def workflow_script_cancel(self):
-        events.after_cancel(self)
-
-    @security.public
-    def workflow_script_reject(self):
-        events.after_reject(self)
-
-    @security.public
-    def workflow_script_attach(self):
-        events.after_attach(self)
-
-    @security.public
-    def workflow_script_assign(self):
-        events.after_assign(self)
-
-    @security.public
-    def workflow_script_unassign(self):
-        events.after_unassign(self)

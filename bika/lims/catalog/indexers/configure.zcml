@@ -9,5 +9,7 @@
 
   <!-- Partitioning. Analyses masking in searches -->
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
+  <!-- Masking of cancellation_workflow for Analysis -->
+  <adapter name="cancellation_state" factory=".requestanalysis.cancellation_state"/>
 
 </configure>

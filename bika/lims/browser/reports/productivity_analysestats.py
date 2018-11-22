@@ -66,24 +66,7 @@ class Report(BrowserView):
 
         query['review_state'] = 'published'
 
-        workflow = getToolByName(self.context, 'portal_workflow')
-        if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form[
-                'bika_worksheetanalysis_workflow']
-            ws_review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append(
-                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
-                 'type': 'text'})
-
-        # query all the analyses and increment the counts
-        count_early = 0
-        mins_early = 0
-        count_late = 0
-        mins_late = 0
-        count_undefined = 0
         services = {}
-
         analyses = bc(query)
         for a in analyses:
             analysis = a.getObject()

@@ -22,7 +22,6 @@ CATALOG_ANALYSIS_LISTING = 'bika_analysis_catalog'
 # Defining the indexes for this catalog
 _indexes_dict = {
     'sortable_title': 'FieldIndex',
-    'worksheetanalysis_review_state': 'FieldIndex',
     'cancellation_state': 'FieldIndex',
     'getParentUID': 'FieldIndex',
     'getRequestUID': 'FieldIndex',
@@ -44,7 +43,6 @@ _indexes_dict = {
     'getSampleUID': 'FieldIndex',
     'getSampleTypeUID': 'FieldIndex',
     'getSamplePointUID': 'FieldIndex',
-    'getRetested': 'FieldIndex',
     'getReferenceAnalysesGroupID': 'FieldIndex',
     'getMethodUID': 'FieldIndex',
     'getInstrumentUID': 'FieldIndex',
@@ -55,10 +53,11 @@ _indexes_dict = {
     'getOriginalReflexedAnalysisUID': 'FieldIndex',
     'getPrioritySortkey': 'FieldIndex',
     'getAncestorsUIDs': 'KeywordIndex',
+    'isSampleReceived': 'BooleanIndex',
+    'isRetest': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
-    'worksheetanalysis_review_state',
     'getAttachmentUIDs',
     'getRequestID',
     'getReferenceAnalysesGroupID',
@@ -78,7 +77,7 @@ _columns_list = [
     'getInterimFields',
     'getSamplePartitionID',
     'getRemarks',
-    'getRetested',
+    'getRetestOfUID',
     'getExpiryDate',
     'getDateSampled',
     'getDueDate',

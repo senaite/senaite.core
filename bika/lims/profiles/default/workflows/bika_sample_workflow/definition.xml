@@ -29,6 +29,11 @@
     <exit-transition transition_id="sampling_workflow"/>
     <exit-transition transition_id="no_sampling_workflow"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
@@ -74,6 +79,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
@@ -139,6 +145,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -327,6 +334,7 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -378,6 +386,7 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>Analyst</permission-role>

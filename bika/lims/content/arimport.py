@@ -249,6 +249,7 @@ class ARImport(BaseFolder):
         if data and len(data):
             return True
 
+    # TODO Workflow - ARImport - Remove
     def workflow_before_validate(self):
         """This function transposes values from the provided file into the
         ARImport object's fields, and checks for invalid values.

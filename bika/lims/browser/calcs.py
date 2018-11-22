@@ -32,6 +32,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         self.request = request
 
     def calculate(self, uid=None):
+        # TODO Move this function to api.analysis.calculate
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]['result']
         calculation = analysis.getCalculation()

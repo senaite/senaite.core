@@ -12,7 +12,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
 from bika.lims.permissions import *
-from bika.lims.subscribers import doActionFor
+from bika.lims.workflow import doActionFor
 from bika.lims.utils import isActive
 
 

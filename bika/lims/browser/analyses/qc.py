@@ -61,9 +61,9 @@ class QCAnalysesView(AnalysesView):
 
         obj = obj.getObject()
         # Group items by RefSample - Worksheet - Position
-        wss = obj.getBackReferences('WorksheetAnalysis')
-        wsid = wss[0].id if wss and len(wss) > 0 else ''
-        wshref = wss[0].absolute_url() if wss and len(wss) > 0 else None
+        ws = obj.getWorksheet()
+        wsid = ws and ws.id or ''
+        wshref = ws.absolute_url() or None
         if wshref:
             item['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (
                 wshref, wsid)

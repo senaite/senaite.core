@@ -11,6 +11,7 @@ from datetime import datetime
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -170,23 +171,16 @@ class ReferenceAnalysesView(AnalysesView):
         if not item:
             return None
         item['Category'] = obj.getCategoryTitle
-        wss = self.rc.getBackReferences(
-            obj.UID,
-            relationship="WorksheetAnalysis")
-        if not wss:
+        ref_analysis = api.get_object(obj)
+        ws = ref_analysis.getWorksheet()
+        if not ws:
             logger.warn(
                 'No Worksheet found for ReferenceAnalysis {}'
                 .format(obj.getId))
-        elif wss and len(wss) == 1:
-            # TODO-performance: We are getting the object here...
-            ws = wss[0].getSourceObject()
+        else:
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
-        else:
-            logger.warn(
-                'More than one Worksheet found for ReferenceAnalysis {}'
-                .format(obj.getId))
 
         # Add the analysis to the QC Chart
         self.chart.add_analysis(obj)

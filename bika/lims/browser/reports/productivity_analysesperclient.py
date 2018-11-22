@@ -59,9 +59,6 @@ class Report(BrowserView):
         # Filter analyses by cancellation state
         self.add_filter_by_cancellation_state(query, parms)
 
-        # Filter analyses by worksheet state
-        self.add_filter_by_worksheet_state(query, parms)
-
         # Fetch and fill data
         data = OrderedDict()
         analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
@@ -136,15 +133,6 @@ class Report(BrowserView):
                                     wf_id="bika_analysis_workflow",
                                     index="review_state",
                                     title=_("Status"))
-
-    def add_filter_by_worksheet_state(self, query, out_params):
-        """Applies the filter by worksheetanalysis_review_state to the search
-        query
-        """
-        self.add_filter_by_wf_state(query=query, out_params=out_params,
-                                    wf_id="bika_worksheetanalysis_workflow",
-                                    index="worksheetanalysis_review_state",
-                                    title=_("Assigned to worksheet"))
 
     def add_filter_by_cancellation_state(self, query, out_params):
         """Applies the filter by cancellation_state to the search query

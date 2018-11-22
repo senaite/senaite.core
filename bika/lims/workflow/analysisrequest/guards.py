@@ -7,6 +7,7 @@
 
 from Products.CMFCore.utils import getToolByName
 
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
@@ -153,3 +154,46 @@ def publish(obj):
     """
     return isBasicTransitionAllowed(obj)
 
+
+def guard_rollback_to_receive(analysis_request):
+    """Return whether 'rollback_to_receive' transition can be performed or not
+    """
+    # Can rollback to receive if at least one analysis hasn't been submitted yet
+    # or if all analyses have been rejected or retracted
+    analyses = analysis_request.getAnalyses()
+    skipped = 0
+    for analysis in analyses:
+        analysis_object = api.get_object(analysis)
+        state = getCurrentState(analysis_object)
+        if state in ["unassigned", "assigned"]:
+            return True
+        if state in ["retracted", "rejected"]:
+            skipped += 1
+    return len(analyses) == skipped
+
+
+def guard_cancel(analysis_request):
+    """Returns whether 'cancel' transition can be performed or not. Returns
+    True only if all analyses are in "unassigned" status
+    """
+    # Ask to partitions
+    for partition in analysis_request.getDescendants(all_descendants=False):
+        if not isTransitionAllowed(partition, "cancel"):
+            return False
+
+    # Look through analyses
+    for analysis in analysis_request.getAnalyses():
+        analysis_object = api.get_object(analysis)
+        if api.get_workflow_status_of(analysis_object) != "unassigned":
+            return False
+
+    return True
+
+
+def guard_reinstate(analysis_request):
+    """Returns whether 'reinstate" transition can be performed or not. Returns
+    True only if this is not a partition or the parent analysis request can be
+    reinstated
+    """
+    parent = analysis_request.getParentAnalysisRequest()
+    return not parent or isTransitionAllowed(parent, "reinstate")

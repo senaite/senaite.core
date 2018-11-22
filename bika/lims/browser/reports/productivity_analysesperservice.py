@@ -83,15 +83,6 @@ class Report(BrowserView):
             parms.append({'title': _('Active'), 'value': cancellation_state,
                           'type': 'text'})
 
-        if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form[
-                'bika_worksheetanalysis_workflow']
-            ws_review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append(
-                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
-                 'type': 'text'})
-
         # and now lets do the actual report lines
         formats = {'columns': 2,
                    'col_heads': [_('Analysis service'), _('Number of analyses')],
