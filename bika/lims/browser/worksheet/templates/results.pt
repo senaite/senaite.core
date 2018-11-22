@@ -131,10 +131,8 @@
       <!-- Wide Interim -->
       <div class="row">
         <div class="col-sm-12">
-          <table tal:define="wideinterims view/get_wide_interims;
-                             wideanselected python:wideinterims.keys()[0];
-                             wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]"
-                 tal:condition="python: wideinterims"
+          <table tal:define="wideinterims view/get_wide_interims"
+                 tal:condition="python:wideinterims"
                  class="wideinterims_bar table table-condensed">
             <tr>
               <!-- Autofill -->
@@ -143,7 +141,9 @@
                   <label>
                     <span i18n:translate="">Autofill</span>
                   </label>
-                  <select id="wideinterims_analyses" class="input-sm">
+                  <select id="wideinterims_analyses"
+                          class="input-sm"
+                          tal:define="wideanselected python:wideinterims.keys()[0];">
                     <tal:options repeat="option python:wideinterims.keys()">
                       <option tal:attributes="value python:option;
                                               selected python:option==wideanselected;"
@@ -168,7 +168,9 @@
                   <label class="required">
                     <span i18n:translate="">Field</span>
                   </label>
-                  <select id="wideinterims_interims" class="input-sm">
+                  <select id="wideinterims_interims"
+                          class="input-sm"
+                          tal:define="wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]">
                     <tal:options repeat="interim interims">
                       <option tal:attributes="value python:interim;
                                               selected python:interim==wideinterimselected;"
