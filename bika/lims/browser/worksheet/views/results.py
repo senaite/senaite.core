@@ -20,6 +20,7 @@ from zope.interface import implements
 from plone.memoize import view
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
+from bika.lims.browser.worksheet.views import AnalysesTransposedView
 
 
 class ManageResultsView(BrowserView):
@@ -55,12 +56,13 @@ class ManageResultsView(BrowserView):
             self.context.plone_utils.addPortalMessage(message, "info")
 
         # Classic/Transposed View Switch
-        view = "analyses_classic_view"
-        if self.context.getResultsLayout() == "2":
-            view = "analyses_transposed_view"
-
-        self.Analyses = api.get_view(
-            view, context=self.context, request=self.request)
+        if self.context.getResultsLayout() == "1":
+            view = "analyses_classic_view"
+            self.Analyses = api.get_view(
+                view, context=self.context, request=self.request)
+        else:
+            # TODO: Refactor transposed view to new listing
+            self.Analyses = AnalysesTransposedView(self.context, self.request)
 
         self.analystname = self.context.getAnalystName()
         self.instrumenttitle = self.get_instrument_title()

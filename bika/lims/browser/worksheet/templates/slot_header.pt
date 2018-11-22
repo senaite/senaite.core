@@ -19,8 +19,6 @@
            tal:attributes="href data/item_url|nothing">
           <span tal:replace="data/item_title|nothing"/>
         </a>
-      </td>
-      <td>
         <span tal:repeat="icon data/additional_item_icons">
           <span tal:replace="structure icon|nothing"/>
         </span>
