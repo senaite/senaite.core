@@ -131,76 +131,75 @@
       <!-- Wide Interim -->
       <div class="row">
         <div class="col-sm-12">
-          <table tal:define="wideinterims view/get_wide_interims"
-                 tal:condition="python:wideinterims"
-                 class="wideinterims_bar table table-condensed">
-            <tr>
-              <!-- Autofill -->
-              <td>
-                <div class="form-group">
-                  <label>
-                    <span i18n:translate="">Autofill</span>
-                  </label>
-                  <select id="wideinterims_analyses"
+          <tal:wideinterims define="wideinterims view/get_wide_interims;">
+            <table tal:define="wideanselected python:wideinterims.keys()[0];
+                              wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]"
+                  tal:condition="python: wideinterims"
+                  class="wideinterims_bar table table-condensed">
+              <tr>
+                <!-- Autofill -->
+                <td>
+                  <div class="form-group">
+                    <label>
+                      <span i18n:translate="">Autofill</span>
+                    </label>
+                    <select id="wideinterims_analyses" class="input-sm">
+                      <tal:options repeat="option python:wideinterims.keys()">
+                        <option tal:attributes="value python:option;
+                                                selected python:option==wideanselected;"
+                                tal:content="python:wideinterims[option]['analysis']" />
+                      </tal:options>
+                    </select>
+                    <tal:hiddeninterims repeat="an python:wideinterims.keys()">
+                      <tal:hiddeninterim repeat="inter python:wideinterims[an]['interims'].values()">
+                        <input type="hidden"
+                              tal:attributes="id python:'wideinterim_%s_%s' % (an, inter['keyword']);
+                                              name python:inter['title'];
+                                              value python:inter['value'];
+                                              keyword python:inter['keyword'];"/>
+                      </tal:hiddeninterim>
+                    </tal:hiddeninterims>
+                  </div>
+                </td>
+                <!-- Field -->
+                <td>
+                  <div class="form-group"
+                      tal:define="interims python:wideinterims[wideanselected]['interims'].keys()">
+                    <label class="required">
+                      <span i18n:translate="">Field</span>
+                    </label>
+                    <select id="wideinterims_interims" class="input-sm">
+                      <tal:options repeat="interim interims">
+                        <option tal:attributes="value python:interim;
+                                                selected python:interim==wideinterimselected;"
+                                tal:content="python:wideinterims[wideanselected]['interims'][interim]['title']" />
+                      </tal:options>
+                    </select>
+                  </div>
+                </td>
+                <!-- Field -->
+                <td>
+                  <div class="form-group">
+                    <label>
+                      <span i18n:translate="">Value</span>
+                    </label>
+                    <input id="wideinterims_value"
                           class="input-sm"
-                          tal:define="wideanselected python:wideinterims.keys()[0];">
-                    <tal:options repeat="option python:wideinterims.keys()">
-                      <option tal:attributes="value python:option;
-                                              selected python:option==wideanselected;"
-                              tal:content="python:wideinterims[option]['analysis']" />
-                    </tal:options>
-                  </select>
-                  <tal:hiddeninterims repeat="an python:wideinterims.keys()">
-                    <tal:hiddeninterim repeat="inter python:wideinterims[an]['interims'].values()">
-                      <input type="hidden"
-                            tal:attributes="id python:'wideinterim_%s_%s' % (an, inter['keyword']);
-                                            name python:inter['title'];
-                                            value python:inter['value'];
-                                            keyword python:inter['keyword'];"/>
-                    </tal:hiddeninterim>
-                  </tal:hiddeninterims>
-                </div>
-              </td>
-              <!-- Field -->
-              <td>
-                <div class="form-group"
-                     tal:define="interims python:wideinterims[wideanselected]['interims'].keys()">
-                  <label class="required">
-                    <span i18n:translate="">Field</span>
-                  </label>
-                  <select id="wideinterims_interims"
-                          class="input-sm"
-                          tal:define="wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]">
-                    <tal:options repeat="interim interims">
-                      <option tal:attributes="value python:interim;
-                                              selected python:interim==wideinterimselected;"
-                              tal:content="python:wideinterims[wideanselected]['interims'][interim]['title']" />
-                    </tal:options>
-                  </select>
-                </div>
-              </td>
-              <!-- Field -->
-              <td>
-                <div class="form-group">
-                  <label>
-                    <span i18n:translate="">Value</span>
-                  </label>
-                  <input id="wideinterims_value"
-                         class="input-sm"
-                         type="text"
-                         size="6"
-                         tal:attributes="value python:wideinterims[wideanselected]['interims'][wideinterimselected]['value']" />
-                  <input type='checkbox'
-                         id='wideinterims_empty'
-                         checked>
-                  <span i18n:translate="">Only to empty or zero fields</span>
-                  <button id="wideinterims_apply"
-                          class="btn btn-default btn-sm"
-                          i18n:translate="">Apply</button>
-                </div>
-              </td>
-            </tr>
-          </table>
+                          type="text"
+                          size="6"
+                          tal:attributes="value python:wideinterims[wideanselected]['interims'][wideinterimselected]['value']" />
+                    <input type='checkbox'
+                          id='wideinterims_empty'
+                          checked>
+                    <span i18n:translate="">Only to empty or zero fields</span>
+                    <button id="wideinterims_apply"
+                            class="btn btn-default btn-sm"
+                            i18n:translate="">Apply</button>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </tal:wideinterims>
         </div>
       </div>
 
