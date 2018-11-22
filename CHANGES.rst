@@ -23,7 +23,7 @@ Changelog
 - #1077 Don't allow to cancel Analysis Requests with assigned/submitted analyses
 - #1077 Decouple `cancellation_workflow` from Analysis content type
 - #1077 Refactored `referenceanalysis_workflow` + after transitions and guards
-. #1077 Refactored `duplicateanalysis_workflow` + after transitions and guards
+- #1077 Refactored `duplicateanalysis_workflow` + after transitions and guards
 - #1077 Refactored `analysis_workflow` + after transitions and guards
 - #1095 New worksheet results listing
 - #1091 New Worksheet blank/control/duplicate listings
