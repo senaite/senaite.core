@@ -131,10 +131,10 @@
       <!-- Wide Interim -->
       <div class="row">
         <div class="col-sm-12">
-          <tal:wideinterims define="wideinterims view/get_wide_interims;">
+          <tal:wideinterims define="wideinterims view/get_wide_interims;"
+                            condition="python: wideinterims">
             <table tal:define="wideanselected python:wideinterims.keys()[0];
-                              wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]"
-                  tal:condition="python: wideinterims"
+                               wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]"
                   class="wideinterims_bar table table-condensed">
               <tr>
                 <!-- Autofill -->
