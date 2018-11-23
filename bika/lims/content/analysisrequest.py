@@ -2085,29 +2085,31 @@ class AnalysisRequest(BaseFolder):
         analyses and the second list the profiles.
         The third contains the analyses objects used by the profiles.
         """
-        # Getting requested analyses
-        workflow = getToolByName(self, 'portal_workflow')
         # profile_analyses contains the profile's analyses (analysis !=
         # service") objects to obtain
         # the correct price later
-        profile_analyses = []
         exclude_rs = ['retracted', 'rejected']
         analyses = filter(lambda an: an.review_state not in exclude_rs,
                           self.getAnalyses(cancellation_state='active'))
-        # Getting all profiles
-        analysis_profiles = self.getProfiles() if len(
-            self.getProfiles()) > 0 else []
-        # Cleaning services included in profiles
-        for profile in analysis_profiles:
-            for analysis_service in profile.getService():
-                for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword:
-                        analyses.remove(analysis)
-                        profile_analyses.append(analysis)
-
         analyses = map(api.get_object, analyses)
-        profile_analyses = map(api.get_object, profile_analyses)
-        return analyses, analysis_profiles, profile_analyses
+        profiles = self.getProfiles()
+
+        # Get the service keys from all profiles
+        profiles_keys = list()
+        for profile in profiles:
+            profile_keys = map(lambda s: s.getKeyword(), profile.getService())
+            profiles_keys.extend(profile_keys)
+
+        # Extract the analyses which service is present in at least one profile
+        # and those not present (orphan)
+        profile_analyses = list()
+        orphan_analyses = list()
+        for an in analyses:
+            if an.getKeyword() in profiles_keys:
+                profile_analyses.append(an)
+            else:
+                orphan_analyses.append(an)
+        return analyses, profiles, profile_analyses
 
     security.declareProtected(View, 'getSubtotal')
 
