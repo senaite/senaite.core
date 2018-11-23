@@ -519,13 +519,3 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             # Once we have the rules, the system has to execute its
             # instructions if the result has the expected result.
             doReflexRuleAction(self, action_row)
-
-    @security.public
-    def guard_to_be_preserved(self):
-        """Returns if the Sample Partition to which this Analysis belongs needs
-        to be prepreserved, so the Analysis. If the analysis has no Sample
-        Partition assigned, returns False.
-        Delegates to Sample Partitions's guard_to_be_preserved
-        """
-        part = self.getSamplePartition()
-        return part and part.guard_to_be_preserved()
