@@ -207,7 +207,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Reindex
         if reindex:
-            self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+            idxs = ["getAnalysesUIDs", "getDepartmentUIDs", "review_state"]
+            self.reindexObject(idxs=idxs)
 
         # Try to rollback the worksheet to prevent inconsistencies
         doActionFor(self, "rollback_to_open")

@@ -8,6 +8,7 @@
 import transaction
 from Products.CMFCore.utils import getToolByName
 
+from bika.lims import api
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_analysis
@@ -110,8 +111,8 @@ def after_retract(analysis):
     delattr(parent, '_verifyObjectPaste')
 
     # Create a copy of the retracted analysis
-    new_analysis = create_analysis(parent, analysis)
-    new_analysis.setRetestOf(analysis)
+    analysis_uid = api.get_uid(analysis)
+    new_analysis = create_analysis(parent, analysis, RetestOf=analysis_uid)
 
     # Assign the new analysis to this same worksheet, if any.
     worksheet = analysis.getWorksheet()
@@ -214,7 +215,7 @@ def reindex_request(analysis, idxs=None):
         # Analysis not directly bound to an Analysis Request. Do nothing
         return
 
-    n_idxs = ['assigned_state', 'isRootAncestor', 'getDueDate']
+    n_idxs = ['assigned_state', 'getDueDate']
     n_idxs = idxs and list(set(idxs + n_idxs)) or n_idxs
     request = analysis.getRequest()
     ancestors = [request] + request.getAncestors(all_ancestors=True)
