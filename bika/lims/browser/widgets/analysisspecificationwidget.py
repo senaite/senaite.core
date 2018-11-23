@@ -109,7 +109,7 @@ class AnalysisSpecificationView(BikaListingView):
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
-                "transitions": [],
+                "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": self.columns.keys(),
             },
         ]
