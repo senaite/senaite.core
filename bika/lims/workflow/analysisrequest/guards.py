@@ -77,34 +77,19 @@ def verify(obj):
     if not isBasicTransitionAllowed(obj):
         return False
 
+    verified_analyses = False
+    permitted_states = ['cancelled', 'rejected', 'retracted', 'verified']
     analyses = obj.getAnalyses(full_objects=True)
-    invalid = 0
     for an in analyses:
-        # The analysis has already been verified?
-        if wasTransitionPerformed(an, 'verify'):
-            continue
-
-        # Maybe the analysis is in an 'inactive' state?
-        if not isActive(an):
-            invalid += 1
-            continue
-
-        # Maybe the analysis has been rejected or retracted?
-        dettached = ['rejected', 'retracted', 'attachments_due']
-        status = getCurrentState(an)
-        if status in dettached:
-            invalid += 1
-            continue
-
-        # At this point we can assume this analysis is an a valid state and
-        # could potentially be verified, but the Analysis Request can only be
-        # verified if all the analyses have been transitioned to verified
-        return False
+        analysis_state = api.get_workflow_status_of(an)
+        if analysis_state not in permitted_states:
+            return False
+        verified_analyses = verified_analyses or analysis_state == 'verified'
 
     # Be sure that at least there is one analysis in an active state, it
     # doesn't make sense to verify an Analysis Request if all the analyses that
     # contains are rejected or cancelled!
-    return len(analyses) - invalid > 0
+    return verified_analyses
 
 
 def prepublish(obj):
