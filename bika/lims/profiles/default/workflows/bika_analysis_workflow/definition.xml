@@ -16,6 +16,10 @@
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
   <permission>Reject</permission>
+  <!-- TODO Workflow - Analysis - Allowing only users with role "Review portal
+  content" to access to workflow history may cause problems when functions
+  "getReviewHistory", "wasTransitionPerformed" are used. These functions are
+  needed in some guards and/or in rollback transitions. Double-check -->
   <permission>Review portal content</permission>
 
 
@@ -120,6 +124,9 @@
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+    <!-- Analysis cannot be rejected once cancelled -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
   </state>
 
   <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
@@ -197,6 +204,9 @@
       <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+    <!-- Analysis cannot be rejected once retracted -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
   </state>
 
   <!-- State: rejected
@@ -210,6 +220,7 @@
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
     <permission-map name="Review portal content" acquired="False">
       <permission-role>LabManager</permission-role>
@@ -217,11 +228,13 @@
     </permission-map>
     <permission-map name="BIKA: Retract" acquired="False">
     </permission-map>
+    <!-- Analysis cannot be rejected again -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
   </state>
 
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="publish" />
-    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -233,12 +246,14 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+    <!-- Analysis cannot be rejected once verified -->
+    <permission-map name="Reject" acquired="False">
     </permission-map>
   </state>
 
   <state state_id="published" title="Published" i18n:attributes="title">
     <exit-transition transition_id="publish" />
-    <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -250,6 +265,9 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+    <!-- Analyses cannot be rejected once published -->
+    <permission-map name="Reject" acquired="False">
     </permission-map>
   </state>
 
@@ -423,7 +441,10 @@
       <expression>state_change/getHistory</expression>
     </default>
     <guard>
-      <guard-permission>Request review</guard-permission>
+      <!-- TODO Workflow - Analysis - Allowing only users with role "Review
+      portal content" to access to workflow history may cause problems when
+      functions "getReviewHistory", "wasTransitionPerformed" are used. These
+      functions are needed in some guards and/or in rollback transitions -->
       <guard-permission>Review portal content</guard-permission>
     </guard>
   </variable>
