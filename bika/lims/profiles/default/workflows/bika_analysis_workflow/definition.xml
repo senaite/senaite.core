@@ -445,6 +445,7 @@
       portal content" to access to workflow history may cause problems when
       functions "getReviewHistory", "wasTransitionPerformed" are used. These
       functions are needed in some guards and/or in rollback transitions -->
+      <guard-permission>Request review</guard-permission>
       <guard-permission>Review portal content</guard-permission>
     </guard>
   </variable>
