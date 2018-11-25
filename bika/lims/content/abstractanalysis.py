@@ -1213,7 +1213,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not back_refs:
             return None
         if len(back_refs) > 1:
-            logger.warn("Analysis {} with multiple retests")
+            logger.warn("Analysis {} with multiple retests".format(self.id))
         return api.get_object_by_uid(back_refs[0])
 
     @security.public
