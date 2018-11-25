@@ -30,12 +30,6 @@ class AjaxListingView(BrowserView):
         super(AjaxListingView, self).__init__(context, request)
         self.traverse_subpath = []
 
-    @property
-    def review_states_by_id(self):
-        """Returns a mapping of the review_states by id
-        """
-        return dict(map(lambda rs: (rs.get("id"), rs), self.review_states))
-
     def ajax_contents_table(self, *args, **kwargs):
         """Render the ReactJS enabled contents table template
 
@@ -112,16 +106,14 @@ class AjaxListingView(BrowserView):
         result.update(kw)
         return result
 
-    @returns_safe_json
     @translate
-    def ajax_columns(self):
-        """Returns the `column` dictionary of the view
+    def get_columns(self):
+        """Returns the `columns` dictionary of the view
         """
         return self.columns
 
-    @returns_safe_json
     @translate
-    def ajax_review_states(self):
+    def get_review_states(self):
         """Returns the `review_states` list of the view
         """
         return self.review_states
@@ -246,6 +238,18 @@ class AjaxListingView(BrowserView):
             return attr()
         return attr
 
+    @returns_safe_json
+    def ajax_review_states(self):
+        """Returns the `review_states` list of the view as JSON
+        """
+        return self.get_review_states()
+
+    @returns_safe_json
+    def ajax_columns(self):
+        """Returns the `columns` dictionary of the view as JSON
+        """
+        return self.get_columns()
+
     @translate
     def get_folderitems(self):
         """This method calls the folderitems method
@@ -281,8 +285,8 @@ class AjaxListingView(BrowserView):
 
         config = {
             "form_id": self.form_id,
-            "review_states": self.review_states,
-            "columns": self.columns,
+            "review_states": self.get_review_states(),
+            "columns": self.get_columns(),
             "allow_edit": self.allow_edit,
             "api_url": self.get_api_url(),
             "catalog": self.catalog,
