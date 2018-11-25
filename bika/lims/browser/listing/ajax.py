@@ -349,7 +349,9 @@ class AjaxListingView(BrowserView):
         updated_objects = []
 
         # sanitize the name
-        fieldname = name.lstrip("get")
+        fieldname = name
+        if fieldname.startswith("get"):
+            fieldname = name.lstrip("get")
 
         # fetch the schema field
         field = obj.getField(fieldname)
