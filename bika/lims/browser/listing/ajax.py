@@ -234,18 +234,6 @@ class AjaxListingView(BrowserView):
 
         return transitions
 
-    def base_info(self, brain_or_object):
-        """Object/Brain Base info
-        """
-        info = {
-            "id": api.get_id(brain_or_object),
-            "uid": api.get_uid(brain_or_object),
-            "url": api.get_url(brain_or_object),
-            "title": api.get_title(brain_or_object),
-            "portal_type": api.get_portal_type(brain_or_object),
-        }
-        return info
-
     def get_category_uid(self, brain_or_object, accessor="getCategoryUID"):
         """Get the category UID from the brain or object
 
