@@ -339,6 +339,20 @@ class AjaxListingView(BrowserView):
         """
         return IRoutineAnalysis.providedBy(obj)
 
+    def lookup_schema_field(self, obj, fieldname):
+        """Lookup  a schema field by name
+
+        :returns: Schema field or None
+        """
+        # Lookup the field by the given name
+        field = obj.getField(fieldname)
+        if field is None:
+            # strip "get" from the fieldname
+            if fieldname.startswith("get"):
+                fieldname = fieldname.lstrip("get")
+                field = obj.get(fieldname)
+        return field
+
     def set_field(self, obj, name, value):
         """Set the value
 
@@ -348,31 +362,26 @@ class AjaxListingView(BrowserView):
         # set of updated objects
         updated_objects = []
 
-        # sanitize the name
-        fieldname = name
-        if fieldname.startswith("get"):
-            fieldname = name.lstrip("get")
-
-        # fetch the schema field
-        field = obj.getField(fieldname)
+        # lookup the schema field
+        field = self.lookup_schema_field(obj, name)
 
         # field exists, set it with the value
         if field:
-            obj.edit(**{fieldname: value})
+            obj.edit(**{field.getName(): value})
             updated_objects.append(obj)
 
         # check if the object is an analysis and has an interim
         if self.is_analysis(obj):
             interims = obj.getInterimFields()
             interim_keys = map(lambda i: i.get("keyword"), interims)
-            if fieldname in interim_keys:
+            if name in interim_keys:
                 for interim in interims:
                     if interim.get("keyword") == name:
                         interim["value"] = value
                 # set the new interim fields
                 obj.setInterimFields(interims)
             # recalculate dependent results for result and interim fields
-            if fieldname == "Result" or fieldname in interim_keys:
+            if name == "Result" or name in interim_keys:
                 updated_objects.append(obj)
                 updated_objects.extend(self.recalculate_results(obj))
 
