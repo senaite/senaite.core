@@ -301,6 +301,50 @@ The Analysis Request rolls-back to `sample_received`:
     >>> api.get_workflow_status_of(ar)
     'sample_received'
 
+Reset calculations:
+
+    >> Fe.setCalculation(None)
+    >> Au.setCalculation(None)
+
+
+Effects of rejection of analysis to Analysis Request
+----------------------------------------------------
+
+Rejection of analyses have implications in the Analysis Request workflow, cause
+they will not be considered anymore in regular transitions of Analysis Request
+that rely on the states of its analyses.
+
+When an Analysis is rejected, the analysis is not considered on submit:
+
+    >>> ar = new_ar([Cu, Fe])
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> analysis = analyses[0]
+    >>> success = do_action_for(analysis, "reject")
+    >>> api.get_workflow_status_of(analysis)
+    'rejected'
+    >>> analysis = analyses[1]
+    >>> analysis.setResult(12)
+    >>> success = do_action_for(analysis, "submit")
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+Neither considered on verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> success = do_action_for(analysis, "verify")
+    >>> api.get_workflow_status_of(ar)
+    'verified'
+
+Neither considered on publish:
+
+    >>> success = do_action_for(ar, "publish")
+    >>> api.get_workflow_status_of(ar)
+    'published'
+
+Reset self-verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(False)
+
 
 Check permissions for Reject transition
 ---------------------------------------

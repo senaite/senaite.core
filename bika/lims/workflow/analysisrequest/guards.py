@@ -18,6 +18,28 @@ from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow.analysis import guards as analysis_guards
 
 
+def are_analyses_valid(analysis_request, target_states, skip_states=None):
+    """Returns true if the analysis request does not contain any analysis in a
+    non-permitted state and it has at least one analysis in the target_state.
+    """
+    if not skip_states:
+        _skip_states = ['cancelled', 'rejected', 'retracted']
+        return are_analyses_valid(analysis_request, target_states, _skip_states)
+
+    if isinstance(target_states, basestring):
+        _target_states = [target_states]
+        return are_analyses_valid(analysis_request, _target_states, skip_states)
+
+    valid_analyses = False
+    allowed_states = list(set(skip_states + target_states))
+    for an in analysis_request.getAnalyses(full_objects=True):
+        an_state = api.get_workflow_status_of(an)
+        if an_state not in allowed_states:
+            return False
+        valid_analyses = valid_analyses or an_state in target_states
+    return valid_analyses
+
+
 def to_be_preserved(obj):
     """ Returns True if the Sample from this AR needs to be preserved
     Returns false if the Analysis Request has no Sample assigned yet or
@@ -64,7 +86,15 @@ def guard_create_partitions(analysis_request):
     return True
 
 
-def verify(obj):
+def guard_submit(analysis_request):
+    """Return whether the transition "submit" can be performed or not.
+    An Analysis Request can only be submitted if all (active) analyses it
+    contains have been submitted.
+    """
+    return are_analyses_valid(analysis_request, ["to_be_verified"])
+
+
+def guard_verify(analysis_request):
     """Returns True if 'verify' transition can be applied to the Analysis
     Request passed in. This is, returns true if all the analyses that contains
     have already been verified. Those analyses that are in an inactive state
@@ -74,22 +104,7 @@ def verify(obj):
     Note this guard depends entirely on the current status of the children
     :returns: true or false
     """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
-    verified_analyses = False
-    permitted_states = ['cancelled', 'rejected', 'retracted', 'verified']
-    analyses = obj.getAnalyses(full_objects=True)
-    for an in analyses:
-        analysis_state = api.get_workflow_status_of(an)
-        if analysis_state not in permitted_states:
-            return False
-        verified_analyses = verified_analyses or analysis_state == 'verified'
-
-    # Be sure that at least there is one analysis in an active state, it
-    # doesn't make sense to verify an Analysis Request if all the analyses that
-    # contains are rejected or cancelled!
-    return verified_analyses
+    return are_analyses_valid(analysis_request, ["verified"])
 
 
 def prepublish(obj):
