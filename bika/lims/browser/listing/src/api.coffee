@@ -52,22 +52,6 @@ class ListingAPI
     return fetch(request).then (response) ->
       return response.json()
 
-  fetch_columns: ->
-    ###
-     * Fetch columns
-     * @returns {Promise}
-    ###
-    return @get_json "columns",
-      method: "GET"
-
-  fetch_review_states: ->
-    ###
-     * Fetch review states
-     * @returns {Promise}
-    ###
-    return @get_json "review_states",
-      method: "GET"
-
   set: (data) ->
     ###
      * Set value of an editable field to the server
