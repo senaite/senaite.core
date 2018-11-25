@@ -423,7 +423,7 @@ class TableCell extends React.Component
     <td className={@props.className}
         colSpan={@props.colspan}
         rowSpan={@props.rowspan}>
-      <div>
+      <div className="form-group">
         {@render_before_content()}
         {@render_content()}
         {@render_after_content()}

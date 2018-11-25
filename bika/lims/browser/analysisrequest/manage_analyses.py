@@ -104,7 +104,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "title": _("All"),
                 "contentFilter": {"inactive_state": "active"},
                 "columns": columns,
-                "transitions": [],
+                "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "custom_transitions": [
                     {
                         "id": "save_analyses_button",

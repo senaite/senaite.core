@@ -119,14 +119,14 @@ class ListingController extends React.Component
       allow_edit: no
       show_select_all_checkbox: no
       show_select_column: no
-      show_column_toggles: yes
+      show_column_toggles: no
       select_checkbox_name: "uids"
       post_action: "workflow_action"
       show_categories: no
       expand_all_categories: no
       show_more: no
       limit_from: 0
-      show_search: yes
+      show_search: no
 
   getRequestOptions: ->
     ###
