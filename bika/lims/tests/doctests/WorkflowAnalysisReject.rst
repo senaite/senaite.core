@@ -303,8 +303,8 @@ The Analysis Request rolls-back to `sample_received`:
 
 Reset calculations:
 
-    >> Fe.setCalculation(None)
-    >> Au.setCalculation(None)
+    >>> Fe.setCalculation(None)
+    >>> Au.setCalculation(None)
 
 
 Effects of rejection of analysis to Analysis Request
@@ -318,20 +318,24 @@ When an Analysis is rejected, the analysis is not considered on submit:
 
     >>> ar = new_ar([Cu, Fe])
     >>> analyses = ar.getAnalyses(full_objects=True)
-    >>> analysis = analyses[0]
-    >>> success = do_action_for(analysis, "reject")
-    >>> api.get_workflow_status_of(analysis)
+    >>> cu = filter(lambda an: an.getKeyword() == 'Cu', analyses)[0]
+    >>> fe = filter(lambda an: an.getKeyword() == 'Fe', analyses)[0]
+    >>> success = do_action_for(cu, "reject")
+    >>> api.get_workflow_status_of(cu)
     'rejected'
-    >>> analysis = analyses[1]
-    >>> analysis.setResult(12)
-    >>> success = do_action_for(analysis, "submit")
+    >>> fe.setResult(12)
+    >>> success = do_action_for(fe, "submit")
+    >>> api.get_workflow_status_of(fe)
+    'to_be_verified'
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'
 
 Neither considered on verification:
 
     >>> bikasetup.setSelfVerificationEnabled(True)
-    >>> success = do_action_for(analysis, "verify")
+    >>> success = do_action_for(fe, "verify")
+    >>> api.get_workflow_status_of(fe)
+    'verified'
     >>> api.get_workflow_status_of(ar)
     'verified'
 

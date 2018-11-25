@@ -11,7 +11,6 @@ import sys
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
 from bika.lims import PMF
 from bika.lims import enum, api
 from bika.lims import logger
