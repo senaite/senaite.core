@@ -5,18 +5,14 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-
 from bika.lims import api
-from bika.lims import logger
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isActive
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import guards as analysis_guards
 
+# States to be omitted in regular transitions
+ANALYSIS_DETTACHED_STATES = ['cancelled', 'rejected', 'retracted']
 
 def to_be_preserved(obj):
     """ Returns True if the Sample from this AR needs to be preserved
@@ -64,47 +60,36 @@ def guard_create_partitions(analysis_request):
     return True
 
 
-def verify(obj):
-    """Returns True if 'verify' transition can be applied to the Analysis
-    Request passed in. This is, returns true if all the analyses that contains
-    have already been verified. Those analyses that are in an inactive state
-    (cancelled, inactive) are dismissed, but at least one analysis must be in
-    an active state (and verified), otherwise always return False. If the
-    Analysis Request is in inactive state (cancelled/inactive), returns False
-    Note this guard depends entirely on the current status of the children
-    :returns: true or false
+def guard_submit(analysis_request):
+    """Return whether the transition "submit" can be performed or not.
+    Returns True if there is at least one analysis in a non-dettached state and
+    all analyses in a non-dettached analyses have been submitted.
     """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
-    analyses = obj.getAnalyses(full_objects=True)
-    invalid = 0
-    for an in analyses:
-        # The analysis has already been verified?
-        if wasTransitionPerformed(an, 'verify'):
+    analyses_ready = False
+    for analysis in analysis_request.getAnalyses():
+        analysis_status = api.get_workflow_status_of(api.get_object(analysis))
+        if analysis_status in ANALYSIS_DETTACHED_STATES:
             continue
+        if analysis_status in ['assigned', 'unassigned']:
+            return False
+        analyses_ready = True
+    return analyses_ready
 
-        # Maybe the analysis is in an 'inactive' state?
-        if not isActive(an):
-            invalid += 1
+
+def guard_verify(analysis_request):
+    """Returns whether the transition "verify" can be performed or not.
+    Returns True if at there is at least one analysis in a non-dettached state
+    and all analyses in a non-dettached state are in "verified" state.
+    """
+    analyses_ready = False
+    for analysis in analysis_request.getAnalyses():
+        analysis_status = api.get_workflow_status_of(api.get_object(analysis))
+        if analysis_status in ANALYSIS_DETTACHED_STATES:
             continue
-
-        # Maybe the analysis has been rejected or retracted?
-        dettached = ['rejected', 'retracted', 'attachments_due']
-        status = getCurrentState(an)
-        if status in dettached:
-            invalid += 1
-            continue
-
-        # At this point we can assume this analysis is an a valid state and
-        # could potentially be verified, but the Analysis Request can only be
-        # verified if all the analyses have been transitioned to verified
-        return False
-
-    # Be sure that at least there is one analysis in an active state, it
-    # doesn't make sense to verify an Analysis Request if all the analyses that
-    # contains are rejected or cancelled!
-    return len(analyses) - invalid > 0
+        if analysis_status != 'verified':
+            return False
+        analyses_ready = True
+    return analyses_ready
 
 
 def prepublish(obj):

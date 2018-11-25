@@ -22,6 +22,7 @@ from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget, RecordsWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
@@ -1204,6 +1205,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         retest_of = self.getRetestOf()
         if retest_of:
             return api.get_uid(retest_of)
+
+    def getRetest(self):
+        """Returns the retest that comes from this analysis, if any
+        """
+        back_refs = get_backreferences(self, 'AnalysisRetestOf')
+        if not back_refs:
+            return None
+        if len(back_refs) > 1:
+            logger.warn("Analysis {} with multiple retests".format(self.id))
+        return api.get_object_by_uid(back_refs[0])
 
     @security.public
     def guard_publish_transition(self):

@@ -2849,10 +2849,6 @@ class AnalysisRequest(BaseFolder):
         return guards.to_be_preserved(self)
 
     @security.public
-    def guard_verify_transition(self):
-        return guards.verify(self)
-
-    @security.public
     def guard_unassign_transition(self):
         return guards.unassign(self)
 

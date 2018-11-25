@@ -15,6 +15,7 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from bika.lims.workflow import getAllowedTransitions
     >>> from bika.lims.workflow import isTransitionAllowed
     >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
@@ -299,3 +300,250 @@ The Analysis Request rolls-back to `sample_received`:
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
+
+Reset calculations:
+
+    >>> Fe.setCalculation(None)
+    >>> Au.setCalculation(None)
+
+
+Effects of rejection of analysis to Analysis Request
+----------------------------------------------------
+
+Rejection of analyses have implications in the Analysis Request workflow, cause
+they will not be considered anymore in regular transitions of Analysis Request
+that rely on the states of its analyses.
+
+When an Analysis is rejected, the analysis is not considered on submit:
+
+    >>> ar = new_ar([Cu, Fe])
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> cu = filter(lambda an: an.getKeyword() == 'Cu', analyses)[0]
+    >>> fe = filter(lambda an: an.getKeyword() == 'Fe', analyses)[0]
+    >>> success = do_action_for(cu, "reject")
+    >>> api.get_workflow_status_of(cu)
+    'rejected'
+    >>> fe.setResult(12)
+    >>> success = do_action_for(fe, "submit")
+    >>> api.get_workflow_status_of(fe)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+Neither considered on verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> success = do_action_for(fe, "verify")
+    >>> api.get_workflow_status_of(fe)
+    'verified'
+    >>> api.get_workflow_status_of(ar)
+    'verified'
+
+Neither considered on publish:
+
+    >>> success = do_action_for(ar, "publish")
+    >>> api.get_workflow_status_of(ar)
+    'published'
+
+Reset self-verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(False)
+
+
+Check permissions for Reject transition
+---------------------------------------
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> allowed_roles = ['LabManager', 'Manager']
+    >>> non_allowed_roles = ['Analyst', 'Authenticated', 'LabClerk', 'Owner',
+    ...                      'RegulatoryInspector', 'Sampler', 'Verifier']
+
+In unassigned state
+...................
+
+In `unassigned` state, exactly these roles can reject:
+
+    >>> api.get_workflow_status_of(analysis)
+    'unassigned'
+    >>> get_roles_for_permission("Reject", analysis)
+    ['LabManager', 'Manager']
+
+Current user can reject because has the `LabManager` role:
+
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+Also if the user has the role `Manager`:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+But cannot for other roles:
+
+    >>> setRoles(portal, TEST_USER_ID, non_allowed_roles)
+    >>> isTransitionAllowed(analysis, "reject")
+    False
+
+Reset the roles for current user:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+
+
+In assigned state
+.................
+
+In `assigned` state, exactly these roles can reject:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.addAnalysis(analysis)
+    >>> api.get_workflow_status_of(analysis)
+    'assigned'
+    >>> get_roles_for_permission("Reject", analysis)
+    ['LabManager', 'Manager']
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+Current user can reject because has the `LabManager` role:
+
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+Also if the user has the role `Manager`:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+But cannot for other roles:
+
+    >>> setRoles(portal, TEST_USER_ID, non_allowed_roles)
+    >>> isTransitionAllowed(analysis, "reject")
+    False
+
+Reset the roles for current user:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+
+
+In to_be_verified state
+.......................
+
+In `to_be_verified` state, exactly these roles can reject:
+
+    >>> analysis.setResult(13)
+    >>> success = do_action_for(analysis, "submit")
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+    >>> get_roles_for_permission("Reject", analysis)
+    ['LabManager', 'Manager']
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+Current user can reject because has the `LabManager` role:
+
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+Also if the user has the role `Manager`:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Manager',])
+    >>> isTransitionAllowed(analysis, "reject")
+    True
+
+But cannot for other roles:
+
+    >>> setRoles(portal, TEST_USER_ID, non_allowed_roles)
+    >>> isTransitionAllowed(analysis, "reject")
+    False
+
+Reset the roles for current user:
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+
+
+In retracted state
+..................
+
+In `retracted` state, the analysis cannot be rejected:
+
+    >>> success = do_action_for(analysis, "retract")
+    >>> api.get_workflow_status_of(analysis)
+    'retracted'
+    >>> get_roles_for_permission("Reject", analysis)
+    []
+    >>> isTransitionAllowed(analysis, "reject")
+    False
+
+
+In verified state
+.................
+
+In `verified` state, the analysis cannot be rejected:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> analysis = analysis.getRetest()
+    >>> success = do_action_for(analysis, "submit")
+    >>> success = do_action_for(analysis, "verify")
+    >>> api.get_workflow_status_of(analysis)
+    'verified'
+    >>> get_roles_for_permission("Reject", analysis)
+    []
+    >>> isTransitionAllowed(analysis, "reject")
+    False
+
+
+In published state
+..................
+
+In `published` state, the analysis cannot be rejected:
+
+    >>> do_action_for(ar, "publish")
+    (True, '')
+    >>> api.get_workflow_status_of(analysis)
+    'published'
+    >>> get_roles_for_permission("Reject", analysis)
+    []
+    >>> isTransitionAllowed(analysis, "reject")
+    False
+
+In cancelled state
+..................
+
+In `cancelled` state, the analysis cannot be rejected:
+
+    >>> ar = new_ar([Cu])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> success = do_action_for(ar, "cancel")
+    >>> api.get_workflow_status_of(analysis)
+    'cancelled'
+    >>> get_roles_for_permission("Reject", analysis)
+    []
+    >>> isTransitionAllowed(analysis, "reject")
+    False
+
+Disable self-verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(False)
+
+
+Check permissions for Rejected state
+------------------------------------
+
+In rejected state, exactly these roles can view results:
+
+    >>> ar = new_ar([Cu])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> success = do_action_for(analysis, "reject")
+    >>> api.get_workflow_status_of(analysis)
+    'rejected'
+    >>> get_roles_for_permission("BIKA: View Results", analysis)
+    ['LabManager', 'Manager', 'RegulatoryInspector']
+
+And no transition can be done from this state:
+
+    >>> getAllowedTransitions(analysis)
+    []

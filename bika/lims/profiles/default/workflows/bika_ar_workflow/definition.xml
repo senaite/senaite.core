@@ -1200,7 +1200,7 @@
   <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
-      <guard-expression>python:here.guard_submit_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("submit")</guard-expression>
     </guard>
   </transition>
 
@@ -1213,7 +1213,7 @@
   <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
-      <guard-expression>python:here.guard_verify_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("verify")</guard-expression>
     </guard>
   </transition>
 
