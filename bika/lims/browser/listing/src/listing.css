@@ -72,10 +72,10 @@
 .ajax-contents-table tr.childrow td:first-child:before { content: "➥ "; }
 
 /* before item */
-.ajax-contents-table tr span.before-item { display: table-cell; line-height: 0; vertical-align: top; padding-right: 5px; }
+.ajax-contents-table tr span.before-item { display: table-cell; line-height: 0; vertical-align: middle; padding-right: 5px; }
 
 /* after item */
-.ajax-contents-table tr span.after-item { display: table-cell; line-height: 0; vertical-align: top;  padding-left: 5px; }
+.ajax-contents-table tr span.after-item { display: table-cell; line-height: 0; vertical-align: middle;  padding-left: 5px; }
 
 /* Render table form-controls smaller */
 .ajax-contents-table tr td div.form-group { display: inline-table; }
