@@ -751,7 +751,6 @@ def get_role_mappings_candidates(portal):
 
 def decouple_analyses_from_sample_workflow(portal):
     logger.info("Decoupling analyses from sample workflow ...")
-    import pdb;pdb.set_trace()
     add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
               index_name="isSampleReceived",
               index_attribute="isSampleReceived",
