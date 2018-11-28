@@ -19,6 +19,7 @@ Changelog
 
 **Changed**
 
+- #1109 Unassignment of an analysis causes the removal of its duplicates
 - #1077 Rejection of an analysis causes the removal of its duplicates
 - #1077 Don't allow to cancel Analysis Requests with assigned/submitted analyses
 - #1077 Decouple `cancellation_workflow` from Analysis content type
