@@ -206,7 +206,7 @@ def after_verify(obj):
         doActionFor(part, "verify")
 
 
-def after_publish(obj):
+def after_publish(analysis_request):
     """Method triggered after an 'publish' transition for the Analysis Request
     passed in is performed. Performs the 'publish' transition to children.
     This function is called automatically by
@@ -215,12 +215,11 @@ def after_publish(obj):
     :type obj: AnalysisRequest
     """
     # Transition the children
-    ans = obj.getAnalyses(full_objects=True)
-    for analysis in ans:
+    for analysis in analysis_request.getAnalyses(full_objects=True):
         doActionFor(analysis, 'publish')
 
     # Cascade to partitions
-    parts = obj.getDescendants(all_descendants=False)
+    parts = analysis_request.getDescendants(all_descendants=False)
     for part in parts:
         doActionFor(part, "publish")
 

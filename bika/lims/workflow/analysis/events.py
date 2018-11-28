@@ -170,6 +170,12 @@ def after_verify(analysis):
         reindex_request(analysis)
 
 
+def after_publish(analysis):
+    """Function triggered after a "publish" transition is performed.
+    """
+    pass
+
+
 def after_attach(obj):
     if skip(obj, "attach"):
         return
