@@ -66,7 +66,7 @@ class ButtonBar extends React.Component
     buttons = []
 
     # Always insert a clear selection button first
-    if @props.transitions.length > 0
+    if @props.show_select_column and @props.transitions.length > 0
       buttons.push(
         <li key="clear">
           <button className="btn btn-default btn-sm"
