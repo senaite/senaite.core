@@ -27,10 +27,10 @@ def after_unassign(analysis):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed.
     """
-    # Remove from the worksheet
-    remove_analysis_from_worksheet(analysis)
     # Unassign our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "unassign")
+    # Remove from the worksheet
+    remove_analysis_from_worksheet(analysis)
     # Reindex the Analysis Request
     reindex_request(analysis)
 
@@ -216,6 +216,11 @@ def remove_analysis_from_worksheet(analysis):
     worksheet = analysis.getWorksheet()
     if not worksheet:
         return
+
+    # Removal of a routine analysis causes the removal of their duplicates
+    if not IDuplicateAnalysis.providedBy(analysis):
+        for dup in worksheet.get_duplicates_for(analysis):
+            doActionFor(dup, "unassign")
 
     analyses = filter(lambda an: an != analysis, worksheet.getAnalyses())
     worksheet.setAnalyses(analyses)

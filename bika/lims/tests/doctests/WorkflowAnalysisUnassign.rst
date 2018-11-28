@@ -13,7 +13,8 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
-    >>> from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
+    >>> from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+    >>> from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
@@ -46,6 +47,13 @@ Functional Helpers:
     ...     service_uids = map(api.get_uid, services)
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     ...     return ar
+
+    >>> def to_new_worksheet_with_duplicate(ar):
+    ...     worksheet = api.create(portal.worksheets, "Worksheet")
+    ...     for analysis in ar.getAnalyses(full_objects=True):
+    ...         worksheet.addAnalysis(analysis)
+    ...     worksheet.addDuplicateAnalyses(1)
+    ...     return worksheet
 
     >>> def try_transition(object, transition_id, target_state_id):
     ...      success = do_action_for(object, transition_id)[0]
@@ -93,6 +101,15 @@ The status of the analyses is `unassigned`:
     >>> map(api.get_workflow_status_of, analyses)
     ['unassigned', 'unassigned', 'unassigned']
 
+And the Analysis Request' assigned state index is 'unassigned':
+
+    >>> query = dict(assigned_state='unassigned', UID=api.get_uid(ar))
+    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    1
+    >>> query = dict(assigned_state='assigned', UID=api.get_uid(ar))
+    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    0
+
 Create a Worksheet and add the analyses:
 
     >>> worksheet = api.create(portal.worksheets, "Worksheet")
@@ -102,6 +119,15 @@ Create a Worksheet and add the analyses:
     ['Au', 'Cu', 'Fe']
     >>> map(api.get_workflow_status_of, analyses)
     ['assigned', 'assigned', 'assigned']
+
+The Analysis Request' assigned state indexer is 'assigned':
+
+    >>> query = dict(assigned_state='unassigned', UID=api.get_uid(ar))
+    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    0
+    >>> query = dict(assigned_state='assigned', UID=api.get_uid(ar))
+    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    1
 
 The worksheet has now 3 analyses assigned:
 
@@ -139,3 +165,41 @@ When we unassign the `Cu` analysis, the workseet gets updated:
     False
     >>> len(ws_brain.getAnalysesUIDs)
     2
+
+And the Analysis Request' assigned state index is updated as well:
+
+    >>> query = dict(assigned_state='unassigned', UID=api.get_uid(ar))
+    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    1
+    >>> query = dict(assigned_state='assigned', UID=api.get_uid(ar))
+    >>> len(api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING))
+    0
+
+
+Unassign of an analysis causes the duplicates to be removed
+-----------------------------------------------------------
+
+When the analysis a duplicate comes from is unassigned, the duplicate is
+removed from the worksheet too.
+
+Create a Worksheet and add the analyses:
+
+    >>> ar = new_ar([Cu])
+    >>> transitioned = do_action_for(ar, "receive")
+    >>> worksheet = to_new_worksheet_with_duplicate(ar)
+    >>> api.get_workflow_status_of(worksheet)
+    'open'
+    >>> cu = ar.getAnalyses(full_objects=True)[0]
+    >>> dcu = worksheet.getDuplicateAnalyses()[0]
+
+When the analysis `Cu` is unassigned, the duplicate is removed:
+
+    >>> dcu_uid = api.get_uid(dcu)
+    >>> try_transition(cu, "unassign", "unassigned")
+    True
+    >>> api.get_workflow_status_of(cu)
+    'unassigned'
+    >>> dcu_uid in worksheet.getDuplicateAnalyses()
+    False
+    >>> api.get_object_by_uid(dcu_uid, None) is None
+    True
