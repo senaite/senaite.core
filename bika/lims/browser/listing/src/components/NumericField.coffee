@@ -65,7 +65,7 @@ class NumericField extends React.Component
     <input type="text"
            size={@props.size or 5}
            name={@props.name}
-           item_key={@props.item_key}
+           column_key={@props.column_key}
            defaultValue={@props.defaultValue or ""}
            title={@props.title}
            disabled={@props.disabled}

@@ -45,7 +45,7 @@ class MultiSelect extends React.Component
                  value={value}
                  onChange={@on_change}
                  onBlur={@on_blur}
-                 item_key={@props.item_key}
+                 column_key={@props.column_key}
                  name={@props.name}/> {title}
         </li>
       )

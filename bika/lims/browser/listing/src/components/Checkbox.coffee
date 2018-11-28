@@ -26,7 +26,7 @@ class Checkbox extends React.Component
     <input key={@props.name}
            type="checkbox"
            name={@props.name}
-           item_key={@props.item_key}
+           column_key={@props.column_key}
            title={@props.title}
            disabled={@props.disabled}
            checked={@props.checked}

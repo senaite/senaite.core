@@ -35,7 +35,7 @@ class TableCell extends React.Component
 
   on_checkbox_field_change: (event) ->
     el = event.currentTarget
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     value = el.checked
     console.debug "TableCell:on_checkbox_field_change: checked=#{value}"
 
@@ -49,7 +49,7 @@ class TableCell extends React.Component
 
   on_select_field_blur: (event) ->
     el = event.currentTarget
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_select_field_blur: value=#{value}"
 
@@ -59,7 +59,7 @@ class TableCell extends React.Component
 
   on_select_field_change: (event) ->
     el = event.currentTarget
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_select_field_change: value=#{value}"
 
@@ -72,7 +72,7 @@ class TableCell extends React.Component
     ul = el.parentNode.parentNode
     checked = ul.querySelectorAll("input[type='checkbox']:checked")
     value = (input.value for input in checked)
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     console.debug "TableCell:on_multiselect_field_blur: value=#{value}"
 
     # Call the *save* field handler
@@ -84,7 +84,7 @@ class TableCell extends React.Component
     ul = el.parentNode.parentNode
     checked = ul.querySelectorAll("input[type='checkbox']:checked")
     value = (input.value for input in checked)
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     console.debug "TableCell:on_multiselect_field_change: value=#{value}"
 
     # Call the *on_blur* field handler
@@ -93,7 +93,7 @@ class TableCell extends React.Component
 
   on_numeric_field_blur: (event) ->
     el = event.currentTarget
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_numeric_field_blur: value=#{value}"
 
@@ -103,7 +103,7 @@ class TableCell extends React.Component
 
   on_numeric_field_change: (event) ->
     el = event.currentTarget
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_numeric_field_change: value=#{value}"
 
@@ -113,7 +113,7 @@ class TableCell extends React.Component
 
   on_string_field_blur: (event) ->
     el = event.currentTarget
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_string_field_blur: value=#{value}"
 
@@ -123,7 +123,7 @@ class TableCell extends React.Component
 
   on_string_field_change: (event) ->
     el = event.currentTarget
-    name = el.getAttribute("item_key") or el.name
+    name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_string_field_change: value=#{value}"
 
@@ -133,75 +133,75 @@ class TableCell extends React.Component
 
   render_before_content: ->
     before = @props.item.before
-    item_key = @props.item_key
-    if @props.item_key not of before
+    column_key = @props.column_key
+    if @props.column_key not of before
       return null
     return <span className="before-item"
-                 dangerouslySetInnerHTML={{__html: before[item_key]}}>
+                 dangerouslySetInnerHTML={{__html: before[column_key]}}>
            </span>
 
   render_after_content: ->
     after = @props.item.after
-    item_key = @props.item_key
-    if item_key not of after
+    column_key = @props.column_key
+    if column_key not of after
       return null
     return <span className="after-item"
-                 dangerouslySetInnerHTML={{__html: after[item_key]}}>
+                 dangerouslySetInnerHTML={{__html: after[column_key]}}>
            </span>
 
-  is_edit_allowed: (item_key, item) ->
+  is_edit_allowed: (column_key, item) ->
     # the global allow_edit overrides all row specific settings
     if not @props.allow_edit
       return no
 
     # check if the field is listed in the item's allow_edit list
-    if item_key in item.allow_edit
+    if column_key in item.allow_edit
       return yes
 
     return no
 
-  is_disabled: (item_key, item) ->
+  is_disabled: (column_key, item) ->
     return item.disabled or no
 
-  is_required: (item_key, item) ->
+  is_required: (column_key, item) ->
     required_fields = item.required or []
-    required = item_key in required_fields
+    required = column_key in required_fields
     # make the field conditionally required if the row is selected
     selected = @props.selected
     return required and selected
 
-  get_name: (item_key, item) ->
-    return "#{item_key}.#{item.uid}"
+  get_name: (column_key, item) ->
+    return "#{column_key}.#{item.uid}"
 
-  get_value: (item_key, item) ->
-    value = item[item_key]
+  get_value: (column_key, item) ->
+    value = item[column_key]
 
     # check if the field is an interim
     interims = item.interimfields or []
     for interim in interims
-      if interim.keyword == item_key
+      if interim.keyword == column_key
         value = interim.value
         break
 
     return value
 
-  is_result_field: (item_key, item) ->
-    return item_key == "Result"
+  is_result_field: (column_key, item) ->
+    return column_key == "Result"
 
-  get_formatted_value: (item_key, item) ->
+  get_formatted_value: (column_key, item) ->
     # replacement html or plain value of the current column
-    formatted_value = item.replace[item_key] or @get_value item_key, item
+    formatted_value = item.replace[column_key] or @get_value column_key, item
 
     # use the formatted result
-    if item_key == "Result"
+    if column_key == "Result"
       formatted_value = item.formatted_result or formatted_value
 
     return formatted_value
 
-  get_type: (item_key, item) ->
+  get_type: (column_key, item) ->
     # true if the field is editable
-    editable = @is_edit_allowed item_key, item
-    resultfield = @is_result_field item_key, item
+    editable = @is_edit_allowed column_key, item
+    resultfield = @is_result_field column_key, item
 
     # readonly field
     if not editable
@@ -213,13 +213,13 @@ class TableCell extends React.Component
       return column["type"]
 
     # check if the field is a boolean
-    value = @get_value item_key, item
+    value = @get_value column_key, item
     if typeof(value) == "boolean"
       return "boolean"
 
     # check if the field is listed in choices
     choices = item.choices or {}
-    if item_key of choices
+    if column_key of choices
       return "select"
 
     # check if the field is an interim
@@ -227,7 +227,7 @@ class TableCell extends React.Component
     if interims.length > 0
       interim_keys = item.interimfields.map (interim) ->
         return interim.keyword
-      if item_key in interim_keys
+      if column_key in interim_keys
         return "interim"
 
     # check if the field is a calculated field
@@ -239,32 +239,32 @@ class TableCell extends React.Component
 
   render_content: ->
     # the current rendered column cell name
-    item_key = @props.item_key
+    column_key = @props.column_key
     # single folderitem
     item = @props.item
     # the current column definition
     column = @props.column
 
     # form field title
-    title = column.title or item_key
+    title = column.title or column_key
     # form field name
-    name = @get_name item_key, item
+    name = @get_name column_key, item
     # form field value
-    value = @get_value item_key, item
+    value = @get_value column_key, item
     # formatted display value of the form field
-    formatted_value = @get_formatted_value item_key, item
+    formatted_value = @get_formatted_value column_key, item
     # true if the holding row is selected
     selected = @props.selected
     # true if the field should be disabled
-    disabled = @is_disabled item_key, item
+    disabled = @is_disabled column_key, item
     # true if the field is required
-    required = @is_required item_key, item
+    required = @is_required column_key, item
     # field type to render
-    type = @get_type item_key, item
+    type = @get_type column_key, item
     # interim fields
     interims = item.interimfields or []
     # result field
-    result_field = @is_result_field item_key, item
+    result_field = @is_result_field column_key, item
     # input field css class
     field_css_class = "form-control input-sm"
     if required then field_css_class += " required"
@@ -309,7 +309,7 @@ class TableCell extends React.Component
         <NumericField
           key={name}
           name={fieldname}
-          item_key={item_key}
+          column_key={column_key}
           defaultValue={value}
           title={title}
           formatted_value={formatted_value}
@@ -333,12 +333,12 @@ class TableCell extends React.Component
     # render select field
     else if type in ["select", "choices"]
       fieldname = "#{name}:records"
-      options = item.choices[item_key]
+      options = item.choices[column_key]
       field.push (
         <Select
           key={name}
           name={fieldname}
-          item_key={item_key}
+          column_key={column_key}
           defaultValue={value}
           title={title}
           disabled={disabled}
@@ -354,12 +354,12 @@ class TableCell extends React.Component
     else if type in ["multiselect", "multichoices"]
       # This gives a dictionary of UID -> UID list of selected items
       fieldname = "#{name}:record:list"
-      options = item.choices[item_key]
+      options = item.choices[column_key]
       field.push (
         <MultiSelect
           key={name}
           name={fieldname}
-          item_key={item_key}
+          column_key={column_key}
           defaultValue={value}
           title={title}
           disabled={disabled}
@@ -378,7 +378,7 @@ class TableCell extends React.Component
         <Checkbox
           key={name}
           name={fieldname}
-          item_key={item_key}
+          column_key={column_key}
           value="on"
           title={title}
           defaultChecked={value}
@@ -393,7 +393,7 @@ class TableCell extends React.Component
         <NumericField
           key={name}
           name={fieldname}
-          item_key={item_key}
+          column_key={column_key}
           defaultValue={value}
           title={title}
           formatted_value={formatted_value}
@@ -413,7 +413,7 @@ class TableCell extends React.Component
         <HiddenField
           key={name + "_hidden"}
           name={fieldname}
-          item_key={item_key}
+          column_key={column_key}
           value={value}
           />)
 

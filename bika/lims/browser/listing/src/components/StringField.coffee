@@ -61,7 +61,7 @@ class StringField extends React.Component
   render: ->
     <input type="text"
            name={@props.name}
-           item_key={@props.item_key}
+           column_key={@props.column_key}
            defaultValue={@props.value}
            disabled={@props.disabled}
            className={@props.className or "form-control input-sm"}
