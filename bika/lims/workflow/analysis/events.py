@@ -27,8 +27,6 @@ def after_unassign(analysis):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed.
     """
-    # Unassign our dependents (analyses that depend on this analysis)
-    cascade_to_dependents(analysis, "unassign")
     # Remove from the worksheet
     remove_analysis_from_worksheet(analysis)
     # Reindex the Analysis Request
