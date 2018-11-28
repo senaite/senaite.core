@@ -222,6 +222,10 @@ class TableCell extends React.Component
         value = interim.value
         break
 
+    # values of input fields should not be null
+    if value is null
+      value = ""
+
     return value
 
   get_interimfields: ->
@@ -409,7 +413,7 @@ class TableCell extends React.Component
     options = item.choices[column_key] or []
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    fieldname = "#{name}:record"
+    fieldname = "#{name}:records"
     title = @props.column.title or column_key
     selected = @is_selected()
     disabled = @is_disabled()
@@ -562,7 +566,7 @@ class TableCell extends React.Component
 
     # N.B. Disabled fields are not send on form submit.
     #      Therefore, we render a hidden field when disabled.
-    if @is_disabled
+    if @is_disabled()
       field = field.concat @create_hidden_field
         props:
           key: "#{@get_name()}_disabled"
