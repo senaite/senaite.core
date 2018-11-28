@@ -32,8 +32,8 @@ class AnalysesTransposedView(AnalysesView):
         """Return the current used analyses positions
         """
         positions = map(
-            lambda uid: str(self.get_item_slot(uid)), self.get_analyses_uids())
-        return sorted(set(positions))
+            lambda uid: self.get_item_slot(uid), self.get_analyses_uids())
+        return map(lambda pos: str(pos), sorted(set(positions)))
 
     @view.memoize
     def get_analyses_uids(self):
