@@ -63,7 +63,9 @@ class TableTransposedCell extends TableCell
         colSpan={@props.colspan}
         rowSpan={@props.rowspan}>
       <div className="form-group">
+        {@render_before_content()}
         {@render_content()}
+        {@render_after_content()}
       </div>
     </td>
 

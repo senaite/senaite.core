@@ -141,7 +141,9 @@ class TableCell extends React.Component
       @props.update_editable_field uid, name, value, @get_item()
 
   render_before_content: ->
-    before = @get_item().before
+    item = @get_item()
+    return unless item
+    before = item.before
     column_key = @get_column_key()
     if column_key not of before
       return null
@@ -150,7 +152,9 @@ class TableCell extends React.Component
            </span>
 
   render_after_content: ->
-    after = @get_item().after
+    item = @get_item()
+    return unless item
+    after = item.after
     column_key = @get_column_key()
     if column_key not of after
       return null
