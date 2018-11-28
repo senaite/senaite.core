@@ -518,8 +518,10 @@ class ListingController extends React.Component
     columns = []
     for key in @get_column_order()
       column = @state.columns[key]
-      if column.toggle
-        columns.push key
+      # only skip columns explicitly set to false
+      if column.toggle is no
+          continue
+      columns.push key
     return columns
 
   set_column_toggles: (columns) ->
