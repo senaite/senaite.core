@@ -53,19 +53,23 @@ class NumericField extends React.Component
     if @props.onChange then @props.onChange event
 
   render: ->
-    <input type="text"
-           size={@props.size or 5}
-           uid={@props.uid}
-           name={@props.name}
-           defaultValue={@props.defaultValue or ""}
-           column_key={@props.column_key}
-           title={@props.title}
-           disabled={@props.disabled}
-           required={@props.required}
-           className={@props.className}
-           placeholder={@props.placeholder}
-           onBlur={@on_blur}
-           onChange={@on_change}/>
+    <span className="form-group">
+      {@props.before and <span dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+      <input type="text"
+            size={@props.size or 5}
+            uid={@props.uid}
+            name={@props.name}
+            defaultValue={@props.defaultValue or ""}
+            column_key={@props.column_key}
+            title={@props.title}
+            disabled={@props.disabled}
+            required={@props.required}
+            className={@props.className}
+            placeholder={@props.placeholder}
+            onBlur={@on_blur}
+            onChange={@on_change}/>
+      {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
+    </span>
 
 
 export default NumericField

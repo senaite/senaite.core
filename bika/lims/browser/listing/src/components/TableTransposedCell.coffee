@@ -87,12 +87,14 @@ class TableTransposedCell extends TableCell
                 column_key: interim.keyword
                 name: "#{interim.keyword}.#{uid}"
                 defaultValue: interim.value
-                placeholder: interim.title
+                placeholder: interim.unit
                 formatted_value: interim.formatted_value
           if item.calculation
             field = field.concat @create_readonly_field()
           else
-            field = field.concat @create_numeric_field()
+            field = field.concat @create_numeric_field
+              props:
+                placeholder: item.Unit or column_key
 
     return field
 
