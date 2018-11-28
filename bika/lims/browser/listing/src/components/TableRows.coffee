@@ -160,7 +160,7 @@ class TableRows extends React.Component
         rows.push(
           <TableRemarksRow
             {...@props}
-            key={colum_key}
+            key={"remarks_" + item_index}
             item={item}
             item_key={column_key}
             expanded={expanded}
