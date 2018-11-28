@@ -751,7 +751,6 @@ def get_role_mappings_candidates(portal):
 
 def decouple_analyses_from_sample_workflow(portal):
     logger.info("Decoupling analyses from sample workflow ...")
-
     add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
               index_name="isSampleReceived",
               index_attribute="isSampleReceived",
@@ -763,7 +762,7 @@ def decouple_analyses_from_sample_workflow(portal):
                    "not_requested", "registered"]
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById(wf_id)
-    query = dict(portal_type=["Analysis" "DuplicateAnalysis"],
+    query = dict(portal_type=["Analysis", "DuplicateAnalysis"],
                  review_state=affected_rs)
     brains = api.search(query, CATALOG_ANALYSIS_LISTING)
     total = len(brains)
