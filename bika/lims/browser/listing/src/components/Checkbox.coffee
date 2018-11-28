@@ -2,9 +2,6 @@ import React from "react"
 
 
 class Checkbox extends React.Component
-  ###
-   * The checkbox component renders a single checkbox
-  ###
 
   constructor: (props) ->
     super(props)
@@ -12,9 +9,6 @@ class Checkbox extends React.Component
     @on_change = @on_change.bind @
 
   on_change: (event) ->
-    ###
-     * Event handler when the checkbox changed
-    ###
     el = event.currentTarget
     checked = el.checked
     console.debug "Checkbox::on_change: checked=#{checked}"
@@ -25,13 +19,14 @@ class Checkbox extends React.Component
   render: ->
     <input key={@props.name}
            type="checkbox"
+           uid={@props.uid}
            name={@props.name}
+           value={@props.value}
            column_key={@props.column_key}
            title={@props.title}
            disabled={@props.disabled}
            checked={@props.checked}
            defaultChecked={@props.defaultChecked}
-           value={@props.value}
            className={@props.className}
            onChange={@on_change}/>
 

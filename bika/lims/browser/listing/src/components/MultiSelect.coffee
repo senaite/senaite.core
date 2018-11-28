@@ -7,7 +7,6 @@ class MultiSelect extends React.Component
     super(props)
     @on_blur = @on_blur.bind @
     @on_change = @on_change.bind @
-    @multiselect = React.createRef()
 
   on_blur: (event) ->
     el = event.currentTarget
@@ -42,18 +41,18 @@ class MultiSelect extends React.Component
         <li key={value}>
           <input type="checkbox"
                  defaultChecked={selected}
+                 uid={@props.uid}
+                 name={@props.name}
                  value={value}
                  onChange={@on_change}
                  onBlur={@on_blur}
-                 column_key={@props.column_key}
-                 name={@props.name}/> {title}
+                 column_key={@props.column_key}/> {title}
         </li>
       )
 
     return options
   render: ->
-    <div className="multiselect"
-         ref={@multiselect}>
+    <div className="multiselect">
       <ul className="list-unstyled">
         {@build_options()}
       </ul>

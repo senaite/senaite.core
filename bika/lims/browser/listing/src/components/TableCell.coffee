@@ -35,101 +35,110 @@ class TableCell extends React.Component
 
   on_checkbox_field_change: (event) ->
     el = event.currentTarget
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.checked
     console.debug "TableCell:on_checkbox_field_change: checked=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @props.item
 
     # Call the *save* field handler (no blur event here necessary)
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @props.item
 
   on_select_field_blur: (event) ->
     el = event.currentTarget
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_select_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @props.item
 
   on_select_field_change: (event) ->
     el = event.currentTarget
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_select_field_change: value=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @props.item
 
   on_multiselect_field_blur: (event) ->
     el = event.currentTarget
     ul = el.parentNode.parentNode
     checked = ul.querySelectorAll("input[type='checkbox']:checked")
-    value = (input.value for input in checked)
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
+    value = (input.value for input in checked)
     console.debug "TableCell:on_multiselect_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @props.item
 
   on_multiselect_field_change: (event) ->
     el = event.currentTarget
     ul = el.parentNode.parentNode
     checked = ul.querySelectorAll("input[type='checkbox']:checked")
+    uid = el.getAttribute("uid")
     value = (input.value for input in checked)
     name = el.getAttribute("column_key") or el.name
     console.debug "TableCell:on_multiselect_field_change: value=#{value}"
 
     # Call the *on_blur* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @props.item
 
   on_numeric_field_blur: (event) ->
     el = event.currentTarget
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_numeric_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @props.item
 
   on_numeric_field_change: (event) ->
     el = event.currentTarget
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_numeric_field_change: value=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @props.item
 
   on_string_field_blur: (event) ->
     el = event.currentTarget
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_string_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field @props.item.uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @props.item
 
   on_string_field_change: (event) ->
     el = event.currentTarget
+    uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.value
     console.debug "TableCell:on_string_field_change: value=#{value}"
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field @props.item.uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @props.item
 
   render_before_content: ->
     before = @props.item.before
@@ -244,7 +253,8 @@ class TableCell extends React.Component
     item = @props.item
     # the current column definition
     column = @props.column
-
+    # the UID of the current item
+    uid = item.uid
     # form field title
     title = column.title or column_key
     # form field name
@@ -277,6 +287,7 @@ class TableCell extends React.Component
       field.push (
         <ReadonlyField
           key={name}
+          uid={uid}
           name={name}
           value={value}
           title={title}
@@ -289,6 +300,7 @@ class TableCell extends React.Component
       field.push (
         <ReadonlyField
           key={name}
+          uid={uid}
           name={fieldname}
           value={value}
           title={title}
@@ -297,6 +309,7 @@ class TableCell extends React.Component
       field.push (
         <HiddenField
           key={name + "_hidden"}
+          uid={uid}
           name={fieldname}
           value={value}
           title={title}
@@ -308,9 +321,10 @@ class TableCell extends React.Component
       field.push (
         <NumericField
           key={name}
+          uid={uid}
           name={fieldname}
-          column_key={column_key}
           defaultValue={value}
+          column_key={column_key}
           title={title}
           formatted_value={formatted_value}
           placeholder={title}
@@ -326,6 +340,7 @@ class TableCell extends React.Component
         field.push (
           <HiddenField
             key={name + "_item_data"}
+            uid={uid}
             name="item_data"
             value={JSON.stringify item_data}
             />)
@@ -337,9 +352,10 @@ class TableCell extends React.Component
       field.push (
         <Select
           key={name}
+          uid={uid}
           name={fieldname}
-          column_key={column_key}
           defaultValue={value}
+          column_key={column_key}
           title={title}
           disabled={disabled}
           selected={selected}
@@ -358,9 +374,10 @@ class TableCell extends React.Component
       field.push (
         <MultiSelect
           key={name}
+          uid={uid}
           name={fieldname}
-          column_key={column_key}
           defaultValue={value}
+          column_key={column_key}
           title={title}
           disabled={disabled}
           selected={selected}
@@ -377,9 +394,10 @@ class TableCell extends React.Component
       field.push (
         <Checkbox
           key={name}
+          uid={uid}
           name={fieldname}
-          column_key={column_key}
           value="on"
+          column_key={column_key}
           title={title}
           defaultChecked={value}
           disabled={disabled}
@@ -392,9 +410,10 @@ class TableCell extends React.Component
       field.push (
         <NumericField
           key={name}
+          uid={uid}
           name={fieldname}
-          column_key={column_key}
           defaultValue={value}
+          column_key={column_key}
           title={title}
           formatted_value={formatted_value}
           placeholder={title}
@@ -412,9 +431,10 @@ class TableCell extends React.Component
       field.push (
         <HiddenField
           key={name + "_hidden"}
+          uid={uid}
           name={fieldname}
-          column_key={column_key}
           value={value}
+          column_key={column_key}
           />)
 
     return field
