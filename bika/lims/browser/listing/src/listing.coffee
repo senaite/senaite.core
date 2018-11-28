@@ -423,7 +423,8 @@ class ListingController extends React.Component
     return unless name in item.allow_edit
 
     # Skip fields which do not have `ajax` set to a truthy value in the column definition
-    return unless @state.columns[name].ajax
+    column = @state.columns[name] or {}
+    return unless column.ajax
 
     console.debug "ListingController::saveEditableField: uid=#{uid} name=#{name} value=#{value}"
 

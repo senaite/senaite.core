@@ -42,11 +42,11 @@ class TableCell extends React.Component
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @get_item()
 
     # Call the *save* field handler (no blur event here necessary)
     if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @get_item()
 
   on_select_field_blur: (event) ->
     el = event.currentTarget
@@ -57,7 +57,7 @@ class TableCell extends React.Component
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @get_item()
 
   on_select_field_change: (event) ->
     el = event.currentTarget
@@ -68,7 +68,7 @@ class TableCell extends React.Component
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @get_item()
 
   on_multiselect_field_blur: (event) ->
     el = event.currentTarget
@@ -81,7 +81,7 @@ class TableCell extends React.Component
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @get_item()
 
   on_multiselect_field_change: (event) ->
     el = event.currentTarget
@@ -94,7 +94,7 @@ class TableCell extends React.Component
 
     # Call the *on_blur* field handler
     if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @get_item()
 
   on_numeric_field_blur: (event) ->
     el = event.currentTarget
@@ -105,7 +105,7 @@ class TableCell extends React.Component
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @get_item()
 
   on_numeric_field_change: (event) ->
     el = event.currentTarget
@@ -116,7 +116,7 @@ class TableCell extends React.Component
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @get_item()
 
   on_string_field_blur: (event) ->
     el = event.currentTarget
@@ -127,7 +127,7 @@ class TableCell extends React.Component
 
     # Call the *save* field handler
     if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @props.item
+      @props.save_editable_field uid, name, value, @get_item()
 
   on_string_field_change: (event) ->
     el = event.currentTarget
@@ -138,20 +138,20 @@ class TableCell extends React.Component
 
     # Call the *update* field handler
     if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @props.item
+      @props.update_editable_field uid, name, value, @get_item()
 
   render_before_content: ->
-    before = @props.item.before
-    column_key = @props.column_key
-    if @props.column_key not of before
+    before = @get_item().before
+    column_key = @get_column_key()
+    if column_key not of before
       return null
     return <span className="before-item"
                  dangerouslySetInnerHTML={{__html: before[column_key]}}>
            </span>
 
   render_after_content: ->
-    after = @props.item.after
-    column_key = @props.column_key
+    after = @get_item().after
+    column_key = @get_column_key()
     if column_key not of after
       return null
     return <span className="after-item"
@@ -178,6 +178,12 @@ class TableCell extends React.Component
     # make the field conditionally required if the row is selected
     selected = @props.selected
     return required and selected
+
+  get_item: ->
+    return @props.item
+
+  get_column_key: ->
+    return @props.column_key
 
   get_name: (column_key, item) ->
     return "#{column_key}.#{item.uid}"
@@ -248,9 +254,13 @@ class TableCell extends React.Component
 
   render_content: ->
     # the current rendered column cell name
-    column_key = @props.column_key
+    column_key = @get_column_key()
     # single folderitem
-    item = @props.item
+    item = @get_item()
+    # return if there is no item
+    if not item
+      console.warn "Skipping cell rendering for column '#{column_key}'"
+      return null
     # the current column definition
     column = @props.column
     # the UID of the current item
