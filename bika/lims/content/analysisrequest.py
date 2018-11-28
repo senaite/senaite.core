@@ -2865,10 +2865,6 @@ class AnalysisRequest(BaseFolder):
         return guards.schedule_sampling(self)
 
     @security.public
-    def guard_publish_transition(self):
-        return guards.publish(self)
-
-    @security.public
     def guard_prepublish_transition(self):
         return guards.prepublish(self)
 

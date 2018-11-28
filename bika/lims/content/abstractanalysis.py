@@ -1217,9 +1217,5 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return api.get_object_by_uid(back_refs[0])
 
     @security.public
-    def guard_publish_transition(self):
-        return guards.publish(self)
-
-    @security.public
     def guard_attach_transition(self):
         return guards.attach(self)

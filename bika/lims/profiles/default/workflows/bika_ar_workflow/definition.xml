@@ -1100,7 +1100,7 @@
     <action url="" category="workflow" icon="">Publish</action>
     <guard>
       <guard-permission>BIKA: Publish</guard-permission>
-      <guard-expression>python:here.guard_publish_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("publish")</guard-expression>
     </guard>
   </transition>
 

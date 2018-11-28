@@ -252,8 +252,12 @@
     </permission-map>
   </state>
 
+  <!-- State: published
+  The analysis has been published. Analyses cannot be published individually,
+  rather analyses transitions to this state automatically when the whole
+  Analysis Request they belong to is published -->
   <state state_id="published" title="Published" i18n:attributes="title">
-    <exit-transition transition_id="publish" />
+    <exit-transition transition_id="" />
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -396,11 +400,19 @@
     </guard>
   </transition>
 
-  <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <!-- Transition: publish
+  The publication cannot be done manually (see the guard), it takes place
+  automatically when the Analysis Request is published -->
+  <transition transition_id="publish" title="Publish" new_state="published"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
     <action url="" category="workflow" icon="">Publish</action>
     <guard>
-      <guard-permission>BIKA: Publish</guard-permission>
-      <guard-expression>python:here.guard_publish_transition()</guard-expression>
+      <!-- There is no guard-permission here because this transition takes
+      place automatically as soon as the Analysis Request  is published. Hence,
+      this transition is governed by the permission "Publish" assigned to the
+      Analysis Request the analysis belongs to -->
+      <guard-expression>python:here.guard_handler("publish")</guard-expression>
     </guard>
   </transition>
 

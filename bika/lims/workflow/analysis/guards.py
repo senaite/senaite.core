@@ -10,19 +10,6 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 
 
-def publish(obj):
-    """ Returns true if the 'publish' transition can be performed to the
-    analysis passed in.
-    In accordance with bika_analysis_workflow, 'publish'
-    transition can only be performed if the state of the analysis is verified,
-    so this guard only checks if the analysis state is active: there is no need
-    of additional checks, cause the DC Workflow machinery will already take
-    care of them.
-    :returns: true or false
-    """
-    return wf.isBasicTransitionAllowed(obj)
-
-
 def attach(obj):
     if not wf.isBasicTransitionAllowed(obj):
         return False
@@ -251,3 +238,11 @@ def guard_reject(analysis):
             return False
 
     return True
+
+
+def guard_publish(analysis):
+    """Return whether the transition "publish" can be performed or not. Returns
+    True only when the Analysis Request the analysis belongs to is in published
+    state. Otherwise, returns False.
+    """
+    return api.get_workflow_status_of(analysis.getRequest()) == "published"
