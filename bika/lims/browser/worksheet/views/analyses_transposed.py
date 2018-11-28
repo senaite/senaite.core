@@ -18,8 +18,8 @@ class AnalysesTransposedView(AnalysesView):
     def __init__(self, context, request):
         super(AnalysesTransposedView, self).__init__(context, request)
 
+        self.headers = OrderedDict()
         self.services = OrderedDict()
-        self.others = OrderedDict()
 
     @view.memoize
     def get_positions(self):
@@ -38,8 +38,7 @@ class AnalysesTransposedView(AnalysesView):
     def make_empty_item(self, **kw):
         """Create a new empty item
         """
-        item = dict.fromkeys(self.get_positions())
-        item.update({
+        item = {
             "uid": None,
             "before": {},
             "after": {},
@@ -47,7 +46,7 @@ class AnalysesTransposedView(AnalysesView):
             "allow_edit": [],
             "disabled": False,
             "state_class": "state-active",
-        })
+        }
         item.update(**kw)
         return item
 
@@ -57,14 +56,22 @@ class AnalysesTransposedView(AnalysesView):
         pos = str(item["Pos"])
         service = item["Service"]
 
+        # remember the headers
+        if "Pos" not in self.headers:
+            self.headers["Pos"] = self.make_empty_item(
+                column_key="Positions", item_key="Pos")
+        if pos not in self.headers["Pos"]:
+            # Add the item with the Pos header
+            item["replace"]["Pos"] = self.get_slot_header(item)
+            self.headers["Pos"][pos] = item
+
         # remember the services
         if service not in self.services:
             self.services[service] = self.make_empty_item(
-                key=service,
-                item_key="Result",  # the key inside the folderitem
-            )
-        # Add the item below its position
-        self.services[service][pos] = item
+                column_key=service, item_key="Result")
+        if pos not in self.services[service]:
+            # Add the item below its position
+            self.services[service][pos] = item
 
         return item
 
@@ -75,27 +82,26 @@ class AnalysesTransposedView(AnalysesView):
         # classes to ensure that we do not interfere with their logic.
         self.columns = OrderedDict()
         # Transposed column keys
-        self.columns["key"] = {"title": ""}
+        self.columns["column_key"] = {"title": ""}
         # Slot position columns
         for pos in self.get_positions():
             self.columns[pos] = {"title": "", "type": "transposed"}
         # Set new columns to the default review_state
-        self.review_states[0]["columns"] = ["key"] + self.get_positions()
+        self.review_states[0]["columns"] = ["column_key"] + self.get_positions()
 
         # transposed rows holder
         transposed = OrderedDict()
 
-        # first row contains the position headers
+        # first row contains the HTML slot headers
+        transposed.update(self.headers)
 
         # the collected services (Iron, Copper, Calcium...) come afterwards
         transposed.update(self.services)
-
-        # TODO
-        # all other rows from the initial columns
 
         # listing fixtures
         self.total = len(transposed.keys())
         self.show_select_column = False
         self.show_select_all_checkbox = False
 
+        # return the transposed rows
         return transposed.values()

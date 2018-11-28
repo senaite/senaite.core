@@ -22,7 +22,7 @@ class TableTransposedCell extends TableCell
 
   get_transposed_key: ->
     # The transposed key points to a key inside the transposed item
-    return @props.item.item_key or @props.column_key
+    return @props.item.item_key or @props.item.column_key
 
   get_type: (column_key, item) ->
     # true if the field is editable
