@@ -19,8 +19,10 @@ class ReadonlyField extends React.Component
         return <span className="glyphicon glyphicon-remove"></span>
     else
       return (
-        <span className={@props.className}
-              dangerouslySetInnerHTML={{__html: @props.formatted_value}}>
+        <span className={@props.className}>
+          {@props.before and <span dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+          <span dangerouslySetInnerHTML={{__html: @props.formatted_value}}></span>
+          {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
         </span>
       )
 

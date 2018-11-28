@@ -9,7 +9,6 @@ from collections import OrderedDict
 
 from bika.lims.browser.worksheet.views import AnalysesView
 from plone.memoize import view
-from bika.lims import bikaMessageFactory as _
 
 
 class AnalysesTransposedView(AnalysesView):
@@ -22,9 +21,7 @@ class AnalysesTransposedView(AnalysesView):
         self.headers = OrderedDict()
         self.services = OrderedDict()
 
-        self.review_states[0]["transitions"] = [
-            {"id": "submit"},
-        ]
+        self.review_states[0]["transitions"] = []
         self.review_states[0]["custom_transitions"] = []
 
     @view.memoize
