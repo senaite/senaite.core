@@ -26,7 +26,8 @@ from bika.lims.utils import tmpID, copy_field_values
 from bika.lims.utils import to_utf8
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, ActionHandlerPool, \
+    push_reindex_to_actions_pool
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
 from email.Utils import formataddr
@@ -408,6 +409,10 @@ def create_retest(ar):
         raise ValueError("Cannot do a retest from an invalid Analysis Request"
                          .format(repr(ar)))
 
+    # 0. Open the actions pool
+    actions_pool = ActionHandlerPool.get_instance()
+    actions_pool.queue_pool()
+
     # 1. Create the Retest (Analysis Request)
     ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample']
     retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
@@ -424,6 +429,7 @@ def create_retest(ar):
         ignore_fieldnames = ['DataAnalysisPublished']
         copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
         nan.unmarkCreationFlag()
+        push_reindex_to_actions_pool(nan)
 
     # 3. Assign the source to retest
     retest.setInvalidated(ar)
@@ -432,6 +438,9 @@ def create_retest(ar):
     changeWorkflowState(retest, 'bika_ar_workflow', 'sample_received')
 
     # 5. Reindex and other stuff
-    retest.reindexObject()
-    retest.aq_parent.reindexObject()
+    push_reindex_to_actions_pool(retest)
+    push_reindex_to_actions_pool(retest.aq_parent)
+
+    # 6. Resume the actions pool
+    actions_pool.resume()
     return retest
