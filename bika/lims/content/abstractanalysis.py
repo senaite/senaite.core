@@ -959,7 +959,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         worksheet = self.getWorksheet()
         if worksheet:
             return worksheet.getAnalyst() or ""
-        return self.getField("Analyst").get(self)
+        return ""
 
     @security.public
     def getAnalystName(self):

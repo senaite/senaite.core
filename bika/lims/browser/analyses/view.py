@@ -702,10 +702,6 @@ class AnalysesView(BikaListingView):
         calculation_uid = analysis_brain.getCalculationUID
         has_calculation = calculation_uid and True or False
         item['calculation'] = has_calculation
-        if is_editable and (not has_calculation or interim_fields):
-            # If the analysis is editable and doesn't have a calculation or it
-            # does, but has interim fields, it must be re-testable.
-            item['allow_edit'].append('retested')
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
@@ -775,10 +771,6 @@ class AnalysesView(BikaListingView):
         # Analyst is editable
         item['Analyst'] = obj.getAnalyst or api.get_current_user().id
         item['choices']['Analyst'] = self.get_analysts()
-
-        # allow edit only if the Analysis is not assigned to a worksheet
-        if api.get_workflow_status_of(obj) == "unassigned":
-            item['allow_edit'].append('Analyst')
 
     def _folder_item_attachments(self, obj, item):
         item['Attachments'] = ''
