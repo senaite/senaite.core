@@ -287,6 +287,7 @@ class AjaxListingView(BrowserView):
             "form_id": self.form_id,
             "review_states": self.get_review_states(),
             "columns": self.get_columns(),
+            "content_filter": self.contentFilter,
             "allow_edit": self.allow_edit,
             "api_url": self.get_api_url(),
             "catalog": self.catalog,
@@ -613,6 +614,50 @@ class AjaxListingView(BrowserView):
         data = {
             "count": len(folderitems),
             "folderitems": folderitems,
+        }
+
+        return data
+
+    @set_application_json_header
+    @returns_safe_json
+    @inject_runtime
+    def ajax_set_fields(self):
+        """Set multiple fields
+
+        The POST Payload needs to provide the following data:
+
+        :save_queue: A mapping of {UID: {fieldname: fieldvalue, ...}}
+        """
+
+        # Get the HTTP POST JSON Payload
+        payload = self.get_json()
+
+        required = ["save_queue"]
+        if not all(map(lambda k: k in payload, required)):
+            return self.error("Payload needs to provide the keys {}"
+                              .format(", ".join(required)), status=400)
+
+        save_queue = payload.get("save_queue")
+
+        updated_objects = set()
+        for uid, data in save_queue.iteritems():
+            # get the object
+            obj = api.get_object_by_uid(uid)
+
+            # update the fields
+            for name, value in data.iteritems():
+                updated_objects.update(self.set_field(obj, name, value))
+
+        if not updated_objects:
+            return self.error("Failed to set field of save queue '{}'"
+                              .format(save_queue), 500)
+
+        # UIDs of updated objects
+        updated_uids = map(api.get_uid, updated_objects)
+
+        # prepare the response object
+        data = {
+            "uids": updated_uids,
         }
 
         return data

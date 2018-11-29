@@ -81,9 +81,6 @@ class AnalysesTransposedView(AnalysesView):
     def folderitems(self):
         super(AnalysesTransposedView, self).folderitems()
 
-        # Reset columns
-        self.columns = OrderedDict()
-
         # Insert the "column key" column
         self.columns["column_key"] = {"title": ""}
 

@@ -161,8 +161,9 @@ class TableRows extends React.Component
           <TableRemarksRow
             {...@props}
             key={"remarks_" + item_index}
+            uid={uid}
             item={item}
-            item_key={column_key}
+            column_key={column_key}
             expanded={expanded}
             selected={selected}
             disabled={disabled}
