@@ -7,17 +7,40 @@ class TableRemarksRow extends React.Component
     super(props)
     # Bind events
     @on_remarks_field_blur = @on_remarks_field_blur.bind @
+    @on_remarks_field_change = @on_remarks_field_change.bind @
 
   on_remarks_field_blur: (event) ->
     el = event.currentTarget
     uid = el.getAttribute("uid")
     name = el.getAttribute("column_key") or el.name
     value = el.value
-    console.debug "TableCell:on_remarks_field_blur: value=#{value}"
+    console.debug "TableRemarksRow:on_remarks_field_blur: value=#{value}"
 
     # Call the *save* field handler
     if @props.save_editable_field
       @props.save_editable_field uid, name, value, @props.item
+
+  on_remarks_field_change: (event) ->
+    el = event.currentTarget
+    uid = el.getAttribute("uid")
+    name = el.getAttribute("column_key") or el.name
+    value = el.value
+    console.debug "TableRemarksRow:on_remarks_field_change: value=#{value}"
+
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field uid, name, value, @props.item
+
+  on_numeric_field_change: (event) ->
+    el = event.currentTarget
+    uid = el.getAttribute("uid")
+    name = el.getAttribute("column_key") or el.name
+    value = el.value
+    console.debug "TableCell:on_numeric_field_change: value=#{value}"
+
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field uid, name, value, @get_item()
 
   can_edit: ->
     item = @props.item
@@ -59,6 +82,7 @@ class TableRemarksRow extends React.Component
           rows="2"
           name={name}
           onBlur={@on_remarks_field_blur}
+          onChange={@on_remarks_field_change}
           defaultValue={value}>
         </textarea>)
 

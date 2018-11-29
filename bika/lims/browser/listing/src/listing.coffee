@@ -423,12 +423,9 @@ class ListingController extends React.Component
     ###
      * Save the whole ajax queue
     ###
-
     uids = Object.keys @state.ajax_save_queue
     return unless uids.length > 0
-
     promise = @ajax_save()
-
 
   saveEditableField: (uid, name, value, item) ->
     ###
@@ -756,6 +753,7 @@ class ListingController extends React.Component
       console.debug "ListingController::ajax_save: GOT DATA=", data
       # empty the ajax save queue
       me.setState
+        show_ajax_save: no
         ajax_save_queue: {}
       # uids of the updated objects
       uids = data.uids or []
