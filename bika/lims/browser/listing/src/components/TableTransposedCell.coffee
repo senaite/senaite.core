@@ -13,90 +13,141 @@ class TableTransposedCell extends TableCell
    *
    * also see bika.lims.browser.worksheet.views.analyses_transposed.py
    *
-   * The transposed `item` is the original folderitem, which is stored below the
+   * The "transposed item" is the original folderitem, which is stored below the
    * `column_key` of the transposed column, e.g.
    *
-   * `{"1": {"uid": ..., }, "2": {"uid": ..., }}`
+   * columns: {1: {…}, 2: {…}, column_key: {…}}
+   * folderitems: [
+   *   {1: {original-folderitem}, 2: {original-folderitem}, item_key: "Pos", column_key: "Positions"},
+   *   {1: {original-folderitem}, 2: {original-folderitem}, item_key: "Result", column_key: "Calcium"},
+   *   {1: {original-folderitem}, 2: {original-folderitem}, item_key: "Result", column_key: "Magnesiumn"},
+   * ]
   ###
-
   get_item: ->
+    # @props.item: transposed folderitem (see TableCells.coffee)
+    # @props.column_key: current column key rendered, e.g. "1", "2", "column_key"
     return @props.item[@props.column_key]
 
+  ###*
+   * Get the value within the transposed folderitem to render
+   *
+   * also see bika.lims.browser.worksheet.views.analyses_transposed.py
+   *
+   * The `item_key` (see also above) within a transposed folderitems item,
+   * points to the value to be rendered from the original folderitem.
+   *
+  ###
   get_column_key: ->
-    # The `item_key` points to a key inside the transposed folderitem
+    # @props.item is a transposed folderitem
+    # @props.column_key is the actual column key rendered, e.g. "1", "2", "column_key"
     return @props.item.item_key or @props.item.column_key
 
+  ###*
+   * Calculate CSS Class for the <td> cell based on the original folderitem
+  ###
   get_css: ->
+    item = @get_item()
+    css = ["transposed", @props.className]
     if @is_result_column()
-      item = @get_item()
-      state_class = if item then item.state_class
-      return "result #{state_class}"
-    return @props.className
+      css.push "result"
+    if not item
+      css.push "empty"
+    else
+      css.push item.state_class
+    return css.join " "
 
+  ###*
+   * Creates a select checkbox for the original folderitem
+   * @param props {object} properties passed to the component
+   * @returns ReadonlyField component
+  ###
+  create_select_checkbox: ({props}={}) ->
+    props ?= {}
+    uid = @get_uid()
+    name = "#{@props.select_checkbox_name}:list"
+    disabled = @is_disabled()
+    selected = @is_selected()
+    return (
+      <div key="select" className="checkbox input-sm">
+        <Checkbox
+          name={name}
+          value={uid}
+          disabled={disabled}
+          checked={selected}
+          onChange={@props.on_select_checkbox_checked}
+          {...props}
+          />
+      </div>)
+
+  ###*
+   * Render the fields for a single transposed cell
+  ###
   render_content: ->
-    # the current rendered column cell name
+    # the current rendered column ID
     column_key = @get_column_key()
     # single folderitem
     item = @get_item()
     # return if there is no item
     if not item
-      console.warn "Skipping cell rendering for column '#{column_key}'"
+      console.debug "Skipping empty item for '#{column_key}' in column '#{@props.column_key}'"
       return null
-    # the UID of the transposed folderitem
+    # the UID of the original folderitem
     uid = @get_uid()
     # field type to render
     type = @get_type()
-    # interims
+    # interimfields contained in original folderitem
     interims = @get_interimfields()
-    # the field to return
-    field = []
 
-    # Always prepend a select checkbox before the results cell
-    if column_key == "Result"
-      field.push (
-        <div key="select" className="checkbox input-sm">
-          <Checkbox
-            name={"#{@props.select_checkbox_name}:list"}
-            value={uid}
-            disabled={@is_disabled()}
-            checked={@is_selected()}
-            onChange={@props.on_select_checkbox_checked}
-            />
-        </div>)
+    # the fields to return
+    fields = []
+
+    # Always prepend a select checkbox before a readonly/editable results cell
+    if @is_result_column()
+      fields = fields.concat @create_select_checkbox()
 
     if type == "readonly"
       # Render the results field + all interim fields
       if column_key == "Result"
-        field = field.concat @create_readonly_field
+        # Append the Unit after the readonly result field
+        fields = fields.concat @create_readonly_field
           props:
             after: " #{item.Unit}"
       else
-        field = field.concat @create_readonly_field()
+        fields = fields.concat @create_readonly_field()
+    # The "transposed" type is defined in the column definition, see analyses_transposed.py
     else if type == "transposed"
-      if column_key of @get_choices()
-        field = field.concat @create_select_field()
+      # Result field handling
+      if @is_result_column()
+        for interim, index in @get_interimfields()
+          # {value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}
+          fields = fields.concat @create_numeric_field
+            props:
+              key: interim.keyword
+              column_key: interim.keyword
+              name: "#{interim.keyword}.#{uid}"
+              defaultValue: interim.value
+              placeholder: interim.unit
+              formatted_value: interim.formatted_value
+        if item.calculation
+          fields = fields.concat @create_readonly_field()
+        else
+          fields = fields.concat @create_numeric_field
+            props:
+              placeholder: item.Unit or column_key
       else
-        # Render the results field + all interim fields
-        if column_key == "Result"
-          # render editable interim fields first
-          for interim, index in @get_interimfields()
-            # {value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}
-            field = field.concat @create_numeric_field
-              props:
-                key: interim.keyword
-                column_key: interim.keyword
-                name: "#{interim.keyword}.#{uid}"
-                defaultValue: interim.value
-                placeholder: interim.unit
-                formatted_value: interim.formatted_value
-          if item.calculation
-            field = field.concat @create_readonly_field()
-          else
-            field = field.concat @create_numeric_field
-              props:
-                placeholder: item.Unit or column_key
+        # select
+        if column_key of @get_choices()
+          fields = fields.concat @create_select_field()
+        # checkbox
+        else if typeof(@get_value()) == "boolean"
+          fields = fields.concat @create_checkbox_field()
+        # numeric
+        else if type == "numeric"
+          fields = fields.concat @create_numeric_field()
+        else
+          fields = fields.concat @create_readonly_field()
 
-    return field
+    return fields
 
   render: ->
     <td className={@get_css()}

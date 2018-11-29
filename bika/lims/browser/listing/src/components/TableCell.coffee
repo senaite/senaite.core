@@ -296,9 +296,7 @@ class TableCell extends React.Component
     return "numeric"
 
   ###*
-   * Method to create a readonly field component
-   * @param column_key {string} key of the column
-   * @param item {object} folderitem containing the key
+   * Creates a readonly field component
    * @param props {object} properties passed to the component
    * @returns ReadonlyField component
   ###
@@ -325,9 +323,7 @@ class TableCell extends React.Component
         />)
 
   ###*
-   * Method to create a hidden field component
-   * @param column_key {string} key of the column
-   * @param item {object} folderitem containing the key
+   * Creates a hidden field component
    * @param props {object} properties passed to the component
    * @returns HiddenField component
   ###
@@ -354,9 +350,7 @@ class TableCell extends React.Component
         />)
 
   ###*
-   * Method to create a numeric field component
-   * @param column_key {string} key of the column
-   * @param item {object} folderitem containing the key
+   * Creates a numeric field component
    * @param props {object} properties passed to the component
    * @returns NumericField component
   ###
@@ -397,9 +391,7 @@ class TableCell extends React.Component
         />)
 
   ###*
-   * Method to create a select field component
-   * @param column_key {string} key of the column
-   * @param item {object} folderitem containing the key
+   * Creates a select field component
    * @param props {object} properties passed to the component
    * @returns SelectField component
   ###
@@ -440,9 +432,7 @@ class TableCell extends React.Component
         />)
 
   ###*
-   * Method to create a multiselect field component
-   * @param column_key {string} key of the column
-   * @param item {object} folderitem containing the key
+   * Creates a multiselect field component
    * @param props {object} properties passed to the component
    * @returns SelectField component
   ###
@@ -483,9 +473,7 @@ class TableCell extends React.Component
         />)
 
   ###*
-   * Method to create a checkbox field component
-   * @param column_key {string} key of the column
-   * @param item {object} folderitem containing the key
+   * Creates a checkbox field component
    * @param props {object} properties passed to the component
    * @returns Checkbox component
   ###
