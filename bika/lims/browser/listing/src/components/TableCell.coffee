@@ -523,6 +523,8 @@ class TableCell extends React.Component
     uid = @get_uid()
     # field type to render
     type = @get_type()
+    # name of the hidden field that holds the field values if disabled
+    hidden_fieldname = "#{@get_name()}:records"
     # the field to return
     field = []
 
@@ -547,17 +549,24 @@ class TableCell extends React.Component
       field = field.concat @create_select_field()
     else if type in ["multiselect", "multichoices"]
       field = field.concat @create_multiselect_field()
+      hidden_fieldname = "#{@get_name()}:record:list"
     else if type == "boolean"
       field = field.concat @create_checkbox_field()
+      hidden_fieldname = "#{@get_name()}:record:ignore-empty"
     else if type == "numeric"
       field = field.concat @create_numeric_field()
 
     # N.B. Disabled fields are not send on form submit.
-    #      Therefore, we render a hidden field when disabled.
-    if @is_disabled()
+    #      Therefore, a hidden field is rendered if disabled.
+    #
+    # TODO Use an internal storage of the key, values of disabled or selected
+    # and not rendered fields, e.g. when a category was collapsed or the user
+    # filtered the items
+    if @is_disabled() and type isnt "readonly"
       field = field.concat @create_hidden_field
         props:
           key: "#{@get_name()}_disabled"
+          name: hidden_fieldname
 
     return field
 
