@@ -21,9 +21,6 @@ class AnalysesTransposedView(AnalysesView):
         self.headers = OrderedDict()
         self.services = OrderedDict()
 
-        self.review_states[0]["transitions"] = []
-        self.review_states[0]["custom_transitions"] = []
-
     @view.memoize
     def get_slots(self):
         """Return the current used analyses positions
