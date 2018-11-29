@@ -161,7 +161,8 @@ class AnalysesView(BikaListingView):
                 "title": "Remarks",
                 "toggle": False,
                 "sortable": False,
-                "type": "remarks"
+                "type": "remarks",
+                "ajax": True,
             }
 
         self.review_states = [
@@ -774,7 +775,10 @@ class AnalysesView(BikaListingView):
         # Analyst is editable
         item['Analyst'] = obj.getAnalyst or api.get_current_user().id
         item['choices']['Analyst'] = self.get_analysts()
-        item['allow_edit'].append('Analyst')
+
+        # allow edit only if the Analysis is not assigned to a worksheet
+        if api.get_workflow_status_of(obj) == "unassigned":
+            item['allow_edit'].append('Analyst')
 
     def _folder_item_attachments(self, obj, item):
         item['Attachments'] = ''
