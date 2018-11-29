@@ -27,6 +27,9 @@ def after_unassign(analysis):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed.
     """
+    # Remove from the worksheet
+    remove_analysis_from_worksheet(analysis)
+    # Reindex the Analysis Request
     reindex_request(analysis)
 
 
@@ -34,21 +37,8 @@ def after_cancel(analysis):
     """Function triggered after a "cancel" transition is performed. Removes the
     cancelled analysis from the worksheet, if any.
     """
-    worksheet = analysis.getWorksheet()
-    if worksheet:
-        # Remove the analysis from the worksheet
-        analyses = filter(lambda an: an != analysis, worksheet.getAnalyses())
-        worksheet.setAnalyses(analyses)
-        worksheet.purgeLayout()
-        if analyses:
-            # Maybe this analysis was the only one that was not yet submitted,
-            # so try to submit or verify the Worksheet to be consistent with
-            # the current states of the analyses it contains.
-            doActionFor(worksheet, "submit")
-            doActionFor(worksheet, "verify")
-        else:
-            # We've removed all analyses. Rollback to "open"
-            doActionFor(worksheet, "rollback_to_open")
+    # Remove from the worksheet
+    remove_analysis_from_worksheet(analysis)
 
 
 def after_reinstate(analysis):
@@ -67,8 +57,7 @@ def after_submit(analysis):
     bika.lims.workfow.AfterTransitionEventHandler
     """
     # Promote to analyses this analysis depends on
-    for dependency in analysis.getDependencies():
-        doActionFor(dependency, "submit")
+    promote_to_dependencies(analysis, "submit")
 
     # TODO: REFLEX TO REMOVE
     # Do all the reflex rules process
@@ -120,8 +109,7 @@ def after_retract(analysis):
         worksheet.addAnalysis(new_analysis)
 
     # Retract our dependents (analyses that depend on this analysis)
-    for dependent in analysis.getDependents():
-        doActionFor(dependent, 'retract')
+    cascade_to_dependents(analysis, "retract")
 
 
 def after_reject(analysis):
@@ -132,8 +120,7 @@ def after_reject(analysis):
         worksheet.removeAnalysis(analysis)
 
     # Reject our dependents (analyses that depend on this analysis)
-    for dependent in analysis.getDependents():
-        doActionFor(dependent, "reject")
+    cascade_to_dependents(analysis, "reject")
 
     # Try to rollback the Analysis Request (all analyses rejected)
     if IRequestAnalysis.providedBy(analysis):
@@ -149,10 +136,8 @@ def after_verify(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
-
     # Promote to analyses this analysis depends on
-    for dependency in analysis.getDependencies():
-        doActionFor(dependency, 'verify')
+    promote_to_dependencies(analysis, "verify")
 
     # TODO: REFLEX TO REMOVE
     # Do all the reflex rules process
@@ -227,3 +212,49 @@ def reindex_request(analysis, idxs=None):
     ancestors = [request] + request.getAncestors(all_ancestors=True)
     for ancestor in ancestors:
         push_reindex_to_actions_pool(ancestor, n_idxs)
+
+
+def remove_analysis_from_worksheet(analysis):
+    """Removes the analysis passed in from the worksheet, if assigned to any
+    """
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        return
+
+    # Removal of a routine analysis causes the removal of their duplicates
+    if not IDuplicateAnalysis.providedBy(analysis):
+        for dup in worksheet.get_duplicates_for(analysis):
+            doActionFor(dup, "unassign")
+
+    analyses = filter(lambda an: an != analysis, worksheet.getAnalyses())
+    worksheet.setAnalyses(analyses)
+    worksheet.purgeLayout()
+    if analyses:
+        # Maybe this analysis was the only one that was not yet submitted or
+        # verified, so try to submit or verify the Worksheet to be aligned
+        # with the current states of the analyses it contains.
+        doActionFor(worksheet, "submit")
+        doActionFor(worksheet, "verify")
+    else:
+        # We've removed all analyses. Rollback to "open"
+        doActionFor(worksheet, "rollback_to_open")
+
+    # Reindex the Worksheet
+    idxs = ["getAnalysesUIDs", "getDepartmentUIDs"]
+    push_reindex_to_actions_pool(worksheet, idxs=idxs)
+
+
+def cascade_to_dependents(analysis, transition_id):
+    """Cascades the transition to dependent analyses (those that depend on the
+    analysis passed in), if any
+    """
+    for dependent in analysis.getDependents():
+        doActionFor(dependent, transition_id)
+
+
+def promote_to_dependencies(analysis, transition_id):
+    """Promotes the transition to the analyses this analysis depends on
+    (dependencies), if any
+    """
+    for dependency in analysis.getDependencies():
+        doActionFor(dependency, transition_id)
