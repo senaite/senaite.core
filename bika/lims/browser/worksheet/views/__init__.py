@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+# flake8: noqa
 from add_analyses import AddAnalysesView
 from add_blank import AddBlankView
 from add_control import AddControlView

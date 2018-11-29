@@ -54,9 +54,10 @@ class Select extends React.Component
 
   render: ->
     <select key={@props.name}
+            uid={@props.uid}
             name={@props.name}
-            item_key={@props.item_key}
             defaultValue={@props.defaultValue}
+            column_key={@props.column_key}
             title={@props.title}
             disabled={@props.disabled}
             onBlur={@on_blur}

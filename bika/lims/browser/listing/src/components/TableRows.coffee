@@ -121,7 +121,7 @@ class TableRows extends React.Component
     category ?= null
     folderitems ?= @props.folderitems
 
-    for item in folderitems
+    for item, item_index in folderitems
 
       # skip items of other categories
       if category and @get_item_category(item) != category
@@ -141,7 +141,7 @@ class TableRows extends React.Component
       rows.push(
         <TableRow
           {...@props}
-          key={uid}
+          key={item_index}
           item={item}
           uid={uid}
           expanded={expanded}
@@ -152,7 +152,7 @@ class TableRows extends React.Component
           />)
 
       # columns with type="remarks" set are rendered in their own row
-      for column_key in @get_remarks_columns()
+      for column_key, column_index in @get_remarks_columns()
         column = @props.columns[column_key]
         # support rowspanning for WS header slot
         skip = item.skip or []
@@ -160,9 +160,10 @@ class TableRows extends React.Component
         rows.push(
           <TableRemarksRow
             {...@props}
-            key={uid + column_key}
+            key={"remarks_" + item_index}
+            uid={uid}
             item={item}
-            item_key={column_key}
+            column_key={column_key}
             expanded={expanded}
             selected={selected}
             disabled={disabled}

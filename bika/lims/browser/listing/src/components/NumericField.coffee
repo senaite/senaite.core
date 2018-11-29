@@ -2,9 +2,6 @@ import React from "react"
 
 
 class NumericField extends React.Component
-  ###
-   * The numeric field component renders a field where only numbers are allowed
-  ###
 
   constructor: (props) ->
     super(props)
@@ -18,9 +15,6 @@ class NumericField extends React.Component
     @on_change = @on_change.bind @
 
   on_blur: (event) ->
-    ###
-     * Event handler when the input for blur event
-    ###
     el = event.currentTarget
     value = el.value
 
@@ -37,9 +31,6 @@ class NumericField extends React.Component
     if @props.onBlur then @props.onBlur event
 
   on_change: (event) ->
-    ###
-     * Event handler when the input changed
-    ###
     el = event.currentTarget
     value = el.value
 
@@ -62,18 +53,23 @@ class NumericField extends React.Component
     if @props.onChange then @props.onChange event
 
   render: ->
-    <input type="text"
-           size={@props.size or 5}
-           name={@props.name}
-           item_key={@props.item_key}
-           defaultValue={@props.defaultValue or ""}
-           title={@props.title}
-           disabled={@props.disabled}
-           required={@props.required}
-           className={@props.className}
-           placeholder={@props.placeholder}
-           onBlur={@on_blur}
-           onChange={@on_change}/>
+    <span className="form-group">
+      {@props.before and <span dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+      <input type="text"
+            size={@props.size or 5}
+            uid={@props.uid}
+            name={@props.name}
+            defaultValue={@props.defaultValue or ""}
+            column_key={@props.column_key}
+            title={@props.title}
+            disabled={@props.disabled}
+            required={@props.required}
+            className={@props.className}
+            placeholder={@props.placeholder}
+            onBlur={@on_blur}
+            onChange={@on_change}/>
+      {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
+    </span>
 
 
 export default NumericField

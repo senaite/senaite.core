@@ -62,6 +62,16 @@ class ListingAPI
       method: "POST"
     return @get_json "set", options
 
+  set_fields: (data) ->
+    ###
+     * Set values of multiple fields
+     * @returns {Promise}
+    ###
+    options =
+      data: data or {}
+      method: "POST"
+    return @get_json "set_fields", options
+
   query_folderitems: (data) ->
     ###
      * Query folderitems

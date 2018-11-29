@@ -11,9 +11,10 @@ class HiddenField extends React.Component
 
   render: ->
     <input type="hidden"
+           uid={@props.uid}
            name={@props.name}
-           item_key={@props.item_key}
            value={@props.value}
+           column_key={@props.column_key}
            className={@props.className} />
 
 

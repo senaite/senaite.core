@@ -1,6 +1,7 @@
 import React from "react"
 import Checkbox from "./Checkbox.coffee"
 import TableCell from "./TableCell.coffee"
+import TableTransposedCell from "./TableTransposedCell.coffee"
 
 
 class TableCells extends React.Component
@@ -8,27 +9,26 @@ class TableCells extends React.Component
   constructor: (props) ->
     super(props)
 
-  get_column: (key) ->
-    return @props.columns[key]
+  get_column: (column_key) ->
+    return @props.columns[column_key]
 
   get_table_columns: ->
     return @props.table_columns or []
 
-  get_colspan: (item_key, item) ->
+  get_colspan: (column_key, item) ->
     colspan = item.colspan or {}
-    return colspan[item_key]
+    return colspan[column_key]
 
-  get_rowspan: (item_key, item) ->
+  get_rowspan: (column_key, item) ->
     rowspan = item.rowspan or {}
-    return rowspan[item_key]
+    return rowspan[column_key]
 
-  skip_cell_rendering: (item_key, item) ->
-    # return yes unless item_key of item
+  skip_cell_rendering: (column_key, item) ->
     skip = item.skip or []
-    return item_key in skip
+    return column_key in skip
 
   show_select: (item) ->
-    if "show_select" of item
+    if typeof item.show_select == "boolean"
       return item.show_select
     return @props.show_select_column
 
@@ -57,30 +57,54 @@ class TableCells extends React.Component
         </td>)
 
     # insert visible columns in the right order
-    for key in @get_table_columns()
+    for column_key, column_index in @get_table_columns()
 
       # Skip single cell rendering to support rowspans
-      if @skip_cell_rendering key, item
+      if @skip_cell_rendering column_key, item
         continue
 
       # get the column definition from the listing view
-      column = @get_column key
-      colspan = @get_colspan key, item
-      rowspan = @get_rowspan key, item
+      column = @get_column column_key
+      colspan = @get_colspan column_key, item
+      rowspan = @get_rowspan column_key, item
 
-      cells.push(
-        <TableCell
-          {...@props}
-          key={key}
-          item={item}
-          item_key={key}
-          column={column}
-          expanded={expanded}
-          selected={selected}
-          disabled={disabled}
-          colspan={colspan}
-          rowspan={rowspan}
-          />)
+      # Transposed cell items contain an object key "key", which points to the
+      # transposed folderitem requested.
+      #
+      # E.g. a transposed worksheet would have the positions (1, 2, 3, ...) as
+      # columns and the contained services of each position as rows.
+      # {"key": "1", "1": {"Service": "Calcium", ...}}
+      # The column for "1" would then contain the type "transposed".
+      if column.type == "transposed"
+        # Transposed Cell
+        cells.push(
+          <TableTransposedCell
+            {...@props}
+            key={column_index}
+            item={item}
+            column_key={column_key}
+            column={column}
+            expanded={expanded}
+            selected={selected}
+            disabled={disabled}
+            colspan={colspan}
+            rowspan={rowspan}
+            />)
+      else
+        # Regular Cell
+        cells.push(
+          <TableCell
+            {...@props}
+            key={column_key}
+            item={item}
+            column_key={column_key}
+            column={column}
+            expanded={expanded}
+            selected={selected}
+            disabled={disabled}
+            colspan={colspan}
+            rowspan={rowspan}
+            />)
 
     return cells
 

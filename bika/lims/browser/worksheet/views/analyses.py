@@ -63,9 +63,11 @@ class AnalysesView(BaseView):
                 "title": _("Analysis")}),
             ("Method", {
                 "sortable": False,
+                "ajax": True,
                 "title": _("Method")}),
             ("Instrument", {
                 "sortable": False,
+                "ajax": True,
                 "title": _("Instrument")}),
             ("DetectionLimit", {
                 "title": _("DL"),
@@ -97,6 +99,7 @@ class AnalysesView(BaseView):
         if self.is_analysis_remarks_enabled():
             self.columns["Remarks"] = {
                 "title": "Remarks",
+                "ajax": True,
                 "toggle": False,
                 "sortable": False,
                 "type": "remarks"

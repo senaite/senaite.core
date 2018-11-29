@@ -1161,7 +1161,7 @@
       analysis = $("#wideinterims_analyses").val();
       interim = $("#wideinterims_interims").val();
       empty_only = $("#wideinterims_empty").is(":checked");
-      return $("tr td input[item_key='" + interim + "']").each(function(index, element) {
+      return $("tr td input[column_key='" + interim + "']").each(function(index, element) {
         if (empty_only) {
           if ($(this).val() === "" || $(this).val().match(/\d+/) === "0") {
             $(this).val($("#wideinterims_value").val());
