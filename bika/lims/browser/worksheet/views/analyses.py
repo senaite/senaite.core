@@ -97,6 +97,7 @@ class AnalysesView(BaseView):
         if self.is_analysis_remarks_enabled():
             self.columns["Remarks"] = {
                 "title": "Remarks",
+                "ajax": True,
                 "toggle": False,
                 "sortable": False,
                 "type": "remarks"
