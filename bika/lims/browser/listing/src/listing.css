@@ -41,11 +41,11 @@
 .ajax-contents-table tr.state-invalid:hover { background-color: rgba(244, 67, 54, 0.2); }
 
 /* state assigned */
-.ajax-contents-table tr.state-assigned { border-left:2px solid transparent; }
+.ajax-contents-table tr.state-assigned { border-left:2px solid #ddd; }
 .ajax-contents-table td.result.state-assigned { border-left:2px solid transparent; }
 
 /* state unassigned */
-.ajax-contents-table tr.state-unassigned { border-left:2px solid transparent; }
+.ajax-contents-table tr.state-unassigned { border-left:2px solid #ddd; }
 .ajax-contents-table td.result.state-unassigned { border-left:2px solid transparent; }
 
 /* state attachment-due */
