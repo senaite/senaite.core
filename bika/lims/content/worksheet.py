@@ -34,7 +34,7 @@ from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.utils import changeWorkflowState, tmpID, to_int
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.workflow import doActionFor, skip, isTransitionAllowed, \
-    ActionHandlerPool
+    ActionHandlerPool, push_reindex_to_actions_pool
 from zope.interface import implements
 
 ALL_ANALYSES_TYPES = "all"
@@ -144,22 +144,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def addAnalyses(self, analyses):
         """Adds a collection of analyses to the Worksheet at once
         """
-        # TODO Workflow - ActionsPool - Might be improved
         actions_pool = ActionHandlerPool.get_instance()
         actions_pool.queue_pool()
-        requests = list()
         for analysis in analyses:
-            analysis = api.get_object(analysis)
-            if IRequestAnalysis.providedBy(analysis) and \
-                    not IDuplicateAnalysis.providedBy(analysis):
-                request = analysis.getRequest()
-                if request not in requests:
-                    requests.append(request)
-            self.addAnalysis(analysis, reindex=False)
+            self.addAnalysis(api.get_object(analysis))
         actions_pool.resume()
-        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
 
-    def addAnalysis(self, analysis, position=None, reindex=True):
+    def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
@@ -201,18 +192,26 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 analysis.setMethod(method)
 
         # Transition analysis to "assigned"
+        actions_pool = ActionHandlerPool.get_instance()
+        actions_pool.queue_pool()
         doActionFor(analysis, "assign")
         self.setAnalyses(analyses + [analysis])
         self.addToLayout(analysis, position)
 
-        # Reindex
-        if reindex:
-            idxs = ["getAnalysesUIDs", "getDepartmentUIDs", "review_state"]
-            self.reindexObject(idxs=idxs)
-
         # Try to rollback the worksheet to prevent inconsistencies
         doActionFor(self, "rollback_to_open")
 
+        # Reindex Worksheet
+        idxs = ["getAnalysesUIDs", "getDepartmentUIDs"]
+        push_reindex_to_actions_pool(self, idxs=idxs)
+
+        # Reindex Analysis Request, if any
+        if IRequestAnalysis.providedBy(analysis):
+            idxs = ['assigned_state', 'getDueDate']
+            push_reindex_to_actions_pool(analysis.getRequest(), idxs=idxs)
+
+        # Resume the actions pool
+        actions_pool.resume()
 
     def removeAnalysis(self, analysis):
         """ Unassigns the analysis passed in from the worksheet.
