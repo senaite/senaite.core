@@ -16,8 +16,9 @@
 
 /* state retracted */
 .ajax-contents-table tr.state-retracted { border-left:2px solid #ff6f00 !important; }
+.ajax-contents-table tr.state-retracted>td:not([rowspan]) { background-color: #eceff1 !important; color: #78909c; font-style: italic; }
 .ajax-contents-table td.result.state-retracted { border-left:2px solid #ff6f00 !important; }
-.ajax-contents-table tr.state-retracted:hover { background-color: rgba(255, 152, 0, 0.1); font-style: italic; }
+.ajax-contents-table tr.state-retracted:hover { background-color: rgba(255, 152, 0, 0.1); }
 
 /* state to_be_verified */
 .ajax-contents-table tr.state-to_be_verified { border-left:2px solid #18ffff !important; }
@@ -59,6 +60,7 @@
 /* worksheet states */
 .ajax-contents-table tr.state-open { border-left:2px solid #ddd  !important; }
 .ajax-contents-table tr.state-empty-worksheet { border-left:2px solid #ddd !important; }
+
 /* transposed worksheet layout*/
 .ajax-contents-table td.transposed.result.empty { cursor: not-allowed; }
 .ajax-contents-table td.transposed.result:hover { background-color: #e3e3e3!important; }

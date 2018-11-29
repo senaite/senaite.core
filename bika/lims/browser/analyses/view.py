@@ -106,6 +106,7 @@ class AnalysesView(BikaListingView):
                 "toggle": True}),
             ("Instrument", {
                 "title": _("Instrument"),
+                "ajax": True,
                 "sortable": False,
                 "toggle": True}),
             ("Analyst", {

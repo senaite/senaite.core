@@ -78,7 +78,7 @@ class ButtonBar extends React.Component
                   onClick={@on_ajax_save_button_click}
                   title={@props.ajax_save_button_title}
                   id="ajax_save_selection">
-            <span className="glyphicon glyphicon-floppy-open"></span>
+            {@props.ajax_save_button_title} <span className="glyphicon glyphicon-floppy-open"></span>
           </button>
         </li>)
 

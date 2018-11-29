@@ -63,9 +63,11 @@ class AnalysesView(BaseView):
                 "title": _("Analysis")}),
             ("Method", {
                 "sortable": False,
+                "ajax": True,
                 "title": _("Method")}),
             ("Instrument", {
                 "sortable": False,
+                "ajax": True,
                 "title": _("Instrument")}),
             ("DetectionLimit", {
                 "title": _("DL"),
