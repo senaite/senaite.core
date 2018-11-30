@@ -67,9 +67,7 @@ class FolderView(BikaListingView):
         self.can_reassign = False
         self.can_manage = False
 
-        self.wf = getToolByName(self, "portal_workflow")
         self.rc = getToolByName(self, REFERENCE_CATALOG)
-        self.pm = getToolByName(self.context, "portal_membership")
 
         # this is a property of self, because self.getAnalysts returns it
         self.analysts = getUsers(self, ["Manager", "LabManager", "Analyst"])
@@ -93,14 +91,11 @@ class FolderView(BikaListingView):
                 "attr": "getWorksheetTemplateTitle",
                 "replace_url": "getWorksheetTemplateURL"}),
             ("NumRegularSamples", {
-                "title": _("Samples"),
-                "sortable": False}),
+                "title": _("Samples")}),
             ("NumQCAnalyses", {
-                "title": _("QC Analyses"),
-                "sortable": False}),
+                "title": _("QC Analyses")}),
             ("NumRegularAnalyses", {
-                "title": _("Routine Analyses"),
-                "sortable": False}),
+                "title": _("Routine Analyses")}),
             ("CreationDate", {
                 "title": _("Created"),
                 "index": "created"}),
