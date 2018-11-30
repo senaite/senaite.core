@@ -206,17 +206,20 @@ class FolderView(BikaListingView):
             # Remove the add button
             self.context_actions = {}
 
-        roles = self.member.getRoles()
-        self.restrict_results = "Manager" not in roles \
-            and "LabManager" not in roles \
-            and "LabClerk" not in roles \
-            and "RegulatoryInspector" not in roles \
-            and self.context.bika_setup.getRestrictWorksheetUsersAccess()
+        if self.context.bika_setup.getRestrictWorksheetUsersAccess():
+            # Display only the worksheets assigned to the current user unless
+            # the user belongs to a privileged role
+            allowed = ["Manager", "LabManager", "RegulatoryInspector"]
+            diff = filter(lambda role: role in allowed, self.member.getRoles())
+            self.restrict_results = len(diff) == 0
 
         if self.restrict_results:
             # Remove 'Mine' button and hide 'Analyst' column
             del self.review_states[1]  # Mine
             self.columns["Analyst"]["toggle"] = False
+            self.contentFilter["getAnalyst"] = self.member.id
+            for rvw in self.review_states:
+                rvw["contentFilter"]["getAnalyst"] = self.member.id
 
     def is_analyst_assignment_allowed(self):
         """Check if the analyst can be assigned
