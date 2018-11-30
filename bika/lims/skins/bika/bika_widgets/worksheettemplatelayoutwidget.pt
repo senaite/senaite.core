@@ -31,14 +31,26 @@
 					analyses python:[s.UID() for s in context.getService()];
 					hasblanks python:len(BlankDefinitions) > 0;
 					hascontrols python:len(ControlDefinitions) > 0;">
-	<dl class="portalMessage warn" tal:condition="python:not hasblanks or not hascontrols">
-		<dt>Alert</dt>
-		<dd>
-			<p tal:omit-tag="" tal:condition="python: not hasblanks and hascontrols" i18n:translate="">No Reference Definitions for Blanks available.<br/>To add a Blank in this Worksheet Template, create a Reference Definition for a Blank sample first.</p>
-			<p tal:omit-tag="" tal:condition="python: not hascontrols and hasblanks" i18n:translate="">No Reference Definitions for Controls available.<br/>To add a Control in this Worksheet Template, create a Reference Definition for a Control sample first.</p>
-			<p tal:omit-tag="" tal:condition="python: not hascontrols and not hasblanks" i18n:translate="">No ReferenceDefinitions for Controls nor Blanks available.<br/>To add a Control or Blank in this Worksheet Template, create a Reference Definition first.</p>
-		</dd>
-	</dl>
+
+  <div class="alert alert-warning"
+        tal:condition="python:not hasblanks or not hascontrols">
+    <div tal:condition="python: not hasblanks and hascontrols" i18n:translate="">
+      No Reference Definitions for Blanks available. <br/>
+      To add a Blank in this Worksheet Template, create a Reference Definition
+      for a Blank sample first.
+    </div>
+    <div tal:condition="python: not hascontrols and hasblanks" i18n:translate="">
+      No Reference Definitions for Controls available. <br/>
+      To add a Control in this Worksheet Template, create a Reference Definition
+      for a Control sample first.
+    </div>
+    <div tal:condition="python: not hascontrols and not hasblanks" i18n:translate="">
+      No ReferenceDefinitions for Controls nor Blanks available. <br/>
+      To add a Control or Blank in this Worksheet Template, create a Reference
+      Definition first.
+    </div>
+	</div>
+
 	<label i18n:translate="">Number of Positions</label>
 	<input name="NoOfPositions"
 		size="3"
