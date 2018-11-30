@@ -20,7 +20,6 @@ from zope.interface import implements
 from plone.memoize import view
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
-from bika.lims.browser.worksheet.views import AnalysesTransposedView
 
 
 class ManageResultsView(BrowserView):
