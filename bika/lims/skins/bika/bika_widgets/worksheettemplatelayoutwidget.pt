@@ -63,10 +63,10 @@
 
           <table class="table">
             <tr>
-              <th i18n:translate="">Pos</th>
+              <th i18n:translate="">Position</th>
               <th i18n:translate="">Analysis Type</th>
               <th i18n:translate="">Reference Definition</th>
-              <th i18n:translate="">Dup of</th>
+              <th i18n:translate="">Duplicate of</th>
             </tr>
 
             <tr tal:repeat="row display_rows">
