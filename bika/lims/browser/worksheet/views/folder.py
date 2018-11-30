@@ -61,7 +61,7 @@ class FolderView(BikaListingView):
 
         self.show_select_column = True
         self.show_select_all_checkbox = True
-        self.restrict_results = False
+        self.filter_by_user = False
         self.selected_state = ""
         self.analyst_choices = []
         self.can_reassign = False
@@ -211,9 +211,9 @@ class FolderView(BikaListingView):
             # the user belongs to a privileged role
             allowed = ["Manager", "LabManager", "RegulatoryInspector"]
             diff = filter(lambda role: role in allowed, self.member.getRoles())
-            self.restrict_results = len(diff) == 0
+            self.filter_by_user = len(diff) == 0
 
-        if self.restrict_results:
+        if self.filter_by_user:
             # Remove 'Mine' button and hide 'Analyst' column
             del self.review_states[1]  # Mine
             self.columns["Analyst"]["toggle"] = False
@@ -228,7 +228,7 @@ class FolderView(BikaListingView):
             return False
         if not self.can_manage:
             return False
-        if self.restrict_results:
+        if self.filter_by_user:
             return False
         return True
 
