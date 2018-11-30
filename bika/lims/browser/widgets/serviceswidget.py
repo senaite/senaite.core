@@ -47,7 +47,7 @@ class ServicesView(BikaListingView):
         self.show_sort_column = False
         self.show_column_toggles = False
         self.show_select_column = True
-        self.show_select_all_checkbox = True
+        self.show_select_all_checkbox = False
         self.pagesize = 999999
         self.allow_edit = True
         # remove the searchbox
