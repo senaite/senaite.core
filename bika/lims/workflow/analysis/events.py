@@ -23,6 +23,30 @@ def after_assign(analysis):
     reindex_request(analysis)
 
 
+def before_unassign(analysis):
+    """Function triggered before 'unassign' transition takes place
+    """
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        return
+
+    # Removal of a routine analysis causes the removal of their duplicates
+    for dup in worksheet.get_duplicates_for(analysis):
+        doActionFor(dup, "unassign")
+
+
+def before_reject(analysis):
+    """Function triggered before 'unassign' transition takes place
+    """
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        return
+
+    # Rejection of a routine analysis causes the removal of their duplicates
+    for dup in worksheet.get_duplicates_for(analysis):
+        doActionFor(dup, "reject")
+
+
 def after_unassign(analysis):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed.
@@ -115,9 +139,8 @@ def after_retract(analysis):
 def after_reject(analysis):
     """Function triggered after the "reject" transition for the analysis passed
     in is performed."""
-    worksheet = analysis.getWorksheet()
-    if worksheet:
-        worksheet.removeAnalysis(analysis)
+    # Remove from the worksheet
+    remove_analysis_from_worksheet(analysis)
 
     # Reject our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "reject")
@@ -220,11 +243,6 @@ def remove_analysis_from_worksheet(analysis):
     worksheet = analysis.getWorksheet()
     if not worksheet:
         return
-
-    # Removal of a routine analysis causes the removal of their duplicates
-    if not IDuplicateAnalysis.providedBy(analysis):
-        for dup in worksheet.get_duplicates_for(analysis):
-            doActionFor(dup, "unassign")
 
     analyses = filter(lambda an: an != analysis, worksheet.getAnalyses())
     worksheet.setAnalyses(analyses)
