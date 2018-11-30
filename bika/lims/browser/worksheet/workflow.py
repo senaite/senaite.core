@@ -13,7 +13,7 @@ from bika.lims.browser.analyses.workflow import AnalysesWorkflowAction
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.permissions import ManageWorksheets
-from bika.lims.workflow import ActionHandlerPool
+from bika.lims.workflow import ActionHandlerPool, doActionFor
 from plone.protect import CheckAuthenticator
 
 
@@ -109,10 +109,14 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
     def do_unassign(self, analysis_uids):
         actions = ActionHandlerPool.get_instance()
         actions.queue_pool()
-        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
-        for brain in catalog({"UID": analysis_uids}):
-            analysis = api.get_object(brain)
-            self.context.removeAnalysis(analysis)
+        # Remove duplicates first
+        query = dict(UID=analysis_uids, portal_type="DuplicateAnalysis")
+        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
+            doActionFor(api.get_object(brain), "unassign")
+        # Now remove the rest
+        query = dict(UID=analysis_uids)
+        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
+            doActionFor(api.get_object(brain), "unassign")
         actions.resume()
 
         message = _("Changes saved.")

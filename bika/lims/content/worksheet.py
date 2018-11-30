@@ -217,35 +217,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Unassigns the analysis passed in from the worksheet.
         Delegates to 'unassign' transition for the analysis passed in
         """
-        # Cannot remove an analysis if unassign transition is not possible
-        # unless the analysis has been rejected
-        if api.get_review_status(analysis) != "rejected":
-            if not isTransitionAllowed(analysis, "unassign"):
-                return
-
-        # Removal of a routine analysis causes the removal of its duplicates
-        if not IDuplicateAnalysis.providedBy(analysis):
-            for dup in self.get_duplicates_for(analysis):
-                self.removeAnalysis(dup)
-
-        # Transition analysis to "unassigned"
-        doActionFor(analysis, "unassign")
-
-        analyses = filter(lambda an: an != analysis, self.getAnalyses())
-        self.setAnalyses(analyses)
-        self.purgeLayout()
-
-        if analyses:
-            # Maybe this analysis was the only one that was not yet submitted or
-            # verified, so try to submit or verify the Worksheet to be aligned
-            # with the current states of the analyses it contains.
-            doActionFor(self, "submit")
-            doActionFor(self, "verify")
-        else:
-            # We've removed all analyses. Rollback to "open"
-            doActionFor(self, "rollback_to_open")
-
-        return
+        if analysis.getWorksheet() == self:
+            doActionFor(analysis, "unassign")
 
     def addToLayout(self, analysis, position=None):
         """ Adds the analysis passed in to the worksheet's layout
