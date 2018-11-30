@@ -102,7 +102,7 @@ def upgrade(tool):
     update_workflows(portal)
 
     # Add catalog indexes needed for worksheets
-    # https://github.com/senaite/senaite.core/pull/
+    # https://github.com/senaite/senaite.core/pull/1114
     add_worksheet_indexes(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
