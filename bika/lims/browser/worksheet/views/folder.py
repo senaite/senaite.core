@@ -17,7 +17,6 @@ from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link
 from bika.lims.utils import getUsers
-from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import user_fullname
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
@@ -74,15 +73,13 @@ class FolderView(BikaListingView):
 
         # this is a property of self, because self.getAnalysts returns it
         self.analysts = getUsers(self, ["Manager", "LabManager", "Analyst"])
-        self.analysts = self.analysts.sortedByKey()
+        self.analysts = self.analysts.sortedByValue()
         self.analyst_choices = []
         for a in self.analysts:
             self.analyst_choices.append({
                 "ResultValue": a,
                 "ResultText": self.analysts.getValue(a),
             })
-
-        self.allowed_department_filtering = self.context.bika_setup.getAllowDepartmentFiltering()
 
         self.columns = collections.OrderedDict((
             ("Title", {
@@ -105,7 +102,7 @@ class FolderView(BikaListingView):
                 "title": _("Routine Analyses"),
                 "sortable": False}),
             ("CreationDate", {
-                "title": _("Date Created"),
+                "title": _("Created"),
                 "index": "created"}),
             ("state_title", {
                 "title": _("State"),
@@ -268,40 +265,6 @@ class FolderView(BikaListingView):
         form_key = "{}_review_state".format(self.form_id)
         return self.request.get(form_key, "default")
 
-    def isItemAllowed(self, obj):
-        """Only show "my" worksheets
-
-        This cannot be setup in contentFilter, because AuthenticatedMember is
-        not available in __init__.
-        It also checks if the worksheet can be added to the list depending on
-        the department filter.
-        It checks the department of each analysis service from each analysis
-        belonguing to the given worksheet.
-        If department filtering is disabled in bika_setup, will return True.
-
-        :param obj: An object that represents a Worksheet
-        :type obj: CatalogBrain
-        :returns: True if the worksheet object meets with the criteria for
-            being displayed
-        :rtype: bool
-        """
-        if (self.selected_state == "mine" or self.restrict_results) and \
-           obj.getAnalyst != _c(self.member.getId()):
-            # Check if the current WS is assigned to the current user
-            return False
-
-        if not self.allowed_department_filtering:
-            # Filtering by department is disabled. Return True
-            return True
-
-        # Department filtering is enabled. Check if at least one of the
-        # analyses associated to this worksheet belongs to at least one
-        # of the departments currently selected.
-        cdepuids = self.request.get("filter_by_department_info", "")
-        cdepuids = cdepuids.split(",") if cdepuids else []
-        allowed = [d for d in obj.getDepartmentUIDs if d in cdepuids]
-        return len(allowed) > 0
-
     def folderitems(self):
         """Return folderitems as brains
         """
@@ -406,12 +369,13 @@ class FolderView(BikaListingView):
     def _get_worksheet_templates_brains(self):
         """Returns all active worksheet templates
 
-        :returns: list of brains
+        :returns: list of worksheet template brains
         """
-        catalog = api.get_tool('bika_setup_catalog')
-        brains = catalog(portal_type='WorksheetTemplate',
-                         inactive_state='active')
-        return brains
+        query = {
+            "portal_type": "WorksheetTemplate",
+            "inactive_state": "active",
+        }
+        return api.search(query, "bika_setup_catalog")
 
     def _get_instruments_brains(self):
         """Returns all active Instruments

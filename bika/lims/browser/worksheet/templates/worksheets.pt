@@ -18,9 +18,10 @@
               action="worksheet_add"
               method="POST">
 
-          <!-- Is this condition needed? -->
+          <!-- N.B. the class is picked up by bika.lims.worksheet.get_template_instrument -->
           <input tal:condition="python:context.portal_type == 'WorksheetFolder'"
                  type="hidden"
+                 class="templateinstruments"
                  tal:attributes="value view/getTemplateInstruments"/>
 
           <div class="form-group">
