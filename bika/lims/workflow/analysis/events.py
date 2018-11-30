@@ -44,7 +44,7 @@ def before_reject(analysis):
 
     # Rejection of a routine analysis causes the removal of their duplicates
     for dup in worksheet.get_duplicates_for(analysis):
-        doActionFor(dup, "reject")
+        doActionFor(dup, "unassign")
 
 
 def after_unassign(analysis):
