@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims import workflow as wf
 from bika.lims.workflow.analysis import guards as analysis_guards
 
 
@@ -31,7 +32,10 @@ def guard_unassign(duplicate_analysis):
     """Return whether the transition 'unassign' can be performed or not
     """
     analysis = duplicate_analysis.getAnalysis()
-    if api.get_review_status(analysis) in ["rejected", "unassigned"]:
+    if wf.isTransitionAllowed(analysis, "unassign"):
+        return True
+    skip = ["retracted", "rejected", "unassigned"]
+    if api.get_review_status(analysis) in skip:
         return True
     return analysis_guards.guard_unassign(duplicate_analysis)
 

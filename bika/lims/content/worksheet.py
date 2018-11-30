@@ -217,18 +217,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Unassigns the analysis passed in from the worksheet.
         Delegates to 'unassign' transition for the analysis passed in
         """
-        # Cannot unassign an analysis that belongs to another worksheet
-        if analysis.getWorksheet() != self:
-            return
-
-        # Cannot remove an analysis if unassign transition is not possible
-        # unless the analysis has been rejected
-        if api.get_review_status(analysis) != "rejected":
-            if not isTransitionAllowed(analysis, "unassign"):
-                return
-
-        # Remove the analysis
-        doActionFor(analysis, "unassign")
+        if analysis.getWorksheet() == self:
+            doActionFor(analysis, "unassign")
 
     def addToLayout(self, analysis, position=None):
         """ Adds the analysis passed in to the worksheet's layout
