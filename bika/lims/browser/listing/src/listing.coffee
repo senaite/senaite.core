@@ -55,6 +55,7 @@ class ListingController extends React.Component
     @toggleRow = @toggleRow.bind @
     @saveEditableField = @saveEditableField.bind @
     @updateEditableField = @updateEditableField.bind @
+    @saveAjaxQueue = @saveAjaxQueue.bind @
 
     # root element
     @root_el = @props.root_el
@@ -115,7 +116,10 @@ class ListingController extends React.Component
       transitions: []
       # The available catalog indexes for sorting
       catalog_indexes: []
+      # ajax save queue: mapping of uid: name -> value mapping
+      ajax_save_queue: {}
       # Listing specific configs
+      content_filter: {}
       allow_edit: no
       show_select_all_checkbox: no
       show_select_column: no
@@ -127,6 +131,7 @@ class ListingController extends React.Component
       show_more: no
       limit_from: 0
       show_search: no
+      show_ajax_save: no
 
   getRequestOptions: ->
     ###
@@ -414,6 +419,14 @@ class ListingController extends React.Component
       # fetch all possible transitions
       me.fetch_transitions()
 
+  saveAjaxQueue: ->
+    ###
+     * Save the whole ajax queue
+    ###
+    uids = Object.keys @state.ajax_save_queue
+    return unless uids.length > 0
+    promise = @ajax_save()
+
   saveEditableField: (uid, name, value, item) ->
     ###
      * Save the editable field of a table cell
@@ -422,36 +435,22 @@ class ListingController extends React.Component
     # Skip fields which are not editable
     return unless name in item.allow_edit
 
-    # Skip fields which do not have `ajax` set to a truthy value in the column definition
-    return unless @state.columns[name].ajax
-
     console.debug "ListingController::saveEditableField: uid=#{uid} name=#{name} value=#{value}"
 
-    # turn loader on
-    @toggle_loader on
+    column = @state.columns[name] or {}
 
-    promise = @api.set
-      uid: uid
-      name: name
-      value: value
-      item: item
-
-    me = this
-    promise.then (data) ->
-      console.debug "ListingController::saveEditableField: GOT DATA=", data
-      # get the current folderitems as a UID -> folderitem mapping object
-      by_uid = me.get_folderitems_by_uid()
-      # the server updated folderitems
-      folderitems = data.folderitems or []
-      # update the existing folderitems
-      for folderitem in folderitems
-        by_uid[folderitem.uid] = folderitem
-      # set the new folderitems
-      me.set_state
-        folderitems: Object.values by_uid
+    # store the value in the ajax_save_queue
+    if column.ajax
+      me = this
+      ajax_save_queue = @state.ajax_save_queue
+      ajax_save_queue[uid] ?= {}
+      ajax_save_queue[uid][name] = value
+      @setState
+        show_ajax_save: yes
+        ajax_save_queue: ajax_save_queue
       , ->
-        # turn loader off
-        me.toggle_loader off
+        if column.autosave
+          me.ajax_save
 
   updateEditableField: (uid, name, value, item) ->
     ###
@@ -518,8 +517,10 @@ class ListingController extends React.Component
     columns = []
     for key in @get_column_order()
       column = @state.columns[key]
-      if column.toggle
-        columns.push key
+      # only skip columns explicitly set to false
+      if column.toggle is no
+          continue
+      columns.push key
     return columns
 
   set_column_toggles: (columns) ->
@@ -648,7 +649,7 @@ class ListingController extends React.Component
         # turn loader off
         me.toggle_loader off
 
-  fetch_folderitems: ->
+  fetch_folderitems: (items_only=no) ->
     ###
      * Fetch the folderitems
     ###
@@ -662,6 +663,8 @@ class ListingController extends React.Component
     me = this
     promise.then (data) ->
       console.debug "ListingController::fetch_folderitems: GOT RESPONSE=", data
+      if items_only
+        data = {"folderitems": data.folderitems}
       me.setState data, ->
         # calculate the new expanded categories and the internal folderitems mapping
         me.setState
@@ -732,6 +735,34 @@ class ListingController extends React.Component
     if @state.review_states.length > 1
       return yes
     return no
+
+  ajax_save: (reload=yes) ->
+    ###
+     * Save the items of the ajax_save_queue
+    ###
+    console.debug "ListingController::ajax_save"
+
+    # turn loader on
+    @toggle_loader on
+
+    promise = @api.set_fields
+      save_queue: @state.ajax_save_queue
+
+    me = this
+    promise.then (data) ->
+      console.debug "ListingController::ajax_save: GOT DATA=", data
+      # empty the ajax save queue
+      me.setState
+        show_ajax_save: no
+        ajax_save_queue: {}
+      # uids of the updated objects
+      uids = data.uids or []
+      # reload the folderitems
+      if reload and uids.length > 0
+        me.fetch_folderitems yes
+        me.fetch_transitions()
+      # toggle loader off
+      me.toggle_loader off
 
   render: ->
     ###
@@ -813,7 +844,10 @@ class ListingController extends React.Component
       <div className="row">
         <div className="col-sm-8">
           <ButtonBar className="buttonbar nav nav-pills"
+                     show_ajax_save={@state.show_ajax_save}
+                     ajax_save_button_title={_("Save")}
                      on_transition_button_click={@doAction}
+                     on_ajax_save_button_click={@saveAjaxQueue}
                      selected_uids={@state.selected_uids}
                      transitions={@state.transitions}/>
         </div>

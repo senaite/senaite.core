@@ -1086,7 +1086,7 @@ class window.WorksheetManageResultsView
     interim = $("#wideinterims_interims").val()
     empty_only = $("#wideinterims_empty").is(":checked")
 
-    $("tr td input[item_key='#{interim}']").each (index, element) ->
+    $("tr td input[column_key='#{interim}']").each (index, element) ->
       if empty_only
         if $(this).val() == "" or $(this).val().match(/\d+/) == "0"
           $(this).val $("#wideinterims_value").val()

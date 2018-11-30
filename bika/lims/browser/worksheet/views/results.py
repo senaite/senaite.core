@@ -61,8 +61,9 @@ class ManageResultsView(BrowserView):
             self.Analyses = api.get_view(
                 view, context=self.context, request=self.request)
         else:
-            # TODO: Refactor transposed view to new listing
-            self.Analyses = AnalysesTransposedView(self.context, self.request)
+            view = "analyses_transposed_view"
+            self.Analyses = api.get_view(
+                view, context=self.context, request=self.request)
 
         self.analystname = self.context.getAnalystName()
         self.instrumenttitle = self.get_instrument_title()
@@ -196,7 +197,7 @@ class ManageResultsView(BrowserView):
             message = _("Some analyses use out-of-date or uncalibrated "
                         "instruments. Results edition not allowed")
             message = "%s: %s" % (message, (", ".join(invalid)))
-            self.context.plone_utils.addPortalMessage(message, "warn")
+            self.context.plone_utils.addPortalMessage(message, "warning")
 
     # TODO Department filtering
     def _getAnalyses(self):

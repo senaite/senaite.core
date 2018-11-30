@@ -4,48 +4,55 @@ import Button from "./Button.coffee"
 
 
 class ButtonBar extends React.Component
-  ###
-   * The button bar component renders the workflow and custom transitions buttons
-  ###
 
   constructor: (props) ->
     super(props)
 
+    # Bind eventhandlers to local context
+    @on_ajax_save_button_click = @on_ajax_save_button_click.bind @
     @on_transition_button_click = @on_transition_button_click.bind @
 
     @css_mapping =
-      "activate": "btn-success"
-      "submit": "btn-success"
-      "cancel": "btn-warning"
-      "unassign": "btn-warning"
-      "deactivate": "btn-danger"
-      "default": "btn-default"
-      "invalidate": "btn-danger"
-      "prepublish": "btn-info"
-      "publish": "btn-success"
+      # default buttons
+      "reassign": "btn-default"
+      # blue buttons
+      "assign": "btn-default"
       "receive": "btn-primary"
-      "republish": "btn-info"
+      # green buttons
+      "activate": "btn-success"
+      "prepublish": "btn-success"
+      "publish": "btn-success"
+      "republish": "btn-success"
+      "submit": "btn-success"
+      # orange buttons
+      "unassign": "btn-warning"
+      # red buttons
+      "cancel": "btn-danger"
+      "deactivate": "btn-danger"
+      "invalidate": "btn-danger"
+      "reject": "btn-danger"
       "retract": "btn-danger"
 
   get_button_css: (id) ->
-    ###
-     * Get the CSS classes for the button for the given transition id
-    ###
-
     # calculate the button CSS
     cls = "btn btn-default btn-sm"
 
+    # append additional button styles
     additional_cls = @css_mapping[id]
     if additional_cls
       cls += " #{additional_cls}"
 
     return cls
 
-  on_transition_button_click: (event) ->
-    ###
-     * Event handler when a transition button was clicked
-    ###
+  on_ajax_save_button_click: (event) ->
+    # prevent form submit, because we want to handle that explicitly
+    event.preventDefault()
 
+    # call the parent event handler to save
+    if @props.on_ajax_save_button_click
+      @props.on_ajax_save_button_click()
+
+  on_transition_button_click: (event) ->
     # prevent form submit, because we want to handle that explicitly
     event.preventDefault()
 
@@ -57,25 +64,35 @@ class ButtonBar extends React.Component
     url = el.getAttribute "url"
 
     # call the parent event handler to perform the transition
-    @props.on_transition_button_click action, url
+    if @props.on_transition_button_click
+      @props.on_transition_button_click action, url
 
   build_buttons: ->
-    ###
-     * Build the buttons for the selected items in the current state
-    ###
     buttons = []
 
-    # Always insert a clear selection button first
-    if @props.transitions.length > 0
+    # Add an Ajax save button
+    if @props.show_ajax_save
       buttons.push(
-        <li key="clear">
-          <button className="btn btn-default btn-sm"
-                  onClick={@on_transition_button_click}
-                  id="clear_selection">
-            <span className="glyphicon glyphicon-ban-circle"></span>
+        <li key="ajax-save">
+          <button className="btn btn-primary btn-sm"
+                  onClick={@on_ajax_save_button_click}
+                  title={@props.ajax_save_button_title}
+                  id="ajax_save_selection">
+            {@props.ajax_save_button_title} <span className="glyphicon glyphicon-floppy-open"></span>
           </button>
-        </li>
-      )
+        </li>)
+
+    # Add a clear button if the select column is rendered
+    if @props.show_select_column
+      if @props.transitions.length > 0
+        buttons.push(
+          <li key="clear">
+            <button className="btn btn-default btn-sm"
+                    onClick={@on_transition_button_click}
+                    id="clear_selection">
+              <span className="glyphicon glyphicon-ban-circle"></span>
+            </button>
+          </li>)
 
     # build the transition buttons
     for transition in @props.transitions

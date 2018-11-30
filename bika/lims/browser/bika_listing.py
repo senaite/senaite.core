@@ -602,11 +602,12 @@ class BikaListingView(AjaxListingView, BrowserView):
         # and we want to make our choice remembered in bika_listing also
         self.request.set(self.form_id + '_pagesize', self.pagesize)
 
+        # XXX Remove!
         # get toggle_cols cookie value
         # and modify self.columns[]['toggle'] to match.
-        toggle_cols = self.get_toggle_cols()
-        for col in self.columns.keys():
-            self.columns[col]['toggle'] = col in toggle_cols
+        # toggle_cols = self.get_toggle_cols()
+        # for col in self.columns.keys():
+        #     self.columns[col]['toggle'] = col in toggle_cols
 
     def before_render(self):
         """Before render hook

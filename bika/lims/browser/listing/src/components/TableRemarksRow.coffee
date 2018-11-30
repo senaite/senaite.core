@@ -5,17 +5,53 @@ class TableRemarksRow extends React.Component
 
   constructor: (props) ->
     super(props)
+    # Bind events
+    @on_remarks_field_blur = @on_remarks_field_blur.bind @
+    @on_remarks_field_change = @on_remarks_field_change.bind @
+
+  on_remarks_field_blur: (event) ->
+    el = event.currentTarget
+    uid = el.getAttribute("uid")
+    name = el.getAttribute("column_key") or el.name
+    value = el.value
+    console.debug "TableRemarksRow:on_remarks_field_blur: value=#{value}"
+
+    # Call the *save* field handler
+    if @props.save_editable_field
+      @props.save_editable_field uid, name, value, @props.item
+
+  on_remarks_field_change: (event) ->
+    el = event.currentTarget
+    uid = el.getAttribute("uid")
+    name = el.getAttribute("column_key") or el.name
+    value = el.value
+    console.debug "TableRemarksRow:on_remarks_field_change: value=#{value}"
+
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field uid, name, value, @props.item
+
+  on_numeric_field_change: (event) ->
+    el = event.currentTarget
+    uid = el.getAttribute("uid")
+    name = el.getAttribute("column_key") or el.name
+    value = el.value
+    console.debug "TableCell:on_numeric_field_change: value=#{value}"
+
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field uid, name, value, @get_item()
 
   can_edit: ->
     item = @props.item
-    item_key = @props.item_key
+    column_key = @props.column_key
     allow_edit = item.allow_edit or []
-    return item_key in allow_edit
+    return column_key in allow_edit
 
   get_column_title: ->
     columns = @props.columns
-    item_key = @props.item_key
-    column = columns[item_key]
+    column_key = @props.column_key
+    column = columns[column_key]
     title = column.title
     if (typeof _ == "function") then title = _(title)
     return title or ""
@@ -23,9 +59,9 @@ class TableRemarksRow extends React.Component
   render_remarks_field: ->
     item = @props.item
     uid = item.uid
-    item_key = @props.item_key
-    name = "#{item_key}.#{uid}:records"
-    value = item[item_key] or ""
+    column_key = @props.column_key
+    name = "#{column_key}.#{uid}:records"
+    value = item[column_key] or ""
     # show the remarks if the row is selected or if a value was set
     show = @props.selected or value.length > 0
 
@@ -40,9 +76,13 @@ class TableRemarksRow extends React.Component
       field = (
         <textarea
           className="form-control"
+          uid={@props.uid}
+          column_key={@props.column_key}
           style={{width: "100%"}}
           rows="2"
           name={name}
+          onBlur={@on_remarks_field_blur}
+          onChange={@on_remarks_field_change}
           defaultValue={value}>
         </textarea>)
 
