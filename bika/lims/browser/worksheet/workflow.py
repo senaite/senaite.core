@@ -109,10 +109,14 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
     def do_unassign(self, analysis_uids):
         actions = ActionHandlerPool.get_instance()
         actions.queue_pool()
-        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
-        for brain in catalog({"UID": analysis_uids}):
-            analysis = api.get_object(brain)
-            doActionFor(analysis, "unassign")
+        # Remove duplicates first
+        query = dict(UID=analysis_uids, portal_type="DuplicateAnalysis")
+        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
+            doActionFor(api.get_object(brain), "unassign")
+        # Now remove the rest
+        query = dict(UID=analysis_uids)
+        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
+            doActionFor(api.get_object(brain), "unassign")
         actions.resume()
 
         message = _("Changes saved.")
