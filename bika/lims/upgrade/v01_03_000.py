@@ -101,6 +101,10 @@ def upgrade(tool):
     # Update workflows
     update_workflows(portal)
 
+    # Add catalog indexes needed for worksheets
+    # https://github.com/senaite/senaite.core/pull/
+    add_worksheet_indexes(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -139,6 +143,7 @@ def purge_portlets(portal):
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, 'portlets')
     logger.info("Purging portlets [DONE]")
+
 
 def setup_partitioning(portal):
     """Setups the enhanced partitioning system
@@ -853,3 +858,14 @@ def update_role_mappings(portal, queries):
             if wf_id not in processed:
                 processed[wf_id] = []
             processed[wf_id].append(api.get_uid(brain))
+
+
+def add_worksheet_indexes(portal):
+    """Add indexes for better worksheet handling
+    """
+    logger.info("Adding worksheet indexes")
+
+    add_index(portal, catalog_id="bika_analysis_catalog",
+              index_name="getCategoryTitle",
+              index_attribute="getCategoryTitle",
+              index_metatype="FieldIndex")
