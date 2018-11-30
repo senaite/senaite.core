@@ -4,6 +4,15 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
+  <!-- Table Analyses Services -->
+  <browser:page
+      for="*"
+      name="table_analyses_services"
+      class=".serviceswidget.ServicesView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Table AR Template Analyses -->
   <browser:page
       for="bika.lims.interfaces.IARTemplate"
