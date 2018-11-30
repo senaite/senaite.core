@@ -132,6 +132,7 @@ class ListingController extends React.Component
       limit_from: 0
       show_search: no
       show_ajax_save: no
+      fetch_transitions_on_select: yes
 
   getRequestOptions: ->
     ###
@@ -416,8 +417,9 @@ class ListingController extends React.Component
     @setState
      selected_uids: selected_uids
     , ->
-      # fetch all possible transitions
-      me.fetch_transitions()
+      if me.state.fetch_transitions_on_select
+        # fetch all possible transitions
+        me.fetch_transitions()
 
   saveAjaxQueue: ->
     ###
