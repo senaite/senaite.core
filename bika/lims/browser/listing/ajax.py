@@ -309,6 +309,7 @@ class AjaxListingView(BrowserView):
             "sort_on": self.get_sort_on(),
             "sort_order": self.get_sort_order(),
             "show_search": self.show_search,
+            "fetch_transitions_on_select": self.fetch_transitions_on_select,
         }
 
         return config

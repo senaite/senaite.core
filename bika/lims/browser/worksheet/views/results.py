@@ -20,7 +20,6 @@ from zope.interface import implements
 from plone.memoize import view
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
-from bika.lims.browser.worksheet.views import AnalysesTransposedView
 
 
 class ManageResultsView(BrowserView):
@@ -40,8 +39,7 @@ class ManageResultsView(BrowserView):
 
     def __call__(self):
         # TODO: Refactor Worfklow
-        grant = self.is_edit_allowed() and self.is_manage_allowed()
-        if not grant:
+        if not self.is_edit_allowed():
             redirect_url = api.get_url(self.context)
             return self.request.response.redirect(redirect_url)
         # TODO: Refactor this function call

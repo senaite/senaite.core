@@ -363,6 +363,9 @@ class BikaListingView(AjaxListingView, BrowserView):
     # Omit the outer form wrapper
     omit_form = False
 
+    # fetch the allowed transitions on select
+    fetch_transitions_on_select = True
+
     # Column definitions:
     #
     # The keys of the columns dictionary must all exist in all
