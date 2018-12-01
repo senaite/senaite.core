@@ -179,3 +179,6 @@
 /* borderless table */
 .ajax-contents-table table.table-borderless td { border: none!important; }
 .ajax-contents-table table.table-borderless tr { border: none!important; }
+
+/* Worksheet's slots table */
+.ajax-contents-table table.slot-header-table { margin-bottom: 0px; }
