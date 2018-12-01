@@ -309,7 +309,7 @@ class TableCell extends React.Component
     value = @get_value()
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    css_class = "readonly input-sm"
+    css_class = "readonly"
 
     return (
       <ReadonlyField
