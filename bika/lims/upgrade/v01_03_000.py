@@ -745,7 +745,7 @@ def get_rm_candidates_for_referenceanalysisworkflow(portal):
         candidates.append(
             (wf_id,
              dict(portal_type="ReferenceAnalysis",
-                  review_state=["unassigned", "assigned"]),
+                  review_state=["unassigned"]),
              CATALOG_ANALYSIS_LISTING))
 
     # "Modify portal content" for "assigned"
@@ -823,7 +823,7 @@ def get_rm_candidates_for_analysisworkfklow(portal):
         candidates.append(
             (wf_id,
              dict(portal_type="Analysis",
-                  review_state=["unassigned", "assigned"]),
+                  review_state=["unassigned"]),
              CATALOG_ANALYSIS_LISTING))
 
     # Analysis workflow: "Modify portal content" for "assigned"
