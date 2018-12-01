@@ -128,6 +128,8 @@
   Analyses can only be cancelled before results being submitted -->
   <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
     <exit-transition transition_id="reinstate" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -147,6 +149,8 @@
     <exit-transition transition_id="attach"/>
     <exit-transition transition_id="retract"/>
     <exit-transition transition_id="reject" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -173,6 +177,8 @@
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -205,6 +211,8 @@
   The analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
     <exit-transition transition_id="" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -227,6 +235,8 @@
   The analysis has been rejected and cannot be used anymore -->
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -272,6 +282,8 @@
   Analysis Request they belong to is published -->
   <state state_id="published" title="Published" i18n:attributes="title">
     <exit-transition transition_id="" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
