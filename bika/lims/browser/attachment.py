@@ -239,8 +239,6 @@ class AttachmentsView(BrowserView):
             # https://github.com/senaite/bika.lims/issues/521
             analysis.reindexObject()
 
-            if api.get_workflow_status_of(analysis) == 'attachment_due':
-                api.do_transition_for(analysis, 'attach')
         else:
             others = self.context.getAttachment()
             attachments = []

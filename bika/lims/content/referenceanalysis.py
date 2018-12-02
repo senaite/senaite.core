@@ -161,25 +161,5 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
-    def workflow_script_attach(self):
-        if skip(self, "attach"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # If all analyses on the worksheet have been attached,
-        # then attach the worksheet.
-        ws = self.getWorksheet()
-        ws_state = workflow.getInfoFor(ws, 'review_state')
-        if ws_state == 'attachment_due' and not skip(ws, "attach", peek=True):
-            can_attach = True
-            for a in ws.getAnalyses():
-                if workflow.getInfoFor(a, 'review_state') in \
-                        ('sample_due', 'sample_received', 'attachment_due',
-                         'assigned',):
-                    can_attach = False
-                    break
-            if can_attach:
-                workflow.doActionFor(ws, 'attach')
-        self.reindexObject()
-
 
 registerType(ReferenceAnalysis, PROJECTNAME)

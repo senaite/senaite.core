@@ -54,8 +54,8 @@ def guard_submit(obj):
     if not isBasicTransitionAllowed(obj):
         return False
 
-    dettached = ['rejected', 'retracted', 'attachment_due']
-    return _children_are_ready(obj, 'submit', dettached)
+    dettached = ['rejected', 'retracted']
+    return _children_are_ready(obj, 'submit', dettached_states=dettached)
 
 
 def guard_verify(obj):
@@ -70,8 +70,8 @@ def guard_verify(obj):
     if not isBasicTransitionAllowed(obj):
         return False
 
-    dettached = ['rejected', 'retracted', 'attachment_due']
-    return _children_are_ready(obj, 'verify', dettached)
+    dettached = ['rejected', 'retracted']
+    return _children_are_ready(obj, 'verify', dettached_states=dettached)
 
 
 def guard_rollback_to_receive(worksheet):

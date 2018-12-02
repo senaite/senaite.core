@@ -184,41 +184,6 @@ def after_publish(analysis):
     pass
 
 
-def after_attach(obj):
-    if skip(obj, "attach"):
-        return
-    workflow = getToolByName(obj, "portal_workflow")
-    # If all analyses in this AR have been attached escalate the action
-    # to the parent AR
-    ar = obj.aq_parent
-    state = workflow.getInfoFor(ar, "review_state")
-    if state == "attachment_due" and not skip(ar, "attach", peek=True):
-        can_attach = True
-        for a in ar.getAnalyses():
-            if a.review_state in ("unassigned", "assigned", "attachment_due"):
-                can_attach = False
-                break
-        if can_attach:
-            workflow.doActionFor(ar, "attach")
-    # If assigned to a worksheet and all analyses on the worksheet have
-    # been attached, then attach the worksheet.
-    ws = obj.getWorksheet()
-    if ws:
-        ws_state = workflow.getInfoFor(ws, "review_state")
-        if ws_state == "attachment_due" \
-                and not skip(ws, "attach", peek=True):
-            can_attach = True
-            for a in ws.getAnalyses():
-                state = workflow.getInfoFor(a, "review_state")
-                if state in ("unassigned", "assigned", "attachment_due"):
-                    can_attach = False
-                    break
-            if can_attach:
-                workflow.doActionFor(ws, "attach")
-    obj.reindexObject()
-    reindex_request(obj)
-
-
 # TODO Workflow - Analysis - revisit reindexing of ancestors
 def reindex_request(analysis, idxs=None):
     """Reindex the Analysis Request the analysis belongs to, as well as the

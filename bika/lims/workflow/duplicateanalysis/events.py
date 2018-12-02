@@ -94,12 +94,3 @@ def after_retract(duplicate_analysis):
 
     # Try to rollback the worksheet to prevent inconsistencies
     doActionFor(worksheet, "rollback_to_open")
-
-
-def after_attach(obj):
-    # TODO Workflow Duplicate Attach - Attach transition is still available?
-    # If all analyses on the worksheet have been attached,
-    # then attach the worksheet.
-    ws = obj.getWorksheet()
-    if ws:
-        doActionFor(ws)

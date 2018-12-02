@@ -560,7 +560,7 @@ class DashboardView(BrowserView):
         name = _('Results pending')
         desc = _('Results pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
-        query['review_state'] = ['unassigned', 'assigned', 'attachment_due', ]
+        query['review_state'] = ['unassigned', 'assigned', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
@@ -679,7 +679,6 @@ class DashboardView(BrowserView):
         if portal_type == 'Analysis':
             return {'unassigned':      _('Assignment pending'),
                     'assigned':        _('Results pending'),
-                    'attachment_due':  _('Results pending'),
                     'to_be_verified':  _('To be verified'),
                     'rejected':        _('Rejected'),
                     'retracted':       _('Retracted'),
