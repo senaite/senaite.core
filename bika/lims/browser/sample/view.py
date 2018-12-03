@@ -11,8 +11,6 @@ from bika.lims import PMF
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.sample.samples_filter_bar \
-    import SamplesBikaListingFilterBar
 from bika.lims.permissions import *
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
@@ -73,9 +71,6 @@ class SamplesView(BikaListingView):
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         user_is_preserver = 'Preserver' in member.getRoles()
-        # Check if the filter bar functionality is activated or not
-        self.filter_bar_enabled =\
-            self.context.bika_setup.getDisplayAdvancedFilterBarForSamples()
         # Defined in the __init__.py
         self.columns = {
             'getSampleID': {
@@ -586,19 +581,4 @@ class SamplesView(BikaListingView):
         @Obj: it is a sample object.
         @return: boolean
         """
-        # TODO-performance:we are expecting for the sample object.
-        # Should be only a brain
-        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
-            return False
         return super(SamplesView, self).isItemAllowed(obj)
-
-    def getFilterBar(self):
-        """
-        This function creates an instance of BikaListingFilterBar if the
-        class has not created one yet.
-        :returns: a BikaListingFilterBar instance
-        """
-        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
-            SamplesBikaListingFilterBar(
-                context=self.context, request=self.request)
-        return self._advfilterbar
