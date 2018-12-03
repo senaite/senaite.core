@@ -763,7 +763,8 @@ class ListingController extends React.Component
       # reload the folderitems
       if reload and uids.length > 0
         me.fetch_folderitems yes
-        me.fetch_transitions()
+        if me.state.fetch_transitions_on_select
+          me.fetch_transitions()
       # toggle loader off
       me.toggle_loader off
 
@@ -773,6 +774,7 @@ class ListingController extends React.Component
     ###
     <div className="listing-container">
       {@state.loading and <div id="table-overlay"/>}
+      {not @render_toolbar_top() and @state.loading and <Loader loading={@state.loading} />}
       {@render_toolbar_top() and
         <div className="row top-toolbar">
           <div className="col-sm-8">
