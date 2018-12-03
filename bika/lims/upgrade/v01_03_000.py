@@ -104,7 +104,7 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1114
     add_worksheet_indexes(portal)
 
-    # https://github.com/senaite/senaite.core/pull
+    # https://github.com/senaite/senaite.core/pull/1118
     remove_bika_listing_resources(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
