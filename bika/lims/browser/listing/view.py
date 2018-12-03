@@ -119,6 +119,11 @@ class ListingView(AjaxListingView):
     # database, a paging control is displayed in the lower right corner
     pagesize = 50
 
+    # Override pagesize and show all items on one page
+    # XXX: Currently only used in classic folderitems method.
+    #      -> Consider if it is worth to keep that funcitonality
+    show_all = False
+
     # Manually sort catalog results on this column
     # XXX: Currently the listing table sorts only if the catalog index exists.
     #      -> Consider if it is worth to keep that functionality
