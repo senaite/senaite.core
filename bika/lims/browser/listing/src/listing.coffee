@@ -132,6 +132,7 @@ class ListingController extends React.Component
       limit_from: 0
       show_search: no
       show_ajax_save: no
+      show_table_footer: no
       fetch_transitions_on_select: yes
 
   getRequestOptions: ->
@@ -843,30 +844,32 @@ class ListingController extends React.Component
             />
         </div>
       </div>
-      <div className="row">
-        <div className="col-sm-8">
-          <ButtonBar className="buttonbar nav nav-pills"
-                     show_ajax_save={@state.show_ajax_save}
-                     ajax_save_button_title={_("Save")}
-                     on_transition_button_click={@doAction}
-                     on_ajax_save_button_click={@saveAjaxQueue}
-                     selected_uids={@state.selected_uids}
-                     show_select_column={@state.show_select_column}
-                     transitions={@state.transitions}/>
+      {@state.show_table_footer and
+        <div className="row">
+          <div className="col-sm-8">
+            <ButtonBar className="buttonbar nav nav-pills"
+                      show_ajax_save={@state.show_ajax_save}
+                      ajax_save_button_title={_("Save")}
+                      on_transition_button_click={@doAction}
+                      on_ajax_save_button_click={@saveAjaxQueue}
+                      selected_uids={@state.selected_uids}
+                      show_select_column={@state.show_select_column}
+                      transitions={@state.transitions}/>
+          </div>
+          <div className="col-sm-1 text-right">
+            <Loader loading={@state.loading} />
+          </div>
+          <div className="col-sm-3 text-right">
+            <Pagination
+              id="pagination"
+              className="pagination-controls"
+              total={@state.total}
+              show_more_button_title={_("Show more")}
+              onShowMore={@showMore}
+              show_more={@state.show_more}
+              count={@get_item_count()}
+              pagesize={@state.pagesize}/>
+          </div>
         </div>
-        <div className="col-sm-1 text-right">
-          <Loader loading={@state.loading} />
-        </div>
-        <div className="col-sm-3 text-right">
-          <Pagination
-            id="pagination"
-            className="pagination-controls"
-            total={@state.total}
-            show_more_button_title={_("Show more")}
-            onShowMore={@showMore}
-            show_more={@state.show_more}
-            count={@get_item_count()}
-            pagesize={@state.pagesize}/>
-        </div>
-      </div>
+      }
     </div>
