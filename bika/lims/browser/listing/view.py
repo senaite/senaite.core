@@ -185,9 +185,6 @@ class ListingView(AjaxListingView):
         self.member = api.get_current_user()
         self.translate = self.context.translate
 
-        self.limit_from = self.get_limit_from()
-        self.pagesize = self.get_pagesize()
-
         # Call update hook
         self.update()
 
@@ -204,6 +201,8 @@ class ListingView(AjaxListingView):
         """Update the view state
         """
         logger.info(u"ListingView::update")
+        self.limit_from = self.get_limit_from()
+        self.pagesize = self.get_pagesize()
 
     def before_render(self):
         """Before render hook
@@ -639,11 +638,12 @@ class ListingView(AjaxListingView):
 
         searchterm = self.get_searchterm()
         brains = self.search(searchterm=searchterm)
+        self.total = len(brains)
 
         # Return a subset of results, if necessary
         if idxfrom and len(brains) > idxfrom:
-            return brains[idxfrom:]
-        return brains
+            return brains[idxfrom:self.pagesize + idxfrom]
+        return brains[:self.pagesize]
 
     def search(self, searchterm="", ignorecase=True):
         """Search the catalog tool
@@ -746,7 +746,6 @@ class ListingView(AjaxListingView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
-        self.total = len(brains) + self.limit_from
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
@@ -867,7 +866,6 @@ class ListingView(AjaxListingView):
         results = []
         self.show_more = False
         brains = self._fetch_brains(self.limit_from)
-        self.total = len(brains) + self.limit_from
         for obj in brains:
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
