@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import collections
 import copy
 import json
 import re
@@ -50,17 +51,15 @@ class ListingView(AjaxListingView):
     # review_state filter
     contentFilter = {}
 
-    # A mapping of column_key -> colum configuration, e.g.:
-    #
-    # self.columns = collections.OrderedDict((
-    #     ("Title", {
-    #         "title": _("Title"),
-    #         "index": "sortable_title"}),
-    #     ("Description", {
-    #         "title": _("Description"),
-    #         "index": "Description"}),
-    # ))
-    columns = {}
+    # A mapping of column_key -> colum configuration
+    columns = collections.OrderedDict((
+        ("Title", {
+            "title": _("Title"),
+            "index": "sortable_title"}),
+        ("Description", {
+            "title": _("Description"),
+            "index": "Description"}),
+    ))
 
     # A list of dictionaries, specifying parameters for listing filter buttons.
     #
@@ -71,7 +70,16 @@ class ListingView(AjaxListingView):
     # - If review_state[x]["custom_transitions"] is defined, e.g.:
     #     "custom_transitions": [{"id": "x"}]
     # The possible transitions will be extended by those defined.
-    review_states = []
+    review_states = [
+        {
+            "id": "default",
+            "title": _("All"),
+            "contentFilter": {},
+            "transitions": [],
+            "custom_transitions": [],
+            "columns": ["Title", "Descritpion"],
+        }
+    ]
 
     # The initial/default review_state
     default_review_state = "default"
