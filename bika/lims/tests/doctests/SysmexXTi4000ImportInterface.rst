@@ -73,3 +73,4 @@ Create an `Instrument` and assign to it the tested Import Interface::
     >>> instrument.setImportDataInterface(['sysmex.xt.i4000'])
     >>> instrument.getImportDataInterface()
     ['sysmex.xt.i4000']
+

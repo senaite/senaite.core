@@ -447,6 +447,9 @@ def update_workflows(portal):
     # Fix analyses stuck in sample* states
     decouple_analyses_from_sample_workflow(portal)
 
+    # Change workflow state of analyses in attachment_due
+    remove_attachment_due_from_analysis_workflow(portal)
+
     # Remove worksheet_analysis workflow
     remove_worksheet_analysis_workflow(portal)
 
@@ -854,6 +857,32 @@ def decouple_analyses_from_sample_workflow(portal):
     total = len(brains)
     for num, brain in enumerate(brains):
         # Set state
+        analysis = api.get_object(brain)
+        target_state = analysis.getWorksheet() and "assigned" or "unassigned"
+
+        if num % 100 == 0:
+            logger.info("Restoring state to '{}': {}/{}"
+                        .format(target_state, num, total))
+
+        changeWorkflowState(analysis, wf_id, target_state)
+
+        # Update role mappings
+        workflow.updateRoleMappingsFor(analysis)
+
+        # Reindex
+        analysis.reindexObject()
+
+
+def remove_attachment_due_from_analysis_workflow(portal):
+    logger.info("Removing attachment_due state from analysis workflow ...")
+    wf_id = "bika_analysis_workflow"
+    affected_rs = ["attachment_due"]
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(review_state=affected_rs)
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
         analysis = api.get_object(brain)
         target_state = analysis.getWorksheet() and "assigned" or "unassigned"
 

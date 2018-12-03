@@ -80,7 +80,7 @@ class AggregatedAnalysesView(AnalysesView):
              'transitions': [{'id': 'submit'},
                              ],
              'contentFilter': {
-                 'review_state': ['unassigned', 'assigned', 'attachment_due'],
+                 'review_state': ['unassigned', 'assigned'],
                  'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
