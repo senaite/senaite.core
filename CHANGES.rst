@@ -19,6 +19,7 @@ Changelog
 
 **Changed**
 
+- #1117 Removed `attachment_due` state and transition from analysis workflow
 - #1114 Listing integration for Worksheet Templates
 - #1109 Unassignment of an analysis causes the removal of its duplicates
 - #1077 Rejection of an analysis causes the removal of its duplicates
