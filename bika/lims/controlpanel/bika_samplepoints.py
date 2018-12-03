@@ -15,10 +15,8 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplePoints
 from bika.lims.utils import get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as _p
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import schemata
@@ -26,12 +24,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface.declarations import implements
 
-
 # TODO: Separate content and view into own modules!
 
 
 class SamplePointsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SamplePointsView, self).__init__(context, request)
@@ -55,7 +51,7 @@ class SamplePointsView(BikaListingView):
             self.portal_url,
             "/++resource++bika.lims.images/samplepoint_big.png"
         )
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25

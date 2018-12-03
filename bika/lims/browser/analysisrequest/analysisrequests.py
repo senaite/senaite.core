@@ -9,8 +9,6 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
-    AnalysisRequestsBikaListingFilterBar
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
@@ -62,11 +60,8 @@ class AnalysisRequestsView(BikaListingView):
 
         self.context_actions = {}
 
-        if self.view_url.find("analysisrequests") == -1:
-            self.view_url = self.view_url + "/analysisrequests"
-
         self.allow_edit = True
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.form_id = "analysisrequests"
@@ -78,11 +73,6 @@ class AnalysisRequestsView(BikaListingView):
 
         SamplingWorkflowEnabled = \
             self.context.bika_setup.getSamplingWorkflowEnabled()
-
-        # Check if the filter bar functionality is activated or not
-        self.filter_bar_enabled =\
-            self.context.bika_setup.\
-            getDisplayAdvancedFilterBarForAnalysisRequests()
 
         self.columns = collections.OrderedDict((
             ("Priority", {
@@ -620,27 +610,6 @@ class AnalysisRequestsView(BikaListingView):
                 review_states.append(review_state)
             self.review_states = review_states
 
-        # Hide Preservation/Sampling workflow actions if the edit columns
-        # are not displayed.
-        toggle_cols = self.get_toggle_cols()
-        new_states = []
-        for i, state in enumerate(self.review_states):
-            if state["id"] == self.review_state:
-                if "getSampler" not in toggle_cols \
-                   or "getDateSampled" not in toggle_cols:
-                    if "hide_transitions" in state:
-                        state["hide_transitions"].append("sample")
-                    else:
-                        state["hide_transitions"] = ["sample", ]
-                if "getPreserver" not in toggle_cols \
-                   or "getDatePreserved" not in toggle_cols:
-                    if "hide_transitions" in state:
-                        state["hide_transitions"].append("preserve")
-                    else:
-                        state["hide_transitions"] = ["preserve", ]
-            new_states.append(state)
-        self.review_states = new_states
-
     def before_render(self):
         """Before template render hook
         """
@@ -654,12 +623,6 @@ class AnalysisRequestsView(BikaListingView):
                 "level": 0}
             # No need to display the Client column
             self.remove_column('Client')
-
-    def isItemAllowed(self, obj):
-        """ If Adnvanced Filter bar is enabled, this method checks if the item
-        matches advanced filter bar criteria
-        """
-        return not self.filter_bar_enabled or self.filter_bar_check_item(obj)
 
     def folderitems(self, full_objects=False, classic=False):
         # We need to get the portal catalog here in roder to save process
@@ -898,17 +861,6 @@ class AnalysisRequestsView(BikaListingView):
                 or mtool.checkPermission(ModifyPortalContent, self.context):
             return True
         return False
-
-    def getFilterBar(self):
-        """
-        This function creates an instance of BikaListingFilterBar if the
-        class has not created one yet.
-        :returns: a BikaListingFilterBar instance
-        """
-        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
-            AnalysisRequestsBikaListingFilterBar(
-                context=self.context, request=self.request)
-        return self._advfilterbar
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()

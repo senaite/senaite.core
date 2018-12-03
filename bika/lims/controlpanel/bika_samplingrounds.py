@@ -23,8 +23,7 @@ class SamplingRoundsView(BikaListingView):
             'portal_type': 'SamplingRound',
             'sort_on': 'sortable_title'
         }
-        self.show_table_only = False
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
@@ -89,6 +88,12 @@ class SamplingRoundsView(BikaListingView):
              },
         ]
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
+
 
 class ISamplingRounds(model.Schema):
     """ A Sampling Rounds container.
@@ -98,4 +103,3 @@ class ISamplingRounds(model.Schema):
 class SamplingRounds(Container):
     implements(ISamplingRounds)
     displayContentsTab = False
-    pass

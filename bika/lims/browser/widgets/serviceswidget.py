@@ -44,7 +44,6 @@ class ServicesView(BikaListingView):
         # selected services UIDs
         self.selected_services_uids = self.get_assigned_services_uids()
 
-        self.show_sort_column = False
         self.show_column_toggles = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
@@ -62,7 +61,6 @@ class ServicesView(BikaListingView):
             self.categories = []
             self.show_categories = True
             self.expand_all_categories = False
-            self.category_index = "getCategoryTitle"
 
         self.columns = collections.OrderedDict((
             ("Title", {

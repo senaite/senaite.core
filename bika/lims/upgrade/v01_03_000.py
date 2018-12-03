@@ -15,7 +15,6 @@ from bika.lims.catalog.analysisrequest_catalog import \
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis
-from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState
@@ -104,6 +103,9 @@ def upgrade(tool):
     # Add catalog indexes needed for worksheets
     # https://github.com/senaite/senaite.core/pull/1114
     add_worksheet_indexes(portal)
+
+    # https://github.com/senaite/senaite.core/pull/1118
+    remove_bika_listing_resources(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -838,6 +840,7 @@ def get_rm_candidates_for_analysisworkfklow(portal):
              CATALOG_ANALYSIS_LISTING))
     return candidates
 
+
 def decouple_analyses_from_sample_workflow(portal):
     logger.info("Decoupling analyses from sample workflow ...")
     add_index(portal, catalog_id=CATALOG_ANALYSIS_LISTING,
@@ -979,3 +982,26 @@ def add_worksheet_indexes(portal):
               index_name="getCategoryTitle",
               index_attribute="getCategoryTitle",
               index_metatype="FieldIndex")
+
+
+def remove_bika_listing_resources(portal):
+    """Remove all bika_listing resources
+    """
+    logger.info("Removing bika_listing resouces")
+
+    REMOVE_JS = [
+        "++resource++bika.lims.js/bika.lims.bikalisting.js",
+        "++resource++bika.lims.js/bika.lims.bikalistingfilterbar.js",
+    ]
+
+    REMOVE_CSS = [
+        "bika_listing.css",
+    ]
+
+    for js in REMOVE_JS:
+        logger.info("********** Unregistering JS %s" % js)
+        portal.portal_javascripts.unregisterResource(js)
+
+    for css in REMOVE_CSS:
+        logger.info("********** Unregistering CSS %s" % css)
+        portal.portal_css.unregisterResource(css)

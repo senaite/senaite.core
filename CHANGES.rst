@@ -41,6 +41,7 @@ Changelog
 
 **Removed**
 
+- #1118 Removed all legacy Bika Listing / Advanced Filtering from Codebase
 - #1077 Remove Sample-specific states from analysis workflow
 - #1077 Remove `worksheetanalysis_workflow`
 - #1059 Remove updates alert viewlet

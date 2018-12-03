@@ -41,13 +41,12 @@ class AnalysisRequestAnalysesView(BikaListingView):
             self.portal_url,
             "++resource++bika.lims.images/analysisservice_big.png"
         )
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_all_checkbox = False
+        self.show_column_toggles = False
         self.show_select_column = True
-        self.table_only = True
+        self.show_select_all_checkbox = False
         self.pagesize = 999999
         self.show_search = False
+        self.fetch_transitions_on_select = False
 
         self.categories = []
         self.selected = []
@@ -55,8 +54,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         if self.do_cats:
             self.show_categories = True
             self.expand_all_categories = False
-            self.ajax_categories = True
-            self.category_index = "getCategoryTitle"
 
         self.columns = collections.OrderedDict((
             ("Title", {

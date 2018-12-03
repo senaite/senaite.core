@@ -46,7 +46,7 @@ class ClientFolderContentsView(BikaListingView):
             "sort_order": "ascending"
         }
 
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False

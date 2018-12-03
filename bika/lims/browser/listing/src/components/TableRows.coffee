@@ -141,7 +141,7 @@ class TableRows extends React.Component
       rows.push(
         <TableRow
           {...@props}
-          key={item_index}
+          key={uid}
           item={item}
           uid={uid}
           expanded={expanded}

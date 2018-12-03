@@ -28,7 +28,7 @@ class SamplePartitionsView(BikaListingView):
         self.description = ""
         self.allow_edit = True
         self.show_select_all_checkbox = False
-        self.show_sort_column = False
+
         self.show_column_toggles = False
         self.show_select_row = False
         self.show_select_column = True

@@ -34,7 +34,7 @@ class PricelistsView(BikaListingView):
         self.title = self.context.translate(_("Pricelists"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/pricelist_big.png"
         self.description = ""
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25

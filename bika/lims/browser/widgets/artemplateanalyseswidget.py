@@ -37,20 +37,19 @@ class ARTemplateAnalysesView(BikaListingView):
         }
         self.context_actions = {}
 
-        self.show_sort_column = False
         self.show_column_toggles = False
         self.show_select_column = True
-        self.show_select_all_checkbox = True
+        self.show_select_all_checkbox = False
         self.pagesize = 999999
         self.allow_edit = True
         self.show_search = False
         self.omit_form = True
+        self.fetch_transitions_on_select = False
 
         # Categories
         if self.show_categories_enabled():
             self.show_categories = True
             self.expand_all_categories = False
-            self.category_index = "getCategoryTitle"
 
         self.partition_choices = []
         for part in self.context.getPartitions():

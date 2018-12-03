@@ -29,7 +29,7 @@ class SRTemplateARTemplatesView(BikaListingView):
         self.context_actions = {}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_column_toggles = False

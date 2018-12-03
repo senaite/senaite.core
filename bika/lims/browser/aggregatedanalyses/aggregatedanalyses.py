@@ -8,8 +8,6 @@
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.aggregatedanalyses.aggregatedanalyses_filter_bar \
-    import AggregatedanalysesBikaListingFilterBar
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 
@@ -38,9 +36,6 @@ class AggregatedAnalysesView(AnalysesView):
         # Get temp objects that are too time consuming to obtain every time
         self.worksheet_catalog = getToolByName(
             context, CATALOG_WORKSHEET_LISTING)
-        # Check if the filter bar functionality is activated or not
-        self.filter_bar_enabled =\
-            self.context.bika_setup.getDisplayAdvancedFilterBarForAnalyses()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -171,11 +166,6 @@ class AggregatedAnalysesView(AnalysesView):
         if not allowed:
             return False
 
-        if self.filter_bar_enabled:
-            # Advanced filter bar is enabled. Check if the Analysis matches
-            # with the filtering criterias.
-            return self.filter_bar_check_item(obj)
-
         # By default, display the analysis
         return True
 
@@ -199,15 +189,3 @@ class AggregatedAnalysesView(AnalysesView):
             item['replace']['Worksheet'] = anchor
 
         return item
-
-    def getFilterBar(self):
-        """
-        This function creates an instance of BikaListingFilterBar if the
-        class has not created one yet.
-        :returns: a BikaListingFilterBar instance
-        :rtype: bika.lims.browser.BikaListingFilterBar
-        """
-        if not self._advfilterbar:
-            self._advfilterbar = AggregatedanalysesBikaListingFilterBar(
-                                    context=self.context, request=self.request)
-        return self._advfilterbar
