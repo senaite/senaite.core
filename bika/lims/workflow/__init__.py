@@ -299,13 +299,10 @@ def getReviewHistory(instance):
     review_history = []
     workflow = getToolByName(instance, 'portal_workflow')
     try:
-        # https://jira.bikalabs.com/browse/LIMS-2242:
-        # Sometimes the workflow history is inexplicably missing!
         review_history = list(workflow.getInfoFor(instance, 'review_history'))
     except WorkflowException:
-        logger.error(
-            "workflow history is inexplicably missing."
-            " https://jira.bikalabs.com/browse/LIMS-2242")
+        logger.error("Unable to retrieve review history from {}:{}"
+                     .format(instance.portal_type, instance.getId()))
     # invert the list, so we always see the most recent matching event
     review_history.reverse()
     return review_history

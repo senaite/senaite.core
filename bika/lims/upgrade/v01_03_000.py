@@ -657,82 +657,50 @@ def fix_cancelled_analyses_inconsistencies(portal):
 
 def get_role_mappings_candidates(portal):
     logger.info("Getting candidates for role mappings ...")
-
     candidates = list()
-    wf_tool = api.get_tool("portal_workflow")
-
     # Analysis workflow
-    workflow = wf_tool.getWorkflowById("bika_analysis_workflow")
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
-        candidates.append(
-            ("bika_analysis_workflow",
-             dict(portal_type="Analysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
-
-    # Analysis workflow: multi-verify transition
-    if "multi_verify" not in workflow.transitions:
-        candidates.append(
-            ("bika_analysis_workflow",
-             dict(portal_type="Analysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
-
-    # Duplicate Analysis Workflow
-    workflow = wf_tool.getWorkflowById("bika_duplicateanalysis_workflow")
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
-        candidates.append(
-            ("bika_duplicateanalysis_workflow",
-             dict(portal_type="DuplicateAnalysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
-
-    # Duplicate Analysis Workflow: unasssigned
-    if "unassigned" in workflow.states:
-        candidates.append(
-            ("bika_duplicateanalysis_workflow",
-             dict(portal_type="DuplicateAnalysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
-
-    # Duplicate Analysis workflow: multi-verify transition
-    if "multi_verify" not in workflow.transitions:
-        candidates.append(
-            ("bika_duplicateanalysis_workflow",
-             dict(portal_type="DuplicateAnalysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
-
+    candidates.extend(get_rm_candidates_for_analysisworkfklow(portal))
+    # Duplicate analysis workflow
+    candidates.extend(get_rm_candidates_for_duplicateanalysisworkflow(portal))
     # Reference Analysis Workflow
-    workflow = wf_tool.getWorkflowById("bika_referenceanalysis_workflow")
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
-        candidates.append(
-            ("bika_referenceanalysis_workflow",
-             dict(portal_type="ReferenceAnalysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
+    candidates.extend(get_rm_candidates_for_referenceanalysisworkflow(portal))
+    # Analysis Request workflow
+    candidates.extend(get_rm_candidates_for_ar_workflow(portal))
+    # Worksheet workflow
+    candidates.extend(get_rm_candidates_for_worksheet_workflow(portal))
 
-    # Reference Analysis workflow: multi-verify transition
-    if "multi_verify" not in workflow.transitions:
-        candidates.append(
-            ("bika_referenceanalysis_workflow",
-             dict(portal_type="ReferenceAnalysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
+    return candidates
 
-    # Reference Analysis Workflow: unasssigned
-    if "unassigned" in workflow.states:
+
+def get_workflow_by_id(portal, workflow_id):
+    wf_tool = api.get_tool("portal_workflow")
+    return wf_tool.getWorkflowById(workflow_id)
+
+
+def get_rm_candidates_for_worksheet_workflow(portal):
+    wf_id = "bika_worksheet_workflow"
+    logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
+    workflow = get_workflow_by_id(portal, wf_id)
+    candidates = list()
+    if "rollback_to_open" not in workflow.transitions:
         candidates.append(
-            ("bika_referenceanalysis_workflow",
-             dict(portal_type="ReferenceAnalysis",
-                  review_state=["to_be_verified", "sample_received"]),
-             CATALOG_ANALYSIS_LISTING))
+            ("bika_worksheet_workflow",
+             dict(portal_type="Worksheet",
+                  review_state=["to_be_verified"]),
+             CATALOG_WORKSHEET_LISTING))
+    return candidates
+
+
+def get_rm_candidates_for_ar_workflow(portal):
+    wf_id = "bika_ar_workflow"
+    logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
+    workflow = get_workflow_by_id(portal, wf_id)
+    candidates = list()
 
     # Analysis Request workflow: rollback_to_receive
-    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
     if "rollback_to_receive" not in workflow.transitions:
         candidates.append(
-            ("bika_ar_workflow",
+            (wf_id,
              dict(portal_type="AnalysisRequest",
                   review_state=["to_be_verified"]),
              CATALOG_ANALYSIS_REQUEST_LISTING))
@@ -740,22 +708,135 @@ def get_role_mappings_candidates(portal):
     # Analysis Request workflow: cancel permissions - do not allow cancel
     # transition from attachment_due and to_be_verified states
     candidates.append(
-        ("bika_ar_workflow",
+        (wf_id,
         dict(portal_type="AnalysisRequest",
              review_state=["attachment_due", "to_be_verified"]),
              CATALOG_ANALYSIS_REQUEST_LISTING))
-
-    # Worksheet workflow: rollback_to_open
-    workflow = wf_tool.getWorkflowById("bika_worksheet_workflow")
-    if "rollback_to_open" not in workflow.transitions:
-        candidates.append(
-            ("bika_worksheet_workflow",
-             dict(portal_type="Worksheet",
-                  review_state=["to_be_verified"]),
-             CATALOG_WORKSHEET_LISTING))
-
     return candidates
 
+
+def get_rm_candidates_for_referenceanalysisworkflow(portal):
+    wf_id = "bika_referenceanalysis_workflow"
+    logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
+    workflow = get_workflow_by_id(portal, wf_id)
+    candidates = list()
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Reference Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Reference Analysis Workflow: unasssigned
+    if "unassigned" in workflow.states:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # "Modify portal content" for "unassigned"
+    if "Modify portal content" not in workflow.states.unassigned.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["unassigned"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # "Modify portal content" for "assigned"
+    if "Modify portal content" not in workflow.states.assigned.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="ReferenceAnalysis",
+                  review_state=["assigned"]),
+             CATALOG_ANALYSIS_LISTING))
+    return candidates
+
+
+def get_rm_candidates_for_duplicateanalysisworkflow(portal):
+    wf_id = "bika_duplicateanalysis_workflow"
+    logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
+    workflow = get_workflow_by_id(portal, wf_id)
+
+    candidates = list()
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Duplicate Analysis Workflow: unasssigned
+    if "unassigned" in workflow.states:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Analysis workflow: "Modify portal content" for "assigned"
+    if "Modify portal content" not in workflow.states.assigned.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["assigned"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Duplicate Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="DuplicateAnalysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+    return candidates
+
+
+def get_rm_candidates_for_analysisworkfklow(portal):
+    wf_id = "bika_analysis_workflow"
+    logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
+    workflow = get_workflow_by_id(portal, wf_id)
+
+    candidates = list()
+    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="Analysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Analysis workflow: multi-verify transition
+    if "multi_verify" not in workflow.transitions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="Analysis",
+                  review_state=["to_be_verified", "sample_received"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Analysis workflow: "Modify portal content" for "unassigned"
+    if "Modify portal content" not in workflow.states.unassigned.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="Analysis",
+                  review_state=["unassigned"]),
+             CATALOG_ANALYSIS_LISTING))
+
+    # Analysis workflow: "Modify portal content" for "assigned"
+    if "Modify portal content" not in workflow.states.assigned.permissions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="Analysis",
+                  review_state=["assigned"]),
+             CATALOG_ANALYSIS_LISTING))
+    return candidates
 
 def decouple_analyses_from_sample_workflow(portal):
     logger.info("Decoupling analyses from sample workflow ...")

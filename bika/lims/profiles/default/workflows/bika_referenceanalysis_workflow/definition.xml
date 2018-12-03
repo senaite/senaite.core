@@ -13,6 +13,10 @@
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
   <permission>Delete objects</permission>
+  <permission>Modify portal content</permission>
+
+  <!-- TODO Workflow - To remove in favour of "Modify portal content" -->
+  <permission>BIKA: Edit Results</permission>
 
   <!-- State: assigned (initial state)
   Reference analyses are assigned to a Worksheet or to an Instrument if is an
@@ -23,6 +27,11 @@
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
     <exit-transition transition_id="unassign" />
     <exit-transition transition_id="submit" />
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
@@ -49,6 +58,8 @@
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -68,6 +79,8 @@
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="unassign" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -93,6 +106,8 @@
 
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="unassign" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
@@ -108,6 +123,8 @@
   The reference analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
     <exit-transition transition_id="" />
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: View Results" acquired="False">
