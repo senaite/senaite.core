@@ -208,7 +208,7 @@ class ReferenceResultsView(BikaListingView):
             self.portal_url,
             "/++resource++bika.lims.images/referencesample_big.png"
         )
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_workflow_action_buttons = False
         self.show_select_column = False

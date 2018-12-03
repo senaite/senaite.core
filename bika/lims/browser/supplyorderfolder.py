@@ -28,7 +28,7 @@ class SupplyOrderFolderView(BikaListingView):
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
         self.show_table_only = False
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25

@@ -61,7 +61,7 @@ class AnalysesView(BikaListingView):
         self.catalog = CATALOG_ANALYSIS_LISTING
         self.sort_order = "ascending"
         self.context_actions = {}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = False
         self.show_column_toggles = False

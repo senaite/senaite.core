@@ -89,7 +89,7 @@ class ContactsView(BikaListingView):
         )
 
         self.show_table_only = False
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25

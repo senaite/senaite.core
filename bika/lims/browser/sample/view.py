@@ -53,7 +53,7 @@ class SamplesView(BikaListingView):
                     }
         else:
                 self.context_actions = {}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.allow_edit = True

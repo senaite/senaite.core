@@ -35,7 +35,7 @@ class LateAnalysesView(BikaListingView):
         self.title = self.context.translate(_("Late Analyses"))
         self.description = ""
         self.context_actions = {}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = False
         self.pagesize = 100

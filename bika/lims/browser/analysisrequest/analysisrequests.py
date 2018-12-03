@@ -61,7 +61,7 @@ class AnalysisRequestsView(BikaListingView):
         self.context_actions = {}
 
         self.allow_edit = True
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.form_id = "analysisrequests"

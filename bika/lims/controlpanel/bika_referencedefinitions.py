@@ -5,26 +5,17 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.Archetypes.ArchetypeTool import registerType
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.content.bikaschema import BikaFolderSchema
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IReferenceDefinitions
 from zope.interface.declarations import implements
 
+
 class ReferenceDefinitionsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(ReferenceDefinitionsView, self).__init__(context, request)
         self.catalog = 'bika_setup_catalog'
@@ -38,7 +29,7 @@ class ReferenceDefinitionsView(BikaListingView):
         self.description = self.context.translate(_(
             "ReferenceDefinition represents a Reference Definition "
             "or sample type used for quality control testing"))
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
@@ -68,6 +59,12 @@ class ReferenceDefinitionsView(BikaListingView):
              'columns': ['Title', 'Description']},
         ]
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
@@ -87,7 +84,10 @@ class ReferenceDefinitionsView(BikaListingView):
 
         return items
 
+
 schema = ATFolderSchema.copy()
+
+
 class ReferenceDefinitions(ATFolder):
     implements(IReferenceDefinitions)
     displayContentsTab = False

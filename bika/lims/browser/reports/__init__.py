@@ -93,7 +93,7 @@ class ReportHistoryView(BikaListingView):
         self.catalog = CATALOG_REPORT_LISTING
 
         self.context_actions = {}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = False
         self.show_column_toggles = False
