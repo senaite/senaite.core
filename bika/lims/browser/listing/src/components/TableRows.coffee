@@ -130,6 +130,10 @@ class TableRows extends React.Component
       uid = @get_item_uid item
       css = @get_item_css item
 
+      # transposed items have no uid, so use the index instead
+      if uid is null
+        uid = item_index
+
       # list of child UIDs in the folderitem
       children = @get_item_children item
 
