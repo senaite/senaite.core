@@ -50,5 +50,11 @@ module.exports = {
   ],
   externals: {
     // https://webpack.js.org/configuration/externals
+    // use jQuery from the outer scope
+    jquery: 'jQuery',
+    bootstrap: 'bootstrap',
+    jsi18n: {
+      root: "_"
+    }
   }
 };
