@@ -58,6 +58,7 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, 'typeinfo')
+    setup.runImportStepFromProfile(profile, 'content')
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -104,6 +105,9 @@ def upgrade(tool):
     # Add catalog indexes needed for worksheets
     # https://github.com/senaite/senaite.core/pull/1114
     add_worksheet_indexes(portal)
+
+    # Remove samples action from navigation bar
+    remove_samples_from_navbar(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -979,3 +983,11 @@ def add_worksheet_indexes(portal):
               index_name="getCategoryTitle",
               index_attribute="getCategoryTitle",
               index_metatype="FieldIndex")
+
+
+def remove_samples_from_navbar(portal):
+    """Removes the action Samples from navbar
+    """
+    logger.info("Removing Samples from navbar ...")
+    # Samples live inside Clients, the samples folder from portal was a cheat
+    portal.manage_delObjects(["samples"])
