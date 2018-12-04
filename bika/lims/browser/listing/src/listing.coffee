@@ -857,7 +857,9 @@ class ListingController extends React.Component
               on_ajax_save_button_click={@saveAjaxQueue}
               selected_uids={@state.selected_uids}
               show_select_column={@state.show_select_column}
-              transitions={@state.transitions}/>
+              transitions={@state.transitions}
+              review_state={@get_review_state_by_id(@state.review_state)}
+              />
           </div>
           <div className="col-sm-1 text-right">
             <Loader loading={@state.loading} />
