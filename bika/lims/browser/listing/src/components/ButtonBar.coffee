@@ -4,6 +4,8 @@ import Button from "./Button.coffee"
 
 import "bootstrap-confirmation2"
 
+import "jsi18n"
+
 
 class ButtonBar extends React.Component
 
