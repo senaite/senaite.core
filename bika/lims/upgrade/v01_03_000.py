@@ -745,14 +745,6 @@ def get_rm_candidates_for_referenceanalysisworkflow(portal):
                   review_state=["to_be_verified", "sample_received"]),
              CATALOG_ANALYSIS_LISTING))
 
-    # "Modify portal content" for "unassigned"
-    if "Modify portal content" not in workflow.states.unassigned.permissions:
-        candidates.append(
-            (wf_id,
-             dict(portal_type="ReferenceAnalysis",
-                  review_state=["unassigned"]),
-             CATALOG_ANALYSIS_LISTING))
-
     # "Modify portal content" for "assigned"
     if "Modify portal content" not in workflow.states.assigned.permissions:
         candidates.append(
