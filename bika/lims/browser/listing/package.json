@@ -28,7 +28,6 @@
   "dependencies": {
     "bootstrap-confirmation2": "^2.4.2",
     "react": "^16.5.2",
-    "react-dom": "^16.5.2",
-    "yarn": "^1.12.3"
+    "react-dom": "^16.5.2"
   }
 }
