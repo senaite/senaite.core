@@ -5,7 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from .ajax import ajaxGetSampleTypeInfo
 from .analyses import SampleAnalysesView
 from .partitions import SamplePartitionsView
 from .edit import SampleEdit

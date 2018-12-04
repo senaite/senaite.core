@@ -81,14 +81,6 @@
     />
 
     <browser:page
-      for="*"
-      name="getsampletypeinfo"
-      class="bika.lims.browser.sample.ajaxGetSampleTypeInfo"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ISample"
       name="doActionForSample"
       class="bika.lims.browser.sample.doActionForSample"
