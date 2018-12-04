@@ -70,18 +70,6 @@ class ButtonBar extends React.Component
   build_buttons: ->
     buttons = []
 
-    # Add an Ajax save button
-    if @props.show_ajax_save
-      buttons.push(
-        <li key="ajax-save">
-          <button className="btn btn-primary btn-sm"
-                  onClick={@on_ajax_save_button_click}
-                  title={@props.ajax_save_button_title}
-                  id="ajax_save_selection">
-            {@props.ajax_save_button_title} <span className="glyphicon glyphicon-floppy-open"></span>
-          </button>
-        </li>)
-
     # Add a clear button if the select column is rendered
     if @props.show_select_column
       if @props.transitions.length > 0
@@ -93,6 +81,18 @@ class ButtonBar extends React.Component
               <span className="glyphicon glyphicon-ban-circle"></span>
             </button>
           </li>)
+
+    # Add an Ajax save button
+    if @props.show_ajax_save
+      buttons.push(
+        <li key="ajax-save">
+          <button className="btn btn-primary btn-sm"
+                  onClick={@on_ajax_save_button_click}
+                  title={@props.ajax_save_button_title}
+                  id="ajax_save_selection">
+            {@props.ajax_save_button_title} <span className="glyphicon glyphicon-floppy-open"></span>
+          </button>
+        </li>)
 
     # build the transition buttons
     for transition in @props.transitions
