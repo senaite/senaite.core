@@ -849,14 +849,17 @@ class ListingController extends React.Component
       {@state.show_table_footer and
         <div className="row">
           <div className="col-sm-8">
-            <ButtonBar className="buttonbar nav nav-pills"
-                      show_ajax_save={@state.show_ajax_save}
-                      ajax_save_button_title={_("Save")}
-                      on_transition_button_click={@doAction}
-                      on_ajax_save_button_click={@saveAjaxQueue}
-                      selected_uids={@state.selected_uids}
-                      show_select_column={@state.show_select_column}
-                      transitions={@state.transitions}/>
+            <ButtonBar
+              className="buttonbar nav nav-pills"
+              show_ajax_save={@state.show_ajax_save}
+              ajax_save_button_title={_("Save")}
+              on_transition_button_click={@doAction}
+              on_ajax_save_button_click={@saveAjaxQueue}
+              selected_uids={@state.selected_uids}
+              show_select_column={@state.show_select_column}
+              transitions={@state.transitions}
+              review_state={@get_review_state_by_id(@state.review_state)}
+              />
           </div>
           <div className="col-sm-1 text-right">
             <Loader loading={@state.loading} />
