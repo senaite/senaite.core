@@ -105,10 +105,8 @@ class TableRows extends React.Component
             expanded={expanded}
             className="categoryrow"
             />)
-        # append expanded rows
-        if expanded
-          content_rows = @build_rows category: category
-          rows = rows.concat content_rows
+        content_rows = @build_rows category: category
+        rows = rows.concat content_rows
     # Render uncatgorized rows
     else
       rows = @build_rows()
@@ -148,6 +146,7 @@ class TableRows extends React.Component
           key={uid}
           item={item}
           uid={uid}
+          category={category}
           expanded={expanded}
           selected={selected}
           disabled={disabled}
