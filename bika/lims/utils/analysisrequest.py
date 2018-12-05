@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
@@ -31,7 +32,7 @@ from bika.lims.workflow import doActionFor, ActionHandlerPool, \
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
 from email.Utils import formataddr
-from plone import api
+from plone import api as plone_api
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -278,7 +279,7 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe object UID.
-        portal = portal if portal else api.portal.get()
+        portal = portal if portal else plone_api.portal.get()
         bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
