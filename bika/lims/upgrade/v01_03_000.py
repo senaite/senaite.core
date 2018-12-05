@@ -991,8 +991,8 @@ def remove_samples_views(portal):
     logger.info("Removing Samples from navbar ...")
     portal.manage_delObjects(["samples"])
 
-    def remove_samples_action(client):
-        type_info = client.getTypeInfo()
+    def remove_samples_action(content_type):
+        type_info = content_type.getTypeInfo()
         actions = map(lambda action: action.id, type_info._actions)
         for index, action in enumerate(actions, start=0):
             if action == 'samples':
@@ -1002,3 +1002,7 @@ def remove_samples_views(portal):
     logger.info("Removing Samples action view from inside Clients ...")
     for client in portal.clients.objectValues("Client"):
         remove_samples_action(client)
+
+    logger.info("Removing Samples action view from inside Batches ...")
+    for batch in portal.batches.objectValues("Batch"):
+        remove_samples_action(batch)
