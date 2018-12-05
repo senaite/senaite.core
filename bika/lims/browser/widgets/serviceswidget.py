@@ -44,14 +44,12 @@ class ServicesView(BikaListingView):
         # selected services UIDs
         self.selected_services_uids = self.get_assigned_services_uids()
 
-        self.show_sort_column = False
         self.show_column_toggles = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 999999
         self.allow_edit = True
-        # remove the searchbox
-        self.show_search = False
+        self.show_search = True
         # omit the outer form
         self.omit_form = True
         # no need to fetch the allowed transitions on select
@@ -62,7 +60,6 @@ class ServicesView(BikaListingView):
             self.categories = []
             self.show_categories = True
             self.expand_all_categories = False
-            self.category_index = "getCategoryTitle"
 
         self.columns = collections.OrderedDict((
             ("Title", {

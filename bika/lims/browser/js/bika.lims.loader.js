@@ -29,9 +29,6 @@ window.bika.lims.controllers =  {
     // Atachments
     ".attachments":
         ['AttachmentsUtils'],
-    // Bika Listing Filter Bar
-    "tr.bika_listing_filter_bar":
-        ['BikaListingFilterBarController'],
 
     /** JS objects to be loaded always **/
 
@@ -41,15 +38,9 @@ window.bika.lims.controllers =  {
 
     /** JS objects to be loaded on specific views or pages **/
 
-    // Bika Listing Table
-    "table.bika-listing-table":
-        ['BikaListingTableView'],
-
-
     // Methods
     ".portaltype-method.template-base_edit":
         ['MethodEditView'],
-
 
     // Analysis Services
     ".portaltype-analysisservice.template-base_edit":

@@ -25,7 +25,7 @@ class ClientSamplePointsView(BikaListingView):
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level": 0},
         }
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50

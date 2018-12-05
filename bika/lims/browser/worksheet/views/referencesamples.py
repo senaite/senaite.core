@@ -39,7 +39,7 @@ class ReferenceSamplesView(BikaListingView):
 
         self.context_actions = {}
         self.title = _("Add Control Reference")
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_column_toggles = False

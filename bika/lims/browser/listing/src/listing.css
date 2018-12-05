@@ -40,6 +40,11 @@
 .ajax-contents-table td.result.state-invalid { border-left:2px solid #e65100 !important; }
 .ajax-contents-table tr.state-invalid:hover { background-color: rgba(244, 67, 54, 0.2); }
 
+/* state rejected */
+.ajax-contents-table tr.state-rejected { border-left:2px solid #ddd; }
+.ajax-contents-table td.result.state-rejected { border-left:2px solid transparent; }
+.ajax-contents-table tr.state-invalid:hover { background-color: #ddd; }
+
 /* state assigned */
 .ajax-contents-table tr.state-assigned { border-left:2px solid #ddd; }
 .ajax-contents-table td.result.state-assigned { border-left:2px solid transparent; }
@@ -78,7 +83,7 @@
 .ajax-contents-table th.active.descending span:after { content: "▼"; margin-left: 0.5em; }
 
 /* category */
-.ajax-contents-table tr.categoryrow { background-color: rgba(96, 125, 139, 0.1)!important; cursor: pointer; font-weight: bold; font-size: 115%; color: #3E4551; background-color: #fcf8e3; }
+.ajax-contents-table tr.categoryrow { border-left: none; background-color: rgba(96, 125, 139, 0.1)!important; cursor: pointer; font-weight: bold; font-size: 115%; color: #3E4551; }
 
 /* table load mask */
 #table-overlay {

@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1120 Listing: Confirm before transition
 - #1077 Creation of retests for blanks and controls via retraction
 - #1077 Creation of retests for duplicates via retraction
 - #1077 Auto-retraction of dependents on retract transitions
@@ -19,6 +20,7 @@ Changelog
 
 **Changed**
 
+- #1123 Listing: Handle visibility of selected rows
 - #1117 Removed `attachment_due` state and transition from analysis workflow
 - #1114 Listing integration for Worksheet Templates
 - #1109 Unassignment of an analysis causes the removal of its duplicates
@@ -41,6 +43,7 @@ Changelog
 
 **Removed**
 
+- #1118 Removed all legacy Bika Listing / Advanced Filtering from Codebase
 - #1077 Remove Sample-specific states from analysis workflow
 - #1077 Remove `worksheetanalysis_workflow`
 - #1059 Remove updates alert viewlet

@@ -14,7 +14,8 @@ class Button extends React.Component
             name={@props.name}
             url={@props.url}
             onClick={@props.onClick}
-            className={@props.className}>
+            className={@props.className}
+            {...@props.attrs}>
       <span dangerouslySetInnerHTML={{__html: @props.title}}></span>
       {@props.badge and
         <span className="badge"

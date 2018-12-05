@@ -10,6 +10,7 @@ class TableRow extends React.Component
   render: ->
     <tr className={@props.className}
         onClick={@props.onClick}
+        category={@props.category}
         uid={@props.uid}>
       <TableCells {...@props}/>
     </tr>

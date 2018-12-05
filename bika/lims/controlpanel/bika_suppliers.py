@@ -12,10 +12,8 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISuppliers
 from bika.lims.utils import get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
@@ -24,7 +22,6 @@ from zope.interface.declarations import implements
 
 
 class SuppliersView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SuppliersView, self).__init__(context, request)
@@ -51,7 +48,7 @@ class SuppliersView(BikaListingView):
         )
 
         self.description = ""
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25

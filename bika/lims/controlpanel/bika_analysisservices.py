@@ -175,7 +175,7 @@ class AnalysisServicesView(BikaListingView):
 
         self.title = self.context.translate(_("Analysis Services"))
         self.form_id = "list_analysisservices"
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
@@ -190,8 +190,6 @@ class AnalysisServicesView(BikaListingView):
             self.pagesize = 999999  # hide batching controls
             self.show_categories = True
             self.expand_all_categories = False
-            self.ajax_categories = True
-            self.category_index = "getCategoryTitle"
 
         self.columns = collections.OrderedDict((
             ("Title", {

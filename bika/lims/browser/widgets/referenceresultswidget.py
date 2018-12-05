@@ -34,7 +34,7 @@ class ReferenceResultsView(BikaListingView):
         }
         self.context_actions = {}
 
-        self.show_sort_column = False
+
         self.show_column_toggles = False
         self.show_select_column = True
         self.show_select_all_checkbox = True

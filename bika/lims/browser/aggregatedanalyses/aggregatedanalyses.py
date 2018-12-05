@@ -36,9 +36,6 @@ class AggregatedAnalysesView(AnalysesView):
         # Get temp objects that are too time consuming to obtain every time
         self.worksheet_catalog = getToolByName(
             context, CATALOG_WORKSHEET_LISTING)
-        # Check if the filter bar functionality is activated or not
-        self.filter_bar_enabled =\
-            self.context.bika_setup.getDisplayAdvancedFilterBarForAnalyses()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -168,11 +165,6 @@ class AggregatedAnalysesView(AnalysesView):
         allowed = AnalysesView.isItemAllowed(self, obj)
         if not allowed:
             return False
-
-        if self.filter_bar_enabled:
-            # Advanced filter bar is enabled. Check if the Analysis matches
-            # with the filtering criterias.
-            return self.filter_bar_check_item(obj)
 
         # By default, display the analysis
         return True

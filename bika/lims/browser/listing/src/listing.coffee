@@ -132,6 +132,7 @@ class ListingController extends React.Component
       limit_from: 0
       show_search: no
       show_ajax_save: no
+      show_table_footer: no
       fetch_transitions_on_select: yes
 
   getRequestOptions: ->
@@ -361,21 +362,6 @@ class ListingController extends React.Component
     # Override the form action when a custom URL is given
     if url then form.action = url
 
-    # TODO
-    # Inject all hidden input fields for UIDs that are currently not in the DOM.
-    # This happens when an item was selected and then the results were filtered,
-    # e.g. by a searchbox search. However, eventually set field values of the
-    # selected items get lost. Therefore, this needs to get refactored soon.
-    for uid in @state.selected_uids
-      # skip injection if the element is currently in the DOM
-      if document.querySelectorAll("input[value='#{uid}']:not([disabled])").length > 0
-        continue
-      input = document.createElement "input"
-      input.setAttribute "type", "hidden"
-      input.setAttribute "name", "#{@state.select_checkbox_name}:list"
-      input.setAttribute "value", uid
-      form.appendChild input
-
     return form.submit()
 
   selectUID: (uid, toggle) ->
@@ -582,27 +568,18 @@ class ListingController extends React.Component
     if @state.filter
       return [].concat @state.categories
 
-    # no categories are expanded if no items are selected
-    if not @state.selected_uids
-      return []
+    return []
 
-    categories = []
-    for folderitem in @state.folderitems
-      # item is selected, get the category
-      if folderitem.uid in @state.selected_uids
-        category = folderitem.category
-        if category not in categories
-          categories.push category
-
-    return categories
-
-  get_folderitems_by_uid: ->
+  get_folderitems_by_uid: (folderitems) ->
     ###
      * Create a mapping of UID -> folderitem
     ###
+    folderitems ?= @state.folderitems
     mapping = {}
-    @state.folderitems.map (item) ->
-      mapping[item.uid] = item
+    folderitems.map (item, index) ->
+      # transposed cells do not have an uid, so we use the index instead
+      uid = item.uid or index
+      mapping[uid] = item
     return mapping
 
   get_item_count: ->
@@ -665,6 +642,40 @@ class ListingController extends React.Component
     me = this
     promise.then (data) ->
       console.debug "ListingController::fetch_folderitems: GOT RESPONSE=", data
+
+      # N.B. Always keep selected folderitems, because otherwise modified fields
+      #      won't get send to the server on form submit
+      #
+      # TODO refactor this logic
+      # -------------------------------8<--------------------------------------
+      # existing folderitems from the state as a UID -> folderitem mapping
+      existing_folderitems = me.get_folderitems_by_uid me.state.folderitems
+      # new folderitems from the server as a UID -> folderitem mapping
+      new_folderitems = me.get_folderitems_by_uid data.folderitems
+      # new categories from the server
+      new_categories = data.categories or []
+
+      # keep selected and potentially modified folderitems in the table
+      for uid in me.state.selected_uids
+        # inject missing folderitems into the server sent folderitems
+        if uid not of new_folderitems
+          # get the missing folderitem from the current state
+          folderitem = existing_folderitems[uid]
+          # inject it to the new folderitems list from the server
+          new_folderitems[uid] = existing_folderitems[uid]
+          # also append the category if it is missing
+          category = folderitem.category
+          if category and category not in new_categories
+            new_categories.push category
+            # unfortunately any sortKey sorting of the category get lost here
+            new_categories.sort()
+
+      # write back new categories
+      data.categories = new_categories
+      # write back new folderitems
+      data.folderitems = Object.values new_folderitems
+      # -------------------------------->8-------------------------------------
+
       if items_only
         data = {"folderitems": data.folderitems}
       me.setState data, ->
@@ -675,25 +686,6 @@ class ListingController extends React.Component
           console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
         # turn loader off
         me.toggle_loader off
-
-    return promise
-
-  fetch_folderitems_by_query: (query) ->
-    ###
-     * Fetch the folderitems with the given catalog query
-    ###
-
-    # turn loader on
-    @toggle_loader on
-
-    # fetch the folderitems from the server
-    promise = @api.query_folderitems query
-
-    me = this
-    promise.then (data) ->
-      console.debug "ListingController::query_folderitems: GOT RESPONSE=", data
-      # turn loader off
-      me.toggle_loader off
 
     return promise
 
@@ -762,7 +754,8 @@ class ListingController extends React.Component
       # reload the folderitems
       if reload and uids.length > 0
         me.fetch_folderitems yes
-        me.fetch_transitions()
+        if me.state.fetch_transitions_on_select
+          me.fetch_transitions()
       # toggle loader off
       me.toggle_loader off
 
@@ -772,6 +765,7 @@ class ListingController extends React.Component
     ###
     <div className="listing-container">
       {@state.loading and <div id="table-overlay"/>}
+      {not @render_toolbar_top() and @state.loading and <Loader loading={@state.loading} />}
       {@render_toolbar_top() and
         <div className="row top-toolbar">
           <div className="col-sm-8">
@@ -843,30 +837,35 @@ class ListingController extends React.Component
             />
         </div>
       </div>
-      <div className="row">
-        <div className="col-sm-8">
-          <ButtonBar className="buttonbar nav nav-pills"
-                     show_ajax_save={@state.show_ajax_save}
-                     ajax_save_button_title={_("Save")}
-                     on_transition_button_click={@doAction}
-                     on_ajax_save_button_click={@saveAjaxQueue}
-                     selected_uids={@state.selected_uids}
-                     show_select_column={@state.show_select_column}
-                     transitions={@state.transitions}/>
+      {@state.show_table_footer and
+        <div className="row">
+          <div className="col-sm-8">
+            <ButtonBar
+              className="buttonbar nav nav-pills"
+              show_ajax_save={@state.show_ajax_save}
+              ajax_save_button_title={_("Save")}
+              on_transition_button_click={@doAction}
+              on_ajax_save_button_click={@saveAjaxQueue}
+              selected_uids={@state.selected_uids}
+              show_select_column={@state.show_select_column}
+              transitions={@state.transitions}
+              review_state={@get_review_state_by_id(@state.review_state)}
+              />
+          </div>
+          <div className="col-sm-1 text-right">
+            <Loader loading={@state.loading} />
+          </div>
+          <div className="col-sm-3 text-right">
+            <Pagination
+              id="pagination"
+              className="pagination-controls"
+              total={@state.total}
+              show_more_button_title={_("Show more")}
+              onShowMore={@showMore}
+              show_more={@state.show_more}
+              count={@get_item_count()}
+              pagesize={@state.pagesize}/>
+          </div>
         </div>
-        <div className="col-sm-1 text-right">
-          <Loader loading={@state.loading} />
-        </div>
-        <div className="col-sm-3 text-right">
-          <Pagination
-            id="pagination"
-            className="pagination-controls"
-            total={@state.total}
-            show_more_button_title={_("Show more")}
-            onShowMore={@showMore}
-            show_more={@state.show_more}
-            count={@get_item_count()}
-            pagesize={@state.pagesize}/>
-        </div>
-      </div>
+      }
     </div>

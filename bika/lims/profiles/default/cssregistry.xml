@@ -18,13 +18,6 @@
     insert-before="*"/>
 
 <stylesheet
-    id="bika_listing.css"
-    media="screen"
-    rel="stylesheet"
-    rendering="link"
-    insert-after="*"/>
-
-<stylesheet
     id="bika_invoice.css"
     media="screen"
     rel="stylesheet"
