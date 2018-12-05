@@ -109,6 +109,7 @@ def upgrade(tool):
     remove_bika_listing_resources(portal)
 
     # Remove samples views from everywhere (navbar, client, batches, etc.)
+    # https://github.com/senaite/senaite.core/pull/1125
     hide_samples(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
