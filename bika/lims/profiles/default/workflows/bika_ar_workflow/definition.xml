@@ -870,6 +870,7 @@
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="publish" />
     <exit-transition transition_id="invalidate" />
+    <exit-transition transition_id="rollback_to_receive" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Add Attachment" acquired="False">
