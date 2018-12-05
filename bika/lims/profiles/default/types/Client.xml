@@ -23,6 +23,7 @@
   <element value="Attachment"/>
   <element value="Batch"/>
   <element value="Contact"/>
+  <element value="Sample"/>
   <element value="SamplePoint"/>
   <element value="SRTemplate"/>
   <element value="SupplyOrder"/>
