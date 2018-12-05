@@ -32,7 +32,6 @@ from bika.lims.workflow import doActionFor, ActionHandlerPool, \
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
 from email.Utils import formataddr
-from plone import api as plone_api
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -279,7 +278,7 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe object UID.
-        portal = portal if portal else plone_api.portal.get()
+        portal = portal if portal else api.get_portal()
         bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
