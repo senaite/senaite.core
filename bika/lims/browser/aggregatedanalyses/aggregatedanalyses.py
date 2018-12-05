@@ -8,8 +8,6 @@
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.aggregatedanalyses.aggregatedanalyses_filter_bar \
-    import AggregatedanalysesBikaListingFilterBar
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 
@@ -199,15 +197,3 @@ class AggregatedAnalysesView(AnalysesView):
             item['replace']['Worksheet'] = anchor
 
         return item
-
-    def getFilterBar(self):
-        """
-        This function creates an instance of BikaListingFilterBar if the
-        class has not created one yet.
-        :returns: a BikaListingFilterBar instance
-        :rtype: bika.lims.browser.BikaListingFilterBar
-        """
-        if not self._advfilterbar:
-            self._advfilterbar = AggregatedanalysesBikaListingFilterBar(
-                                    context=self.context, request=self.request)
-        return self._advfilterbar
