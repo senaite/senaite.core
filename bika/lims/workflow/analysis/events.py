@@ -135,6 +135,11 @@ def after_retract(analysis):
     # Retract our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "retract")
 
+    # Try to rollback the Analysis Request (all analyses rejected)
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), "rollback_to_receive")
+        reindex_request(analysis)
+
 
 def after_reject(analysis):
     """Function triggered after the "reject" transition for the analysis passed
