@@ -105,27 +105,32 @@ class TableRows extends React.Component
             expanded={expanded}
             className="categoryrow"
             />)
-        # append expanded rows
-        if expanded
-          content_rows = @build_rows category: category
-          rows = rows.concat content_rows
+        # concatenate the categorized rows in the right order
+        rows = rows.concat @build_rows
+          props: {category: category}
     # Render uncatgorized rows
     else
       rows = @build_rows()
 
     return rows
 
-  build_rows: ({category, folderitems} = {}) ->
+  build_rows: ({props}={}) ->
     rows = []
 
-    category ?= null
-    folderitems ?= @props.folderitems
+    props ?= {}
+    category = props.category or null
+    folderitems = props.folderitems or @props.folderitems
 
     for item, item_index in folderitems
 
       # skip items of other categories
       if category and @get_item_category(item) != category
         continue
+
+      # skip items in collapsed categories except the selected ones
+      if category and not @is_category_expanded category
+        if not @is_selected item
+          continue
 
       uid = @get_item_uid item
       css = @get_item_css item
@@ -148,6 +153,7 @@ class TableRows extends React.Component
           key={uid}
           item={item}
           uid={uid}
+          category={category}
           expanded={expanded}
           selected={selected}
           disabled={disabled}
@@ -180,7 +186,10 @@ class TableRows extends React.Component
         # use the global children mapping to get the lazy fetched folderitem
         children = @get_children item
         if children.length > 0
-          child_rows = @build_rows folderitems: children
+          child_rows = @build_rows
+            props:
+              category: category
+              folderitems: children
           rows = rows.concat child_rows
 
     return rows

@@ -14,6 +14,18 @@ class TableCell extends React.Component
   constructor: (props) ->
     super(props)
 
+    # Zope Publisher Converter Argument Mapping
+    @ZPUBLISHER_CONVERTER = {
+      "boolean": ":record:ignore_empty"
+      "select": ":records"
+      "choices": ":records"
+      "multiselect": ":record:list"
+      "multichoices": ":record:list"
+      "numeric": ":records"
+      "readonly": ""
+      "default": ":records"
+    }
+
     # Bind checkbox field events
     @on_checkbox_field_change = @on_checkbox_field_change.bind @
 
@@ -336,14 +348,13 @@ class TableCell extends React.Component
     value = @get_value()
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    fieldname = "#{name}:records"
     title = @props.column.title or column_key
 
     return (
       <HiddenField
         key={name + "_hidden"}
         uid={uid}
-        name={fieldname}
+        name={name}
         value={value}
         column_key={column_key}
         {...props}
@@ -363,7 +374,8 @@ class TableCell extends React.Component
     value = @get_value()
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    fieldname = "#{name}:records"
+    converter = @ZPUBLISHER_CONVERTER["numeric"]
+    fieldname = name + converter
     title = @props.column.title or column_key
     selected = @is_selected()
     disabled = @is_disabled()
@@ -405,7 +417,8 @@ class TableCell extends React.Component
     options = item.choices[column_key] or []
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    fieldname = "#{name}:records"
+    converter = @ZPUBLISHER_CONVERTER["select"]
+    fieldname = name + converter
     title = @props.column.title or column_key
     selected = @is_selected()
     disabled = @is_disabled()
@@ -446,7 +459,8 @@ class TableCell extends React.Component
     options = item.choices[column_key] or []
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    fieldname = "#{name}:record:list"
+    converter = @ZPUBLISHER_CONVERTER["multiselect"]
+    fieldname = name + converter
     title = @props.column.title or column_key
     selected = @is_selected()
     disabled = @is_disabled()
@@ -487,7 +501,8 @@ class TableCell extends React.Component
     options = item.choices[column_key] or []
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    fieldname = "#{name}:record:ignore-empty"
+    converter = @ZPUBLISHER_CONVERTER["boolean"]
+    fieldname = name + converter
     title = @props.column.title or column_key
     selected = @is_selected()
     disabled = @is_disabled()
@@ -523,8 +538,6 @@ class TableCell extends React.Component
     uid = @get_uid()
     # field type to render
     type = @get_type()
-    # name of the hidden field that holds the field values if disabled
-    hidden_fieldname = "#{@get_name()}:records"
     # the field to return
     field = []
 
@@ -532,7 +545,6 @@ class TableCell extends React.Component
       field = field.concat @create_readonly_field()
     else if type == "calculated"
       field = field.concat @create_readonly_field()
-      field = field.concat @create_hidden_field()
     else if type == "interim"
       field = field.concat @create_numeric_field()
       interims = item.interimfields or []
@@ -549,24 +561,23 @@ class TableCell extends React.Component
       field = field.concat @create_select_field()
     else if type in ["multiselect", "multichoices"]
       field = field.concat @create_multiselect_field()
-      hidden_fieldname = "#{@get_name()}:record:list"
     else if type == "boolean"
       field = field.concat @create_checkbox_field()
-      hidden_fieldname = "#{@get_name()}:record:ignore-empty"
     else if type == "numeric"
       field = field.concat @create_numeric_field()
 
-    # N.B. Disabled fields are not send on form submit.
-    #      Therefore, a hidden field is rendered if disabled.
+    # TODO: Handle hidden field rendering in the field components directly
+    #       -> see approach in Checkbox component
     #
-    # TODO Use an internal storage of the key, values of disabled or selected
-    # and not rendered fields, e.g. when a category was collapsed or the user
-    # filtered the items
+    # N.B. Disabled fields are not send to the server on form submit!
+    #      -> Render hidden field for each disabled input
     if @is_disabled() and type isnt "readonly"
+      converter = @ZPUBLISHER_CONVERTER[type]
+      fieldname = @get_name() + converter
       field = field.concat @create_hidden_field
         props:
-          key: "#{@get_name()}_disabled"
-          name: hidden_fieldname
+          key: "#{name}_disabled"
+          name: fieldname
 
     return field
 

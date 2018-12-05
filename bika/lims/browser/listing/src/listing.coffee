@@ -362,21 +362,6 @@ class ListingController extends React.Component
     # Override the form action when a custom URL is given
     if url then form.action = url
 
-    # TODO
-    # Inject all hidden input fields for UIDs that are currently not in the DOM.
-    # This happens when an item was selected and then the results were filtered,
-    # e.g. by a searchbox search. However, eventually set field values of the
-    # selected items get lost. Therefore, this needs to get refactored soon.
-    for uid in @state.selected_uids
-      # skip injection if the element is currently in the DOM
-      if document.querySelectorAll("input[value='#{uid}']:not([disabled])").length > 0
-        continue
-      input = document.createElement "input"
-      input.setAttribute "type", "hidden"
-      input.setAttribute "name", "#{@state.select_checkbox_name}:list"
-      input.setAttribute "value", uid
-      form.appendChild input
-
     return form.submit()
 
   selectUID: (uid, toggle) ->
@@ -583,27 +568,18 @@ class ListingController extends React.Component
     if @state.filter
       return [].concat @state.categories
 
-    # no categories are expanded if no items are selected
-    if not @state.selected_uids
-      return []
+    return []
 
-    categories = []
-    for folderitem in @state.folderitems
-      # item is selected, get the category
-      if folderitem.uid in @state.selected_uids
-        category = folderitem.category
-        if category not in categories
-          categories.push category
-
-    return categories
-
-  get_folderitems_by_uid: ->
+  get_folderitems_by_uid: (folderitems) ->
     ###
      * Create a mapping of UID -> folderitem
     ###
+    folderitems ?= @state.folderitems
     mapping = {}
-    @state.folderitems.map (item) ->
-      mapping[item.uid] = item
+    folderitems.map (item, index) ->
+      # transposed cells do not have an uid, so we use the index instead
+      uid = item.uid or index
+      mapping[uid] = item
     return mapping
 
   get_item_count: ->
@@ -666,6 +642,40 @@ class ListingController extends React.Component
     me = this
     promise.then (data) ->
       console.debug "ListingController::fetch_folderitems: GOT RESPONSE=", data
+
+      # N.B. Always keep selected folderitems, because otherwise modified fields
+      #      won't get send to the server on form submit
+      #
+      # TODO refactor this logic
+      # -------------------------------8<--------------------------------------
+      # existing folderitems from the state as a UID -> folderitem mapping
+      existing_folderitems = me.get_folderitems_by_uid me.state.folderitems
+      # new folderitems from the server as a UID -> folderitem mapping
+      new_folderitems = me.get_folderitems_by_uid data.folderitems
+      # new categories from the server
+      new_categories = data.categories or []
+
+      # keep selected and potentially modified folderitems in the table
+      for uid in me.state.selected_uids
+        # inject missing folderitems into the server sent folderitems
+        if uid not of new_folderitems
+          # get the missing folderitem from the current state
+          folderitem = existing_folderitems[uid]
+          # inject it to the new folderitems list from the server
+          new_folderitems[uid] = existing_folderitems[uid]
+          # also append the category if it is missing
+          category = folderitem.category
+          if category and category not in new_categories
+            new_categories.push category
+            # unfortunately any sortKey sorting of the category get lost here
+            new_categories.sort()
+
+      # write back new categories
+      data.categories = new_categories
+      # write back new folderitems
+      data.folderitems = Object.values new_folderitems
+      # -------------------------------->8-------------------------------------
+
       if items_only
         data = {"folderitems": data.folderitems}
       me.setState data, ->
@@ -676,25 +686,6 @@ class ListingController extends React.Component
           console.debug "ListingController::fetch_folderitems: NEW STATE=", me.state
         # turn loader off
         me.toggle_loader off
-
-    return promise
-
-  fetch_folderitems_by_query: (query) ->
-    ###
-     * Fetch the folderitems with the given catalog query
-    ###
-
-    # turn loader on
-    @toggle_loader on
-
-    # fetch the folderitems from the server
-    promise = @api.query_folderitems query
-
-    me = this
-    promise.then (data) ->
-      console.debug "ListingController::query_folderitems: GOT RESPONSE=", data
-      # turn loader off
-      me.toggle_loader off
 
     return promise
 
