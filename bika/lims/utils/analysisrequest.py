@@ -421,8 +421,12 @@ def create_retest(ar):
     renameAfterCreation(retest)
 
     # 2. Copy the analyses from the source
-    criteria = dict(full_objects=True, retracted=False, reflexed=False)
-    for an in ar.getAnalyses(**criteria):
+    intermediate_statuses = ['retracted', 'reflexed']
+    for an in ar.getAnalyses(full_objects=True):
+        if (api.get_workflow_status_of(an) in intermediate_statuses):
+            # Exclude intermediate analyses
+            continue
+
         nan = _createObjectByType("Analysis", retest, an.getKeyword())
 
         # Make a copy
