@@ -714,6 +714,14 @@ def get_rm_candidates_for_ar_workflow(portal):
         dict(portal_type="AnalysisRequest",
              review_state=["attachment_due", "to_be_verified"]),
              CATALOG_ANALYSIS_REQUEST_LISTING))
+
+    # To ensure the rollback_to_receive is possible from a verified state
+    candidates.append(
+        (wf_id,
+         dict(portal_type="AnalysisRequest",
+              review_state=["verified"]),
+         CATALOG_ANALYSIS_REQUEST_LISTING)
+    )
     return candidates
 
 
@@ -830,6 +838,15 @@ def get_rm_candidates_for_analysisworkfklow(portal):
              dict(portal_type="Analysis",
                   review_state=["assigned"]),
              CATALOG_ANALYSIS_LISTING))
+
+
+    # Just in case (some buddies use 'retract' in 'verified' state)
+    candidates.append(
+        (wf_id,
+         dict(portal_type="Analysis",
+              review_state=["verified"]),
+         CATALOG_ANALYSIS_REQUEST_LISTING)
+    )
     return candidates
 
 
