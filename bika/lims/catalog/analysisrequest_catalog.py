@@ -20,7 +20,6 @@ _indexes_dict = {
     # TODO: Can be removed? Same as id
     'sortable_title': 'FieldIndex',
     'getClientUID': 'FieldIndex',
-    'getSampleUID': 'FieldIndex',
     'cancellation_state': 'FieldIndex',
     'getBatchUID': 'FieldIndex',
     'getDateSampled': 'DateIndex',
@@ -51,7 +50,6 @@ _columns_list = [
     'getCreatorFullName',
     'getCreatorEmail',
     'getPhysicalPath',
-    'getSampleUID',
     # Used to print the ID of the Sample in lists
     'getSampleID',
     # Used to create add an anchor to Sample ID that redirects to
