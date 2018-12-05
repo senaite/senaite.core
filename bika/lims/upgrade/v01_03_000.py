@@ -106,8 +106,8 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1114
     add_worksheet_indexes(portal)
 
-    # Remove samples action from navigation bar
-    remove_samples_from_navbar(portal)
+    # Remove samples views from everywhere (navbar, client, batches, etc.)
+    remove_samples_views(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -985,9 +985,20 @@ def add_worksheet_indexes(portal):
               index_metatype="FieldIndex")
 
 
-def remove_samples_from_navbar(portal):
-    """Removes the action Samples from navbar
+def remove_samples_views(portal):
+    """Removes samples views from everywhere
     """
     logger.info("Removing Samples from navbar ...")
-    # Samples live inside Clients, the samples folder from portal was a cheat
     portal.manage_delObjects(["samples"])
+
+    def remove_samples_action(client):
+        type_info = client.getTypeInfo()
+        actions = map(lambda action: action.id, type_info._actions)
+        for index, action in enumerate(actions, start=0):
+            if action == 'samples':
+                type_info.deleteActions([index])
+                break
+
+    logger.info("Removing Samples action view from inside Clients ...")
+    for client in portal.clients.objectValues("Client"):
+        remove_samples_action(client)
