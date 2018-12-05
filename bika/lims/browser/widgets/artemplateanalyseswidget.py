@@ -42,7 +42,7 @@ class ARTemplateAnalysesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.pagesize = 999999
         self.allow_edit = True
-        self.show_search = False
+        self.show_search = True
         self.omit_form = True
         self.fetch_transitions_on_select = False
 

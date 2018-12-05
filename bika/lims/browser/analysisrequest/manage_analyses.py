@@ -45,7 +45,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 999999
-        self.show_search = False
+        self.show_search = True
         self.fetch_transitions_on_select = False
 
         self.categories = []

@@ -49,8 +49,7 @@ class ServicesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.pagesize = 999999
         self.allow_edit = True
-        # remove the searchbox
-        self.show_search = False
+        self.show_search = True
         # omit the outer form
         self.omit_form = True
         # no need to fetch the allowed transitions on select
