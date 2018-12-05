@@ -422,9 +422,9 @@ def create_retest(ar):
     renameAfterCreation(retest)
 
     # 2. Copy the analyses from the source
-    intermediate_statuses = ['retracted', 'reflexed']
+    intermediate_states = ['retracted', 'reflexed']
     for an in ar.getAnalyses(full_objects=True):
-        if (api.get_workflow_status_of(an) in intermediate_statuses):
+        if (api.get_workflow_status_of(an) in intermediate_states):
             # Exclude intermediate analyses
             continue
 
