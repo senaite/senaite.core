@@ -20,6 +20,7 @@ Changelog
 
 **Changed**
 
+- #1123 Listing: Handle visibility of selected rows
 - #1117 Removed `attachment_due` state and transition from analysis workflow
 - #1114 Listing integration for Worksheet Templates
 - #1109 Unassignment of an analysis causes the removal of its duplicates
