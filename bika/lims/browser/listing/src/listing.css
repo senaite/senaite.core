@@ -40,6 +40,11 @@
 .ajax-contents-table td.result.state-invalid { border-left:2px solid #e65100 !important; }
 .ajax-contents-table tr.state-invalid:hover { background-color: rgba(244, 67, 54, 0.2); }
 
+/* state rejected */
+.ajax-contents-table tr.state-rejected { border-left:2px solid #ddd; }
+.ajax-contents-table td.result.state-rejected { border-left:2px solid transparent; }
+.ajax-contents-table tr.state-invalid:hover { background-color: #ddd; }
+
 /* state assigned */
 .ajax-contents-table tr.state-assigned { border-left:2px solid #ddd; }
 .ajax-contents-table td.result.state-assigned { border-left:2px solid transparent; }
