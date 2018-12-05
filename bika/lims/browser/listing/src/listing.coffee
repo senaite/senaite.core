@@ -576,8 +576,10 @@ class ListingController extends React.Component
     ###
     folderitems ?= @state.folderitems
     mapping = {}
-    folderitems.map (item) ->
-      mapping[item.uid] = item
+    folderitems.map (item, index) ->
+      # transposed cells do not have an uid, so we use the index instead
+      uid = item.uid or index
+      mapping[uid] = item
     return mapping
 
   get_item_count: ->
