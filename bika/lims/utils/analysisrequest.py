@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
@@ -31,7 +32,6 @@ from bika.lims.workflow import doActionFor, ActionHandlerPool, \
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
 from email.Utils import formataddr
-from plone import api
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -278,7 +278,7 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe object UID.
-        portal = portal if portal else api.portal.get()
+        portal = portal if portal else api.get_portal()
         bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
@@ -421,8 +421,12 @@ def create_retest(ar):
     renameAfterCreation(retest)
 
     # 2. Copy the analyses from the source
-    criteria = dict(full_objects=True, retracted=False, reflexed=False)
-    for an in ar.getAnalyses(**criteria):
+    intermediate_states = ['retracted', 'reflexed']
+    for an in ar.getAnalyses(full_objects=True):
+        if (api.get_workflow_status_of(an) in intermediate_states):
+            # Exclude intermediate analyses
+            continue
+
         nan = _createObjectByType("Analysis", retest, an.getKeyword())
 
         # Make a copy
