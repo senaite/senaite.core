@@ -720,8 +720,7 @@ def get_rm_candidates_for_ar_workflow(portal):
         (wf_id,
          dict(portal_type="AnalysisRequest",
               review_state=["verified"]),
-         CATALOG_ANALYSIS_REQUEST_LISTING)
-    )
+         CATALOG_ANALYSIS_REQUEST_LISTING))
     return candidates
 
 
@@ -845,8 +844,7 @@ def get_rm_candidates_for_analysisworkfklow(portal):
         (wf_id,
          dict(portal_type="Analysis",
               review_state=["verified"]),
-         CATALOG_ANALYSIS_REQUEST_LISTING)
-    )
+         CATALOG_ANALYSIS_LISTING))
     return candidates
 
 
