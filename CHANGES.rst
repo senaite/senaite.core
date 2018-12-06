@@ -20,6 +20,7 @@ Changelog
 
 **Changed**
 
+- #1128 Listing: Removed non-conform handling of disabled fields
 - #1123 Listing: Handle visibility of selected rows
 - #1117 Removed `attachment_due` state and transition from analysis workflow
 - #1114 Listing integration for Worksheet Templates
