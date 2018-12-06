@@ -148,8 +148,30 @@ transitions to "to_be_verified" because follows `Fe`:
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'
 
-And if we remove analysis `Fe` (in `to_be_verified` state), the Analysis Request
-will follow `Au` analysis (that is `verified`):
+Analyses which are in the state `to_be_verified` can **not** be removed.
+Therefore, if we try to remove the analysis `Fe` (in `to_be_verified` state),
+the Analysis Request will stay in `to_be_verified` and the Analysis will still
+be assigned:
+
+    >>> new_analyses = ar.setAnalyses([Au])
+
+    >>> analysis_fe in ar.objectValues()
+    True
+
+    >>> analysis_au in ar.objectValues()
+    True
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+The only way to remove the `Fe` analysis is to retract it first:
+
+    >>> transitioned = do_action_for(analysis_fe, "retract")
+    >>> api.get_workflow_status_of(analysis_fe)
+    'retracted'
+
+And if we remove analysis `Fe`, the Analysis Request will follow `Au` analysis
+(that is `verified`):
 
     >>> new_analyses = ar.setAnalyses([Au])
     >>> api.get_workflow_status_of(ar)
