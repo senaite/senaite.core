@@ -369,16 +369,6 @@ def setup_permissions(portal):
     mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
     portal.referencesamples.reindexObject()
 
-    # /samples folder permissions
-    mp = portal.samples.manage_permission
-    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-    portal.samples.reindexObject()
-
     # /reports folder permissions
     mp = portal.reports.manage_permission
     mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', ], 0)

@@ -448,14 +448,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         raise NotImplementedError("getSample is not implemented.")
 
     @security.public
-    def getSampleUID(self):
-        """Instances must implement getSample
-        """
-        sample = self.getSample()
-        if sample:
-            return sample.UID()
-
-    @security.public
     def getResultsRange(self):
         raise NotImplementedError("getResultsRange is not implemented.")
 

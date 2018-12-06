@@ -129,12 +129,6 @@ class AnalysisRequestsView(BikaListingView):
             ("getDatePublished", {
                 "title": _("Date Published"),
                 "toggle": False}),
-            ("getSample", {
-                "title": _("Sample"),
-                "attr": "getSampleID",
-                "index": "getSampleID",
-                "replace_url": "getSampleURL",
-                "toggle": False}),
             ("BatchID", {
                 "title": _("Batch ID"),
                 "index": "getBatchID",

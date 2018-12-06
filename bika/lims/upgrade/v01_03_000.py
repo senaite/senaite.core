@@ -57,6 +57,7 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, 'typeinfo')
+    setup.runImportStepFromProfile(profile, 'content')
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -106,6 +107,10 @@ def upgrade(tool):
 
     # https://github.com/senaite/senaite.core/pull/1118
     remove_bika_listing_resources(portal)
+
+    # Remove samples views from everywhere (navbar, client, batches, etc.)
+    # https://github.com/senaite/senaite.core/pull/1125
+    hide_samples(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -1012,3 +1017,33 @@ def remove_bika_listing_resources(portal):
     for css in REMOVE_CSS:
         logger.info("********** Unregistering CSS %s" % css)
         portal.portal_css.unregisterResource(css)
+
+
+def hide_samples(portal):
+    """Removes samples views from everywhere, related indexes, etc.
+    """
+    logger.info("Removing Samples from navbar ...")
+    portal.manage_delObjects(["samples"])
+
+    def remove_samples_action(content_type):
+        type_info = content_type.getTypeInfo()
+        actions = map(lambda action: action.id, type_info._actions)
+        for index, action in enumerate(actions, start=0):
+            if action == 'samples':
+                type_info.deleteActions([index])
+                break
+
+    logger.info("Removing Samples action view from inside Clients ...")
+    for client in portal.clients.objectValues("Client"):
+        remove_samples_action(client)
+
+    logger.info("Removing Samples action view from inside Batches ...")
+    for batch in portal.batches.objectValues("Batch"):
+        remove_samples_action(batch)
+
+    # Remove indexes and metadata not used anymore
+    del_index(portal, "bika_catalog", "getSampleUID")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleUID")
+    del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+

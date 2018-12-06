@@ -22,14 +22,6 @@
 
     <browser:page
       for="bika.lims.interfaces.IBatch"
-      name="samples"
-      class="bika.lims.browser.batch.samples.SamplesView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IBatch"
       name="batchbook"
       class="bika.lims.browser.batch.batchbook.BatchBookView"
       permission="zope2.View"

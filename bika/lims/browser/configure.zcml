@@ -46,7 +46,6 @@
   <include package=".dashboard"/>
   <include package=".department"/>
   <include package=".resultsimport"/>
-  <include package=".sample"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
   <include package=".viewlets"/>
