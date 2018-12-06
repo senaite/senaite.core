@@ -182,12 +182,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         ar = self.context
         sample = ar.getSample()
         objects = WorkflowAction._get_selected_items(self)
-        if not objects:
-            message = _("No analyses have been selected")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url() + "/analyses"
-            self.request.response.redirect(self.destination_url)
-            return
         Analyses = objects.keys()
         prices = form.get("Price", [None])[0]
 

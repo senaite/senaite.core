@@ -11,7 +11,6 @@ from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
 from bika.lims import api
-from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis
@@ -19,7 +18,6 @@ from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import getReviewHistoryActionsList
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
@@ -35,9 +33,6 @@ Run this test from the buildout directory:
 
     bin/test test_textual_doctests -t ARAnalysesField
 """
-
-FROZEN_STATES = ["verified", "published", "retracted"]
-FROZEN_TRANSITIONS = ["verify", "retract"]
 
 
 class ARAnalysesField(ObjectField):
@@ -93,8 +88,17 @@ class ARAnalysesField(ObjectField):
         # This setter returns a list of new set Analyses
         new_analyses = []
 
-        # Prevent removing all Analyses
-        if not items:
+        # Current assigned analyses
+        analyses = instance.objectValues("Analysis")
+
+        # Analyses which are in a non-open state must be retained
+        non_open_analyses = filter(lambda an: not an.isOpen(), analyses)
+
+        # Prevent removing all analyses
+        #
+        # N.B.: Non-open analyses are rendered disabled in the HTML form.
+        #       Therefore, their UIDs are not included in the submitted UIDs.
+        if not items and not non_open_analyses:
             logger.warn("Not allowed to remove all Analyses from AR.")
             return new_analyses
 
@@ -127,11 +131,10 @@ class ARAnalysesField(ObjectField):
         # Merge dependencies and services
         services = set(services + dependencies)
 
-        # Service UIDs
-        service_uids = map(api.get_uid, services)
-
         # Modify existing AR specs with new form values of selected analyses.
         self._update_specs(instance, specs)
+
+        # CREATE/MODIFY ANALYSES
 
         for service in services:
             keyword = service.getKeyword()
@@ -146,21 +149,26 @@ class ARAnalysesField(ObjectField):
             # Set the price of the Analysis
             self._update_price(analysis, service, prices)
 
-        # delete analyses
+        # DELETE ANALYSES
+
+        # Service UIDs
+        service_uids = map(api.get_uid, services)
+
+        # Analyses IDs to delete
         delete_ids = []
+
+        # Assigned Attachments
         assigned_attachments = []
 
-        for analysis in instance.objectValues('Analysis'):
+        for analysis in analyses:
             service_uid = analysis.getServiceUID()
 
-            # Skip assigned Analyses
+            # Skip if the Service is selected
             if service_uid in service_uids:
                 continue
 
-            # Skip Analyses in frozen states
-            if self._is_frozen(analysis):
-                logger.warn("Inactive/verified/retracted Analyses can not be "
-                            "removed.")
+            # Skip non-open Analyses
+            if analysis in non_open_analyses:
                 continue
 
             # Remember assigned attachments
