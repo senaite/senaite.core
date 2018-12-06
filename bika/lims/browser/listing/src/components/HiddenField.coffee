@@ -15,7 +15,8 @@ class HiddenField extends React.Component
            name={@props.name}
            value={@props.value}
            column_key={@props.column_key}
-           className={@props.className} />
+           className={@props.className}
+           {...@props.attrs}/>
 
 
 export default HiddenField

@@ -80,7 +80,8 @@ class NumericField extends React.Component
              className={@props.className}
              placeholder={@props.placeholder}
              onBlur={@on_blur}
-             onChange={@on_change}/>
+             onChange={@on_change}
+             {...@props.attrs}/>
       {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
     </span>
 
