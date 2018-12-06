@@ -5,7 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import copy
 import itertools
 
 from AccessControl import ClassSecurityInfo
@@ -19,7 +18,6 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.permissions import AddAnalysis
-from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import getReviewHistoryActionsList
 from Products.Archetypes.public import Field
@@ -87,7 +85,7 @@ class ARAnalysesField(ObjectField):
         :type items: list
         :param prices: Mapping of AnalysisService UID -> price
         :type prices: dict
-        :param specs: List of AnalysisService UID -> Result Range Record mappings
+        :param specs: List of AnalysisService UID -> Result Range mappings
         :type specs: list
         :returns: list of new assigned Analyses
         """
@@ -184,7 +182,8 @@ class ARAnalysesField(ObjectField):
                 # exist anymore
                 an_uid = api.get_uid(analysis)
                 part_ans = part.getAnalyses() or []
-                part_ans = filter(lambda an: api.get_uid(an) != an_uid, part_ans)
+                part_ans = filter(
+                    lambda an: api.get_uid(an) != an_uid, part_ans)
                 part.setAnalyses(part_ans)
             # Unset the Analysis-to-Partition reference
             analysis.setSamplePartition(None)
@@ -305,7 +304,7 @@ class ARAnalysesField(ObjectField):
 
     security.declarePublic('Vocabulary')
 
-    @deprecated("Please refactor, this method will be removed in senaite.core 1.5")
+    @deprecated("This method will be removed in senaite.core 1.3")
     def Vocabulary(self, content_instance=None):
         """Create a vocabulary from analysis services
         """
@@ -316,7 +315,7 @@ class ARAnalysesField(ObjectField):
 
     security.declarePublic('Services')
 
-    @deprecated("Please refactor, this method will be removed in senaite.core 1.5")
+    @deprecated("This method will be removed in senaite.core 1.3")
     def Services(self):
         """Fetch and return analysis service objects
         """
