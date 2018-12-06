@@ -112,6 +112,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1125
     hide_samples(portal)
 
+    # Add Listing JS to portal_javascripts registry
+    # https://github.com/senaite/senaite.core/pull/
+    add_listing_js_to_portal_javascripts(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1047,3 +1051,11 @@ def hide_samples(portal):
     del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
     del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
 
+
+def add_listing_js_to_portal_javascripts(portal):
+    """Adds senaite.core.listing.js to the portal_javascripts registry
+    """
+    id="++resource++senaite.core.browser.listing.static/js/senaite.core.listing.js"
+    portal_javascripts = portal.portal_javascripts
+    if id not in portal_javascripts.getResouceIds():
+        portal_javascripts.registerResource(id=id)

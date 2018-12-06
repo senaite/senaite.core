@@ -1,14 +1,6 @@
 <tal:contents_table
   define="portal context/@@plone_portal_state/portal;">
 
-  <tal:js
-    define="portal_url portal/absolute_url;
-            static_url string:${portal_url}/++resource++senaite.core.browser.listing.static;">
-    <script type="text/javascript"
-            src="senaite.core.listing.js"
-            tal:attributes="src string:${static_url}/js/senaite.core.listing.js"></script>
-  </tal:js>
-
   <form name="listing_form"
         class="form form-inline"
         method="post"
