@@ -43,8 +43,8 @@ class ARAnalysesField(ObjectField):
     security = ClassSecurityInfo()
     _properties = Field._properties.copy()
     _properties.update({
-        'type': 'analyses',
-        'default': None,
+        "type": "analyses",
+        "default": None,
     })
 
     security.declarePrivate('get')
@@ -62,8 +62,8 @@ class ARAnalysesField(ObjectField):
         catalog = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
         query = dict(
             [(k, v) for k, v in kwargs.items() if k in catalog.indexes()])
-        query['portal_type'] = "Analysis"
-        query['getRequestUID'] = api.get_uid(instance)
+        query["portal_type"] = "Analysis"
+        query["getRequestUID"] = api.get_uid(instance)
         analyses = catalog(query)
         if not kwargs.get("full_objects", False):
             return analyses
@@ -215,8 +215,8 @@ class ARAnalysesField(ObjectField):
     def _get_services(self, full_objects=False):
         """Fetch and return analysis service objects
         """
-        bsc = api.get_tool('bika_setup_catalog')
-        brains = bsc(portal_type='AnalysisService')
+        bsc = api.get_tool("bika_setup_catalog")
+        brains = bsc(portal_type="AnalysisService")
         if full_objects:
             return map(api.get_object, brains)
         return brains
@@ -248,27 +248,10 @@ class ARAnalysesField(ObjectField):
 
         # An object, but neither an Analysis nor AnalysisService?
         # This should never happen.
-        msg = "ARAnalysesField doesn't accept objects from {} type. " \
-            "The object will be dismissed.".format(api.get_portal_type(obj))
-        logger.warn(msg)
+        portal_type = api.get_portal_type(obj)
+        logger.error("ARAnalysesField doesn't accept objects from {} type. "
+                     "The object will be dismissed.".format(portal_type))
         return None
-
-    def _is_frozen(self, brain_or_object):
-        """Check if the passed in object is frozen: the object is cancelled,
-        inactive or has been verified at some point
-        :param brain_or_object: Analysis or AR Brain/Object
-        :returns: True if the object is frozen
-        """
-        if not api.is_active(brain_or_object):
-            return True
-        if api.get_workflow_status_of(brain_or_object) in FROZEN_STATES:
-            return True
-        # Check the review history if one of the frozen transitions was done
-        object = api.get_object(brain_or_object)
-        performed_transitions = set(getReviewHistoryActionsList(object))
-        if set(FROZEN_TRANSITIONS).intersection(performed_transitions):
-            return True
-        return False
 
     def _update_price(self, analysis, service, prices):
         """Update the Price of the Analysis
@@ -307,27 +290,6 @@ class ARAnalysesField(ObjectField):
             else:
                 rr[keyword] = spec
         return instance.setResultsRange(rr.values())
-
-    # DEPRECATED: The following code should not be in the field's domain
-
-    security.declarePublic('Vocabulary')
-
-    @deprecated("This method will be removed in senaite.core 1.3")
-    def Vocabulary(self, content_instance=None):
-        """Create a vocabulary from analysis services
-        """
-        vocab = []
-        for service in self._get_services():
-            vocab.append((api.get_uid(service), api.get_title(service)))
-        return vocab
-
-    security.declarePublic('Services')
-
-    @deprecated("This method will be removed in senaite.core 1.3")
-    def Services(self):
-        """Fetch and return analysis service objects
-        """
-        return self._get_services(full_objects=True)
 
 
 registerField(ARAnalysesField,
