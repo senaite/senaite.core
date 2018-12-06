@@ -52,7 +52,6 @@ class TableCells extends React.Component
             name={checkbox_name}
             value={uid}
             disabled={disabled}
-            render_hidden={disabled}  # render a hidden field when the row is disabled
             checked={selected}
             onChange={@props.on_select_checkbox_checked}/>
         </td>)

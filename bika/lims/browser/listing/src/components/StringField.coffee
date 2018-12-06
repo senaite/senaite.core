@@ -59,7 +59,8 @@ class StringField extends React.Component
            className={@props.className or "form-control input-sm"}
            placeholder={@props.placeholder}
            onBlur={@on_blur}
-           onChange={@on_change}/>
+           onChange={@on_change}
+           {...@props.attrs}/>
 
 
 export default StringField

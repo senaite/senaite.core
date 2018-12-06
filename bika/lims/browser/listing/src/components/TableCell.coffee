@@ -566,19 +566,6 @@ class TableCell extends React.Component
     else if type == "numeric"
       field = field.concat @create_numeric_field()
 
-    # TODO: Handle hidden field rendering in the field components directly
-    #       -> see approach in Checkbox component
-    #
-    # N.B. Disabled fields are not send to the server on form submit!
-    #      -> Render hidden field for each disabled input
-    if @is_disabled() and type isnt "readonly"
-      converter = @ZPUBLISHER_CONVERTER[type]
-      fieldname = @get_name() + converter
-      field = field.concat @create_hidden_field
-        props:
-          key: "#{name}_disabled"
-          name: fieldname
-
     return field
 
   render: ->

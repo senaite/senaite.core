@@ -5,23 +5,19 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import copy
 import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
 from AccessControl import getSecurityManager
 from bika.lims import api
-from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.permissions import AddAnalysis
-from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import getReviewHistoryActionsList
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
 from Products.Archetypes.Registry import registerField
@@ -38,9 +34,6 @@ Run this test from the buildout directory:
     bin/test test_textual_doctests -t ARAnalysesField
 """
 
-FROZEN_STATES = ["verified", "published", "retracted"]
-FROZEN_TRANSITIONS = ["verify", "retract"]
-
 
 class ARAnalysesField(ObjectField):
     """A field that stores Analyses instances
@@ -50,8 +43,8 @@ class ARAnalysesField(ObjectField):
     security = ClassSecurityInfo()
     _properties = Field._properties.copy()
     _properties.update({
-        'type': 'analyses',
-        'default': None,
+        "type": "analyses",
+        "default": None,
     })
 
     security.declarePrivate('get')
@@ -69,8 +62,8 @@ class ARAnalysesField(ObjectField):
         catalog = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
         query = dict(
             [(k, v) for k, v in kwargs.items() if k in catalog.indexes()])
-        query['portal_type'] = "Analysis"
-        query['getRequestUID'] = api.get_uid(instance)
+        query["portal_type"] = "Analysis"
+        query["getRequestUID"] = api.get_uid(instance)
         analyses = catalog(query)
         if not kwargs.get("full_objects", False):
             return analyses
@@ -87,7 +80,7 @@ class ARAnalysesField(ObjectField):
         :type items: list
         :param prices: Mapping of AnalysisService UID -> price
         :type prices: dict
-        :param specs: List of AnalysisService UID -> Result Range Record mappings
+        :param specs: List of AnalysisService UID -> Result Range mappings
         :type specs: list
         :returns: list of new assigned Analyses
         """
@@ -95,8 +88,17 @@ class ARAnalysesField(ObjectField):
         # This setter returns a list of new set Analyses
         new_analyses = []
 
-        # Prevent removing all Analyses
-        if not items:
+        # Current assigned analyses
+        analyses = instance.objectValues("Analysis")
+
+        # Analyses which are in a non-open state must be retained
+        non_open_analyses = filter(lambda an: not an.isOpen(), analyses)
+
+        # Prevent removing all analyses
+        #
+        # N.B.: Non-open analyses are rendered disabled in the HTML form.
+        #       Therefore, their UIDs are not included in the submitted UIDs.
+        if not items and not non_open_analyses:
             logger.warn("Not allowed to remove all Analyses from AR.")
             return new_analyses
 
@@ -129,11 +131,10 @@ class ARAnalysesField(ObjectField):
         # Merge dependencies and services
         services = set(services + dependencies)
 
-        # Service UIDs
-        service_uids = map(api.get_uid, services)
-
         # Modify existing AR specs with new form values of selected analyses.
         self._update_specs(instance, specs)
+
+        # CREATE/MODIFY ANALYSES
 
         for service in services:
             keyword = service.getKeyword()
@@ -148,21 +149,26 @@ class ARAnalysesField(ObjectField):
             # Set the price of the Analysis
             self._update_price(analysis, service, prices)
 
-        # delete analyses
+        # DELETE ANALYSES
+
+        # Service UIDs
+        service_uids = map(api.get_uid, services)
+
+        # Analyses IDs to delete
         delete_ids = []
+
+        # Assigned Attachments
         assigned_attachments = []
 
-        for analysis in instance.objectValues('Analysis'):
+        for analysis in analyses:
             service_uid = analysis.getServiceUID()
 
-            # Skip assigned Analyses
+            # Skip if the Service is selected
             if service_uid in service_uids:
                 continue
 
-            # Skip Analyses in frozen states
-            if self._is_frozen(analysis):
-                logger.warn("Inactive/verified/retracted Analyses can not be "
-                            "removed.")
+            # Skip non-open Analyses
+            if analysis in non_open_analyses:
                 continue
 
             # Remember assigned attachments
@@ -184,7 +190,8 @@ class ARAnalysesField(ObjectField):
                 # exist anymore
                 an_uid = api.get_uid(analysis)
                 part_ans = part.getAnalyses() or []
-                part_ans = filter(lambda an: api.get_uid(an) != an_uid, part_ans)
+                part_ans = filter(
+                    lambda an: api.get_uid(an) != an_uid, part_ans)
                 part.setAnalyses(part_ans)
             # Unset the Analysis-to-Partition reference
             analysis.setSamplePartition(None)
@@ -208,8 +215,8 @@ class ARAnalysesField(ObjectField):
     def _get_services(self, full_objects=False):
         """Fetch and return analysis service objects
         """
-        bsc = api.get_tool('bika_setup_catalog')
-        brains = bsc(portal_type='AnalysisService')
+        bsc = api.get_tool("bika_setup_catalog")
+        brains = bsc(portal_type="AnalysisService")
         if full_objects:
             return map(api.get_object, brains)
         return brains
@@ -241,27 +248,10 @@ class ARAnalysesField(ObjectField):
 
         # An object, but neither an Analysis nor AnalysisService?
         # This should never happen.
-        msg = "ARAnalysesField doesn't accept objects from {} type. " \
-            "The object will be dismissed.".format(api.get_portal_type(obj))
-        logger.warn(msg)
+        portal_type = api.get_portal_type(obj)
+        logger.error("ARAnalysesField doesn't accept objects from {} type. "
+                     "The object will be dismissed.".format(portal_type))
         return None
-
-    def _is_frozen(self, brain_or_object):
-        """Check if the passed in object is frozen: the object is cancelled,
-        inactive or has been verified at some point
-        :param brain_or_object: Analysis or AR Brain/Object
-        :returns: True if the object is frozen
-        """
-        if not api.is_active(brain_or_object):
-            return True
-        if api.get_workflow_status_of(brain_or_object) in FROZEN_STATES:
-            return True
-        # Check the review history if one of the frozen transitions was done
-        object = api.get_object(brain_or_object)
-        performed_transitions = set(getReviewHistoryActionsList(object))
-        if set(FROZEN_TRANSITIONS).intersection(performed_transitions):
-            return True
-        return False
 
     def _update_price(self, analysis, service, prices):
         """Update the Price of the Analysis
@@ -300,27 +290,6 @@ class ARAnalysesField(ObjectField):
             else:
                 rr[keyword] = spec
         return instance.setResultsRange(rr.values())
-
-    # DEPRECATED: The following code should not be in the field's domain
-
-    security.declarePublic('Vocabulary')
-
-    @deprecated("Please refactor, this method will be removed in senaite.core 1.5")
-    def Vocabulary(self, content_instance=None):
-        """Create a vocabulary from analysis services
-        """
-        vocab = []
-        for service in self._get_services():
-            vocab.append((api.get_uid(service), api.get_title(service)))
-        return vocab
-
-    security.declarePublic('Services')
-
-    @deprecated("Please refactor, this method will be removed in senaite.core 1.5")
-    def Services(self):
-        """Fetch and return analysis service objects
-        """
-        return self._get_services(full_objects=True)
 
 
 registerField(ARAnalysesField,
