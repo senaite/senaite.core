@@ -963,31 +963,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return user and user.getProperty("fullname") or ""
         return ""
 
-    # TODO Workflow, Analysis - Remove
-    @security.public
-    def isVerifiable(self):
-        """Checks it the current analysis can be verified. This is, its not a
-        cancelled analysis and has no dependenant analyses not yet verified
-        :return: True or False
-        """
-        return guards.guard_verify(self) or guards.guard_multi_verify(self)
-
-    # TODO Workflow, Analysis - Remove
-    @security.public
-    def isUserAllowedToVerify(self, member):
-        """
-        Checks if the specified user has enough privileges to verify the
-        current analysis. Apart of roles, the function also checks if the
-        option IsSelfVerificationEnabled is set to true at Service or
-        Bika Setup levels and validates if according to this value, together
-        with the user roles, the analysis can be verified. Note that this
-        function only returns if the user can verify the analysis, but not if
-        the analysis is ready to be verified (see isVerifiable)
-        :member: user to be tested
-        :return: true or false
-        """
-        return guards.guard_verify(self) or guards.guard_multi_verify(self)
-
     @security.public
     def getObjectWorkflowStates(self):
         """This method is used to populate catalog values

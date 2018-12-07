@@ -44,6 +44,7 @@ Changelog
 
 **Removed**
 
+- #1132 Remove "Submitted by current user" icon from AR listing (performance)
 - #1125 Remove Sample views, listings and links to Sample(s) from everywhere
 - #1118 Removed all legacy Bika Listing / Advanced Filtering from Codebase
 - #1077 Remove Sample-specific states from analysis workflow

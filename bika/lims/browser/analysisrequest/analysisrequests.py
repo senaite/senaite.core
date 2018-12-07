@@ -822,25 +822,7 @@ class AnalysisRequestsView(BikaListingView):
         item["getPreserver"] = ""
         item["getDatePreserved"] = ""
 
-        # Submitting user may not verify results
-        # Thee conditions to improve performance, some functions to check
-        # the condition need to get the full analysis request.
-        if states_dict.get("review_state", "") == "to_be_verified":
-            allowed = user.has_permission(
-                VerifyPermission,
-                username=self.member.getUserName())
-            # TODO-performance: isUserAllowedToVerify getts all analysis
-            # objects inside the analysis request.
-            if allowed:
-                # Gettin the full object if not get before
-                full_object = full_object if full_object else obj.getObject()
-                if not full_object.isUserAllowedToVerify(self.member):
-                    item["after"]["state_title"] = get_image(
-                        "submitted-by-current-user.png",
-                        title=t(_("Cannot verify: Submitted by current user")))
-
         # Advanced partitioning
-        #
         # append the UID of the primary AR as parent
         item["parent"] = obj.getRawParentAnalysisRequest or ""
         # append partition UIDs of this AR as children
