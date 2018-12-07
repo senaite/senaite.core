@@ -1055,7 +1055,7 @@ def hide_samples(portal):
 def add_listing_js_to_portal_javascripts(portal):
     """Adds senaite.core.listing.js to the portal_javascripts registry
     """
-    id="++resource++senaite.core.browser.listing.static/js/senaite.core.listing.js"
+    id = "++resource++senaite.core.browser.listing.static/js/senaite.core.listing.js"
     portal_javascripts = portal.portal_javascripts
-    if id not in portal_javascripts.getResouceIds():
+    if id not in portal_javascripts.getResourceIds():
         portal_javascripts.registerResource(id=id)
