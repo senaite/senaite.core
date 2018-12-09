@@ -8,6 +8,15 @@ class TableCells extends React.Component
 
   constructor: (props) ->
     super(props)
+    @on_remarks_row_expand_click = @on_remarks_row_expand_click.bind @
+
+  on_remarks_row_expand_click: (event) ->
+    el = event.currentTarget
+    uid = el.getAttribute "uid"
+
+    # notify parent event handler with the extracted uid
+    if @props.on_remarks_row_expand_click
+      @props.on_remarks_row_expand_click uid
 
   get_column: (column_key) ->
     return @props.columns[column_key]
@@ -43,6 +52,7 @@ class TableCells extends React.Component
     expanded = @props.expanded
     selected = @props.selected
     disabled = @props.disabled
+    remarks = @props.remarks  # True if this row follows a remarks row
 
     # insert select column
     if show_select
@@ -54,6 +64,13 @@ class TableCells extends React.Component
             disabled={disabled}
             checked={selected}
             onChange={@props.on_select_checkbox_checked}/>
+
+          {remarks and
+          <div uid={uid}
+               onClick={@on_remarks_row_expand_click}>
+            <span className="remarksicon glyphicon glyphicon-comment"></span>
+          </div>
+          }
         </td>)
 
     # insert visible columns in the right order

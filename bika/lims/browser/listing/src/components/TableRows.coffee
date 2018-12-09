@@ -146,6 +146,7 @@ class TableRows extends React.Component
       selected = @is_selected item
       disabled = @is_item_disabled item
       expandable = @has_item_children item
+      remarks_columns = @get_remarks_columns()
 
       rows.push(
         <TableRow
@@ -155,6 +156,7 @@ class TableRows extends React.Component
           uid={uid}
           category={category}
           expanded={expanded}
+          remarks={remarks_columns.length > 0}
           selected={selected}
           disabled={disabled}
           className={css}
@@ -162,7 +164,7 @@ class TableRows extends React.Component
           />)
 
       # columns with type="remarks" set are rendered in their own row
-      for column_key, column_index in @get_remarks_columns()
+      for column_key, column_index in remarks_columns
         column = @props.columns[column_key]
         # support rowspanning for WS header slot
         skip = item.skip or []
