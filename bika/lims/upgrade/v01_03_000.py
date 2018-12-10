@@ -1090,7 +1090,7 @@ def fix_ar_analyses_inconsistencies(portal):
             if num % 100 == 0:
                 logger.info("Fixing inconsistent analyses from {} ARs: {}/{}"
                             .format(status, num, total))
-            fix_analyses(api.get_object(brain), status)
+            fix_analyses(brain, status)
 
     logger.info("Fixing Analysis Request - Analyses inconsistencies ...")
     fix_ar_analyses("cancelled", wf_state_id="cancellation_state")
