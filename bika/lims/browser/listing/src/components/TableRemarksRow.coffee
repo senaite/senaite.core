@@ -62,8 +62,8 @@ class TableRemarksRow extends React.Component
     column_key = @props.column_key
     name = "#{column_key}.#{uid}:records"
     value = item[column_key] or ""
-    # show the remarks if the row is selected or if a value was set
-    show = @props.selected or value.length > 0
+    # show if the remarks are expanded or if a remark is set
+    show = uid in @props.expanded_remarks_rows or value.length > 0
 
     style =
       display: if show then "block" else "none"

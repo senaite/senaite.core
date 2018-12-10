@@ -194,3 +194,6 @@
 
 /* Worksheet's slots table */
 .ajax-contents-table table.slot-header-table { margin-bottom: 0px; }
+
+/* Remarks */
+.ajax-contents-table span.remarksicon { cursor: pointer; color: #3F729B; }
