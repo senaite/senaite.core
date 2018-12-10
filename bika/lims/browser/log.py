@@ -99,7 +99,7 @@ class LogView(BikaListingView):
         """
         actor = entry.get("actor")
         if isinstance(actor, basestring):
-            actor = api.get_user_properties(actor)
+            actor = api.get_user_properties(actor) or dict(actorid=actor)
         fullname = actor.get("fullname")
         if not fullname:
             return actor.get("actorid")
